@@ -165,6 +165,7 @@
   "dependencies": {
     "@blueprintjs/core": "^1.32.0",
     "@blueprintjs/table": "^1.29.1",
+    "@types/redux-form": "^7.0.9",
     "electron-debug": "^1.1.0",
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
@@ -175,6 +176,7 @@
     "react-router-dom": "^4.1.1",
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.6.0",
+    "redux-form": "^7.1.2",
     "redux-thunk": "^2.1.0",
     "source-map-support": "^0.5.0"
   },
