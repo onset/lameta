@@ -1,17 +1,17 @@
 import * as React from "react";
 import { bindActionCreators } from "redux";
 import { connect, Dispatch } from "react-redux";
-import { SessionsTab, IProps } from "../components/SessionsTab";
+import { SessionsTab, SessionTabProps } from "../components/SessionsTab";
 import * as SessionActions from "../actions/sessionActions";
 import { IState } from "../reducers";
 
-function mapStateToProps(state: IState): Partial<IProps> {
+function mapStateToProps(state: IState): Partial<SessionTabProps> {
   return {
     //counter: state.counter
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<IState>): Partial<IProps> {
+function mapDispatchToProps(dispatch: Dispatch<IState>): Partial<SessionTabProps> {
   return bindActionCreators(SessionActions as any, dispatch);
 }
 

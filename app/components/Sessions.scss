@@ -4,19 +4,16 @@ $color-session: #CFF09F;
 $color-session-outline: #94C397;
 
 :local {
+  .sessionsTab {
+    background-color: #F0F0F0;
+    height: 100%;
+    color:black;
+    display: flex;
+  }
   .sessionForm {
     background-color: transparent;// $color-session;
     //border: solid thin $color-session-outline;
     margin: 8px;
-  }
-  .sessionsScreen {
-    background-color: #F0F0F0;
-    height: 100%;
-    color:black;
-  }
-  .filesAndDetails {
-    height: 100%;
-    display: flex;
   }
   .fileDetails{
     background-color: $color-interstitial;
@@ -60,7 +57,7 @@ $color-session-outline: #94C397;
     background-color: white;
     height: 30%;
   }
-  .fileHeader {
+  .paneTitle {
     font-size: 19px;
     margin-top: 6px;
     margin-left: 6px;

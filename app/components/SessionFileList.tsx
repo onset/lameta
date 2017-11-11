@@ -1,28 +1,25 @@
 import * as React from "react";
-import { RouteComponentProps } from "react-router";
 import { Table, Column, Cell, SelectionModes, Regions } from "@blueprintjs/table";
-
+import { IFile } from "./SessionModel";
 let styles = require("./Sessions.scss");
 
-export interface IProps extends RouteComponentProps<any> {
+export interface ISessionFileListProps {
+  files: IFile[];
 }
 
-export class SessionsFileList extends React.Component<any> {
+export class SessionsFileList extends React.Component<ISessionFileListProps> {
 
-  files = [["Community Members", "Session","11-10-17","690 B"],
-            ["community_members.eaf","ELAN","11-10-17","111 KB"],
-            ["community_members.mp3","Audio","11-10-17", "47kb"]];
   renderName = (rowIndex: number) => {
-    return <Cell>{this.files[rowIndex][0]}</Cell>;
+    return <Cell>{this.props.files[rowIndex].name}</Cell>;
   }
   renderType = (rowIndex: number) => {
-    return <Cell>{this.files[rowIndex][1]}</Cell>;
+    return <Cell>{this.props.files[rowIndex].type}</Cell>;
   }
   renderFileDate = (rowIndex: number) => {
-    return <Cell>{this.files[rowIndex][2]}</Cell>;
+    return <Cell>{this.props.files[rowIndex].date}</Cell>;
   }
   renderSize = (rowIndex: number) => {
-    return <Cell>{this.files[rowIndex][3]}</Cell>;
+    return <Cell>{this.props.files[rowIndex].size}</Cell>;
   }
   getSelectedFileRow() {
     return [Regions.row(0)];
@@ -31,7 +28,7 @@ export class SessionsFileList extends React.Component<any> {
 
   return (
       <div className={styles.fileList}>
-        <Table numRows={this.files.length} isRowHeaderShown={false}
+        <Table numRows={this.props.files.length} isRowHeaderShown={false}
             allowMultipleSelection={false}
             selectionModes={SelectionModes.ROWS_ONLY}
             selectedRegions={this.getSelectedFileRow()}>

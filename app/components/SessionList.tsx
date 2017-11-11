@@ -1,26 +1,29 @@
 import * as React from "react";
 import { Table, Column, Cell, SelectionModes, Regions } from "@blueprintjs/table";
+import {ISession} from "./SessionModel";
 
 let styles = require("./Sessions.scss");
 
-export class SessionList extends React.Component<any> {
-
-  sessions = [["Community Members","11-10-17"],["Flowers", "18-9-17"]];
+export interface SessionListProps {
+  sessions: ISession[];
+  selectedSessionIndex: number;
+}
+export class SessionList extends React.Component<SessionListProps> {
   renderId = (rowIndex: number) => {
-    return <Cell>{this.sessions[rowIndex][0]}</Cell>;
+    return <Cell>{this.props.sessions[rowIndex].title}</Cell>;
   }
   renderDate = (rowIndex: number) => {
-    return <Cell>{this.sessions[rowIndex][1]}</Cell>;
+    return <Cell>{this.props.sessions[rowIndex].date}</Cell>;
   }
 
   getSelectedSessionRow() {
-    return [Regions.row(0)];
+    return [Regions.row(this.props.selectedSessionIndex)];
   }
   render() {
 
   return (
           <div className={styles.sessionsList}>
-            <Table numRows={this.sessions.length} isRowHeaderShown={false}
+            <Table numRows={this.props.sessions.length} isRowHeaderShown={false}
                        allowMultipleSelection={false}
                        selectionModes={SelectionModes.ROWS_ONLY}
                        selectedRegions={this.getSelectedSessionRow()}>
