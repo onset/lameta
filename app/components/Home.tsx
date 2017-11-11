@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
+import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-let styles = require('./Home.scss');
+let styles = require("./Home.scss");
 
 export default class Home extends React.Component {
   render() {
@@ -21,7 +20,7 @@ export default class Home extends React.Component {
   </TabPanel>
 
           <TabPanel>
-            <SessionsPage />
+            session
           </TabPanel>
           <TabPanel>
             people
