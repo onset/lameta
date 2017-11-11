@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import SessionsPage from "../containers/SessionsPage";
 let styles = require("./Home.scss");
 
 export default class Home extends React.Component {
@@ -8,23 +9,20 @@ export default class Home extends React.Component {
       <div className={styles.container} data-tid="container">
         <Tabs >
           <TabList>
-            {/* <Tab><MdFolder size={25} className="projectTab" />Project</Tab>
-    <Tab><FaComments size={25} className="sessionsTab" />Sessions</Tab>
-    <Tab><FaUser size={25} className="peopleTab" />People</Tab> */}
             <Tab>Project</Tab>
             <Tab>Sessions</Tab>
             <Tab>People</Tab>
           </TabList>
-          <TabPanel>
+          <TabPanel className={styles.projectTab}>
             project
-  </TabPanel>
+          </TabPanel>
 
           <TabPanel>
-            session
+          <SessionsPage />
           </TabPanel>
-          <TabPanel>
+          <TabPanel className={styles.peopleTab}>
             people
-  </TabPanel>
+          </TabPanel>
         </Tabs>
       </div>
     );

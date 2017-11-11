@@ -1,0 +1,69 @@
+$color-interstitial: #F0F0F0;
+$color-greyborder: #ABADB3;
+$color-session: #CFF09F;
+$color-session-outline: #94C397;
+
+:local {
+  .sessionForm {
+    background-color: transparent;// $color-session;
+    //border: solid thin $color-session-outline;
+    margin: 8px;
+  }
+  .sessionsScreen {
+    background-color: #F0F0F0;
+    height: 100%;
+    color:black;
+  }
+  .filesAndDetails {
+    height: 100%;
+    display: flex;
+  }
+  .fileDetails{
+    background-color: $color-interstitial;
+    border: solid thin $color-greyborder;
+  }
+  :global(.react-tabs)
+  {
+    height: 100%;
+    background-color: white;
+  }
+  :global(.react-tabs__tab-panel)
+  {
+    height: 100%;
+    background-color: $color-session;
+    border: solid thin $color-session-outline;
+  }
+  :global(.react-tabs__tab-list)
+  {
+    background-color: $color-interstitial;
+  }
+  .sessionsList {
+    height: 100%;
+    background-color: white;
+    height: 100%;
+    width: 300px;
+    color: black;
+    border: solid thin $color-greyborder;
+    margin-right: 6px;
+  }
+  .filePane {
+    background-color: #CFF09F;
+    width: 100%;
+    //padding: 8px; // nice idea, to inset the child, but it was visually complicating
+    border: solid thin $color-greyborder;
+  }
+  .filePane :global(.react-tabs__tab-panel){
+    // margin-left: 12px;
+    // margin-right: 12px;
+  }
+  .fileList {
+    background-color: white;
+    height: 30%;
+  }
+  .fileHeader {
+    font-size: 19px;
+    margin-top: 6px;
+    margin-left: 6px;
+    margin-bottom: 6px;
+  }
+}

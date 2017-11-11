@@ -2,6 +2,70 @@
 
 @import "~react-tabs/style/react-tabs.scss";
 
-body, html, .root{
+//$region-selected-color: #CFF09F; //this is too light
+// this is an overlay, not a true background, so it has to use transparency, which makes it impossible to mimic saymore
+// alas, the transparancy get's discarded and replaced by 0.1. So I've increased the saturation
+$region-selected-color: rgba(151, 255, 0, 0.2);
+// $header-background-color:#CFF09F; (samore green) interesting, but it was too much
+$header-background-color: white;
+$icon-font-path: "~@blueprintjs/core/resources/icons";
+@import "~@blueprintjs/core/src/blueprint.scss";
+@import "~@blueprintjs/table/src/table.scss";
+@import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
+
+$color-interstitial: #F0F0F0;
+body, html, #root, #app{
   height: 100%;
+  margin: 0;
+  background-color: $color-interstitial;
+}
+
+.field {
+  //width: 30%;
+  margin: 4px 8px;
+}
+.field:not(.text-block){
+  height: 40px;
+}
+.field label{
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+}
+.field input{
+  width: 100%;
+}
+.text-block {
+  //height: 64px;
+}
+.text-block input{
+  height: 4em;
+}
+form{
+  // display: grid;
+  // grid-template-columns: 1fr 1fr;
+  // grid-gap: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start; // stack from top on all columns
+  margin: 0 -8px;
+  height: 300px;
+}
+// .react-tabs__tab svg{
+
+// }
+.projectTab{
+  color: #E69664;
+}
+.sessionsTab{
+  color: #CFF09F;
+}
+.peopleTab{
+  color: #4D6B96;
+}
+
+.bp-table-quadrant{
+  background-color: white;
 }
