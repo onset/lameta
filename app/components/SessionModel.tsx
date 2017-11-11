@@ -1,6 +1,7 @@
 export interface ISession {
     title: string;
     date: string;
+    files: IFile[];
   }
 
 export interface IFile {
