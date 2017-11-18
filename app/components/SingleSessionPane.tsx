@@ -4,6 +4,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import {default as SessionForm} from "./SessionForm";
 import SessionFileList from "./SessionFileList";
 import {ISession} from "./SessionModel";
+import { observer } from "mobx-react";
+
 
 let styles = require("./Sessions.scss");
 
@@ -11,6 +13,7 @@ export interface SingleSessionPaneProps {
   session: ISession;
 }
 
+@observer
 export class SingleSessionPane extends React.Component<SingleSessionPaneProps> {
   render() {
 
@@ -26,7 +29,7 @@ export class SingleSessionPane extends React.Component<SingleSessionPaneProps> {
           <Tab>Notes</Tab>
         </TabList>
       <TabPanel>
-        {<SessionForm/>}
+        {<SessionForm session={this.props.session}/>}
       </TabPanel>
       <TabPanel>
         aaa

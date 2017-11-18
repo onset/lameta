@@ -1,12 +1,14 @@
 import * as React from "react";
 import { Table, Column, Cell, SelectionModes, Regions } from "@blueprintjs/table";
 import { IFile } from "./SessionModel";
+import { observer } from "mobx-react";
 let styles = require("./Sessions.scss");
 
 export interface ISessionFileListProps {
   files: IFile[];
 }
 
+@observer
 export class SessionsFileList extends React.Component<ISessionFileListProps> {
 
   renderName = (rowIndex: number) => {

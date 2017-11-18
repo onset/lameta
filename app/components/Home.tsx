@@ -2,13 +2,16 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
 import {SessionsTab} from "./SessionsTab";
-import {ISession} from "./SessionModel";
+import {ISession, ISessionSelection} from "./SessionModel";
+import { observer } from "mobx-react";
 let styles = require("./Home.scss");
 
 export interface HomeProps {
   sessions: ISession[];
+  selectedSession: ISessionSelection;
 }
 
+@observer
 export default class Home extends React.Component<HomeProps> {
 
   render() {
@@ -25,7 +28,7 @@ export default class Home extends React.Component<HomeProps> {
           </TabPanel>
 
           <TabPanel>
-          <SessionsTab sessions={this.props.sessions} selectedSessionIndex={1}/>
+          <SessionsTab sessions={this.props.sessions} selectedSession={this.props.selectedSession}/>
           </TabPanel>
           <TabPanel className={styles.peopleTab}>
             people
