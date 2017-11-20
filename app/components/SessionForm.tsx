@@ -1,9 +1,10 @@
 import * as React from "react";
 //import { Field, reduxForm, InjectedFormProps  } from "redux-form";
 import { DateInput } from "@blueprintjs/datetime";
-//let styles = require("./Sessions.scss");
+let styles = require("./Sessions.scss");
 import {ISession} from "./SessionModel";
 import { observer } from "mobx-react";
+import TextField from "./TextField";
 
 export interface IProps {
   session : ISession;
@@ -20,6 +21,7 @@ export default class SessionForm  extends React.Component<IProps> {
   constructor (props : IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
+    console.log(this.props.session.getString("title"));
   }
 
   renderDatePicker = () => (
@@ -29,9 +31,8 @@ export default class SessionForm  extends React.Component<IProps> {
   )
 
   updateProperty (key:string, value:string) {
-    this.props.session[key] = value;
+    this.props.session.setString(key,value);
     console.log(key+" = "+value);
-    //this.props.session.title = value;
   }
 
   onChange (event: React.FormEvent<HTMLInputElement>) {
@@ -40,14 +41,16 @@ export default class SessionForm  extends React.Component<IProps> {
 
   render() {
     return (
-       <input type="text" name="title" value={this.props.session.title}
-        onChange={this.onChange}/>
+      <form className={styles.sessionForm}>
+        <TextField label="ID" data={this.props.session}/>
+        <TextField label="Title" data={this.props.session}/>
+      </form>
       // <form className={styles.sessionForm}>
-      //   <div className={"field"}>
-      //     <label htmlFor="id">ID</label>
-      //     {/* <Field name="foo" type="text" component={this.renderField}/> */}
-      //     <Field name="id" type="text" component="input"/>
-      //   </div>
+        // <div className={"field"}>
+        //   <label htmlFor="id">ID</label>
+        //   {/* <Field name="foo" type="text" component={this.renderField}/> */}
+        //   <Field name="id" type="text" component="input"/>
+        // </div>
       //   <div className={"field"}>
       //     <label htmlFor="title">Title</label>
       //     <Field name="title" type="text" component="input"/>

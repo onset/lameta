@@ -24,7 +24,7 @@ export class SessionList extends React.Component<SessionListProps> {
   }
 
   onSelection(e: IRegion[]) {
-    console.log("TableTestRedux:onSelection e:", e);
+    console.log("SessionList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
         var selectedRow : number = e[0].rows![0];
         this.props.selectedSession.index = selectedRow;

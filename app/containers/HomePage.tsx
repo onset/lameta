@@ -1,32 +1,44 @@
-import * as React from "react";
-//import { RouteComponentProps } from "react-router";
 import Home from "../components/Home";
+import { ISession } from "../components/SessionModel";
+import * as React from "react";
 import * as mobx from "mobx";
-import {observer} from "mobx-react";
+import { observer } from "mobx-react";
+import * as fs from "fs";
 
-@observer
-export default class HomePage extends React.Component<any> {
-  store = mobx.observable(
-      {  selectedSession: {index: 0},
-        sessions: [
-        {title:"Community Members",date:"11-10-17",
-        files:[
-          {name:"Community Members", type:"Session",date:"11-10-17",size:"690 B"},
-          {name:"community_members.eaf",type:"ELAN",date:"11-10-17",size:"111 KB"},
-          {name:"community_members.mp3",type:"Audio",date:"11-10-17", size:"47 KB"}]},
-        {title:"Flowers", date:"18-9-17",               files:[
-          {name:"Flowers", type:"Session",date:"12-13-17",size:"670 B"},
-          {name:"Flowers.eaf",type:"ELAN",date:"12-12-17",size:"222 KB"},
-          {name:"Flowers.jpg",type:"Image",date:"12-11-17", size:"99 KB"}]},
-        {title:"Wedding", date:"18-9-17",               files:[
-            {name:"Wedding", type:"Session",date:"12-31-13",size:"670 B"}]},
-      ]});
+class SelectedItem {
+  @mobx.observable index: number;
+}
 
-  render() {
-    return (
-      <Home sessions={this.store.sessions} selectedSession={this.store.selectedSession}/>
-    );
+class Store {
+
+  @mobx.observable selectedSession: SelectedItem;
+  @mobx.observable sessions: ISession[] = [];
+
+  constructor() {
+    this.selectedSession = new SelectedItem();
+  }
+
+  load(path: string) {
+    let s: string = fs.readFileSync(path, "utf8");
+    let x: ISession = ISession.fromObject(JSON.parse(s));
+    console.log("loaded " + x.getString("title"));
+    this.sessions.push(x);
   }
 }
 
-//export default (HomePage as any as React.StatelessComponent<RouteComponentProps<any>>);
+@observer
+export default class HomePage extends React.Component<any> {
+  @mobx.observable store = new Store();
+
+  constructor() {
+    super();
+    this.store.load("test/sample/Sessions/Community Members/Community Members.session");
+    this.store.load("test/sample/Sessions/Flowers/Flowers.session");
+  }
+
+  render() {
+    return (
+      <Home sessions={this.store.sessions} selectedSession={this.store.selectedSession} />
+    );
+  }
+}

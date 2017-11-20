@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import {default as SessionForm} from "./SessionForm";
