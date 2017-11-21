@@ -168,6 +168,7 @@
     "@blueprintjs/table": "^1.29.1",
     "@types/react-tabs": "^1.0.3",
     "@types/redux-form": "^7.0.9",
+    "@types/title-case": "^1.1.2",
     "bourbon": "^4.3.4",
     "electron-debug": "^1.1.0",
     "font-awesome": "^4.7.0",
@@ -187,7 +188,8 @@
     "redux": "^3.6.0",
     "redux-form": "^7.1.2",
     "redux-thunk": "^2.1.0",
-    "source-map-support": "^0.5.0"
+    "source-map-support": "^0.5.0",
+    "title-case": "^2.1.1"
   },
   "devEngines": {
     "node": ">=6.x",

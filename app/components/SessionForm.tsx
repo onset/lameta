@@ -3,7 +3,7 @@ import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
 let styles = require("./Sessions.scss");
 import {ISession} from "./SessionModel";
-import { observer } from "mobx-react";
+import { observer, Provider } from "mobx-react";
 import TextField from "./TextField";
 
 export interface IProps {
@@ -41,10 +41,20 @@ export default class SessionForm  extends React.Component<IProps> {
 
   render() {
     return (
-      <form className={styles.sessionForm}>
-        <TextField label="ID" data={this.props.session}/>
-        <TextField label="Title" data={this.props.session}/>
-      </form>
+      <Provider data={this.props.session}>
+        <form className={styles.sessionForm}>
+          {/* <TextField label="ID"/> */}
+          <TextField property="title" />
+          <TextField property="people" />
+          <TextField property="genre" />
+          <TextField property="situation" />
+          <TextField property="date" />
+          <TextField property="setting" />
+          <TextField property="location" />
+          <TextField property="access" />
+          <TextField property="description" />
+        </form>
+      </Provider>
       // <form className={styles.sessionForm}>
         // <div className={"field"}>
         //   <label htmlFor="id">ID</label>

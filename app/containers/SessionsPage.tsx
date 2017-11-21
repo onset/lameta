@@ -7,7 +7,6 @@ import { IState } from "../reducers";
 
 function mapStateToProps(state: IState): Partial<SessionTabProps> {
   return {
-    //counter: state.counter
   };
 }
 

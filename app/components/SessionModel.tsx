@@ -4,17 +4,18 @@ export interface ISessionSelection {
     index: number;
 }
 
-// export interface ISession {
-//     title: string;
-//     date: string;
-//     files: IFile[];
-//     [key: string]: string | IFile[]; // not sure about this. allows setting property by name
-//   }
-
 export class ISession {
     @observable title: string = "";
+    @observable people: string = "";
+    @observable genre: string = "";
+    @observable situation: string = "";
+    @observable setting: string = "";
+    @observable location: string = "";
+    @observable access: string = "";
+    @observable description: string = "";
     @observable date: string  = ""; //TODO
     @observable files: IFile[] = [];
+    path: string = "";
 
     setString(key: string, value: string) {
         let x : any = this;
