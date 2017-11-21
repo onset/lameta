@@ -1,5 +1,4 @@
 import * as React from "react";
-//import { Field, reduxForm, InjectedFormProps  } from "redux-form";
 import { DateInput } from "@blueprintjs/datetime";
 let styles = require("./Sessions.scss");
 import {ISession} from "./SessionModel";

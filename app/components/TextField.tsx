@@ -2,13 +2,18 @@ import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { ISession } from "./SessionModel";
 //let styles = require("./Sessions.scss");
-
 var titleCase = require("title-case");
 
+/* TextField is just a label and a text field.
+    There is so much code here just because it is optimized to reduce boilerplate
+   (onchange, label vs. property, etc.)
+*/
+
 export interface IProps {
-    data?: ISession;
+    // data isn't actually optional, but because we're using mobx.inject, the compiler won't see that it was provided
+    data?: ISession; // TODO: currently ISession, will be generalized later
     property: string;
-    label?:string;// label is optional if it equals property
+    label?:string;// if missing, then we will "title case" the property name and use that for English
 }
 
 @inject("data") @observer
