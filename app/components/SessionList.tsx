@@ -29,7 +29,7 @@ export class SessionList extends React.Component<SessionListProps> {
         var selectedRow : number = e[0].rows![0];
         this.props.selectedSession.index = selectedRow;
     }
-}
+  }
 
   render() {
     return (

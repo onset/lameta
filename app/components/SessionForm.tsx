@@ -40,34 +40,22 @@ export default class SessionForm  extends React.Component<IProps> {
 
   render() {
     return (
+      // the mobx.Provider makes the object available without having to list it for every field
       <Provider data={this.props.session}>
         <form className={styles.sessionForm}>
-          {/* <TextField label="ID"/> */}
           <TextField property="title" />
           <TextField property="people" />
           <TextField property="genre" />
-          <TextField property="situation" />
+          <TextField property="situation"  className={"text-block"}/>
           <TextField property="date" />
           <TextField property="setting" />
           <TextField property="location" />
           <TextField property="access" />
-          <TextField property="description" />
+          <TextField property="description" className={"text-block"} />
         </form>
       </Provider>
       // <form className={styles.sessionForm}>
-        // <div className={"field"}>
-        //   <label htmlFor="id">ID</label>
-        //   {/* <Field name="foo" type="text" component={this.renderField}/> */}
-        //   <Field name="id" type="text" component="input"/>
-        // </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="title">Title</label>
-      //     <Field name="title" type="text" component="input"/>
-      //   </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="People">People</label>
-      //     <Field name="people" type="text" component="input"/>
-      //   </div>
+
       //   <div className={"field"}>
       //     <label htmlFor="genre">Genre</label>
       //     <Field name="genre"  component="select">

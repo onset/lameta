@@ -16,10 +16,14 @@ export interface IProps {
     label?:string;// if missing, then we will "title case" the property name and use that for English
 }
 
-@inject("data") @observer
-export default class TextField  extends React.Component<IProps> {
+//get the object given by a <Provider> in the parent, and put it into our props (just saves the parent having to list it for every field)
+@inject("data")
+// automatically update when the value changes
+@observer
+// the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
+export default class TextField  extends React.Component<IProps & React.HTMLAttributes<HTMLDivElement> > {
     constructor(props : IProps) {
-        super();
+        super(props);
         this.onChange = this.onChange.bind(this);
         this.getLabel= this.getLabel.bind(this);
     }
@@ -45,7 +49,7 @@ export default class TextField  extends React.Component<IProps> {
 
       render() {
         return (
-            <div className={"field"}>
+            <div className={"field "  + this.props.className}>
                 <label>{this.props.label?this.props.label : this.getLabel(this.props.property)}</label>
                 <input type="text"
                     name={this.props.property}

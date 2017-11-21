@@ -4,6 +4,7 @@ import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import * as fs from "fs";
+import * as path from "path";
 
 class SelectedItem {
   @mobx.observable index: number;
@@ -18,10 +19,13 @@ class Store {
     this.selectedSession = new SelectedItem();
   }
 
-  loadSession(path: string) {
-    let s: string = fs.readFileSync(path, "utf8");
+  loadSession(sessionPath: string) {
+    let s: string = fs.readFileSync(sessionPath, "utf8");
     let x: ISession = ISession.fromObject(JSON.parse(s));
-    x.path = path;
+    x.selectedFile = x.files[0];
+    x.path = fs.realpathSync(sessionPath);
+    x.directory = path.dirname( x.path );
+    console.log(x.path+ " vs "+x.directory);
     console.log("loaded " + x.getString("title"));
     this.sessions.push(x);
 

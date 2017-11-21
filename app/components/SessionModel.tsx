@@ -15,7 +15,9 @@ export class ISession {
     @observable description: string = "";
     @observable date: string  = ""; //TODO
     @observable files: IFile[] = [];
+    @observable selectedFile: IFile;
     path: string = "";
+    directory: string = "";
 
     setString(key: string, value: string) {
         let x : any = this;
