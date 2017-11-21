@@ -1,20 +1,21 @@
 import * as React from "react";
-import * as Redux from "react-redux";
-import { History } from "history";
+//import * as Redux from "react-redux";
+//import { History } from "history";
 
-import { Provider } from "react-redux";
+//import { Provider } from "react-redux";
 //import { ConnectedRouter } from 'react-router-redux';
 //import Routes from '../routes';
 import App from "./App";
-interface IRootType {
-  store: Redux.Store<any>;
-  history: History;
-}
+// interface IRootType {
+//   // store: Redux.Store<any> ;
+//   // history: History;
+// }
 
-export default function Root({ store, history }: IRootType) {
+export default function Root() {
   return (
-    <Provider store={store}>
-      <App/>
-    </Provider>
+    <App/>
+    // <Provider store={store}>
+    //   <App/>
+    // </Provider>
   );
 }

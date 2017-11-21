@@ -3,7 +3,6 @@ import { observer, inject } from "mobx-react";
 import { ISession } from "./SessionModel";
 //let styles = require("./Sessions.scss");
 
-//import { titleCase } from "title-case"; why didn't this way work?
 var titleCase = require("title-case");
 
 export interface IProps {
