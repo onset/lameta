@@ -21,7 +21,8 @@
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl",
-    "cleanup": "mop -v"
+    "cleanup": "mop -v",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "jest": {
     "moduleNameMapper": {
@@ -168,7 +169,6 @@
     "@blueprintjs/table": "^1.29.1",
     "@types/react-tabs": "^1.0.3",
     "@types/redux-form": "^7.0.9",
-    "@types/title-case": "^1.1.2",
     "bourbon": "^4.3.4",
     "electron-debug": "^1.1.0",
     "font-awesome": "^4.7.0",
@@ -188,7 +188,8 @@
     "redux-form": "^7.1.2",
     "redux-thunk": "^2.1.0",
     "source-map-support": "^0.5.0",
-    "title-case": "^2.1.1"
+    "title-case": "^2.1.1",
+    "tslint-config-prettier": "^1.6.0"
   },
   "devEngines": {
     "node": ">=6.x",

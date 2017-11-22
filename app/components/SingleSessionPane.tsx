@@ -1,62 +1,67 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import {default as SessionForm} from "./SessionForm";
+import { default as SessionForm } from "./SessionForm";
 import SessionFileList from "./SessionFileList";
-import {ISession} from "./SessionModel";
+import { ISession } from "./SessionModel";
 import { observer } from "mobx-react";
 import * as path from "path";
+const styles = require("./Sessions.scss");
 
-let styles = require("./Sessions.scss");
-
-export interface SingleSessionPaneProps {
+export interface IProps {
   session: ISession;
 }
 
-@observer
-export class SingleSessionPane extends React.Component<SingleSessionPaneProps> {
-  render() {
-  let filetypeSpecificTab = null;
-  let type = this.props.session.selectedFile.type;
-  let fullPath :string = path.join(this.props.session.directory, this.props.session.selectedFile.name);
-    console.log(fullPath);
-    console.log("type="+type);
-  if(type === "Session") {
-    filetypeSpecificTab = <SessionForm session={this.props.session}/>;
-  } else if(type === "Image") {
-    filetypeSpecificTab = <img src={fullPath}/>;
-  } else if(type === "Audio") {
-    console.log("Doing audio");
+@observer export class SingleSessionPane extends React.Component<IProps> {
+  private filetypeSpecificTab: any; // enhance: what's the real type?
 
-    filetypeSpecificTab = <audio controls>
-        <source src={"file://X:/dev/sayless/test/sample/Sessions/Community Members/ETR009_Careful.mp3"}/>
-      </audio>;
+  constructor(props: IProps) {
+    super(props);
+
+    const fullPath: string = path.join(this.props.session.directory, this.props.session.selectedFile.name);
+
+    const typesToTabs: { [type: string]: any; } = {
+      "Session":
+        <SessionForm session={this.props.session} />,
+      "Image":
+        <img src={fullPath} />,
+      "Audio":
+        <audio controls>
+          <source src={"file://X:/dev/sayless/test/sample/Sessions/Community Members/ETR009_Careful.mp3"} />
+        </audio>
+    };
+    this.filetypeSpecificTab = typesToTabs[this.props.session.selectedFile.type];
   }
 
-  return (
-    <div className={styles.filePane}>
-      <h3 className={styles.paneTitle}>{this.props.session.title}</h3>
-      {<SessionFileList session={this.props.session}/>}
-      <Tabs >
-      <TabList>
-          <Tab>Session</Tab>
-          <Tab>Properties</Tab>
-          <Tab>Contributors</Tab>
-          <Tab>Notes</Tab>
-        </TabList>
-      <TabPanel>
-        {filetypeSpecificTab}
+  public render() {
+
+    return (
+
+      <div className={styles.filePane}>
+        <h3 className={styles.paneTitle}>{this.props.session.title}</h3>
+        {
+          <SessionFileList session={this.props.session} />}
+
+        <Tabs >
+          <TabList>
+            <Tab>Session</Tab>
+            <Tab>Properties</Tab>
+            <Tab>Contributors</Tab>
+            <Tab>Notes</Tab>
+          </TabList>
+          <TabPanel>
+            {this.filetypeSpecificTab}
+          </TabPanel>
+          <TabPanel>
+            aaa
       </TabPanel>
-      <TabPanel>
-        aaa
+          <TabPanel>
+            aaa
       </TabPanel>
-      <TabPanel>
-        aaa
+          <TabPanel>
+            aaa
       </TabPanel>
-      <TabPanel>
-        aaa
-      </TabPanel>
-    </Tabs>
-    </div>
+        </Tabs>
+      </div>
     );
   }
 }

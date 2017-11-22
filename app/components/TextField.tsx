@@ -1,8 +1,8 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { ISession } from "./SessionModel";
-//let styles = require("./Sessions.scss");
-var titleCase = require("title-case");
+const titleCase = require("title-case");
+//const styles = require("./Sessions.scss");
 
 /* TextField is just a label and a text field.
     There is so much code here just because it is optimized to reduce boilerplate
@@ -10,10 +10,10 @@ var titleCase = require("title-case");
 */
 
 export interface IProps {
-    // data isn't actually optional, but because we're using mobx.inject, the compiler won't see that it was provided
-    data?: ISession; // TODO: currently ISession, will be generalized later
-    property: string;
-    label?:string;// if missing, then we will "title case" the property name and use that for English
+  // data isn't actually optional, but because we're using mobx.inject, the compiler won't see that it was provided
+  data?: ISession; // TODO: currently ISession, will be generalized later
+  property: string;
+  label?: string; // if missing, then we will "title case" the property name and use that for English
 }
 
 //get the object given by a <Provider> in the parent, and put it into our props (just saves the parent having to list it for every field)
@@ -21,40 +21,49 @@ export interface IProps {
 // automatically update when the value changes
 @observer
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export default class TextField  extends React.Component<IProps & React.HTMLAttributes<HTMLDivElement> > {
-    constructor(props : IProps) {
-        super(props);
-        this.onChange = this.onChange.bind(this);
-        this.getLabel= this.getLabel.bind(this);
+export default class TextField extends React.Component<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> {
+  constructor(props: IProps) {
+    super(props);
+    this.onChange = this.onChange.bind(this);
+    this.getLabel = this.getLabel.bind(this);
+  }
+  private updateProperty(key: string, value: string) {
+    if (this.props.data) {
+      this.props.data.setString(key, value);
     }
-    updateProperty (key:string, value:string) {
-        if(this.props.data) {
-            this.props.data.setString(key, value);
-        }
-        console.log(key+" = "+value);
-      }
+    console.log(key + " = " + value);
+  }
 
-      onChange (event: React.FormEvent<HTMLInputElement>) {
-        console.log(event);
-        this.updateProperty(event.currentTarget.name, event.currentTarget.value);
-      }
+  private onChange(event: React.FormEvent<HTMLInputElement>) {
+    console.log(event);
+    this.updateProperty(event.currentTarget.name, event.currentTarget.value);
+  }
 
-      getLabel(property: string) {
-          return titleCase(property);
-      }
+  private getLabel(property: string) {
+    return titleCase(property);
+  }
 
-      getValue(property: string) {
-        return this.props.data? this.props.data.getString(property) : "ERROR";
-    }
+  private getValue(property: string) {
+    return this.props.data ? this.props.data.getString(property) : "ERROR";
+  }
 
-      render() {
-        return (
-            <div className={"field "  + this.props.className}>
-                <label>{this.props.label?this.props.label : this.getLabel(this.props.property)}</label>
-                <input type="text"
-                    name={this.props.property}
-                    value={this.getValue(this.props.property)}
-                    onChange={this.onChange}/>
-            </div>
-        );}
+  public render() {
+    return (
+      <div className={"field " + this.props.className}>
+        <label>
+          {this.props.label
+            ? this.props.label
+            : this.getLabel(this.props.property)}
+        </label>
+        <input
+          type="text"
+          name={this.props.property}
+          value={this.getValue(this.props.property)}
+          onChange={this.onChange}
+        />
+      </div>
+    );
+  }
 }

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Table, Column, Cell,  Regions, IRegion } from "@blueprintjs/table";
+import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { ISession } from "./SessionModel";
 import { observer } from "mobx-react";
-let styles = require("./Sessions.scss");
+const styles = require("./Sessions.scss");
 
 export interface ISessionFileListProps {
   session: ISession;
@@ -10,45 +10,46 @@ export interface ISessionFileListProps {
 
 @observer
 export class SessionsFileList extends React.Component<ISessionFileListProps> {
-
-  renderName = (rowIndex: number) => {
+  private renderName = (rowIndex: number) => {
     return <Cell>{this.props.session.files[rowIndex].name}</Cell>;
-  }
-  renderType = (rowIndex: number) => {
+  };
+  private renderType = (rowIndex: number) => {
     return <Cell>{this.props.session.files[rowIndex].type}</Cell>;
-  }
-  renderFileDate = (rowIndex: number) => {
+  };
+  private renderFileDate = (rowIndex: number) => {
     return <Cell>{this.props.session.files[rowIndex].date}</Cell>;
-  }
-  renderSize = (rowIndex: number) => {
+  };
+  private renderSize = (rowIndex: number) => {
     return <Cell>{this.props.session.files[rowIndex].size}</Cell>;
-  }
-  getSelectedFileRow() {
-    let i = this.props.session.files.indexOf(this.props.session.selectedFile);
+  };
+  private getSelectedFileRow() {
+    const i = this.props.session.files.indexOf(this.props.session.selectedFile);
     return [Regions.row(i)];
   }
 
-  onSelection(e: IRegion[]) {
+  private onSelection(e: IRegion[]) {
     console.log("SessionList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
-        var selectedRow : number = e[0].rows![0];
-        this.props.session.selectedFile = this.props.session.files[selectedRow];
+      const selectedRow: number = e[0].rows![0];
+      this.props.session.selectedFile = this.props.session.files[selectedRow];
     }
-}
+  }
 
-  render() {
-
-  return (
+  public render() {
+    return (
       <div className={styles.fileList}>
-        <Table numRows={this.props.session.files.length} isRowHeaderShown={false}
-            allowMultipleSelection={false}
-            // selectionModes={SelectionModes.ROWS_ONLY}
-            selectedRegions={this.getSelectedFileRow()}
-            onSelection={e => this.onSelection(e)}>
-          <Column name="Name" renderCell={this.renderName}/>
-          <Column name="Type" renderCell={this.renderType}/>
-          <Column name="Date" renderCell={this.renderFileDate}/>
-          <Column name="Size" renderCell={this.renderSize}/>
+        <Table
+          numRows={this.props.session.files.length}
+          isRowHeaderShown={false}
+          allowMultipleSelection={false}
+          // selectionModes={SelectionModes.ROWS_ONLY}
+          selectedRegions={this.getSelectedFileRow()}
+          onSelection={e => this.onSelection(e)}
+        >
+          <Column name="Name" renderCell={this.renderName} />
+          <Column name="Type" renderCell={this.renderType} />
+          <Column name="Date" renderCell={this.renderFileDate} />
+          <Column name="Size" renderCell={this.renderSize} />
         </Table>
       </div>
     );

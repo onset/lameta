@@ -1,44 +1,43 @@
 import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
-let styles = require("./Sessions.scss");
-import {ISession} from "./SessionModel";
+import { ISession } from "./SessionModel";
 import { observer, Provider } from "mobx-react";
 import TextField from "./TextField";
+const styles = require("./Sessions.scss");
 
 export interface IProps {
-  session : ISession;
-
+  session: ISession;
 }
 @observer
-export default class SessionForm  extends React.Component<IProps> {
+export default class SessionForm extends React.Component<IProps> {
   //  renderField = (field: any) => (
   //   <div className="input-row">
   //     <input {...field.input} type="text"/>
   //   </div>
   // )
 
-  constructor (props : IProps) {
+  constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
     console.log(this.props.session.getString("title"));
   }
 
-  renderDatePicker = () => (
+  private renderDatePicker = () => (
     <div>
-          <DateInput />
+      <DateInput />
     </div>
-  )
+  );
 
-  updateProperty (key:string, value:string) {
-    this.props.session.setString(key,value);
-    console.log(key+" = "+value);
+  private updateProperty(key: string, value: string) {
+    this.props.session.setString(key, value);
+    console.log(key + " = " + value);
   }
 
-  onChange (event: React.FormEvent<HTMLInputElement>) {
+  private onChange(event: React.FormEvent<HTMLInputElement>) {
     this.updateProperty(event.currentTarget.name, event.currentTarget.value);
   }
 
-  render() {
+  public render() {
     return (
       // the mobx.Provider makes the object available without having to list it for every field
       <Provider data={this.props.session}>
@@ -46,7 +45,7 @@ export default class SessionForm  extends React.Component<IProps> {
           <TextField property="title" />
           <TextField property="people" />
           <TextField property="genre" />
-          <TextField property="situation"  className={"text-block"}/>
+          <TextField property="situation" className={"text-block"} />
           <TextField property="date" />
           <TextField property="setting" />
           <TextField property="location" />

@@ -172,12 +172,6 @@
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/@types/tether/-/tether-1.4.3.tgz#bbcb46a35dfbeeaaf60d60afaba3d872b6e1ebf5"
 
-"@types/title-case@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@types/title-case/-/title-case-1.1.2.tgz#ad45d5b61e4f349e438164c2f1a1a5687135af01"
-  dependencies:
-    title-case "*"
-
 abab@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
@@ -6176,7 +6170,7 @@ timers-browserify@^2.0.2:
   dependencies:
     setimmediate "^1.0.4"
 
-title-case@*, title-case@^2.1.1:
+title-case@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/title-case/-/title-case-2.1.1.tgz#3e127216da58d2bc5becf137ab91dae3a7cd8faa"
   dependencies:
@@ -6287,6 +6281,10 @@ tslib@^1.5.0:
 tslib@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
+
+tslint-config-prettier@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/tslint-config-prettier/-/tslint-config-prettier-1.6.0.tgz#fec1ee8fb07e8f033c63fed6b135af997f31962a"
 
 tslint@^5.4.3:
   version "5.7.0"

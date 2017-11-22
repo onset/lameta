@@ -1,20 +1,19 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
-import {SessionsTab} from "./SessionsTab";
-import {ISession, ISessionSelection} from "./SessionModel";
+import { SessionsTab } from "./SessionsTab";
+import { ISession, ISessionSelection } from "./SessionModel";
 import { observer } from "mobx-react";
-let styles = require("./Home.scss");
+const styles = require("./Home.scss");
 
-export interface HomeProps {
+export interface IProps {
   sessions: ISession[];
   selectedSession: ISessionSelection;
 }
 
 @observer
-export default class Home extends React.Component<HomeProps> {
-
-  render() {
+export default class Home extends React.Component<IProps> {
+  public render() {
     return (
       <div className={styles.container} data-tid="container">
         <Tabs defaultIndex={1}>
@@ -23,16 +22,15 @@ export default class Home extends React.Component<HomeProps> {
             <Tab>Sessions</Tab>
             <Tab>People</Tab>
           </TabList>
-          <TabPanel className={styles.projectTab}>
-            project
-          </TabPanel>
+          <TabPanel className={styles.projectTab}>project</TabPanel>
 
           <TabPanel>
-          <SessionsTab sessions={this.props.sessions} selectedSession={this.props.selectedSession}/>
+            <SessionsTab
+              sessions={this.props.sessions}
+              selectedSession={this.props.selectedSession}
+            />
           </TabPanel>
-          <TabPanel className={styles.peopleTab}>
-            people
-          </TabPanel>
+          <TabPanel className={styles.peopleTab}>people</TabPanel>
         </Tabs>
       </div>
     );
