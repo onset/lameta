@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Iso639Code />
+	<transcriptionFont />
+	<freeTranslationFont />
+	<AutoSegmentersettings minSegmentLength="0" maxSegmentLength="0" preferrerdPauseLength="0" optimumLengthClampingFactor="0" />
+	<Title>Edolo Sample</Title>
+	<FundingProjectTitle />
+	<ProjectDescription>The Etoro, or Edolo, are a tribe and ethnic group of the Southern Highlands Province of Papua New Guinea. Their territory comprises the southern slopes of Mt. Sisa, along the southern edge of the central mountain range of New Guinea, near the Papuan Plateau.</ProjectDescription>
+	<VernacularISO3CodeAndName>etr: Edolo</VernacularISO3CodeAndName>
+	<Location />
+	<Region>Southern Highlands Province</Region>
+	<Country>Papua New Guinea</Country>
+	<Continent>Oceania</Continent>
+	<ContactPerson />
+	<AccessProtocol>None</AccessProtocol>
+	<ContentType />
+	<Applications />
+	<DateAvailable />
+	<RightsHolder />
+	<Depositor />
+	<RelatedPublications />
+</Project>

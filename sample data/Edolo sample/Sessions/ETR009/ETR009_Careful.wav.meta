@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MetaData>
+  <Recordist type="string">Hatton</Recordist>
+  <Device type="string">Shure X2u A/D, into GoldWave</Device>
+  <Microphone type="string">Sure SM10A Headset</Microphone>
+  <Channels type="string">1</Channels>
+  <Sample_Rate type="string">96khz</Sample_Rate>
+  <Bit_Depth type="string">24</Bit_Depth>
+  <Speaker type="string">Awi Heole</Speaker>
+  <notes type="string">This is squeezed down to low bit-rate mp3 so that the SayMore Installer doesn't get large.</notes>
+</MetaData>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions } from "@blueprintjs/table";
-import { ISession, ISessionSelection } from "./SessionModel";
+import { ISession, ISessionSelection } from "../model/SessionModel";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";

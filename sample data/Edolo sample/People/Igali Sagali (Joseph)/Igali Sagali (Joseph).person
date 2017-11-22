@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person>
+  <primaryLanguage type="string">Edolo</primaryLanguage>
+  <primaryLanguageLearnedIn type="string">Huya</primaryLanguageLearnedIn>
+  <otherLanguage0 type="string">Huli</otherLanguage0>
+  <otherLanguage1 type="string">Tok Pisin</otherLanguage1>
+  <education type="string">Grade 1</education>
+  <primaryOccupation type="string">Subsistence Farmer</primaryOccupation>
+  <gender type="string">Male</gender>
+  <birthYear type="string">1972</birthYear>
+  <fathersLanguage type="string">Edolo</fathersLanguage>
+  <mothersLanguage type="string">Edolo</mothersLanguage>
+</Person>

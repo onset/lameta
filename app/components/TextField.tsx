@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { ISession } from "./SessionModel";
+import { FormObject } from "../model/BaseModel";
 const titleCase = require("title-case");
 //const styles = require("./Sessions.scss");
 
@@ -11,7 +11,7 @@ const titleCase = require("title-case");
 
 export interface IProps {
   // data isn't actually optional, but because we're using mobx.inject, the compiler won't see that it was provided
-  data?: ISession; // TODO: currently ISession, will be generalized later
+  data?: FormObject; // TODO: currently ISession, will be generalized later
   property: string;
   label?: string; // if missing, then we will "title case" the property name and use that for English
 }

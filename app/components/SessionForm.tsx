@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
-import { ISession } from "./SessionModel";
+import { ISession } from "../model/SessionModel";
 import { observer, Provider } from "mobx-react";
 import TextField from "./TextField";
 const styles = require("./Sessions.scss");

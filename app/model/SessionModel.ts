@@ -1,10 +1,11 @@
 import { observable } from "mobx";
+import { ObjectWithChildFiles } from "./BaseModel";
 
 export interface ISessionSelection {
   index: number;
 }
 
-export class ISession {
+export class ISession extends ObjectWithChildFiles {
   @observable public title: string = "";
   @observable public people: string = "";
   @observable public genre: string = "";
@@ -14,18 +15,8 @@ export class ISession {
   @observable public access: string = "";
   @observable public description: string = "";
   @observable public date: string = ""; //TODO
-  @observable public files: IFile[] = [];
-  @observable public selectedFile: IFile;
   public path: string = "";
   public directory: string = "";
-
-  public setString(key: string, value: string) {
-    this[key] = value;
-  }
-  public getString(key: string): string {
-    return this[key];
-  }
-  [key: string]: string | IFile[] | any; // not sure about this. allows setting property by name
 
   // see https://stackoverflow.com/questions/22875636/how-do-i-cast-a-json-object-to-a-typescript-class
   // this is lame because it ignores any property that does not have an initializer
@@ -41,10 +32,4 @@ export class ISession {
     }
     return session;
   }
-}
-export interface IFile {
-  name: string;
-  type: string;
-  date: string;
-  size: string;
 }
