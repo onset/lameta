@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SessionList } from "./SessionList";
-import { Session, ISessionSelection } from "../model/SessionModel";
+import { Session, ISessionSelection } from "../model/Session";
 import { SingleSessionPane } from "./SingleSessionPane";
 import { observer } from "mobx-react";
 const styles = require("./Sessions.scss");

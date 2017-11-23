@@ -2,7 +2,7 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { default as SessionForm } from "./SessionForm";
 import SessionFileList from "./SessionFileList";
-import { Session } from "../model/SessionModel";
+import { Session } from "../model/Session";
 import { observer } from "mobx-react";
 import * as path from "path";
 const styles = require("./Sessions.scss");
@@ -17,7 +17,9 @@ export class SingleSessionPane extends React.Component<IProps> {
 
   constructor(props: IProps) {
     super(props);
+  }
 
+  public render() {
     const fullPath: string = path.join(
       this.props.session.directory,
       this.props.session.selectedFile.name
@@ -38,9 +40,7 @@ export class SingleSessionPane extends React.Component<IProps> {
     };
     this.filetypeSpecificTab =
       typesToTabs[this.props.session.selectedFile.type];
-  }
 
-  public render() {
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>{this.props.session.title}</h3>

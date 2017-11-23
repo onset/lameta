@@ -2,7 +2,7 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
 import { SessionsTab } from "./SessionsTab";
-import { Session, ISessionSelection } from "../model/SessionModel";
+import { Session, ISessionSelection } from "../model/Session";
 import { observer } from "mobx-react";
 const styles = require("./Home.scss");
 
