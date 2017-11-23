@@ -1,4 +1,7 @@
 import { observable } from "mobx";
+import * as fs from "fs";
+import * as Path from "path";
+import FileDescriptor from "./ComponentFile";
 
 /* This whole class is a hack, to work with a typescript object in a simple property-name way.
    We use this for peristence and form-filling (without boilerplate code for each field). */
@@ -9,7 +12,7 @@ export class FormObject {
   public getString(key: string): string {
     return this[key];
   }
-  [key: string]: string | IFile[] | any; // not sure about this. allows setting property by name
+  [key: string]: string | File[] | any; // not sure about this. allows setting property by name
 
   public loadFromObject(data: any) {
     // see https://stackoverflow.com/questions/22875636/how-do-i-cast-a-json-object-to-a-typescript-class
@@ -23,14 +26,10 @@ export class FormObject {
     }
   }
 }
-export interface IFile {
-  name: string;
-  type: string;
-  date: string;
-  size: string;
-}
 
-export class ObjectWithChildFiles extends FormObject {
-  @observable public files: IFile[] = [];
-  @observable public selectedFile: IFile;
+export class DirectoryObject extends FormObject {
+  public path: string = "";
+  public directory: string = "";
+  @observable public files: FileDescriptor[] = [];
+  @observable public selectedFile: FileDescriptor;
 }

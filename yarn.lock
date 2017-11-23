@@ -74,6 +74,10 @@
     "@types/cheerio" "*"
     "@types/react" "*"
 
+"@types/filesize@^3.2.15":
+  version "3.2.15"
+  resolved "https://registry.yarnpkg.com/@types/filesize/-/filesize-3.2.15.tgz#a97325f27a5ff7974c7cbd7afa244b8a7affe668"
+
 "@types/glob@^5.0.33":
   version "5.0.33"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-5.0.33.tgz#3dff7c6ce09d65abe919c7961dc3dee016f36ad7"
@@ -2365,6 +2369,10 @@ fileset@^2.0.2:
   dependencies:
     glob "^7.0.3"
     minimatch "^3.0.3"
+
+filesize@^3.5.11:
+  version "3.5.11"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-3.5.11.tgz#1919326749433bb3cf77368bd158caabcc19e9ee"
 
 fill-range@^2.1.0:
   version "2.2.3"

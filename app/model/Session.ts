@@ -1,11 +1,11 @@
 import { observable } from "mobx";
-import { ObjectWithChildFiles, FormObject } from "./BaseModel";
+import { DirectoryObject, FormObject } from "./BaseModel";
 
 export interface ISessionSelection {
   index: number;
 }
 
-export class Session extends ObjectWithChildFiles {
+export class Session extends DirectoryObject {
   @observable public title: string = "";
   @observable public people: string = "";
   @observable public genre: string = "";
@@ -15,8 +15,6 @@ export class Session extends ObjectWithChildFiles {
   @observable public access: string = "";
   @observable public description: string = "";
   @observable public date: string = ""; //TODO
-  public path: string = "";
-  public directory: string = "";
 
   public static fromObject(instanceData: FormObject): Session {
     const session = new Session();

@@ -17,7 +17,9 @@ export class SessionsFileList extends React.Component<ISessionFileListProps> {
     return <Cell>{this.props.session.files[rowIndex].type}</Cell>;
   };
   private renderFileDate = (rowIndex: number) => {
-    return <Cell>{this.props.session.files[rowIndex].date}</Cell>;
+    return (
+      <Cell>{this.props.session.files[rowIndex].date.toLocaleString()}</Cell>
+    );
   };
   private renderSize = (rowIndex: number) => {
     return <Cell>{this.props.session.files[rowIndex].size}</Cell>;
@@ -45,6 +47,7 @@ export class SessionsFileList extends React.Component<ISessionFileListProps> {
           // selectionModes={SelectionModes.ROWS_ONLY}
           selectedRegions={this.getSelectedFileRow()}
           onSelection={e => this.onSelection(e)}
+          columnWidths={[200, 80, 150, 70]}
         >
           <Column name="Name" renderCell={this.renderName} />
           <Column name="Type" renderCell={this.renderType} />
