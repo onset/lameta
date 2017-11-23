@@ -30,11 +30,7 @@ export class SingleSessionPane extends React.Component<IProps> {
       Image: <img src={fullPath} />,
       Audio: (
         <audio controls>
-          <source
-            src={
-              "file://X:/dev/sayless/test/sample/Sessions/Community Members/ETR009_Careful.mp3"
-            }
-          />
+          <source src={fullPath} />
         </audio>
       )
     };

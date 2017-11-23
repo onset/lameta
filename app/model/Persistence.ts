@@ -19,14 +19,6 @@ export default class Persistence {
       Persistence.loadSession(project, dir);
     });
 
-    // Persistence.loadSession(
-    //   project,
-    //   Path.join(path, "Sessions/Community Members/Community Members.session")
-    // );
-    // Persistence.loadSession(
-    //   project,
-    //   "test/sample/Sessions/Flowers/Flowers.session"
-    // );
     project.selectedSession.index = 0;
     return project;
   }
@@ -35,7 +27,6 @@ export default class Persistence {
     const sessionPath = Path.join(sessionDirectory, sessionName + ".session");
     const contents: string = fs.readFileSync(sessionPath, "utf8");
     const session: Session = Session.fromObject(JSON.parse(contents));
-    session.selectedFile = session.files[0];
     session.path = fs.realpathSync(sessionPath);
     session.directory = sessionDirectory;
 
