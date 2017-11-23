@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
-import { ISession } from "../model/SessionModel";
+import { Session } from "../model/SessionModel";
 import { observer } from "mobx-react";
 const styles = require("./Sessions.scss");
 
 export interface ISessionFileListProps {
-  session: ISession;
+  session: Session;
 }
 
 @observer

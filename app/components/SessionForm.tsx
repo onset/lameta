@@ -1,12 +1,12 @@
 import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
-import { ISession } from "../model/SessionModel";
+import { Session } from "../model/SessionModel";
 import { observer, Provider } from "mobx-react";
 import TextField from "./TextField";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  session: ISession;
+  session: Session;
 }
 @observer
 export default class SessionForm extends React.Component<IProps> {

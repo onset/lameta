@@ -2,13 +2,13 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { default as SessionForm } from "./SessionForm";
 import SessionFileList from "./SessionFileList";
-import { ISession } from "../model/SessionModel";
+import { Session } from "../model/SessionModel";
 import { observer } from "mobx-react";
 import * as path from "path";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  session: ISession;
+  session: Session;
 }
 
 @observer

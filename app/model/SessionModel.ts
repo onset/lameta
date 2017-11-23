@@ -1,11 +1,11 @@
 import { observable } from "mobx";
-import { ObjectWithChildFiles } from "./BaseModel";
+import { ObjectWithChildFiles, FormObject } from "./BaseModel";
 
 export interface ISessionSelection {
   index: number;
 }
 
-export class ISession extends ObjectWithChildFiles {
+export class Session extends ObjectWithChildFiles {
   @observable public title: string = "";
   @observable public people: string = "";
   @observable public genre: string = "";
@@ -18,18 +18,9 @@ export class ISession extends ObjectWithChildFiles {
   public path: string = "";
   public directory: string = "";
 
-  // see https://stackoverflow.com/questions/22875636/how-do-i-cast-a-json-object-to-a-typescript-class
-  // this is lame because it ignores any property that does not have an initializer
-  public static fromObject(instanceData: ISession): ISession {
-    const session = new ISession();
-    // Note this.active will not be listed in keys since it's declared, but not defined
-    const keys = Object.keys(session);
-
-    for (const key of keys) {
-      if (instanceData.hasOwnProperty(key)) {
-        session[key] = instanceData[key];
-      }
-    }
+  public static fromObject(instanceData: FormObject): Session {
+    const session = new Session();
+    session.loadFromObject(instanceData);
     return session;
   }
 }

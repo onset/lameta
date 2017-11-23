@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as mobx from "mobx";
-import { ISession } from "./SessionModel";
+import { Session } from "./SessionModel";
 
 class SelectedItem {
   @mobx.observable public index: number;
@@ -9,7 +9,7 @@ class SelectedItem {
 
 export class ProjectModel {
   @mobx.observable public selectedSession: SelectedItem;
-  @mobx.observable public sessions: ISession[] = [];
+  @mobx.observable public sessions: Session[] = [];
 
   constructor() {
     this.selectedSession = new SelectedItem();
@@ -17,7 +17,7 @@ export class ProjectModel {
 
   public loadSession(sessionPath: string) {
     const s: string = fs.readFileSync(sessionPath, "utf8");
-    const x: ISession = ISession.fromObject(JSON.parse(s));
+    const x: Session = Session.fromObject(JSON.parse(s));
     x.selectedFile = x.files[0];
     x.path = fs.realpathSync(sessionPath);
     x.directory = path.dirname(x.path);
@@ -31,7 +31,7 @@ export class ProjectModel {
     );
   }
 
-  public saveSession(session: ISession) {
+  public saveSession(session: Session) {
     console.log("saving " + session.getString("title"));
     fs.writeFileSync(session.path + ".test", JSON.stringify(session), "utf8");
   }

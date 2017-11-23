@@ -1,5 +1,5 @@
 import Home from "../components/Home";
-import { ISession } from "../model/SessionModel";
+import { Session } from "../model/SessionModel";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";

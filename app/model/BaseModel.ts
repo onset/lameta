@@ -1,12 +1,7 @@
 import { observable } from "mobx";
 
-export interface IFile {
-  name: string;
-  type: string;
-  date: string;
-  size: string;
-}
-
+/* This whole class is a hack, to work with a typescript object in a simple property-name way.
+   We use this for peristence and form-filling (without boilerplate code for each field). */
 export class FormObject {
   public setString(key: string, value: string) {
     this[key] = value;
@@ -15,6 +10,24 @@ export class FormObject {
     return this[key];
   }
   [key: string]: string | IFile[] | any; // not sure about this. allows setting property by name
+
+  public loadFromObject(data: any) {
+    // see https://stackoverflow.com/questions/22875636/how-do-i-cast-a-json-object-to-a-typescript-class
+    // this is lame because it ignores any property that does not have an initializer
+    const keys = Object.keys(this);
+
+    for (const key of keys) {
+      if (data.hasOwnProperty(key)) {
+        this[key] = data[key];
+      }
+    }
+  }
+}
+export interface IFile {
+  name: string;
+  type: string;
+  date: string;
+  size: string;
 }
 
 export class ObjectWithChildFiles extends FormObject {

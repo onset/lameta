@@ -1,37 +1,34 @@
-$color-interstitial: #F0F0F0;
-$color-greyborder: #ABADB3;
-$color-session: #CFF09F;
-$color-session-outline: #94C397;
+$color-interstitial: #f0f0f0;
+$color-greyborder: #abadb3;
+$color-session: #cff09f;
+$color-session-outline: #94c397;
 
 :local {
   .sessionsTab {
-    background-color: #F0F0F0;
+    //background-color: #F0F0F0;
     height: 100%;
-    color:black;
+    color: black;
     display: flex;
   }
   .sessionForm {
-    background-color: transparent;// $color-session;
+    background-color: transparent; // $color-session;
     //border: solid thin $color-session-outline;
     margin: 8px;
   }
-  .fileDetails{
+  .fileDetails {
     background-color: $color-interstitial;
     border: solid thin $color-greyborder;
   }
-  :global(.react-tabs)
-  {
+  :global(.react-tabs) {
     height: 100%;
     background-color: white;
   }
-  :global(.react-tabs__tab-panel)
-  {
+  :global(.react-tabs__tab-panel) {
     height: 100%;
     background-color: $color-session;
     border: solid thin $color-session-outline;
   }
-  :global(.react-tabs__tab-list)
-  {
+  :global(.react-tabs__tab-list) {
     background-color: $color-interstitial;
   }
   .sessionsList {
@@ -44,12 +41,12 @@ $color-session-outline: #94C397;
     margin-right: 6px;
   }
   .filePane {
-    background-color: #CFF09F;
+    background-color: #cff09f;
     width: 100%;
     //padding: 8px; // nice idea, to inset the child, but it was visually complicating
     border: solid thin $color-greyborder;
   }
-  .filePane :global(.react-tabs__tab-panel){
+  .filePane :global(.react-tabs__tab-panel) {
     // margin-left: 12px;
     // margin-right: 12px;
   }
