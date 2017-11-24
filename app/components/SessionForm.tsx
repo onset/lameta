@@ -2,7 +2,8 @@ import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
 import { Session } from "../model/Session";
 import { observer, Provider } from "mobx-react";
-import TextField from "./TextField";
+import PolytextField from "./PolytextField";
+import { Polytext } from "../model/BaseModel";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
@@ -10,12 +11,6 @@ export interface IProps {
 }
 @observer
 export default class SessionForm extends React.Component<IProps> {
-  //  renderField = (field: any) => (
-  //   <div className="input-row">
-  //     <input {...field.input} type="text"/>
-  //   </div>
-  // )
-
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
@@ -39,59 +34,23 @@ export default class SessionForm extends React.Component<IProps> {
 
   public render() {
     return (
-      // the mobx.Provider makes the object available without having to list it for every field
-      <Provider data={this.props.session}>
-        <form className={styles.sessionForm}>
-          <TextField property="title" />
-          <TextField property="people" />
-          <TextField property="genre" />
-          <TextField property="situation" className={"text-block"} />
-          <TextField property="date" />
-          <TextField property="setting" />
-          <TextField property="location" />
-          <TextField property="access" />
-          <TextField property="description" className={"text-block"} />
-        </form>
-      </Provider>
-      // <form className={styles.sessionForm}>
-
-      //   <div className={"field"}>
-      //     <label htmlFor="genre">Genre</label>
-      //     <Field name="genre"  component="select">
-      //       <option>Drama</option>
-      //       <option>Formulaic Discourse</option>
-      //       <option>Interactive Discourse</option>
-      //       <option>Etc..</option>
-      //     </Field>
-      //   </div>
-      //   <div className={"field text-block"}>
-      //     <label htmlFor="situation">Situation</label>
-      //     <Field name="situation" type="text" component="input"/>
-      //   </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="date">Date</label>
-      //     {<Field name="date" type="date" component={this.renderDatePicker}/>}
-      //   </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="setting">Setting</label>
-      //     <Field name="setting" type="text" component="input"/>
-      //   </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="location">Location</label>
-      //     <Field name="location" type="text" component="input"/>
-      //   </div>
-      //   <div className={"field"}>
-      //     <label htmlFor="access">Access</label>
-      //     <Field name="access" type="text" component="select">
-      //       <option>All users can access</option>
-      //       <option>Etc...</option>
-      //     </Field>
-      //   </div>
-      //   <div className={"field text-block"}>
-      //     <label htmlFor="description">Description</label>
-      //     <Field name="description" type="text" component="input"/>
-      //   </div>
-      // </form>
+      <form className={styles.sessionForm}>
+        <PolytextField text={this.props.session.title} />
+        <PolytextField text={this.props.session.people} />
+        <PolytextField text={this.props.session.genre} />
+        <PolytextField
+          text={this.props.session.situation}
+          className={"text-block"}
+        />
+        <PolytextField text={this.props.session.date} />
+        <PolytextField text={this.props.session.setting} />
+        <PolytextField text={this.props.session.location} />
+        <PolytextField text={this.props.session.access} />
+        <PolytextField
+          text={this.props.session.description}
+          className={"text-block"}
+        />
+      </form>
     );
   }
 }

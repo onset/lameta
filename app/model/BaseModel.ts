@@ -21,7 +21,11 @@ export class FormObject {
 
     for (const key of keys) {
       if (data.hasOwnProperty(key)) {
-        this[key] = data[key];
+        if (this[key].constructor.prototype.hasOwnProperty("setDefault")) {
+          this[key].setDefault(data[key]);
+        } else {
+          this[key] = data[key];
+        }
       }
     }
   }
@@ -32,4 +36,20 @@ export class DirectoryObject extends FormObject {
   public directory: string = "";
   @observable public files: FileDescriptor[] = [];
   @observable public selectedFile: FileDescriptor;
+}
+
+export class Polytext {
+  @observable public text = new Map();
+  public englishLabel: string; // just for debugging at this point
+  constructor(label: string, englishValue: string) {
+    this.text.set("en", englishValue);
+    this.englishLabel = label;
+  }
+  public default(): string {
+    return this.text.get("en");
+  }
+  public setDefault(value: string) {
+    console.log(this.englishLabel + ":setDefault(" + value + ")");
+    this.text.set("en", value);
+  }
 }

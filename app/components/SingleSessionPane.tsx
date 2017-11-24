@@ -39,7 +39,9 @@ export class SingleSessionPane extends React.Component<IProps> {
 
     return (
       <div className={styles.filePane}>
-        <h3 className={styles.paneTitle}>{this.props.session.title}</h3>
+        <h3 className={styles.paneTitle}>
+          {this.props.session.title.default()}
+        </h3>
         {<SessionFileList session={this.props.session} />}
 
         <Tabs>

@@ -7,6 +7,7 @@
     "no-console": false,
     "comment-format": false,
     "member-ordering": false,
+    "no-string-literal": false,
     "no-unused-variable": {
       "severity": "warning"
     },
