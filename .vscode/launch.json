@@ -1,0 +1,56 @@
+{
+  // requires https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
+  // Use IntelliSense to learn about possible Node.js debug attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, https://github.com/Microsoft/vscode-recipes/tree/master/Electron
+  "version": "0.2.0",
+  "configurations": [
+    //this builds and runs, but doesn't attach. I added dev-vscode, server.js:start-hot-vscode to
+    //get the remote-debugging-port=9223 in, but something's still missing.
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "run hot with debugging",
+      "protocol": "inspector",
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": ["run-script", "dev-vscode"],
+      "timeout": 30000,
+      "console": "integratedTerminal"
+    },
+
+    // this works in tandem with the next one, call via the compound "Electron: All".
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Electron: Main",
+      "protocol": "inspector",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "program": "${workspaceRoot}/app/main.development.js",
+      "env": { "NODE_ENV": "development" }, //electron opens with blank with this: ,"HOT": "1" },
+      "runtimeArgs": ["--remote-debugging-port=9223", "${workspaceRoot}/app/."]
+    },
+    // this works in tandom with the previous one, call via the compound "Electron: All".
+    {
+      "name": "Electron: Renderer",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9223,
+      "webRoot": "${workspaceRoot}",
+      "timeout": 30000
+    }
+  ],
+  "compounds": [
+    // this runs, but doesn't build, hot-reload, etc.
+    {
+      "name": "Electron: All",
+      "configurations": ["Electron: Main", "Electron: Renderer"]
+    },
+
+    // this runs the hot load system we want, but doesn't connect
+    {
+      "name": "Electron: test",
+      "configurations": ["run hot with debugging", "Electron: Renderer"]
+    }
+  ]
+}
