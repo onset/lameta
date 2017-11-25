@@ -1,8 +1,11 @@
 import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
+import { observable } from "mobx";
+import { Polytext } from "./BaseModel";
 
 export class ComponentFile {
+  @observable public properties: Polytext[] = new Array<Polytext>();
   public name: string;
   public type: string = "";
   public date: Date;
@@ -30,5 +33,16 @@ export class ComponentFile {
         //break;  alas, there is no break as yet.
       }
     });
+
+    this.ComputeProperties(); //enhance: do this on demand, instead of for every file
+  }
+
+  public ComputeProperties() {
+    this.properties.push(new Polytext("name", this.name));
+    switch (this.type) {
+      case "Audio":
+        this.properties.push(new Polytext("duration", "pretend"));
+        break;
+    }
   }
 }

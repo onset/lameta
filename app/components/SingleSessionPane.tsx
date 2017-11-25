@@ -5,6 +5,7 @@ import SessionFileList from "./SessionFileList";
 import { Session } from "../model/Session";
 import { observer } from "mobx-react";
 import * as path from "path";
+import PropertyTable from "./PropertyTable";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
@@ -52,13 +53,15 @@ export class SingleSessionPane extends React.Component<IProps> {
 
         <Tabs>
           <TabList>
-            <Tab>Session</Tab>
+            <Tab>{this.props.session.selectedFile.type}</Tab>
             <Tab>Properties</Tab>
             <Tab>Contributors</Tab>
             <Tab>Notes</Tab>
           </TabList>
           <TabPanel>{this.filetypeSpecificTab}</TabPanel>
-          <TabPanel>aaa</TabPanel>
+          <TabPanel>
+            <PropertyTable file={this.props.session.selectedFile} />
+          </TabPanel>
           <TabPanel>aaa</TabPanel>
           <TabPanel>aaa</TabPanel>
         </Tabs>

@@ -190,7 +190,6 @@
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.1",
     "react-router-dom": "^4.1.1",
-    "react-router-redux": "^5.0.0-alpha.6",
     "react-tabs": "^2.1.0",
     "redux-form": "^7.1.2",
     "redux-thunk": "^2.1.0",
