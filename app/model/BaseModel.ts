@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 import * as fs from "fs";
 import * as Path from "path";
-import FileDescriptor from "./ComponentFile";
+import { ComponentFile } from "./ComponentFile";
 
 /* This whole class is a hack, to work with a typescript object in a simple property-name way.
    We use this for peristence and form-filling (without boilerplate code for each field). */
@@ -34,8 +34,8 @@ export class FormObject {
 export class DirectoryObject extends FormObject {
   public path: string = "";
   public directory: string = "";
-  @observable public files: FileDescriptor[] = [];
-  @observable public selectedFile: FileDescriptor;
+  @observable public files: ComponentFile[] = [];
+  @observable public selectedFile: ComponentFile;
 }
 
 export class Polytext {

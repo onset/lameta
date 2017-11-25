@@ -2,12 +2,15 @@ import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
 
-export default class ComponentFile {
+export class ComponentFile {
   public name: string;
   public type: string = "";
   public date: Date;
   public size: string;
-
+  [key: string]: any;
+  public get(key: string): string {
+    return this[key].toString();
+  }
   public constructor(path: string) {
     this.name = Path.basename(path);
     const stats = fs.statSync(path);

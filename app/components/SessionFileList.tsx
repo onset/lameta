@@ -4,26 +4,25 @@ import { Session } from "../model/Session";
 import { observer } from "mobx-react";
 const styles = require("./Sessions.scss");
 
-export interface ISessionFileListProps {
+export interface IProps {
   session: Session;
 }
 
 @observer
-export class SessionsFileList extends React.Component<ISessionFileListProps> {
-  private renderName = (rowIndex: number) => {
-    return <Cell>{this.props.session.files[rowIndex].name}</Cell>;
+export class SessionsFileList extends React.Component<IProps> {
+  //NB: I settled on this approach after a bewildering stuggle in which a simpler approach,
+  // renderCell={this.renderName}, would actually give us a "this.session" in the renderName that
+  // was a *different session*. And yet within the element declaration, the "this.session" was
+  // correct. So presumably a different "this" altogether. Binding, arrow functions, etc. didn't help.
+  // So now makeCell is static and the element has to give it everthing.
+  private static makeCell = (
+    session: Session,
+    rowIndex: number,
+    property: string
+  ) => {
+    return <Cell>{session.files[rowIndex].get(property)}</Cell>;
   };
-  private renderType = (rowIndex: number) => {
-    return <Cell>{this.props.session.files[rowIndex].type}</Cell>;
-  };
-  private renderFileDate = (rowIndex: number) => {
-    return (
-      <Cell>{this.props.session.files[rowIndex].date.toLocaleString()}</Cell>
-    );
-  };
-  private renderSize = (rowIndex: number) => {
-    return <Cell>{this.props.session.files[rowIndex].size}</Cell>;
-  };
+
   private getSelectedFileRow() {
     const i = this.props.session.files.indexOf(this.props.session.selectedFile);
     return [Regions.row(i)];
@@ -37,7 +36,12 @@ export class SessionsFileList extends React.Component<ISessionFileListProps> {
     }
   }
 
+  constructor(props: IProps) {
+    super(props);
+  }
+
   public render() {
+    console.log("Render Session " + this.props.session.title.default());
     return (
       <div className={styles.fileList}>
         <Table
@@ -49,10 +53,30 @@ export class SessionsFileList extends React.Component<ISessionFileListProps> {
           onSelection={e => this.onSelection(e)}
           columnWidths={[200, 80, 150, 70]}
         >
-          <Column name="Name" renderCell={this.renderName} />
-          <Column name="Type" renderCell={this.renderType} />
-          <Column name="Date" renderCell={this.renderFileDate} />
-          <Column name="Size" renderCell={this.renderSize} />
+          <Column
+            name="Name"
+            renderCell={row => {
+              return SessionsFileList.makeCell(this.props.session, row, "name");
+            }}
+          />
+          <Column
+            name="Type"
+            renderCell={r =>
+              SessionsFileList.makeCell(this.props.session, r, "type")
+            }
+          />
+          <Column
+            name="Date"
+            renderCell={r =>
+              SessionsFileList.makeCell(this.props.session, r, "date")
+            }
+          />
+          <Column
+            name="Size"
+            renderCell={r =>
+              SessionsFileList.makeCell(this.props.session, r, "size")
+            }
+          />
         </Table>
       </div>
     );

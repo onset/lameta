@@ -7,7 +7,7 @@ import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
 import { DirectoryObject } from "./BaseModel";
-import ComponentFile from "./ComponentFile";
+import { ComponentFile } from "./ComponentFile";
 
 export default class Persistence {
   public static loadProjectFolder(path: string): Project {
@@ -22,6 +22,7 @@ export default class Persistence {
     project.selectedSession.index = 0;
     return project;
   }
+
   public static loadSession(project: Project, sessionDirectory: string) {
     const sessionName = Path.basename(sessionDirectory);
     const sessionPath = Path.join(sessionDirectory, sessionName + ".session");
@@ -31,6 +32,7 @@ export default class Persistence {
     session.directory = sessionDirectory;
 
     Persistence.loadChildFiles(session);
+
     session.selectedFile = session.files[0];
 
     console.log("loaded " + session.getString("title"));
@@ -50,7 +52,11 @@ export default class Persistence {
     files.forEach(f => {
       if (!f.endsWith(".meta") && !f.endsWith(".test")) {
         const file = new ComponentFile(f);
-        obj.files.push(file);
+        if (f.endsWith(".session") || f.endsWith(".person")) {
+          obj.files.unshift(file);
+        } else {
+          obj.files.push(file);
+        }
       }
       // if (!f.endsWith(".session")) {
       //   // we don't want the session file itself

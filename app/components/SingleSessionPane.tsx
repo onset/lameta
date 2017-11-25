@@ -20,6 +20,7 @@ export class SingleSessionPane extends React.Component<IProps> {
   }
 
   public render() {
+    //console.log("Render SSPane:" + this.props.session.title.default());
     const fullPath: string = path.join(
       this.props.session.directory,
       this.props.session.selectedFile.name
@@ -37,6 +38,11 @@ export class SingleSessionPane extends React.Component<IProps> {
     this.filetypeSpecificTab =
       typesToTabs[this.props.session.selectedFile.type];
 
+    console.log(
+      `Render SSPane: ${this.props.session.title.default()}   ${
+        this.filetypeSpecificTab.type
+      }    ${this.props.session.selectedFile.name}`
+    );
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>
