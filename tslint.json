@@ -12,7 +12,7 @@
       "severity": "warning"
     },
     "max-classes-per-file": {
-      "sevearity": "warning"
+      "severity": "warning"
     },
     "no-var-keyword": {
       "severity": "warning"

@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
-import { Session } from "../model/Session";
+//import { Session } from "../model/Session";
 import { observer } from "mobx-react";
+import { DirectoryObject } from "../model/BaseModel";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  session: Session;
+  directoryObject: DirectoryObject;
 }
 
 @observer
@@ -16,18 +17,20 @@ export class SessionsFileList extends React.Component<IProps> {
   // correct. So presumably a different "this" altogether. Binding, arrow functions, etc. didn't help.
   // So now makeCell is static and the element has to give it everthing.
   private static makeCell = (
-    session: Session,
+    directoryObject: DirectoryObject,
     rowIndex: number,
     property: string
   ) => {
-    const p = session.files[rowIndex].properties.getValue(property);
+    const p = directoryObject.files[rowIndex].properties.getValue(property);
     const x = p ? p.default() : "no " + property;
     console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   };
 
   private getSelectedFileRow() {
-    const i = this.props.session.files.indexOf(this.props.session.selectedFile);
+    const i = this.props.directoryObject.files.indexOf(
+      this.props.directoryObject.selectedFile
+    );
     return [Regions.row(i)];
   }
 
@@ -35,7 +38,9 @@ export class SessionsFileList extends React.Component<IProps> {
     console.log("SessionList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
       const selectedRow: number = e[0].rows![0];
-      this.props.session.selectedFile = this.props.session.files[selectedRow];
+      this.props.directoryObject.selectedFile = this.props.directoryObject.files[
+        selectedRow
+      ];
     }
   }
 
@@ -46,12 +51,12 @@ export class SessionsFileList extends React.Component<IProps> {
   public render() {
     console.log(
       "Render Session " +
-        this.props.session.properties.getValue("title").default()
+        this.props.directoryObject.properties.getValue("title").default()
     );
     return (
       <div className={styles.fileList}>
         <Table
-          numRows={this.props.session.files.length}
+          numRows={this.props.directoryObject.files.length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           // selectionModes={SelectionModes.ROWS_ONLY}
@@ -62,25 +67,29 @@ export class SessionsFileList extends React.Component<IProps> {
           <Column
             name="Name"
             renderCell={row => {
-              return SessionsFileList.makeCell(this.props.session, row, "name");
+              return SessionsFileList.makeCell(
+                this.props.directoryObject,
+                row,
+                "name"
+              );
             }}
           />
           <Column
             name="Type"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.session, r, "type")
+              SessionsFileList.makeCell(this.props.directoryObject, r, "type")
             }
           />
           <Column
             name="Date"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.session, r, "date")
+              SessionsFileList.makeCell(this.props.directoryObject, r, "date")
             }
           />
           <Column
             name="Size"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.session, r, "size")
+              SessionsFileList.makeCell(this.props.directoryObject, r, "size")
             }
           />
         </Table>

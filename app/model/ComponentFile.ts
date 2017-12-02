@@ -12,9 +12,7 @@ export class ComponentFile {
   public get(key: string): string {
     return this[key].toString();
   }
-  public name() {
-    return this.properties.getValue("name").default();
-  }
+
   get type(): string {
     const x = this.properties.getValue("type");
     return x ? x.default() : "???";
@@ -38,7 +36,7 @@ export class ComponentFile {
       ["Image", /\.(jpg)|(bmp)|(gif)/]
     ];
     typePatterns.forEach(t => {
-      if (this.name().match(t[1])) {
+      if (path.match(t[1])) {
         this.properties.setValue("type", new Polytext("type", t[0] as string));
         //break;  alas, there is no break as yet.
       }

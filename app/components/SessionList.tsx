@@ -24,7 +24,7 @@ export class SessionList extends React.Component<IProps> {
     //    return <Cell>{this.props.sessions[rowIndex].date.default()}</Cell>;
     return (
       <Cell>
-        {this.props.sessions[rowIndex].properties.values()[rowIndex].default()}
+        {this.props.sessions[rowIndex].properties.getValue("date").default()}
       </Cell>
     );
   };

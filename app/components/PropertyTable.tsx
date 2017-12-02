@@ -4,14 +4,13 @@ import { Session, ISessionSelection } from "../model/Session";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { ComponentFile } from "../model/ComponentFile";
-import { computed } from "mobx";
 import { Polytext } from "../model/BaseModel";
+import { Dictionary } from "typescript-collections";
 
 //const styles = require("./Sessions.scss");
 
 export interface IProps {
-  file: ComponentFile;
+  properties: Dictionary<string, Polytext>;
 }
 interface IState {
   selectedRow: number;
@@ -20,20 +19,18 @@ interface IState {
 @observer
 export default class PropertyTable extends React.Component<IProps, IState> {
   private getPropertyNameCell(rowIndex: number) {
-    const v = this.props.file.properties.values();
+    const v = this.props.properties.values();
     const p: Polytext = v[rowIndex];
     return <Cell>{p.englishLabel}</Cell>;
   }
   private getPropertyValueCell(rowIndex: number) {
-    return (
-      <Cell>{this.props.file.properties.values()[rowIndex].default()}</Cell>
-    );
+    return <Cell>{this.props.properties.values()[rowIndex].default()}</Cell>;
   }
   public render() {
     return (
       <div>
         <Table
-          numRows={this.props.file.properties.keys().length}
+          numRows={this.props.properties.keys().length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           columnWidths={[80, 200]}
