@@ -27,7 +27,10 @@ export default class Persistence {
     const sessionName = Path.basename(sessionDirectory);
     const sessionPath = Path.join(sessionDirectory, sessionName + ".session");
     const contents: string = fs.readFileSync(sessionPath, "utf8");
-    const session: Session = Session.fromObject(JSON.parse(contents));
+    const session: Session = Session.fromObject(
+      sessionDirectory,
+      JSON.parse(contents)
+    );
     session.path = fs.realpathSync(sessionPath);
     session.directory = sessionDirectory;
 
@@ -35,7 +38,7 @@ export default class Persistence {
 
     session.selectedFile = session.files[0];
 
-    console.log("loaded " + session.getString("title"));
+    console.log("loaded " + session.properties.getValue("title").default());
     project.sessions.push(session);
 
     //start autosave
@@ -66,7 +69,7 @@ export default class Persistence {
   }
 
   public static saveSession(project: Project, session: Session) {
-    console.log("saving " + session.getString("title"));
-    fs.writeFileSync(session.path + ".test", JSON.stringify(session), "utf8");
+    //console.log("saving " + session.getString("title"));
+    //fs.writeFileSync(session.path + ".test", JSON.stringify(session), "utf8");
   }
 }

@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import { IRegion } from "@blueprintjs/table/dist/regions";
 import { ComponentFile } from "../model/ComponentFile";
 import { computed } from "mobx";
+import { Polytext } from "../model/BaseModel";
 
 //const styles = require("./Sessions.scss");
 
@@ -19,16 +20,20 @@ interface IState {
 @observer
 export default class PropertyTable extends React.Component<IProps, IState> {
   private getPropertyNameCell(rowIndex: number) {
-    return <Cell>{this.props.file.properties[rowIndex].englishLabel}</Cell>;
+    const v = this.props.file.properties.values();
+    const p: Polytext = v[rowIndex];
+    return <Cell>{p.englishLabel}</Cell>;
   }
   private getPropertyValueCell(rowIndex: number) {
-    return <Cell>{this.props.file.properties[rowIndex].default()}</Cell>;
+    return (
+      <Cell>{this.props.file.properties.values()[rowIndex].default()}</Cell>
+    );
   }
   public render() {
     return (
       <div>
         <Table
-          numRows={this.props.file.properties.length}
+          numRows={this.props.file.properties.keys().length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           columnWidths={[80, 200]}

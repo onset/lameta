@@ -20,7 +20,10 @@ export class SessionsFileList extends React.Component<IProps> {
     rowIndex: number,
     property: string
   ) => {
-    return <Cell>{session.files[rowIndex].get(property)}</Cell>;
+    const p = session.files[rowIndex].properties.getValue(property);
+    const x = p ? p.default() : "no " + property;
+    console.log(rowIndex + ":" + property + "=" + x);
+    return <Cell>{x}</Cell>;
   };
 
   private getSelectedFileRow() {
@@ -41,7 +44,10 @@ export class SessionsFileList extends React.Component<IProps> {
   }
 
   public render() {
-    console.log("Render Session " + this.props.session.title.default());
+    console.log(
+      "Render Session " +
+        this.props.session.properties.getValue("title").default()
+    );
     return (
       <div className={styles.fileList}>
         <Table

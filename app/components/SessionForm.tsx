@@ -14,7 +14,7 @@ export default class SessionForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
-    console.log(this.props.session.getString("title"));
+    console.log(this.props.session.properties.getValue("title").default());
   }
 
   private renderDatePicker = () => (
@@ -35,19 +35,27 @@ export default class SessionForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={styles.sessionForm}>
-        <PolytextField text={this.props.session.title} />
-        <PolytextField text={this.props.session.people} />
-        <PolytextField text={this.props.session.genre} />
+        <PolytextField text={this.props.session.properties.getValue("title")} />
         <PolytextField
-          text={this.props.session.situation}
+          text={this.props.session.properties.getValue("people")}
+        />
+        <PolytextField text={this.props.session.properties.getValue("genre")} />
+        <PolytextField
+          text={this.props.session.properties.getValue("situation")}
           className={"text-block"}
         />
-        <PolytextField text={this.props.session.date} />
-        <PolytextField text={this.props.session.setting} />
-        <PolytextField text={this.props.session.location} />
-        <PolytextField text={this.props.session.access} />
+        <PolytextField text={this.props.session.properties.getValue("date")} />
         <PolytextField
-          text={this.props.session.description}
+          text={this.props.session.properties.getValue("setting")}
+        />
+        <PolytextField
+          text={this.props.session.properties.getValue("location")}
+        />
+        <PolytextField
+          text={this.props.session.properties.getValue("access")}
+        />
+        <PolytextField
+          text={this.props.session.properties.getValue("description")}
           className={"text-block"}
         />
       </form>

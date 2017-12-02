@@ -26,13 +26,13 @@ export class SingleSessionPane extends React.Component<IProps> {
     //console.log("Render SSPane:" + this.props.session.title.default());
     const fullPath: string = Path.join(
       this.props.session.directory,
-      this.props.session.selectedFile.name
+      this.props.session.selectedFile.name()
     );
 
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>
-          {this.props.session.title.default()}
+          {this.props.session.properties.getValue("title").default()}
         </h3>
         <SessionFileList session={this.props.session} />
         {this.getTabs(this.props.session.selectedFile, fullPath)}

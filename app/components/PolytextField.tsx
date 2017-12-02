@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { FormObject, Polytext } from "../model/BaseModel";
+import { Polytext } from "../model/BaseModel";
 const titleCase = require("title-case");
 //const styles = require("./Sessions.scss");
 
@@ -24,18 +24,24 @@ export default class PolytextField extends React.Component<
     this.props.text.setDefault(event.currentTarget.value);
   }
 
-  private getLabel(property: string) {
-    return titleCase(property);
+  private getLabel() {
+    if (this.props.text === undefined) {
+      return "Null Polytext";
+    }
+    return titleCase(this.props.text.englishLabel);
   }
 
   private getValue() {
+    if (this.props.text === undefined) {
+      return "Null Polytext";
+    }
     return this.props.text.default();
   }
 
   public render() {
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.props.text.englishLabel}</label>
+        <label>{this.getLabel()}</label>
         <input
           type="text"
           name={this.props.property}

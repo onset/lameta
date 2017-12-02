@@ -3,23 +3,33 @@ import * as Path from "path";
 import * as filesize from "filesize";
 import { observable } from "mobx";
 import { Polytext } from "./BaseModel";
+import { Dictionary } from "typescript-collections";
 
 export class ComponentFile {
-  @observable public properties: Polytext[] = new Array<Polytext>();
-  public name: string;
-  public type: string = "";
-  public date: Date;
-  public size: string;
+  @observable public properties = new Dictionary<string, Polytext>();
+  //public name: string;
   [key: string]: any;
   public get(key: string): string {
     return this[key].toString();
   }
+  public name() {
+    return this.properties.getValue("name").default();
+  }
+  get type(): string {
+    const x = this.properties.getValue("type");
+    return x ? x.default() : "???";
+  }
   public constructor(path: string) {
-    this.name = Path.basename(path);
+    this.properties.setValue("name", new Polytext("name", Path.basename(path)));
     const stats = fs.statSync(path);
-    this.size = filesize(stats.size, { round: 0 });
-    this.date = stats.mtime;
-
+    this.properties.setValue(
+      "size",
+      new Polytext("size", filesize(stats.size, { round: 0 }))
+    );
+    this.properties.setValue(
+      "date",
+      new Polytext("date", stats.mtime.toDateString())
+    ); //todo
     //{"session"}
 
     const typePatterns = [
@@ -28,8 +38,8 @@ export class ComponentFile {
       ["Image", /\.(jpg)|(bmp)|(gif)/]
     ];
     typePatterns.forEach(t => {
-      if (this.name.match(t[1])) {
-        this.type = t[0] as string;
+      if (this.name().match(t[1])) {
+        this.properties.setValue("type", new Polytext("type", t[0] as string));
         //break;  alas, there is no break as yet.
       }
     });
@@ -37,11 +47,22 @@ export class ComponentFile {
     this.ComputeProperties(); //enhance: do this on demand, instead of for every file
   }
 
+  public loadFromObject(data: any) {
+    const keys = Object.keys(data);
+
+    for (const key of keys) {
+      const p = new Polytext(key, data[key]);
+      this.properties.setValue(key, p);
+    }
+  }
+
   public ComputeProperties() {
-    this.properties.push(new Polytext("name", this.name));
     switch (this.type) {
       case "Audio":
-        this.properties.push(new Polytext("duration", "pretend"));
+        this.properties.setValue(
+          "duration",
+          new Polytext("duration", "pretend")
+        );
         break;
     }
   }

@@ -6357,6 +6357,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typescript-collections@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/typescript-collections/-/typescript-collections-1.2.5.tgz#192978f2f432171222a5248663f45da4a0df3f18"
+
 typescript@^2.4.1:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.2.tgz#038a95f7d9bbb420b1bf35ba31d4c5c1dd3ffe34"

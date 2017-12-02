@@ -14,10 +14,19 @@ export interface IProps {
 @observer
 export class SessionList extends React.Component<IProps> {
   private renderTitle = (rowIndex: number) => {
-    return <Cell>{this.props.sessions[rowIndex].title.default()}</Cell>;
+    return (
+      <Cell>
+        {this.props.sessions[rowIndex].properties.getValue("title").default()}
+      </Cell>
+    );
   };
   private renderDate = (rowIndex: number) => {
-    return <Cell>{this.props.sessions[rowIndex].date.default()}</Cell>;
+    //    return <Cell>{this.props.sessions[rowIndex].date.default()}</Cell>;
+    return (
+      <Cell>
+        {this.props.sessions[rowIndex].properties.values()[rowIndex].default()}
+      </Cell>
+    );
   };
 
   private getSelectedSessionRow() {
