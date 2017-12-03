@@ -22,18 +22,18 @@ export default class PolytextField extends React.Component<
 
   // this way gave us the wrong "this" (e.g 1st session when we were on the second
   // private onChange(event: React.FormEvent<HTMLInputElement>) {
-  //   console.log("PolytextFiled setting field of " + this.props.text.default());
+  //   console.log("PolytextFiled setting field of " + this.props.text.default);
   //   this.props.text.setDefault(event.currentTarget.value);
-  //   console.log("PolytextFiled now " + this.props.text.default());
+  //   console.log("PolytextFiled now " + this.props.text.default);
   // }
 
   private static onChange(
     event: React.FormEvent<HTMLInputElement>,
     text: Polytext
   ) {
-    console.log("PolytextFiled setting field of " + text.default());
-    text.setDefault(event.currentTarget.value);
-    console.log("PolytextFiled now " + text.default());
+    console.log("PolytextFiled setting field of " + text.english);
+    text.english = event.currentTarget.value;
+    console.log("PolytextFiled now " + text.english);
   }
 
   private getLabel() {
@@ -47,7 +47,7 @@ export default class PolytextField extends React.Component<
     if (text === undefined) {
       return "Null Polytext";
     }
-    return text.default();
+    return text.english;
   }
 
   public render() {

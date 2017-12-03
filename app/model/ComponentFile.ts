@@ -7,15 +7,10 @@ import { Dictionary } from "typescript-collections";
 
 export class ComponentFile {
   @observable public properties = new Dictionary<string, Polytext>();
-  //public name: string;
-  [key: string]: any;
-  public get(key: string): string {
-    return this[key].toString();
-  }
 
   get type(): string {
     const x = this.properties.getValue("type");
-    return x ? x.default() : "???";
+    return x ? x.english : "???";
   }
   public constructor(path: string) {
     this.properties.setValue("name", new Polytext("name", Path.basename(path)));

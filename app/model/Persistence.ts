@@ -38,7 +38,7 @@ export default class Persistence {
 
     session.selectedFile = session.files[0];
 
-    console.log("loaded " + session.properties.getValue("title").default());
+    console.log("loaded " + session.properties.getValue("title").english);
     project.sessions.push(session);
 
     //start autosave

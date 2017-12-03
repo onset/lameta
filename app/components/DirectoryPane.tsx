@@ -23,18 +23,17 @@ export class DirectoryPane extends React.Component<IProps> {
   }
 
   public render() {
-    //console.log("Render SSPane:" + this.props.session.title.default());
+    //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
       this.props.directoryObject.directory,
-      this.props.directoryObject.selectedFile.properties
-        .getValue("name")
-        .default()
+      this.props.directoryObject.selectedFile.properties.getValue("name")
+        .english
     );
 
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>
-          {this.props.directoryObject.properties.getValue("title").default()}
+          {this.props.directoryObject.properties.getValue("title").english}
         </h3>
         <FileList directoryObject={this.props.directoryObject} />
         {this.getTabs(this.props.directoryObject, fullPath)}

@@ -16,7 +16,7 @@ export class SessionList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
     return (
       <Cell>
-        {this.props.sessions[rowIndex].properties.getValue(key).default()}
+        {this.props.sessions[rowIndex].properties.getValue(key).english}
       </Cell>
     );
   }

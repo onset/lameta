@@ -24,7 +24,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
     return <Cell>{p.englishLabel}</Cell>;
   }
   private getPropertyValueCell(rowIndex: number) {
-    return <Cell>{this.props.properties.values()[rowIndex].default()}</Cell>;
+    return <Cell>{this.props.properties.values()[rowIndex].english}</Cell>;
   }
   public render() {
     return (

@@ -14,7 +14,7 @@ export default class FileList extends React.Component<IProps> {
     const p = this.props.directoryObject.files[rowIndex].properties.getValue(
       property
     );
-    const x = p ? p.default() : "no " + property;
+    const x = p ? p.english : "no " + property;
     //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   }
@@ -42,7 +42,7 @@ export default class FileList extends React.Component<IProps> {
   public render() {
     // console.log(
     //   "Render Session " +
-    //     this.props.directoryObject.properties.getValue("title").default()
+    //     this.props.directoryObject.properties.getValue("title").default
     // );
     return (
       <div className={styles.fileList}>
@@ -81,7 +81,7 @@ export default class FileList extends React.Component<IProps> {
     property: string
   ) => {
     const p = directoryObject.files[rowIndex].properties.getValue(property);
-    const x = p ? p.default() : "no " + property;
+    const x = p ? p.default : "no " + property;
     //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   };*/

@@ -15,7 +15,7 @@ export default class SessionForm extends React.Component<IProps> {
     super(props);
     console.log(
       "SessionForm constructor: " +
-        this.props.session.properties.getValue("title").default()
+        this.props.session.properties.getValue("title").english
     );
   }
 

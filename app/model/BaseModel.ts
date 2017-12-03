@@ -22,10 +22,10 @@ export class Polytext {
     this.text.set("en", englishValue);
     this.englishLabel = label;
   }
-  public default(): string {
+  get english(): string {
     return this.text.get("en");
   }
-  public setDefault(value: string) {
+  set english(value: string) {
     console.log(this.englishLabel + ":setDefault(" + value + ")");
     this.text.set("en", value);
   }
