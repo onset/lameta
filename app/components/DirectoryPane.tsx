@@ -6,12 +6,11 @@ import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyTable from "./PropertyTable";
 import { ComponentFile } from "../model/ComponentFile";
-import { DirectoryObject, IDirectoryObjectSelection } from "../model/BaseModel";
-import { computed } from "mobx";
+import { DirectoryObject } from "../model/BaseModel";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  directorySelection: IDirectoryObjectSelection;
+  directoryObject: DirectoryObject;
 }
 
 @observer
@@ -26,8 +25,8 @@ export class DirectoryPane extends React.Component<IProps> {
   public render() {
     //console.log("Render SSPane:" + this.props.session.title.default());
     const fullPath: string = Path.join(
-      this.props.directorySelection.selected.directory,
-      this.props.directorySelection.selected.selectedFile.properties
+      this.props.directoryObject.directory,
+      this.props.directoryObject.selectedFile.properties
         .getValue("name")
         .default()
     );
@@ -38,17 +37,19 @@ export class DirectoryPane extends React.Component<IProps> {
           {this.props.directoryObject.properties.getValue("title").default()}
         </h3>
         <FileList directoryObject={this.props.directoryObject} />
-        {this.getTabs(this.props.directoryObject.selectedFile, fullPath)}
+        {this.getTabs(this.props.directoryObject, fullPath)}
       </div>
     );
   }
 
-  private getTabs(file: ComponentFile, path: string) {
-    console.log("*****getTabs:" + path);
+  private getTabs(directoryObject: DirectoryObject, path: string) {
+    const file = directoryObject.selectedFile;
+    // console.log("getTabs:" + path);
+    // console.log("getTabs:" + directoryObject.path);
+    // console.log("getTabs file:" + file.type);
     if (!file) {
       return <h3>none</h3>;
     }
-
     switch (file.type) {
       case "Session":
         return (
@@ -59,7 +60,9 @@ export class DirectoryPane extends React.Component<IProps> {
               <Tab>Notes</Tab>
             </TabList>
             <TabPanel>
-              <SessionForm session={this.props.directoryObject} />
+              <SessionForm session={directoryObject} />
+              {/* Doing it this way, the form would be stuck showing the first session. Sigh, haven't figured out why.
+                  <SessionForm session={this.props.directoryObject} /> */}
             </TabPanel>
             <TabPanel>todo</TabPanel>
             <TabPanel>todo</TabPanel>

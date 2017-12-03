@@ -23,7 +23,7 @@ export class FileList extends React.Component<IProps> {
   ) => {
     const p = directoryObject.files[rowIndex].properties.getValue(property);
     const x = p ? p.default() : "no " + property;
-    console.log(rowIndex + ":" + property + "=" + x);
+    //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   };
   private makeCell2(rowIndex: number, property: string) {
@@ -31,7 +31,7 @@ export class FileList extends React.Component<IProps> {
       property
     );
     const x = p ? p.default() : "no " + property;
-    console.log(rowIndex + ":" + property + "=" + x);
+    //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   }
   private getSelectedFileRow() {
