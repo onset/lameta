@@ -13,7 +13,6 @@ export interface IProps {
 export default class SessionForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
-    this.onChange = this.onChange.bind(this);
     console.log(
       "SessionForm constructor: " +
         this.props.session.properties.getValue("title").default()
@@ -25,15 +24,6 @@ export default class SessionForm extends React.Component<IProps> {
       <DateInput />
     </div>
   );
-
-  private updateProperty(key: string, value: string) {
-    this.props.session.setString(key, value);
-    console.log(key + " = " + value);
-  }
-
-  private onChange(event: React.FormEvent<HTMLInputElement>) {
-    this.updateProperty(event.currentTarget.name, event.currentTarget.value);
-  }
 
   public render() {
     return (

@@ -16,12 +16,24 @@ export default class PolytextField extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    this.onChange = this.onChange.bind(this);
+    //this.onChange = this.onChange.bind(this);
     this.getLabel = this.getLabel.bind(this);
   }
 
-  private onChange(event: React.FormEvent<HTMLInputElement>) {
-    this.props.text.setDefault(event.currentTarget.value);
+  // this way gave us the wrong "this" (e.g 1st session when we were on the second
+  // private onChange(event: React.FormEvent<HTMLInputElement>) {
+  //   console.log("PolytextFiled setting field of " + this.props.text.default());
+  //   this.props.text.setDefault(event.currentTarget.value);
+  //   console.log("PolytextFiled now " + this.props.text.default());
+  // }
+
+  private static onChange(
+    event: React.FormEvent<HTMLInputElement>,
+    text: Polytext
+  ) {
+    console.log("PolytextFiled setting field of " + text.default());
+    text.setDefault(event.currentTarget.value);
+    console.log("PolytextFiled now " + text.default());
   }
 
   private getLabel() {
@@ -31,11 +43,11 @@ export default class PolytextField extends React.Component<
     return titleCase(this.props.text.englishLabel);
   }
 
-  private getValue() {
-    if (this.props.text === undefined) {
+  private static getValue(text: Polytext): string {
+    if (text === undefined) {
       return "Null Polytext";
     }
-    return this.props.text.default();
+    return text.default();
   }
 
   public render() {
@@ -43,12 +55,15 @@ export default class PolytextField extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
         <input
-          type="text"
-          name={this.props.property}
-          value={this.getValue()}
-          onChange={this.onChange}
+          name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
+          value={PolytextField.getValue(this.props.text)}
+          onChange={event => PolytextField.onChange(event, this.props.text)}
         />
       </div>
     );
   }
 }
+
+// name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
+// value={() => PolytextField.getValue(this.props.text)}
+// onChange={x => PolytextField.onChange(x, this.props.text)}
