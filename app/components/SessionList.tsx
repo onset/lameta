@@ -13,28 +13,19 @@ export interface IProps {
 }
 @observer
 export class SessionList extends React.Component<IProps> {
-  private renderTitle = (rowIndex: number) => {
+  private makeCell(rowIndex: number, key: string) {
     return (
       <Cell>
-        {this.props.sessions[rowIndex].properties.getValue("title").default()}
+        {this.props.sessions[rowIndex].properties.getValue(key).default()}
       </Cell>
     );
-  };
-  private renderDate = (rowIndex: number) => {
-    //    return <Cell>{this.props.sessions[rowIndex].date.default()}</Cell>;
-    return (
-      <Cell>
-        {this.props.sessions[rowIndex].properties.getValue("date").default()}
-      </Cell>
-    );
-  };
+  }
 
   private getSelectedSessionRow() {
     return [Regions.row(this.props.selectedSession.index)];
   }
 
   private onSelection(e: IRegion[]) {
-    console.log("SessionList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
       const selectedRow: number = e[0].rows![0];
       this.props.selectedSession.index = selectedRow;
@@ -53,8 +44,14 @@ export class SessionList extends React.Component<IProps> {
           selectedRegions={this.getSelectedSessionRow()}
           onSelection={e => this.onSelection(e)}
         >
-          <Column name="Title" renderCell={this.renderTitle} />
-          <Column name="Date" renderCell={this.renderDate} />
+          <Column
+            name="Title"
+            renderCell={rowIndex => this.makeCell(rowIndex, "title")}
+          />
+          <Column
+            name="Date"
+            renderCell={rowIndex => this.makeCell(rowIndex, "date")}
+          />
         </Table>
       </div>
     );

@@ -10,7 +10,7 @@ export interface IProps {
 }
 
 @observer
-export class SessionsFileList extends React.Component<IProps> {
+export class FileList extends React.Component<IProps> {
   //NB: I settled on this approach after a bewildering stuggle in which a simpler approach,
   // renderCell={this.renderName}, would actually give us a "this.session" in the renderName that
   // was a *different session*. And yet within the element declaration, the "this.session" was
@@ -26,7 +26,14 @@ export class SessionsFileList extends React.Component<IProps> {
     console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   };
-
+  private makeCell2(rowIndex: number, property: string) {
+    const p = this.props.directoryObject.files[rowIndex].properties.getValue(
+      property
+    );
+    const x = p ? p.default() : "no " + property;
+    console.log(rowIndex + ":" + property + "=" + x);
+    return <Cell>{x}</Cell>;
+  }
   private getSelectedFileRow() {
     const i = this.props.directoryObject.files.indexOf(
       this.props.directoryObject.selectedFile
@@ -67,29 +74,25 @@ export class SessionsFileList extends React.Component<IProps> {
           <Column
             name="Name"
             renderCell={row => {
-              return SessionsFileList.makeCell(
-                this.props.directoryObject,
-                row,
-                "name"
-              );
+              return FileList.makeCell(this.props.directoryObject, row, "name");
             }}
           />
           <Column
             name="Type"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.directoryObject, r, "type")
+              FileList.makeCell(this.props.directoryObject, r, "type")
             }
           />
           <Column
             name="Date"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.directoryObject, r, "date")
+              FileList.makeCell(this.props.directoryObject, r, "date")
             }
           />
           <Column
             name="Size"
             renderCell={r =>
-              SessionsFileList.makeCell(this.props.directoryObject, r, "size")
+              FileList.makeCell(this.props.directoryObject, r, "size")
             }
           />
         </Table>
@@ -98,4 +101,4 @@ export class SessionsFileList extends React.Component<IProps> {
   }
 }
 
-export default SessionsFileList;
+export default FileList;

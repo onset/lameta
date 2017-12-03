@@ -14,7 +14,10 @@ export default class SessionForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
-    console.log(this.props.session.properties.getValue("title").default());
+    console.log(
+      "SessionForm constructor: " +
+        this.props.session.properties.getValue("title").default()
+    );
   }
 
   private renderDatePicker = () => (

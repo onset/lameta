@@ -3,6 +3,10 @@ import * as fs from "fs";
 import * as Path from "path";
 import { ComponentFile } from "./ComponentFile";
 
+export interface IDirectoryObjectSelection {
+  selected: DirectoryObject;
+}
+
 // Project, Session, or Person
 export class DirectoryObject extends ComponentFile {
   public path: string = "";

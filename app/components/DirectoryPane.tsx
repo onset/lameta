@@ -6,11 +6,12 @@ import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyTable from "./PropertyTable";
 import { ComponentFile } from "../model/ComponentFile";
-import { DirectoryObject } from "../model/BaseModel";
+import { DirectoryObject, IDirectoryObjectSelection } from "../model/BaseModel";
+import { computed } from "mobx";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  directoryObject: DirectoryObject;
+  directorySelection: IDirectoryObjectSelection;
 }
 
 @observer
@@ -25,8 +26,8 @@ export class DirectoryPane extends React.Component<IProps> {
   public render() {
     //console.log("Render SSPane:" + this.props.session.title.default());
     const fullPath: string = Path.join(
-      this.props.directoryObject.directory,
-      this.props.directoryObject.selectedFile.properties
+      this.props.directorySelection.selected.directory,
+      this.props.directorySelection.selected.selectedFile.properties
         .getValue("name")
         .default()
     );
@@ -43,6 +44,7 @@ export class DirectoryPane extends React.Component<IProps> {
   }
 
   private getTabs(file: ComponentFile, path: string) {
+    console.log("*****getTabs:" + path);
     if (!file) {
       return <h3>none</h3>;
     }
