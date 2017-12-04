@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { observer } from "mobx-react";
-import { DirectoryObject } from "../model/BaseModel";
+import { DirectoryObject } from "../model/DirectoryObject";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
@@ -14,7 +14,7 @@ export default class FileList extends React.Component<IProps> {
     const p = this.props.directoryObject.files[rowIndex].properties.getValue(
       property
     );
-    const x = p ? p.english : "no " + property;
+    const x = p ? p.toString() : "no " + property;
     //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   }

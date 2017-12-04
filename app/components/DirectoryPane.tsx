@@ -6,7 +6,8 @@ import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyTable from "./PropertyTable";
 import { ComponentFile } from "../model/ComponentFile";
-import { DirectoryObject } from "../model/BaseModel";
+import { DirectoryObject } from "../model/DirectoryObject";
+import Notes from "./Notes";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
@@ -26,14 +27,15 @@ export class DirectoryPane extends React.Component<IProps> {
     //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
       this.props.directoryObject.directory,
-      this.props.directoryObject.selectedFile.properties.getValue("name")
-        .english
+      this.props.directoryObject.selectedFile.properties
+        .getValue("name")
+        .toString()
     );
 
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>
-          {this.props.directoryObject.properties.getValue("title").english}
+          {this.props.directoryObject.getTextField("title").toString()}
         </h3>
         <FileList directoryObject={this.props.directoryObject} />
         {this.getTabs(this.props.directoryObject, fullPath)}
@@ -49,6 +51,22 @@ export class DirectoryPane extends React.Component<IProps> {
     if (!file) {
       return <h3>none</h3>;
     }
+    const notesPanel = (
+      <TabPanel>
+        <Notes text={directoryObject.getTextField("notes")} />
+      </TabPanel>
+    );
+    const propertiesPanel = (
+      <TabPanel>
+        <PropertyTable fields={file.properties} />
+      </TabPanel>
+    );
+    const contributorsPanel = (
+      <TabPanel>
+        <h1>contributors todo</h1>
+      </TabPanel>
+    );
+
     switch (file.type) {
       case "Session":
         return (
@@ -64,7 +82,7 @@ export class DirectoryPane extends React.Component<IProps> {
                   <SessionForm session={this.props.directoryObject} /> */}
             </TabPanel>
             <TabPanel>todo</TabPanel>
-            <TabPanel>todo</TabPanel>
+            {notesPanel}
           </Tabs>
         );
       case "Audio":
@@ -81,11 +99,9 @@ export class DirectoryPane extends React.Component<IProps> {
                 <source src={path} />
               </audio>
             </TabPanel>
-            <TabPanel>
-              <PropertyTable properties={file.properties} />
-            </TabPanel>
-            <TabPanel>todo</TabPanel>
-            <TabPanel>todo</TabPanel>
+            {propertiesPanel}
+            {contributorsPanel}
+            {notesPanel}
           </Tabs>
         );
       case "Image":
@@ -100,15 +116,28 @@ export class DirectoryPane extends React.Component<IProps> {
             <TabPanel>
               <img src={path} />,
             </TabPanel>
-            <TabPanel>
-              <PropertyTable properties={file.properties} />
-            </TabPanel>
-            <TabPanel>todo</TabPanel>
-            <TabPanel>todo</TabPanel>
+            {propertiesPanel}
+            {contributorsPanel}
+            {notesPanel}
           </Tabs>
         );
       default:
-        return <h3>unknown type stuff</h3>;
+        return (
+          <Tabs>
+            <TabList>
+              <Tab>View</Tab>
+              <Tab>Properties</Tab>
+              <Tab>Contributors</Tab>
+              <Tab>Notes</Tab>
+            </TabList>
+            <TabPanel>
+              <h1>todo</h1>
+            </TabPanel>
+            {propertiesPanel}
+            {contributorsPanel}
+            {notesPanel}
+          </Tabs>
+        );
     }
   }
 }

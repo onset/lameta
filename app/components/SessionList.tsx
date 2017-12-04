@@ -4,6 +4,8 @@ import { Session, ISessionSelection } from "../model/Session";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
+import { TextField } from "../model/Fields";
+import { instanceOf } from "prop-types";
 
 const styles = require("./Sessions.scss");
 
@@ -14,11 +16,15 @@ export interface IProps {
 @observer
 export class SessionList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
-    return (
-      <Cell>
-        {this.props.sessions[rowIndex].properties.getValue(key).english}
-      </Cell>
-    );
+    const p = this.props.sessions[rowIndex].properties.getValue(key);
+    if (p instanceof TextField) {
+      return <Cell>{p.toString()}</Cell>;
+    }
+    if (p instanceof Date) {
+      return <Cell>{(p as Date).toLocaleDateString()}</Cell>;
+    }
+
+    return <Cell />;
   }
 
   private getSelectedSessionRow() {

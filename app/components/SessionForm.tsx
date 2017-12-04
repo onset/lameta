@@ -2,8 +2,9 @@ import * as React from "react";
 import { DateInput } from "@blueprintjs/datetime";
 import { Session } from "../model/Session";
 import { observer, Provider } from "mobx-react";
-import PolytextField from "./PolytextField";
-import { Polytext } from "../model/BaseModel";
+import TextFieldEdit from "./TextFieldEdit";
+import { TextField } from "../model/Fields";
+import DateFieldEdit from "./DateFieldEdit";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
@@ -15,7 +16,7 @@ export default class SessionForm extends React.Component<IProps> {
     super(props);
     console.log(
       "SessionForm constructor: " +
-        this.props.session.properties.getValue("title").english
+        this.props.session.properties.getValue("title").toString()
     );
   }
 
@@ -28,27 +29,19 @@ export default class SessionForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={styles.sessionForm}>
-        <PolytextField text={this.props.session.properties.getValue("title")} />
-        <PolytextField
-          text={this.props.session.properties.getValue("people")}
-        />
-        <PolytextField text={this.props.session.properties.getValue("genre")} />
-        <PolytextField
-          text={this.props.session.properties.getValue("situation")}
+        <TextFieldEdit text={this.props.session.getTextField("title")} />
+        <TextFieldEdit text={this.props.session.getTextField("people")} />
+        <TextFieldEdit text={this.props.session.getTextField("genre")} />
+        <TextFieldEdit
+          text={this.props.session.getTextField("situation")}
           className={"text-block"}
         />
-        <PolytextField text={this.props.session.properties.getValue("date")} />
-        <PolytextField
-          text={this.props.session.properties.getValue("setting")}
-        />
-        <PolytextField
-          text={this.props.session.properties.getValue("location")}
-        />
-        <PolytextField
-          text={this.props.session.properties.getValue("access")}
-        />
-        <PolytextField
-          text={this.props.session.properties.getValue("description")}
+        <DateFieldEdit date={this.props.session.getDateField("date")} />
+        <TextFieldEdit text={this.props.session.getTextField("setting")} />
+        <TextFieldEdit text={this.props.session.getTextField("location")} />
+        <TextFieldEdit text={this.props.session.getTextField("access")} />
+        <TextFieldEdit
+          text={this.props.session.getTextField("description")}
           className={"text-block"}
         />
       </form>

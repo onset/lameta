@@ -12,9 +12,13 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
 @import "~@blueprintjs/table/src/table.scss";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
+@import "~react-datepicker/dist/react-datepicker.css";
 
-$color-interstitial: #F0F0F0;
-body, html, #root, #app{
+$color-interstitial: #f0f0f0;
+body,
+html,
+#root,
+#app {
   height: 100%;
   margin: 0;
   background-color: $color-interstitial;
@@ -24,24 +28,24 @@ body, html, #root, #app{
   //width: 30%;
   margin: 4px 8px;
 }
-.field:not(.text-block){
+.field:not(.text-block) {
   height: 40px;
 }
-.field label{
+.field label {
   display: block;
   font-size: 12px;
   font-weight: bold;
 }
-.field input{
+.field input {
   width: 100%;
 }
 .text-block {
   //height: 64px;
 }
-.text-block input{
+.text-block input {
   height: 4em;
 }
-form{
+form {
   // display: grid;
   // grid-template-columns: 1fr 1fr;
   // grid-gap: 8px;
@@ -56,16 +60,16 @@ form{
 // .react-tabs__tab svg{
 
 // }
-.projectTab{
-  color: #E69664;
+.projectTab {
+  color: #e69664;
 }
-.sessionsTab{
-  color: #CFF09F;
+.sessionsTab {
+  color: #cff09f;
 }
-.peopleTab{
-  color: #4D6B96;
+.peopleTab {
+  color: #4d6b96;
 }
 
-.bp-table-quadrant{
+.bp-table-quadrant {
   background-color: white;
 }

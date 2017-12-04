@@ -1,17 +1,17 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { Polytext } from "../model/BaseModel";
+import { TextField } from "../model/Fields";
 const titleCase = require("title-case");
 //const styles = require("./Sessions.scss");
 
 export interface IProps {
-  text: Polytext;
+  text: TextField;
 }
 
 // automatically update when the value changes
 @observer
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export default class PolytextField extends React.Component<
+export default class TextFieldEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -29,23 +29,21 @@ export default class PolytextField extends React.Component<
 
   private static onChange(
     event: React.FormEvent<HTMLInputElement>,
-    text: Polytext
+    text: TextField
   ) {
-    console.log("PolytextFiled setting field of " + text.english);
     text.english = event.currentTarget.value;
-    console.log("PolytextFiled now " + text.english);
   }
 
   private getLabel() {
     if (this.props.text === undefined) {
-      return "Null Polytext";
+      return "Null Text";
     }
     return titleCase(this.props.text.englishLabel);
   }
 
-  private static getValue(text: Polytext): string {
+  private static getValue(text: TextField): string {
     if (text === undefined) {
-      return "Null Polytext";
+      return "Null Text";
     }
     return text.english;
   }
@@ -56,14 +54,10 @@ export default class PolytextField extends React.Component<
         <label>{this.getLabel()}</label>
         <input
           name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
-          value={PolytextField.getValue(this.props.text)}
-          onChange={event => PolytextField.onChange(event, this.props.text)}
+          value={TextFieldEdit.getValue(this.props.text)}
+          onChange={event => TextFieldEdit.onChange(event, this.props.text)}
         />
       </div>
     );
   }
 }
-
-// name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
-// value={() => PolytextField.getValue(this.props.text)}
-// onChange={x => PolytextField.onChange(x, this.props.text)}

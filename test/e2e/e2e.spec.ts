@@ -3,14 +3,15 @@ import * as path from "path";
 
 const { Application } = require("spectron");
 
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time));
+const delay = (time: number) =>
+  new Promise(resolve => setTimeout(resolve, time));
 
 describe("main window", function spec() {
   let app: any;
   beforeAll(async () => {
     app = new Application({
       path: electronPath,
-      args: [path.join(__dirname, "..", "..", "app")],
+      args: [path.join(__dirname, "..", "..", "app")]
     });
     return app.start();
   });
@@ -34,10 +35,10 @@ describe("main window", function spec() {
     await client.waitUntilWindowLoaded();
     await delay(500);
     const title = await browserWindow.getTitle();
-    expect(title).toBe("Hello Electron React!");
+    expect(title).toBe("SayLess");
   });
 
-  it("should not have any logs in console of main window", async () => {
+  it("should not have any errors in logs in console of main window", async () => {
     const { client } = app;
     const logs = await client.getRenderProcessLogs();
     // Print renderer process logs
@@ -45,8 +46,8 @@ describe("main window", function spec() {
       console.log(log.message);
       console.log(log.source);
       console.log(log.level);
+      expect(log.message.indexOf("error") > -1).toBeFalsy();
     });
-    expect(logs).toHaveLength(0);
+    //expect(logs).toHaveLength(0);
   });
-
 });

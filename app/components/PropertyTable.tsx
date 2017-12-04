@@ -4,13 +4,14 @@ import { Session, ISessionSelection } from "../model/Session";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { Polytext } from "../model/BaseModel";
+import { TextField, Field } from "../model/Fields";
 import { Dictionary } from "typescript-collections";
+import { FieldSet } from "../model/ComponentFile";
 
 //const styles = require("./Sessions.scss");
 
 export interface IProps {
-  properties: Dictionary<string, Polytext>;
+  fields: FieldSet;
 }
 interface IState {
   selectedRow: number;
@@ -18,28 +19,33 @@ interface IState {
 
 @observer
 export default class PropertyTable extends React.Component<IProps, IState> {
-  private getPropertyNameCell(rowIndex: number) {
-    const v = this.props.properties.values();
-    const p: Polytext = v[rowIndex];
-    return <Cell>{p.englishLabel}</Cell>;
+  private getFieldNameCell(rowIndex: number) {
+    const v = this.props.fields.values();
+    const f: Field = v[rowIndex];
+    return <Cell>{f.englishLabel}</Cell>;
   }
-  private getPropertyValueCell(rowIndex: number) {
-    return <Cell>{this.props.properties.values()[rowIndex].english}</Cell>;
+  private getFieldValueCell(rowIndex: number) {
+    const p = this.props.fields.values()[rowIndex];
+    if (p instanceof TextField) {
+      return <Cell>{p.toString()}</Cell>;
+    }
+    if (p instanceof Date) {
+      return <Cell>{(p as Date).toLocaleDateString()}</Cell>;
+    }
+
+    return <Cell />;
   }
   public render() {
     return (
       <div>
         <Table
-          numRows={this.props.properties.keys().length}
+          numRows={this.props.fields.keys().length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           columnWidths={[80, 200]}
         >
-          <Column
-            name="Property"
-            renderCell={r => this.getPropertyNameCell(r)}
-          />
-          <Column name="Value" renderCell={r => this.getPropertyValueCell(r)} />
+          <Column name="Property" renderCell={r => this.getFieldNameCell(r)} />
+          <Column name="Value" renderCell={r => this.getFieldValueCell(r)} />
         </Table>
       </div>
     );

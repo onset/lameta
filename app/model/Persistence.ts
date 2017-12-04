@@ -6,7 +6,7 @@ import { Project } from "./Project";
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
-import { DirectoryObject } from "./BaseModel";
+import { DirectoryObject } from "./DirectoryObject";
 import { ComponentFile } from "./ComponentFile";
 
 export default class Persistence {
@@ -38,7 +38,7 @@ export default class Persistence {
 
     session.selectedFile = session.files[0];
 
-    console.log("loaded " + session.properties.getValue("title").english);
+    console.log("loaded " + session.properties.getValue("title").toString());
     project.sessions.push(session);
 
     //start autosave
