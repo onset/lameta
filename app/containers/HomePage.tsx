@@ -14,8 +14,9 @@ export default class HomePage extends React.Component<any> {
   constructor() {
     super();
     this.project = Persistence.loadProjectFolder(
-      fs.realpathSync("test/sample")
-    ); //"sample data/Edolo sample");
+      fs.realpathSync("sample data/Edolo sample")
+      //fs.realpathSync("test/sample")
+    );
   }
 
   public render() {

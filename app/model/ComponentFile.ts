@@ -27,8 +27,9 @@ export class ComponentFile {
     this.checkType(key, date);
     this.properties.setValue(key, new DateField(key, date));
   }
-  protected addTextProperty(key: string, value: string) {
+  public addTextProperty(key: string, value: string) {
     this.properties.setValue(key, new TextField(key, value));
+    console.log("Adding " + key + "=" + value);
   }
 
   public getTextField(key: string): TextField {
@@ -65,14 +66,15 @@ export class ComponentFile {
     const keys = Object.keys(data);
 
     for (const key of keys) {
+      const t = data[key]._text;
       // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
       if (this.properties.containsKey(key)) {
         const v = this.properties.getValue(key);
-        v.setValueFromString(data[key]);
+        v.setValueFromString(t);
       } else {
+        console.log("extra");
         // otherwise treat it as a string
-        const textField = new TextField(key, data[key]);
-        this.properties.setValue(key, textField);
+        this.addTextProperty(key, t);
       }
     }
   }

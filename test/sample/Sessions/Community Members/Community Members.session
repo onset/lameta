@@ -1,3 +1,13 @@
-{
-    "title":"Community Members","date":"11-10-17", "setting":"town square"
-}
+<?xml version="1.0" encoding="utf-8"?>
+<Session>
+  <title type="string">Community Members</title>
+  <participants type="string">Awi Heole; Ilawi Amosa</participants>
+  <genre type="string">narrative</genre>
+  <access type="string">Open</access>
+  <location type="string">Huya</location>
+  <setting type="string">town square</setting>
+  <situation type="string">Walking with Ilawi, we passed the plant they use to make poison for fishing, and I asked him if he'd tell me about how to do it.  We went to his house, where Awi joined us, and the two of them took turns telling parts of the "whole story".</situation>
+  <date type="string">6/6/2010</date>
+  <notes type="string">hello</notes>
+  <status type="string">Incoming</status>
+</Session>

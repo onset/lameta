@@ -73,6 +73,7 @@ export class DirectoryPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>Session</Tab>
+              <Tab>Properties</Tab>
               <Tab>Status &amp; Stages</Tab>
               <Tab>Notes</Tab>
             </TabList>
@@ -81,6 +82,7 @@ export class DirectoryPane extends React.Component<IProps> {
               {/* Doing it this way, the form would be stuck showing the first session. Sigh, haven't figured out why.
                   <SessionForm session={this.props.directoryObject} /> */}
             </TabPanel>
+            {propertiesPanel}
             <TabPanel>todo</TabPanel>
             {notesPanel}
           </Tabs>

@@ -10,4 +10,5 @@
   <date type="string">6/6/2010</date>
   <notes type="string">hello</notes>
   <status type="string">Incoming</status>
+  <somethingelse type="string">Something new</somethingelse>
 </Session>

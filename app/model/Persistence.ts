@@ -8,6 +8,7 @@ import * as Path from "path";
 import * as glob from "glob";
 import { DirectoryObject } from "./DirectoryObject";
 import { ComponentFile } from "./ComponentFile";
+import { xml2js, xml2json } from "xml-js";
 
 export default class Persistence {
   public static loadProjectFolder(path: string): Project {
@@ -26,10 +27,17 @@ export default class Persistence {
   public static loadSession(project: Project, sessionDirectory: string) {
     const sessionName = Path.basename(sessionDirectory);
     const sessionPath = Path.join(sessionDirectory, sessionName + ".session");
-    const contents: string = fs.readFileSync(sessionPath, "utf8");
+    const xml: string = fs.readFileSync(sessionPath, "utf8");
+    const json: string = xml2json(xml, {
+      ignoreComment: true,
+      compact: true,
+      ignoreDoctype: true,
+      ignoreDeclaration: true,
+      trim: true
+    });
     const session: Session = Session.fromObject(
       sessionDirectory,
-      JSON.parse(contents)
+      JSON.parse(json).Session
     );
     session.path = fs.realpathSync(sessionPath);
     session.directory = sessionDirectory;
