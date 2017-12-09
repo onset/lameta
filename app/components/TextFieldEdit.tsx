@@ -28,7 +28,7 @@ export default class TextFieldEdit extends React.Component<
   // }
 
   private static onChange(
-    event: React.FormEvent<HTMLInputElement>,
+    event: React.FormEvent<HTMLTextAreaElement>,
     text: TextField
   ) {
     text.english = event.currentTarget.value;
@@ -52,7 +52,7 @@ export default class TextFieldEdit extends React.Component<
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
-        <input
+        <textarea
           name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.text)}
           onChange={event => TextFieldEdit.onChange(event, this.props.text)}

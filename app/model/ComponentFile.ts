@@ -10,6 +10,11 @@ import * as assert from "assert";
 export class FieldSet extends Dictionary<string, Field> {}
 
 export class ComponentFile {
+  protected fullpath: string;
+  public get path(): string {
+    return this.fullpath;
+  }
+
   @observable public properties = new FieldSet();
 
   get type(): string {
@@ -40,6 +45,7 @@ export class ComponentFile {
   }
 
   public constructor(path: string) {
+    this.fullpath = path;
     this.addTextProperty("name", Path.basename(path));
     this.addTextProperty("notes", "");
 
@@ -60,9 +66,11 @@ export class ComponentFile {
     });
 
     this.ComputeProperties(); //enhance: do this on demand, instead of for every file
+
+    // TODO read the .meta file that describes this file, if it exists
   }
 
-  public loadFromObject(data: any) {
+  public loadFromJSObject(data: any) {
     const keys = Object.keys(data);
 
     for (const key of keys) {

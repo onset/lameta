@@ -36,15 +36,18 @@ html,
   font-size: 12px;
   font-weight: bold;
 }
-.field input {
-  width: 100%;
+
+.text-block textarea {
+  height: 6em;
 }
-.text-block {
-  //height: 64px;
+textarea {
+  border-style: inset;
+  resize: none;
+  height: 2em;
+  width: 300px;
+  font-family: "segoe ui", "sans";
 }
-.text-block input {
-  height: 4em;
-}
+
 form {
   // display: grid;
   // grid-template-columns: 1fr 1fr;

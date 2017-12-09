@@ -14,20 +14,48 @@ export default class Persistence {
   public static loadProjectFolder(path: string): Project {
     const project = new Project();
 
-    fs.readdirSync(Path.join(path, "Sessions"), "utf8").forEach(p => {
-      const dir = Path.join(path, "Sessions", p);
-      console.log(dir);
-      Persistence.loadSession(project, dir);
+    fs.readdirSync(Path.join(path, "Sessions"), "utf8").forEach(childName => {
+      const dir = Path.join(path, "Sessions", childName);
+      if (fs.lstatSync(dir).isDirectory()) {
+        console.log(dir);
+        const session = Persistence.loadSession(dir);
+        project.sessions.push(session);
+      }
+      // else ignore it
     });
 
     project.selectedSession.index = 0;
     return project;
   }
 
-  public static loadSession(project: Project, sessionDirectory: string) {
-    const sessionName = Path.basename(sessionDirectory);
-    const sessionPath = Path.join(sessionDirectory, sessionName + ".session");
-    const xml: string = fs.readFileSync(sessionPath, "utf8");
+  public static loadSession(sessionDirectory: string): Session {
+    const files = Persistence.loadChildFiles(sessionDirectory, ".session");
+    return new Session(sessionDirectory, files);
+
+    //start autosave
+    // mobx.autorunAsync(
+    //   () => Persistence.saveSession(project, session),
+    //   10 * 1000 /* min 10 seconds in between */
+    // );
+  }
+
+  ///Load the files constituting a session, person, or project
+  private static loadChildFiles(
+    directory: string,
+    mainMetadataFileExtensionWithDot: string
+  ): ComponentFile[] {
+    const files = new Array<ComponentFile>();
+
+    // the first file we want to return is special. It is the metadata file for the DirectoryObject (Project | Session | Person)
+    const name = Path.basename(directory);
+    const mainMetaPath = Path.join(
+      directory,
+      name + mainMetadataFileExtensionWithDot
+    );
+    if (!fs.existsSync(mainMetaPath)) {
+      fs.writeFileSync(mainMetaPath, "<Session></Session>", "utf8");
+    }
+    const xml: string = fs.readFileSync(mainMetaPath, "utf8");
     const json: string = xml2json(xml, {
       ignoreComment: true,
       compact: true,
@@ -35,45 +63,23 @@ export default class Persistence {
       ignoreDeclaration: true,
       trim: true
     });
-    const session: Session = Session.fromObject(
-      sessionDirectory,
-      JSON.parse(json).Session
-    );
-    session.path = fs.realpathSync(sessionPath);
-    session.directory = sessionDirectory;
+    const data = JSON.parse(json).Session;
+    const f = new ComponentFile(mainMetaPath);
+    f.loadFromJSObject(data);
+    files.push(f);
 
-    Persistence.loadChildFiles(session);
-
-    session.selectedFile = session.files[0];
-
-    console.log("loaded " + session.properties.getValue("title").toString());
-    project.sessions.push(session);
-
-    //start autosave
-    mobx.autorunAsync(
-      () => Persistence.saveSession(project, session),
-      10 * 1000 /* min 10 seconds in between */
-    );
-  }
-
-  ///Load the files constituting a session, person, or project
-  private static loadChildFiles(obj: DirectoryObject) {
-    //read the files
-    const files = glob.sync(Path.join(obj.directory, "*.*"));
-    files.forEach(f => {
-      if (!f.endsWith(".meta") && !f.endsWith(".test")) {
-        const file = new ComponentFile(f);
-        if (f.endsWith(".session") || f.endsWith(".person")) {
-          obj.files.unshift(file);
-        } else {
-          obj.files.push(file);
+    //read the other files
+    const filePaths = glob.sync(Path.join(directory, "*.*"));
+    filePaths.forEach(path => {
+      if (!path.endsWith(mainMetadataFileExtensionWithDot)) {
+        // the .meta companion files will be read and loaded into the properties of
+        // the files they describe will be found and loaded, by the constructor of the ComponentFile
+        if (!path.endsWith(".meta") && !path.endsWith(".test")) {
+          files.push(new ComponentFile(path));
         }
       }
-      // if (!f.endsWith(".session")) {
-      //   // we don't want the session file itself
-      //   console.log("File: " + f);
-      // }
     });
+    return files;
   }
 
   public static saveSession(project: Project, session: Session) {
