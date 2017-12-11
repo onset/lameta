@@ -4,9 +4,9 @@ import { Session, ISessionSelection } from "../model/Session";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { TextField, Field } from "../model/Fields";
+import { TextField, Field } from "../model/Field";
 import { Dictionary } from "typescript-collections";
-import { FieldSet } from "../model/ComponentFile";
+import { FieldSet } from "../model/File";
 
 //const styles = require("./Sessions.scss");
 

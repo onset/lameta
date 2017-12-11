@@ -5,17 +5,18 @@ import FileList from "./FileList";
 import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyTable from "./PropertyTable";
-import { ComponentFile } from "../model/ComponentFile";
-import { DirectoryObject } from "../model/DirectoryObject";
+import { File } from "../model/File";
+import { Folder } from "../model/Folder";
 import Notes from "./Notes";
+import ReactPlayer from "react-player";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  directoryObject: DirectoryObject;
+  folder: Folder;
 }
 
 @observer
-export class DirectoryPane extends React.Component<IProps> {
+export class FolderPane extends React.Component<IProps> {
   private filetypeSpecificTab: any; // enhance: what's the real type?
 
   constructor(props: IProps) {
@@ -26,24 +27,22 @@ export class DirectoryPane extends React.Component<IProps> {
   public render() {
     //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
-      this.props.directoryObject.directory,
-      this.props.directoryObject.selectedFile.properties
-        .getValue("name")
-        .toString()
+      this.props.folder.directory,
+      this.props.folder.selectedFile.properties.getValue("name").toString()
     );
 
     return (
       <div className={styles.filePane}>
         <h3 className={styles.paneTitle}>
-          {this.props.directoryObject.getTextField("title").toString()}
+          {this.props.folder.getTextField("title").toString()}
         </h3>
-        <FileList directoryObject={this.props.directoryObject} />
-        {this.getTabs(this.props.directoryObject, fullPath)}
+        <FileList folder={this.props.folder} />
+        {this.getTabs(this.props.folder, fullPath)}
       </div>
     );
   }
 
-  private getTabs(directoryObject: DirectoryObject, path: string) {
+  private getTabs(directoryObject: Folder, path: string) {
     const file = directoryObject.selectedFile;
     // console.log("getTabs:" + path);
     // console.log("getTabs:" + directoryObject.path);
@@ -106,6 +105,25 @@ export class DirectoryPane extends React.Component<IProps> {
             {notesPanel}
           </Tabs>
         );
+      case "Video":
+        return (
+          <Tabs>
+            <TabList>
+              <Tab>Video</Tab>
+              <Tab>Properties</Tab>
+              <Tab>Contributors</Tab>
+              <Tab>Notes</Tab>
+            </TabList>
+            <TabPanel>
+              <ReactPlayer url={path}>
+                <source src={path} />
+              </ReactPlayer>
+            </TabPanel>
+            {propertiesPanel}
+            {contributorsPanel}
+            {notesPanel}
+          </Tabs>
+        );
       case "Image":
         return (
           <Tabs>
@@ -144,4 +162,4 @@ export class DirectoryPane extends React.Component<IProps> {
   }
 }
 
-export default DirectoryPane;
+export default FolderPane;

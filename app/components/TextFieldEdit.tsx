@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { TextField } from "../model/Fields";
+import { TextField } from "../model/Field";
 const titleCase = require("title-case");
 //const styles = require("./Sessions.scss");
 

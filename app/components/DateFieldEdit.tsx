@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { DateField } from "../model/Fields";
+import { DateField } from "../model/Field";
 // tslint:disable-next-line:no-submodule-imports
 import DatePicker from "react-datepicker";
 import { Moment } from "moment";

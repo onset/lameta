@@ -1,22 +1,22 @@
-import { ComponentFile, FieldSet } from "./ComponentFile";
+import { File, FieldSet } from "./File";
 import { observable } from "mobx";
-import { TextField, DateField } from "./Fields";
+import { TextField, DateField } from "./Field";
 import * as assert from "assert";
 import * as fs from "fs";
 import * as Path from "path";
 
 export interface IDirectoryObjectSelection {
-  selected: DirectoryObject;
+  selected: Folder;
 }
 
 // Project, Session, or Person
-export abstract class DirectoryObject {
+export abstract class Folder {
   //public path: string = "";
   public directory: string = "";
-  @observable public files: ComponentFile[] = [];
-  @observable public selectedFile: ComponentFile;
+  @observable public files: File[] = [];
+  @observable public selectedFile: File;
 
-  public constructor(directory: string, files: ComponentFile[]) {
+  public constructor(directory: string, files: File[]) {
     this.directory = directory;
     this.files = files;
     this.selectedFile = files[0];
@@ -42,7 +42,7 @@ export abstract class DirectoryObject {
         // it doesn't even exist yet
         fs.writeFileSync(path, "", "utf8");
       }
-      this.files.push(new ComponentFile(path));
+      this.files.push(new File(path));
     }
     return this.files[0].properties;
   }

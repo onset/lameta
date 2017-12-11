@@ -2,14 +2,16 @@ import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
 import { observable } from "mobx";
-import { Field, TextField, DateField } from "./Fields";
+import { Field, TextField, DateField } from "./Field";
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
+import * as imagesize from "image-size";
+import * as musicmetadata from "musicmetadata";
 
 // tslint:disable-next-line:no-empty-interface
 export class FieldSet extends Dictionary<string, Field> {}
 
-export class ComponentFile {
+export class File {
   protected fullpath: string;
   public get path(): string {
     return this.fullpath;
@@ -54,9 +56,10 @@ export class ComponentFile {
     this.addDateProperty("date", stats.mtime);
 
     const typePatterns = [
-      ["Session", /\.session$/],
-      ["Audio", /\.((mp3)|(wav)|(ogg))$/],
-      ["Image", /\.(jpg)|(bmp)|(gif)/]
+      ["Session", /\.session$/i],
+      ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
+      ["Video", /\.((mp4))$/i],
+      ["Image", /\.(jpg)|(bmp)|(gif)/i]
     ];
     typePatterns.forEach(t => {
       if (path.match(t[1])) {
@@ -70,11 +73,11 @@ export class ComponentFile {
     // TODO read the .meta file that describes this file, if it exists
   }
 
-  public loadFromJSObject(data: any) {
-    const keys = Object.keys(data);
+  public loadProperties(properties: any) {
+    const keys = Object.keys(properties);
 
     for (const key of keys) {
-      const t = data[key]._text;
+      const t = properties[key]._text;
       // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
       if (this.properties.containsKey(key)) {
         const v = this.properties.getValue(key);
@@ -90,7 +93,23 @@ export class ComponentFile {
   public ComputeProperties() {
     switch (this.type) {
       case "Audio":
-        this.addTextProperty("duration", "pretend");
+        if (this.path.match(/\.((mp3)|(ogg))$/i)) {
+          musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
+            if (err) {
+              console.log("Error:" + err.message);
+            }
+            this.addTextProperty(
+              "duration",
+              err ? "????" : metadata.duration.toString() // <-- haven't see this work yet. I think we'll give in and ship with ffmpeg eventually
+            );
+            // todo bit rate & such, which musicmetadata doesn't give us
+          });
+        }
+        break;
+      case "Image":
+        const dimensions = imagesize(this.path);
+        this.addTextProperty("width", dimensions.width.toString());
+        this.addTextProperty("height", dimensions.height.toString());
         break;
     }
   }

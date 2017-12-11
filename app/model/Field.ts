@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 import * as fs from "fs";
 import * as Path from "path";
-import { ComponentFile } from "./ComponentFile";
+import { File } from "./File";
 const titleCase = require("title-case");
 
 export class Field {

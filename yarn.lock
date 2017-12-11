@@ -89,6 +89,12 @@
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.0.tgz#093d67ed780d889c9543f6dca24ebee0b6b9fc45"
 
+"@types/image-size@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/image-size/-/image-size-0.0.29.tgz#0924d4ec95edc82f615b7f634cba31534b81c351"
+  dependencies:
+    "@types/node" "*"
+
 "@types/jest@^21.1.1":
   version "21.1.1"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-21.1.1.tgz#70008ecce439774a45c7d0b543d879ec58a1b332"
@@ -102,6 +108,12 @@
   resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
   dependencies:
     moment "*"
+
+"@types/musicmetadata@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/musicmetadata/-/musicmetadata-2.0.4.tgz#84f8dede180d7258f56f5d455fec905a122c583d"
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*":
   version "8.0.32"
@@ -1582,6 +1594,10 @@ deep-diff@^0.3.5:
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/deep-diff/-/deep-diff-0.3.8.tgz#c01de63efb0eec9798801d40c7e0dae25b582c84"
 
+deep-equal@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-0.2.1.tgz#fad7a793224cbf0c3c7786f92ef780e4fc8cc878"
+
 deep-equal@^1.0.1, deep-equal@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
@@ -1593,6 +1609,10 @@ deep-extend@~0.4.0:
 deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
+
+deepmerge@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.0.1.tgz#25c1c24f110fb914f80001b925264dd77f3f4312"
 
 deepmerge@~1.3.2:
   version "1.3.2"
@@ -2429,6 +2449,12 @@ filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
 
+filereader-stream@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/filereader-stream/-/filereader-stream-0.2.0.tgz#16374a202715b640b666ecffd07089938e9ff11f"
+  dependencies:
+    inherits "1.0.0"
+
 fileset@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/fileset/-/fileset-2.0.3.tgz#8e7548a96d3cc2327ee5e674168723a333bba2a0"
@@ -2997,6 +3023,10 @@ ignore@^3.3.6:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
 
+image-size@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.1.tgz#98122a562d59dcc097ef1b2c8191866eb8f5d663"
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -3029,6 +3059,10 @@ inflight@^1.0.4:
   dependencies:
     once "^1.3.0"
     wrappy "1"
+
+inherits@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/inherits/-/inherits-1.0.0.tgz#38e1975285bf1f7ba9c84da102bb12771322ac48"
 
 inherits@2, inherits@2.0.3, inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.0, inherits@~2.0.1, inherits@~2.0.3:
   version "2.0.3"
@@ -3780,6 +3814,10 @@ load-json-file@^2.0.0:
     pify "^2.0.0"
     strip-bom "^3.0.0"
 
+load-script@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/load-script/-/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
+
 loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
@@ -4165,6 +4203,16 @@ ms@0.7.1:
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
+
+musicmetadata@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/musicmetadata/-/musicmetadata-2.0.5.tgz#7ae910d99fbaee05f2bd543aef10b6fbe1f37bd4"
+  dependencies:
+    deep-equal "0.2.1"
+    filereader-stream "^0.2.0"
+    is-stream "^1.1.0"
+    strtok2 "~1.0.0"
+    through "~2.3.4"
 
 mute-stream@0.0.7:
   version "0.0.7"
@@ -5248,6 +5296,14 @@ react-onclickoutside@^6.6.3:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.7.0.tgz#997a4d533114c9a0a104913638aa26afc084f75c"
 
+react-player@^0.25.3:
+  version "0.25.3"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-0.25.3.tgz#dc86010855fefe7e4460a341971e8e0d558ecf63"
+  dependencies:
+    deepmerge "^2.0.0"
+    load-script "^1.0.0"
+    prop-types "^15.5.6"
+
 react-popper@^0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-0.7.4.tgz#8649d539837e7c6f47bc9b24c9cf57a404e199a1"
@@ -6115,6 +6171,10 @@ strip-indent@^1.0.1:
 strip-json-comments@^2.0.0, strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
+
+strtok2@~1.0.0:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/strtok2/-/strtok2-1.0.4.tgz#df9ffb2e70a3336b4660e267ef0547e610275fc1"
 
 style-loader@^0.19.0:
   version "0.19.0"

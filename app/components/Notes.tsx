@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { TextField } from "../model/Fields";
+import { TextField } from "../model/Field";
 import TextFieldEdit from "./TextFieldEdit";
 
 export interface IProps {

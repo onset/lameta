@@ -3,7 +3,7 @@ import { DateInput } from "@blueprintjs/datetime";
 import { Session } from "../model/Session";
 import { observer, Provider } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
-import { TextField } from "../model/Fields";
+import { TextField } from "../model/Field";
 import DateFieldEdit from "./DateFieldEdit";
 const styles = require("./Sessions.scss");
 

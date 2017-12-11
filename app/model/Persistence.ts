@@ -6,8 +6,8 @@ import { Project } from "./Project";
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
-import { DirectoryObject } from "./DirectoryObject";
-import { ComponentFile } from "./ComponentFile";
+import { Folder } from "./Folder";
+import { File } from "./File";
 import { xml2js, xml2json } from "xml-js";
 
 export default class Persistence {
@@ -43,8 +43,8 @@ export default class Persistence {
   private static loadChildFiles(
     directory: string,
     mainMetadataFileExtensionWithDot: string
-  ): ComponentFile[] {
-    const files = new Array<ComponentFile>();
+  ): File[] {
+    const files = new Array<File>();
 
     // the first file we want to return is special. It is the metadata file for the DirectoryObject (Project | Session | Person)
     const name = Path.basename(directory);
@@ -55,18 +55,9 @@ export default class Persistence {
     if (!fs.existsSync(mainMetaPath)) {
       fs.writeFileSync(mainMetaPath, "<Session></Session>", "utf8");
     }
-    const xml: string = fs.readFileSync(mainMetaPath, "utf8");
-    const json: string = xml2json(xml, {
-      ignoreComment: true,
-      compact: true,
-      ignoreDoctype: true,
-      ignoreDeclaration: true,
-      trim: true
-    });
-    const data = JSON.parse(json).Session;
-    const f = new ComponentFile(mainMetaPath);
-    f.loadFromJSObject(data);
-    files.push(f);
+    const folder = new File(mainMetaPath);
+    this.readMetaFile(folder, mainMetaPath);
+    files.push(folder);
 
     //read the other files
     const filePaths = glob.sync(Path.join(directory, "*.*"));
@@ -75,13 +66,32 @@ export default class Persistence {
         // the .meta companion files will be read and loaded into the properties of
         // the files they describe will be found and loaded, by the constructor of the ComponentFile
         if (!path.endsWith(".meta") && !path.endsWith(".test")) {
-          files.push(new ComponentFile(path));
+          const file = new File(path);
+          if (fs.existsSync(path + ".meta")) {
+            this.readMetaFile(file, path + ".meta");
+          }
+          files.push(file);
         }
       }
     });
     return files;
   }
 
+  private static readMetaFile(file: File, path: string) {
+    const xml: string = fs.readFileSync(path, "utf8");
+    const json: string = xml2json(xml, {
+      ignoreComment: true,
+      compact: true,
+      ignoreDoctype: true,
+      ignoreDeclaration: true,
+      trim: true
+    });
+    const xmlAsObject = JSON.parse(json);
+    // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+    // so that we just have the object with its properties.
+    const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+    file.loadProperties(properties);
+  }
   public static saveSession(project: Project, session: Session) {
     //console.log("saving " + session.getString("title"));
     //fs.writeFileSync(session.path + ".test", JSON.stringify(session), "utf8");

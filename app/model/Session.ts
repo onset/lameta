@@ -1,18 +1,18 @@
 import { observable } from "mobx";
-import { TextField } from "./Fields";
-import { DirectoryObject } from "./DirectoryObject";
-import { ComponentFile } from "./ComponentFile";
+import { TextField } from "./Field";
+import { Folder } from "./Folder";
+import { File } from "./File";
 
 export interface ISessionSelection {
   index: number;
 }
 
-export class Session extends DirectoryObject {
+export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
     return ".session";
   }
 
-  public constructor(directory: string, files: ComponentFile[]) {
+  public constructor(directory: string, files: File[]) {
     super(directory, files);
     this.manditoryTextProperty("people", "");
     this.manditoryTextProperty("genre", "");

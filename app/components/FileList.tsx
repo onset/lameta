@@ -1,27 +1,23 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { observer } from "mobx-react";
-import { DirectoryObject } from "../model/DirectoryObject";
+import { Folder } from "../model/Folder";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  directoryObject: DirectoryObject;
+  folder: Folder;
 }
 
 @observer
 export default class FileList extends React.Component<IProps> {
   private makeCell(rowIndex: number, property: string) {
-    const p = this.props.directoryObject.files[rowIndex].properties.getValue(
-      property
-    );
+    const p = this.props.folder.files[rowIndex].properties.getValue(property);
     const x = p ? p.toString() : "no " + property;
     //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;
   }
   private getSelectedFileRow() {
-    const i = this.props.directoryObject.files.indexOf(
-      this.props.directoryObject.selectedFile
-    );
+    const i = this.props.folder.files.indexOf(this.props.folder.selectedFile);
     return [Regions.row(i)];
   }
 
@@ -29,9 +25,7 @@ export default class FileList extends React.Component<IProps> {
     //console.log("FileList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
       const selectedRow: number = e[0].rows![0];
-      this.props.directoryObject.selectedFile = this.props.directoryObject.files[
-        selectedRow
-      ];
+      this.props.folder.selectedFile = this.props.folder.files[selectedRow];
     }
   }
 
@@ -47,7 +41,7 @@ export default class FileList extends React.Component<IProps> {
     return (
       <div className={styles.fileList}>
         <Table
-          numRows={this.props.directoryObject.files.length}
+          numRows={this.props.folder.files.length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           // selectionModes={SelectionModes.ROWS_ONLY}
