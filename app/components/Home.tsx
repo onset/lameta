@@ -5,10 +5,12 @@ import { SessionsTab } from "./SessionsTab";
 import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 import { Session } from "../model/Session";
+import { Person } from "../model/Person";
 const styles = require("./Home.scss");
 
 export interface IProps {
-  sessions: Folder[];
+  sessions: Session[];
+  persons: Person[];
   selectedSession: IFolderSelection;
   selectedPerson: IFolderSelection;
 }
@@ -30,9 +32,16 @@ export default class Home extends React.Component<IProps> {
             <SessionsTab
               folders={this.props.sessions}
               selectedFolder={this.props.selectedSession}
+              folderTypeStyleClass="sessions"
             />
           </TabPanel>
-          <TabPanel className={styles.peopleTab}>people</TabPanel>
+          <TabPanel className={styles.peopleTab}>
+            <SessionsTab
+              folders={this.props.persons}
+              selectedFolder={this.props.selectedPerson}
+              folderTypeStyleClass="people"
+            />
+          </TabPanel>
         </Tabs>
       </div>
     );

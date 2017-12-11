@@ -5,7 +5,6 @@ import { observer, Provider } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import { TextField } from "../model/Field";
 import DateFieldEdit from "./DateFieldEdit";
-const styles = require("./Sessions.scss");
 
 export interface IProps {
   session: Session;
@@ -28,7 +27,7 @@ export default class SessionForm extends React.Component<IProps> {
 
   public render() {
     return (
-      <form className={styles.sessionForm}>
+      <form className={"sessionForm"}>
         <TextFieldEdit text={this.props.session.getTextField("title")} />
         <TextFieldEdit text={this.props.session.getTextField("people")} />
         <TextFieldEdit text={this.props.session.getTextField("genre")} />
@@ -48,15 +47,3 @@ export default class SessionForm extends React.Component<IProps> {
     );
   }
 }
-
-// export default reduxForm({
-//   // a unique name for the form
-//   form: "sessionDetails"
-// })(SessionForm);
-
-//export default connect(mapStateToProps,mapDispatchToProps)
-// export default connect()
-// (reduxForm({
-//   // a unique name for the form
-//   form: "sessionDetails"
-// })(SessionDetails);

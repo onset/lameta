@@ -2,7 +2,6 @@ import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import { Folder } from "../model/Folder";
-const styles = require("./Sessions.scss");
 
 export interface IProps {
   folder: Folder;
@@ -39,7 +38,7 @@ export default class FileList extends React.Component<IProps> {
     //     this.props.directoryObject.properties.getValue("title").default
     // );
     return (
-      <div className={styles.fileList}>
+      <div className={"fileList"}>
         <Table
           numRows={this.props.folder.files.length}
           isRowHeaderShown={false}

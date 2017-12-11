@@ -9,10 +9,10 @@ import { File } from "../model/File";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import ReactPlayer from "react-player";
-const styles = require("./Sessions.scss");
 
 export interface IProps {
   folder: Folder;
+  folderTypeStyleClass: string;
 }
 
 @observer
@@ -25,6 +25,9 @@ export class FolderPane extends React.Component<IProps> {
   }
 
   public render() {
+    if (!this.props.folder) {
+      return <h1>No folder selected.</h1>;
+    }
     //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
       this.props.folder.directory,
@@ -32,8 +35,8 @@ export class FolderPane extends React.Component<IProps> {
     );
 
     return (
-      <div className={styles.filePane}>
-        <h3 className={styles.paneTitle}>
+      <div className={"filePane " + this.props.folderTypeStyleClass}>
+        <h3 className={"paneTitle"}>
           {this.props.folder.getTextField("title").toString()}
         </h3>
         <FileList folder={this.props.folder} />

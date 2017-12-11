@@ -3,16 +3,41 @@
 @import "~react-tabs/style/react-tabs.scss";
 
 //$region-selected-color: #CFF09F; //this is too light
-// this is an overlay, not a true background, so it has to use transparency, which makes it impossible to mimic saymore
-// alas, the transparancy get's discarded and replaced by 0.1. So I've increased the saturation
-$region-selected-color: rgba(151, 255, 0, 0.2);
+// this is an overlay, not a true background, so it has to use transparency, which makes it
+// impossible to mimic saymore's selected cell background color.
+// Alas, the transparancy get's discarded and replaced by 0.1. So I've increased the saturation
+//$region-selected-color: rgba(151, 255, 0, 0.2);
 // $header-background-color:#CFF09F; (samore green) interesting, but it was too much
 $header-background-color: white;
+$project--color: #e69664;
+$people--color: #c7cfdb;
+$session--color: #cff09f;
+$pane__interstitial--color: #f0f0f0;
+$pane__border--color: #abadb3;
+$session__outline--color: #94c397;
+$people__outline--color: #7092be;
+$session__cellOverlay--color: rgba(151, 255, 0, 0.2);
+$people__cellOverlay--color: rgba(199, 207, 219, 0.2);
+$project__cellOverlay--color: rgba(230, 150, 100, 0.2);
+
 $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
 @import "~@blueprintjs/table/src/table.scss";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
 @import "~react-datepicker/dist/react-datepicker.css";
+
+.people {
+  .bp-table-selection-region {
+    background-color: $people__cellOverlay--color;
+    border-color: $people__outline--color;
+  }
+}
+.sessions {
+  .bp-table-selection-region {
+    background-color: $session__cellOverlay--color;
+    border-color: $session__outline--color;
+  }
+}
 
 $color-interstitial: #f0f0f0;
 body,
@@ -64,15 +89,82 @@ form {
 
 // }
 .projectTab {
-  color: #e69664;
+  color: $project--color;
 }
-.sessionsTab {
-  color: #cff09f;
+.areaTab {
+  color: $session--color;
 }
 .peopleTab {
-  color: #4d6b96;
+  color: $people--color;
 }
 
+.react-tabs {
+  height: 100%;
+  background-color: white;
+}
+.react-tabs__tab-panel {
+  height: 100%;
+  background-color: $session--color;
+  border: solid thin $session__outline--color;
+}
+.people .react-tabs__tab-panel {
+  background-color: $people--color;
+  border: solid thin $people__outline--color;
+}
+
+.react-tabs__tab-list {
+  background-color: $pane__interstitial--color;
+}
+
+.people {
+  background-color: $people--color;
+}
 .bp-table-quadrant {
   background-color: white;
+}
+
+.areaTab {
+  //background-color: #F0F0F0;
+  height: 100%;
+  color: black;
+  display: flex;
+}
+.sessionForm {
+  background-color: transparent; // $color-session;
+  //border: solid thin $color-session-outline;
+  margin: 8px;
+}
+.fileDetails {
+  background-color: $pane__interstitial--color;
+  border: solid thin $pane__border--color;
+}
+
+.sessionsList {
+  height: 100%;
+  background-color: white;
+  height: 100%;
+  width: 300px;
+  color: black;
+  border: solid thin $pane__border--color;
+  margin-right: 6px;
+}
+.filePane {
+  //background-color: #cff09f;
+  width: 100%;
+  //padding: 8px; // nice idea, to inset the child, but it was visually complicating
+  border: solid thin $pane__border--color;
+}
+.filePane :global(.react-tabs__tab-panel) {
+  // margin-left: 12px;
+  // margin-right: 12px;
+}
+.fileList {
+  background-color: white;
+  height: 30%;
+}
+.paneTitle {
+  font-size: 19px;
+  margin-top: 6px;
+  margin-left: 6px;
+  margin-bottom: 6px;
 }

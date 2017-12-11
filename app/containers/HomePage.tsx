@@ -21,6 +21,7 @@ export default class HomePage extends React.Component<any> {
     return (
       <Home
         sessions={this.project.sessions}
+        persons={this.project.persons}
         selectedSession={this.project.selectedSession}
         selectedPerson={this.project.selectedPerson}
       />

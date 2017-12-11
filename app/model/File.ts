@@ -59,7 +59,7 @@ export class File {
       ["Session", /\.session$/i],
       ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
       ["Video", /\.((mp4))$/i],
-      ["Image", /\.(jpg)|(bmp)|(gif)/i]
+      ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i]
     ];
     typePatterns.forEach(t => {
       if (path.match(t[1])) {

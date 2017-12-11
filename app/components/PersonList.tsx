@@ -1,18 +1,21 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions } from "@blueprintjs/table";
-import { Folder, IFolderSelection } from "../model/Folder";
+import { IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
 import { TextField } from "../model/Field";
 import { instanceOf } from "prop-types";
+import { Person } from "../model/Person";
+
+const styles = require("./Persons.scss");
 
 export interface IProps {
-  folders: Folder[];
+  folders: Person[];
   selectedFolder: IFolderSelection;
 }
 @observer
-export class SessionList extends React.Component<IProps> {
+export class PersonList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
     const p = this.props.folders[rowIndex].properties.getValue(key);
     if (p instanceof TextField) {
@@ -25,7 +28,7 @@ export class SessionList extends React.Component<IProps> {
     return <Cell />;
   }
 
-  private getSelectedSessionRow() {
+  private getSelectedPersonRow() {
     return [Regions.row(this.props.selectedFolder.index)];
   }
 
@@ -38,23 +41,19 @@ export class SessionList extends React.Component<IProps> {
 
   public render() {
     return (
-      <div className={"sessionsList"}>
+      <div className={"people"}>
         <Table
           numRows={this.props.folders.length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           // selectionModes={SelectionModes.ROWS_ONLY} when set, the argument to onSelection is always emtpy!
           // selectionModes={[RegionCardinality.FULL_ROWS]} this doesn't work either
-          selectedRegions={this.getSelectedSessionRow()}
+          selectedRegions={this.getSelectedPersonRow()}
           onSelection={e => this.onSelection(e)}
         >
           <Column
-            name="Title"
-            renderCell={rowIndex => this.makeCell(rowIndex, "title")}
-          />
-          <Column
-            name="Date"
-            renderCell={rowIndex => this.makeCell(rowIndex, "date")}
+            name="Name"
+            renderCell={rowIndex => this.makeCell(rowIndex, "name")}
           />
         </Table>
       </div>
@@ -62,4 +61,4 @@ export class SessionList extends React.Component<IProps> {
   }
 }
 
-export default SessionList;
+export default PersonList;

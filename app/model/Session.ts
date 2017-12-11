@@ -1,5 +1,4 @@
 import { observable } from "mobx";
-import { TextField } from "./Field";
 import { Folder } from "./Folder";
 import { File } from "./File";
 
