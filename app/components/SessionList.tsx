@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions } from "@blueprintjs/table";
-import { Session, ISessionSelection } from "../model/Session";
+import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
@@ -10,13 +10,13 @@ import { instanceOf } from "prop-types";
 const styles = require("./Sessions.scss");
 
 export interface IProps {
-  sessions: Session[];
-  selectedSession: ISessionSelection;
+  folders: Folder[];
+  selectedFolder: IFolderSelection;
 }
 @observer
 export class SessionList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
-    const p = this.props.sessions[rowIndex].properties.getValue(key);
+    const p = this.props.folders[rowIndex].properties.getValue(key);
     if (p instanceof TextField) {
       return <Cell>{p.toString()}</Cell>;
     }
@@ -28,13 +28,13 @@ export class SessionList extends React.Component<IProps> {
   }
 
   private getSelectedSessionRow() {
-    return [Regions.row(this.props.selectedSession.index)];
+    return [Regions.row(this.props.selectedFolder.index)];
   }
 
   private onSelection(e: IRegion[]) {
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
       const selectedRow: number = e[0].rows![0];
-      this.props.selectedSession.index = selectedRow;
+      this.props.selectedFolder.index = selectedRow;
     }
   }
 
@@ -42,7 +42,7 @@ export class SessionList extends React.Component<IProps> {
     return (
       <div className={styles.sessionsList}>
         <Table
-          numRows={this.props.sessions.length}
+          numRows={this.props.folders.length}
           isRowHeaderShown={false}
           allowMultipleSelection={false}
           // selectionModes={SelectionModes.ROWS_ONLY} when set, the argument to onSelection is always emtpy!

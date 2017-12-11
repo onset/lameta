@@ -3,10 +3,6 @@ import { TextField } from "./Field";
 import { Folder } from "./Folder";
 import { File } from "./File";
 
-export interface ISessionSelection {
-  index: number;
-}
-
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
     return ".session";

@@ -1,13 +1,13 @@
 import * as React from "react";
 import { SessionList } from "./SessionList";
-import { Session, ISessionSelection } from "../model/Session";
+import { Folder, IFolderSelection } from "../model/Folder";
 import { FolderPane } from "./FolderPane";
 import { observer } from "mobx-react";
 const styles = require("./Sessions.scss");
 
 interface IProps {
-  sessions: Session[];
-  selectedSession: ISessionSelection;
+  folders: Folder[];
+  selectedFolder: IFolderSelection;
 }
 
 @observer
@@ -16,11 +16,11 @@ export class SessionsTab extends React.Component<IProps> {
     return (
       <div className={styles.sessionsTab}>
         <SessionList
-          sessions={this.props.sessions}
-          selectedSession={this.props.selectedSession}
+          folders={this.props.folders}
+          selectedFolder={this.props.selectedFolder}
         />
         <FolderPane
-          folder={this.props.sessions[this.props.selectedSession.index]}
+          folder={this.props.folders[this.props.selectedFolder.index]}
         />
       </div>
     );

@@ -7,8 +7,8 @@ import * as Path from "path";
 import * as glob from "glob";
 import { xml2js, xml2json } from "xml-js";
 
-export interface IDirectoryObjectSelection {
-  selected: Folder;
+export class IFolderSelection {
+  @observable public index: number;
 }
 
 // Project, Session, or Person
@@ -96,16 +96,16 @@ export abstract class Folder {
 
     // the first file we want to return is special. It is the metadata file for the DirectoryObject (Project | Session | Person)
     const name = Path.basename(directory);
-    const mainMetaPath = Path.join(
+    const folderMetadataPath = Path.join(
       directory,
       name + mainMetadataFileExtensionWithDot
     );
-    if (!fs.existsSync(mainMetaPath)) {
-      fs.writeFileSync(mainMetaPath, "<Session></Session>", "utf8");
+    if (!fs.existsSync(folderMetadataPath)) {
+      fs.writeFileSync(folderMetadataPath, "<Session></Session>", "utf8");
     }
-    const folder = new File(mainMetaPath);
-    this.readMetaFile(folder, mainMetaPath);
-    files.push(folder);
+    const folderMetaDataFile = new File(folderMetadataPath);
+    this.readMetadataFile(folderMetaDataFile, folderMetadataPath);
+    files.push(folderMetaDataFile);
 
     //read the other files
     const filePaths = glob.sync(Path.join(directory, "*.*"));
@@ -116,7 +116,7 @@ export abstract class Folder {
         if (!path.endsWith(".meta") && !path.endsWith(".test")) {
           const file = new File(path);
           if (fs.existsSync(path + ".meta")) {
-            this.readMetaFile(file, path + ".meta");
+            this.readMetadataFile(file, path + ".meta");
           }
           files.push(file);
         }
@@ -125,7 +125,7 @@ export abstract class Folder {
     return files;
   }
 
-  private static readMetaFile(file: File, path: string) {
+  private static readMetadataFile(file: File, path: string) {
     const xml: string = fs.readFileSync(path, "utf8");
     const json: string = xml2json(xml, {
       ignoreComment: true,
