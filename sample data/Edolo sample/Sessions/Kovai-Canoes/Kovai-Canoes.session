@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Session>
+  <genre type="string">Narrative</genre>
+  <date type="string">2012-10-25</date>
+  <status type="string">In_Progress</status>
+  <title type="string">Canoes in my Culture</title>
+  <participants type="string">James Gima</participants>
+  <access type="string">Public</access>
+  <setting type="string">SIL Linguistics library</setting>
+  <location type="string">Ukarumpa, Eastern Highlands, Papua New Guinea</location>
+  <situation type="string">I wanted to show SayMore to James and get a video to show for a conference in Goroka. So we discussed things he might like to talk about, and we settled on this topic, which is interesting to me because his is a Papuan language but the low-lands part of the island is ringed by Austranesian, and he lives in the high interior of the island, but knows how to make canoes.</situation>
+  <notes type="string">We intentially didn't finish translating the whole thing.</notes>
+</Session>
