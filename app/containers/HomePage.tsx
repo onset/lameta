@@ -4,7 +4,6 @@ import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import { Project } from "../model/Project";
-import Persistence from "../model/Persistence";
 import * as fs from "fs";
 
 @observer
@@ -13,9 +12,8 @@ export default class HomePage extends React.Component<any> {
 
   constructor() {
     super();
-    this.project = Persistence.loadProjectFolder(
+    this.project = Project.FromDirectory(
       fs.realpathSync("sample data/Edolo sample")
-      //fs.realpathSync("test/sample")
     );
   }
 
