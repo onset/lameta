@@ -7,6 +7,10 @@ export class Session extends Folder {
     return ".session";
   }
 
+  public get displayName(): string {
+    return this.getTextStringOrEmpty("title");
+  }
+
   public constructor(directory: string, files: File[]) {
     super(directory, files);
     this.manditoryTextProperty("people", "");

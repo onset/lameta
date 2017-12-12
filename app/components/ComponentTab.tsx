@@ -11,11 +11,14 @@ interface IProps {
   columns: string[];
 }
 
+// Sorry, the name for this is bad... suggestions welcome.
+// This implements the screens for both Sessions and People, but not Projects.
+// So they are "components" of the project.
 @observer
-export class SessionsTab extends React.Component<IProps> {
+export class ComponentTab extends React.Component<IProps> {
   public render() {
     return (
-      <div className={"areaTab " + this.props.folderTypeStyleClass}>
+      <div className={"componentTab " + this.props.folderTypeStyleClass}>
         <FolderList
           folders={this.props.folders}
           selectedFolder={this.props.selectedFolder}

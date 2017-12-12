@@ -36,9 +36,7 @@ export class FolderPane extends React.Component<IProps> {
 
     return (
       <div className={"filePane " + this.props.folderTypeStyleClass}>
-        <h3 className={"paneTitle"}>
-          {this.props.folder.getTextField("title").toString()}
-        </h3>
+        <h3 className={"paneTitle"}>{this.props.folder.displayName}</h3>
         <FileList folder={this.props.folder} />
         {this.getTabs(this.props.folder, fullPath)}
       </div>

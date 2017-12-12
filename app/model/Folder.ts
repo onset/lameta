@@ -87,6 +87,10 @@ export abstract class Folder {
     }
   }
 
+  public get displayName(): string {
+    return "Should be overriden";
+  }
+
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,

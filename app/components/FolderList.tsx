@@ -4,15 +4,17 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { TextField } from "../model/Field";
+import { TextField, Field } from "../model/Field";
 import { instanceOf } from "prop-types";
+const titleCase = require("title-case");
 
 export interface IProps {
   folders: Folder[];
   selectedFolder: IFolderSelection;
+  columns: string[];
 }
 @observer
-export class SessionList extends React.Component<IProps> {
+export class FolderList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
     const p = this.props.folders[rowIndex].properties.getValue(key);
     if (p instanceof TextField) {
@@ -48,18 +50,17 @@ export class SessionList extends React.Component<IProps> {
           selectedRegions={this.getSelectedSessionRow()}
           onSelection={e => this.onSelection(e)}
         >
-          <Column
-            name="Title"
-            renderCell={rowIndex => this.makeCell(rowIndex, "title")}
-          />
-          <Column
-            name="Date"
-            renderCell={rowIndex => this.makeCell(rowIndex, "date")}
-          />
+          {this.props.columns.map(s => (
+            <Column
+              key={s}
+              name={titleCase(s)}
+              renderCell={rowIndex => this.makeCell(rowIndex, s)}
+            />
+          ))}
         </Table>
       </div>
     );
   }
 }
 
-export default SessionList;
+export default FolderList;

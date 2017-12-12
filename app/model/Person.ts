@@ -7,6 +7,10 @@ export class Person extends Folder {
     return ".person";
   }
 
+  public get displayName(): string {
+    return this.getTextStringOrEmpty("name");
+  }
+
   public constructor(directory: string, files: File[]) {
     super(directory, files);
     const manditoryTextProperies = [
