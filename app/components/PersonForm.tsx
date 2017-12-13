@@ -6,9 +6,11 @@ import TextFieldEdit from "./TextFieldEdit";
 import { TextField } from "../model/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ImageField from "./ImageField";
+import { FieldSet } from "../model/FieldSet";
 
 export interface IProps {
   person: Person;
+  fields: FieldSet;
 }
 @observer
 export default class PersonForm extends React.Component<IProps> {
@@ -25,28 +27,28 @@ export default class PersonForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={"personForm"}>
-        <TextFieldEdit text={this.props.person.getTextField("name")} />
+        <TextFieldEdit text={this.props.fields.getTextField("name")} />
         <TextFieldEdit
-          text={this.props.person.getTextField("primaryLanguage")}
+          text={this.props.fields.getTextField("primaryLanguage")}
         />
         <TextFieldEdit
-          text={this.props.person.getTextField("otherLanguage0")}
+          text={this.props.fields.getTextField("otherLanguage0")}
         />
         <TextFieldEdit
-          text={this.props.person.getTextField("fathersLanguage")}
+          text={this.props.fields.getTextField("fathersLanguage")}
         />
         <TextFieldEdit
-          text={this.props.person.getTextField("mothersLanguage")}
+          text={this.props.fields.getTextField("mothersLanguage")}
         />
         <ImageField path={this.props.person.photoPath} />
         <TextFieldEdit
-          text={this.props.person.getTextField("otherLanguage1")}
+          text={this.props.fields.getTextField("otherLanguage1")}
         />
-        <TextFieldEdit text={this.props.person.getTextField("birthYear")} />
-        <TextFieldEdit text={this.props.person.getTextField("gender")} />
-        <TextFieldEdit text={this.props.person.getTextField("education")} />
+        <TextFieldEdit text={this.props.fields.getTextField("birthYear")} />
+        <TextFieldEdit text={this.props.fields.getTextField("gender")} />
+        <TextFieldEdit text={this.props.fields.getTextField("education")} />
         <TextFieldEdit
-          text={this.props.person.getTextField("primaryOccupation")}
+          text={this.props.fields.getTextField("primaryOccupation")}
         />
       </form>
     );

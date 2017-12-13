@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { IRegion } from "@blueprintjs/table/dist/regions";
 import { TextField, Field } from "../model/Field";
 import { Dictionary } from "typescript-collections";
-import { FieldSet } from "../model/File";
+import { FieldSet } from "../model/FieldSet";
 
 //const styles = require("./Sessions.scss");
 

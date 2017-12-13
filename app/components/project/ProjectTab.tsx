@@ -18,7 +18,10 @@ export class ProjectTab extends React.Component<IProps> {
           <Tab>Access Protocol</Tab>
         </TabList>
         <TabPanel>
-          <ProjectAbout project={this.props.project} />
+          <ProjectAbout
+            project={this.props.project}
+            fields={this.props.project.properties}
+          />
         </TabPanel>
         <TabPanel>
           <h1>Access Protocol</h1>

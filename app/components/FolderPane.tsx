@@ -55,7 +55,7 @@ export class FolderPane extends React.Component<IProps> {
     }
     const notesPanel = (
       <TabPanel>
-        <Notes text={directoryObject.getTextField("notes")} />
+        <Notes text={directoryObject.properties.getTextField("notes")} />
       </TabPanel>
     );
     const propertiesPanel = (
@@ -98,7 +98,10 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>Notes</Tab>
             </TabList>
             <TabPanel>
-              <PersonForm person={directoryObject as Person} />
+              <PersonForm
+                person={directoryObject as Person}
+                fields={directoryObject.properties}
+              />
             </TabPanel>
             {propertiesPanel}
             {notesPanel}

@@ -5,17 +5,19 @@ import { observer, Provider } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import { TextField } from "../model/Field";
 import DateFieldEdit from "./DateFieldEdit";
+import { FieldSet } from "../model/FieldSet";
 
 export interface IProps {
   session: Session;
 }
 @observer
 export default class SessionForm extends React.Component<IProps> {
+  protected fields: FieldSet;
   constructor(props: IProps) {
     super(props);
+    this.fields = props.session.properties;
     console.log(
-      "SessionForm constructor: " +
-        this.props.session.properties.getValue("title").toString()
+      "SessionForm constructor: " + this.fields.getValue("title").toString()
     );
   }
 
@@ -28,19 +30,19 @@ export default class SessionForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={"sessionForm"}>
-        <TextFieldEdit text={this.props.session.getTextField("title")} />
-        <TextFieldEdit text={this.props.session.getTextField("people")} />
-        <TextFieldEdit text={this.props.session.getTextField("genre")} />
+        <TextFieldEdit text={this.fields.getTextField("title")} />
+        <TextFieldEdit text={this.fields.getTextField("people")} />
+        <TextFieldEdit text={this.fields.getTextField("genre")} />
         <TextFieldEdit
-          text={this.props.session.getTextField("situation")}
+          text={this.fields.getTextField("situation")}
           className={"text-block"}
         />
-        <DateFieldEdit date={this.props.session.getDateField("date")} />
-        <TextFieldEdit text={this.props.session.getTextField("setting")} />
-        <TextFieldEdit text={this.props.session.getTextField("location")} />
-        <TextFieldEdit text={this.props.session.getTextField("access")} />
+        <DateFieldEdit date={this.fields.getDateField("date")} />
+        <TextFieldEdit text={this.fields.getTextField("setting")} />
+        <TextFieldEdit text={this.fields.getTextField("location")} />
+        <TextFieldEdit text={this.fields.getTextField("access")} />
         <TextFieldEdit
-          text={this.props.session.getTextField("description")}
+          text={this.fields.getTextField("description")}
           className={"text-block"}
         />
       </form>

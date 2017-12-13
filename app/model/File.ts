@@ -3,14 +3,11 @@ import * as Path from "path";
 import * as filesize from "filesize";
 import { observable } from "mobx";
 import { Field, TextField, DateField } from "./Field";
-import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
-
-// tslint:disable-next-line:no-empty-interface
-export class FieldSet extends Dictionary<string, Field> {}
+import { FieldSet } from "./FieldSet";
 
 export class File {
   protected fullpath: string;

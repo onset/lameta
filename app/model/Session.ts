@@ -8,19 +8,19 @@ export class Session extends Folder {
   }
 
   public get displayName(): string {
-    return this.getTextStringOrEmpty("title");
+    return this.properties.getTextStringOrEmpty("title");
   }
 
   public constructor(directory: string, files: File[]) {
     super(directory, files);
-    this.manditoryTextProperty("people", "");
-    this.manditoryTextProperty("genre", "");
-    this.manditoryTextProperty("situation", "");
-    this.manditoryTextProperty("setting", "");
-    this.manditoryTextProperty("location", "");
-    this.manditoryTextProperty("access", "");
-    this.manditoryTextProperty("description", "");
-    this.addDateProperty("date", new Date()); //TODO: does that work as 'unknown'?
+    this.properties.manditoryTextProperty("people", "");
+    this.properties.manditoryTextProperty("genre", "");
+    this.properties.manditoryTextProperty("situation", "");
+    this.properties.manditoryTextProperty("setting", "");
+    this.properties.manditoryTextProperty("location", "");
+    this.properties.manditoryTextProperty("access", "");
+    this.properties.manditoryTextProperty("description", "");
+    this.properties.addDateProperty("date", new Date()); //TODO: does that work as 'unknown'?
   }
   public static fromDirectory(path: string): Session {
     const files = this.loadChildFiles(path, ".session", "Session");

@@ -12,7 +12,7 @@ export class Person extends Folder {
   public get photoPath(): string {
     let pattern = Path.join(
       this.directory,
-      this.getTextStringOrEmpty("name") +
+      this.properties.getTextStringOrEmpty("name") +
         "_Photo.@(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|bmp|BMP)"
     );
     pattern = pattern.split("\\").join("/"); // this glob lib requires forward slashes, even on windows
@@ -27,7 +27,7 @@ export class Person extends Folder {
   }
 
   public get displayName(): string {
-    return this.getTextStringOrEmpty("name");
+    return this.properties.getTextStringOrEmpty("name");
   }
 
   public constructor(directory: string, files: File[]) {
@@ -45,9 +45,11 @@ export class Person extends Folder {
       "primaryOccupation"
     ];
 
-    manditoryTextProperies.forEach(key => this.manditoryTextProperty(key, ""));
+    manditoryTextProperies.forEach(key =>
+      this.properties.manditoryTextProperty(key, "")
+    );
 
-    this.addTextProperty("name", Path.basename(directory));
+    this.properties.addTextProperty("name", Path.basename(directory));
   }
   public static fromDirectory(path: string): Person {
     const files = this.loadChildFiles(path, ".person", "Person");

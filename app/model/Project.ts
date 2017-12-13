@@ -37,7 +37,9 @@ export class Project extends Folder {
       "relatedPublications"
     ];
 
-    manditoryTextProperies.forEach(key => this.manditoryTextProperty(key, ""));
+    manditoryTextProperies.forEach(key =>
+      this.properties.manditoryTextProperty(key, "")
+    );
   }
 
   public get metadataFileExtensionWithDot(): string {

@@ -1,4 +1,4 @@
-import { File, FieldSet } from "./File";
+import { File } from "./File";
 import { observable } from "mobx";
 import { TextField, DateField } from "./Field";
 import * as assert from "assert";
@@ -6,6 +6,7 @@ import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
 import { xml2js, xml2json } from "xml-js";
+import { FieldSet } from "./FieldSet";
 
 export class IFolderSelection {
   @observable public index: number;
@@ -22,7 +23,7 @@ export abstract class Folder {
     this.directory = directory;
     this.files = files;
     this.selectedFile = files[0];
-    this.manditoryTextProperty("title", "untitled");
+    this.properties.manditoryTextProperty("title", "untitled");
   }
 
   public abstract get metadataFileExtensionWithDot(): string;
@@ -48,43 +49,10 @@ export abstract class Folder {
     }
     return this.files[0].properties;
   }
-  public getTextStringOrEmpty(key: string): string {
-    const s = this.properties.getValue(key) as TextField;
-    return s ? s.english : "";
-  }
-  public getTextField(key: string): TextField {
-    return this.properties.getValue(key) as TextField;
-  }
-  public getDateField(key: string): DateField {
-    return this.properties.getValue(key) as DateField;
-  }
-  protected addDateProperty(key: string, date: Date) {
-    this.checkType(key, date);
-    this.properties.setValue(key, new DateField(key, date));
-  }
-
-  public manditoryTextProperty(key: string, value: string) {
-    if (!this.properties.containsKey(key)) {
-      this.properties.setValue(key, new TextField(key, value));
-      console.log("Adding " + key + "=" + value);
-    }
-  }
-
-  public addTextProperty(key: string, value: string) {
-    this.properties.setValue(key, new TextField(key, value));
-    console.log("Adding " + key + "=" + value);
-  }
 
   get type(): string {
     const x = this.properties.getValue("type") as TextField;
     return x ? x.english : "???";
-  }
-  private checkType(key: string, value: any) {
-    if (this.properties.containsKey(key)) {
-      const a = typeof this.properties.getValue(key);
-      const b = typeof value;
-      assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
-    }
   }
 
   public get displayName(): string {
