@@ -48,7 +48,7 @@ export class File {
 
   public constructor(path: string) {
     this.fullpath = path;
-    this.addTextProperty("name", Path.basename(path));
+    this.addTextProperty("filename", Path.basename(path));
     this.addTextProperty("notes", "");
 
     const stats = fs.statSync(path);
@@ -57,6 +57,7 @@ export class File {
 
     const typePatterns = [
       ["Session", /\.session$/i],
+      ["Person", /\.person$/i],
       ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
       ["Video", /\.((mp4))$/i],
       ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i]

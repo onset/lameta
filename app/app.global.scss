@@ -10,7 +10,7 @@
 // $header-background-color:#CFF09F; (samore green) interesting, but it was too much
 $header-background-color: white;
 $project--color: #e69664;
-$people--color: #c7cfdb;
+$people--color: #becde4; // saymore was #c7cfdb;
 $session--color: #cff09f;
 $pane__interstitial--color: #f0f0f0;
 $pane__border--color: #abadb3;
@@ -129,7 +129,7 @@ form {
   color: black;
   display: flex;
 }
-.sessionForm {
+form {
   background-color: transparent; // $color-session;
   //border: solid thin $color-session-outline;
   margin: 8px;

@@ -9,6 +9,8 @@ import { File } from "../model/File";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import ReactPlayer from "react-player";
+import PersonForm from "./PersonForm";
+import { Person } from "../model/Person";
 
 export interface IProps {
   folder: Folder;
@@ -31,7 +33,7 @@ export class FolderPane extends React.Component<IProps> {
     //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
       this.props.folder.directory,
-      this.props.folder.selectedFile.properties.getValue("name").toString()
+      this.props.folder.selectedFile.properties.getValue("filename").toString()
     );
 
     return (
@@ -84,6 +86,21 @@ export class FolderPane extends React.Component<IProps> {
             </TabPanel>
             {propertiesPanel}
             <TabPanel>todo</TabPanel>
+            {notesPanel}
+          </Tabs>
+        );
+      case "Person":
+        return (
+          <Tabs>
+            <TabList>
+              <Tab>Session</Tab>
+              <Tab>Properties</Tab>
+              <Tab>Notes</Tab>
+            </TabList>
+            <TabPanel>
+              <PersonForm person={directoryObject as Person} />
+            </TabPanel>
+            {propertiesPanel}
             {notesPanel}
           </Tabs>
         );
