@@ -8,11 +8,11 @@ import * as fs from "fs";
 
 @observer
 export default class HomePage extends React.Component<any> {
-  @mobx.observable public project = new Project();
+  @mobx.observable public project: Project;
 
   constructor() {
     super();
-    this.project = Project.FromDirectory(
+    this.project = Project.fromDirectory(
       fs.realpathSync("sample data/Edolo sample")
     );
   }
@@ -20,6 +20,7 @@ export default class HomePage extends React.Component<any> {
   public render() {
     return (
       <Home
+        project={this.project}
         sessions={this.project.sessions}
         persons={this.project.persons}
         selectedSession={this.project.selectedSession}

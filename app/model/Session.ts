@@ -23,7 +23,7 @@ export class Session extends Folder {
     this.addDateProperty("date", new Date()); //TODO: does that work as 'unknown'?
   }
   public static fromDirectory(path: string): Session {
-    const files = this.loadChildFiles(path, ".session");
+    const files = this.loadChildFiles(path, ".session", "Session");
 
     //start autosave
     // mobx.autorunAsync(

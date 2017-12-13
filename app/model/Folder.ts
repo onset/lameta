@@ -94,7 +94,8 @@ export abstract class Folder {
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
-    mainMetadataFileExtensionWithDot: string
+    mainMetadataFileExtensionWithDot: string,
+    rootXmlTag: string
   ): File[] {
     const files = new Array<File>();
 
@@ -105,7 +106,11 @@ export abstract class Folder {
       name + mainMetadataFileExtensionWithDot
     );
     if (!fs.existsSync(folderMetadataPath)) {
-      fs.writeFileSync(folderMetadataPath, "<Session></Session>", "utf8");
+      fs.writeFileSync(
+        folderMetadataPath,
+        `<${rootXmlTag}></${rootXmlTag}>`,
+        "utf8"
+      );
     }
     const folderMetaDataFile = new File(folderMetadataPath);
     this.readMetadataFile(folderMetaDataFile, folderMetadataPath);

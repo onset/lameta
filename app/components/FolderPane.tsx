@@ -33,7 +33,7 @@ export class FolderPane extends React.Component<IProps> {
     //console.log("Render SSPane:" + this.props.session.title.default);
     const fullPath: string = Path.join(
       this.props.folder.directory,
-      this.props.folder.selectedFile.properties.getValue("filename").toString()
+      this.props.folder.selectedFile.getTextProperty("filename")
     );
 
     return (

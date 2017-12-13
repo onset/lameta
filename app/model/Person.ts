@@ -50,7 +50,7 @@ export class Person extends Folder {
     this.addTextProperty("name", Path.basename(directory));
   }
   public static fromDirectory(path: string): Person {
-    const files = this.loadChildFiles(path, ".person");
+    const files = this.loadChildFiles(path, ".person", "Person");
     return new Person(path, files);
   }
   public static save() {

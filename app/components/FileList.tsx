@@ -10,7 +10,7 @@ export interface IProps {
 @observer
 export default class FileList extends React.Component<IProps> {
   private makeCell(rowIndex: number, property: string) {
-    const p = this.props.folder.files[rowIndex].properties.getValue(property);
+    const p = this.props.folder.files[rowIndex].getTextProperty(property);
     const x = p ? p.toString() : "no " + property;
     //console.log(rowIndex + ":" + property + "=" + x);
     return <Cell>{x}</Cell>;

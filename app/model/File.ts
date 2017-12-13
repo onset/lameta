@@ -5,6 +5,7 @@ import { observable } from "mobx";
 import { Field, TextField, DateField } from "./Field";
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
+import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
 
@@ -36,9 +37,17 @@ export class File {
   }
   public addTextProperty(key: string, value: string) {
     this.properties.setValue(key, new TextField(key, value));
-    console.log("Adding " + key + "=" + value);
   }
-
+  public setTextProperty(key: string, value: string) {
+    //many SayMore 1/2/3.x xml files used a mix of upper and lower case
+    //We can read the upper case ones, but then we convert them to lower case initial
+    const correctedKey = camelcase(key);
+    this.properties.setValue(key, new TextField(correctedKey, value));
+  }
+  public getTextProperty(key: string): string {
+    const p = this.properties.getValue(key) as TextField;
+    return p.english;
+  }
   public getTextField(key: string): TextField {
     return this.properties.getValue(key) as TextField;
   }
@@ -78,15 +87,16 @@ export class File {
     const keys = Object.keys(properties);
 
     for (const key of keys) {
-      const t = properties[key]._text;
+      const value = properties[key]._text || "";
+      const fixedKey = camelcase(key);
       // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-      if (this.properties.containsKey(key)) {
-        const v = this.properties.getValue(key);
-        v.setValueFromString(t);
+      if (this.properties.containsKey(fixedKey)) {
+        const v = this.properties.getValue(fixedKey);
+        v.setValueFromString(value);
       } else {
         console.log("extra");
         // otherwise treat it as a string
-        this.addTextProperty(key, t);
+        this.addTextProperty(fixedKey, value);
       }
     }
   }

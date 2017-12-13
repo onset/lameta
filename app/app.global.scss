@@ -16,6 +16,7 @@ $pane__interstitial--color: #f0f0f0;
 $pane__border--color: #abadb3;
 $session__outline--color: #94c397;
 $people__outline--color: #7092be;
+$project__outline--color: #b64906;
 $session__cellOverlay--color: rgba(151, 255, 0, 0.2);
 $people__cellOverlay--color: rgba(199, 207, 219, 0.2);
 $project__cellOverlay--color: rgba(230, 150, 100, 0.2);
@@ -88,8 +89,9 @@ form {
 // .react-tabs__tab svg{
 
 // }
-.projectTab {
-  color: $project--color;
+
+.project ul {
+  display: block;
 }
 .componentTab {
   color: $session--color;
@@ -104,6 +106,9 @@ form {
 }
 .react-tabs__tab-panel {
   height: 100%;
+}
+
+.sessions .react-tabs__tab-panel {
   background-color: $session--color;
   border: solid thin $session__outline--color;
 }
@@ -111,7 +116,10 @@ form {
   background-color: $people--color;
   border: solid thin $people__outline--color;
 }
-
+.project .react-tabs__tab-panel {
+  background-color: $project--color;
+  border: solid thin $project__outline--color;
+}
 .react-tabs__tab-list {
   background-color: $pane__interstitial--color;
 }
@@ -122,7 +130,28 @@ form {
 .bp-table-quadrant {
   background-color: white;
 }
+.project {
+  //background-color: #F0F0F0;
+  height: 100%;
+  color: black;
+  display: flex;
 
+  //left side
+  ul {
+    width: 200px;
+
+    // turn off the tab look
+    .react-tabs__tab {
+      border: none;
+      border-radius: initial;
+      width: 100%;
+    }
+  }
+  //right side
+  .react-tabs__tab-panel {
+    width: 100%;
+  }
+}
 .componentTab {
   //background-color: #F0F0F0;
   height: 100%;
