@@ -1,6 +1,12 @@
 import { File } from "./File";
 import { observable } from "mobx";
-import { TextField, DateField } from "./Field";
+import {
+  TextField,
+  DateField,
+  Field,
+  FieldType,
+  FieldVisibility
+} from "./Field";
 import * as assert from "assert";
 import * as fs from "fs";
 import * as Path from "path";
@@ -63,7 +69,8 @@ export abstract class Folder {
   protected static loadChildFiles(
     directory: string,
     mainMetadataFileExtensionWithDot: string,
-    rootXmlTag: string
+    rootXmlTag: string,
+    knownFields: Array<Field | string> = []
   ): File[] {
     const files = new Array<File>();
 
@@ -81,6 +88,21 @@ export abstract class Folder {
       );
     }
     const folderMetaDataFile = new File(folderMetadataPath);
+
+    knownFields.forEach(f => {
+      const field: Field =
+        f !== Object(f)
+          ? Field.create(
+              f as string,
+              "",
+              undefined,
+              FieldType.ShortText,
+              FieldVisibility.OnForm
+            )
+          : Field.parse(f as string);
+      folderMetaDataFile.properties.setValue(field.key, field);
+    });
+
     this.readMetadataFile(folderMetaDataFile, folderMetadataPath);
     files.push(folderMetaDataFile);
 

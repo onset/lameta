@@ -33,7 +33,9 @@ export class File {
     this.properties.setValue(key, new DateField(key, date));
   }
   public addTextProperty(key: string, value: string) {
+    console.log("setting " + key + " to " + value);
     this.properties.setValue(key, new TextField(key, value));
+    assert(value === this.properties.getTextField(key).english);
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
@@ -42,7 +44,7 @@ export class File {
     this.properties.setValue(key, new TextField(correctedKey, value));
   }
   public getTextProperty(key: string): string {
-    const p = this.properties.getValue(key) as TextField;
+    const p = this.properties.getValue(key); //as TextField;
     return p.english;
   }
   public getTextField(key: string): TextField {

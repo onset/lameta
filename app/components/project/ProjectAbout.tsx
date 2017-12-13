@@ -1,7 +1,12 @@
 import * as React from "react";
 import { observer, Provider } from "mobx-react";
 import TextFieldEdit from "../TextFieldEdit";
-import { TextField } from "../../model/Field";
+import {
+  Field,
+  FieldType,
+  TextField,
+  FieldVisibility
+} from "../../model/Field";
 import DateFieldEdit from "../DateFieldEdit";
 import { Project } from "../../model/Project";
 import { FieldSet } from "../../model/FieldSet";
@@ -16,16 +21,43 @@ export default class ProjectAbout extends React.Component<IProps> {
     super(props);
   }
 
+  private makeEdit(field: Field) {
+    console.log("makeEdit(" + JSON.stringify(field));
+    switch (field.type) {
+      case FieldType.ShortText:
+        return (
+          <TextFieldEdit
+            className={field.cssClass}
+            key={field.key}
+            text={field as TextField}
+          />
+        );
+      default:
+        return "unknown type: " + field.type.toString();
+    }
+  }
+
   public render() {
     return (
       <form className={"projectAboutForm"}>
-        <TextFieldEdit text={this.props.fields.getTextField("title")} />
-        <TextFieldEdit text={this.props.fields.getTextField("iso639Code")} />
-        <TextFieldEdit
-          className={"text-block"}
-          text={this.props.fields.getTextField("projectDescription")}
-        />
+        {this.props.fields
+          .values()
+          .filter(field => field.visibility === FieldVisibility.OnForm)
+          .map(field => this.makeEdit(field))}
       </form>
     );
   }
+
+  // public render() {
+  //   return (
+  //     <form className={"projectAboutForm"}>
+  //       <TextFieldEdit text={this.props.fields.getTextField("title")} />
+  //       <TextFieldEdit text={this.props.fields.getTextField("iso639Code")} />
+  //       <TextFieldEdit
+  //         className={"text-block"}
+  //         text={this.props.fields.getTextField("projectDescription")}
+  //       />
+  //     </form>
+  //   );
+  // }
 }

@@ -5,6 +5,7 @@ import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
 import { File } from "./File";
+import { Field, TextField, FieldType, FieldVisibility } from "./Field";
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;
@@ -16,30 +17,6 @@ export class Project extends Folder {
     super(directory, files);
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
-
-    const manditoryTextProperies = [
-      "iso639Code",
-      "title",
-      "fundingProjectTitle",
-      "projectDescription",
-      "vernacularISO3CodeAndName",
-      "location",
-      "region",
-      "country",
-      "continent",
-      "contactPerson",
-      "accessProtocol",
-      "contentType",
-      "applications",
-      "dateAvailable",
-      "rightsHolder",
-      "depositor",
-      "relatedPublications"
-    ];
-
-    manditoryTextProperies.forEach(key =>
-      this.properties.manditoryTextProperty(key, "")
-    );
   }
 
   public get metadataFileExtensionWithDot(): string {
@@ -47,7 +24,39 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
-    const files = this.loadChildFiles(directory, ".sprj", "Project");
+    const knownFields = [
+      //      "iso639Code",
+      "title",
+      //    "fundingProjectTitle",
+      Field.create(
+        "xprojectDescription",
+        "",
+        undefined,
+        FieldType.Paragraph,
+        FieldVisibility.OnForm,
+        "text-block"
+      )
+      // "vernacularISO3CodeAndName",
+      // "location",
+      // "region",
+      // "country",
+      // "continent",
+      // "contactPerson",
+      // "accessProtocol",
+      // "contentType",
+      // "applications",
+      // "dateAvailable",
+      // "rightsHolder",
+      // "depositor",
+      // "relatedPublications"
+    ];
+
+    const files = this.loadChildFiles(
+      directory,
+      ".sprj",
+      "Project",
+      knownFields
+    );
     const project = new Project(directory, files);
 
     fs

@@ -29,7 +29,7 @@ export default class DateFieldEdit extends React.Component<
   }
 
   public render() {
-    const m: Moment = moment(this.props.date.date);
+    const m: Moment = moment(this.props.date.toString()); //review
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
@@ -39,7 +39,7 @@ export default class DateFieldEdit extends React.Component<
           onChange={newDate => {
             if (newDate != null) {
               // TODO: while this is changing the value, it's not propogating back to our props so you don't see the change immediately
-              this.props.date.setDate(newDate.toDate());
+              this.props.date.setValueFromString(newDate.toISOString());
             }
           }}
         />

@@ -23,7 +23,16 @@ export class FieldSet extends Dictionary<string, Field> {
       this.setValue(key, new TextField(key, value));
     }
   }
-
+  // public manditoryField(field: Field) {
+  //   if (this.containsKey(field.key)) {
+  //     const existing = this.getValue(field.key);
+  //     // a fuller version of this could be made to migrate the old data into what we expect now
+  //     field.setValueFromString(existing)
+  //   }
+  //   else {
+  //     this.setValue(field.key, field);
+  //   }
+  // }
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new TextField(key, value));
   }
