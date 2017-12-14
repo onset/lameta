@@ -1,7 +1,7 @@
-import * as React from "react";
+/*import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { TextField } from "../model/Field";
-import { File, FieldSet } from "../model/File";
+import { File } from "../model/File";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -59,3 +59,4 @@ export default class TextFieldEdit2 extends React.Component<
     );
   }
 }
+*/

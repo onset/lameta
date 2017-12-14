@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { Project } from "../../model/Project";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import ProjectAbout from "./ProjectAbout";
+import ProjectAccessProtocol from "./ProjectAccessProtocol";
 
 interface IProps {
   project: Project;
@@ -24,7 +25,10 @@ export class ProjectTab extends React.Component<IProps> {
           />
         </TabPanel>
         <TabPanel>
-          <h1>Access Protocol</h1>
+          <ProjectAccessProtocol
+            project={this.props.project}
+            fields={this.props.project.properties}
+          />
         </TabPanel>
       </Tabs>
     );

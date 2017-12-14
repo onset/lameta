@@ -11,7 +11,7 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
-import { xml2js, xml2json } from "xml-js";
+import * as xml2js from "xml2js";
 import { FieldSet } from "./FieldSet";
 
 export class IFolderSelection {
@@ -91,15 +91,15 @@ export abstract class Folder {
 
     knownFields.forEach(f => {
       const field: Field =
-        f !== Object(f)
-          ? Field.create(
+        f === Object(f)
+          ? (f as Field)
+          : Field.create(
               f as string,
               "",
               undefined,
-              FieldType.ShortText,
+              FieldType.String,
               FieldVisibility.OnForm
-            )
-          : Field.parse(f as string);
+            );
       folderMetaDataFile.properties.setValue(field.key, field);
     });
 
@@ -126,14 +126,18 @@ export abstract class Folder {
 
   private static readMetadataFile(file: File, path: string) {
     const xml: string = fs.readFileSync(path, "utf8");
-    const json: string = xml2json(xml, {
-      ignoreComment: true,
-      compact: true,
-      ignoreDoctype: true,
-      ignoreDeclaration: true,
-      trim: true
-    });
-    const xmlAsObject = JSON.parse(json);
+
+    let xmlAsObject: any = {};
+    xml2js.parseString(
+      xml,
+      { async: false, explicitArray: false },
+      (err, result) => {
+        if (err) {
+          throw err;
+        }
+        xmlAsObject = result;
+      }
+    );
     // that will have a root with one child, like "Session" or "Meta". Zoom in on that
     // so that we just have the object with its properties.
     const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];

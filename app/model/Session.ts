@@ -33,8 +33,4 @@ export class Session extends Folder {
 
     return new Session(path, files);
   }
-  public static save() {
-    //console.log("saving " + session.getString("title"));
-    //fs.writeFileSync(session.path + ".test", JSON.stringify(session), "utf8");
-  }
 }

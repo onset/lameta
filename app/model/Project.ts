@@ -25,29 +25,36 @@ export class Project extends Folder {
 
   public static fromDirectory(directory: string): Project {
     const knownFields = [
-      //      "iso639Code",
       "title",
-      //    "fundingProjectTitle",
       Field.create(
-        "xprojectDescription",
+        "projectDescription",
         "",
         undefined,
-        FieldType.Paragraph,
+        FieldType.String,
         FieldVisibility.OnForm,
         "text-block"
-      )
-      // "vernacularISO3CodeAndName",
-      // "location",
-      // "region",
-      // "country",
-      // "continent",
-      // "contactPerson",
+      ),
+      "iso639Code",
+      "vernacularISO3CodeAndName",
+      "location",
+      "region",
+      "country",
+      "continent",
+      "contactPerson",
+      "fundingProjectTitle",
       // "accessProtocol",
       // "contentType",
       // "applications",
-      // "dateAvailable",
-      // "rightsHolder",
-      // "depositor",
+      Field.create(
+        "dateAvailable",
+        "",
+        undefined,
+        FieldType.Date,
+        FieldVisibility.OnForm,
+        ""
+      ),
+      "rightsHolder",
+      "depositor"
       // "relatedPublications"
     ];
 
@@ -85,6 +92,8 @@ export class Project extends Folder {
 
     project.selectedSession.index = 0;
     project.selectedPerson.index = 0;
+
+    project.files[0].save();
     return project;
   }
 }

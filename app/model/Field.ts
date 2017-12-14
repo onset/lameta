@@ -6,8 +6,7 @@ const titleCase = require("title-case");
 import * as assert from "assert";
 
 export enum FieldType {
-  ShortText,
-  Paragraph,
+  String,
   Date,
   Image
 }
@@ -38,13 +37,12 @@ export class Field {
     key: string,
     value: any,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.ShortText,
+    type: FieldType = FieldType.String,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ): Field {
     switch (type) {
-      case FieldType.ShortText:
-      case FieldType.Paragraph:
+      case FieldType.String:
         return new TextField(
           key,
           value,
@@ -70,7 +68,7 @@ export class Field {
   public constructor(
     key: string,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.ShortText,
+    type: FieldType = FieldType.String,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
@@ -94,6 +92,26 @@ export class Field {
   public setValueFromString(s: string): any {
     this.english = s;
   }
+
+  public stringify(): string {
+    throw new Error("Subclasses must implement stringify");
+  }
+  // public objectForSerializing(): object {
+  //   throw new Error("Subclasses must implement objectForSerializing");
+  // }
+
+  //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
+  protected static escapeSpecialChars(s: string): string {
+    return s
+      .replace(/\\n/g, "\\n")
+      .replace(/\\'/g, "\\'")
+      .replace(/\\"/g, '\\"')
+      .replace(/\\&/g, "\\&")
+      .replace(/\\r/g, "\\r")
+      .replace(/\\t/g, "\\t")
+      .replace(/\\b/g, "\\b")
+      .replace(/\\f/g, "\\f");
+  }
 }
 
 export class DateField extends Field {
@@ -102,7 +120,7 @@ export class DateField extends Field {
     key: string,
     date: Date,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.ShortText,
+    type: FieldType = FieldType.String,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
@@ -113,6 +131,12 @@ export class DateField extends Field {
   public toString(): string {
     return this.date.toLocaleDateString();
   }
+  public stringify(): string {
+    return `"${this.key}":"${this.date.toISOString()}"`;
+  }
+  // public objectForSerializing(): object {
+  //   return { [this.key]: this.date.toISOString() };
+  // }
   public setDate(date: Date) {
     this.date = date;
   }
@@ -127,7 +151,7 @@ export class TextField extends Field {
     key: string,
     englishValue: string = "",
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.ShortText,
+    type: FieldType = FieldType.String,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
@@ -144,6 +168,12 @@ export class TextField extends Field {
   public toString(): string {
     return this.english;
   }
+  public stringify(): string {
+    return `"${this.key}":"${Field.escapeSpecialChars(this.english)}"`;
+  }
+  // public objectForSerializing(): object {
+  //   return { [this.key]: Field.escapeSpecialChars(this.english) };
+  // }
   public setValueFromString(s: string): any {
     this.english = s;
   }

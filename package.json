@@ -179,6 +179,7 @@
     "@types/react-datepicker": "^0.55.1",
     "@types/react-tabs": "^1.0.3",
     "@types/redux-form": "^7.0.9",
+    "@types/xml2js": "^0.4.2",
     "bourbon": "^4.3.4",
     "camelcase": "^4.1.0",
     "electron-debug": "^1.1.0",
@@ -207,7 +208,7 @@
     "title-case": "^2.1.1",
     "tslint-config-prettier": "^1.6.0",
     "typescript-collections": "^1.2.5",
-    "xml-js": "^1.5.2"
+    "xml2js": "^0.4.19"
   },
   "devEngines": {
     "node": ">=8.x",

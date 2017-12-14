@@ -5,7 +5,8 @@ import {
   Field,
   FieldType,
   TextField,
-  FieldVisibility
+  FieldVisibility,
+  DateField
 } from "../../model/Field";
 import DateFieldEdit from "../DateFieldEdit";
 import { Project } from "../../model/Project";
@@ -24,12 +25,20 @@ export default class ProjectAbout extends React.Component<IProps> {
   private makeEdit(field: Field) {
     console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
-      case FieldType.ShortText:
+      case FieldType.String:
         return (
           <TextFieldEdit
             className={field.cssClass}
             key={field.key}
             text={field as TextField}
+          />
+        );
+      case FieldType.Date:
+        return (
+          <DateFieldEdit
+            className={field.cssClass}
+            key={field.key}
+            date={field as DateField}
           />
         );
       default:
