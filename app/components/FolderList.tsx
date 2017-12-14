@@ -4,8 +4,7 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { TextField, Field } from "../model/Field";
-import { instanceOf } from "prop-types";
+import { TextField } from "../model/Field";
 const titleCase = require("title-case");
 
 export interface IProps {

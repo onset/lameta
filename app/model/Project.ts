@@ -5,7 +5,7 @@ import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
 import { File } from "./File";
-import { Field, TextField, FieldType, FieldVisibility } from "./Field";
+import { Field, FieldType, FieldVisibility } from "./Field";
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;
@@ -42,9 +42,9 @@ export class Project extends Folder {
       "continent",
       "contactPerson",
       "fundingProjectTitle",
-      // "accessProtocol",
-      // "contentType",
-      // "applications",
+      "accessProtocol",
+      "contentType",
+      "applications",
       Field.create(
         "dateAvailable",
         "",

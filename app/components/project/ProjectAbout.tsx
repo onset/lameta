@@ -1,5 +1,5 @@
 import * as React from "react";
-import { observer, Provider } from "mobx-react";
+import { observer } from "mobx-react";
 import TextFieldEdit from "../TextFieldEdit";
 import {
   Field,

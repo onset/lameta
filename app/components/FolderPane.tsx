@@ -5,7 +5,6 @@ import FileList from "./FileList";
 import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyTable from "./PropertyTable";
-import { File } from "../model/File";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import ReactPlayer from "react-player";
@@ -19,8 +18,6 @@ export interface IProps {
 
 @observer
 export class FolderPane extends React.Component<IProps> {
-  private filetypeSpecificTab: any; // enhance: what's the real type?
-
   constructor(props: IProps) {
     super(props);
     this.getTabs = this.getTabs.bind(this);

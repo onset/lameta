@@ -1,9 +1,6 @@
 import { observable } from "mobx";
-import * as fs from "fs";
-import * as Path from "path";
-import { File } from "./File";
 const titleCase = require("title-case");
-import * as assert from "assert";
+//import * as assert from "assert";
 
 export enum FieldType {
   String,

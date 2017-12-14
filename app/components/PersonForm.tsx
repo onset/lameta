@@ -1,10 +1,7 @@
 import * as React from "react";
-import { DateInput } from "@blueprintjs/datetime";
 import { Person } from "../model/Person";
-import { observer, Provider } from "mobx-react";
+import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
-import { TextField } from "../model/Field";
-import DateFieldEdit from "./DateFieldEdit";
 import ImageField from "./ImageField";
 import { FieldSet } from "../model/FieldSet";
 
@@ -17,12 +14,6 @@ export default class PersonForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
-
-  private renderDatePicker = () => (
-    <div>
-      <DateInput />
-    </div>
-  );
 
   public render() {
     return (

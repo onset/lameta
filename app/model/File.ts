@@ -2,13 +2,12 @@ import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
 import { observable } from "mobx";
-import { Field, TextField, DateField } from "./Field";
 import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
+import { Field, TextField, DateField } from "./Field";
 import { FieldSet } from "./FieldSet";
-import * as xml2js from "xml2js";
 
 export class File {
   protected fullpath: string;
@@ -78,7 +77,7 @@ export class File {
       }
     });
 
-    this.ComputeProperties(); //enhance: do this on demand, instead of for every file
+    this.computeProperties(); //enhance: do this on demand, instead of for every file
 
     // TODO read the .meta file that describes this file, if it exists
   }
@@ -113,7 +112,7 @@ export class File {
     }
   }
 
-  public ComputeProperties() {
+  public computeProperties() {
     switch (this.type) {
       case "Audio":
         if (this.path.match(/\.((mp3)|(ogg))$/i)) {
@@ -138,8 +137,6 @@ export class File {
   }
 
   public save() {
-    const builder = new xml2js.Builder();
-
     let json = `{"root":[`;
     this.properties.forEach((k, f: Field) => {
       json += "{" + f.stringify() + "},";
@@ -147,35 +144,6 @@ export class File {
     json = json.replace(/(,$)/g, ""); //remove trailing comma
     json += "]}";
 
-    console.log(builder.buildObject(JSON.parse(json)));
-
-    // using package "xml"
-    //let json = `{"root":[`;
-    // this.properties.forEach((k, f: Field) => {
-    //   json += "{" + f.stringify() + "},";
-    // });
-    // json = json.replace(/(,$)/g, ""); //remove trailing comma
-    // json += "]}";
-    // const o = JSON.parse(json);
-    // console.log(xmlconverter(o, { declaration: true, indent: "\t" }));
-
-    // const root = xmlconverter.element({
-    //   _attr: { decade: "80s", locale: "US" }
-    // });
-    // const stream = xmlconverter({ toys: root }, { stream: true });
-    // stream.on("data", chunk => {
-    //   console.log("data:", chunk);
-    // });
-    // this.properties.forEach((k, f) => {
-    //   root.push({ [k]: "foo" });
-    // });
-    // root.close();
-
-    // console.log(xmlconverter(`{root:3}`));
-    // console.log(xmlconverter({ root: 3 }));
-    // const xml = xmlconverter(json);
-    // fs.writeFile(this.path + ".test", xml, err => {
-    //   throw err;
-    // });
+    //console.log(builder.buildObject(JSON.parse(json)));
   }
 }

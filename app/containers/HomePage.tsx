@@ -1,5 +1,4 @@
 import Home from "../components/Home";
-import { Session } from "../model/Session";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";

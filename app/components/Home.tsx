@@ -2,7 +2,7 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
 import { ComponentTab } from "./ComponentTab";
-import { Folder, IFolderSelection } from "../model/Folder";
+import { IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 import { Session } from "../model/Session";
 import { Person } from "../model/Person";

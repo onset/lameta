@@ -1,13 +1,7 @@
 import { File } from "./File";
 import { observable } from "mobx";
-import {
-  TextField,
-  DateField,
-  Field,
-  FieldType,
-  FieldVisibility
-} from "./Field";
-import * as assert from "assert";
+import { TextField, Field, FieldType, FieldVisibility } from "./Field";
+
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
