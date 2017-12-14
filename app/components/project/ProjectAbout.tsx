@@ -11,6 +11,7 @@ import {
 import DateFieldEdit from "../DateFieldEdit";
 import { Project } from "../../model/Project";
 import { FieldSet } from "../../model/FieldSet";
+import ClosedChoiceEdit from "../ClosedChoiceEdit";
 
 export interface IProps {
   project: Project;
@@ -25,14 +26,19 @@ export default class ProjectAbout extends React.Component<IProps> {
   private makeEdit(field: Field) {
     console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
-      case FieldType.String:
-        return (
-          <TextFieldEdit
-            className={field.cssClass}
-            key={field.key}
-            text={field as TextField}
-          />
-        );
+      case FieldType.Text:
+        const f = field as TextField;
+        if (f.choices.length > 0) {
+          return <ClosedChoiceEdit text={f} key={field.key} />;
+        } else {
+          return (
+            <TextFieldEdit
+              className={field.cssClass}
+              key={field.key}
+              text={field as TextField}
+            />
+          );
+        }
       case FieldType.Date:
         return (
           <DateFieldEdit
@@ -51,7 +57,7 @@ export default class ProjectAbout extends React.Component<IProps> {
       <form className={"projectAboutForm"}>
         {this.props.fields
           .values()
-          .filter(field => field.visibility === FieldVisibility.OnForm)
+          .filter(field => field.visibility === FieldVisibility.MainForm)
           .map(field => this.makeEdit(field))}
       </form>
     );

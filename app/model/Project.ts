@@ -30,8 +30,9 @@ export class Project extends Folder {
         "projectDescription",
         "",
         undefined,
-        FieldType.String,
-        FieldVisibility.OnForm,
+        FieldType.Text,
+        FieldVisibility.MainForm,
+        [],
         "text-block"
       ),
       "iso639Code",
@@ -39,19 +40,41 @@ export class Project extends Folder {
       "location",
       "region",
       "country",
-      "continent",
+      Field.create(
+        "continent",
+        "",
+        undefined,
+        FieldType.Text,
+        FieldVisibility.MainForm,
+        [
+          "Africa",
+          "Asia",
+          "Australia",
+          "Eurpoe",
+          "North-America",
+          "Middle-America",
+          "Oceania",
+          "South-America"
+        ],
+        "text-block"
+      ),
       "contactPerson",
       "fundingProjectTitle",
-      "accessProtocol",
-      "contentType",
+      Field.create(
+        "accessProtocol",
+        "",
+        undefined,
+        FieldType.Text,
+        FieldVisibility.SecondaryForm,
+        ["None", "AILCA", "AILIA", "ANLA", "ELAR", "REAP", "TLA", "Custom"]
+      ),
       "applications",
       Field.create(
         "dateAvailable",
         "",
         undefined,
         FieldType.Date,
-        FieldVisibility.OnForm,
-        ""
+        FieldVisibility.MainForm
       ),
       "rightsHolder",
       "depositor"

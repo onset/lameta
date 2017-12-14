@@ -3,13 +3,14 @@ const titleCase = require("title-case");
 //import * as assert from "assert";
 
 export enum FieldType {
-  String,
+  Text,
   Date,
   Image
 }
 export enum FieldVisibility {
   Extra,
-  OnForm
+  MainForm,
+  SecondaryForm
 }
 export class Field {
   public readonly key: string;
@@ -34,18 +35,20 @@ export class Field {
     key: string,
     value: any,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.String,
+    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
+    choices: string[] = [],
     cssClass: string = ""
   ): Field {
     switch (type) {
-      case FieldType.String:
+      case FieldType.Text:
         return new TextField(
           key,
           value,
           englishLabel,
           type,
           visibility,
+          choices,
           cssClass
         );
       case FieldType.Date:
@@ -65,7 +68,7 @@ export class Field {
   public constructor(
     key: string,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.String,
+    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
@@ -117,7 +120,7 @@ export class DateField extends Field {
     key: string,
     date: Date,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.String,
+    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
@@ -144,15 +147,19 @@ export class DateField extends Field {
 
 export class TextField extends Field {
   @observable public text = new Map();
+  public choices: string[];
+
   constructor(
     key: string,
     englishValue: string = "",
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.String,
+    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
+    choices: string[] = [],
     cssClass: string = ""
   ) {
     super(key, englishLabel, type, visibility, cssClass);
+    this.choices = choices;
     this.text.set("en", englishValue);
   }
   get english(): string {

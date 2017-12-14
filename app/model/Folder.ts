@@ -91,8 +91,8 @@ export abstract class Folder {
               f as string,
               "",
               undefined,
-              FieldType.String,
-              FieldVisibility.OnForm
+              FieldType.Text,
+              FieldVisibility.MainForm
             );
       folderMetaDataFile.properties.setValue(field.key, field);
     });
