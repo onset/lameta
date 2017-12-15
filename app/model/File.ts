@@ -19,7 +19,7 @@ export class File {
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
-    return x ? x.english : "???";
+    return x ? x.text : "???";
   }
   private checkType(key: string, value: any) {
     if (this.properties.containsKey(key)) {
@@ -38,7 +38,7 @@ export class File {
   public addTextProperty(key: string, value: string) {
     //console.log("setting " + key + " to " + value);
     this.properties.setValue(key, new Field(key, FieldType.Text, value));
-    assert(value === this.properties.getTextField(key).english);
+    assert(value === this.properties.getTextField(key).text);
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
@@ -51,7 +51,7 @@ export class File {
   }
   public getTextProperty(key: string): string {
     const p = this.properties.getValue(key); //as Field;
-    return p.english;
+    return p.text;
   }
   public getTextField(key: string): Field {
     return this.properties.getValue(key) as Field;

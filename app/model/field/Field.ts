@@ -31,7 +31,7 @@ export class Field {
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
   public readonly cssClass: string;
-  @observable public text = new TextHolder();
+  @observable public textHolder = new TextHolder();
   public choices: string[];
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
@@ -72,25 +72,25 @@ export class Field {
     this.type = type;
     this.visibility = visibility;
     this.cssClass = cssClass;
-    this.english = englishValue;
+    this.text = englishValue;
+    this.choices = choices;
   }
 
-  get english(): string {
-    return this.text.default;
+  get text(): string {
+    return this.textHolder.textInDefaultLanguage;
   }
-  set english(value: string) {
-    //console.log(this.englishLabel + ":setDefault(" + value + ")");
-    this.text.default = value;
+  set text(value: string) {
+    this.textHolder.textInDefaultLanguage = value;
   }
   public toString(): string {
-    return this.english;
+    return this.text;
   }
   public setValueFromString(s: string): any {
-    this.english = s;
+    this.text = s;
   }
 
   public asDate(): Date {
-    return new Date(Date.parse(this.english));
+    return new Date(Date.parse(this.text));
   }
 
   public asISODateString(): string {
@@ -102,7 +102,7 @@ export class Field {
   public stringify(): string {
     switch (this.type) {
       case FieldType.Text:
-        return `"${this.key}":"${Field.escapeSpecialChars(this.english)}"`;
+        return `"${this.key}":"${Field.escapeSpecialChars(this.text)}"`;
       case FieldType.Date:
         return `"${this.key}":"${this.asISODateString()}"`;
       default:

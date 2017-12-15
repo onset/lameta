@@ -20,7 +20,7 @@ export default class ClosedChoiceEdit extends React.Component<
     event: React.FormEvent<HTMLSelectElement>,
     text: Field
   ) {
-    text.english = event.currentTarget.value;
+    text.text = event.currentTarget.value;
   }
 
   private getLabel() {
@@ -34,7 +34,7 @@ export default class ClosedChoiceEdit extends React.Component<
     if (text === undefined) {
       return "Null Text";
     }
-    return text.english;
+    return text.text;
   }
 
   public render() {

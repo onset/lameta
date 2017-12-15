@@ -12,10 +12,10 @@
  */
 export default class TextHolder {
   private map = new Map();
-  public get default() {
+  public get textInDefaultLanguage() {
     return this.map.get("en");
   }
-  public set default(value: string) {
+  public set textInDefaultLanguage(value: string) {
     this.map.set("en", value);
   }
 }

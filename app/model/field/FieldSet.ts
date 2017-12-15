@@ -5,7 +5,7 @@ import { Field, FieldType } from "./Field";
 export class FieldSet extends Dictionary<string, Field> {
   public getTextStringOrEmpty(key: string): string {
     const s = this.getValue(key) as Field;
-    return s ? s.english : "";
+    return s ? s.text : "";
   }
   public getTextField(key: string): Field {
     return this.getValue(key) as Field;

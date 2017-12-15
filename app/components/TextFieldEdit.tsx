@@ -30,7 +30,7 @@ export default class TextFieldEdit extends React.Component<
     event: React.FormEvent<HTMLTextAreaElement>,
     text: Field
   ) {
-    text.english = event.currentTarget.value;
+    text.text = event.currentTarget.value;
   }
 
   private getLabel() {
@@ -44,7 +44,7 @@ export default class TextFieldEdit extends React.Component<
     if (text === undefined) {
       return "Null Text";
     }
-    return text.english;
+    return text.text;
   }
 
   public render() {
