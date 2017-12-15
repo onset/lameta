@@ -37,7 +37,7 @@ export default class TextFieldEdit extends React.Component<
     if (this.props.text === undefined) {
       return "Null Text";
     }
-    return titleCase(this.props.text.englishLabel);
+    return this.props.text.englishLabel;
   }
 
   private static getValue(text: TextField): string {

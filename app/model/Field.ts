@@ -7,7 +7,8 @@ export interface IFieldDefinition {
   englishLabel?: string;
   defaultValue?: string;
   type: string;
-  visibility?: string;
+  form: string; // what form this shows on, if not the main one
+  //visibility?: string;
   cssClass?: string;
   choices?: string[];
 }
@@ -18,20 +19,23 @@ export enum FieldType {
   Image
 }
 export enum FieldVisibility {
-  Extra,
-  MainForm,
-  SecondaryForm
+  Always,
+  IfNotEmpty
 }
 export class Field {
   public readonly key: string;
   public readonly englishLabel: string; // just for debugging at this point
   public readonly type: FieldType;
+  public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
   public readonly cssClass: string;
   @observable public text = new Map();
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
   public static fromFieldDefinition(definition: IFieldDefinition): Field {
+    if (!definition.form || definition.form.length === 0) {
+      definition.form = "primary";
+    }
     const type = definition.type
       ? FieldType[definition.type as keyof typeof FieldType]
       : FieldType.Text;
@@ -43,7 +47,8 @@ export class Field {
           definition.key,
           definition.defaultValue,
           definition.englishLabel,
-          FieldVisibility.MainForm, //todo
+          definition.form,
+          FieldVisibility.Always, //todo
           choices,
           definition.cssClass
         );
@@ -52,7 +57,8 @@ export class Field {
           definition.key,
           new Date(), // fix
           definition.englishLabel,
-          FieldVisibility.MainForm, //todo
+          definition.form,
+          FieldVisibility.Always, //todo
           definition.cssClass
         );
       default:
@@ -63,12 +69,14 @@ export class Field {
   public constructor(
     key: string,
     englishLabel: string = titleCase(key),
+    form: string = "",
     type: FieldType = FieldType.Text,
-    visibility: FieldVisibility = FieldVisibility.Extra,
+    visibility: FieldVisibility = FieldVisibility.Always,
     cssClass: string = ""
   ) {
     this.key = key;
     this.englishLabel = englishLabel;
+    this.form = form;
     this.type = type;
     this.visibility = visibility;
     this.cssClass = cssClass;
@@ -78,7 +86,7 @@ export class Field {
     return this.text.get("en");
   }
   set english(value: string) {
-    console.log(this.englishLabel + ":setDefault(" + value + ")");
+    //console.log(this.englishLabel + ":setDefault(" + value + ")");
     this.text.set("en", value);
   }
   public toString(): string {
@@ -115,10 +123,11 @@ export class DateField extends Field {
     key: string,
     defaultValue: Date,
     englishLabel: string = titleCase(key),
-    visibility: FieldVisibility = FieldVisibility.Extra,
+    form: string = "",
+    visibility: FieldVisibility = FieldVisibility.Always,
     cssClass: string = ""
   ) {
-    super(key, englishLabel, FieldType.Date, visibility, cssClass);
+    super(key, englishLabel, form, FieldType.Date, visibility, cssClass);
     this.date = defaultValue;
   }
 
@@ -147,11 +156,12 @@ export class TextField extends Field {
     key: string,
     englishValue: string = "",
     englishLabel: string = titleCase(key),
-    visibility: FieldVisibility = FieldVisibility.Extra,
+    form: string = "",
+    visibility: FieldVisibility = FieldVisibility.Always,
     choices: string[] = [],
     cssClass: string = ""
   ) {
-    super(key, englishLabel, FieldType.Text, visibility, cssClass);
+    super(key, englishLabel, form, FieldType.Text, visibility, cssClass);
     this.choices = choices;
     this.text.set("en", englishValue);
   }
@@ -159,7 +169,7 @@ export class TextField extends Field {
     return this.text.get("en");
   }
   set english(value: string) {
-    console.log(this.englishLabel + ":setDefault(" + value + ")");
+    //console.log(this.englishLabel + ":setDefault(" + value + ")");
     this.text.set("en", value);
   }
   public toString(): string {

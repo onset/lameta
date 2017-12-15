@@ -33,7 +33,7 @@ export class File {
     this.properties.setValue(key, new DateField(key, date));
   }
   public addTextProperty(key: string, value: string) {
-    console.log("setting " + key + " to " + value);
+    //console.log("setting " + key + " to " + value);
     this.properties.setValue(key, new TextField(key, value));
     assert(value === this.properties.getTextField(key).english);
   }

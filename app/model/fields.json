@@ -1,7 +1,8 @@
 {
   "project": [
     {
-      "key": "title"
+      "key": "title",
+      "englishLabel": "Project Title"
     },
     {
       "key": "projectDescription",
@@ -15,7 +16,9 @@
       "key": "vernacularISO3CodeAndName"
     },
     {
-      "key": "location"
+      "key": "location",
+      "englishLabel": "Location/Address",
+      "cssClass": "field__newSection"
     },
     {
       "key": "region"
@@ -36,15 +39,14 @@
         "South-America"
       ]
     },
+
     {
-      "key": "contactPerson"
-    },
-    {
-      "key": "fundingProjectTitle"
+      "key": "fundingProjectTitle",
+      "cssClass": "field__newSection"
     },
     {
       "key": "accessProtocol",
-      "visibility": "AccessProtocol",
+      "form": "AccessProtocol",
       "choices": [
         "None",
         "AILCA",
@@ -57,14 +59,19 @@
       ]
     },
     {
-      "key": "dateAvailable",
-      "type": "Date"
+      "key": "depositor",
+      "cssClass": "field__newSection"
     },
     {
       "key": "rightsHolder"
     },
+
     {
-      "key": "depositor"
+      "key": "contactPerson"
+    },
+    {
+      "key": "dateAvailable",
+      "type": "Date"
     }
   ],
   "session": [

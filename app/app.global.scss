@@ -152,6 +152,29 @@ form {
     width: 100%;
   }
 }
+.projectAboutForm {
+  display: grid;
+  grid-template-columns: auto;
+
+  .field {
+    display: flex; // enables the following rule...
+    align-items: center; // which aligns labels and inputs
+    height: initial;
+
+    &.field__newSection {
+      margin-top: 2em;
+    }
+    label {
+      text-align: right;
+      width: 150px;
+      margin-right: 1em;
+    }
+
+    textarea {
+      width: 400px;
+    }
+  }
+}
 .componentTab {
   //background-color: #F0F0F0;
   height: 100%;

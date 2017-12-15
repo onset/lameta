@@ -24,7 +24,7 @@ export default class ProjectAbout extends React.Component<IProps> {
   }
 
   private makeEdit(field: Field) {
-    console.log("makeEdit(" + JSON.stringify(field));
+    //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
         const f = field as TextField;
@@ -57,7 +57,7 @@ export default class ProjectAbout extends React.Component<IProps> {
       <form className={"projectAboutForm"}>
         {this.props.fields
           .values()
-          .filter(field => field.visibility === FieldVisibility.MainForm)
+          .filter(field => field.form === "primary")
           .map(field => this.makeEdit(field))}
       </form>
     );
