@@ -2,6 +2,7 @@ import { Folder } from "./Folder";
 import { File } from "./File";
 import * as Path from "path";
 import * as glob from "glob";
+const knownFieldDefinitions = require("./fields.json");
 
 export class Person extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -26,32 +27,20 @@ export class Person extends Folder {
   }
 
   public get displayName(): string {
-    return this.properties.getTextStringOrEmpty("name");
+    return this.properties.getTextStringOrEmpty(name);
   }
 
   public constructor(directory: string, files: File[]) {
     super(directory, files);
-    const manditoryTextProperies = [
-      "primaryLanguage",
-      "primaryLanguageLearnedIn",
-      "otherLanguage0",
-      "fathersLanguage",
-      "mothersLanguage",
-      "otherLanguage1",
-      "birthYear",
-      "gender",
-      "education",
-      "primaryOccupation"
-    ];
-
-    manditoryTextProperies.forEach(key =>
-      this.properties.manditoryTextProperty(key, "")
-    );
-
     this.properties.addTextProperty("name", Path.basename(directory));
   }
   public static fromDirectory(path: string): Person {
-    const files = this.loadChildFiles(path, ".person", "Person");
+    const files = this.loadChildFiles(
+      path,
+      ".person",
+      "Person",
+      knownFieldDefinitions.person
+    );
     return new Person(path, files);
   }
   public static save() {
