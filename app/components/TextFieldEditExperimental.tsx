@@ -1,6 +1,6 @@
 /*import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { TextField } from "../model/Field";
+import { Field } from "../model/Field";
 import { File } from "../model/File";
 const titleCase = require("title-case");
 

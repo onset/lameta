@@ -4,7 +4,7 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { IRegion } from "@blueprintjs/table/dist/regions";
-import { TextField } from "../model/Field";
+import { Field, FieldType } from "../model/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -16,11 +16,11 @@ export interface IProps {
 export class FolderList extends React.Component<IProps> {
   private makeCell(rowIndex: number, key: string) {
     const p = this.props.folders[rowIndex].properties.getValue(key);
-    if (p instanceof TextField) {
+    if (p.type === FieldType.Text) {
       return <Cell>{p.toString()}</Cell>;
     }
-    if (p instanceof Date) {
-      return <Cell>{(p as Date).toLocaleDateString()}</Cell>;
+    if (p.type === FieldType.Date) {
+      return <Cell>{p.asLocaleDateString()}</Cell>;
     }
 
     return <Cell />;

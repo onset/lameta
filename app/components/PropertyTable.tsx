@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Table, Column, Cell } from "@blueprintjs/table";
 import { observer } from "mobx-react";
-import { TextField, Field } from "../model/Field";
+import { Field, FieldType } from "../model/Field";
 import { FieldSet } from "../model/FieldSet";
 
 //const styles = require("./Sessions.scss");
@@ -22,11 +22,11 @@ export default class PropertyTable extends React.Component<IProps, IState> {
   }
   private getFieldValueCell(rowIndex: number) {
     const p = this.props.fields.values()[rowIndex];
-    if (p instanceof TextField) {
+    if (p.type === FieldType.Text) {
       return <Cell>{p.toString()}</Cell>;
     }
-    if (p instanceof Date) {
-      return <Cell>{(p as Date).toLocaleDateString()}</Cell>;
+    if (p.type === FieldType.Date) {
+      return <Cell>{p.asLocaleDateString()}</Cell>;
     }
 
     return <Cell />;

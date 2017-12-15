@@ -6,7 +6,7 @@ import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
-import { Field, TextField, DateField } from "./Field";
+import { Field, FieldType } from "./Field";
 import { FieldSet } from "./FieldSet";
 
 export class File {
@@ -18,7 +18,7 @@ export class File {
   @observable public properties = new FieldSet();
 
   get type(): string {
-    const x = this.properties.getValue("type") as TextField;
+    const x = this.properties.getValue("type") as Field;
     return x ? x.english : "???";
   }
   private checkType(key: string, value: any) {
@@ -30,28 +30,31 @@ export class File {
   }
   protected addDateProperty(key: string, date: Date) {
     this.checkType(key, date);
-    this.properties.setValue(key, new DateField(key, date));
+    this.properties.setValue(
+      key,
+      new Field(key, FieldType.Text, date.toISOString())
+    );
   }
   public addTextProperty(key: string, value: string) {
     //console.log("setting " + key + " to " + value);
-    this.properties.setValue(key, new TextField(key, value));
+    this.properties.setValue(key, new Field(key, FieldType.Text, value));
     assert(value === this.properties.getTextField(key).english);
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
     //We can read the upper case ones, but then we convert them to lower case initial
     const correctedKey = camelcase(key);
-    this.properties.setValue(key, new TextField(correctedKey, value));
+    this.properties.setValue(
+      key,
+      new Field(correctedKey, FieldType.Text, value)
+    );
   }
   public getTextProperty(key: string): string {
-    const p = this.properties.getValue(key); //as TextField;
+    const p = this.properties.getValue(key); //as Field;
     return p.english;
   }
-  public getTextField(key: string): TextField {
-    return this.properties.getValue(key) as TextField;
-  }
-  public getDateField(key: string): DateField {
-    return this.properties.getValue(key) as DateField;
+  public getTextField(key: string): Field {
+    return this.properties.getValue(key) as Field;
   }
 
   public constructor(path: string) {

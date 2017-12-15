@@ -1,26 +1,26 @@
 import { Dictionary } from "typescript-collections";
-import { Field, TextField, DateField } from "./Field";
 import * as assert from "assert";
+import { Field, FieldType } from "./Field";
 
 export class FieldSet extends Dictionary<string, Field> {
   public getTextStringOrEmpty(key: string): string {
-    const s = this.getValue(key) as TextField;
+    const s = this.getValue(key) as Field;
     return s ? s.english : "";
   }
-  public getTextField(key: string): TextField {
-    return this.getValue(key) as TextField;
+  public getTextField(key: string): Field {
+    return this.getValue(key) as Field;
   }
-  public getDateField(key: string): DateField {
-    return this.getValue(key) as DateField;
+  public getDateField(key: string): Field {
+    return this.getValue(key) as Field;
   }
   public addDateProperty(key: string, date: Date) {
     this.checkType(key, date);
-    this.setValue(key, new DateField(key, date));
+    this.setValue(key, new Field(key, FieldType.Date, date.toISOString()));
   }
 
   public manditoryTextProperty(key: string, value: string) {
     if (!this.containsKey(key)) {
-      this.setValue(key, new TextField(key, value));
+      this.setValue(key, new Field(key, FieldType.Text, value));
     }
   }
   // public manditoryField(field: Field) {
@@ -34,7 +34,7 @@ export class FieldSet extends Dictionary<string, Field> {
   //   }
   // }
   public addTextProperty(key: string, value: string) {
-    this.setValue(key, new TextField(key, value));
+    this.setValue(key, new Field(key, FieldType.Text, value));
   }
 
   private checkType(key: string, value: any) {

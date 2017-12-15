@@ -1,13 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
-import {
-  Field,
-  FieldType,
-  TextField,
-  FieldVisibility,
-  DateField
-} from "../model/Field";
+import { Field, FieldType, FieldVisibility } from "../model/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import { Project } from "../model/Project";
 import { FieldSet } from "../model/FieldSet";
@@ -30,15 +24,15 @@ export default class AutoForm extends React.Component<IProps> {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
-        const f = field as TextField;
-        if (f.choices.length > 0) {
+        const f = field as Field;
+        if (f.choices && f.choices.length > 0) {
           return <ClosedChoiceEdit text={f} key={field.key} />;
         } else {
           return (
             <TextFieldEdit
               className={field.cssClass}
               key={field.key}
-              text={field as TextField}
+              text={field as Field}
             />
           );
         }
@@ -47,11 +41,11 @@ export default class AutoForm extends React.Component<IProps> {
           <DateFieldEdit
             className={field.cssClass}
             key={field.key}
-            date={field as DateField}
+            date={field as Field}
           />
         );
       default:
-        return "unknown type: " + field.type.toString();
+        throw Error("unknown type: " + field.type.toString());
     }
   }
 

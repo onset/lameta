@@ -1,12 +1,6 @@
 import { File } from "./File";
 import { observable } from "mobx";
-import {
-  IFieldDefinition,
-  TextField,
-  Field,
-  FieldType,
-  FieldVisibility
-} from "./Field";
+import { IFieldDefinition, Field, FieldType, FieldVisibility } from "./Field";
 
 import * as fs from "fs";
 import * as Path from "path";
@@ -57,7 +51,7 @@ export abstract class Folder {
   }
 
   get type(): string {
-    const x = this.properties.getValue("type") as TextField;
+    const x = this.properties.getValue("type") as Field;
     return x ? x.english : "???";
   }
 

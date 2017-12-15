@@ -1,10 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { TextField } from "../model/Field";
+import { Field } from "../model/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
-  text: TextField;
+  text: Field;
 }
 
 @observer
@@ -18,7 +18,7 @@ export default class ClosedChoiceEdit extends React.Component<
 
   private static onChange(
     event: React.FormEvent<HTMLSelectElement>,
-    text: TextField
+    text: Field
   ) {
     text.english = event.currentTarget.value;
   }
@@ -30,7 +30,7 @@ export default class ClosedChoiceEdit extends React.Component<
     return titleCase(this.props.text.englishLabel);
   }
 
-  private static getValue(text: TextField): string {
+  private static getValue(text: Field): string {
     if (text === undefined) {
       return "Null Text";
     }

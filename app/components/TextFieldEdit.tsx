@@ -1,10 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { TextField } from "../model/Field";
+import { Field } from "../model/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
-  text: TextField;
+  text: Field;
 }
 
 // automatically update when the value changes
@@ -28,7 +28,7 @@ export default class TextFieldEdit extends React.Component<
 
   private static onChange(
     event: React.FormEvent<HTMLTextAreaElement>,
-    text: TextField
+    text: Field
   ) {
     text.english = event.currentTarget.value;
   }
@@ -40,7 +40,7 @@ export default class TextFieldEdit extends React.Component<
     return this.props.text.englishLabel;
   }
 
-  private static getValue(text: TextField): string {
+  private static getValue(text: Field): string {
     if (text === undefined) {
       return "Null Text";
     }

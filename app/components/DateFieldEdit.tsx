@@ -1,16 +1,16 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { DateField } from "../model/Field";
 // tslint:disable-next-line:no-submodule-imports
 import DatePicker from "react-datepicker";
 import { Moment } from "moment";
+import { Field } from "../model/Field";
 const moment = require("moment");
 // tslint:disable-next-line:no-submodule-imports
 
 //const styles = require("./Sessions.scss");
 
 export interface IProps {
-  date: DateField;
+  date: Field;
 }
 
 // automatically update when the value changes
@@ -29,7 +29,7 @@ export default class DateFieldEdit extends React.Component<
   }
 
   public render() {
-    const m: Moment = moment(this.props.date.date); //review
+    const m: Moment = moment(this.props.date.english); //review
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
