@@ -1,24 +1,27 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import TextFieldEdit from "../TextFieldEdit";
+import TextFieldEdit from "./TextFieldEdit";
 import {
   Field,
   FieldType,
   TextField,
   FieldVisibility,
   DateField
-} from "../../model/Field";
-import DateFieldEdit from "../DateFieldEdit";
-import { Project } from "../../model/Project";
-import { FieldSet } from "../../model/FieldSet";
-import ClosedChoiceEdit from "../ClosedChoiceEdit";
+} from "../model/Field";
+import DateFieldEdit from "./DateFieldEdit";
+import { Project } from "../model/Project";
+import { FieldSet } from "../model/FieldSet";
+import ClosedChoiceEdit from "./ClosedChoiceEdit";
+import { Folder } from "../model/Folder";
 
 export interface IProps {
-  project: Project;
   fields: FieldSet;
+  form: string; // only fields with this "form" property will show
 }
+
+/** Constructs a form by looking at the properties of the given fields */
 @observer
-export default class ProjectAbout extends React.Component<IProps> {
+export default class AutoForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -54,25 +57,12 @@ export default class ProjectAbout extends React.Component<IProps> {
 
   public render() {
     return (
-      <form className={"projectAboutForm"}>
+      <form className={"autoForm " + this.props.form}>
         {this.props.fields
           .values()
-          .filter(field => field.form === "primary")
+          .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
       </form>
     );
   }
-
-  // public render() {
-  //   return (
-  //     <form className={"projectAboutForm"}>
-  //       <TextFieldEdit text={this.props.fields.getTextField("title")} />
-  //       <TextFieldEdit text={this.props.fields.getTextField("iso639Code")} />
-  //       <TextFieldEdit
-  //         className={"text-block"}
-  //         text={this.props.fields.getTextField("projectDescription")}
-  //       />
-  //     </form>
-  //   );
-  // }
 }

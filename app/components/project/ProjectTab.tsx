@@ -2,8 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Project } from "../../model/Project";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import ProjectAbout from "./ProjectAbout";
-import ProjectAccessProtocol from "./ProjectAccessProtocol";
+import AutoForm from "../AutoForm";
 
 interface IProps {
   project: Project;
@@ -19,14 +18,11 @@ export class ProjectTab extends React.Component<IProps> {
           <Tab>Access Protocol</Tab>
         </TabList>
         <TabPanel>
-          <ProjectAbout
-            project={this.props.project}
-            fields={this.props.project.properties}
-          />
+          <AutoForm form="primary" fields={this.props.project.properties} />
         </TabPanel>
         <TabPanel>
-          <ProjectAccessProtocol
-            project={this.props.project}
+          <AutoForm
+            form="accessProtocol"
             fields={this.props.project.properties}
           />
         </TabPanel>

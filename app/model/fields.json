@@ -46,7 +46,8 @@
     },
     {
       "key": "accessProtocol",
-      "form": "AccessProtocol",
+      "form": "accessProtocol",
+      "englishLabel": "Access Protocol used by this project",
       "choices": [
         "None",
         "AILCA",

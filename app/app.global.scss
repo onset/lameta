@@ -152,26 +152,30 @@ form {
     width: 100%;
   }
 }
-.projectAboutForm {
-  display: grid;
-  grid-template-columns: auto;
+.project {
+  .primary {
+    display: grid;
+    grid-template-columns: auto;
+  }
+  .primary,
+  .accessProtocol {
+    .field {
+      display: flex; // enables the following rule...
+      align-items: center; // which aligns labels and inputs
+      height: initial;
 
-  .field {
-    display: flex; // enables the following rule...
-    align-items: center; // which aligns labels and inputs
-    height: initial;
+      &.field__newSection {
+        margin-top: 2em;
+      }
+      label {
+        text-align: right;
+        width: 150px;
+        margin-right: 1em;
+      }
 
-    &.field__newSection {
-      margin-top: 2em;
-    }
-    label {
-      text-align: right;
-      width: 150px;
-      margin-right: 1em;
-    }
-
-    textarea {
-      width: 400px;
+      textarea {
+        width: 400px;
+      }
     }
   }
 }
