@@ -1,5 +1,6 @@
 import { Folder } from "./Folder";
 import { File } from "./File";
+const knownFieldDefinitions = require("./fields.json");
 
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -12,17 +13,14 @@ export class Session extends Folder {
 
   public constructor(directory: string, files: File[]) {
     super(directory, files);
-    this.properties.manditoryTextProperty("people", "");
-    this.properties.manditoryTextProperty("genre", "");
-    this.properties.manditoryTextProperty("situation", "");
-    this.properties.manditoryTextProperty("setting", "");
-    this.properties.manditoryTextProperty("location", "");
-    this.properties.manditoryTextProperty("access", "");
-    this.properties.manditoryTextProperty("description", "");
-    this.properties.addDateProperty("date", new Date()); //TODO: does that work as 'unknown'?
   }
   public static fromDirectory(path: string): Session {
-    const files = this.loadChildFiles(path, ".session", "Session");
+    const files = this.loadChildFiles(
+      path,
+      ".session",
+      "Session",
+      knownFieldDefinitions.session
+    );
 
     //start autosave
     // mobx.autorunAsync(
