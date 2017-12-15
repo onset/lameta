@@ -1,0 +1,70 @@
+{
+  "project": [
+    {
+      "key": "title"
+    },
+    {
+      "key": "projectDescription",
+      "englishLabel": "Description",
+      "cssClass": "text-block"
+    },
+    {
+      "key": "iso639Code"
+    },
+    {
+      "key": "vernacularISO3CodeAndName"
+    },
+    {
+      "key": "location"
+    },
+    {
+      "key": "region"
+    },
+    {
+      "key": "country"
+    },
+    {
+      "key": "continent",
+      "choices": [
+        "Africa",
+        "Asia",
+        "Australia",
+        "Eurpoe",
+        "North-America",
+        "Middle-America",
+        "Oceania",
+        "South-America"
+      ]
+    },
+    {
+      "key": "contactPerson"
+    },
+    {
+      "key": "fundingProjectTitle"
+    },
+    {
+      "key": "accessProtocol",
+      "visibility": "AccessProtocol",
+      "choices": [
+        "None",
+        "AILCA",
+        "AILIA",
+        "ANLA",
+        "ELAR",
+        "REAP",
+        "TLA",
+        "Custom"
+      ]
+    },
+    {
+      "key": "dateAvailable",
+      "type": "Date"
+    },
+    {
+      "key": "rightsHolder"
+    },
+    {
+      "key": "depositor"
+    }
+  ]
+}

@@ -2,6 +2,16 @@ import { observable } from "mobx";
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
+export interface IFieldDefinition {
+  key: string;
+  englishLabel?: string;
+  defaultValue?: string;
+  type: string;
+  visibility?: string;
+  cssClass?: string;
+  choices?: string[];
+}
+
 export enum FieldType {
   Text,
   Date,
@@ -20,45 +30,30 @@ export class Field {
   public readonly cssClass: string;
   @observable public text = new Map();
 
-  public static parse(fieldDescription: any): Field {
-    console.log("parse(" + fieldDescription.toString());
-    return Field.create(
-      fieldDescription.key,
-      fieldDescription.englishLabel,
-      fieldDescription.type,
-      fieldDescription.visibility,
-      fieldDescription.cssClass
-    );
-  }
+  // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
+  public static fromFieldDefinition(definition: IFieldDefinition): Field {
+    const type = definition.type
+      ? FieldType[definition.type as keyof typeof FieldType]
+      : FieldType.Text;
 
-  public static create(
-    key: string,
-    value: any,
-    englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.Text,
-    visibility: FieldVisibility = FieldVisibility.Extra,
-    choices: string[] = [],
-    cssClass: string = ""
-  ): Field {
     switch (type) {
       case FieldType.Text:
+        const choices = definition.choices ? definition.choices : [];
         return new TextField(
-          key,
-          value,
-          englishLabel,
-          type,
-          visibility,
+          definition.key,
+          definition.defaultValue,
+          definition.englishLabel,
+          FieldVisibility.MainForm, //todo
           choices,
-          cssClass
+          definition.cssClass
         );
       case FieldType.Date:
         return new DateField(
-          key,
-          value,
-          englishLabel,
-          type,
-          visibility,
-          cssClass
+          definition.key,
+          new Date(), // fix
+          definition.englishLabel,
+          FieldVisibility.MainForm, //todo
+          definition.cssClass
         );
       default:
         throw new RangeError("Uknown field type");
@@ -118,14 +113,13 @@ export class DateField extends Field {
   public date: Date;
   constructor(
     key: string,
-    date: Date,
+    defaultValue: Date,
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
     cssClass: string = ""
   ) {
-    super(key, englishLabel, type, visibility, cssClass);
-    this.date = date;
+    super(key, englishLabel, FieldType.Date, visibility, cssClass);
+    this.date = defaultValue;
   }
 
   public toString(): string {
@@ -153,12 +147,11 @@ export class TextField extends Field {
     key: string,
     englishValue: string = "",
     englishLabel: string = titleCase(key),
-    type: FieldType = FieldType.Text,
     visibility: FieldVisibility = FieldVisibility.Extra,
     choices: string[] = [],
     cssClass: string = ""
   ) {
-    super(key, englishLabel, type, visibility, cssClass);
+    super(key, englishLabel, FieldType.Text, visibility, cssClass);
     this.choices = choices;
     this.text.set("en", englishValue);
   }

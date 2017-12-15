@@ -6,6 +6,7 @@ import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
 import { File } from "./File";
 import { Field, FieldType, FieldVisibility } from "./Field";
+const knownFieldDefinitions = require("./fields.json");
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;
@@ -24,68 +25,11 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
-    const knownFields = [
-      "title",
-      Field.create(
-        "projectDescription",
-        "",
-        undefined,
-        FieldType.Text,
-        FieldVisibility.MainForm,
-        [],
-        "text-block"
-      ),
-      "iso639Code",
-      "vernacularISO3CodeAndName",
-      "location",
-      "region",
-      "country",
-      Field.create(
-        "continent",
-        "",
-        undefined,
-        FieldType.Text,
-        FieldVisibility.MainForm,
-        [
-          "Africa",
-          "Asia",
-          "Australia",
-          "Eurpoe",
-          "North-America",
-          "Middle-America",
-          "Oceania",
-          "South-America"
-        ],
-        "text-block"
-      ),
-      "contactPerson",
-      "fundingProjectTitle",
-      Field.create(
-        "accessProtocol",
-        "",
-        undefined,
-        FieldType.Text,
-        FieldVisibility.SecondaryForm,
-        ["None", "AILCA", "AILIA", "ANLA", "ELAR", "REAP", "TLA", "Custom"]
-      ),
-      "applications",
-      Field.create(
-        "dateAvailable",
-        "",
-        undefined,
-        FieldType.Date,
-        FieldVisibility.MainForm
-      ),
-      "rightsHolder",
-      "depositor"
-      // "relatedPublications"
-    ];
-
     const files = this.loadChildFiles(
       directory,
       ".sprj",
       "Project",
-      knownFields
+      knownFieldDefinitions.project
     );
     const project = new Project(directory, files);
 
