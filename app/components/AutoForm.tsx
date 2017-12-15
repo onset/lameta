@@ -1,10 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
-import { Field, FieldType, FieldVisibility } from "../model/Field";
+import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import { Project } from "../model/Project";
-import { FieldSet } from "../model/FieldSet";
+import { FieldSet } from "../model/field/FieldSet";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Folder } from "../model/Folder";
 

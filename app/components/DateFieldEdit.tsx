@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import DatePicker from "react-datepicker";
 import { Moment } from "moment";
-import { Field } from "../model/Field";
+import { Field } from "../model/field/Field";
 const moment = require("moment");
 // tslint:disable-next-line:no-submodule-imports
 

@@ -1,4 +1,5 @@
 import { observable } from "mobx";
+import TextHolder from "./TextHolder";
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
@@ -22,6 +23,7 @@ export enum FieldVisibility {
   Always,
   IfNotEmpty
 }
+
 export class Field {
   public readonly key: string;
   public readonly englishLabel: string; // just for debugging at this point
@@ -29,7 +31,7 @@ export class Field {
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
   public readonly cssClass: string;
-  @observable public text = new Map();
+  @observable public text = new TextHolder();
   public choices: string[];
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
@@ -74,11 +76,11 @@ export class Field {
   }
 
   get english(): string {
-    return this.text.get("en");
+    return this.text.default;
   }
   set english(value: string) {
     //console.log(this.englishLabel + ":setDefault(" + value + ")");
-    this.text.set("en", value);
+    this.text.default = value;
   }
   public toString(): string {
     return this.english;
@@ -124,73 +126,3 @@ export class Field {
       .replace(/\\f/g, "\\f");
   }
 }
-
-// export class DateField extends Field {
-//   public date: Date;
-//   constructor(
-//     key: string,
-//     defaultValue: Date,
-//     englishLabel: string = titleCase(key),
-//     form: string = "",
-//     visibility: FieldVisibility = FieldVisibility.Always,
-//     cssClass: string = ""
-//   ) {
-//     super(key, englishLabel, form, FieldType.Date, visibility, cssClass);
-//     this.date = defaultValue;
-//   }
-
-//   public toString(): string {
-//     return this.date.toLocaleDateString();
-//   }
-//   public stringify(): string {
-//     return `"${this.key}":"${this.date.toISOString()}"`;
-//   }
-//   // public objectForSerializing(): object {
-//   //   return { [this.key]: this.date.toISOString() };
-//   // }
-//   public setDate(date: Date) {
-//     this.date = date;
-//   }
-//   public setValueFromString(s: string): any {
-//     this.date = new Date(s);
-//   }
-// }
-
-/*export class Field extends Field {
-  @observable public text = new Map();
-  public choices: string[];
-
-  constructor(
-    key: string,
-    type: FieldType = FieldType.Text,
-    englishValue: string = "",
-    englishLabel: string = titleCase(key),
-    form: string = "",
-    visibility: FieldVisibility = FieldVisibility.Always,
-    choices: string[] = [],
-    cssClass: string = ""
-  ) {
-    super(key, englishLabel, form, type, visibility, cssClass);
-    this.choices = choices;
-    this.text.set("en", englishValue);
-  }
-  get english(): string {
-    return this.text.get("en");
-  }
-  set english(value: string) {
-    //console.log(this.englishLabel + ":setDefault(" + value + ")");
-    this.text.set("en", value);
-  }
-  public toString(): string {
-    return this.english;
-  }
-  public stringify(): string {
-    return `"${this.key}":"${Field.escapeSpecialChars(this.english)}"`;
-  }
-  // public objectForSerializing(): object {
-  //   return { [this.key]: Field.escapeSpecialChars(this.english) };
-  // }
-  public setValueFromString(s: string): any {
-    this.english = s;
-  }
-}*/

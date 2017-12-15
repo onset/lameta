@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Table, Column, Cell } from "@blueprintjs/table";
 import { observer } from "mobx-react";
-import { Field, FieldType } from "../model/Field";
-import { FieldSet } from "../model/FieldSet";
+import { Field, FieldType } from "../model/field/Field";
+import { FieldSet } from "../model/field/FieldSet";
 
 //const styles = require("./Sessions.scss");
 

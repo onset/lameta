@@ -3,7 +3,7 @@ import { Session } from "../model/Session";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import DateFieldEdit from "./DateFieldEdit";
-import { FieldSet } from "../model/FieldSet";
+import { FieldSet } from "../model/field/FieldSet";
 
 export interface IProps {
   session: Session;

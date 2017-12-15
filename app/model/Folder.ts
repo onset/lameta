@@ -1,12 +1,12 @@
 import { File } from "./File";
 import { observable } from "mobx";
-import { IFieldDefinition, Field, FieldType, FieldVisibility } from "./Field";
+import { IFieldDefinition, Field, FieldType, FieldVisibility } from "./field/Field";
 
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
 import * as xml2js from "xml2js";
-import { FieldSet } from "./FieldSet";
+import { FieldSet } from "./field/FieldSet";
 
 export class IFolderSelection {
   @observable public index: number;

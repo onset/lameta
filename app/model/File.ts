@@ -6,8 +6,8 @@ import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
-import { Field, FieldType } from "./Field";
-import { FieldSet } from "./FieldSet";
+import { Field, FieldType } from "./field/Field";
+import { FieldSet } from "./field/FieldSet";
 
 export class File {
   protected fullpath: string;

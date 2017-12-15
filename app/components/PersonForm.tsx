@@ -3,7 +3,7 @@ import { Person } from "../model/Person";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import ImageField from "./ImageField";
-import { FieldSet } from "../model/FieldSet";
+import { FieldSet } from "../model/field/FieldSet";
 
 export interface IProps {
   person: Person;

@@ -5,8 +5,8 @@ import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
 import { File } from "./File";
-import { Field, FieldType, FieldVisibility } from "./Field";
-const knownFieldDefinitions = require("./fields.json");
+import { Field, FieldType, FieldVisibility } from "./field/Field";
+const knownFieldDefinitions = require("./field/fields.json");
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;

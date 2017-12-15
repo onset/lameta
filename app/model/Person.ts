@@ -2,7 +2,7 @@ import { Folder } from "./Folder";
 import { File } from "./File";
 import * as Path from "path";
 import * as glob from "glob";
-const knownFieldDefinitions = require("./fields.json");
+const knownFieldDefinitions = require("./field/fields.json");
 
 export class Person extends Folder {
   public get metadataFileExtensionWithDot(): string {
