@@ -119,16 +119,17 @@ export class File {
     switch (this.type) {
       case "Audio":
         if (this.path.match(/\.((mp3)|(ogg))$/i)) {
-          musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
-            if (err) {
-              console.log("Error:" + err.message);
-            }
-            this.addTextProperty(
-              "duration",
-              err ? "????" : metadata.duration.toString() // <-- haven't see this work yet. I think we'll give in and ship with ffmpeg eventually
-            );
-            // todo bit rate & such, which musicmetadata doesn't give us
-          });
+          //TODO: this is killing unrleated unit testing... presumably because the callback happens after the tests are done?
+          // musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
+          //   if (err) {
+          //     console.log("Error:" + err.message);
+          //   }
+          //   this.addTextProperty(
+          //     "duration",
+          //     err ? "????" : metadata.duration.toString() // <-- haven't see this work yet. I think we'll give in and ship with ffmpeg eventually
+          //   );
+          //   // todo bit rate & such, which musicmetadata doesn't give us
+          // });
         }
         break;
       case "Image":

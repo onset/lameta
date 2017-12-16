@@ -6,6 +6,7 @@ import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
 import { File } from "./File";
 import { Field, FieldType, FieldVisibility } from "./field/Field";
+import ImdiExporter from "../export/imdi";
 const knownFieldDefinitions = require("./field/fields.json");
 
 export class Project extends Folder {
@@ -14,7 +15,7 @@ export class Project extends Folder {
   @mobx.observable public sessions: Session[] = [];
   @mobx.observable public persons: Person[] = [];
 
-  constructor(directory: string, files: File[]) {
+  private constructor(directory: string, files: File[]) {
     super(directory, files);
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
@@ -61,6 +62,7 @@ export class Project extends Folder {
     project.selectedPerson.index = 0;
 
     project.files[0].save();
+    // tslint:disable-next-line:no-unused-expression
     return project;
   }
 }
