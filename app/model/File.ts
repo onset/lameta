@@ -1,3 +1,4 @@
+import * as xml2js from "xml2js";
 import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
@@ -8,6 +9,7 @@ import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "./field/Field";
 import { FieldSet } from "./field/FieldSet";
+import * as xmlbuilder from "xmlbuilder";
 
 export class File {
   protected fullpath: string;
@@ -80,6 +82,9 @@ export class File {
       }
     });
 
+    if (fs.existsSync(path + ".meta")) {
+      this.readMetadataFile(path + ".meta");
+    }
     this.computeProperties(); //enhance: do this on demand, instead of for every file
 
     // TODO read the .meta file that describes this file, if it exists
@@ -139,6 +144,25 @@ export class File {
         break;
     }
   }
+  public readMetadataFile(path: string) {
+    const xml: string = fs.readFileSync(path, "utf8");
+
+    let xmlAsObject: any = {};
+    xml2js.parseString(
+      xml,
+      { async: false, explicitArray: false },
+      (err, result) => {
+        if (err) {
+          throw err;
+        }
+        xmlAsObject = result;
+      }
+    );
+    // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+    // so that we just have the object with its properties.
+    const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+    this.loadProperties(properties);
+  }
 
   public save() {
     let json = `{"root":[`;
@@ -148,6 +172,14 @@ export class File {
     json = json.replace(/(,$)/g, ""); //remove trailing comma
     json += "]}";
 
-    //console.log(builder.buildObject(JSON.parse(json)));
+    // prettier-ignore
+    const root = xmlbuilder.create("Blah")
+                    .element("notes", this.getTextProperty("notes"))
+                        
+                        .up();
+
+    const xml = root.end({ pretty: true });
+    console.log(xml);
+    fs.writeFileSync(this.path + "meta", xml);
   }
 }

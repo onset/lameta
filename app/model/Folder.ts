@@ -10,7 +10,6 @@ import {
 import * as fs from "fs";
 import * as Path from "path";
 import * as glob from "glob";
-import * as xml2js from "xml2js";
 import { FieldSet } from "./field/FieldSet";
 
 export class IFolderSelection {
@@ -93,7 +92,7 @@ export abstract class Folder {
       folderMetaDataFile.properties.setValue(field.key, field);
     });
 
-    this.readMetadataFile(folderMetaDataFile, folderMetadataPath);
+    folderMetaDataFile.readMetadataFile(folderMetadataPath);
     files.push(folderMetaDataFile);
 
     //read the other files
@@ -104,33 +103,10 @@ export abstract class Folder {
         // the files they describe will be found and loaded, by the constructor of the ComponentFile
         if (!path.endsWith(".meta") && !path.endsWith(".test")) {
           const file = new File(path);
-          if (fs.existsSync(path + ".meta")) {
-            this.readMetadataFile(file, path + ".meta");
-          }
           files.push(file);
         }
       }
     });
     return files;
-  }
-
-  private static readMetadataFile(file: File, path: string) {
-    const xml: string = fs.readFileSync(path, "utf8");
-
-    let xmlAsObject: any = {};
-    xml2js.parseString(
-      xml,
-      { async: false, explicitArray: false },
-      (err, result) => {
-        if (err) {
-          throw err;
-        }
-        xmlAsObject = result;
-      }
-    );
-    // that will have a root with one child, like "Session" or "Meta". Zoom in on that
-    // so that we just have the object with its properties.
-    const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
-    file.loadProperties(properties);
   }
 }
