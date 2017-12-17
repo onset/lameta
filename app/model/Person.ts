@@ -1,5 +1,5 @@
 import { Folder } from "./Folder";
-import { File } from "./file/File";
+import { File, PersonMetdataFile } from "./file/File";
 import * as Path from "path";
 import * as glob from "glob";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -30,18 +30,21 @@ export class Person extends Folder {
     return this.properties.getTextStringOrEmpty(name);
   }
 
-  public constructor(directory: string, files: File[]) {
-    super(directory, files);
+  public constructor(directory: string, metadataFile: File, files: File[]) {
+    super(directory, metadataFile, files);
     this.properties.addTextProperty("name", Path.basename(directory));
   }
-  public static fromDirectory(path: string): Person {
+  public static fromDirectory(directory: string): Person {
+    const name = Path.basename(directory);
+    const metadataPath = Path.join(directory, name + ".person");
+    const metadataFile = new PersonMetdataFile(metadataPath);
+
     const files = this.loadChildFiles(
-      path,
-      ".person",
-      "Person",
+      directory,
+      metadataFile,
       knownFieldDefinitions.person
     );
-    return new Person(path, files);
+    return new Person(directory, metadataFile, files);
   }
   public static save() {
     //console.log("saving " + person.getString("title"));

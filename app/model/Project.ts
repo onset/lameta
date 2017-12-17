@@ -4,7 +4,7 @@ import * as Path from "path";
 import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
-import { File } from "./file/File";
+import { File, ProjectMetdataFile } from "./file/File";
 import { Field, FieldType, FieldVisibility } from "./field/Field";
 import ImdiExporter from "../export/imdi";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -15,8 +15,8 @@ export class Project extends Folder {
   @mobx.observable public sessions: Session[] = [];
   @mobx.observable public persons: Person[] = [];
 
-  private constructor(directory: string, files: File[]) {
-    super(directory, files);
+  private constructor(directory: string, metadataFile: File, files: File[]) {
+    super(directory, metadataFile, files);
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
   }
@@ -26,13 +26,16 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
+    const name = Path.basename(directory);
+    const metadataPath = Path.join(directory, name + ".sprj");
+    const metdataFile = new ProjectMetdataFile(metadataPath);
+
     const files = this.loadChildFiles(
       directory,
-      ".sprj",
-      "Project",
+      metdataFile,
       knownFieldDefinitions.project
     );
-    const project = new Project(directory, files);
+    const project = new Project(directory, metdataFile, files);
 
     fs
       .readdirSync(Path.join(directory, "Sessions"), "utf8")

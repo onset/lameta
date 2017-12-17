@@ -11,13 +11,15 @@ import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 
-export class File {
+///export  enum Type {Project, Session, Person, Other }
+
+export abstract class File {
   // can be changed to Session, Project, or Person in constructor
-  protected xmlRootName: string = "MetaData";
+  //protected xmlRootName: string = "MetaData";
 
   // project, sessions, and person folders have a single metdata file describing their contents, and this ends
   // in a special extension (.sprj, .session, .person)
-  protected fileExtensionForFolderMetadata: string;
+  //protected fileExtensionForFolderMetadata: string;
 
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
@@ -28,16 +30,10 @@ export class File {
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
   // with an extension of ".meta", as in "banquet.jpg.meta";
-  public get metadataPath(): string {
-    if (this.fileExtensionForFolderMetadata) {
-      assert(
-        this.describedFilePath.indexOf(this.fileExtensionForFolderMetadata) > -1
-      );
-      return this.describedFilePath;
-    } else {
-      return this.describedFilePath + ".meta";
-    }
-  }
+  public abstract get metadataPath(): string;
+
+  protected abstract xmlRootName(): string;
+  protected abstract fileExtensionForMetadata(): string;
 
   @observable public properties = new FieldSet();
 
@@ -81,27 +77,8 @@ export class File {
     return this.properties.getValue(key) as Field;
   }
 
-  public constructor(
-    path: string,
-    fileExtensionForFolderMetadata?: string,
-    xmlRootName?: string
-  ) {
+  public constructor(path: string) {
     this.describedFilePath = path;
-
-    if (fileExtensionForFolderMetadata) {
-      assert(
-        xmlRootName,
-        "If fileExtensionForFolderMetadata is declared, then we also need an xml root name"
-      );
-      this.fileExtensionForFolderMetadata = fileExtensionForFolderMetadata;
-      this.xmlRootName = xmlRootName || "";
-    } else {
-      assert(
-        xmlRootName,
-        "If fileExtensionForFolderMetadata is not declared, then you cannot declare a custom xml root name"
-      );
-    }
-
     this.addTextProperty("filename", Path.basename(path));
     this.addTextProperty("notes", "");
 
@@ -123,9 +100,8 @@ export class File {
       }
     });
 
-    if (fs.existsSync(path + ".meta")) {
-      this.readMetadataFile(path + ".meta");
-    }
+    this.readMetadataFile();
+
     this.computeProperties(); //enhance: do this on demand, instead of for every file
 
     // TODO read the .meta file that describes this file, if it exists
@@ -183,8 +159,12 @@ export class File {
         break;
     }
   }
-  public readMetadataFile(path: string) {
-    const xml: string = fs.readFileSync(path, "utf8");
+  public readMetadataFile() {
+    if (!fs.existsSync(this.metadataPath)) {
+      return;
+    }
+
+    const xml: string = fs.readFileSync(this.metadataPath, "utf8");
 
     let xmlAsObject: any = {};
     xml2js.parseString(
@@ -212,19 +192,64 @@ export class File {
     json += "]}";
 
     // prettier-ignore
-    const root = xmlbuilder.create(this.xmlRootName)
+    const root = xmlbuilder.create(this.xmlRootName())
                     .element("notes", this.getTextProperty("notes"))
                         .up();
 
     const xml = root.end({ pretty: true });
     if (this.describedFilePath.indexOf("sample data") > -1) {
-      console.log(
-        "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
-      );
-      console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataPath);
-      console.log(xml);
+      // console.log(
+      //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
+      // );
+      // console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataPath);
+      // console.log(xml);
     } else {
       fs.writeFileSync(this.metadataPath, xml);
     }
+  }
+}
+
+export class ProjectMetdataFile extends File {
+  protected xmlRootName(): string {
+    return "Project";
+  }
+  protected fileExtensionForMetadata(): string {
+    return ".sprj";
+  }
+  public get metadataPath(): string {
+    return this.describedFilePath;
+  }
+}
+export class PersonMetdataFile extends File {
+  protected xmlRootName(): string {
+    return "Person";
+  }
+  protected fileExtensionForMetadata(): string {
+    return ".person";
+  }
+  public get metadataPath(): string {
+    return this.describedFilePath;
+  }
+}
+export class SessionMetdataFile extends File {
+  protected xmlRootName(): string {
+    return "Session";
+  }
+  protected fileExtensionForMetadata(): string {
+    return ".session";
+  }
+  public get metadataPath(): string {
+    return this.describedFilePath;
+  }
+}
+export class OtherMetdataFile extends File {
+  protected xmlRootName(): string {
+    return "Meta";
+  }
+  protected fileExtensionForMetadata(): string {
+    return ".meta";
+  }
+  public get metadataPath(): string {
+    return this.describedFilePath + ".meta";
   }
 }

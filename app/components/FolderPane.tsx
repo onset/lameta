@@ -10,6 +10,7 @@ import Notes from "./Notes";
 import ReactPlayer from "react-player";
 import PersonForm from "./PersonForm";
 import { Person } from "../model/Person";
+import { Session } from "../model/Session";
 
 export interface IProps {
   folder: Folder;
@@ -77,7 +78,7 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>Notes</Tab>
             </TabList>
             <TabPanel>
-              <SessionForm session={directoryObject} />
+              <SessionForm session={directoryObject as Session} />
               {/* Doing it this way, the form would be stuck showing the first session. Sigh, haven't figured out why.
                   <SessionForm session={this.props.directoryObject} /> */}
             </TabPanel>
