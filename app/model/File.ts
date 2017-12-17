@@ -175,11 +175,17 @@ export class File {
     // prettier-ignore
     const root = xmlbuilder.create("Blah")
                     .element("notes", this.getTextProperty("notes"))
-                        
+
                         .up();
 
     const xml = root.end({ pretty: true });
-    console.log(xml);
-    fs.writeFileSync(this.path + "meta", xml);
+    if (this.path.indexOf("sample data") > -1) {
+      console.log(
+        "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
+      );
+      console.log(xml);
+    } else {
+      fs.writeFileSync(this.path + "meta", xml);
+    }
   }
 }

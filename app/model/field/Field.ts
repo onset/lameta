@@ -1,5 +1,8 @@
 import { observable } from "mobx";
 import TextHolder from "./TextHolder";
+import { Moment } from "moment";
+const moment = require("moment");
+
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
@@ -94,10 +97,16 @@ export class Field {
   }
 
   public asISODateString(): string {
-    return this.asDate().toISOString();
+    if (moment(this.text).isValid()) {
+      return this.asDate().toISOString();
+    }
+    return "";
   }
   public asLocaleDateString(): string {
-    return this.asDate().toLocaleDateString();
+    if (moment(this.text).isValid()) {
+      return this.asDate().toLocaleDateString();
+    }
+    return "";
   }
   public stringify(): string {
     switch (this.type) {
