@@ -7,14 +7,36 @@ import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
 import * as musicmetadata from "musicmetadata";
-import { Field, FieldType } from "./field/Field";
-import { FieldSet } from "./field/FieldSet";
+import { Field, FieldType } from "../field/Field";
+import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 
 export class File {
-  protected fullpath: string;
-  public get path(): string {
-    return this.fullpath;
+  // can be changed to Session, Project, or Person in constructor
+  protected xmlRootName: string = "MetaData";
+
+  // project, sessions, and person folders have a single metdata file describing their contents, and this ends
+  // in a special extension (.sprj, .session, .person)
+  protected fileExtensionForFolderMetadata: string;
+
+  // In the case of folder objects (project, session, people) this will just be the metadata file,
+  // and so describedFilePath === metadataPath.
+  // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
+  protected describedFilePath: string;
+
+  // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
+  // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
+  // in which case the metadata will be stored in afile with the same name as the described file, but
+  // with an extension of ".meta", as in "banquet.jpg.meta";
+  public get metadataPath(): string {
+    if (this.fileExtensionForFolderMetadata) {
+      assert(
+        this.describedFilePath.indexOf(this.fileExtensionForFolderMetadata) > -1
+      );
+      return this.describedFilePath;
+    } else {
+      return this.describedFilePath + ".meta";
+    }
   }
 
   @observable public properties = new FieldSet();
@@ -59,8 +81,27 @@ export class File {
     return this.properties.getValue(key) as Field;
   }
 
-  public constructor(path: string) {
-    this.fullpath = path;
+  public constructor(
+    path: string,
+    fileExtensionForFolderMetadata?: string,
+    xmlRootName?: string
+  ) {
+    this.describedFilePath = path;
+
+    if (fileExtensionForFolderMetadata) {
+      assert(
+        xmlRootName,
+        "If fileExtensionForFolderMetadata is declared, then we also need an xml root name"
+      );
+      this.fileExtensionForFolderMetadata = fileExtensionForFolderMetadata;
+      this.xmlRootName = xmlRootName || "";
+    } else {
+      assert(
+        xmlRootName,
+        "If fileExtensionForFolderMetadata is not declared, then you cannot declare a custom xml root name"
+      );
+    }
+
     this.addTextProperty("filename", Path.basename(path));
     this.addTextProperty("notes", "");
 
@@ -101,9 +142,7 @@ export class File {
         if (value.$ && value.$.type && value.$.type === "string") {
           value = value._;
         } else {
-          console.log(
-            "Skippping " + key + " which was " + JSON.stringify(value)
-          );
+          //console.log(            "Skippping " + key + " which was " + JSON.stringify(value)          );
           continue;
         }
       }
@@ -113,7 +152,7 @@ export class File {
         const v = this.properties.getValue(fixedKey);
         v.setValueFromString(value);
       } else {
-        console.log("extra");
+        //console.log("extra");
         // otherwise treat it as a string
         this.addTextProperty(fixedKey, value);
       }
@@ -123,7 +162,7 @@ export class File {
   public computeProperties() {
     switch (this.type) {
       case "Audio":
-        if (this.path.match(/\.((mp3)|(ogg))$/i)) {
+        if (this.describedFilePath.match(/\.((mp3)|(ogg))$/i)) {
           //TODO: this is killing unrleated unit testing... presumably because the callback happens after the tests are done?
           // musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
           //   if (err) {
@@ -138,7 +177,7 @@ export class File {
         }
         break;
       case "Image":
-        const dimensions = imagesize(this.path);
+        const dimensions = imagesize(this.describedFilePath);
         this.addTextProperty("width", dimensions.width.toString());
         this.addTextProperty("height", dimensions.height.toString());
         break;
@@ -173,19 +212,19 @@ export class File {
     json += "]}";
 
     // prettier-ignore
-    const root = xmlbuilder.create("Blah")
+    const root = xmlbuilder.create(this.xmlRootName)
                     .element("notes", this.getTextProperty("notes"))
-
                         .up();
 
     const xml = root.end({ pretty: true });
-    if (this.path.indexOf("sample data") > -1) {
+    if (this.describedFilePath.indexOf("sample data") > -1) {
       console.log(
         "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
       );
+      console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataPath);
       console.log(xml);
     } else {
-      fs.writeFileSync(this.path + "meta", xml);
+      fs.writeFileSync(this.metadataPath, xml);
     }
   }
 }

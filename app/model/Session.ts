@@ -1,5 +1,5 @@
 import { Folder } from "./Folder";
-import { File } from "./File";
+import { File } from "./file/File";
 const knownFieldDefinitions = require("./field/fields.json");
 
 export class Session extends Folder {

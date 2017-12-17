@@ -1,4 +1,4 @@
-import { File } from "./File";
+import { File } from "./file/File";
 import { observable } from "mobx";
 import {
   IFieldDefinition,

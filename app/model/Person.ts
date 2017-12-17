@@ -1,5 +1,5 @@
 import { Folder } from "./Folder";
-import { File } from "./File";
+import { File } from "./file/File";
 import * as Path from "path";
 import * as glob from "glob";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -18,7 +18,7 @@ export class Person extends Folder {
     pattern = pattern.split("\\").join("/"); // this glob lib requires forward slashes, even on windows
 
     const filePaths = glob.sync(pattern); // nocase didn't work { nocase: true });
-    console.log("photos length:" + filePaths.length);
+    //console.log("photos length:" + filePaths.length);
     if (filePaths.length > 0) {
       return filePaths[0];
     } else {

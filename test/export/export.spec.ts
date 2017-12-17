@@ -1,5 +1,5 @@
 import ImdiExporter from "../../app/export/imdi";
-import { File } from "../../app/model/File";
+import { File } from "../../app/model/file/File";
 import { Project } from "../../app/model/Project";
 
 describe("imdi export", () => {

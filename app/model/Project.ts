@@ -4,7 +4,7 @@ import * as Path from "path";
 import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
-import { File } from "./File";
+import { File } from "./file/File";
 import { Field, FieldType, FieldVisibility } from "./field/Field";
 import ImdiExporter from "../export/imdi";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -39,7 +39,7 @@ export class Project extends Folder {
       .forEach(childName => {
         const dir = Path.join(directory, "Sessions", childName);
         if (fs.lstatSync(dir).isDirectory()) {
-          console.log(dir);
+          // console.log(dir);
           const session = Session.fromDirectory(dir);
           project.sessions.push(session);
         }
@@ -51,7 +51,7 @@ export class Project extends Folder {
       .forEach(childName => {
         const dir = Path.join(directory, "People", childName);
         if (fs.lstatSync(dir).isDirectory()) {
-          console.log(dir);
+          //console.log(dir);
           const person = Person.fromDirectory(dir);
           project.persons.push(person);
         }
