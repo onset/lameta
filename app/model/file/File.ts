@@ -17,10 +17,6 @@ export abstract class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
 
-  // project, sessions, and person folders have a single metdata file describing their contents, and this ends
-  // in a special extension (.sprj, .session, .person)
-  //protected fileExtensionForFolderMetadata: string;
-
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
@@ -30,10 +26,10 @@ export abstract class File {
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
   // with an extension of ".meta", as in "banquet.jpg.meta";
-  public abstract get metadataPath(): string;
+  public metadataFilePath: string;
 
-  protected abstract xmlRootName(): string;
-  protected abstract fileExtensionForMetadata(): string;
+  private xmlRootName: string;
+  private fileExtensionForMetadata: string;
 
   @observable public properties = new FieldSet();
 
@@ -55,9 +51,20 @@ export abstract class File {
       new Field(key, FieldType.Text, date.toISOString())
     );
   }
-  public addTextProperty(key: string, value: string) {
+  public addTextProperty(key: string, value: string, persist: boolean = true) {
     //console.log("setting " + key + " to " + value);
-    this.properties.setValue(key, new Field(key, FieldType.Text, value));
+    this.properties.setValue(
+      key,
+      new Field(
+        key,
+        FieldType.Text,
+        value,
+        undefined,
+        undefined,
+        undefined,
+        persist
+      )
+    );
     assert(value === this.properties.getTextField(key).text);
   }
   public setTextProperty(key: string, value: string) {
@@ -77,13 +84,21 @@ export abstract class File {
     return this.properties.getValue(key) as Field;
   }
 
-  public constructor(path: string) {
-    this.describedFilePath = path;
-    this.addTextProperty("filename", Path.basename(path));
+  public constructor(
+    describedFilePath: string,
+    metadataFilePath: string,
+    xmlRootName: string,
+    fileExtensionForMetadata: string
+  ) {
+    this.describedFilePath = describedFilePath;
+    this.metadataFilePath = metadataFilePath;
+    this.xmlRootName = xmlRootName;
+    this.fileExtensionForMetadata = fileExtensionForMetadata;
+    this.addTextProperty("filename", Path.basename(describedFilePath), false);
     this.addTextProperty("notes", "");
 
-    const stats = fs.statSync(path);
-    this.addTextProperty("size", filesize(stats.size, { round: 0 }));
+    const stats = fs.statSync(describedFilePath);
+    this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("date", stats.mtime);
 
     const typePatterns = [
@@ -94,7 +109,7 @@ export abstract class File {
       ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i]
     ];
     typePatterns.forEach(t => {
-      if (path.match(t[1])) {
+      if (describedFilePath.match(t[1])) {
         this.addTextProperty("type", t[0] as string);
         //break;  alas, there is no break as yet.
       }
@@ -107,11 +122,11 @@ export abstract class File {
     // TODO read the .meta file that describes this file, if it exists
   }
 
-  public loadProperties(properties: any) {
-    const keys = Object.keys(properties);
+  public loadProperties(propertiesFromXml: any) {
+    const keys = Object.keys(propertiesFromXml);
 
     for (const key of keys) {
-      let value = properties[key];
+      let value = propertiesFromXml[key];
       if (value === undefined) {
         value = "";
       } else if (typeof value === "object") {
@@ -128,7 +143,7 @@ export abstract class File {
         const v = this.properties.getValue(fixedKey);
         v.setValueFromString(value);
       } else {
-        //console.log("extra");
+        //console.log("extra" + fixedKey + "=" + value);
         // otherwise treat it as a string
         this.addTextProperty(fixedKey, value);
       }
@@ -160,11 +175,11 @@ export abstract class File {
     }
   }
   public readMetadataFile() {
-    if (!fs.existsSync(this.metadataPath)) {
+    if (!fs.existsSync(this.metadataFilePath)) {
       return;
     }
 
-    const xml: string = fs.readFileSync(this.metadataPath, "utf8");
+    const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
 
     let xmlAsObject: any = {};
     xml2js.parseString(
@@ -184,72 +199,63 @@ export abstract class File {
   }
 
   public save() {
-    let json = `{"root":[`;
-    this.properties.forEach((k, f: Field) => {
-      json += "{" + f.stringify() + "},";
-    });
-    json = json.replace(/(,$)/g, ""); //remove trailing comma
-    json += "]}";
+    console.log("Save():" + JSON.stringify(this.properties.keys()));
+
+    // let json = `{"root":[`;
+    // this.properties.forEach((k, f: Field) => {
+    //   json += "{" + f.stringify() + "},";
+    // });
+    // json = json.replace(/(,$)/g, ""); //remove trailing comma
+    // json += "]}";
+
+    // console.log("Save() JSON:" + json);
 
     // prettier-ignore
-    const root = xmlbuilder.create(this.xmlRootName())
-                    .element("notes", this.getTextProperty("notes"))
-                        .up();
+    const root = xmlbuilder.create(this.xmlRootName, { version: '1.0', encoding: 'utf-8' });
+    this.properties.forEach((k, f: Field) => {
+      if (f.persist) {
+        const t = f.typeAndValueForXml();
+        root.element(k, { type: t[0] }, t[1]).up();
+      }
+    });
+    //    root.element("notes", this.getTextProperty("notes")).up();
 
     const xml = root.end({ pretty: true });
+    console.log(`Save(${this.describedFilePath}`);
     if (this.describedFilePath.indexOf("sample data") > -1) {
       // console.log(
       //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
       // );
-      // console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataPath);
+      console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
       // console.log(xml);
     } else {
-      fs.writeFileSync(this.metadataPath, xml);
+      console.log("writing:" + xml);
+      fs.writeFileSync(this.metadataFilePath, xml);
     }
   }
 }
 
-export class ProjectMetdataFile extends File {
-  protected xmlRootName(): string {
-    return "Project";
-  }
-  protected fileExtensionForMetadata(): string {
-    return ".sprj";
-  }
-  public get metadataPath(): string {
-    return this.describedFilePath;
-  }
-}
-export class PersonMetdataFile extends File {
-  protected xmlRootName(): string {
-    return "Person";
-  }
-  protected fileExtensionForMetadata(): string {
-    return ".person";
-  }
-  public get metadataPath(): string {
-    return this.describedFilePath;
-  }
-}
-export class SessionMetdataFile extends File {
-  protected xmlRootName(): string {
-    return "Session";
-  }
-  protected fileExtensionForMetadata(): string {
-    return ".session";
-  }
-  public get metadataPath(): string {
-    return this.describedFilePath;
+// project, sessions, and person folders have a single metdata file describing their contents, and this ends
+// in a special extension (.sprj, .session, .person)
+//protected fileExtensionForFolderMetadata: string;
+export class FolderMetdataFile extends File {
+  constructor(
+    directory: string,
+    xmlRootName: string,
+    fileExtensionForMetadata: string
+  ) {
+    const name = Path.basename(directory);
+
+    //if the metadata file doesn't yet exist, just make an empty one.
+    const metadataPath = Path.join(directory, name + fileExtensionForMetadata);
+    if (!fs.existsSync(metadataPath)) {
+      fs.writeFileSync(metadataPath, `<${xmlRootName}/>`);
+    }
+    super(metadataPath, metadataPath, xmlRootName, fileExtensionForMetadata);
   }
 }
 export class OtherMetdataFile extends File {
-  protected xmlRootName(): string {
-    return "Meta";
-  }
-  protected fileExtensionForMetadata(): string {
-    return ".meta";
-  }
-  public get metadataPath(): string {
-    return this.describedFilePath + ".meta";
+  constructor(path: string) {
+    super(path, path + ".meta", "Meta", ".meta");
   }
 }

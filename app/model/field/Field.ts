@@ -10,6 +10,7 @@ export interface IFieldDefinition {
   key: string;
   englishLabel?: string;
   defaultValue?: string;
+  persist: boolean;
   type: string;
   form: string; // what form this shows on, if not the main one
   //visibility?: string;
@@ -33,6 +34,7 @@ export class Field {
   public readonly type: FieldType;
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
+  public readonly persist: boolean;
   public readonly cssClass: string;
   @observable public textHolder = new TextHolder();
   public choices: string[];
@@ -54,6 +56,7 @@ export class Field {
       definition.englishLabel,
       definition.form,
       FieldVisibility.Always, //todo
+      definition.persist,
       choices,
       definition.cssClass
     );
@@ -66,6 +69,7 @@ export class Field {
     englishLabel: string = titleCase(key),
     form: string = "",
     visibility: FieldVisibility = FieldVisibility.Always,
+    persist: boolean = true,
     choices: string[] = [],
     cssClass: string = ""
   ) {
@@ -74,6 +78,7 @@ export class Field {
     this.form = form;
     this.type = type;
     this.visibility = visibility;
+    this.persist = persist;
     this.cssClass = cssClass;
     this.text = englishValue;
     this.choices = choices;
@@ -108,15 +113,24 @@ export class Field {
     }
     return "";
   }
-  public stringify(): string {
+  public typeAndValueForXml(): [string, string] {
     switch (this.type) {
       case FieldType.Text:
-        return `"${this.key}":"${Field.escapeSpecialChars(this.text)}"`;
+        return ["string", Field.escapeSpecialChars(this.text)];
       case FieldType.Date:
-        return `"${this.key}":"${this.asISODateString()}"`;
+        return ["date", this.asISODateString()];
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }
+    // public stringify(): string {
+    //   switch (this.type) {
+    //     case FieldType.Text:
+    //       return `"${this.key}":"${Field.escapeSpecialChars(this.text)}"`;
+    //     case FieldType.Date:
+    //       return `"${this.key}":"${this.asISODateString()}"`;
+    //     default:
+    //       throw new Error("stringify() Unexpected type " + this.type);
+    //   }
   }
   // public objectForSerializing(): object {
   //   throw new Error("Subclasses must implement objectForSerializing");

@@ -28,6 +28,11 @@
     "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "./tsconfig.json"
+      }
+    },
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/internals/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
@@ -167,6 +172,7 @@
     "@blueprintjs/table": "^1.29.1",
     "@types/camelcase": "^4.1.0",
     "@types/filesize": "^3.2.15",
+    "@types/fs-extra": "^5.0.0",
     "@types/glob": "^5.0.33",
     "@types/image-size": "^0.0.29",
     "@types/moment": "^2.13.0",
@@ -183,6 +189,7 @@
     "filesize": "^3.5.11",
     "font-awesome": "^4.7.0",
     "fs": "^0.0.1-security",
+    "fs-extra": "^5.0.0",
     "glob": "^7.1.2",
     "history": "^4.6.1",
     "image-size": "^0.6.1",

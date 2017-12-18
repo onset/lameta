@@ -1,5 +1,5 @@
 import { Folder } from "./Folder";
-import { File, SessionMetdataFile } from "./file/File";
+import { File, FolderMetdataFile } from "./file/File";
 import * as Path from "path";
 const knownFieldDefinitions = require("./field/fields.json");
 
@@ -16,9 +16,11 @@ export class Session extends Folder {
     super(directory, metadataFile, files);
   }
   public static fromDirectory(directory: string): Session {
-    const name = Path.basename(directory);
-    const metadataPath = Path.join(directory, name + ".session");
-    const metadataFile = new SessionMetdataFile(metadataPath);
+    const metadataFile = new FolderMetdataFile(
+      directory,
+      "Session",
+      ".session"
+    );
 
     const files = this.loadChildFiles(
       directory,

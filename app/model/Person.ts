@@ -1,5 +1,5 @@
 import { Folder } from "./Folder";
-import { File, PersonMetdataFile } from "./file/File";
+import { File, FolderMetdataFile } from "./file/File";
 import * as Path from "path";
 import * as glob from "glob";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -35,9 +35,7 @@ export class Person extends Folder {
     this.properties.addTextProperty("name", Path.basename(directory));
   }
   public static fromDirectory(directory: string): Person {
-    const name = Path.basename(directory);
-    const metadataPath = Path.join(directory, name + ".person");
-    const metadataFile = new PersonMetdataFile(metadataPath);
+    const metadataFile = new FolderMetdataFile(directory, "Person", ".person");
 
     const files = this.loadChildFiles(
       directory,

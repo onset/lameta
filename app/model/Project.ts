@@ -4,7 +4,7 @@ import * as Path from "path";
 import { Session } from "./Session";
 import { IFolderSelection, Folder } from "./Folder";
 import { Person } from "./Person";
-import { File, ProjectMetdataFile } from "./file/File";
+import { File, FolderMetdataFile } from "./file/File";
 import { Field, FieldType, FieldVisibility } from "./field/Field";
 import ImdiExporter from "../export/imdi";
 const knownFieldDefinitions = require("./field/fields.json");
@@ -21,21 +21,15 @@ export class Project extends Folder {
     this.selectedPerson = new IFolderSelection();
   }
 
-  public get metadataFileExtensionWithDot(): string {
-    return ".sprj";
-  }
-
   public static fromDirectory(directory: string): Project {
-    const name = Path.basename(directory);
-    const metadataPath = Path.join(directory, name + ".sprj");
-    const metdataFile = new ProjectMetdataFile(metadataPath);
+    const metadataFile = new FolderMetdataFile(directory, "Project", ".sprj");
 
     const files = this.loadChildFiles(
       directory,
-      metdataFile,
+      metadataFile,
       knownFieldDefinitions.project
     );
-    const project = new Project(directory, metdataFile, files);
+    const project = new Project(directory, metadataFile, files);
 
     fs
       .readdirSync(Path.join(directory, "Sessions"), "utf8")

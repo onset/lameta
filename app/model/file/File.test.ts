@@ -1,7 +1,8 @@
-import { OtherMetdataFile, SessionMetdataFile } from "./File";
-import * as fs from "fs";
+import { OtherMetdataFile, FolderMetdataFile } from "./File";
+import * as fs from "fs-extra";
+import * as Path from "path";
 import * as temp from "temp";
-
+/*
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
   fs.writeFileSync(path, "pretend contents");
@@ -16,12 +17,15 @@ describe("file.save()", () => {
   });
 });
 
-describe("SessionMetdataFile.save", () => {
-  it("should not create a .meta file", () => {
-    const path = temp.path({ suffix: ".session" }) as string;
-    fs.writeFileSync(path, "<Session/>");
-    new SessionMetdataFile(path).save();
-    expect(fs.existsSync(path + ".meta")).toBeFalsy();
+describe("FolderMetadataFile constructor", () => {
+  it("should make the appropriate metadata file if it doesn't exist", () => {
+    //temp.track();
+    const dir = temp.mkdirSync("blah");
+    const f = new FolderMetdataFile(dir, "Session", ".session");
+    const files = fs.readdirSync(dir);
+    expect(files.length).toBe(1);
+    expect(files[0].indexOf(".session")).toBeGreaterThan(0);
+    temp.cleanupSync();
   });
 });
 
@@ -34,5 +38,38 @@ describe("file", () => {
     f.save();
     const f2 = new OtherMetdataFile(mediaFilePath);
     expect(f2.getTextField("notes").text).toBe(notes);
+  });
+});
+*/
+// describe("file", () => {
+//   it("should roundtrip custom field", () => {
+//     const mediaFilePath = getPretendAudioFile();
+//     const f = new OtherMetdataFile(mediaFilePath);
+//     f.setTextProperty("customone", "hello");
+//     f.save();
+//     const f2 = new OtherMetdataFile(mediaFilePath);
+//     expect(f2.getTextField("customone").text).toBe("hello");
+//   });
+// });
+
+describe("FolderMetdataFile", () => {
+  test.only("can roundtrip sample session file", () => {
+    const originalPath =
+      "./sample data/Edolo sample/Sessions/ETR009/ETR009.session";
+    const originalXml: string = fs.readFileSync(originalPath, "utf8");
+    const newDir = Path.join(temp.dir, "ETR009");
+    if (fs.existsSync(newDir)) {
+      fs.removeSync(newDir);
+    }
+    fs.mkdirSync(newDir);
+    const newPath = Path.join(newDir, "ETR009.session");
+    fs.writeFileSync(newPath, originalXml, "utf8");
+
+    const f = new FolderMetdataFile(newDir, "Session", ".session");
+    f.save();
+    const newXml: string = fs.readFileSync(newPath, "utf8");
+    // console.log("-----------------------------");
+    // console.log(newXml);
+    expect(newXml).toBe(originalXml);
   });
 });
