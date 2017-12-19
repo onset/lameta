@@ -1,3 +1,4 @@
+const electron = require("electron");
 const { app, BrowserWindow, Menu, shell } = require("electron");
 
 let menu;
@@ -38,6 +39,12 @@ const installExtensions = () => {
   return Promise.resolve([]);
 };
 
+function fillLastMonitor() {
+  var displays = electron.screen.getAllDisplays();
+  mainWindow.setBounds(displays[displays.length - 1].bounds);
+  mainWindow.maximize();
+}
+
 app.on("ready", () =>
   installExtensions().then(() => {
     mainWindow = new BrowserWindow({
@@ -51,8 +58,8 @@ app.on("ready", () =>
     mainWindow.webContents.on("did-finish-load", () => {
       mainWindow.show();
       mainWindow.focus();
+      fillLastMonitor();
     });
-
     mainWindow.on("closed", () => {
       mainWindow = null;
     });
