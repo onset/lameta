@@ -1,3 +1,4 @@
+const path = require("path");
 const electron = require("electron");
 const { app, BrowserWindow, Menu, shell } = require("electron");
 
@@ -50,7 +51,11 @@ app.on("ready", () =>
     mainWindow = new BrowserWindow({
       show: false,
       width: 1024,
-      height: 728
+      height: 728,
+      //windows
+      icon: path.join(__dirname, "../app/icons/windows.ico")
+      //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")
+      //mac icon: path.join(__dirname, "../app/icons/mac.icns")
     });
 
     mainWindow.loadURL(`file://${__dirname}/app.html`);

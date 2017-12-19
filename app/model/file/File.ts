@@ -151,10 +151,10 @@ export abstract class File {
       if (this.properties.containsKey(fixedKey)) {
         const v = this.properties.getValue(fixedKey);
         v.setValueFromString(textValue);
-        console.log("11111" + key);
+        //console.log("11111" + key);
       } else {
         // bit of a hack, might not keep this
-        console.log("000000 " + key);
+        //console.log("000000 " + key);
         if (key.toLowerCase().indexOf("date") > -1) {
           this.addDatePropertyFromString(fixedKey, textValue);
         } else {
