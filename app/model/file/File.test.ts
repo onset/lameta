@@ -53,7 +53,7 @@ describe("file", () => {
 // });
 
 describe("FolderMetdataFile", () => {
-  test.only("can roundtrip sample session file", () => {
+  it("can roundtrip sample session file", () => {
     const originalPath =
       "./sample data/Edolo sample/Sessions/ETR009/ETR009.session";
     const originalXml: string = fs.readFileSync(originalPath, "utf8");
@@ -66,6 +66,24 @@ describe("FolderMetdataFile", () => {
     fs.writeFileSync(newPath, originalXml, "utf8");
 
     const f = new FolderMetdataFile(newDir, "Session", ".session");
+    f.save();
+    const newXml: string = fs.readFileSync(newPath, "utf8");
+    // console.log("-----------------------------");
+    // console.log(newXml);
+    expect(newXml).toBe(originalXml);
+  });
+  test.only("can roundtrip sample project file", () => {
+    const originalPath = "./sample data/Edolo sample/Edolo sample.sprj";
+    const originalXml: string = fs.readFileSync(originalPath, "utf8");
+    const newDir = Path.join(temp.dir, "Edolo sample");
+    if (fs.existsSync(newDir)) {
+      fs.removeSync(newDir);
+    }
+    fs.mkdirSync(newDir);
+    const newPath = Path.join(newDir, "Edolo sample.sprj");
+    fs.writeFileSync(newPath, originalXml, "utf8");
+
+    const f = new FolderMetdataFile(newDir, "Project", ".sprj");
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");

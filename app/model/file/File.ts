@@ -10,7 +10,7 @@ import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
-
+const moment = require("moment");
 ///export  enum Type {Project, Session, Person, Other }
 
 export abstract class File {
@@ -44,11 +44,19 @@ export abstract class File {
       assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
   }
+  protected addDatePropertyFromString(key: string, dateString: string) {
+    // get a little paranoid with the date format
+    assert(moment(dateString).isValid()); //todo: handle bad data
+    const date = new Date(Date.parse(dateString));
+    this.checkType(key, date);
+    const dateWeTrust = date.toISOString();
+    this.properties.setValue(key, new Field(key, FieldType.Date, dateWeTrust));
+  }
   protected addDateProperty(key: string, date: Date) {
     this.checkType(key, date);
     this.properties.setValue(
       key,
-      new Field(key, FieldType.Text, date.toISOString())
+      new Field(key, FieldType.Date, date.toISOString())
     );
   }
   public addTextProperty(key: string, value: string, persist: boolean = true) {
@@ -110,7 +118,7 @@ export abstract class File {
     ];
     typePatterns.forEach(t => {
       if (describedFilePath.match(t[1])) {
-        this.addTextProperty("type", t[0] as string);
+        this.addTextProperty("type", t[0] as string, false);
         //break;  alas, there is no break as yet.
       }
     });
@@ -137,15 +145,23 @@ export abstract class File {
           continue;
         }
       }
+      const textValue: string = value;
       const fixedKey = camelcase(key);
       // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
       if (this.properties.containsKey(fixedKey)) {
         const v = this.properties.getValue(fixedKey);
-        v.setValueFromString(value);
+        v.setValueFromString(textValue);
+        console.log("11111" + key);
       } else {
-        //console.log("extra" + fixedKey + "=" + value);
-        // otherwise treat it as a string
-        this.addTextProperty(fixedKey, value);
+        // bit of a hack, might not keep this
+        console.log("000000 " + key);
+        if (key.toLowerCase().indexOf("date") > -1) {
+          this.addDatePropertyFromString(fixedKey, textValue);
+        } else {
+          //console.log("extra" + fixedKey + "=" + value);
+          // otherwise treat it as a string
+          this.addTextProperty(fixedKey, textValue);
+        }
       }
     }
   }
@@ -215,7 +231,14 @@ export abstract class File {
     this.properties.forEach((k, f: Field) => {
       if (f.persist) {
         const t = f.typeAndValueForXml();
-        root.element(k, { type: t[0] }, t[1]).up();
+        //console.log(k + " is a " + t[0] + " of value " + t[1]);
+        assert(
+          k.indexOf("date") === -1 || t[0] === "date",
+          "SHOULDN'T " + k + " BE A DATE?"
+        );
+        if (t[1].length > 0) {
+          root.element(k, { type: t[0] }, t[1]).up();
+        }
       }
     });
     //    root.element("notes", this.getTextProperty("notes")).up();

@@ -1,5 +1,6 @@
 import { observable } from "mobx";
 import TextHolder from "./TextHolder";
+import * as assert from "assert";
 import { Moment } from "moment";
 const moment = require("moment");
 
@@ -49,6 +50,9 @@ export class Field {
       : FieldType.Text;
     const choices = definition.choices ? definition.choices : [];
 
+    // console.log(
+    //   "fromFieldDefinition() " + definition.key + " is a " + definition.type
+    // );
     return new Field(
       definition.key,
       type,
@@ -82,6 +86,12 @@ export class Field {
     this.cssClass = cssClass;
     this.text = englishValue;
     this.choices = choices;
+
+    assert(
+      this.key.toLowerCase().indexOf("date") === -1 ||
+        this.type === FieldType.Date,
+      "SHOULDN'T " + key + " BE A DATE?"
+    );
   }
 
   get text(): string {
@@ -122,19 +132,7 @@ export class Field {
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }
-    // public stringify(): string {
-    //   switch (this.type) {
-    //     case FieldType.Text:
-    //       return `"${this.key}":"${Field.escapeSpecialChars(this.text)}"`;
-    //     case FieldType.Date:
-    //       return `"${this.key}":"${this.asISODateString()}"`;
-    //     default:
-    //       throw new Error("stringify() Unexpected type " + this.type);
-    //   }
   }
-  // public objectForSerializing(): object {
-  //   throw new Error("Subclasses must implement objectForSerializing");
-  // }
 
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
   protected static escapeSpecialChars(s: string): string {
