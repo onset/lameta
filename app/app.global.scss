@@ -55,7 +55,9 @@ html,
   margin: 0;
   background-color: $color-interstitial;
 }
-
+a {
+  text-decoration: underline;
+}
 .field {
   //width: 30%;
   margin: 4px 8px;
@@ -124,12 +126,15 @@ form {
 }
 .project .react-tabs__tab-panel {
   background-color: $project--color;
-  border: solid thin $project__outline--color;
+  //border: solid thin $project__outline--color;
+  padding: 10px;
 }
 .react-tabs__tab-list {
   background-color: $pane__interstitial--color;
 }
-
+.sessions {
+  background-color: $session--color;
+}
 .people {
   background-color: $people--color;
 }
@@ -183,6 +188,10 @@ form {
       }
     }
   }
+
+  .filePane {
+    border: none;
+  }
 }
 .componentTab {
   //background-color: #F0F0F0;
@@ -213,7 +222,7 @@ form {
   //background-color: #cff09f;
   width: 100%;
   //padding: 8px; // nice idea, to inset the child, but it was visually complicating
-  border: solid thin $pane__border--color;
+  //border: solid thin $pane__border--color;
 }
 
 .fileList {
@@ -228,4 +237,25 @@ form {
 }
 .project-documents .fileList {
   min-height: 150px;
+}
+
+.filePane {
+  height: 100%;
+}
+
+.textView {
+  background-color: white;
+  height: 100%;
+  padding: 1em;
+}
+
+.project .filePane {
+  .react-tabs__tab-panel {
+    padding-left: 1px;
+    padding-top: 0px;
+    padding-right: 0;
+  }
+  .react-tabs__tab-list {
+    background-color: $project--color;
+  }
 }

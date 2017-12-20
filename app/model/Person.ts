@@ -27,7 +27,7 @@ export class Person extends Folder {
   }
 
   public get displayName(): string {
-    return this.properties.getTextStringOrEmpty(name);
+    return this.properties.getTextStringOrEmpty("name");
   }
 
   public constructor(directory: string, metadataFile: File, files: File[]) {

@@ -35,14 +35,33 @@ export class ProjectTab extends React.Component<IProps> {
             folder={this.props.project.descriptionFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}
-          />
+          >
+            <strong>
+              Add documents here that describe the projects and corpus.
+            </strong>
+            <br />
+            <a>How these are archived</a>
+            <br /> <br />
+            <br />
+          </FolderPane>
         </TabPanel>
         <TabPanel>
           <FolderPane
             folder={this.props.project.otherDocsFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}
-          />
+          >
+            {" "}
+            <strong>
+              Add documents here that don't seem to fit anywhere else. An
+              example would be documents explaining how the project was funded.
+            </strong>
+            <br />
+            <a>How these are archived</a>
+            <br />
+            <br />
+            <br />
+          </FolderPane>
         </TabPanel>
       </Tabs>
     );

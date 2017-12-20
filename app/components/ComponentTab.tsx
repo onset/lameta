@@ -30,7 +30,14 @@ export class ComponentTab extends React.Component<IProps> {
               folder={this.props.folders[this.props.selectedFolder.index]}
               folderTypeStyleClass={this.props.folderTypeStyleClass}
               showStandardMetaTabs={true}
-            />
+            >
+              <h3 className={"paneTitle"}>
+                {
+                  this.props.folders[this.props.selectedFolder.index]
+                    .displayName
+                }
+              </h3>
+            </FolderPane>
           )}
       </div>
     );

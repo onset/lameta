@@ -23,9 +23,6 @@ export class ProjectDocuments extends Folder {
       const file = new OtherFile(path);
       files.push(file);
     });
-    return new ProjectDocuments(
-      Path.join(directory, "DescriptionDocuments"),
-      files
-    );
+    return new ProjectDocuments(directory, files);
   }
 }

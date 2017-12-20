@@ -11,6 +11,7 @@ import ReactPlayer from "react-player";
 import PersonForm from "./PersonForm";
 import { Person } from "../model/Person";
 import { Session } from "../model/Session";
+import TextFileView from "./TextFileView";
 
 export interface IProps {
   folder: Folder;
@@ -39,7 +40,8 @@ export class FolderPane extends React.Component<IProps> {
 
     return (
       <div className={"filePane " + this.props.folderTypeStyleClass}>
-        <h3 className={"paneTitle"}>{this.props.folder.displayName}</h3>
+        {this.props.children}
+        {/* <h3 className={"paneTitle"}>{this.props.folder.displayName}</h3> */}
         <FileList folder={this.props.folder} />
         {this.getTabs(this.props.folder, fullPath)}
       </div>
@@ -52,7 +54,7 @@ export class FolderPane extends React.Component<IProps> {
     // console.log("getTabs:" + directoryObject.path);
     // console.log("getTabs file:" + file.type);
     if (!file || path.length === 0) {
-      return <h3>none</h3>;
+      return <br />;
     }
     const notesPanel = (
       <TabPanel>
@@ -172,7 +174,9 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>Text</Tab>
               {standardMetaTabs}
             </TabList>
-            <TabPanel>TODO Put text here,</TabPanel>
+            <TabPanel>
+              <TextFileView path={path} />
+            </TabPanel>
             {standardMetaPanels}
           </Tabs>
         );
