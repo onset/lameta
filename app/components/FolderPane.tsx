@@ -15,6 +15,7 @@ import { Session } from "../model/Session";
 export interface IProps {
   folder: Folder;
   folderTypeStyleClass: string;
+  showStandardMetaTabs: boolean;
 }
 
 @observer
@@ -68,6 +69,20 @@ export class FolderPane extends React.Component<IProps> {
         <h1>contributors todo</h1>
       </TabPanel>
     );
+    const standardMetaTabs = this.props.showStandardMetaTabs ? (
+      <>
+        <Tab>Properties</Tab>
+        <Tab>Contributors</Tab>
+        <Tab>Notes</Tab>
+      </>
+    ) : null;
+    const standardMetaPanels = this.props.showStandardMetaTabs ? (
+      <>
+        {propertiesPanel}
+        {contributorsPanel}
+        {notesPanel}
+      </>
+    ) : null;
 
     switch (file.type) {
       case "Session":
@@ -112,18 +127,14 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>Audio</Tab>
-              <Tab>Properties</Tab>
-              <Tab>Contributors</Tab>
-              <Tab>Notes</Tab>
+              {standardMetaTabs}
             </TabList>
             <TabPanel>
               <audio controls>
                 <source src={path} />
               </audio>
             </TabPanel>
-            {propertiesPanel}
-            {contributorsPanel}
-            {notesPanel}
+            {standardMetaPanels}
           </Tabs>
         );
       case "Video":
@@ -131,18 +142,14 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>Video</Tab>
-              <Tab>Properties</Tab>
-              <Tab>Contributors</Tab>
-              <Tab>Notes</Tab>
+              {standardMetaTabs}
             </TabList>
             <TabPanel>
               <ReactPlayer url={path}>
                 <source src={path} />
               </ReactPlayer>
             </TabPanel>
-            {propertiesPanel}
-            {contributorsPanel}
-            {notesPanel}
+            {standardMetaPanels}
           </Tabs>
         );
       case "Image":
@@ -150,16 +157,12 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>Image</Tab>
-              <Tab>Properties</Tab>
-              <Tab>Contributors</Tab>
-              <Tab>Notes</Tab>
+              {standardMetaTabs}
             </TabList>
             <TabPanel>
-              <img src={path} />,
+              <img src={path} />
             </TabPanel>
-            {propertiesPanel}
-            {contributorsPanel}
-            {notesPanel}
+            {standardMetaPanels}
           </Tabs>
         );
       case "Text":
@@ -167,14 +170,10 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>Text</Tab>
-              <Tab>Properties</Tab>
-              <Tab>Contributors</Tab>
-              <Tab>Notes</Tab>
+              {standardMetaTabs}
             </TabList>
             <TabPanel>TODO Put text here,</TabPanel>
-            {propertiesPanel}
-            {contributorsPanel}
-            {notesPanel}
+            {standardMetaPanels}
           </Tabs>
         );
       default:
@@ -182,16 +181,12 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs>
             <TabList>
               <Tab>View</Tab>
-              <Tab>Properties</Tab>
-              <Tab>Contributors</Tab>
-              <Tab>Notes</Tab>
+              {standardMetaTabs}
             </TabList>
             <TabPanel>
               <h1>todo</h1>
             </TabPanel>
-            {propertiesPanel}
-            {contributorsPanel}
-            {notesPanel}
+            {standardMetaPanels}
           </Tabs>
         );
     }
