@@ -29,10 +29,12 @@ export class FolderPane extends React.Component<IProps> {
       return <h1>No folder selected.</h1>;
     }
     //console.log("Render SSPane:" + this.props.session.title.default);
-    const fullPath: string = Path.join(
-      this.props.folder.directory,
-      this.props.folder.selectedFile.getTextProperty("filename")
-    );
+    const fullPath: string = this.props.folder.selectedFile
+      ? Path.join(
+          this.props.folder.directory,
+          this.props.folder.selectedFile.getTextProperty("filename")
+        )
+      : "";
 
     return (
       <div className={"filePane " + this.props.folderTypeStyleClass}>
@@ -48,7 +50,7 @@ export class FolderPane extends React.Component<IProps> {
     // console.log("getTabs:" + path);
     // console.log("getTabs:" + directoryObject.path);
     // console.log("getTabs file:" + file.type);
-    if (!file) {
+    if (!file || path.length === 0) {
       return <h3>none</h3>;
     }
     const notesPanel = (
@@ -160,6 +162,21 @@ export class FolderPane extends React.Component<IProps> {
             {notesPanel}
           </Tabs>
         );
+      case "Text":
+        return (
+          <Tabs>
+            <TabList>
+              <Tab>Text</Tab>
+              <Tab>Properties</Tab>
+              <Tab>Contributors</Tab>
+              <Tab>Notes</Tab>
+            </TabList>
+            <TabPanel>TODO Put text here,</TabPanel>
+            {propertiesPanel}
+            {contributorsPanel}
+            {notesPanel}
+          </Tabs>
+        );
       default:
         return (
           <Tabs>
@@ -180,5 +197,3 @@ export class FolderPane extends React.Component<IProps> {
     }
   }
 }
-
-export default FolderPane;

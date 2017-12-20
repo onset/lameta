@@ -90,8 +90,8 @@ form {
 
 // }
 
-.project ul {
-  display: block;
+.projectx .primary ul {
+  //display: block;
 }
 .componentTab {
   color: $session--color;
@@ -137,10 +137,10 @@ form {
   display: flex;
 
   //left side
-  ul {
+  & > ul {
     width: 200px;
 
-    // turn off the tab look
+    //   // turn off the tab look
     .react-tabs__tab {
       border: none;
       border-radius: initial;
@@ -151,8 +151,7 @@ form {
   .react-tabs__tab-panel {
     width: 100%;
   }
-}
-.project {
+
   .primary {
     display: grid;
     grid-template-columns: auto;
@@ -210,10 +209,7 @@ form {
   //padding: 8px; // nice idea, to inset the child, but it was visually complicating
   border: solid thin $pane__border--color;
 }
-.filePane :global(.react-tabs__tab-panel) {
-  // margin-left: 12px;
-  // margin-right: 12px;
-}
+
 .fileList {
   background-color: white;
   height: 30%;
@@ -223,4 +219,7 @@ form {
   margin-top: 6px;
   margin-left: 6px;
   margin-bottom: 6px;
+}
+.project-documents .fileList {
+  min-height: 150px;
 }

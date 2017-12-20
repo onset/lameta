@@ -84,10 +84,14 @@ export abstract class File {
       new Field(correctedKey, FieldType.Text, value)
     );
   }
-  public getTextProperty(key: string): string {
+  public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
     const p = this.properties.getValue(key); //as Field;
+    if (!p) {
+      return ifMissing;
+    }
     return p.text;
   }
+
   public getTextField(key: string): Field {
     return this.properties.getValue(key) as Field;
   }
@@ -114,7 +118,8 @@ export abstract class File {
       ["Person", /\.person$/i],
       ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
       ["Video", /\.((mp4))$/i],
-      ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i]
+      ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i],
+      ["Text", /\.(txt)/i]
     ];
     typePatterns.forEach(t => {
       if (describedFilePath.match(t[1])) {
@@ -277,7 +282,7 @@ export class FolderMetdataFile extends File {
     super(metadataPath, metadataPath, xmlRootName, fileExtensionForMetadata);
   }
 }
-export class OtherMetdataFile extends File {
+export class OtherFile extends File {
   constructor(path: string) {
     super(path, path + ".meta", "Meta", ".meta");
   }

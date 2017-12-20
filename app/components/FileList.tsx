@@ -16,6 +16,9 @@ export default class FileList extends React.Component<IProps> {
     return <Cell>{x}</Cell>;
   }
   private getSelectedFileRow() {
+    if (!this.props.folder.selectedFile) {
+      return [];
+    }
     const i = this.props.folder.files.indexOf(this.props.folder.selectedFile);
     return [Regions.row(i)];
   }

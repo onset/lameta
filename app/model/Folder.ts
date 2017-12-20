@@ -1,4 +1,4 @@
-import { File, OtherMetdataFile } from "./file/File";
+import { File, OtherFile } from "./file/File";
 import { observable } from "mobx";
 import {
   IFieldDefinition,
@@ -17,13 +17,17 @@ export class IFolderSelection {
 }
 
 // Project, Session, or Person
-export abstract class Folder {
+export class Folder {
   public directory: string = "";
   @observable public files: File[] = [];
-  @observable public selectedFile: File;
-  protected metadataFile: File;
+  @observable public selectedFile: File | null;
+  protected metadataFile: File | null;
 
-  public constructor(directory: string, metadataFile: File, files: File[]) {
+  public constructor(
+    directory: string,
+    metadataFile: File | null,
+    files: File[]
+  ) {
     this.directory = directory;
     this.metadataFile = metadataFile;
     this.files = files;
@@ -51,7 +55,11 @@ export abstract class Folder {
     //   }
     //   this.files.push(new File(path));
     // }
-    return this.metadataFile.properties;
+    if (this.metadataFile) {
+      return this.metadataFile.properties;
+    } else {
+      return new FieldSet(); //review... property document folders don't have properties
+    }
   }
 
   get type(): string {
@@ -100,8 +108,12 @@ export abstract class Folder {
       if (path !== folderMetaDataFile.metadataFilePath) {
         // the .meta companion files will be read and loaded into the properties of
         // the files they describe will be found and loaded, by the constructor of the ComponentFile
-        if (!path.endsWith(".meta") && !path.endsWith(".test")) {
-          const file = new OtherMetdataFile(path);
+        if (
+          !path.endsWith(".meta") &&
+          !path.endsWith(".test") &&
+          Path.normalize(path) !== Path.normalize(metdataFile.metadataFilePath)
+        ) {
+          const file = new OtherFile(path);
           files.push(file);
         }
       }
