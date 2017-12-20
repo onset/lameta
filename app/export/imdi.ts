@@ -1,6 +1,6 @@
-import { Session } from "../model/Session";
+import { Session } from "../model/Project/Session/Session";
 import * as builder from "xmlbuilder";
-import { Project } from "../model/Project";
+import { Project } from "../model/Project/Project";
 
 export default class ImdiExporter {
   public static export(project: Project) {

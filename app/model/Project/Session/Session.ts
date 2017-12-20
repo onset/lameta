@@ -1,7 +1,9 @@
-import { Folder } from "./Folder";
-import { File, FolderMetdataFile } from "./file/File";
+import { Folder } from "../../Folder";
+import { File, FolderMetdataFile } from "../../file/File";
 import * as Path from "path";
-const knownFieldDefinitions = require("./field/fields.json");
+import { IChoice } from "../../field/Field";
+const knownFieldDefinitions = require("../../field/fields.json");
+const genres = require("./genres.json");
 
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -21,7 +23,18 @@ export class Session extends Folder {
       "Session",
       ".session"
     );
+    // const genreNames = genres.map((g: any) => g.label);
+    // const genreFieldDefinition = knownFieldDefinitions.session.find(
+    //   (o: any) => o.key === "genre"
+    // );
+    const genreChoices = genres.map((g: any) => {
+      return g as IChoice;
+    });
+    const genreFieldDefinition = knownFieldDefinitions.session.find(
+      (o: any) => o.key === "genre"
+    );
 
+    genreFieldDefinition.choices = genreChoices;
     const files = this.loadChildFiles(
       directory,
       metadataFile,

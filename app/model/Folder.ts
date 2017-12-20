@@ -42,19 +42,6 @@ export class Folder {
   // they are directly accessible via objects of this class.
 
   public get properties(): FieldSet {
-    // if (this.files.length === 0) {
-    //   // we don't have our meta file loaded yet
-    //   const sessionName = Path.basename(this.directory);
-    //   const path = Path.join(
-    //     this.directory,
-    //     sessionName + this.metadataFileExtensionWithDot
-    //   );
-    //   if (!fs.existsSync(path)) {
-    //     // it doesn't even exist yet
-    //     fs.writeFileSync(path, "", "utf8");
-    //   }
-    //   this.files.push(new File(path));
-    // }
     if (this.metadataFile) {
       return this.metadataFile.properties;
     } else {
@@ -74,35 +61,20 @@ export class Folder {
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
-    metdataFile: File,
+    folderMetaDataFile: File,
     knownFields: IFieldDefinition[] = []
   ): File[] {
     const files = new Array<File>();
-    const folderMetaDataFile = metdataFile;
 
-    // the first file we want to return is special. It is the metadata file for the DirectoryObject (Project | Session | Person)
-    // const name = Path.basename(directory);
-    // const folderMetadataPath = Path.join(
-    //   directory,
-    //   name + mainMetadataFileExtensionWithDot
-    // );
-    // if (!fs.existsSync(folderMetadataPath)) {
-    //   fs.writeFileSync(
-    //     folderMetadataPath,
-    //     `<${rootXmlTag}></${rootXmlTag}>`,
-    //     "utf8"
-    //   );
-    // }
-
+    // load the file containing metadata about this folder
     knownFields.forEach((f: IFieldDefinition) => {
       const field = Field.fromFieldDefinition(f);
       folderMetaDataFile.properties.setValue(field.key, field);
     });
-
     folderMetaDataFile.readMetadataFile();
     files.push(folderMetaDataFile);
 
-    //read the other files
+    //collect the other files and the metdata files they are paired with
     const filePaths = glob.sync(Path.join(directory, "*.*"));
     filePaths.forEach(path => {
       if (path !== folderMetaDataFile.metadataFilePath) {
@@ -111,7 +83,8 @@ export class Folder {
         if (
           !path.endsWith(".meta") &&
           !path.endsWith(".test") &&
-          Path.normalize(path) !== Path.normalize(metdataFile.metadataFilePath)
+          Path.normalize(path) !==
+            Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
           const file = new OtherFile(path);
           files.push(file);

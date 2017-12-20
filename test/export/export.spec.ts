@@ -1,6 +1,6 @@
 import ImdiExporter from "../../app/export/imdi";
 import { File } from "../../app/model/file/File";
-import { Project } from "../../app/model/Project";
+import { Project } from "../../app/model/Project/Project";
 
 describe("imdi export", () => {
   it("should contain METATRANSCRIPT", () => {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Session } from "../model/Session";
+import { Session } from "../model/Project/Session/Session";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import DateFieldEdit from "./DateFieldEdit";

@@ -2,14 +2,14 @@ import * as fs from "fs";
 import * as mobx from "mobx";
 import * as Path from "path";
 import * as glob from "glob";
-import { Session } from "./Session";
-import { IFolderSelection, Folder } from "./Folder";
-import { Person } from "./Person";
-import { File, FolderMetdataFile } from "./file/File";
-import { Field, FieldType, FieldVisibility } from "./field/Field";
-import ImdiExporter from "../export/imdi";
+import { Session } from "./Session/Session";
+import { IFolderSelection, Folder } from "../Folder";
+import { Person } from "./Person/Person";
+import { File, FolderMetdataFile } from "../file/File";
+import { Field, FieldType, FieldVisibility } from "../field/Field";
+import ImdiExporter from "../../export/imdi";
 import { ProjectDocuments } from "./ProjectDocuments";
-const knownFieldDefinitions = require("./field/fields.json");
+const knownFieldDefinitions = require("../field/fields.json");
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;
@@ -34,23 +34,6 @@ export class Project extends Folder {
     this.otherDocsFolder = otherDocsFolder;
   }
 
-  // private static makeDocumentFolder(
-  //   rootDirectory: string,
-  //   subDirectory: string
-  // ): Folder {
-  //   const directory = Path.join(rootDirectory, subDirectory);
-  //   const files = new Array<File>();
-  //   const filePaths = glob.sync(Path.join(directory, "*.*"));
-  //   filePaths.forEach(path => {
-  //         const file = new OtherFile(path);
-  //         files.push(file);
-  //   });
-  //   return new Folder(
-  //     Path.join(directory, "DescriptionDocuments"),
-  //     null,
-  //     files
-  //   );
-  // }
   public static fromDirectory(directory: string): Project {
     const metadataFile = new FolderMetdataFile(directory, "Project", ".sprj");
 

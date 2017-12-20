@@ -9,9 +9,10 @@ import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import ReactPlayer from "react-player";
 import PersonForm from "./PersonForm";
-import { Person } from "../model/Person";
-import { Session } from "../model/Session";
+import { Person } from "../model/Project/Person/Person";
+import { Session } from "../model/Project/Session/Session";
 import TextFileView from "./TextFileView";
+import AutoForm from "./AutoForm";
 
 export interface IProps {
   folder: Folder;
@@ -97,9 +98,7 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>Notes</Tab>
             </TabList>
             <TabPanel>
-              <SessionForm session={directoryObject as Session} />
-              {/* Doing it this way, the form would be stuck showing the first session. Sigh, haven't figured out why.
-                  <SessionForm session={this.props.directoryObject} /> */}
+              <AutoForm fields={directoryObject.properties} form="primary" />
             </TabPanel>
             {propertiesPanel}
             <TabPanel>todo</TabPanel>

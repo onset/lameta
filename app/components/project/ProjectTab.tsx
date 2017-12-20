@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Project } from "../../model/Project";
+import { Project } from "../../model/Project/Project";
 //import { DocumentsPane } from "./DocumentsPane";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import AutoForm from "../AutoForm";

@@ -4,9 +4,9 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { ComponentTab } from "./ComponentTab";
 import { IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
-import { Session } from "../model/Session";
-import { Person } from "../model/Person";
-import { Project } from "../model/Project";
+import { Session } from "../model/Project/Session/Session";
+import { Person } from "../model/Project/Person/Person";
+import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 const styles = require("./Home.scss");
 

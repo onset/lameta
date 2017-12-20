@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Person } from "../model/Person";
+import { Person } from "../model/Project/Person/Person";
 import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import ImageField from "./ImageField";

@@ -2,7 +2,7 @@ import Home from "../components/Home";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
-import { Project } from "../model/Project";
+import { Project } from "../model/Project/Project";
 import * as fs from "fs";
 
 @observer

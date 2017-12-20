@@ -1,5 +1,5 @@
-import { Folder } from "./Folder";
-import { File, OtherFile } from "./file/File";
+import { Folder } from "../Folder";
+import { File, OtherFile } from "../file/File";
 import * as Path from "path";
 import * as glob from "glob";
 
