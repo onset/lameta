@@ -37,6 +37,8 @@ export class Project extends Folder {
     this.otherDocsFolder = otherDocsFolder;
     this.authorityLists = new AuthorityLists();
 
+    // when the user changes the chosen access protocol, we need to let the authorityLists
+    // object know so that it can provide the correct set of choices to the Settings form.
     this.properties
       .getValue("accessProtocol")
       .textHolder.map.intercept(change => {

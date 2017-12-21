@@ -16,6 +16,23 @@ module.exports = {
       {
         test: /\.json$/,
         loader: "json-loader"
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: "html-loader"
+        }
+      },
+      {
+        test: /\.md$/,
+        use: [
+          {
+            loader: "html-loader"
+          },
+          {
+            loader: "markdown-loader"
+          }
+        ]
       }
     ]
   },
