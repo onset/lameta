@@ -46,7 +46,6 @@ export default class ClosedChoiceEdit extends React.Component<
           value={ClosedChoiceEdit.getValue(this.props.text)}
           onChange={event => {
             ClosedChoiceEdit.onChange(event, this.props.text);
-            this.setState({}); //hack to force a re-rendering
           }}
         >
           {//NB: an error about keys here means that the choices were not unique

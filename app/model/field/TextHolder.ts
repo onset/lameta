@@ -1,3 +1,5 @@
+import { observable } from "mobx";
+
 /*** This class is really just a string. But it's here because we have found that virtually every long-lived language-related app
  * eventually
  * 1) needs to know the language of each string
@@ -11,9 +13,10 @@
  *
  */
 export default class TextHolder {
-  private map = new Map();
+  private map = observable.map();
   public get textInDefaultLanguage() {
-    return this.map.get("en");
+    const x = this.map.get("en") as string;
+    return x ? x : "";
   }
   public set textInDefaultLanguage(value: string) {
     this.map.set("en", value);
