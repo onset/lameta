@@ -77,7 +77,8 @@
   ],
   "session": [
     {
-      "key": "title"
+      "key": "title",
+      "cssClass": "text-block"
     },
     {
       "key": "people"
@@ -96,10 +97,17 @@
       "key": "location"
     },
     {
-      "key": "access"
+      "key": "access",
+      "choices": [
+        "Open",
+        "Restricted",
+        "Protected",
+        "This is not really tracking the chosen protocol yet"
+      ]
     },
     {
-      "key": "description"
+      "key": "description",
+      "cssClass": "text-block"
     },
     {
       "key": "date",

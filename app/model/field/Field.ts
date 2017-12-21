@@ -7,6 +7,13 @@ const moment = require("moment");
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
+export interface IChoice {
+  id: string;
+  label: string;
+  definition: string;
+  examples: string[];
+}
+
 export interface IFieldDefinition {
   key: string;
   englishLabel?: string;
@@ -17,6 +24,7 @@ export interface IFieldDefinition {
   //visibility?: string;
   cssClass?: string;
   choices?: string[];
+  complexChoices: IChoice[];
 }
 
 export enum FieldType {
@@ -29,6 +37,8 @@ export enum FieldVisibility {
   IfNotEmpty
 }
 
+// REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
+
 export class Field {
   public readonly key: string;
   public readonly englishLabel: string; // just for debugging at this point
@@ -39,12 +49,14 @@ export class Field {
   public readonly cssClass: string;
   @observable public textHolder = new TextHolder();
   public choices: string[];
+  public definition: IFieldDefinition;
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
   public static fromFieldDefinition(definition: IFieldDefinition): Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";
     }
+
     const type = definition.type
       ? FieldType[definition.type as keyof typeof FieldType]
       : FieldType.Text;
@@ -53,7 +65,7 @@ export class Field {
     // console.log(
     //   "fromFieldDefinition() " + definition.key + " is a " + definition.type
     // );
-    return new Field(
+    const f = new Field(
       definition.key,
       type,
       definition.defaultValue,
@@ -64,6 +76,8 @@ export class Field {
       choices,
       definition.cssClass
     );
+    f.definition = definition; // did this to retain complex choices without yet another new property...
+    return f;
   }
 
   public constructor(

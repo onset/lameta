@@ -44,9 +44,13 @@ export default class ClosedChoiceEdit extends React.Component<
         <select
           name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
           value={ClosedChoiceEdit.getValue(this.props.text)}
-          onChange={event => ClosedChoiceEdit.onChange(event, this.props.text)}
+          onChange={event => {
+            ClosedChoiceEdit.onChange(event, this.props.text);
+            this.setState({}); //hack to force a re-rendering
+          }}
         >
-          {this.props.text.choices.map(s => <option key={s}>{s}</option>)}
+          {//NB: an error about keys here means that the choices were not unique
+          this.props.text.choices.map(s => <option key={s}>{s}</option>)}
         </select>
       </div>
     );

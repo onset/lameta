@@ -34,7 +34,7 @@ export class Session extends Folder {
       (o: any) => o.key === "genre"
     );
 
-    genreFieldDefinition.choices = genreChoices;
+    genreFieldDefinition.complexChoices = genreChoices;
     const files = this.loadChildFiles(
       directory,
       metadataFile,

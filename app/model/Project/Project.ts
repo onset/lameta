@@ -52,9 +52,9 @@ export class Project extends Folder {
       metadataFile,
       knownFieldDefinitions.project
     );
-    console.log(
-      "Project had " + files.length + " files. " + JSON.stringify(files)
-    );
+    // console.log(
+    //   "Project had " + files.length + " files. " + JSON.stringify(files)
+    // );
 
     const project = new Project(
       directory,

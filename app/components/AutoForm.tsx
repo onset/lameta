@@ -3,10 +3,11 @@ import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
-import { Project } from "../model/Project";
+import { Project } from "../model/Project/Project";
 import { FieldSet } from "../model/field/FieldSet";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Folder } from "../model/Folder";
+import DeepChoiceEdit from "./DeepChoiceEdit";
 
 export interface IProps {
   fields: FieldSet;
@@ -27,6 +28,11 @@ export default class AutoForm extends React.Component<IProps> {
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return <ClosedChoiceEdit text={f} key={field.key} />;
+        } else if (
+          f.definition.complexChoices &&
+          f.definition.complexChoices.length > 0
+        ) {
+          return <DeepChoiceEdit field={f} closed={false} key={field.key} />;
         } else {
           return (
             <TextFieldEdit
