@@ -8,6 +8,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 const styles = require("./Home.scss");
 
 export interface IProps {
@@ -16,6 +17,7 @@ export interface IProps {
   persons: Person[];
   selectedSession: IFolderSelection;
   selectedPerson: IFolderSelection;
+  authorityLists: AuthorityLists;
 }
 
 @observer
@@ -30,7 +32,10 @@ export default class Home extends React.Component<IProps> {
             <Tab>People</Tab>
           </TabList>
           <TabPanel>
-            <ProjectTab project={this.props.project} />
+            <ProjectTab
+              project={this.props.project}
+              authorityLists={this.props.authorityLists}
+            />
           </TabPanel>
           <TabPanel>
             <ComponentTab
@@ -38,6 +43,7 @@ export default class Home extends React.Component<IProps> {
               selectedFolder={this.props.selectedSession}
               folderTypeStyleClass="sessions"
               columns={["title", "date"]}
+              authorityLists={this.props.authorityLists}
             />
           </TabPanel>
           <TabPanel className={styles.peopleTab}>
@@ -46,6 +52,7 @@ export default class Home extends React.Component<IProps> {
               selectedFolder={this.props.selectedPerson}
               folderTypeStyleClass="people"
               columns={["name"]}
+              authorityLists={this.props.authorityLists}
             />
           </TabPanel>
         </Tabs>

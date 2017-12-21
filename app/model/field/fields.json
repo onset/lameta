@@ -47,17 +47,7 @@
     {
       "key": "accessProtocol",
       "form": "accessProtocol",
-      "englishLabel": "Access Protocol used by this project",
-      "choices": [
-        "None",
-        "AILCA",
-        "AILIA",
-        "ANLA",
-        "ELAR",
-        "REAP",
-        "TLA",
-        "Custom"
-      ]
+      "englishLabel": "Access Protocol used by this project"
     },
     {
       "key": "depositor",
@@ -97,13 +87,7 @@
       "key": "location"
     },
     {
-      "key": "access",
-      "choices": [
-        "Open",
-        "Restricted",
-        "Protected",
-        "This is not really tracking the chosen protocol yet"
-      ]
+      "key": "access"
     },
     {
       "key": "description",

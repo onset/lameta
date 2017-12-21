@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { default as SessionForm } from "./SessionForm";
+import { default as SessionForm } from "./session/SessionForm";
 import FileList from "./FileList";
 import { observer } from "mobx-react";
 import * as Path from "path";
@@ -8,16 +8,18 @@ import PropertyTable from "./PropertyTable";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import ReactPlayer from "react-player";
-import PersonForm from "./PersonForm";
+import PersonForm from "./person/PersonForm";
 import { Person } from "../model/Project/Person/Person";
 import { Session } from "../model/Project/Session/Session";
 import TextFileView from "./TextFileView";
 import AutoForm from "./AutoForm";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 
 export interface IProps {
   folder: Folder;
   folderTypeStyleClass: string;
   showStandardMetaTabs: boolean;
+  authorityLists: AuthorityLists;
 }
 
 @observer
@@ -98,7 +100,11 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>Notes</Tab>
             </TabList>
             <TabPanel>
-              <AutoForm fields={directoryObject.properties} form="primary" />
+              <AutoForm
+                fields={directoryObject.properties}
+                form="primary"
+                authorityLists={this.props.authorityLists}
+              />
             </TabPanel>
             {propertiesPanel}
             <TabPanel>todo</TabPanel>

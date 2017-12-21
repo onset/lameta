@@ -3,12 +3,14 @@ import { FolderList } from "./FolderList";
 import { Folder, IFolderSelection } from "../model/Folder";
 import { FolderPane } from "./FolderPane";
 import { observer } from "mobx-react";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 
 interface IProps {
   folders: Folder[];
   selectedFolder: IFolderSelection;
   folderTypeStyleClass: string;
   columns: string[];
+  authorityLists: AuthorityLists;
 }
 
 // Sorry, the name for this is bad... suggestions welcome.
@@ -30,6 +32,7 @@ export class ComponentTab extends React.Component<IProps> {
               folder={this.props.folders[this.props.selectedFolder.index]}
               folderTypeStyleClass={this.props.folderTypeStyleClass}
               showStandardMetaTabs={true}
+              authorityLists={this.props.authorityLists}
             >
               <h3 className={"paneTitle"}>
                 {

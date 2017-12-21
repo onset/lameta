@@ -7,11 +7,14 @@ import { Project } from "../model/Project/Project";
 import { FieldSet } from "../model/field/FieldSet";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Folder } from "../model/Folder";
-import DeepChoiceEdit from "./DeepChoiceEdit";
+import GenreChooser from "./session/GenreChooser";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+import AccessChooser from "./session/AccessChooser";
 
 export interface IProps {
   fields: FieldSet;
   form: string; // only fields with this "form" property will show
+  authorityLists: AuthorityLists;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -28,11 +31,18 @@ export default class AutoForm extends React.Component<IProps> {
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return <ClosedChoiceEdit text={f} key={field.key} />;
+        } else if (f.definition.key === "access") {
+          return (
+            <AccessChooser
+              field={f}
+              authorityLists={this.props.authorityLists}
+            />
+          );
         } else if (
           f.definition.complexChoices &&
           f.definition.complexChoices.length > 0
         ) {
-          return <DeepChoiceEdit field={f} closed={false} key={field.key} />;
+          return <GenreChooser field={f} key={field.key} />;
         } else {
           return (
             <TextFieldEdit

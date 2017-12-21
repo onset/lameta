@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field } from "../model/field/Field";
+import { Field } from "../../model/field/Field";
 import { Creatable, Option, OptionValues } from "react-select";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
@@ -10,14 +10,13 @@ const titleCase = require("title-case");
 
 export interface IProps {
   field: Field;
-  closed: boolean;
 }
 
 /* This is for choices that have a distinct id vs. name, definitions, examples, etc.
   Maybe just genre & access.
   */
 @observer
-export default class DeepChoiceEdit extends React.Component<
+export default class GenreChooser extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {

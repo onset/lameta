@@ -5,9 +5,12 @@ import { Project } from "../../model/Project/Project";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
+import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import { AccessProtocolForm } from "./AccessProtocolForm";
 
 interface IProps {
   project: Project;
+  authorityLists: AuthorityLists;
 }
 
 @observer
@@ -22,19 +25,24 @@ export class ProjectTab extends React.Component<IProps> {
           <Tab>Other Documents</Tab>
         </TabList>
         <TabPanel>
-          <AutoForm form="primary" fields={this.props.project.properties} />
+          <AutoForm
+            form="primary"
+            fields={this.props.project.properties}
+            authorityLists={this.props.authorityLists}
+          />
         </TabPanel>
         <TabPanel>
-          <AutoForm
-            form="accessProtocol"
-            fields={this.props.project.properties}
-          />{" "}
+          <AccessProtocolForm
+            field={this.props.project.properties.getTextField("accessProtocol")}
+            authorityLists={this.props.authorityLists}
+          />
         </TabPanel>
         <TabPanel>
           <FolderPane
             folder={this.props.project.descriptionFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}
+            authorityLists={this.props.authorityLists}
           >
             <strong>
               Add documents here that describe the projects and corpus.
@@ -50,6 +58,7 @@ export class ProjectTab extends React.Component<IProps> {
             folder={this.props.project.otherDocsFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}
+            authorityLists={this.props.authorityLists}
           >
             {" "}
             <strong>

@@ -9,6 +9,8 @@ import { File, FolderMetdataFile } from "../file/File";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import ImdiExporter from "../../export/imdi";
 import { ProjectDocuments } from "./ProjectDocuments";
+import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
+import { intercept } from "mobx";
 const knownFieldDefinitions = require("../field/fields.json");
 
 export class Project extends Folder {
@@ -19,6 +21,7 @@ export class Project extends Folder {
 
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
+  public authorityLists: AuthorityLists;
 
   private constructor(
     directory: string,
@@ -32,6 +35,16 @@ export class Project extends Folder {
     this.selectedPerson = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
+    this.authorityLists = new AuthorityLists();
+
+    this.properties
+      .getValue("accessProtocol")
+      .textHolder.map.intercept(change => {
+        const protocol = change.newValue as string;
+        console.log("Protocol = " + protocol);
+        this.authorityLists.setAccessProtocol(protocol);
+        return change;
+      });
   }
 
   public static fromDirectory(directory: string): Project {

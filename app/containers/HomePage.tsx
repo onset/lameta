@@ -24,6 +24,7 @@ export default class HomePage extends React.Component<any> {
         persons={this.project.persons}
         selectedSession={this.project.selectedSession}
         selectedPerson={this.project.selectedPerson}
+        authorityLists={this.project.authorityLists}
       />
     );
   }

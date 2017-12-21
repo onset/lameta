@@ -13,7 +13,7 @@ import { observable } from "mobx";
  *
  */
 export default class TextHolder {
-  private map = observable.map();
+  public map = observable.map();
   public get textInDefaultLanguage() {
     const x = this.map.get("en") as string;
     return x ? x : "";
