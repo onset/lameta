@@ -1,7 +1,9 @@
 //@import "~font-awesome/css/font-awesome.css";
 
 @import "~react-tabs/style/react-tabs.scss";
-@import "~react-select/dist/react-select.css";
+
+$select-input-height: 28px;
+@import "~react-select/scss/default";
 
 //$region-selected-color: #CFF09F; //this is too light
 // this is an overlay, not a true background, so it has to use transparency, which makes it
@@ -271,4 +273,21 @@ form {
 }
 .Select-value-label {
   color: black !important; //react-select makes it some kind of almost-black
+}
+
+.field.access-protocol {
+  display: flex;
+  label {
+    width: 120px;
+    margin-right: 10px;
+  }
+  .protocol-documentation {
+    margin-top: 10px;
+    max-width: 600px;
+    h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 1em;
+    }
+  }
 }

@@ -34,6 +34,7 @@ export default class AutoForm extends React.Component<IProps> {
         } else if (f.definition.key === "access") {
           return (
             <AccessChooser
+              key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
             />

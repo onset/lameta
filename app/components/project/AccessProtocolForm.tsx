@@ -16,12 +16,12 @@ import { Dictionary } from "typescript-collections";
 // Should re-do as markdown or just build required fields into the
 // main AccessProtocols.json file.
 const doc: Dictionary<string, string> = new Dictionary<string, string>();
-doc.setValue("ailca", require("./AccessProtocolDocumenation/ailca.html"));
-doc.setValue("ailla", require("./AccessProtocolDocumenation/ailla.html"));
-doc.setValue("anla", require("./AccessProtocolDocumenation/anla.html"));
-doc.setValue("elar", require("./AccessProtocolDocumenation/elar.html"));
-doc.setValue("reap", require("./AccessProtocolDocumenation/reap.html"));
-doc.setValue("tla", require("./AccessProtocolDocumenation/tla.html"));
+doc.setValue("ailca", require("./AccessProtocolDocumenation/ailca.md"));
+doc.setValue("ailla", require("./AccessProtocolDocumenation/ailla.md"));
+doc.setValue("anla", require("./AccessProtocolDocumenation/anla.md"));
+doc.setValue("elar", require("./AccessProtocolDocumenation/elar.md"));
+doc.setValue("reap", require("./AccessProtocolDocumenation/reap.md"));
+doc.setValue("tla", require("./AccessProtocolDocumenation/tla.md"));
 
 interface IProps {
   field: Field;
@@ -31,23 +31,30 @@ interface IProps {
 @observer
 export class AccessProtocolForm extends React.Component<IProps> {
   public render() {
+    console.log("zzz" + this.props.field.text.toLowerCase());
     const documentationHtml = doc.getValue(this.props.field.text.toLowerCase());
 
     return (
-      <div>
-        <select
-          name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
-          value={this.props.field.text}
-          onChange={event => {
-            this.props.field.text = event.currentTarget.value;
-          }}
-        >
-          {//NB: an error about keys here means that the choices were not unique
-          this.props.authorityLists.accessProtocolChoices.map(s => (
-            <option key={s.protocol}>{s.protocol}</option>
-          ))}
-        </select>
-        <div dangerouslySetInnerHTML={{ __html: documentationHtml }} />
+      <div className={"field access-protocol"}>
+        <label>{this.props.field.englishLabel} </label>
+        <div className={"controls"}>
+          <select
+            name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
+            value={this.props.field.text}
+            onChange={event => {
+              this.props.field.text = event.currentTarget.value;
+            }}
+          >
+            {//NB: an error about keys here means that the choices were not unique
+            this.props.authorityLists.accessProtocolChoices.map(s => (
+              <option key={s.protocol}>{s.protocol}</option>
+            ))}
+          </select>
+          <div
+            className={"protocol-documentation"}
+            dangerouslySetInnerHTML={{ __html: documentationHtml }}
+          />
+        </div>
       </div>
     );
   }
