@@ -33,7 +33,12 @@ export class ProjectTab extends React.Component<IProps> {
         </TabPanel>
         <TabPanel>
           <AccessProtocolForm
-            field={this.props.project.properties.getTextField("accessProtocol")}
+            protocolField={this.props.project.properties.getTextField(
+              "accessProtocol"
+            )}
+            customChoicesField={this.props.project.properties.getTextField(
+              "customAccessChoices"
+            )}
             authorityLists={this.props.authorityLists}
           />
         </TabPanel>

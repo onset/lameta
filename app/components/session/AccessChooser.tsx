@@ -24,7 +24,7 @@ export default class AccessChooser extends React.Component<IProps> {
     const options = this.props.authorityLists.accessChoices.map(c => {
       return new Object({
         value: c.label,
-        label: c.label + ":  " + c.description
+        label: c.label + (c.description.length > 0 ? ":  " + c.description : "")
       });
     });
 

@@ -16,13 +16,20 @@ export class AuthorityLists {
 
   public constructor() {
     this.accessProtocolChoices = accessProtocols;
-    this.setAccessProtocol("ELAR");
+    this.accessChoices = [];
   }
 
-  public setAccessProtocol(protocolName: string) {
-    const protocol = accessProtocols.find(
-      (o: any) => o.protocol === protocolName
-    );
-    this.accessChoices = protocol.choices;
+  public setAccessProtocol(protocolName: string, customChoices: string) {
+    if (protocolName === "custom") {
+      // tslint:disable-next-line:arrow-return-shorthand
+      this.accessChoices = customChoices.split(",").map(c => {
+        return { label: c, description: "" };
+      });
+    } else {
+      const protocol = accessProtocols.find(
+        (o: any) => o.protocol === protocolName
+      );
+      this.accessChoices = protocol.choices;
+    }
   }
 }

@@ -13,11 +13,12 @@
 	<Country>Papua New Guinea</Country>
 	<Continent>Oceania</Continent>
 	<ContactPerson />
-	<AccessProtocol>None</AccessProtocol>
+	<AccessProtocol>custom</AccessProtocol>
 	<ContentType />
 	<Applications />
 	<DateAvailable>2017-12-14</DateAvailable>
 	<RightsHolder />
 	<Depositor />
 	<RelatedPublications />
+	<customAccessChoices>show,hide</customAccessChoices>
 </Project>

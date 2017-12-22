@@ -22,19 +22,19 @@ export default class SessionForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={"sessionForm"}>
-        <TextFieldEdit text={this.fields.getTextField("title")} />
-        <TextFieldEdit text={this.fields.getTextField("people")} />
-        <TextFieldEdit text={this.fields.getTextField("genre")} />
+        <TextFieldEdit field={this.fields.getTextField("title")} />
+        <TextFieldEdit field={this.fields.getTextField("people")} />
+        <TextFieldEdit field={this.fields.getTextField("genre")} />
         <TextFieldEdit
-          text={this.fields.getTextField("situation")}
+          field={this.fields.getTextField("situation")}
           className={"text-block"}
         />
         <DateFieldEdit date={this.fields.getDateField("date")} />
-        <TextFieldEdit text={this.fields.getTextField("setting")} />
-        <TextFieldEdit text={this.fields.getTextField("location")} />
-        <TextFieldEdit text={this.fields.getTextField("access")} />
+        <TextFieldEdit field={this.fields.getTextField("setting")} />
+        <TextFieldEdit field={this.fields.getTextField("location")} />
+        <TextFieldEdit field={this.fields.getTextField("access")} />
         <TextFieldEdit
-          text={this.fields.getTextField("description")}
+          field={this.fields.getTextField("description")}
           className={"text-block"}
         />
       </form>

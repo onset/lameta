@@ -9,8 +9,11 @@ import { File, FolderMetdataFile } from "../file/File";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import ImdiExporter from "../../export/imdi";
 import { ProjectDocuments } from "./ProjectDocuments";
-import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import { intercept } from "mobx";
+import {
+  AuthorityLists,
+  IAccessProtocolChoice
+} from "./AuthorityLists/AuthorityLists";
+
 const knownFieldDefinitions = require("../field/fields.json");
 
 export class Project extends Folder {
@@ -37,16 +40,7 @@ export class Project extends Folder {
     this.otherDocsFolder = otherDocsFolder;
     this.authorityLists = new AuthorityLists();
 
-    // when the user changes the chosen access protocol, we need to let the authorityLists
-    // object know so that it can provide the correct set of choices to the Settings form.
-    this.properties
-      .getValue("accessProtocol")
-      .textHolder.map.intercept(change => {
-        const protocol = change.newValue as string;
-        console.log("Protocol = " + protocol);
-        this.authorityLists.setAccessProtocol(protocol);
-        return change;
-      });
+    this.setupProtocolChoices();
   }
 
   public static fromDirectory(directory: string): Project {
@@ -109,5 +103,37 @@ export class Project extends Folder {
     //project.files[0].save();
     // tslint:disable-next-line:no-unused-expression
     return project;
+  }
+
+  private setupProtocolChoices() {
+    this.authorityLists.setAccessProtocol(
+      this.properties.getTextStringOrEmpty("accessProtocol"),
+      this.properties.getTextStringOrEmpty("customAccessChoices")
+    );
+
+    // when the user changes the chosen access protocol, we need to let the authorityLists
+    // object know so that it can provide the correct set of choices to the Settings form.
+    this.properties
+      .getValue("accessProtocol")
+      .textHolder.map.intercept(change => {
+        this.authorityLists.setAccessProtocol(
+          change.newValue as string,
+          this.properties.getTextStringOrEmpty("customAccessChoices")
+        );
+        return change;
+      });
+    this.properties
+      .getValue("customAccessChoices")
+      .textHolder.map.intercept(change => {
+        const currentProtocol = this.properties.getTextStringOrEmpty(
+          "accessProtocol"
+        );
+        // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
+        this.authorityLists.setAccessProtocol(
+          currentProtocol,
+          change.newValue as string
+        );
+        return change;
+      });
   }
 }

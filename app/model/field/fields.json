@@ -50,6 +50,11 @@
       "englishLabel": "Access Protocol used by this project"
     },
     {
+      "key": "customAccessChoices",
+      "form": "accessProtocol",
+      "englishLabel": "Custom access choices"
+    },
+    {
       "key": "depositor",
       "cssClass": "field__newSection"
     },

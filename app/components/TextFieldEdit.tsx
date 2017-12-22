@@ -4,7 +4,7 @@ import { Field } from "../model/field/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
-  text: Field;
+  field: Field;
 }
 
 // automatically update when the value changes
@@ -34,10 +34,10 @@ export default class TextFieldEdit extends React.Component<
   }
 
   private getLabel() {
-    if (this.props.text === undefined) {
+    if (this.props.field === undefined) {
       return "Null Text";
     }
-    return this.props.text.englishLabel;
+    return this.props.field.englishLabel;
   }
 
   private static getValue(text: Field): string {
@@ -52,9 +52,9 @@ export default class TextFieldEdit extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
         <textarea
-          name={this.props.text.englishLabel} //what does this do? Maybe accessibility?
-          value={TextFieldEdit.getValue(this.props.text)}
-          onChange={event => TextFieldEdit.onChange(event, this.props.text)}
+          name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
+          value={TextFieldEdit.getValue(this.props.field)}
+          onChange={event => TextFieldEdit.onChange(event, this.props.field)}
         />
       </div>
     );

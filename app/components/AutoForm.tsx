@@ -49,7 +49,7 @@ export default class AutoForm extends React.Component<IProps> {
             <TextFieldEdit
               className={field.cssClass}
               key={field.key}
-              text={field as Field}
+              field={field as Field}
             />
           );
         }

@@ -10,6 +10,6 @@ export interface IProps {
 @observer
 export default class Notes extends React.Component<IProps> {
   public render() {
-    return <TextFieldEdit text={this.props.text} className={"text-block"} />;
+    return <TextFieldEdit field={this.props.text} className={"text-block"} />;
   }
 }
