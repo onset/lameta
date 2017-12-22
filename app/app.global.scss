@@ -64,12 +64,14 @@ a {
 }
 .field {
   //width: 30%;
-  margin: 4px 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-right: 8px;
 }
 .field:not(.text-block) {
   //height: 40px;
 }
-.field label {
+label {
   display: block;
   font-size: 12px;
   font-weight: bold;
@@ -288,6 +290,62 @@ form {
       font-size: 16px;
       font-weight: 700;
       margin-top: 1em;
+    }
+  }
+}
+
+.personForm {
+  //display: grid;
+  //grid-auto-flow: column;
+  //grid-template-rows: repeat(4, 54px);
+  display: flex;
+
+  .language {
+    margin-top: 0;
+    margin-bottom: 0;
+    .field {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+  .nickname-and-code {
+    display: flex;
+    .field {
+      //width: 50px;
+
+      textarea {
+        width: 100%;
+      }
+    }
+  }
+  .upper-right-cluster {
+    // grid-row-start: 1;
+    // grid-row-end: 7;
+
+    display: flex;
+    height: 160px;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 300px;
+    position: relative; // allow image to be absolute
+
+    .birth,
+    .gender {
+      width: 50px;
+      textarea {
+        width: 60px;
+      }
+    }
+
+    .field.mugshot {
+      width: 185px;
+      position: absolute;
+      right: 0;
+      margin-right: 0;
+
+      img {
+        width: 100%; // just fit in container
+      }
     }
   }
 }

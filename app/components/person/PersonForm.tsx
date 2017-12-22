@@ -4,6 +4,8 @@ import { observer } from "mobx-react";
 import TextFieldEdit from "../TextFieldEdit";
 import ImageField from "../ImageField";
 import { FieldSet } from "../../model/field/FieldSet";
+import LanguageEdit from "./LanguageEdit";
+import ClosedChoiceEdit from "../ClosedChoiceEdit";
 
 export interface IProps {
   person: Person;
@@ -16,31 +18,76 @@ export default class PersonForm extends React.Component<IProps> {
   }
 
   public render() {
+    const father = this.props.fields.getTextField("fathersLanguage");
+    const mother = this.props.fields.getTextField("mothersLanguage");
+
     return (
       <form className={"personForm"}>
-        <TextFieldEdit field={this.props.fields.getTextField("name")} />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("primaryLanguage")}
-        />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("otherLanguage0")}
-        />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("fathersLanguage")}
-        />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("mothersLanguage")}
-        />
-        <ImageField path={this.props.person.photoPath} />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("otherLanguage1")}
-        />
-        <TextFieldEdit field={this.props.fields.getTextField("birthYear")} />
-        <TextFieldEdit field={this.props.fields.getTextField("gender")} />
-        <TextFieldEdit field={this.props.fields.getTextField("education")} />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("primaryOccupation")}
-        />
+        <div className={"first-column"}>
+          <TextFieldEdit field={this.props.fields.getTextField("name")} />
+          <div className={"nickname-and-code"}>
+            <TextFieldEdit field={this.props.fields.getTextField("nickName")} />
+            <TextFieldEdit field={this.props.fields.getTextField("code")} />
+          </div>
+          <div>
+            <label>
+              {this.props.fields.getTextField("primaryLanguage").englishLabel}
+            </label>
+            <LanguageEdit
+              language={this.props.fields.getTextField("primaryLanguage")}
+              fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
+              motherLangauge={this.props.fields.getTextField("mothersLanguage")}
+            />
+          </div>
+          <label>Other Languages</label>
+          <LanguageEdit
+            language={this.props.fields.getTextField("otherLanguage0")}
+            fatherLanguage={father}
+            motherLangauge={mother}
+          />
+          <LanguageEdit
+            language={this.props.fields.getTextField("otherLanguage1")}
+            fatherLanguage={father}
+            motherLangauge={mother}
+          />
+          <LanguageEdit
+            language={this.props.fields.getTextField("otherLanguage2")}
+            fatherLanguage={father}
+            motherLangauge={mother}
+          />
+          <LanguageEdit
+            language={this.props.fields.getTextField("otherLanguage3")}
+            fatherLanguage={father}
+            motherLangauge={mother}
+          />
+        </div>
+        <div className={"second-column"}>
+          <div className={"upper-right-cluster"}>
+            <TextFieldEdit
+              className={"birth"}
+              field={this.props.fields.getTextField("birthYear")}
+            />
+            <ClosedChoiceEdit
+              className={"gender"}
+              field={this.props.fields.getTextField("gender")}
+            />
+            <ImageField
+              className={"mugshot"}
+              path={this.props.person.photoPath}
+            />
+          </div>
+          <TextFieldEdit field={this.props.fields.getTextField("education")} />
+          <TextFieldEdit
+            className={"text-block"}
+            field={this.props.fields.getTextField("howToContact")}
+          />{" "}
+          <TextFieldEdit
+            field={this.props.fields.getTextField("ethnicGroup")}
+          />{" "}
+          <TextFieldEdit
+            field={this.props.fields.getTextField("primaryOccupation")}
+          />
+        </div>
       </form>
     );
   }

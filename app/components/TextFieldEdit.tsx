@@ -5,6 +5,7 @@ const titleCase = require("title-case");
 
 export interface IProps {
   field: Field;
+  hideLabel?: boolean;
 }
 
 // automatically update when the value changes
@@ -50,7 +51,7 @@ export default class TextFieldEdit extends React.Component<
   public render() {
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.getLabel()}</label>
+        {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
         <textarea
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}

@@ -40,7 +40,7 @@ export default class AutoForm extends React.Component<IProps> {
       case FieldType.Text:
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
-          return <ClosedChoiceEdit text={f} key={field.key} />;
+          return <ClosedChoiceEdit field={f} key={field.key} />;
         } else if (f.definition && f.definition.key === "access") {
           return (
             <AccessChooser

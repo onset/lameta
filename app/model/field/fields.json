@@ -126,13 +126,19 @@
       "key": "otherLanguage0"
     },
     {
+      "key": "otherLanguage1"
+    },
+    {
+      "key": "otherLanguage2"
+    },
+    {
+      "key": "otherLanguage3"
+    },
+    {
       "key": "fathersLanguage"
     },
     {
       "key": "mothersLanguage"
-    },
-    {
-      "key": "otherLanguage1"
     },
     {
       "key": "education"
@@ -141,7 +147,15 @@
       "key": "birthYear"
     },
     {
-      "key": "gender"
+      "key": "gender",
+      "choices": ["Male", "Female"]
+    },
+    {
+      "key": "howToContact"
+    },
+
+    {
+      "key": "ethnicGroup"
     },
     {
       "key": "primaryOccupation"
