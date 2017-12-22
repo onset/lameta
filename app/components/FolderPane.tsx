@@ -115,7 +115,7 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>Session</Tab>
+              <Tab>Person</Tab>
               <Tab>Properties</Tab>
               <Tab>Notes</Tab>
             </TabList>

@@ -105,6 +105,18 @@
   ],
   "person": [
     {
+      "key": "name",
+      "englishLabel": "Full Name"
+    },
+    {
+      "key": "nickName",
+      "englishLabel": "Nickname"
+    },
+    {
+      "key": "code",
+      "englishLabel": "Code"
+    },
+    {
       "key": "primaryLanguage"
     },
     {
@@ -123,13 +135,13 @@
       "key": "otherLanguage1"
     },
     {
+      "key": "education"
+    },
+    {
       "key": "birthYear"
     },
     {
       "key": "gender"
-    },
-    {
-      "key": "education"
     },
     {
       "key": "primaryOccupation"

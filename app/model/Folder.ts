@@ -67,7 +67,8 @@ export class Folder {
     const files = new Array<File>();
 
     // load the file containing metadata about this folder
-    knownFields.forEach((f: IFieldDefinition) => {
+    knownFields.forEach((f: IFieldDefinition, i: number) => {
+      f.order = i;
       const field = Field.fromFieldDefinition(f);
       folderMetaDataFile.properties.setValue(field.key, field);
     });

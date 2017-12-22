@@ -20,8 +20,18 @@ export interface IProps {
 /** Constructs a form by looking at the properties of the given fields */
 @observer
 export default class AutoForm extends React.Component<IProps> {
+  private sortedKeys: string[];
   constructor(props: IProps) {
     super(props);
+
+    this.sortedKeys = this.props.fields
+      .values()
+      .sort(
+        (a, b) =>
+          (a.definition ? a.definition.order : 1000) -
+          (b.definition ? b.definition.order : 1000)
+      )
+      .map(f => f.key);
   }
 
   private makeEdit(field: Field) {
@@ -31,7 +41,7 @@ export default class AutoForm extends React.Component<IProps> {
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return <ClosedChoiceEdit text={f} key={field.key} />;
-        } else if (f.definition.key === "access") {
+        } else if (f.definition && f.definition.key === "access") {
           return (
             <AccessChooser
               key={f.key} // for some reason we get a key error without this
@@ -40,6 +50,7 @@ export default class AutoForm extends React.Component<IProps> {
             />
           );
         } else if (
+          f.definition &&
           f.definition.complexChoices &&
           f.definition.complexChoices.length > 0
         ) {
@@ -69,10 +80,17 @@ export default class AutoForm extends React.Component<IProps> {
   public render() {
     return (
       <form className={"autoForm " + this.props.form}>
-        {this.props.fields
-          .values()
+        {// this.props.fields
+        // .values()
+        // .filter(field => field.form === this.props.form)
+        //   .map(field => this.makeEdit(field))
+        this.sortedKeys
+          .map(k => this.props.fields.getValue(k))
+
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
+        {/* Items that don't come from fields are given to this component as children */}
+        {this.props.children}
       </form>
     );
   }

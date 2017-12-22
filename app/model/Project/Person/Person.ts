@@ -32,7 +32,7 @@ export class Person extends Folder {
 
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
-    this.properties.addTextProperty("name", Path.basename(directory));
+    this.properties.setText("name", Path.basename(directory));
   }
   public static fromDirectory(directory: string): Person {
     const metadataFile = new FolderMetdataFile(directory, "Person", ".person");

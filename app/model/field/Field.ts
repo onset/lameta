@@ -25,6 +25,7 @@ export interface IFieldDefinition {
   cssClass?: string;
   choices?: string[];
   complexChoices: IChoice[];
+  order: number;
 }
 
 export enum FieldType {
