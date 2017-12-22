@@ -50,7 +50,11 @@ export default class TextFieldEdit extends React.Component<
 
   public render() {
     return (
-      <div className={"field " + this.props.className}>
+      <div
+        className={
+          "field " + (this.props.className ? this.props.className : "")
+        }
+      >
         {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
         <textarea
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?

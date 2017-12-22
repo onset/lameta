@@ -66,8 +66,9 @@ a {
   //width: 30%;
   margin-top: 4px;
   margin-bottom: 4px;
-  margin-right: 8px;
+  //margin-right: 8px;
 }
+
 .field:not(.text-block) {
   //height: 40px;
 }
@@ -84,7 +85,7 @@ textarea {
   border-style: inset;
   resize: none;
   height: 2em;
-  width: 300px;
+  width: 100%; //just fill the container
   font-family: "segoe ui", "sans";
 }
 .Select {
@@ -300,18 +301,37 @@ form {
   //grid-template-rows: repeat(4, 54px);
   display: flex;
 
+  .first-column {
+    margin-right: 10px;
+    .field {
+      width: calc(100% - 50px); // leave room for mom & dad icons
+    }
+  }
+
   .language {
     margin-top: 0;
     margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
     .field {
       margin-top: 0;
       margin-bottom: 0;
     }
+    .language-name {
+      width: 100px;
+      flex-grow: 1;
+      margin-right: 8px;
+      textarea {
+        width: 100%; //just fill container
+      }
+    }
   }
   .nickname-and-code {
+    width: calc(100% - 50px); // leave room for mom & dad icons
     display: flex;
+    justify-content: space-between;
     .field {
-      //width: 50px;
+      width: 45%;
 
       textarea {
         width: 100%;
@@ -331,7 +351,7 @@ form {
 
     .birth,
     .gender {
-      width: 50px;
+      width: 80px;
       textarea {
         width: 60px;
       }

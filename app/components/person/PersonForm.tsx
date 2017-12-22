@@ -36,30 +36,31 @@ export default class PersonForm extends React.Component<IProps> {
             <LanguageEdit
               language={this.props.fields.getTextField("primaryLanguage")}
               fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
-              motherLangauge={this.props.fields.getTextField("mothersLanguage")}
+              motherLanguage={this.props.fields.getTextField("mothersLanguage")}
             />
           </div>
           <label>Other Languages</label>
           <LanguageEdit
             language={this.props.fields.getTextField("otherLanguage0")}
             fatherLanguage={father}
-            motherLangauge={mother}
+            motherLanguage={mother}
           />
           <LanguageEdit
             language={this.props.fields.getTextField("otherLanguage1")}
             fatherLanguage={father}
-            motherLangauge={mother}
+            motherLanguage={mother}
           />
           <LanguageEdit
             language={this.props.fields.getTextField("otherLanguage2")}
             fatherLanguage={father}
-            motherLangauge={mother}
+            motherLanguage={mother}
           />
           <LanguageEdit
             language={this.props.fields.getTextField("otherLanguage3")}
             fatherLanguage={father}
-            motherLangauge={mother}
+            motherLanguage={mother}
           />
+          <TextFieldEdit field={this.props.fields.getTextField("education")} />
         </div>
         <div className={"second-column"}>
           <div className={"upper-right-cluster"}>
@@ -76,7 +77,6 @@ export default class PersonForm extends React.Component<IProps> {
               path={this.props.person.photoPath}
             />
           </div>
-          <TextFieldEdit field={this.props.fields.getTextField("education")} />
           <TextFieldEdit
             className={"text-block"}
             field={this.props.fields.getTextField("howToContact")}
