@@ -1,4 +1,5 @@
 import { File, OtherFile } from "./file/File";
+import * as electron from "electron";
 import { observable } from "mobx";
 import {
   IFieldDefinition,
@@ -7,10 +8,11 @@ import {
   FieldVisibility
 } from "./field/Field";
 
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
+import * as assert from "assert";
 
 export class IFolderSelection {
   @observable public index: number;
@@ -49,6 +51,16 @@ export class Folder {
     }
   }
 
+  public addFiles(files: object[]) {
+    assert(files.length > 0);
+
+    files.forEach((f: any) => {
+      console.log("copy in " + f.path);
+      const dest = Path.join(this.directory, Path.basename(f.path));
+      fs.copySync(f.path, dest);
+      this.files.push(new OtherFile(dest));
+    });
+  }
   get type(): string {
     const x = this.properties.getValue("type") as Field;
     return x ? x.text : "???";

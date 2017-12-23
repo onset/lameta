@@ -2,6 +2,7 @@ import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import { Folder } from "../model/Folder";
+import * as Dropzone from "react-dropzone";
 
 export interface IProps {
   folder: Folder;
@@ -35,13 +36,27 @@ export default class FileList extends React.Component<IProps> {
     super(props);
   }
 
+  private onDrop(
+    acceptedFiles: Dropzone.ImageFile[],
+    rejectedFiles: Dropzone.ImageFile[]
+  ) {
+    console.log(JSON.stringify(acceptedFiles));
+    this.props.folder.addFiles(acceptedFiles);
+  }
+
   public render() {
     // console.log(
     //   "Render Session " +
     //     this.props.directoryObject.properties.getValue("title").default
     // );
     return (
-      <div className={"fileList"}>
+      <Dropzone
+        activeClassName={"drop-active"}
+        className={"fileList"}
+        onDrop={this.onDrop.bind(this)}
+        disableClick
+      >
+        <div className={"mask"}>Drop files here</div>
         <Table
           numRows={this.props.folder.files.length}
           isRowHeaderShown={false}
@@ -61,7 +76,7 @@ export default class FileList extends React.Component<IProps> {
           <Column name="Date" renderCell={r => this.makeCell(r, "date")} />
           <Column name="Size" renderCell={r => this.makeCell(r, "size")} />
         </Table>
-      </div>
+      </Dropzone>
     );
   }
 }
