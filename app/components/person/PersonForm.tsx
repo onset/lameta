@@ -20,7 +20,7 @@ export default class PersonForm extends React.Component<IProps> {
   public render() {
     const father = this.props.fields.getTextField("fathersLanguage");
     const mother = this.props.fields.getTextField("mothersLanguage");
-
+    console.log("Render person");
     return (
       <form className={"personForm"}>
         <div className={"first-column"}>
@@ -61,8 +61,9 @@ export default class PersonForm extends React.Component<IProps> {
             motherLanguage={mother}
           />
 
+          {/* uncomment for testing that the parent buttons are working
           <TextFieldEdit className={"language-name"} field={mother} />
-          <TextFieldEdit className={"language-name"} field={father} />
+          <TextFieldEdit className={"language-name"} field={father} /> */}
 
           <TextFieldEdit field={this.props.fields.getTextField("education")} />
         </div>

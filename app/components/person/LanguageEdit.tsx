@@ -4,38 +4,40 @@ import { Field } from "../../model/field/Field";
 import TextFieldEdit from "./../TextFieldEdit";
 import { Button } from "@blueprintjs/core";
 import { observable, intercept } from "mobx";
-import StateButton, { ObservableBoolean } from "./StateButton";
+import ParentButton from "./ParentButton";
 
 export interface IProps {
   language: Field;
   fatherLanguage: Field;
   motherLanguage: Field;
+  //changed?: () => void;
 }
 
 @observer
 export default class LanguageEdit extends React.Component<IProps> {
-  @observable private mother: ObservableBoolean;
-  @observable private father: ObservableBoolean;
-
   constructor(props: IProps) {
     super(props);
-    this.mother = this.wireParent(this.props.motherLanguage);
-    this.father = this.wireParent(this.props.fatherLanguage);
+    // this.mothersLanguage = this.wireParent(this.props.motherLanguage);
+    // this.fathersLanguage = this.wireParent(this.props.fatherLanguage);
   }
 
-  private wireParent(parentLanguageField: Field) {
-    const parent = new ObservableBoolean();
-    parent.value = parentLanguageField.text === this.props.language.text;
-    intercept(parent, change => {
-      parentLanguageField.setValueFromString(
-        change.newValue ? this.props.language.text : ""
-      );
-      return change;
-    });
-    return parent;
-  }
+  // private wireParent(parentLanguageField: Field) {
+  //   parent.value = parentLanguageField.text === this.props.language.text;
+  //   intercept(parent, change => {
+  //     console.log("------------- " + change.newValue);
+  //     parentLanguageField.setValueFromString(
+  //       change.newValue ? this.props.language.text : ""
+  //     );
+  //     if (this.props.changed) {
+  //       this.props.changed();
+  //     }
+  //     return change;
+  //   });
+  //   return parent;
+  // }
 
   public render() {
+    //console.log("Render languageEdit:" + this.props.language.key);
     return (
       <div className={"field language " + this.props.language.key}>
         <TextFieldEdit
@@ -43,8 +45,18 @@ export default class LanguageEdit extends React.Component<IProps> {
           hideLabel={true}
           field={this.props.language}
         />
-        <StateButton on={this.father}>{"F"}</StateButton>
-        <StateButton on={this.mother}>{"M"}</StateButton>
+        <ParentButton
+          childLanguage={this.props.language}
+          parentLanguage={this.props.fatherLanguage}
+        >
+          {"F"}
+        </ParentButton>
+        <ParentButton
+          childLanguage={this.props.language}
+          parentLanguage={this.props.motherLanguage}
+        >
+          {"M"}
+        </ParentButton>
       </div>
     );
   }
