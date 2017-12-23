@@ -60,6 +60,10 @@ export default class PersonForm extends React.Component<IProps> {
             fatherLanguage={father}
             motherLanguage={mother}
           />
+
+          <TextFieldEdit className={"language-name"} field={mother} />
+          <TextFieldEdit className={"language-name"} field={father} />
+
           <TextFieldEdit field={this.props.fields.getTextField("education")} />
         </div>
         <div className={"second-column"}>

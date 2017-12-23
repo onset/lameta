@@ -3,9 +3,10 @@ import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
 import TextFieldEdit from "./../TextFieldEdit";
 import { Button } from "@blueprintjs/core";
+import { observable } from "mobx";
 
 export class ObservableBoolean {
-  public value: boolean;
+  @observable public value: boolean;
 }
 
 export interface IProps {
@@ -21,8 +22,11 @@ export default class StateButton extends React.Component<IProps> {
   public render() {
     return (
       <button
-        className={this.props.on.value ? "on" : ""}
-        onClick={() => (this.props.on.value = !this.props.on.value)}
+        type="button"
+        className={"state " + (this.props.on.value ? "on" : "")}
+        onClick={() =>
+          console.log((this.props.on.value = !this.props.on.value))
+        }
       >
         {this.props.children}
       </button>
@@ -34,3 +38,5 @@ export default class StateButton extends React.Component<IProps> {
         onClick={this.props.on.value = !this.props.on.value}>
         {this.props.children}
       </button>*/
+
+//

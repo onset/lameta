@@ -325,6 +325,9 @@ form {
         width: 100%; //just fill container
       }
     }
+    .state.on {
+      background-color: $project--color;
+    }
   }
   .nickname-and-code {
     width: calc(100% - 50px); // leave room for mom & dad icons

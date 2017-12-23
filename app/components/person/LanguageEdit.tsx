@@ -14,17 +14,25 @@ export interface IProps {
 
 @observer
 export default class LanguageEdit extends React.Component<IProps> {
-  @observable private mom: ObservableBoolean;
+  @observable private mother: ObservableBoolean;
+  @observable private father: ObservableBoolean;
 
   constructor(props: IProps) {
     super(props);
+    this.mother = this.wireParent(this.props.motherLanguage);
+    this.father = this.wireParent(this.props.fatherLanguage);
+  }
 
-    intercept(this.mom, "value", change => {
-      this.props.motherLanguage.setValueFromString(
+  private wireParent(parentLanguageField: Field) {
+    const parent = new ObservableBoolean();
+    parent.value = parentLanguageField.text === this.props.language.text;
+    intercept(parent, change => {
+      parentLanguageField.setValueFromString(
         change.newValue ? this.props.language.text : ""
       );
       return change;
     });
+    return parent;
   }
 
   public render() {
@@ -35,8 +43,8 @@ export default class LanguageEdit extends React.Component<IProps> {
           hideLabel={true}
           field={this.props.language}
         />
-        <Button value={1}>{"M"}</Button>
-        <StateButton on={this.mom}>{"F"}</StateButton>
+        <StateButton on={this.father}>{"F"}</StateButton>
+        <StateButton on={this.mother}>{"M"}</StateButton>
       </div>
     );
   }
