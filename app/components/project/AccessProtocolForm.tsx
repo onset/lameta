@@ -33,7 +33,6 @@ interface IProps {
 @observer
 export class AccessProtocolForm extends React.Component<IProps> {
   public render() {
-    console.log("zzz" + this.props.protocolField.text.toLowerCase());
     const protocol = this.props.protocolField.text.toLowerCase();
     const documentationHtml = doc.getValue(protocol);
 

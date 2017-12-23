@@ -25,7 +25,7 @@ export default class Home extends React.Component<IProps> {
   public render() {
     return (
       <div className={styles.container} data-tid="container">
-        <Tabs defaultIndex={2}>
+        <Tabs className={"home"} defaultIndex={2}>
           <TabList>
             <Tab>Project</Tab>
             <Tab>Sessions</Tab>

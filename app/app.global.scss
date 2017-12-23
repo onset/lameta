@@ -50,6 +50,9 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 }
 
 $color-interstitial: #f0f0f0;
+* {
+  box-sizing: border-box;
+}
 body,
 html,
 #root,
@@ -91,8 +94,12 @@ textarea {
 .Select {
   width: 300px;
 }
-
 form {
+  height: 100%;
+  background-color: transparent; // $color-session;
+  overflow: auto;
+  //border: solid thin $color-session-outline;
+  margin: 8px;
   // display: grid;
   // grid-template-columns: 1fr 1fr;
   // grid-gap: 8px;
@@ -101,8 +108,7 @@ form {
   justify-content: space-between;
   flex-wrap: wrap;
   justify-content: flex-start; // stack from top on all columns
-  margin: 0 -8px;
-  height: 300px;
+  // margin: 0 -8px;
 }
 // .react-tabs__tab svg{
 
@@ -122,8 +128,12 @@ form {
   height: 100%;
   background-color: white;
 }
-.react-tabs__tab-panel {
+.home {
+  overflow: hidden;
   height: 100%;
+  .react-tabs__tab-panel {
+    height: calc(100% - 31px); // this is just the overall screenone
+  }
 }
 
 .sessions .react-tabs__tab-panel {
@@ -138,6 +148,7 @@ form {
   background-color: $project--color;
   //border: solid thin $project__outline--color;
   padding: 10px;
+  height: 100%; // unlike other tabs, this has tabs on left so can be taller
 }
 .react-tabs__tab-list {
   background-color: $pane__interstitial--color;
@@ -155,7 +166,7 @@ form {
   //background-color: #F0F0F0;
   height: 100%;
   color: black;
-  display: flex;
+  display: flex; // put the tabs on the left
 
   //left side
   & > ul {
@@ -174,8 +185,7 @@ form {
   }
 
   .primary {
-    display: grid;
-    grid-template-columns: auto;
+    display: block; // just v-scroll if we don't have room
   }
   .primary,
   .accessProtocol {
@@ -198,21 +208,12 @@ form {
       }
     }
   }
-
-  .filePane {
-    border: none;
-  }
 }
 .componentTab {
   //background-color: #F0F0F0;
   height: 100%;
   color: black;
   display: flex;
-}
-form {
-  background-color: transparent; // $color-session;
-  //border: solid thin $color-session-outline;
-  margin: 8px;
 }
 .fileDetails {
   background-color: $pane__interstitial--color;
@@ -222,17 +223,10 @@ form {
 .sessionsList {
   height: 100%;
   background-color: white;
-  height: 100%;
   width: 300px;
   color: black;
   border: solid thin $pane__border--color;
   margin-right: 6px;
-}
-.filePane {
-  //background-color: #cff09f;
-  width: 100%;
-  //padding: 8px; // nice idea, to inset the child, but it was visually complicating
-  //border: solid thin $pane__border--color;
 }
 
 .fileList {
@@ -250,7 +244,13 @@ form {
 }
 
 .filePane {
-  height: 100%;
+  width: 100%;
+  border: none;
+  .react-tabs {
+    background-color: yellow !important;
+
+    height: calc(100% - 30% - 40px);
+  }
 }
 
 .textView {
@@ -326,7 +326,7 @@ form {
       }
     }
     .state.on {
-      background-color: $project--color;
+      background-color: $people__outline--color;
     }
   }
   .nickname-and-code {
