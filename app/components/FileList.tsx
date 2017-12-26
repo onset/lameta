@@ -3,6 +3,7 @@ import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import * as Dropzone from "react-dropzone";
+import { remote } from "electron";
 
 export interface IProps {
   folder: Folder;
@@ -43,7 +44,13 @@ export default class FileList extends React.Component<IProps> {
     console.log(JSON.stringify(acceptedFiles));
     this.props.folder.addFiles(acceptedFiles);
   }
-
+  private addFiles() {
+    remote.dialog.showOpenDialog({}, paths => {
+      if (paths) {
+        this.props.folder.addFiles(paths.map(p => ({ path: p })));
+      }
+    });
+  }
   public render() {
     // console.log(
     //   "Render Session " +
@@ -57,6 +64,21 @@ export default class FileList extends React.Component<IProps> {
         disableClick
       >
         <div className={"mask"}>Drop files here</div>
+        <div className={"fileBar"}>
+          <li className={"menu-open not-implemented"}>
+            Open
+            <ul className={"menu"}>
+              <li className={"cmd-show-in-explorer"}>
+                Show in File Explorer...
+              </li>
+            </ul>
+          </li>
+          <li className={"cmd-rename not-implemented"}>*Rename...</li>
+          <li className={"cmd-convert not-implemented"}>*Convert...</li>
+          <button className={"cmd-add-files"} onClick={() => this.addFiles()}>
+            Add Files
+          </button>
+        </div>
         <Table
           numRows={this.props.folder.files.length}
           isRowHeaderShown={false}

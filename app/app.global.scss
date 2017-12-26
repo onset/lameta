@@ -409,3 +409,25 @@ form {
     }
   }
 }
+.fileBar {
+  background-color: $pane__interstitial--color;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 0;
+  padding-top: 5px;
+  font-size: 12px;
+  .not-implemented {
+    color: lightgray;
+  }
+  li {
+    list-style: none;
+  }
+  .menu {
+    li {
+      display: none;
+    }
+  }
+}
