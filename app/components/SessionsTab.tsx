@@ -23,7 +23,9 @@ export class SessionsTab extends React.Component<IProps> {
         columns={["title", "date"]}
         authorityLists={this.props.authorityLists}
       >
-        <button>New Session</button>
+        <button onClick={e => this.props.project.addSession()}>
+          New Session
+        </button>
       </ComponentTab>
     );
   }

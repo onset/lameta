@@ -20,18 +20,9 @@ export interface IProps {
 /** Constructs a form by looking at the properties of the given fields */
 @observer
 export default class AutoForm extends React.Component<IProps> {
-  private sortedKeys: string[];
+  //private sortedKeys: string[];
   constructor(props: IProps) {
     super(props);
-
-    this.sortedKeys = this.props.fields
-      .values()
-      .sort(
-        (a, b) =>
-          (a.definition ? a.definition.order : 1000) -
-          (b.definition ? b.definition.order : 1000)
-      )
-      .map(f => f.key);
   }
 
   private makeEdit(field: Field) {
@@ -78,13 +69,33 @@ export default class AutoForm extends React.Component<IProps> {
   }
 
   public render() {
+    const sortedKeys = this.props.fields
+      .values()
+      .sort(
+        (a, b) =>
+          (a.definition ? a.definition.order : 1000) -
+          (b.definition ? b.definition.order : 1000)
+      )
+      .map(f => f.key);
+    // console.log("---------");
+    // sortedKeys.forEach(k => console.log("key: " + k));
+    // sortedKeys
+    //   .map(k => {
+    //     console.log("key: " + k);
+    //     return this.props.fields.getValue(k);
+    //   })
+    // .forEach(field => {
+    //   console.log("field.form " + JSON.stringify(field));
+    //   console.log("field.form " + field.key + "/" + field.form);
+    // });
     return (
       <form className={"autoForm " + this.props.form}>
         {// this.props.fields
         // .values()
         // .filter(field => field.form === this.props.form)
         //   .map(field => this.makeEdit(field))
-        this.sortedKeys
+
+        sortedKeys
           .map(k => this.props.fields.getValue(k))
 
           .filter(field => field.form === this.props.form)

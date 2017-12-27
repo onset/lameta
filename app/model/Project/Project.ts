@@ -105,6 +105,27 @@ export class Project extends Folder {
     return project;
   }
 
+  public addSession() {
+    // get a uniquely-named directory to use
+    let i = 0;
+    let sessionName = "New Session";
+    while (fs.existsSync(Path.join(this.directory, "Sessions", sessionName))) {
+      i++;
+      sessionName = "New Session " + i;
+    }
+    const dir = Path.join(this.directory, "Sessions", sessionName);
+
+    // make the session dir and the .session metadata file
+    fs.mkdirSync(dir);
+    const metadataFile = new FolderMetdataFile(dir, "Session", ".session");
+    const session = Session.fromDirectory(dir);
+    session.properties.setText("id", sessionName);
+
+    // add to our list of sessions and select it
+    this.sessions.push(session);
+    this.selectedSession.index = this.sessions.length - 1;
+  }
+
   private setupProtocolChoices() {
     this.authorityLists.setAccessProtocol(
       this.properties.getTextStringOrEmpty("accessProtocol"),
