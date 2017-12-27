@@ -6,6 +6,7 @@ import ImageField from "../ImageField";
 import { FieldSet } from "../../model/field/FieldSet";
 import LanguageEdit from "./LanguageEdit";
 import ClosedChoiceEdit from "../ClosedChoiceEdit";
+import * as Dropzone from "react-dropzone";
 
 export interface IProps {
   person: Person;
@@ -15,6 +16,15 @@ export interface IProps {
 export default class PersonForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
+  }
+
+  private onMugShotDrop(
+    acceptedFiles: Dropzone.ImageFile[],
+    rejectedFiles: Dropzone.ImageFile[]
+  ) {
+    if (acceptedFiles.length > 0) {
+      this.props.person.photoPath = acceptedFiles[0].path;
+    }
   }
 
   public render() {
@@ -77,10 +87,14 @@ export default class PersonForm extends React.Component<IProps> {
               className={"gender"}
               field={this.props.fields.getTextField("gender")}
             />
-            <ImageField
+            <Dropzone
               className={"mugshot"}
-              path={this.props.person.photoPath}
-            />
+              activeClassName={"drop-active"}
+              onDrop={this.onMugShotDrop.bind(this)}
+              accept="image/jpg,image/jpeg,image/png"
+            >
+              <ImageField path={this.props.person.photoPath} />
+            </Dropzone>
           </div>
           <TextFieldEdit
             className={"text-block"}

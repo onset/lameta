@@ -36,7 +36,9 @@ export class Folder {
     this.selectedFile = metadataFile;
     this.properties.manditoryTextProperty("title", "untitled");
   }
-
+  protected get filePrefix(): string {
+    return Path.basename(Path.basename(this.directory));
+  }
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural
   // to think of these properties as belonging to the (Project/Session/Person) itself.
@@ -50,15 +52,17 @@ export class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-
+  public addOneFile(path: string) {
+    console.log("copy in " + path);
+    const dest = Path.join(this.directory, Path.basename(path));
+    fs.copySync(path, dest);
+    this.files.push(new OtherFile(dest));
+  }
   public addFiles(files: object[]) {
     assert(files.length > 0);
 
     files.forEach((f: any) => {
-      console.log("copy in " + f.path);
-      const dest = Path.join(this.directory, Path.basename(f.path));
-      fs.copySync(f.path, dest);
-      this.files.push(new OtherFile(dest));
+      this.addOneFile(f.path);
     });
   }
   get type(): string {

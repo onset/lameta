@@ -16,7 +16,10 @@ export default class ImageField extends React.Component<
 
   public render() {
     return (
-      <div className={"field " + this.props.className}>
+      <div
+        className={"field " + this.props.className}
+        style={{ backgroundImage: `url(${this.props.path})` }}
+      >
         <img src={this.props.path} />
       </div>
     );

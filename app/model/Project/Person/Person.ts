@@ -3,6 +3,7 @@ import { File, FolderMetdataFile } from "../../file/File";
 import * as Path from "path";
 import * as glob from "glob";
 const knownFieldDefinitions = require("../../field/fields.json");
+import * as fs from "fs-extra";
 
 export class Person extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -24,6 +25,24 @@ export class Person extends Folder {
     } else {
       return "";
     }
+  }
+  public set photoPath(path: string) {
+    console.log("photopath " + path);
+
+    const p = this.photoPath;
+    if (p && p.length > 0 && fs.existsSync(p)) {
+      // fs.removeSync(this.photoPath);
+      fs.renameSync(
+        p,
+        Path.join(
+          this.directory,
+          this.filePrefix + "_OldPhoto" + Path.extname(p)
+        )
+      );
+    }
+    const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
+    fs.renameSync(path, renamedPhotoPath);
+    this.addOneFile(renamedPhotoPath);
   }
 
   public get displayName(): string {

@@ -343,7 +343,7 @@ form {
   //grid-auto-flow: column;
   //grid-template-rows: repeat(4, 54px);
   display: flex;
-
+  flex-direction: row;
   .first-column {
     margin-right: 10px;
     .field {
@@ -403,14 +403,16 @@ form {
       }
     }
 
-    .field.mugshot {
-      width: 185px;
+    .mugshot {
       position: absolute;
       right: 0;
       margin-right: 0;
 
       img {
-        width: 100%; // just fit in container
+        object-fit: contain;
+        object-position: right top;
+        height: 160px;
+        width: 160px;
       }
     }
   }

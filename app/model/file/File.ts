@@ -20,7 +20,7 @@ export abstract class File {
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
-  protected describedFilePath: string;
+  public describedFilePath: string;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
