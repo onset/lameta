@@ -2,13 +2,10 @@ import * as React from "react";
 import { Person } from "../../model/Project/Person/Person";
 import { observer } from "mobx-react";
 import TextFieldEdit from "../TextFieldEdit";
-import ImageField from "../ImageField";
 import { FieldSet } from "../../model/field/FieldSet";
 import LanguageEdit from "./LanguageEdit";
 import ClosedChoiceEdit from "../ClosedChoiceEdit";
-import * as Dropzone from "react-dropzone";
-import * as fs from "fs-extra";
-import { MugshotPlaceholder } from "../MugshotPlaceholder";
+import MugShot from "./MugShot";
 
 export interface IProps {
   person: Person;
@@ -18,15 +15,6 @@ export interface IProps {
 export default class PersonForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
-  }
-
-  private onMugShotDrop(
-    acceptedFiles: Dropzone.ImageFile[],
-    rejectedFiles: Dropzone.ImageFile[]
-  ) {
-    if (acceptedFiles.length > 0) {
-      this.props.person.mugshotPath = acceptedFiles[0].path;
-    }
   }
 
   public render() {
@@ -89,27 +77,7 @@ export default class PersonForm extends React.Component<IProps> {
               className={"gender"}
               field={this.props.fields.getTextField("gender")}
             />
-            <Dropzone
-              className={"mugshot"}
-              activeClassName={"drop-active"}
-              onDrop={this.onMugShotDrop.bind(this)}
-              accept="image/jpg,image/jpeg,image/png"
-            >
-              <div className={"mask"}>Drop here</div>
-              {this.props.person.mugshotPath &&
-              this.props.person.mugshotPath.length > 0 &&
-              fs.existsSync(this.props.person.mugshotPath) ? (
-                <ImageField
-                  path={
-                    this.props.person.mugshotPath +
-                    "?nocache=" +
-                    new Date().getTime()
-                  }
-                />
-              ) : (
-                <MugshotPlaceholder />
-              )}
-            </Dropzone>
+            <MugShot person={this.props.person} />
           </div>
           <TextFieldEdit
             className={"text-block"}
