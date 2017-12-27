@@ -35,11 +35,17 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
     background-color: $people__cellOverlay--color;
     border-color: $people__outline--color;
   }
+  .folderList {
+    border: solid 4px $people--color;
+  }
 }
 .sessions {
   .bp-table-selection-region {
     background-color: $session__cellOverlay--color;
     border-color: $session__outline--color;
+  }
+  .folderList {
+    border: solid 4px $session--color;
   }
 }
 .project {

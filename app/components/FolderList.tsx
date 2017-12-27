@@ -39,7 +39,7 @@ export class FolderList extends React.Component<IProps> {
 
   public render() {
     return (
-      <div className={"sessionsList"}>
+      <div className={"folderList"}>
         <Table
           numRows={this.props.folders.length}
           isRowHeaderShown={false}
