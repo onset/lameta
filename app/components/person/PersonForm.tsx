@@ -25,7 +25,7 @@ export default class PersonForm extends React.Component<IProps> {
     rejectedFiles: Dropzone.ImageFile[]
   ) {
     if (acceptedFiles.length > 0) {
-      this.props.person.photoPath = acceptedFiles[0].path;
+      this.props.person.mugshotPath = acceptedFiles[0].path;
     }
   }
 
@@ -96,10 +96,16 @@ export default class PersonForm extends React.Component<IProps> {
               accept="image/jpg,image/jpeg,image/png"
             >
               <div className={"mask"}>Drop here</div>
-              {this.props.person.photoPath &&
-              this.props.person.photoPath.length > 0 &&
-              fs.existsSync(this.props.person.photoPath) ? (
-                <ImageField path={this.props.person.photoPath} />
+              {this.props.person.mugshotPath &&
+              this.props.person.mugshotPath.length > 0 &&
+              fs.existsSync(this.props.person.mugshotPath) ? (
+                <ImageField
+                  path={
+                    this.props.person.mugshotPath +
+                    "?nocache=" +
+                    new Date().getTime()
+                  }
+                />
               ) : (
                 <MugshotPlaceholder />
               )}

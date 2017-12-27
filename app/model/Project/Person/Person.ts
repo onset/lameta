@@ -4,46 +4,53 @@ import * as Path from "path";
 import * as glob from "glob";
 const knownFieldDefinitions = require("../../field/fields.json");
 import * as fs from "fs-extra";
+import { computed } from "mobx";
 
 export class Person extends Folder {
   public get metadataFileExtensionWithDot(): string {
     return ".person";
   }
 
-  public get photoPath(): string {
-    let pattern = Path.join(
-      this.directory,
-      this.properties.getTextStringOrEmpty("name") +
-        "_Photo.@(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|bmp|BMP)"
-    );
-    pattern = pattern.split("\\").join("/"); // this glob lib requires forward slashes, even on windows
+  // public get photoPath2(): string {
+  //   let pattern = Path.join(
+  //     this.directory,
+  //     this.properties.getTextStringOrEmpty("name") +
+  //       "_Photo.@(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|bmp|BMP)"
+  //   );
+  //   pattern = pattern.split("\\").join("/"); // this glob lib requires forward slashes, even on windows
 
-    const filePaths = glob.sync(pattern); // nocase didn't work { nocase: true });
-    //console.log("photos length:" + filePaths.length);
-    if (filePaths.length > 0) {
-      return filePaths[0];
-    } else {
-      return "";
-    }
+  //   const filePaths = glob.sync(pattern); // nocase didn't work { nocase: true });
+  //   //console.log("photos length:" + filePaths.length);
+  //   if (filePaths.length > 0) {
+  //     return filePaths[0];
+  //   } else {
+  //     return "";
+  //   }
+  // }
+
+  private get mugshotFile(): File | undefined {
+    return this.files.find(f => {
+      return f.describedFilePath.indexOf("_Photo.") > -1;
+    });
+  }
+
+  public get mugshotPath(): string {
+    const m = this.mugshotFile;
+    return m ? m.describedFilePath : "";
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
-  public set photoPath(path: string) {
+  public set mugshotPath(path: string) {
     console.log("photopath " + path);
 
-    const p = this.photoPath;
-    if (p && p.length > 0 && fs.existsSync(p)) {
-      // fs.removeSync(this.photoPath);
-      fs.renameSync(
-        p,
-        Path.join(
-          this.directory,
-          this.filePrefix + "_OldPhoto" + Path.extname(p)
-        )
-      );
+    const f = this.mugshotFile;
+    if (f) {
+      fs.removeSync(f.describedFilePath);
+      this.files.splice(this.files.indexOf(f), 1); //remove that one
     }
+
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
-    fs.renameSync(path, renamedPhotoPath);
+    fs.copySync(path, renamedPhotoPath);
     this.addOneFile(renamedPhotoPath);
   }
 
