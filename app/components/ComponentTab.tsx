@@ -16,16 +16,20 @@ interface IProps {
 // Sorry, the name for this is bad... suggestions welcome.
 // This implements the screens for both Sessions and People, but not Projects.
 // So they are "components" of the project.
+// Any children are put in the bar at the lower left.
 @observer
 export class ComponentTab extends React.Component<IProps> {
   public render() {
     return (
       <div className={"componentTab " + this.props.folderTypeStyleClass}>
-        <FolderList
-          folders={this.props.folders}
-          selectedFolder={this.props.selectedFolder}
-          columns={this.props.columns}
-        />
+        <div className={"firstColumn"}>
+          <FolderList
+            folders={this.props.folders}
+            selectedFolder={this.props.selectedFolder}
+            columns={this.props.columns}
+          />
+          <div className={"newFolderBar"}>{this.props.children}</div>
+        </div>
         {this.props.folders &&
           this.props.folders.length > 0 && (
             <FolderPane

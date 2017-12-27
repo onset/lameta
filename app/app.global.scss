@@ -125,6 +125,26 @@ form {
 }
 .componentTab {
   color: $session--color;
+
+  .firstColumn {
+    display: flex;
+    flex-direction: column;
+    .folderList {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
+      .bp-table-container {
+        flex-grow: 1; // take up all the vertical space except what newFolderBar needs
+      }
+    }
+
+    .newFolderBar {
+      width: 100%;
+      height: 50px;
+      //border: solid blue;
+    }
+  }
 }
 .peopleTab {
   color: $people--color;
@@ -135,11 +155,22 @@ form {
   background-color: white;
 }
 .home {
-  overflow: hidden;
+  overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
   height: 100%;
-  .react-tabs__tab-panel {
-    height: calc(100% - 31px); // this is just the overall screenone
+
+  & > .react-tabs__tab-panel--selected {
+    // background-color: $people-color;
+    height: 100%;
+
+    //border: solid pink;
+    display: flex;
+    // flex-grow: 1;
+    flex-direction: column;
   }
+
+  //border: solid green;
+  display: flex;
+  flex-direction: column;
 }
 
 .sessions .react-tabs__tab-panel {
@@ -237,7 +268,7 @@ form {
 
 .fileList {
   background-color: white;
-  height: 30%;
+  //height: 30%;
   position: relative; // needed by mask
 }
 .paneTitle {
@@ -251,12 +282,17 @@ form {
 }
 
 .filePane {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   border: none;
   .react-tabs {
-    background-color: yellow !important;
-
-    height: calc(100% - 30% - 40px);
+    background-color: yellow !important; //shouldn't see this
+    display: flex;
+    flex-direction: column;
+  }
+  .react-tabs__tab-panel--selected {
+    flex-grow: 1;
   }
 }
 

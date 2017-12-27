@@ -16,13 +16,11 @@ const styles = require("./Home.scss");
 import { SessionIcon } from "./SessionIcon";
 import { ProjectIcon } from "./ProjectIcon";
 import { PeopleIcon } from "./PeopleIcon";
+import { PeopleTab } from "./PeopleTab";
+import { SessionsTab } from "./SessionsTab";
 
 export interface IProps {
   project: Project;
-  sessions: Session[];
-  persons: Person[];
-  selectedSession: IFolderSelection;
-  selectedPerson: IFolderSelection;
   authorityLists: AuthorityLists;
 }
 
@@ -63,20 +61,14 @@ export default class Home extends React.Component<IProps> {
             />
           </TabPanel>
           <TabPanel>
-            <ComponentTab
-              folders={this.props.sessions}
-              selectedFolder={this.props.selectedSession}
-              folderTypeStyleClass="sessions"
-              columns={["title", "date"]}
+            <SessionsTab
+              project={this.props.project}
               authorityLists={this.props.authorityLists}
             />
           </TabPanel>
           <TabPanel className={styles.peopleTab}>
-            <ComponentTab
-              folders={this.props.persons}
-              selectedFolder={this.props.selectedPerson}
-              folderTypeStyleClass="people"
-              columns={["name"]}
+            <PeopleTab
+              project={this.props.project}
               authorityLists={this.props.authorityLists}
             />
           </TabPanel>

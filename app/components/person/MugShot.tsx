@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Person } from "../../model/Project/Person/Person";
 import * as Dropzone from "react-dropzone";
 import * as fs from "fs-extra";
-import { MugshotPlaceholder } from "../MugshotPlaceholder";
+import { MugshotPlaceholder } from "./MugshotPlaceholder";
 import ImageField from "../ImageField";
 
 export interface IProps {

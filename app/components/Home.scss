@@ -1,25 +1,30 @@
-$people-color: #C7CFDB;
-$project-color: #E69664;
+$people-color: #c7cfdb;
+$project-color: #e69664;
 :local {
   .container {
     height: 100%;
     left: 10px;
   }
- ul:global(.react-tabs__tab-list){
-   margin: 0;
- }
+  ul:global(.react-tabs__tab-list) {
+    margin: 0;
+  }
 
- .projectTab{
-    &:global(.react-tabs__tab-panel--selected){
+  .projectTab {
+    &:global(.react-tabs__tab-panel--selected) {
       background-color: $project-color;
       height: 100%;
     }
-}
-//:global(react-tabs__tab-panel--selected).peopleTab{
-  .peopleTab{
-    &:global(.react-tabs__tab-panel--selected){
-      background-color: $people-color;
-      height: 100%;
-    }
- }
+  }
+  //:global(react-tabs__tab-panel--selected).peopleTab{
+  // .peopleTab {
+  //   &:global(.react-tabs__tab-panel--selected) {
+  //     // background-color: $people-color;
+  //     height: 100%;
+
+  //     border: solid pink;
+  //     display: flex;
+  //     // flex-grow: 1;
+  //     flex-direction: column;
+  //   }
+  // }
 }

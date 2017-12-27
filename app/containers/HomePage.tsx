@@ -20,10 +20,6 @@ export default class HomePage extends React.Component<any> {
     return (
       <Home
         project={this.project}
-        sessions={this.project.sessions}
-        persons={this.project.persons}
-        selectedSession={this.project.selectedSession}
-        selectedPerson={this.project.selectedPerson}
         authorityLists={this.project.authorityLists}
       />
     );
