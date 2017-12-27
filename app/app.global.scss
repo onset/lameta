@@ -431,3 +431,16 @@ form {
     }
   }
 }
+
+.icon-and-label {
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 24px;
+    margin-right: 8px;
+  }
+}
+.react-tabs__tab--selected {
+  font-weight: bold;
+}

@@ -10,6 +10,12 @@ import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 const styles = require("./Home.scss");
+//import sessionIcon from "../../artwork/session.svg";
+// const sessionIcon = require("../../artwork/Female_Selected.png");
+//import * as sessionIcon from "./test.svg";
+import { SessionIcon } from "./SessionIcon";
+import { ProjectIcon } from "./ProjectIcon";
+import { PeopleIcon } from "./PeopleIcon";
 
 export interface IProps {
   project: Project;
@@ -27,9 +33,28 @@ export default class Home extends React.Component<IProps> {
       <div className={styles.container} data-tid="container">
         <Tabs className={"home"} defaultIndex={2}>
           <TabList>
-            <Tab>Project</Tab>
-            <Tab>Sessions</Tab>
-            <Tab>People</Tab>
+            <Tab>
+              <div className={"icon-and-label"}>
+                <ProjectIcon />
+                <span>Project</span>
+              </div>
+            </Tab>
+            <Tab>
+              <div className={"icon-and-label"}>
+                {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
+              <div dangerouslySetInnerHTML={{ __html: sessionIcon.data }} /> */}
+                {/* <img src={sessionIcon} /> */}
+                <SessionIcon />
+                {/* <SessionIcon /> */}
+                <span>Sessions</span>
+              </div>
+            </Tab>
+            <Tab>
+              <div className={"icon-and-label"}>
+                <PeopleIcon />
+                <span>People</span>
+              </div>
+            </Tab>
           </TabList>
           <TabPanel>
             <ProjectTab
