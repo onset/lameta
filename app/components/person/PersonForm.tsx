@@ -7,6 +7,8 @@ import { FieldSet } from "../../model/field/FieldSet";
 import LanguageEdit from "./LanguageEdit";
 import ClosedChoiceEdit from "../ClosedChoiceEdit";
 import * as Dropzone from "react-dropzone";
+import * as fs from "fs-extra";
+import { MugshotPlaceholder } from "../MugshotPlaceholder";
 
 export interface IProps {
   person: Person;
@@ -93,7 +95,14 @@ export default class PersonForm extends React.Component<IProps> {
               onDrop={this.onMugShotDrop.bind(this)}
               accept="image/jpg,image/jpeg,image/png"
             >
-              <ImageField path={this.props.person.photoPath} />
+              <div className={"mask"}>Drop here</div>
+              {this.props.person.photoPath &&
+              this.props.person.photoPath.length > 0 &&
+              fs.existsSync(this.props.person.photoPath) ? (
+                <ImageField path={this.props.person.photoPath} />
+              ) : (
+                <MugshotPlaceholder />
+              )}
             </Dropzone>
           </div>
           <TextFieldEdit

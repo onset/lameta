@@ -26,6 +26,8 @@ export class Person extends Folder {
       return "";
     }
   }
+
+  /* Used when the user gives us a mugshot, either the first one or replacement one */
   public set photoPath(path: string) {
     console.log("photopath " + path);
 
