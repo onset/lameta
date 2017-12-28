@@ -105,6 +105,11 @@ export class Project extends Folder {
     return project;
   }
 
+  // override that isn't actually used in our UI
+  public get displayName(): string {
+    return "Project";
+  }
+
   private getUniqueFolder(directory: string, baseName: string): string {
     // get a uniquely-named directory to use
     let i = 0;

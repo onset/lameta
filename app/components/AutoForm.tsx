@@ -15,6 +15,8 @@ export interface IProps {
   fields: FieldSet;
   form: string; // only fields with this "form" property will show
   authorityLists: AuthorityLists;
+  fieldThatControlsFileNames?: string;
+  fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -46,6 +48,24 @@ export default class AutoForm extends React.Component<IProps> {
           f.definition.complexChoices.length > 0
         ) {
           return <GenreChooser field={f} key={field.key} />;
+        } else if (
+          this.props.fieldThatControlsFileNamesMightHaveChanged &&
+          this.props.fieldThatControlsFileNames &&
+          field.key === this.props.fieldThatControlsFileNames
+        ) {
+          return (
+            <TextFieldEdit
+              className={field.cssClass}
+              key={field.key}
+              field={field as Field}
+              onBlur={() =>
+                // for some reason typescript isn't noticing that I have already checked that this isn't null,
+                // so the || console.log is just to pacify it
+                (this.props.fieldThatControlsFileNamesMightHaveChanged ||
+                  console.log)(this.props.fieldThatControlsFileNames || "")
+              }
+            />
+          );
         } else {
           return (
             <TextFieldEdit

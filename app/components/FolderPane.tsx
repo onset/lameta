@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { default as SessionForm } from "./session/SessionForm";
 import FileList from "./FileList";
 import { observer } from "mobx-react";
 import * as Path from "path";
@@ -104,6 +103,10 @@ export class FolderPane extends React.Component<IProps> {
                 fields={directoryObject.properties}
                 form="primary"
                 authorityLists={this.props.authorityLists}
+                fieldThatControlsFileNames={"id"}
+                fieldThatControlsFileNamesMightHaveChanged={key =>
+                  (this.props.folder as Session).nameMightHaveChanged(key)
+                }
               />
             </TabPanel>
             {propertiesPanel}

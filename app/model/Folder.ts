@@ -19,11 +19,12 @@ export class IFolderSelection {
 }
 
 // Project, Session, or Person
-export class Folder {
+export abstract class Folder {
   public directory: string = "";
   @observable public files: File[] = [];
   @observable public selectedFile: File | null;
   protected metadataFile: File | null;
+  protected previousFileNameBase: string;
 
   public constructor(
     directory: string,
@@ -70,9 +71,7 @@ export class Folder {
     return x ? x.text : "???";
   }
 
-  public get displayName(): string {
-    return "Should be overriden";
-  }
+  public abstract get displayName(): string;
 
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
@@ -128,5 +127,15 @@ export class Folder {
 
     fs.renameSync(this.directory, newDirPath);
     this.directory = newDirPath;
+  }
+
+  public nameMightHaveChanged(keyFileNameBaseFieldName: string) {
+    const s = this.properties
+      .getTextStringOrEmpty(keyFileNameBaseFieldName)
+      .trim();
+    if (s !== this.previousFileNameBase) {
+      this.previousFileNameBase = s;
+      this.renameFilesAndFolders(s);
+    }
   }
 }

@@ -7,8 +7,6 @@ import * as fs from "fs-extra";
 import { computed } from "mobx";
 
 export class Person extends Folder {
-  private previousIdString: string;
-
   public get metadataFileExtensionWithDot(): string {
     return ".person";
   }
@@ -46,7 +44,7 @@ export class Person extends Folder {
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
     this.properties.setText("name", Path.basename(directory));
-    this.previousIdString = this.properties.getTextStringOrEmpty("name");
+    this.previousFileNameBase = this.properties.getTextStringOrEmpty("name");
     this.properties.getValue("name").textHolder.map.intercept(change => {
       // a problem with this is that it's going going get called for every keystroke
 
@@ -66,13 +64,5 @@ export class Person extends Folder {
   public static save() {
     //console.log("saving " + person.getString("title"));
     //fs.writeFileSync(person.path + ".test", JSON.stringify(person), "utf8");
-  }
-
-  public nameMightHaveChanged() {
-    const s = this.properties.getTextStringOrEmpty("name").trim();
-    if (s !== this.previousIdString) {
-      this.previousIdString = s;
-      this.renameFilesAndFolders(s);
-    }
   }
 }
