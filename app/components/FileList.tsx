@@ -90,8 +90,8 @@ export default class FileList extends React.Component<IProps> {
         >
           <Column
             name="Name"
-            renderCell={row => {
-              return this.makeCell(row, "filename");
+            renderCell={rowIndex => {
+              return this.makeCell(rowIndex, "filename");
             }}
           />
           <Column name="Type" renderCell={r => this.makeCell(r, "type")} />

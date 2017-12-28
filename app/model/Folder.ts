@@ -39,12 +39,12 @@ export class Folder {
   protected get filePrefix(): string {
     return Path.basename(Path.basename(this.directory));
   }
+
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural
   // to think of these properties as belonging to the (Project/Session/Person) itself.
   // So for the time being, we're wrapping the properties of that first file so that
   // they are directly accessible via objects of this class.
-
   public get properties(): FieldSet {
     if (this.metadataFile) {
       return this.metadataFile.properties;
@@ -109,5 +109,24 @@ export class Folder {
       }
     });
     return files;
+  }
+
+  protected renameFilesAndFolders(n: string) {
+    const oldDirPath = this.directory;
+    const base = Path.dirname(this.directory);
+    const newDirPath = Path.join(base, n);
+
+    this.files.forEach(f => {
+      const oldDescribedPath = f.describedFilePath;
+      const oldMetadataPath = f.metadataFilePath;
+      f.renameWithNewBase(n);
+      if (oldMetadataPath !== oldDescribedPath) {
+        f.metadataFilePath = f.metadataFilePath.replace(oldDirPath, newDirPath);
+      }
+      f.describedFilePath = f.describedFilePath.replace(oldDirPath, newDirPath);
+    });
+
+    fs.renameSync(this.directory, newDirPath);
+    this.directory = newDirPath;
   }
 }

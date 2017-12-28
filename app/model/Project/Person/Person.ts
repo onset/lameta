@@ -7,26 +7,11 @@ import * as fs from "fs-extra";
 import { computed } from "mobx";
 
 export class Person extends Folder {
+  private previousIdString: string;
+
   public get metadataFileExtensionWithDot(): string {
     return ".person";
   }
-
-  // public get photoPath2(): string {
-  //   let pattern = Path.join(
-  //     this.directory,
-  //     this.properties.getTextStringOrEmpty("name") +
-  //       "_Photo.@(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|bmp|BMP)"
-  //   );
-  //   pattern = pattern.split("\\").join("/"); // this glob lib requires forward slashes, even on windows
-
-  //   const filePaths = glob.sync(pattern); // nocase didn't work { nocase: true });
-  //   //console.log("photos length:" + filePaths.length);
-  //   if (filePaths.length > 0) {
-  //     return filePaths[0];
-  //   } else {
-  //     return "";
-  //   }
-  // }
 
   private get mugshotFile(): File | undefined {
     return this.files.find(f => {
@@ -61,6 +46,12 @@ export class Person extends Folder {
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
     this.properties.setText("name", Path.basename(directory));
+    this.previousIdString = this.properties.getTextStringOrEmpty("name");
+    this.properties.getValue("name").textHolder.map.intercept(change => {
+      // a problem with this is that it's going going get called for every keystroke
+
+      return change;
+    });
   }
   public static fromDirectory(directory: string): Person {
     const metadataFile = new FolderMetdataFile(directory, "Person", ".person");
@@ -75,5 +66,13 @@ export class Person extends Folder {
   public static save() {
     //console.log("saving " + person.getString("title"));
     //fs.writeFileSync(person.path + ".test", JSON.stringify(person), "utf8");
+  }
+
+  public nameMightHaveChanged() {
+    const s = this.properties.getTextStringOrEmpty("name").trim();
+    if (s !== this.previousIdString) {
+      this.previousIdString = s;
+      this.renameFilesAndFolders(s);
+    }
   }
 }

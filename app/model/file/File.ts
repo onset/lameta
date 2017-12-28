@@ -261,6 +261,44 @@ export abstract class File {
       fs.writeFileSync(this.metadataFilePath, xml);
     }
   }
+
+  private getUniqueFileName(intendedPath: string): string {
+    let i = 0;
+    let path = intendedPath;
+    const extension = Path.extname(intendedPath);
+    // enhance: there are pathological file names like "foo.mp3.mp3" where this would mess up.
+    const pathWithoutExtension = Path.join(
+      Path.dirname(intendedPath),
+      Path.basename(intendedPath).replace(extension, "")
+    );
+    while (fs.existsSync(path)) {
+      i++;
+      path = pathWithoutExtension + " " + i + extension;
+    }
+    return path;
+  }
+
+  private getNewPath(oldPath: string, newBase: string) {
+    const oldFilename = Path.basename(oldPath);
+    let newFilename = oldFilename.replace(/(^[^_]+)_/, newBase + "_");
+    newFilename = newFilename.replace(/(^[^_]+)\./, newBase + ".");
+    const newPath = Path.join(Path.dirname(oldPath), newFilename);
+    return this.getUniqueFileName(newPath);
+  }
+  public renameWithNewBase(base: string) {
+    if (
+      this.metadataFilePath !== this.describedFilePath &&
+      fs.existsSync(this.metadataFilePath)
+    ) {
+      const mp = this.getNewPath(this.metadataFilePath, base);
+      fs.renameSync(this.metadataFilePath, mp);
+      this.metadataFilePath = mp;
+    }
+    const p = this.getNewPath(this.describedFilePath, base);
+    fs.renameSync(this.describedFilePath, p);
+    this.describedFilePath = p;
+    this.properties.setText("filename", Path.basename(p));
+  }
 }
 
 // project, sessions, and person folders have a single metdata file describing their contents, and this ends

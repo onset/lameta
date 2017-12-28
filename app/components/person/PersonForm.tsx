@@ -24,7 +24,10 @@ export default class PersonForm extends React.Component<IProps> {
     return (
       <form className={"personForm"}>
         <div className={"first-column"}>
-          <TextFieldEdit field={this.props.fields.getTextField("name")} />
+          <TextFieldEdit
+            field={this.props.fields.getTextField("name")}
+            onBlur={() => this.props.person.nameMightHaveChanged()}
+          />
           <div className={"nickname-and-code"}>
             <TextFieldEdit field={this.props.fields.getTextField("nickName")} />
             <TextFieldEdit field={this.props.fields.getTextField("code")} />

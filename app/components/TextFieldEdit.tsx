@@ -6,6 +6,7 @@ const titleCase = require("title-case");
 export interface IProps {
   field: Field;
   hideLabel?: boolean;
+  onBlur?: () => void;
 }
 
 // automatically update when the value changes
@@ -60,6 +61,11 @@ export default class TextFieldEdit extends React.Component<
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
           onChange={event => TextFieldEdit.onChange(event, this.props.field)}
+          onBlur={event => {
+            if (this.props.onBlur) {
+              this.props.onBlur();
+            }
+          }}
         />
       </div>
     );
