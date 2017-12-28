@@ -10,6 +10,7 @@ interface IProps {
   selectedFolder: IFolderSelection;
   folderTypeStyleClass: string;
   columns: string[];
+  columnWidths: number[];
   authorityLists: AuthorityLists;
 }
 
@@ -27,6 +28,7 @@ export class ComponentTab extends React.Component<IProps> {
             folders={this.props.folders}
             selectedFolder={this.props.selectedFolder}
             columns={this.props.columns}
+            columnWidths={this.props.columnWidths}
           />
           <div className={"newFolderBar"}>{this.props.children}</div>
         </div>

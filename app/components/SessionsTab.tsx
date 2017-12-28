@@ -21,6 +21,7 @@ export class SessionsTab extends React.Component<IProps> {
         selectedFolder={this.props.project.selectedSession}
         folderTypeStyleClass="sessions"
         columns={["id", "title", "date"]}
+        columnWidths={[60, 150, 90]}
         authorityLists={this.props.authorityLists}
       >
         <button onClick={e => this.props.project.addSession()}>

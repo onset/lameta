@@ -110,30 +110,26 @@ export abstract class Folder {
     return files;
   }
 
-  protected renameFilesAndFolders(n: string) {
+  protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;
-    const base = Path.dirname(this.directory);
-    const newDirPath = Path.join(base, n);
+    const oldFolderName = Path.basename(oldDirPath);
+    if (oldFolderName === newFolderName) {
+      return; // nothing to do
+    }
+
+    const parentPath = Path.dirname(this.directory);
+    const newDirPath = Path.join(parentPath, newFolderName);
 
     this.files.forEach(f => {
-      const oldDescribedPath = f.describedFilePath;
-      const oldMetadataPath = f.metadataFilePath;
-      f.renameWithNewBase(n);
-      if (oldMetadataPath !== oldDescribedPath) {
-        f.metadataFilePath = f.metadataFilePath.replace(oldDirPath, newDirPath);
-      }
-      f.describedFilePath = f.describedFilePath.replace(oldDirPath, newDirPath);
+      f.updateNameBasedOnNewFolderName(newFolderName);
     });
-
     fs.renameSync(this.directory, newDirPath);
     this.directory = newDirPath;
   }
 
-  public nameMightHaveChanged(keyFileNameBaseFieldName: string) {
-    const s = this.properties
-      .getTextStringOrEmpty(keyFileNameBaseFieldName)
-      .trim();
-    if (s !== this.previousFileNameBase) {
+  public nameMightHaveChanged(keyOfField: string) {
+    const s = this.properties.getTextStringOrEmpty(keyOfField).trim();
+    if (s.length > 0 && s !== this.previousFileNameBase) {
       this.previousFileNameBase = s;
       this.renameFilesAndFolders(s);
     }

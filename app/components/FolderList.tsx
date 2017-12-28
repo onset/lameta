@@ -11,6 +11,7 @@ export interface IProps {
   folders: Folder[];
   selectedFolder: IFolderSelection;
   columns: string[];
+  columnWidths: number[];
 }
 @observer
 export class FolderList extends React.Component<IProps> {
@@ -48,6 +49,7 @@ export class FolderList extends React.Component<IProps> {
           // selectionModes={[RegionCardinality.FULL_ROWS]} this doesn't work either
           selectedRegions={this.getSelectedSessionRow()}
           onSelection={e => this.onSelection(e)}
+          columnWidths={this.props.columnWidths}
         >
           {this.props.columns.map(s => (
             <Column

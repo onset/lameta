@@ -21,6 +21,7 @@ export class PeopleTab extends React.Component<IProps> {
         selectedFolder={this.props.project.selectedPerson}
         folderTypeStyleClass="people"
         columns={["name"]}
+        columnWidths={[100]}
         authorityLists={this.props.authorityLists}
       >
         <button onClick={e => this.props.project.addPerson()}>

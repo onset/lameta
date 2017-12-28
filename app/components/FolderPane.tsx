@@ -25,7 +25,6 @@ export interface IProps {
 export class FolderPane extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
-    this.getTabs = this.getTabs.bind(this);
   }
 
   public render() {
@@ -39,13 +38,13 @@ export class FolderPane extends React.Component<IProps> {
           this.props.folder.selectedFile.getTextProperty("filename")
         )
       : "";
-
+    const tabs = this.getTabs(this.props.folder, fullPath);
     return (
       <div className={"filePane " + this.props.folderTypeStyleClass}>
         {this.props.children}
         {/* <h3 className={"paneTitle"}>{this.props.folder.displayName}</h3> */}
         <FileList folder={this.props.folder} />
-        {this.getTabs(this.props.folder, fullPath)}
+        {tabs}
       </div>
     );
   }

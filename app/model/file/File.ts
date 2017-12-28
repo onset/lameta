@@ -278,26 +278,47 @@ export abstract class File {
     return path;
   }
 
-  private getNewPath(oldPath: string, newBase: string) {
-    const oldFilename = Path.basename(oldPath);
-    let newFilename = oldFilename.replace(/(^[^_]+)_/, newBase + "_");
-    newFilename = newFilename.replace(/(^[^_]+)\./, newBase + ".");
-    const newPath = Path.join(Path.dirname(oldPath), newFilename);
-    return this.getUniqueFileName(newPath);
+  // Rename one file on disk and return the new full path.
+  // A file is renamed only if it currently contains
+  // the folder name. E.g. if we are changing from "jo" to "joe":
+  // jo.person  --> joe.person
+  // jo_photo.jpg --> joe_photo.jpg
+  // group_photo.jpg --> no change
+  private internalUpdateNameBasedOnNewFolderName(
+    currentFilePath: string,
+    newbase: string
+  ): string {
+    const oldbase = Path.basename(Path.dirname(currentFilePath));
+    const oldFilename = Path.basename(currentFilePath);
+    if (oldFilename.startsWith(oldbase)) {
+      const newFilename = oldFilename.replace(oldbase, newbase);
+      let newPath = Path.join(Path.dirname(currentFilePath), newFilename);
+      // can't think of a strong scenario for this at the moment,
+      // but it makes sure the rename will not fail due to a collision
+      newPath = this.getUniqueFileName(newPath);
+      fs.renameSync(currentFilePath, newPath);
+      return newPath;
+    }
+    return currentFilePath;
   }
-  public renameWithNewBase(base: string) {
+
+  // Rename the file and change any internal references to the name.
+  // Must be called *before* renaming the parent folder.
+  public updateNameBasedOnNewFolderName(newFolderName: string) {
     if (
       this.metadataFilePath !== this.describedFilePath &&
       fs.existsSync(this.metadataFilePath)
     ) {
-      const mp = this.getNewPath(this.metadataFilePath, base);
-      fs.renameSync(this.metadataFilePath, mp);
-      this.metadataFilePath = mp;
+      this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
+        this.metadataFilePath,
+        newFolderName
+      );
     }
-    const p = this.getNewPath(this.describedFilePath, base);
-    fs.renameSync(this.describedFilePath, p);
-    this.describedFilePath = p;
-    this.properties.setText("filename", Path.basename(p));
+    this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
+      this.describedFilePath,
+      newFolderName
+    );
+    this.properties.setText("filename", Path.basename(this.describedFilePath));
   }
 }
 
