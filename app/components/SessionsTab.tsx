@@ -20,7 +20,7 @@ export class SessionsTab extends React.Component<IProps> {
         folders={this.props.project.sessions}
         selectedFolder={this.props.project.selectedSession}
         folderTypeStyleClass="sessions"
-        columns={["title", "date"]}
+        columns={["id", "title", "date"]}
         authorityLists={this.props.authorityLists}
       >
         <button onClick={e => this.props.project.addSession()}>

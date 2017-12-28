@@ -105,25 +105,43 @@ export class Project extends Folder {
     return project;
   }
 
-  public addSession() {
+  private getUniqueFolder(directory: string, baseName: string): string {
     // get a uniquely-named directory to use
     let i = 0;
-    let sessionName = "New Session";
-    while (fs.existsSync(Path.join(this.directory, "Sessions", sessionName))) {
+    let name = baseName;
+    while (fs.existsSync(Path.join(directory, name))) {
       i++;
-      sessionName = "New Session " + i;
+      name = baseName + " " + i;
     }
-    const dir = Path.join(this.directory, "Sessions", sessionName);
+    const dir = Path.join(directory, name);
 
-    // make the session dir and the .session metadata file
+    // make the folder dir and the  metadata file
     fs.mkdirSync(dir);
-    const metadataFile = new FolderMetdataFile(dir, "Session", ".session");
-    const session = Session.fromDirectory(dir);
-    session.properties.setText("id", sessionName);
+    return dir;
+  }
 
-    // add to our list of sessions and select it
+  public addSession() {
+    const dir = this.getUniqueFolder(
+      Path.join(this.directory, "Sessions"),
+      "New Session"
+    );
+    //const metadataFile = new FolderMetdataFile(dir, "Session", ".session");
+    const session = Session.fromDirectory(dir);
+    session.properties.setText("id", Path.basename(dir));
     this.sessions.push(session);
     this.selectedSession.index = this.sessions.length - 1;
+  }
+
+  public addPerson() {
+    const dir = this.getUniqueFolder(
+      Path.join(this.directory, "People"),
+      "New Person"
+    );
+    //const metadataFile = new FolderMetdataFile(dir, "Person", ".person");
+    const person = Person.fromDirectory(dir);
+    person.properties.setText("name", Path.basename(dir));
+    this.persons.push(person);
+    this.selectedPerson.index = this.persons.length - 1;
   }
 
   private setupProtocolChoices() {

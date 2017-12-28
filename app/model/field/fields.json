@@ -72,6 +72,9 @@
   ],
   "session": [
     {
+      "key": "id"
+    },
+    {
       "key": "title",
       "cssClass": "text-block"
     },

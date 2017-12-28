@@ -23,7 +23,9 @@ export class PeopleTab extends React.Component<IProps> {
         columns={["name"]}
         authorityLists={this.props.authorityLists}
       >
-        <button>New Person</button>
+        <button onClick={e => this.props.project.addPerson()}>
+          New Person
+        </button>
       </ComponentTab>
     );
   }
