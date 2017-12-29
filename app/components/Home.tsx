@@ -31,13 +31,13 @@ export default class Home extends React.Component<IProps> {
       <div className={styles.container} data-tid="container">
         <Tabs className={"home"} defaultIndex={2}>
           <TabList>
-            <Tab>
+            <Tab className={"react-tabs__tab tab-project"}>
               <div className={"icon-and-label"}>
                 <ProjectIcon />
                 <span>Project</span>
               </div>
             </Tab>
-            <Tab>
+            <Tab className={"react-tabs__tab tab-sessions"}>
               <div className={"icon-and-label"}>
                 {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
               <div dangerouslySetInnerHTML={{ __html: sessionIcon.data }} /> */}
@@ -47,26 +47,26 @@ export default class Home extends React.Component<IProps> {
                 <span>Sessions</span>
               </div>
             </Tab>
-            <Tab>
+            <Tab className={"react-tabs__tab tab-people"}>
               <div className={"icon-and-label"}>
                 <PeopleIcon />
                 <span>People</span>
               </div>
             </Tab>
           </TabList>
-          <TabPanel>
+          <TabPanel className={"tab-panel-project"}>
             <ProjectTab
               project={this.props.project}
               authorityLists={this.props.authorityLists}
             />
           </TabPanel>
-          <TabPanel>
+          <TabPanel className={"tab-panel-sessions"}>
             <SessionsTab
               project={this.props.project}
               authorityLists={this.props.authorityLists}
             />
           </TabPanel>
-          <TabPanel className={styles.peopleTab}>
+          <TabPanel className={"tab-panel-people"}>
             <PeopleTab
               project={this.props.project}
               authorityLists={this.props.authorityLists}

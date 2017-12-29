@@ -36,8 +36,17 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
     border-color: $people__outline--color;
   }
   .folderList {
-    border: solid 4px $people--color;
+    //border: solid 4px $people--color;
   }
+}
+.tab-project.react-tabs__tab--selected {
+  background-color: $project--color;
+}
+.tab-sessions.react-tabs__tab--selected {
+  background-color: $session--color;
+}
+.tab-people.react-tabs__tab--selected {
+  background-color: $people--color;
 }
 .sessions {
   .bp-table-selection-region {
@@ -45,7 +54,7 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
     border-color: $session__outline--color;
   }
   .folderList {
-    border: solid 4px $session--color;
+    //border: solid 4px $session--color;
   }
 }
 .project {
@@ -72,6 +81,10 @@ a {
   text-decoration: underline;
 }
 .field {
+  // display: flex;
+  // flex-direction: column;
+  // width: 100%;
+
   //width: 30%;
   margin-top: 4px;
   margin-bottom: 4px;
@@ -109,12 +122,23 @@ form {
   // display: grid;
   // grid-template-columns: 1fr 1fr;
   // grid-gap: 8px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-wrap: wrap;
   justify-content: flex-start; // stack from top on all columns
   // margin: 0 -8px;
+
+  .fill-form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    textarea {
+      flex-grow: 1;
+    }
+  }
 }
 // .react-tabs__tab svg{
 
@@ -129,6 +153,7 @@ form {
   .firstColumn {
     display: flex;
     flex-direction: column;
+    width: 100%;
     .folderList {
       flex-grow: 1;
       display: flex;
@@ -140,6 +165,7 @@ form {
     }
 
     .newFolderBar {
+      padding-top: 8px;
       width: 100%;
       height: 50px;
       //border: solid blue;
@@ -158,7 +184,17 @@ form {
   overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
   height: 100%;
 
+  .tab-panel-project {
+    background-color: $project--color;
+  }
+  .tab-panel-sessions {
+    background-color: $session--color;
+  }
+  .tab-panel-people {
+    background-color: $people--color;
+  }
   & > .react-tabs__tab-panel--selected {
+    padding: 8px;
     // background-color: $people-color;
     height: 100%;
 
@@ -175,11 +211,11 @@ form {
 
 .sessions .react-tabs__tab-panel {
   background-color: $session--color;
-  border: solid thin $session__outline--color;
+  //border: solid thin $session__outline--color;
 }
 .people .react-tabs__tab-panel {
   background-color: $people--color;
-  border: solid thin $people__outline--color;
+  //border: solid thin $people__outline--color;
 }
 .project .react-tabs__tab-panel {
   background-color: $project--color;
@@ -187,14 +223,20 @@ form {
   padding: 10px;
   height: 100%; // unlike other tabs, this has tabs on left so can be taller
 }
-.react-tabs__tab-list {
-  background-color: $pane__interstitial--color;
-}
 .sessions {
   background-color: $session--color;
+  .react-tabs {
+    background-color: $session--color;
+  }
+  .react-tabs__tab-list {
+    background-color: $session--color;
+  }
 }
 .people {
   background-color: $people--color;
+  .react-tabs__tab-list {
+    background-color: $people--color;
+  }
 }
 .bp-table-quadrant {
   background-color: white;
@@ -215,6 +257,9 @@ form {
       border-radius: initial;
       width: 100%;
     }
+  }
+  .react-tabs__tab-list {
+    background-color: white;
   }
   //right side
   .react-tabs__tab-panel {
@@ -267,15 +312,26 @@ form {
 }
 
 .fileList {
+  margin-bottom: 8px;
   background-color: white;
   //height: 30%;
   position: relative; // needed by mask
+
+  button {
+    background-color: inherit;
+    border-color: transparent;
+    border-width: 1px;
+    &:hover {
+      border-color: $people--color;
+    }
+  }
 }
 .paneTitle {
-  font-size: 19px;
-  margin-top: 6px;
-  margin-left: 6px;
-  margin-bottom: 6px;
+  display: none;
+  // font-size: 19px;
+  // margin-top: 6px;
+  // margin-left: 6px;
+  // margin-bottom: 6px;
 }
 .project-documents .fileList {
   min-height: 150px;
@@ -287,12 +343,15 @@ form {
   width: 100%;
   border: none;
   .react-tabs {
-    background-color: yellow !important; //shouldn't see this
+    //background-color: yellow !important; //shouldn't see this
     display: flex;
     flex-direction: column;
   }
   .react-tabs__tab-panel--selected {
     flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -418,7 +477,7 @@ form {
   }
 }
 .fileBar {
-  background-color: $pane__interstitial--color;
+  //background-color: $pane__interstitial--color;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -492,4 +551,40 @@ form {
 // enhance: this is for when you click on a photo in the list... should be more defined
 img {
   width: 100%;
+}
+
+.Resizer.vertical {
+  width: 20px;
+  margin: 0 -5px;
+  border-left: 5px solid rgba(255, 255, 255, 0);
+  border-right: 5px solid rgba(255, 255, 255, 0);
+  cursor: col-resize;
+}
+
+.Resizer.vertical:hover {
+  border-left: 5px solid rgba(0, 0, 0, 0.5);
+  border-right: 5px solid rgba(0, 0, 0, 0.5);
+}
+.Resizer {
+  //background: #000;
+  opacity: 0.2;
+  z-index: 1;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
+}
+
+.Resizer:hover {
+  -webkit-transition: all 2s ease;
+  transition: all 2s ease;
+}
+.SplitPane {
+  //padding: 8px;
+  position: relative !important; //by default it was absolute, which messed up auto sizing
+  .Pane {
+    display: flex;
+  }
 }
