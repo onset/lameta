@@ -31,12 +31,24 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~react-datepicker/dist/react-datepicker.css";
 
 .people {
+  .not-implemented {
+    color: #becde4;
+  }
   .bp-table-selection-region {
     background-color: $people__cellOverlay--color;
     border-color: $people__outline--color;
   }
   .folderList {
-    //border: solid 4px $people--color;
+    border: solid 1px $people__outline--color;
+  }
+  .fileList {
+    border: solid 1px $people__outline--color;
+  }
+  .react-tabs__tab-list {
+    border-bottom: solid 1px $people__outline--color;
+    .react-tabs__tab--selected {
+      border-color: $people__outline--color;
+    }
   }
 }
 .tab-project.react-tabs__tab--selected {
@@ -158,9 +170,13 @@ form {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      background-color: white;
 
       .bp-table-container {
         flex-grow: 1; // take up all the vertical space except what newFolderBar needs
+        // library code puts in 100%, which makes it take more space than the parent since it has a sybling
+        height: inherit;
+        background-color: inherit;
       }
     }
 
@@ -256,6 +272,11 @@ form {
       border: none;
       border-radius: initial;
       width: 100%;
+      // &:hover,
+      // &.react-tabs__tab--selected {
+      //   //background-color: $project__cellOverlay--color;
+      //   font-weight: bold;
+      // }
     }
   }
   .react-tabs__tab-list {
@@ -312,17 +333,23 @@ form {
 }
 
 .fileList {
-  margin-bottom: 8px;
   background-color: white;
-  //height: 30%;
+  width: 100%;
   position: relative; // needed by mask
-
+  display: flex;
+  flex-direction: column;
+  .bp-table-container {
+    // library code puts in 100%, which makes it take more space than the parent since it has a sybling
+    height: inherit;
+    flex-grow: 1;
+    background-color: inherit;
+  }
   button {
     background-color: inherit;
     border-color: transparent;
     border-width: 1px;
     &:hover {
-      border-color: $people--color;
+      border-color: $people__outline--color;
     }
   }
 }
@@ -346,6 +373,7 @@ form {
     //background-color: yellow !important; //shouldn't see this
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   .react-tabs__tab-panel--selected {
     flex-grow: 1;
@@ -486,9 +514,6 @@ form {
   margin-bottom: 0;
   padding-top: 5px;
   font-size: 12px;
-  .not-implemented {
-    color: lightgray;
-  }
   li {
     list-style: none;
   }
@@ -508,6 +533,7 @@ form {
     margin-right: 8px;
   }
 }
+.react-tabs__tab:hover,
 .react-tabs__tab--selected {
   font-weight: bold;
 }
@@ -553,33 +579,37 @@ img {
   width: 100%;
 }
 
+.Resizer.horizontal {
+  height: 11px;
+  cursor: row-resize;
+  width: 100%;
+}
+
 .Resizer.vertical {
-  width: 20px;
-  margin: 0 -5px;
-  border-left: 5px solid rgba(255, 255, 255, 0);
-  border-right: 5px solid rgba(255, 255, 255, 0);
+  width: 10px;
+  // margin: 0 -5px;
+  // border-left: 5px solid rgba(255, 255, 255, 0);
+  // border-right: 5px solid rgba(255, 255, 255, 0);
   cursor: col-resize;
 }
 
-.Resizer.vertical:hover {
-  border-left: 5px solid rgba(0, 0, 0, 0.5);
-  border-right: 5px solid rgba(0, 0, 0, 0.5);
+.Resizer:hover {
+  background-color: gray;
 }
 .Resizer {
   //background: #000;
-  opacity: 0.2;
+  opacity: 0.4;
   z-index: 1;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+  // -moz-box-sizing: border-box;
+  // -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
+  // -moz-background-clip: padding;
+  // -webkit-background-clip: padding;
   background-clip: padding-box;
 }
 
 .Resizer:hover {
-  -webkit-transition: all 2s ease;
-  transition: all 2s ease;
+  //transition: all 2s ease;
 }
 .SplitPane {
   //padding: 8px;
@@ -587,4 +617,7 @@ img {
   .Pane {
     display: flex;
   }
+}
+.not-implemented {
+  color: lightgray;
 }

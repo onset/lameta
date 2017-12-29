@@ -13,6 +13,7 @@ import { Session } from "../model/Project/Session/Session";
 import TextFileView from "./TextFileView";
 import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+const SplitPane = require("react-split-pane");
 
 export interface IProps {
   folder: Folder;
@@ -39,12 +40,25 @@ export class FolderPane extends React.Component<IProps> {
         )
       : "";
     const tabs = this.getTabs(this.props.folder, fullPath);
+
+    const splitterKey =
+      this.props.folderTypeStyleClass + "HorizontalSplitPosition";
+    const splitterposition = localStorage.getItem(splitterKey) || "300";
+    const sp = parseInt(splitterposition, 10);
+
     return (
       <div className={"filePane " + this.props.folderTypeStyleClass}>
         {this.props.children}
         {/* <h3 className={"paneTitle"}>{this.props.folder.displayName}</h3> */}
-        <FileList folder={this.props.folder} />
-        {tabs}
+        <SplitPane
+          split="horizontal"
+          minSize={100}
+          defaultSize={sp}
+          onChange={(size: any) => localStorage.setItem(splitterKey, size)}
+        >
+          <FileList folder={this.props.folder} />
+          {tabs}
+        </SplitPane>
       </div>
     );
   }
