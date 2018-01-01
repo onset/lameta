@@ -250,7 +250,7 @@ app.on("ready", () =>
               }
             },
             {
-              label: "&Crate Project...",
+              label: "&Create Project...",
 
               click() {
                 mainWindow.webContents.send("create-project");
@@ -258,13 +258,16 @@ app.on("ready", () =>
             },
             { type: "separator" },
             {
-              label: "Export &Sessions..."
+              label: "Export &Sessions...",
+              enabled: false
             },
             {
-              label: "Export &People..."
+              label: "Export &People...",
+              enabled: false
             },
             {
-              label: "&Archive using IMDI..."
+              label: "&Archive using IMDI...",
+              enabled: false
             },
             { type: "separator" },
             { role: "quit" }

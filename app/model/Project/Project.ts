@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
 import * as glob from "glob";
@@ -34,6 +34,9 @@ export class Project extends Folder {
     otherDocsFolder: Folder
   ) {
     super(directory, metadataFile, files);
+    if (this.properties.getTextStringOrEmpty("title").length === 0) {
+      this.properties.setText("title", Path.basename(directory));
+    }
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
@@ -72,30 +75,28 @@ export class Project extends Folder {
       descriptionFolder,
       otherDocsFolder
     );
-
-    fs
-      .readdirSync(Path.join(directory, "Sessions"), "utf8")
-      .forEach(childName => {
-        const dir = Path.join(directory, "Sessions", childName);
-        if (fs.lstatSync(dir).isDirectory()) {
-          // console.log(dir);
-          const session = Session.fromDirectory(dir);
-          project.sessions.push(session);
-        }
-        // else ignore it
-      });
-
-    fs
-      .readdirSync(Path.join(directory, "People"), "utf8")
-      .forEach(childName => {
-        const dir = Path.join(directory, "People", childName);
-        if (fs.lstatSync(dir).isDirectory()) {
-          //console.log(dir);
-          const person = Person.fromDirectory(dir);
-          project.persons.push(person);
-        }
-        // else ignore it
-      });
+    const sesssionsDir = Path.join(directory, "Sessions");
+    fs.ensureDirSync(sesssionsDir);
+    fs.readdirSync(sesssionsDir, "utf8").forEach(childName => {
+      const dir = Path.join(sesssionsDir, childName);
+      if (fs.lstatSync(dir).isDirectory()) {
+        // console.log(dir);
+        const session = Session.fromDirectory(dir);
+        project.sessions.push(session);
+      }
+      // else ignore it
+    });
+    const peopleDir = Path.join(directory, "People");
+    fs.ensureDirSync(peopleDir);
+    fs.readdirSync(peopleDir, "utf8").forEach(childName => {
+      const dir = Path.join(peopleDir, childName);
+      if (fs.lstatSync(dir).isDirectory()) {
+        //console.log(dir);
+        const person = Person.fromDirectory(dir);
+        project.persons.push(person);
+      }
+      // else ignore it
+    });
 
     project.selectedSession.index = 0;
     project.selectedPerson.index = 0;
@@ -105,9 +106,8 @@ export class Project extends Folder {
     return project;
   }
 
-  // override that isn't actually used in our UI
   public get displayName(): string {
-    return "Project";
+    return this.properties.getTextStringOrEmpty("title");
   }
 
   private getUniqueFolder(directory: string, baseName: string): string {

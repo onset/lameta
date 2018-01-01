@@ -83,7 +83,7 @@ export class FolderPane extends React.Component<IProps> {
     );
     const contributorsPanel = (
       <TabPanel>
-        <h1>contributors todo</h1>
+        <h1>(not implemented yet)</h1>
       </TabPanel>
     );
     const standardMetaTabs = this.props.showStandardMetaTabs ? (

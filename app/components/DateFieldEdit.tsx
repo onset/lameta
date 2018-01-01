@@ -29,7 +29,9 @@ export default class DateFieldEdit extends React.Component<
   }
 
   public render() {
-    const m: Moment = moment(this.props.date.text); //review
+    const m: Moment = this.props.date.text
+      ? moment(this.props.date.text)
+      : null;
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
