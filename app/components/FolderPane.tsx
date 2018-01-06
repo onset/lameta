@@ -13,6 +13,8 @@ import { Session } from "../model/Project/Session/Session";
 import TextFileView from "./TextFileView";
 import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+import ContributorsTable from "./ContributorsTable";
+
 const SplitPane = require("react-split-pane");
 
 export interface IProps {
@@ -65,7 +67,7 @@ export class FolderPane extends React.Component<IProps> {
 
   private getTabs(directoryObject: Folder, path: string) {
     const file = directoryObject.selectedFile;
-    // console.log("getTabs:" + path);
+    console.log("getTabs:" + path);
     // console.log("getTabs:" + directoryObject.path);
     // console.log("getTabs file:" + file.type);
     if (!file || path.length === 0) {
@@ -83,7 +85,10 @@ export class FolderPane extends React.Component<IProps> {
     );
     const contributorsPanel = (
       <TabPanel>
-        <h1>(not implemented yet)</h1>
+        <ContributorsTable
+          // contributions={file.contributions}
+          file={file}
+        />
       </TabPanel>
     );
     const standardMetaTabs = this.props.showStandardMetaTabs ? (

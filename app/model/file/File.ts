@@ -13,6 +13,13 @@ import * as xmlbuilder from "xmlbuilder";
 const moment = require("moment");
 ///export  enum Type {Project, Session, Person, Other }
 
+export class Contribution {
+  public name: string;
+  public role: string;
+  public date: string;
+  public comments: string;
+}
+
 export abstract class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
@@ -32,6 +39,8 @@ export abstract class File {
   private fileExtensionForMetadata: string;
 
   @observable public properties = new FieldSet();
+
+  @observable public contributions = new Array<Contribution>();
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
