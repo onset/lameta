@@ -1,5 +1,7 @@
 //@import "~font-awesome/css/font-awesome.css";
 
+@import "~react-table/react-table.css";
+
 @import "~react-tabs/style/react-tabs.scss";
 
 $select-input-height: 28px;
@@ -683,4 +685,8 @@ img {
       }
     }
   }
+}
+
+.ReactTable {
+  background-color: white;
 }

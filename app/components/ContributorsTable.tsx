@@ -1,8 +1,11 @@
 import * as React from "react";
-import { Table, Column, Cell, EditableCell } from "@blueprintjs/table";
 import { observer } from "mobx-react";
 import { Field, FieldType } from "../model/field/Field";
 import { File, Contribution } from "../model/file/File";
+import ReactTable from "react-table";
+import DatePicker from "react-datepicker";
+import { Moment } from "moment";
+const moment = require("moment");
 
 export interface IProps {
   // contributions: Contribution[];
@@ -22,8 +25,15 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     //   ]
     // };
   }
+  public componentWillMount() {
+    this.ensureOneBlankRow();
+  }
+  public componentWillReceiveProps(nextProps: IProps) {
+    //if <different className=""></different>
+    this.ensureOneBlankRow();
+  }
   private ensureOneBlankRow() {
-    console.log("contributors.file: " + this.props.file.describedFilePath);
+    console.log("ensureOnBlankRow(): " + this.props.file.describedFilePath);
     let i = this.props.file.contributions.length;
     while (i--) {
       const c = this.props.file.contributions[i];
@@ -35,51 +45,62 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     console.log("Adding blank contribution");
     this.props.file.contributions.push(new Contribution());
   }
+
+  private renderEditableText(cellInfo: any) {
+    const contribution = this.props.file.contributions[cellInfo.index];
+    const key: keyof Contribution = cellInfo.column.id;
+    return (
+      <textarea
+        onChange={e => {
+          this.props.file.contributions[cellInfo.index][key] = e.target.value;
+          this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
+        }}
+        value={contribution[key]}
+      />
+    );
+  }
+  private renderDate(cellInfo: any) {
+    const contribution = this.props.file.contributions[cellInfo.index];
+    const key: keyof Contribution = cellInfo.column.id;
+    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
+    return (
+      <DatePicker
+        selected={m}
+        onChange={newDate => {
+          if (newDate != null) {
+            contribution[key] = newDate.toISOString();
+            this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
+          }
+        }}
+      />
+    );
+  }
+
   public render() {
     //review: this seems wrong, having this data model change here in the render method...
-    this.ensureOneBlankRow();
-    const c = this.props.file.contributions;
+    const c = this.props.file.contributions; //.slice(); //make normal array
+    const columns = [
+      {
+        Header: "Name",
+        accessor: "name",
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+      },
+      { Header: "Role", accessor: "role" },
+      {
+        Header: "Date",
+        accessor: "date",
+        Cell: (cellInfo: any) => this.renderDate(cellInfo)
+      },
+      {
+        Header: "Comments",
+        accessor: "comments",
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+      }
+    ];
 
     return (
-      <div>
-        <Table
-          numRows={this.props.file.contributions.length}
-          isRowHeaderShown={false}
-          allowMultipleSelection={false}
-          // columnWidths={[80, 200]}
-        >
-          <Column
-            name="Name"
-            renderCell={r => (
-              <EditableCell
-                value={c[r].name}
-                onChange={value => {
-                  c[r].name = value;
-                }}
-              />
-            )}
-          />
-          <Column
-            name="Role"
-            renderCell={r => (
-              <EditableCell
-                value={c[r].role}
-                onChange={value => {
-                  c[r].role = value;
-                }}
-              />
-            )}
-          />
-          <Column
-            name="Date"
-            renderCell={r => <EditableCell>{c[r].date}</EditableCell>}
-          />
-          <Column
-            name="Comments"
-            renderCell={r => <EditableCell>{c[r].comments}</EditableCell>}
-          />
-        </Table>
-      </div>
+      <ReactTable data={c} columns={columns} />
+      // <ReactTable data={[{name:"one"}]} columns={columns} />
     );
   }
 }

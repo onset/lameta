@@ -141,6 +141,8 @@ export abstract class File {
 
     this.computeProperties(); //enhance: do this on demand, instead of for every file
 
+    this.contributions.push(new Contribution());
+    this.contributions[0].name = Path.basename(this.describedFilePath);
     // TODO read the .meta file that describes this file, if it exists
   }
 

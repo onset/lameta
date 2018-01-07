@@ -188,6 +188,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-table@^6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-6.7.0.tgz#4a8bcd6a98276912738d4d2f18719557a476a329"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-tabs@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@types/react-tabs/-/react-tabs-1.0.3.tgz#7646db18cebc31242158ca48b3cfc0e4ed946ad4"
@@ -5735,6 +5741,12 @@ react-style-proptype@^3.0.0:
   resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.1.0.tgz#c8912fc13460f5b0c1ec1114c729d535b52b8073"
   dependencies:
     prop-types "^15.5.4"
+
+react-table@^6.7.6:
+  version "6.7.6"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-6.7.6.tgz#3f9e3b308328ceb04ef93a47babefaba2619c905"
+  dependencies:
+    classnames "^2.2.5"
 
 react-tabs@^2.1.0:
   version "2.1.1"
