@@ -88,6 +88,7 @@ export class FolderPane extends React.Component<IProps> {
         <ContributorsTable
           // contributions={file.contributions}
           file={file}
+          authorityLists={this.props.authorityLists}
         />
       </TabPanel>
     );

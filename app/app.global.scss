@@ -125,7 +125,8 @@ textarea {
   font-family: "segoe ui", "sans";
 }
 .Select {
-  width: 300px;
+  //need to narrow the selector down
+  //width: 300px;
 }
 form {
   height: 100%;
@@ -689,4 +690,8 @@ img {
 
 .ReactTable {
   background-color: white;
+}
+
+.ReactTable .Select-menu-outer {
+  position: initial; //hack to show the dropdown portion
 }

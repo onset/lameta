@@ -33,6 +33,15 @@ module.exports = {
             loader: "markdown-loader"
           }
         ]
+      },
+      {
+        test: /\.(xml)$/,
+        use: [
+          {
+            loader: "raw-loader",
+            options: {}
+          }
+        ]
       }
     ]
   },

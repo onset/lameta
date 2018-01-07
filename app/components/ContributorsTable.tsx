@@ -5,11 +5,14 @@ import { File, Contribution } from "../model/file/File";
 import ReactTable from "react-table";
 import DatePicker from "react-datepicker";
 import { Moment } from "moment";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+import RoleChooser from "../RoleChooser";
 const moment = require("moment");
 
 export interface IProps {
   // contributions: Contribution[];
   file: File;
+  authorityLists: AuthorityLists;
 }
 interface IState {
   unused: number;
@@ -59,6 +62,18 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       />
     );
   }
+  private renderRole(cellInfo: any) {
+    const contribution = this.props.file.contributions[cellInfo.index];
+    const key: keyof Contribution = cellInfo.column.id;
+    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
+    return (
+      <RoleChooser
+        contribution={contribution}
+        choices={this.props.authorityLists.roleChoices}
+      />
+    );
+  }
+
   private renderDate(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     const key: keyof Contribution = cellInfo.column.id;
@@ -85,7 +100,11 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         accessor: "name",
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
       },
-      { Header: "Role", accessor: "role" },
+      {
+        Header: "Role",
+        accessor: "role",
+        Cell: (cellInfo: any) => this.renderRole(cellInfo)
+      },
       {
         Header: "Date",
         accessor: "date",
