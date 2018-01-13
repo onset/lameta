@@ -4,6 +4,8 @@ import { observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import * as Dropzone from "react-dropzone";
 import { remote } from "electron";
+const { Menu } = require("electron");
+const electron = require("electron");
 
 export interface IProps {
   folder: Folder;
@@ -35,8 +37,45 @@ export default class FileList extends React.Component<IProps> {
 
   constructor(props: IProps) {
     super(props);
-  }
+    //console.log(electron.Menu.toString());
+    const mainWindow = remote.getCurrentWindow(); // as any;
+    remote.getCurrentWebContents().on("context-menu", (e, p) => {
+      const { x, y } = p;
 
+      remote.Menu.buildFromTemplate([
+        process.env.NODE_ENV === "development"
+          ? {
+              label: "Inspect element",
+              click() {
+                (mainWindow as any).inspectElement(x, y);
+              }
+            }
+          : {},
+        {
+          label: "Show in File Explorer",
+          click: () => {
+            electron.shell.showItemInFolder(this.getFileFromClick());
+          }
+        },
+        {
+          label: "Open in Program associate with this file",
+          click: () => {
+            electron.shell.openExternal(this.getFileFromClick());
+          }
+        },
+        { type: "separator" },
+        {
+          label: "Move to Trash",
+          click: () => {
+            electron.shell.moveItemToTrash(this.getFileFromClick());
+          }
+        }
+      ]).popup(mainWindow);
+    });
+  }
+  private getFileFromClick(): string {
+    return this.props.folder.files[0].describedFilePath; //todo
+  }
   private onDrop(
     acceptedFiles: Dropzone.ImageFile[],
     rejectedFiles: Dropzone.ImageFile[]

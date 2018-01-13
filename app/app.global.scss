@@ -690,8 +690,27 @@ img {
 
 .ReactTable {
   background-color: white;
-}
-
-.ReactTable .Select-menu-outer {
-  position: initial; //hack to show the dropdown portion
+  .rt-td {
+    overflow: unset; //allow comboboxes to draw list outside cell
+  }
+  .Select-control {
+    border: none;
+  }
+  .Select-arrow,
+  .Select-placeholder {
+    visibility: hidden;
+  }
+  .rt-td:hover .Select-arrow {
+    visibility: visible;
+  }
+  input {
+    border: none;
+    width: 100%; //fit within the column width
+  }
+  textarea {
+    overflow: hidden;
+    //white-space: nowrap;
+    height: auto; //go ahead and grow the row to show all the text
+    border: none;
+  }
 }

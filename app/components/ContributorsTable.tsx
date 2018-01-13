@@ -118,7 +118,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     ];
 
     return (
-      <ReactTable data={c} columns={columns} />
+      <ReactTable showPagination={false} data={c} columns={columns} />
       // <ReactTable data={[{name:"one"}]} columns={columns} />
     );
   }
