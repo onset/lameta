@@ -72,6 +72,20 @@
     ]
   },
   {
+    "protocol": "PARADISEC",
+    "documentation": "paradisec.html",
+    "choices": [
+      {
+        "label": "O",
+        "description": "Open (subject to PARADISEC access conditions)"
+      },
+      {
+        "label": "C",
+        "description": "Closed (subject to certain specified conditions)"
+      }
+    ]
+  },
+  {
     "protocol": "REAP",
     "documentation": "reap.html",
     "choices": [
