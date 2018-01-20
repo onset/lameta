@@ -714,3 +714,16 @@ img {
     border: none;
   }
 }
+.welcomeScreen {
+  padding: 4em;
+  .contents {
+    font-size: 14pt;
+    margin-top: 2em;
+
+    a {
+      display: block;
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+  }
+}

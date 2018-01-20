@@ -256,6 +256,13 @@ app.on("ready", () =>
                 mainWindow.webContents.send("create-project");
               }
             },
+            {
+              label: "&Welcome Screen",
+
+              click() {
+                mainWindow.webContents.send("welcome-screen");
+              }
+            },
             { type: "separator" },
             {
               label: "Export &Sessions...",

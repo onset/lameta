@@ -2,11 +2,12 @@ import Home from "../components/Home";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
-import { Project } from "../model/Project/Project";
+import { Project, IProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { remote, OpenDialogOptions } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
+import WelcomeScreen from "../components/project/WelcomeScreen";
 const { ipcRenderer } = require("electron");
 // tslint:disable-next-line:no-empty-interface
 
@@ -14,10 +15,6 @@ const { ipcRenderer } = require("electron");
 interface IProps {}
 interface IState {
   showModal: boolean;
-}
-
-interface IProjectHolder {
-  project: Project;
 }
 
 @observer
@@ -31,10 +28,14 @@ export default class HomePage extends React.Component<IProps, IState> {
       showModal: false
     };
     this.projectHolder = {
-      project: Project.fromDirectory(
-        fs.realpathSync("sample data/Edolo sample")
-      )
+      // project: Project.fromDirectory(
+      //   fs.realpathSync("sample data/Edolo sample")
+      // )
+      project: null
     };
+  }
+  private createProject() {
+    this.setState({ showModal: true });
   }
 
   public componentDidMount() {
@@ -42,10 +43,15 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.openProject();
     });
     ipcRenderer.on("create-project", () => {
-      this.setState({ showModal: true });
+      this.createProject();
+    });
+
+    //review: could just as well be "Close Project"; would do the same thing
+    ipcRenderer.on("welcome-screen", () => {
+      //todo: Is anything needed to save things off first?
+      this.projectHolder.project = null;
     });
   }
-
   private handleCreateProjectClose(directory: string) {
     this.setState({ showModal: false });
     if (directory) {
@@ -54,15 +60,38 @@ export default class HomePage extends React.Component<IProps, IState> {
     }
   }
   public render() {
-    remote
-      .getCurrentWindow()
-      .setTitle(this.projectHolder.project.displayName + " - SayLess");
+    const title = this.projectHolder.project
+      ? this.projectHolder.project.displayName + " - SayLess"
+      : "SayLess";
+    // if (this.projectHolder.project) {
+    remote.getCurrentWindow().setTitle(title);
     return (
       <div style={{ height: "100%" }}>
-        <Home
-          project={this.projectHolder.project}
-          authorityLists={this.projectHolder.project.authorityLists}
-        />
+        {this.projectHolder.project ? (
+          <Home
+            project={this.projectHolder.project}
+            authorityLists={this.projectHolder.project.authorityLists}
+          />
+        ) : (
+          <div className={"welcomeScreen"}>
+            <h1>Welcome to SayMore!</h1>
+            <div className={"contents"}>
+              <a onClick={() => this.createProject()}>Create a new project</a>
+              <a onClick={() => this.openProject()}>
+                Open an existing project on this computer
+              </a>
+              <a
+                onClick={() =>
+                  (this.projectHolder.project = Project.fromDirectory(
+                    fs.realpathSync("sample data/Edolo sample")
+                  ))
+                }
+              >
+                Play around with a project containing some sample data
+              </a>
+            </div>
+          </div>
+        )}
         {this.state.showModal ? (
           <CreateProjectDialog
             isOpen={this.state.showModal}
@@ -73,6 +102,29 @@ export default class HomePage extends React.Component<IProps, IState> {
         )}
       </div>
     );
+    // } else {
+    //return <WelcomeScreen projectHolder={this.projectHolder} />;
+    // return (
+    //   <div className={"welcomeScreen"}>
+    //     <h1>Welcome to SayMore!</h1>
+    //     <div className={"contents"}>
+    //       <a
+    //         onClick={() =>
+    //           (this.projectHolder.project = Project.fromDirectory(
+    //             fs.realpathSync("sample data/Edolo sample")
+    //           ))
+    //         }
+    //       >
+    //         Play around with a Project containing some sample data
+    //       </a>
+    //       <a onClick={() => this.createProject()}>Create a new project</a>
+    //       <a onClick={() => this.openProject()}>
+    //         Open an existing project on this computer
+    //       </a>
+    //     </div>
+    //   </div>
+    // );
+    // }
   }
 
   private openProject() {

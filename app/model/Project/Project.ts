@@ -15,6 +15,9 @@ import {
 } from "./AuthorityLists/AuthorityLists";
 
 const knownFieldDefinitions = require("../field/fields.json");
+export interface IProjectHolder {
+  project: Project | null;
+}
 
 export class Project extends Folder {
   @mobx.observable public selectedSession: IFolderSelection;
