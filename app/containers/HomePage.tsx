@@ -7,7 +7,6 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import { remote, OpenDialogOptions } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-import WelcomeScreen from "../components/project/WelcomeScreen";
 const { ipcRenderer } = require("electron");
 // tslint:disable-next-line:no-empty-interface
 
@@ -87,7 +86,7 @@ export default class HomePage extends React.Component<IProps, IState> {
                   ))
                 }
               >
-                Play around with a project containing some sample data
+                Play with sample project
               </a>
             </div>
           </div>
