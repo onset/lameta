@@ -3,7 +3,7 @@
  */
 
 const path = require("path");
-const { dependencies: externals } = require("./app/package.json"); // was just package.json, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
+const { dependencies: externals } = require("./app/package-app.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
 module.exports = {
   module: {
@@ -42,6 +42,14 @@ module.exports = {
             options: {}
           }
         ]
+      },
+      {
+        test: /\.(?:png|jpg|svg)$/,
+        loader: "url-loader",
+        query: {
+          // Inline images smaller than 10kb as data URIs
+          limit: 10000
+        }
       }
     ]
   },

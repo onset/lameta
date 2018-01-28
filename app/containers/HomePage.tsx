@@ -4,37 +4,49 @@ import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import { Project, IProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
+import * as ncp from "ncp";
 import * as Path from "path";
 import { remote, OpenDialogOptions } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
+const { app } = require("electron").remote;
 const { ipcRenderer } = require("electron");
-// tslint:disable-next-line:no-empty-interface
+import Store = require("electron-store");
+const welcomeBackground = require("../img/icon.png");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
   showModal: boolean;
+  useSampleProject: boolean;
 }
 
 @observer
 export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
   @mobx.observable private projectHolder: IProjectHolder;
+  private userSettings: Store;
 
   constructor(props: IProps) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
+      useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
-    this.projectHolder = {
-      // project: Project.fromDirectory(
-      //   fs.realpathSync("sample data/Edolo sample")
-      // )
-      project: null
-    };
+    //console.log("0000000" + app.getPath("userData"));
+    this.userSettings = new Store({ name: "saymore-user-settings" });
+    const previousDirectory = this.userSettings.get("previousProjectDirectory");
+    if (previousDirectory && fs.existsSync(previousDirectory)) {
+      this.projectHolder = {
+        project: Project.fromDirectory(previousDirectory)
+      };
+    } else {
+      this.projectHolder = {
+        project: null
+      };
+    }
   }
-  private createProject() {
-    this.setState({ showModal: true });
+  private createProject(useSample: boolean) {
+    this.setState({ showModal: true, useSampleProject: useSample });
   }
 
   public componentDidMount() {
@@ -42,7 +54,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.openProject();
     });
     ipcRenderer.on("create-project", () => {
-      this.createProject();
+      this.createProject(false);
     });
 
     //review: could just as well be "Close Project"; would do the same thing
@@ -51,18 +63,34 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.projectHolder.project = null;
     });
   }
-  private handleCreateProjectClose(directory: string) {
+  private handleCreateProjectDialogClose(
+    directory: string,
+    useSampleProject: boolean
+  ) {
     this.setState({ showModal: false });
     if (directory) {
       fs.ensureDirSync(directory);
-      this.projectHolder.project = Project.fromDirectory(directory);
+      if (useSampleProject) {
+        const sampleSourceDir = fs.realpathSync("sample data/Edolo sample");
+        ncp.ncp(sampleSourceDir, directory, err => {
+          const projectName = Path.basename(directory);
+          fs.rename(
+            Path.join(directory, "Edolo Sample.sprj"),
+            Path.join(directory, projectName + ".sprj")
+          );
+          this.projectHolder.project = Project.fromDirectory(directory);
+        });
+      } else {
+        this.projectHolder.project = Project.fromDirectory(directory);
+      }
+      this.userSettings.set("previousProjectDirectory", directory);
     }
   }
   public render() {
     const title = this.projectHolder.project
       ? this.projectHolder.project.displayName + " - SayLess"
       : "SayLess";
-    // if (this.projectHolder.project) {
+
     remote.getCurrentWindow().setTitle(title);
     return (
       <div style={{ height: "100%" }}>
@@ -73,20 +101,28 @@ export default class HomePage extends React.Component<IProps, IState> {
           />
         ) : (
           <div className={"welcomeScreen"}>
-            <h1>Welcome to SayMore!</h1>
-            <div className={"contents"}>
-              <a onClick={() => this.createProject()}>Create a new project</a>
-              <a onClick={() => this.openProject()}>
-                Open an existing project on this computer
+            <div className={"top"}>
+              <img src="./img/icon.png" />
+              <h1>
+                SayMore <span>Mac</span>
+              </h1>
+            </div>
+            <div className={"choices"}>
+              <img src="./img/create.png" />
+              <a onClick={() => this.createProject(false)}>
+                Create New Project
               </a>
+              <br />
+              <img src="./img/open.png" />
+              <a onClick={() => this.openProject()}>Open SayMore Project</a>
+              <br />
+              <img src="./img/sample.png" />
               <a
-                onClick={() =>
-                  (this.projectHolder.project = Project.fromDirectory(
-                    fs.realpathSync("sample data/Edolo sample")
-                  ))
-                }
+                onClick={() => {
+                  this.createProject(true);
+                }}
               >
-                Play with sample project
+                Create New Project with Sample Data
               </a>
             </div>
           </div>
@@ -94,50 +130,39 @@ export default class HomePage extends React.Component<IProps, IState> {
         {this.state.showModal ? (
           <CreateProjectDialog
             isOpen={this.state.showModal}
-            callback={answer => this.handleCreateProjectClose(answer)}
+            useSampleProject={this.state.useSampleProject}
+            callback={(answer, useSampleProject) =>
+              this.handleCreateProjectDialogClose(answer, useSampleProject)
+            }
           />
         ) : (
           ""
         )}
       </div>
     );
-    // } else {
-    //return <WelcomeScreen projectHolder={this.projectHolder} />;
-    // return (
-    //   <div className={"welcomeScreen"}>
-    //     <h1>Welcome to SayMore!</h1>
-    //     <div className={"contents"}>
-    //       <a
-    //         onClick={() =>
-    //           (this.projectHolder.project = Project.fromDirectory(
-    //             fs.realpathSync("sample data/Edolo sample")
-    //           ))
-    //         }
-    //       >
-    //         Play around with a Project containing some sample data
-    //       </a>
-    //       <a onClick={() => this.createProject()}>Create a new project</a>
-    //       <a onClick={() => this.openProject()}>
-    //         Open an existing project on this computer
-    //       </a>
-    //     </div>
-    //   </div>
-    // );
-    // }
   }
 
   private openProject() {
+    const defaultProjectParentDirectory = Path.join(
+      app.getPath("documents"),
+      "SayLess"
+    );
+
     const options: OpenDialogOptions = {
       title: "Open Project...",
-      defaultPath: "x:/temp",
+      defaultPath: defaultProjectParentDirectory,
+      //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
+      // look like saymore projects
       properties: ["openFile"],
       filters: [{ name: "SayMore/SayLess Project Files", extensions: ["sprj"] }]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
       if (paths) {
+        const directory = Path.dirname(paths[0]);
         this.projectHolder.project = Project.fromDirectory(
-          fs.realpathSync(Path.dirname(paths[0]))
+          fs.realpathSync(directory)
         );
+        this.userSettings.set("previousProjectDirectory", directory);
       }
     });
   }

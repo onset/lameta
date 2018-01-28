@@ -6,7 +6,8 @@ const { app } = require("electron").remote;
 
 interface IProps {
   isOpen: boolean;
-  callback: (answer: string) => void;
+  callback: (answer: string, useSampleProject: boolean) => void;
+  useSampleProject: boolean;
 }
 interface IState {
   projectName: string;
@@ -21,7 +22,10 @@ export default class CreateProjectDialog extends React.Component<
     this.state = { projectName: "" };
   }
   private handleCloseModal(doCreate: boolean) {
-    this.props.callback(doCreate ? this.getChosenPath() : "");
+    this.props.callback(
+      doCreate ? this.getChosenPath() : "",
+      this.props.useSampleProject
+    );
   }
   private getChosenPath(): string {
     return Path.join(
@@ -51,6 +55,9 @@ export default class CreateProjectDialog extends React.Component<
       message = "Project will be created in: " + this.getChosenPath();
     }
 
+    const title = this.props.useSampleProject
+      ? "Create Project Using Sample Data"
+      : "Create New Saymore Project";
     return (
       <ReactModal
         ariaHideApp={false}
@@ -59,7 +66,7 @@ export default class CreateProjectDialog extends React.Component<
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => this.handleCloseModal(false)}
       >
-        <div className={"dialogTitle"}>Create New Saymore Project</div>
+        <div className={"dialogTitle"}>{title}</div>
         <div className={"dialogContent"}>
           <h1>What would you like to call this project?</h1>
           <input

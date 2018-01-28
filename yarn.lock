@@ -75,6 +75,10 @@
   version "1.5.20"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-1.5.20.tgz#ccf636d3b794fe65a4191ebc7ff979a78efea6c2"
 
+"@types/electron-store@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/electron-store/-/electron-store-1.2.0.tgz#c6c7134a3827d07560ce7296dead51e47e8c1c17"
+
 "@types/enzyme@^3.1.1":
   version "3.1.6"
   resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.6.tgz#5b6fd8c5d23d2e1d06eca528b54df81c3ee4cbbf"
@@ -135,6 +139,12 @@
 "@types/musicmetadata@^2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@types/musicmetadata/-/musicmetadata-2.0.4.tgz#84f8dede180d7258f56f5d455fec905a122c583d"
+  dependencies:
+    "@types/node" "*"
+
+"@types/ncp@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/ncp/-/ncp-2.0.1.tgz#749432511f6ad747d04e98837b18cca9045567fb"
   dependencies:
     "@types/node" "*"
 
@@ -1340,6 +1350,16 @@ concurrently@^3.1.0:
     supports-color "^3.2.3"
     tree-kill "^1.1.0"
 
+conf@^1.3.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/conf/-/conf-1.4.0.tgz#1ea66c9d7a9b601674a5bb9d2b8dc3c726625e67"
+  dependencies:
+    dot-prop "^4.1.0"
+    env-paths "^1.0.0"
+    make-dir "^1.0.0"
+    pkg-up "^2.0.0"
+    write-file-atomic "^2.3.0"
+
 configstore@^3.0.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/configstore/-/configstore-3.1.1.tgz#094ee662ab83fad9917678de114faaea8fcdca90"
@@ -2107,6 +2127,12 @@ electron-publish@19.49.0:
 electron-releases@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-2.1.0.tgz#c5614bf811f176ce3c836e368a0625782341fd4e"
+
+electron-store@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-1.3.0.tgz#ee488a28a61fb982fd35b658fb9cb6331eb201f8"
+  dependencies:
+    conf "^1.3.0"
 
 electron-to-chromium@^1.2.7:
   version "1.3.30"
@@ -4511,6 +4537,10 @@ ncname@1.0.x:
   dependencies:
     xml-char-classes "^1.0.0"
 
+ncp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ncp/-/ncp-2.0.0.tgz#195a21d6c46e361d2fb1281ba38b91e9df7bdbb3"
+
 nearley@^2.7.10:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/nearley/-/nearley-2.11.0.tgz#5e626c79a6cd2f6ab9e7e5d5805e7668967757ae"
@@ -5091,6 +5121,12 @@ pkg-dir@^1.0.0:
 pkg-dir@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
+  dependencies:
+    find-up "^2.1.0"
+
+pkg-up@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pkg-up/-/pkg-up-2.0.0.tgz#c819ac728059a461cab1c3889a2be3c49a004d7f"
   dependencies:
     find-up "^2.1.0"
 
@@ -7407,7 +7443,7 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
-write-file-atomic@^2.0.0, write-file-atomic@^2.1.0:
+write-file-atomic@^2.0.0, write-file-atomic@^2.1.0, write-file-atomic@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-2.3.0.tgz#1ff61575c2e2a4e8e510d6fa4e243cce183999ab"
   dependencies:
