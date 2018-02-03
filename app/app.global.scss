@@ -7,31 +7,27 @@
 $select-input-height: 28px;
 @import "~react-select/scss/default";
 
-//$region-selected-color: #CFF09F; //this is too light
-// this is an overlay, not a true background, so it has to use transparency, which makes it
-// impossible to mimic saymore's selected cell background color.
-// Alas, the transparancy get's discarded and replaced by 0.1. So I've increased the saturation
-//$region-selected-color: rgba(151, 255, 0, 0.2);
-// $header-background-color:#CFF09F; (samore green) interesting, but it was too much
 $header-background-color: white;
 $project--color: #e69664;
 $people--color: #becde4; // saymore was #c7cfdb;
 $session--color: #cff09f;
 $pane__interstitial--color: #f0f0f0;
 $pane__border--color: #abadb3;
-$session__outline--color: #94c397;
-$people__outline--color: #7092be;
-$project__outline--color: #b64906;
-$session__cellOverlay--color: rgba(151, 255, 0, 0.2);
-$people__cellOverlay--color: rgba(199, 207, 219, 0.2);
-$project__cellOverlay--color: rgba(230, 150, 100, 0.2);
+$session__outline--color: transparent; // #94c397;
+$people__outline--color: transparent; // #7092be;
+$project__outline--color: transparent; // #b64906;
+$session__cellOverlay--color: rgba(207, 240, 159, 0.28); //$session--color;
+$people__cellOverlay--color: rgba(16, 100, 228, 0.28); //$people--color;
+$project__cellOverlay--color: rgba(230, 150, 100, 0.28);
 
 $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
 @import "~@blueprintjs/table/src/table.scss";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
 @import "~react-datepicker/dist/react-datepicker.css";
-
+.bp-table-cell {
+  z-index: 100; //put *above* the overlay that selected elements get, since that looks better than having a semitransparent color above
+}
 .people {
   .not-implemented {
     color: #becde4;

@@ -109,7 +109,24 @@ export abstract class Folder {
     });
     return files;
   }
-
+  private forgetFile(file: File) {
+    const index = this.files.indexOf(file);
+    this.files.splice(index, 1);
+  }
+  public moveFileToTrash(file: File) {
+    this.forgetFile(file);
+    if (fs.existsSync(file.describedFilePath)) {
+      electron.shell.moveItemToTrash(file.describedFilePath);
+    }
+    if (
+      file.metadataFilePath &&
+      file.metadataFilePath !== file.describedFilePath
+    ) {
+      if (fs.existsSync(file.metadataFilePath)) {
+        electron.shell.moveItemToTrash(file.metadataFilePath);
+      }
+    }
+  }
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
