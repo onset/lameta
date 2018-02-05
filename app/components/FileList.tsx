@@ -106,10 +106,16 @@ export default class FileList extends React.Component<IProps> {
     });
   }
   public render() {
-    // console.log(
-    //   "Render Session " +
-    //     this.props.directoryObject.properties.getValue("title").default
-    // );
+    // What this mobxDummy is about:
+    // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
+    // have a way of knowing that these are reliant on the filename of the file.
+    // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
+    // However the <Observer> wrapper suggested by that link messes up the display of the table.
+    // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
+    // when the user does something that causes a rename.
+    const mobxDummy = this.props.folder.files.map(f =>
+      f.getTextProperty("filename")
+    );
     return (
       <Dropzone
         activeClassName={"drop-active"}

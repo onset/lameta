@@ -273,7 +273,7 @@ export abstract class File {
     }
   }
 
-  private getUniqueFileName(intendedPath: string): string {
+  private getUniqueFilePath(intendedPath: string): string {
     let i = 0;
     let path = intendedPath;
     const extension = Path.extname(intendedPath);
@@ -295,7 +295,7 @@ export abstract class File {
   // jo.person  --> joe.person
   // jo_photo.jpg --> joe_photo.jpg
   // group_photo.jpg --> no change
-  private internalUpdateNameBasedOnNewFolderName(
+  private internalUpdateNameBasedOnNewBaseName(
     currentFilePath: string,
     newbase: string
   ): string {
@@ -306,13 +306,18 @@ export abstract class File {
       let newPath = Path.join(Path.dirname(currentFilePath), newFilename);
       // can't think of a strong scenario for this at the moment,
       // but it makes sure the rename will not fail due to a collision
-      newPath = this.getUniqueFileName(newPath);
+      newPath = this.getUniqueFilePath(newPath);
       fs.renameSync(currentFilePath, newPath);
       return newPath;
     }
     return currentFilePath;
   }
-
+  private updateFolderOnly(path: string, newFolderName: string): string {
+    const filePortion = Path.basename(path);
+    const directoryPortion = Path.dirname(path);
+    const parentDirectoryPortion = Path.dirname(directoryPortion);
+    return Path.join(parentDirectoryPortion, newFolderName, filePortion);
+  }
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
@@ -320,12 +325,20 @@ export abstract class File {
       this.metadataFilePath !== this.describedFilePath &&
       fs.existsSync(this.metadataFilePath)
     ) {
-      this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
+      this.metadataFilePath = this.internalUpdateNameBasedOnNewBaseName(
+        this.metadataFilePath,
+        newFolderName
+      );
+      this.metadataFilePath = this.updateFolderOnly(
         this.metadataFilePath,
         newFolderName
       );
     }
-    this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
+    this.describedFilePath = this.internalUpdateNameBasedOnNewBaseName(
+      this.describedFilePath,
+      newFolderName
+    );
+    this.describedFilePath = this.updateFolderOnly(
       this.describedFilePath,
       newFolderName
     );

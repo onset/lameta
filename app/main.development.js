@@ -257,10 +257,10 @@ app.on("ready", () =>
               }
             },
             {
-              label: "&Welcome Screen",
+              label: "&Start Screen",
 
               click() {
-                mainWindow.webContents.send("welcome-screen");
+                mainWindow.webContents.send("start-screen");
               }
             },
             { type: "separator" },

@@ -11,7 +11,7 @@ import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
 const { ipcRenderer } = require("electron");
 import Store = require("electron-store");
-const welcomeBackground = require("../img/icon.png");
+const startBackground = require("../img/icon.png");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -58,7 +58,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     });
 
     //review: could just as well be "Close Project"; would do the same thing
-    ipcRenderer.on("welcome-screen", () => {
+    ipcRenderer.on("start-screen", () => {
       //todo: Is anything needed to save things off first?
       this.projectHolder.project = null;
     });
@@ -74,7 +74,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         const sampleSourceDir = fs.realpathSync("sample data/Edolo sample");
         ncp.ncp(sampleSourceDir, directory, err => {
           const projectName = Path.basename(directory);
-          fs.rename(
+          fs.renameSync(
             Path.join(directory, "Edolo Sample.sprj"),
             Path.join(directory, projectName + ".sprj")
           );
@@ -86,6 +86,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.userSettings.set("previousProjectDirectory", directory);
     }
   }
+
   public render() {
     const title = this.projectHolder.project
       ? this.projectHolder.project.displayName + " - SayLess"
@@ -100,7 +101,7 @@ export default class HomePage extends React.Component<IProps, IState> {
             authorityLists={this.projectHolder.project.authorityLists}
           />
         ) : (
-          <div className={"welcomeScreen"}>
+          <div className={"startScreen"}>
             <div className={"top"}>
               <img src="./img/icon.png" />
               <h1>
