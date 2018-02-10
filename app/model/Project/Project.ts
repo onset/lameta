@@ -9,10 +9,12 @@ import { File, FolderMetdataFile } from "../file/File";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import ImdiExporter from "../../export/imdi";
 import { ProjectDocuments } from "./ProjectDocuments";
+const sanitize = require("sanitize-filename");
 import {
   AuthorityLists,
   IAccessProtocolChoice
 } from "./AuthorityLists/AuthorityLists";
+import { remote } from "electron";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export interface IProjectHolder {
@@ -182,5 +184,61 @@ export class Project extends Folder {
         );
         return change;
       });
+  }
+
+  protected validateFieldThatControlsFolderName(
+    folderArray: Folder[],
+    folder: Folder,
+    value: string,
+    fieldName: string,
+    folderKind: string
+  ) {
+    let msg = "";
+    const wouldBeFolderName = sanitize(value);
+
+    if (value.trim().length === 0) {
+      msg = `The ${fieldName} cannot be empty`;
+    } else if (wouldBeFolderName.trim().length === 0) {
+      msg = `That would lead to an empty filename`;
+    } else if (
+      //TODO: this is bogus
+      folderArray.some(
+        f =>
+          f !== folder &&
+          f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase()
+      )
+    ) {
+      msg = `There is already a ${folderKind} with the name '${value}'`;
+    }
+    if (msg.length > 0) {
+      remote.dialog.showMessageBox(
+        {
+          title: "SayMore",
+          message: msg
+        },
+        () => {} //without this, I was hanging on windows
+      );
+      return false;
+    } else {
+      return true;
+    }
+  }
+  public validateSessionId(session: Session, id: string): boolean {
+    return this.validateFieldThatControlsFolderName(
+      this.sessions,
+      session,
+      id,
+      "ID",
+      "Session"
+    );
+  }
+  public validatePersonFullName(person: Person, name: string): boolean {
+    return this.validateFieldThatControlsFolderName(
+      this.persons,
+      person,
+      name,
+      "Full Name",
+      "Person"
+    );
   }
 }

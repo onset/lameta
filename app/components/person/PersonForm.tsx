@@ -10,6 +10,7 @@ import MugShot from "./MugShot";
 export interface IProps {
   person: Person;
   fields: FieldSet;
+  validateFullName: (value: string) => boolean;
 }
 @observer
 export default class PersonForm extends React.Component<IProps> {
@@ -20,13 +21,15 @@ export default class PersonForm extends React.Component<IProps> {
   public render() {
     const father = this.props.fields.getTextField("fathersLanguage");
     const mother = this.props.fields.getTextField("mothersLanguage");
-    console.log("Render person");
     return (
       <form className={"personForm"}>
         <div className={"first-column"}>
           <TextFieldEdit
+            validate={(value: string) => this.props.validateFullName(value)}
             field={this.props.fields.getTextField("name")}
-            onBlur={() => this.props.person.nameMightHaveChanged("name")}
+            onBlur={() => {
+              this.props.person.nameMightHaveChanged("name");
+            }}
           />
           <div className={"nickname-and-code"}>
             <TextFieldEdit field={this.props.fields.getTextField("nickName")} />
@@ -80,7 +83,10 @@ export default class PersonForm extends React.Component<IProps> {
               className={"gender"}
               field={this.props.fields.getTextField("gender")}
             />
-            <MugShot person={this.props.person} />
+            <MugShot
+              person={this.props.person}
+              unused={this.props.person.displayName}
+            />
           </div>
           <TextFieldEdit
             className={"text-block"}

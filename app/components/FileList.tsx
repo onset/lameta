@@ -1,10 +1,12 @@
 import * as React from "react";
 import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
-import { observer } from "mobx-react";
+import { computed } from "mobx";
+import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import { File } from "../model/file/File";
 import * as Dropzone from "react-dropzone";
 import { remote } from "electron";
+import { Dictionary } from "typescript-collections";
 const { Menu } = require("electron");
 const electron = require("electron");
 
@@ -17,6 +19,7 @@ let globalPropertiesForPendingContextMenu: any;
 export default class FileList extends React.Component<IProps> {
   public table: Table | null;
   //private propertiesForPendingContextMenu: any;
+  private previousFileNames: WeakMap<File, string> = new WeakMap();
 
   constructor(props: IProps) {
     super(props);
@@ -152,10 +155,54 @@ export default class FileList extends React.Component<IProps> {
             globaltable = input;
           }}
         >
+          {/* <Column
+            name="Name"
+            renderCell={rowIndex => (
+              <Observer>
+                {() => {
+                  const p = this.props.folder.files[rowIndex].getTextProperty(
+                    "filename"
+                  );
+                  const x = p ? p.toString() : "no filename";
+                  return <Cell>{x}</Cell>;
+                }}
+              </Observer>
+            )}
+          />   */}
           <Column
             name="Name"
             renderCell={rowIndex => {
-              return this.makeCell(rowIndex, "filename");
+              const file = this.props.folder.files[rowIndex];
+              const p = file.getTextProperty("filename");
+              const displayName = p ? p.toString() : "no filename";
+
+              let className = "";
+              if (
+                this.previousFileNames.has(file) &&
+                this.previousFileNames.get(file) !== displayName
+              ) {
+                className = "fileNameChanged";
+                console.log(
+                  "change " +
+                    this.previousFileNames.get(file) +
+                    " to " +
+                    displayName
+                );
+              }
+              this.previousFileNames.set(file, displayName);
+              return (
+                <Cell>
+                  <span
+                    className={className}
+                    //todo: this removal seems to work, but then subsequently we don't seem to be getting the class name again.
+                    onAnimationEnd={e =>
+                      (e.target as any).classList.remove(className)
+                    }
+                  >
+                    {displayName}
+                  </span>
+                </Cell>
+              );
             }}
           />
           <Column name="Type" renderCell={r => this.makeCell(r, "type")} />

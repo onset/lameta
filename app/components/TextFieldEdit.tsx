@@ -7,18 +7,23 @@ export interface IProps {
   field: Field;
   hideLabel?: boolean;
   onBlur?: () => void;
+  validate?: (value: string) => boolean;
 }
-
+interface IState {
+  invalid: boolean;
+}
 // automatically update when the value changes
 @observer
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export default class TextFieldEdit extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>
+  IProps & React.HTMLAttributes<HTMLDivElement>,
+  IState
 > {
   constructor(props: IProps) {
     super(props);
     //this.onChange = this.onChange.bind(this);
     this.getLabel = this.getLabel.bind(this);
+    this.state = { invalid: false };
   }
 
   // this way gave us the wrong "this" (e.g 1st session when we were on the second
@@ -28,11 +33,9 @@ export default class TextFieldEdit extends React.Component<
   //   console.log("PolytextFiled now " + this.props.text.default);
   // }
 
-  private static onChange(
-    event: React.FormEvent<HTMLTextAreaElement>,
-    text: Field
-  ) {
+  private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
     text.text = event.currentTarget.value;
+    this.setState({ invalid: false });
   }
 
   private getLabel() {
@@ -50,6 +53,7 @@ export default class TextFieldEdit extends React.Component<
   }
 
   public render() {
+    const classname = this.state.invalid ? "invalid" : "";
     return (
       <div
         className={
@@ -58,12 +62,26 @@ export default class TextFieldEdit extends React.Component<
       >
         {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
         <textarea
+          className={classname}
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
-          onChange={event => TextFieldEdit.onChange(event, this.props.field)}
-          onBlur={event => {
-            if (this.props.onBlur) {
-              this.props.onBlur();
+          onChange={event => this.onChange(event, this.props.field)}
+          onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
+            if (
+              this.props.validate &&
+              !this.props.validate(event.currentTarget.value)
+            ) {
+              event.preventDefault();
+              const textarea = event.currentTarget;
+              window.setTimeout(() => {
+                textarea.focus();
+                this.setState({ invalid: true });
+              });
+            } else {
+              this.setState({ invalid: false });
+              if (this.props.onBlur) {
+                this.props.onBlur();
+              }
             }
           }}
         />

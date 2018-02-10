@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import { Project } from "../../model/Project/Project";
 //import { DocumentsPane } from "./DocumentsPane";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Field } from "../../model/field/Field";

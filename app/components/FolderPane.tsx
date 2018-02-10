@@ -14,6 +14,7 @@ import TextFileView from "./TextFileView";
 import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./ContributorsTable";
+import { Project } from "../model/Project/Project";
 
 const SplitPane = require("react-split-pane");
 
@@ -22,6 +23,7 @@ export interface IProps {
   folderTypeStyleClass: string;
   showStandardMetaTabs: boolean;
   authorityLists: AuthorityLists;
+  project: Project;
 }
 
 @observer
@@ -126,6 +128,12 @@ export class FolderPane extends React.Component<IProps> {
                 fieldThatControlsFileNamesMightHaveChanged={key =>
                   (this.props.folder as Session).nameMightHaveChanged(key)
                 }
+                validateFieldThatControlsFileNames={value =>
+                  this.props.project.validateSessionId(
+                    directoryObject as Session,
+                    value
+                  )
+                }
               />
             </TabPanel>
             {propertiesPanel}
@@ -143,6 +151,12 @@ export class FolderPane extends React.Component<IProps> {
             </TabList>
             <TabPanel>
               <PersonForm
+                validateFullName={value => {
+                  return this.props.project.validatePersonFullName(
+                    directoryObject as Person,
+                    value
+                  );
+                }}
                 person={directoryObject as Person}
                 fields={directoryObject.properties}
               />

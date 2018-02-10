@@ -44,6 +44,7 @@ export class ProjectTab extends React.Component<IProps> {
         </TabPanel>
         <TabPanel>
           <FolderPane
+            project={this.props.project}
             folder={this.props.project.descriptionFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}
@@ -60,6 +61,7 @@ export class ProjectTab extends React.Component<IProps> {
         </TabPanel>
         <TabPanel>
           <FolderPane
+            project={this.props.project}
             folder={this.props.project.otherDocsFolder}
             folderTypeStyleClass={"project-documents"}
             showStandardMetaTabs={false}

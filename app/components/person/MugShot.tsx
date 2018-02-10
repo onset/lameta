@@ -8,6 +8,7 @@ import ImageField from "../ImageField";
 
 export interface IProps {
   person: Person;
+  unused: string;
 }
 
 @observer
@@ -22,6 +23,7 @@ export default class MugShot extends React.Component<IProps> {
   }
 
   public render() {
+    console.log("render mugshot with path " + this.props.person.mugshotPath);
     return (
       <Dropzone
         className={"mugshot"}

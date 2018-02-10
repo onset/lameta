@@ -17,6 +17,7 @@ export interface IProps {
   authorityLists: AuthorityLists;
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
+  validateFieldThatControlsFileNames?: (value: string) => boolean;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -63,6 +64,10 @@ export default class AutoForm extends React.Component<IProps> {
                 // so the || console.log is just to pacify it
                 (this.props.fieldThatControlsFileNamesMightHaveChanged ||
                   console.log)(this.props.fieldThatControlsFileNames || "")
+              }
+              validate={value =>
+                !this.props.validateFieldThatControlsFileNames ||
+                this.props.validateFieldThatControlsFileNames(value)
               }
             />
           );

@@ -17,6 +17,7 @@ export class SessionsTab extends React.Component<IProps> {
   public render() {
     return (
       <ComponentTab
+        project={this.props.project}
         folders={this.props.project.sessions}
         selectedFolder={this.props.project.selectedSession}
         folderTypeStyleClass="sessions"

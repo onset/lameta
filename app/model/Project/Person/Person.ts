@@ -38,7 +38,10 @@ export class Person extends Folder {
   }
 
   public get displayName(): string {
-    return this.properties.getTextStringOrEmpty("name");
+    const code = this.properties.getTextStringOrEmpty("code").trim();
+    return code && code.length > 0
+      ? code
+      : this.properties.getTextStringOrEmpty("name");
   }
 
   public constructor(directory: string, metadataFile: File, files: File[]) {

@@ -119,6 +119,10 @@ textarea {
   height: 2em;
   width: 100%; //just fill the container
   font-family: "segoe ui", "sans";
+
+  &.invalid {
+    border: solid 2px red;
+  }
 }
 .Select {
   //need to narrow the selector down
@@ -711,7 +715,7 @@ img {
   }
 }
 
-.welcomeScreen {
+.startScreen {
   padding: 4em;
   color: black;
   margin-left: auto;
@@ -764,3 +768,35 @@ img {
     }
   }
 }
+.fileNameChanged {
+  animation: pulse 1s linear;
+  animation-iteration-count: 1;
+  color: black;
+}
+@keyframes pulse {
+  0% {
+    color: red;
+  }
+  50% {
+    color: $project--color;
+  }
+  100% {
+    color: black;
+  }
+}
+// .fileNameChanged {
+//   animation: pulse 1s linear;
+//   animation-iteration-count: infinite;
+//   font-weight: 400;
+// }
+// @keyframes pulse {
+//   0% {
+//     font-weight: 400;
+//   }
+//   50% {
+//     font-weight: 700;
+//   }
+//   100% {
+//     font-weight: 400;
+//   }
+// }

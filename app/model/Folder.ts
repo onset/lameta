@@ -13,6 +13,7 @@ import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
 import * as assert from "assert";
+const sanitize = require("sanitize-filename");
 
 export class IFolderSelection {
   @observable public index: number;
@@ -37,7 +38,7 @@ export abstract class Folder {
     this.selectedFile = metadataFile;
     this.properties.manditoryTextProperty("title", "untitled");
   }
-  protected get filePrefix(): string {
+  public get filePrefix(): string {
     return Path.basename(Path.basename(this.directory));
   }
 
@@ -145,7 +146,8 @@ export abstract class Folder {
   }
 
   public nameMightHaveChanged(keyOfField: string) {
-    const s = this.properties.getTextStringOrEmpty(keyOfField).trim();
+    let s = this.properties.getTextStringOrEmpty(keyOfField).trim();
+    s = sanitize(s);
     if (s.length > 0 && s !== this.previousFileNameBase) {
       this.previousFileNameBase = s;
       this.renameFilesAndFolders(s);

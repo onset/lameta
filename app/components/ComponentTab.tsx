@@ -4,6 +4,7 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import { FolderPane } from "./FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+import { Project } from "../model/Project/Project";
 //import SplitPane from "react-split-pane";
 const SplitPane = require("react-split-pane");
 
@@ -14,6 +15,7 @@ interface IProps {
   columns: string[];
   columnWidths: number[];
   authorityLists: AuthorityLists;
+  project: Project;
 }
 
 // Sorry, the name for this is bad... suggestions welcome.
@@ -48,6 +50,7 @@ export class ComponentTab extends React.Component<IProps> {
           {this.props.folders &&
             this.props.folders.length > 0 && (
               <FolderPane
+                project={this.props.project}
                 folder={this.props.folders[this.props.selectedFolder.index]}
                 folderTypeStyleClass={this.props.folderTypeStyleClass}
                 showStandardMetaTabs={true}
