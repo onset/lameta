@@ -54,20 +54,11 @@
     "protocol": "ELAR",
     "documentation": "elar.html",
     "choices": [
-      { "label": "U", "description": "all Users can access" },
-      {
-        "label": "R",
-        "description": "Researchers and Community members are allowed access"
-      },
-      {
-        "label": "C",
-        "description":
-          "only Community members are allowed access (normally requires application to Depositor)"
-      },
+      { "label": "O", "description": "fully Open" },
+      { "label": "U", "description": "open to Users" },
       {
         "label": "S",
-        "description":
-          "only Subscribers are allowed access (requires application to Depositor)"
+        "description": "open to Subscribers"
       }
     ]
   },
