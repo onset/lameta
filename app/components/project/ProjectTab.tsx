@@ -79,6 +79,13 @@ export class ProjectTab extends React.Component<IProps> {
             <br />
           </FolderPane>
         </TabPanel>
+        <TabPanel>
+          <XmlExportView
+            contentGenerator={() =>
+              ImdiCorpusGenerator.generate(this.props.project)
+            }
+          />
+        </TabPanel>
       </Tabs>
     );
   }

@@ -15,6 +15,8 @@ import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./ContributorsTable";
 import { Project } from "../model/Project/Project";
+import XmlExportView from "./XmlExportView";
+import ImdiSessionGenerator from "../export/imdiSession";
 
 const SplitPane = require("react-split-pane");
 
@@ -111,17 +113,19 @@ export class FolderPane extends React.Component<IProps> {
 
     switch (file.type) {
       case "Session":
+        const kFirstTabToOpen = 4;
         return (
-          <Tabs>
+          <Tabs defaultIndex={kFirstTabToOpen}>
             <TabList>
               <Tab>Session</Tab>
               <Tab>Properties</Tab>
               <Tab>Status &amp; Stages</Tab>
               <Tab>Notes</Tab>
+              <Tab>IMDI</Tab>
             </TabList>
             <TabPanel>
               <AutoForm
-                fields={directoryObject.properties}
+                folder={directoryObject}
                 form="primary"
                 authorityLists={this.props.authorityLists}
                 fieldThatControlsFileNames={"id"}
@@ -139,6 +143,13 @@ export class FolderPane extends React.Component<IProps> {
             {propertiesPanel}
             <TabPanel>todo</TabPanel>
             {notesPanel}
+            <TabPanel>
+              <XmlExportView
+                contentGenerator={() =>
+                  ImdiSessionGenerator.generate(directoryObject as Session)
+                }
+              />
+            </TabPanel>
           </Tabs>
         );
       case "Person":

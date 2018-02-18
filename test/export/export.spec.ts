@@ -1,4 +1,4 @@
-import ImdiExporter from "../../app/export/imdi";
+import ImdiExporter from "../../app/export/imdiSession";
 import { File } from "../../app/model/file/File";
 import { Project } from "../../app/model/Project/Project";
 

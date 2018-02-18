@@ -387,6 +387,11 @@ form {
   }
 }
 
+.imdiView {
+  height: 100%; // in project
+  flex-grow: 1; // everywhere else
+}
+
 .textView {
   background-color: white;
   height: 100%;
