@@ -27,9 +27,14 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   public render() {
+    const kFirstTabToOpen = 1;
     return (
       <div className={styles.container} data-tid="container">
-        <Tabs className={"home"} defaultIndex={2}>
+        <Tabs
+          className={"home"}
+          defaultIndex={kFirstTabToOpen}
+          onSelect={() => this.props.project.saveAllFilesInFolder()}
+        >
           <TabList>
             <Tab className={"react-tabs__tab tab-project"}>
               <div className={"icon-and-label"}>

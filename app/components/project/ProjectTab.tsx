@@ -7,6 +7,8 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { AccessProtocolForm } from "./AccessProtocolForm";
+import ImdiCorpusGenerator from "../../export/imdiCorpus";
+import XmlExportView from "../XmlExportView";
 
 interface IProps {
   project: Project;
@@ -16,18 +18,25 @@ interface IProps {
 @observer
 export class ProjectTab extends React.Component<IProps> {
   public render() {
+    this.props.project.considerDirty();
+    const kFirstTabToOpen = 4;
     return (
-      <Tabs className={"project"}>
+      <Tabs
+        className={"project"}
+        defaultIndex={kFirstTabToOpen}
+        onSelect={() => this.props.project.saveFolderMetaData()}
+      >
         <TabList>
           <Tab>About This Project</Tab>
           <Tab>Access Protocol</Tab>
           <Tab>Description Documents</Tab>
           <Tab>Other Documents</Tab>
+          <Tab>IMDI</Tab>
         </TabList>
         <TabPanel>
           <AutoForm
             form="primary"
-            fields={this.props.project.properties}
+            folder={this.props.project}
             authorityLists={this.props.authorityLists}
           />
         </TabPanel>

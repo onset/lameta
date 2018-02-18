@@ -29,6 +29,20 @@ export abstract class File {
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
   public describedFilePath: string;
 
+  //does this need to be saved?
+  private dirty: boolean;
+  public isDirty(): boolean {
+    return this.dirty;
+  }
+  public considerDirty() {
+    if (this.dirty) {
+      console.log(`Already dirty: ${this.metadataFilePath}`);
+    } else {
+      console.log(`Considered dirty: ${this.metadataFilePath}`);
+    }
+    this.dirty = true;
+  }
+
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
@@ -231,7 +245,12 @@ export abstract class File {
   }
 
   public save() {
-    console.log("Save():" + JSON.stringify(this.properties.keys()));
+    if (!this.dirty) {
+      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
+      return;
+    }
+    console.log(`Saving ${this.metadataFilePath}`);
+    //console.log("Save():" + JSON.stringify(this.properties.keys()));
 
     // let json = `{"root":[`;
     // this.properties.forEach((k, f: Field) => {
@@ -260,7 +279,7 @@ export abstract class File {
     //    root.element("notes", this.getTextProperty("notes")).up();
 
     const xml = root.end({ pretty: true });
-    console.log(`Save(${this.describedFilePath}`);
+
     if (this.describedFilePath.indexOf("sample data") > -1) {
       // console.log(
       //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
@@ -268,8 +287,9 @@ export abstract class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
       // console.log(xml);
     } else {
-      console.log("writing:" + xml);
+      //console.log("writing:" + xml);
       fs.writeFileSync(this.metadataFilePath, xml);
+      this.dirty = false;
     }
   }
 

@@ -2,6 +2,7 @@ import { Folder } from "../../Folder";
 import { File, FolderMetdataFile } from "../../file/File";
 import * as Path from "path";
 import { IChoice } from "../../field/Field";
+import mobx from "mobx";
 const knownFieldDefinitions = require("../../field/fields.json");
 const genres = require("./genres.json");
 

@@ -23,7 +23,7 @@ export default class MugShot extends React.Component<IProps> {
   }
 
   public render() {
-    console.log("render mugshot with path " + this.props.person.mugshotPath);
+    //console.log("render mugshot with path " + this.props.person.mugshotPath);
     return (
       <Dropzone
         className={"mugshot"}

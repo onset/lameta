@@ -7,7 +7,7 @@ import { IFolderSelection, Folder } from "../Folder";
 import { Person } from "./Person/Person";
 import { File, FolderMetdataFile } from "../file/File";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
-import ImdiExporter from "../../export/imdi";
+//import ImdiExporter from "../../export/imdiCorpus";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import {
@@ -17,8 +17,22 @@ import {
 import { remote } from "electron";
 
 const knownFieldDefinitions = require("../field/fields.json");
-export interface IProjectHolder {
-  project: Project | null;
+export class ProjectHolder {
+  @mobx.observable private projectInternal: Project | null;
+  public get project(): Project | null {
+    return this.projectInternal;
+  }
+  public setProject(p: Project | null) {
+    if (this.projectInternal) {
+      this.projectInternal.saveAllFilesInFolder();
+    }
+    if (p == null) {
+      console.log("setting project to null");
+    } else {
+      console.log("setting project to " + p.directory);
+    }
+    this.projectInternal = p;
+  }
 }
 
 export class Project extends Folder {
@@ -240,5 +254,15 @@ export class Project extends Folder {
       "Full Name",
       "Person"
     );
+  }
+
+  public saveAllFilesInFolder() {
+    this.saveFolderMetaData();
+    for (const f of this.sessions) {
+      f.saveAllFilesInFolder();
+    }
+    for (const f of this.persons) {
+      f.saveAllFilesInFolder();
+    }
   }
 }

@@ -2,7 +2,7 @@ import Home from "../components/Home";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
-import { Project, IProjectHolder } from "../model/Project/Project";
+import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as ncp from "ncp";
 import * as Path from "path";
@@ -23,11 +23,12 @@ interface IState {
 @observer
 export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
-  @mobx.observable private projectHolder: IProjectHolder;
+  @mobx.observable private projectHolder: ProjectHolder;
   private userSettings: Store;
 
   constructor(props: IProps) {
     super(props);
+    this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
@@ -36,13 +37,9 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.userSettings = new Store({ name: "saymore-user-settings" });
     const previousDirectory = this.userSettings.get("previousProjectDirectory");
     if (previousDirectory && fs.existsSync(previousDirectory)) {
-      this.projectHolder = {
-        project: Project.fromDirectory(previousDirectory)
-      };
+      const project = Project.fromDirectory(previousDirectory);
     } else {
-      this.projectHolder = {
-        project: null
-      };
+      this.projectHolder.setProject(null);
     }
   }
   private createProject(useSample: boolean) {
@@ -51,6 +48,9 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     ipcRenderer.on("open-project", () => {
+      // if (this.projectHolder.project) {
+      //   this.projectHolder.project.saveAllFilesInFolder();
+      // }
       this.openProject();
     });
     ipcRenderer.on("create-project", () => {
@@ -59,8 +59,7 @@ export default class HomePage extends React.Component<IProps, IState> {
 
     //review: could just as well be "Close Project"; would do the same thing
     ipcRenderer.on("start-screen", () => {
-      //todo: Is anything needed to save things off first?
-      this.projectHolder.project = null;
+      this.projectHolder.setProject(null);
     });
   }
   private handleCreateProjectDialogClose(
@@ -78,10 +77,10 @@ export default class HomePage extends React.Component<IProps, IState> {
             Path.join(directory, "Edolo Sample.sprj"),
             Path.join(directory, projectName + ".sprj")
           );
-          this.projectHolder.project = Project.fromDirectory(directory);
+          this.projectHolder.setProject(Project.fromDirectory(directory));
         });
       } else {
-        this.projectHolder.project = Project.fromDirectory(directory);
+        this.projectHolder.setProject(Project.fromDirectory(directory));
       }
       this.userSettings.set("previousProjectDirectory", directory);
     }
@@ -160,8 +159,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
       if (paths) {
         const directory = Path.dirname(paths[0]);
-        this.projectHolder.project = Project.fromDirectory(
-          fs.realpathSync(directory)
+        this.projectHolder.setProject(
+          Project.fromDirectory(fs.realpathSync(directory))
         );
         this.userSettings.set("previousProjectDirectory", directory);
       }

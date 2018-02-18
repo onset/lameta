@@ -23,7 +23,9 @@ export default class FileList extends React.Component<IProps> {
 
   constructor(props: IProps) {
     super(props);
-
+    if (this.props.folder.selectedFile) {
+      this.props.folder.considerDirty();
+    }
     //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
     //https://nodejs.org/api/events.html#events_class_eventemitter
     const webContents = remote.getCurrentWebContents();
@@ -59,10 +61,16 @@ export default class FileList extends React.Component<IProps> {
   }
 
   private onSelection(e: IRegion[]) {
+    if (this.props.folder.selectedFile) {
+      this.props.folder.saveAllFilesInFolder();
+    }
     //console.log("FileList:onSelection e:", e);
     if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
       const selectedRow: number = e[0].rows![0];
       this.props.folder.selectedFile = this.props.folder.files[selectedRow];
+      if (this.props.folder.selectedFile) {
+        this.props.folder.selectedFile.considerDirty();
+      }
     }
   }
 

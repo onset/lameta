@@ -64,7 +64,7 @@ export class Person extends Folder {
     );
     return new Person(directory, metadataFile, files);
   }
-  public static save() {
+  public static saveFolderMetaData() {
     //console.log("saving " + person.getString("title"));
     //fs.writeFileSync(person.path + ".test", JSON.stringify(person), "utf8");
   }

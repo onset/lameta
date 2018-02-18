@@ -12,7 +12,7 @@ import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
 
 export interface IProps {
-  fields: FieldSet;
+  folder: Folder;
   form: string; // only fields with this "form" property will show
   authorityLists: AuthorityLists;
   fieldThatControlsFileNames?: string;
@@ -94,7 +94,7 @@ export default class AutoForm extends React.Component<IProps> {
   }
 
   public render() {
-    const sortedKeys = this.props.fields
+    const sortedKeys = this.props.folder.properties
       .values()
       .sort(
         (a, b) =>
@@ -121,7 +121,7 @@ export default class AutoForm extends React.Component<IProps> {
         //   .map(field => this.makeEdit(field))
 
         sortedKeys
-          .map(k => this.props.fields.getValue(k))
+          .map(k => this.props.folder.properties.getValue(k))
 
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}

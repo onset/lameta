@@ -153,4 +153,23 @@ export abstract class Folder {
       this.renameFilesAndFolders(s);
     }
   }
+
+  public saveFolderMetaData() {
+    assert(this.metadataFile);
+    if (this.metadataFile) {
+      this.metadataFile.save();
+    }
+  }
+
+  public saveAllFilesInFolder() {
+    for (const f of this.files) {
+      f.save();
+    }
+  }
+
+  public considerDirty() {
+    if (this.metadataFile) {
+      this.metadataFile.considerDirty();
+    }
+  }
 }

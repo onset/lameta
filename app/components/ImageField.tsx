@@ -15,7 +15,7 @@ export default class ImageField extends React.Component<
   }
 
   public render() {
-    console.log("render ImageField");
+    //console.log("render ImageField");
     return (
       <div
         className={"field " + this.props.className}
