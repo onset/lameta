@@ -38,6 +38,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     const previousDirectory = this.userSettings.get("previousProjectDirectory");
     if (previousDirectory && fs.existsSync(previousDirectory)) {
       const project = Project.fromDirectory(previousDirectory);
+      this.projectHolder.setProject(project);
     } else {
       this.projectHolder.setProject(null);
     }

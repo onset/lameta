@@ -167,9 +167,9 @@ export abstract class Folder {
     }
   }
 
-  public considerDirty() {
+  public couldPossiblyBecomeDirty() {
     if (this.metadataFile) {
-      this.metadataFile.considerDirty();
+      this.metadataFile.couldPossiblyBecomeDirty();
     }
   }
 }

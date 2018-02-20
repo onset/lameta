@@ -16,7 +16,8 @@ import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./ContributorsTable";
 import { Project } from "../model/Project/Project";
 import XmlExportView from "./XmlExportView";
-import ImdiSessionGenerator from "../export/imdiSession";
+import ImdiGenerator from "../export/imdiGenerator";
+import { File } from "../model/file/File";
 
 const SplitPane = require("react-split-pane");
 
@@ -30,6 +31,9 @@ export interface IProps {
 
 @observer
 export class FolderPane extends React.Component<IProps> {
+  private tabs: JSX.Element;
+  private previousSelectedFile: File | null;
+
   constructor(props: IProps) {
     super(props);
   }
@@ -38,14 +42,14 @@ export class FolderPane extends React.Component<IProps> {
     if (!this.props.folder) {
       return <h1>No folder selected.</h1>;
     }
-    //console.log("Render SSPane:" + this.props.session.title.default);
-    const fullPath: string = this.props.folder.selectedFile
-      ? Path.join(
-          this.props.folder.directory,
-          this.props.folder.selectedFile.getTextProperty("filename")
-        )
-      : "";
-    const tabs = this.getTabs(this.props.folder, fullPath);
+
+    //Without this test, getTabs() will be run on every keystroke when typing into a field.
+    //But if we only do it in constructor, then we don't reset when the selected file
+    //changes. We need to run it when
+    if (this.previousSelectedFile !== this.props.folder.selectedFile) {
+      this.previousSelectedFile = this.props.folder.selectedFile;
+      this.tabs = this.getTabs(this.props.folder);
+    }
 
     const splitterKey =
       this.props.folderTypeStyleClass + "HorizontalSplitPosition";
@@ -63,13 +67,19 @@ export class FolderPane extends React.Component<IProps> {
           onChange={(size: any) => localStorage.setItem(splitterKey, size)}
         >
           <FileList folder={this.props.folder} />
-          {tabs}
+          {this.tabs}
         </SplitPane>
       </div>
     );
   }
 
-  private getTabs(directoryObject: Folder, path: string) {
+  private getTabs(directoryObject: Folder) {
+    const path: string = this.props.folder.selectedFile
+      ? Path.join(
+          this.props.folder.directory,
+          this.props.folder.selectedFile.getTextProperty("filename")
+        )
+      : "";
     const file = directoryObject.selectedFile;
     console.log("getTabs:" + path);
     // console.log("getTabs:" + directoryObject.path);
@@ -146,7 +156,7 @@ export class FolderPane extends React.Component<IProps> {
             <TabPanel>
               <XmlExportView
                 contentGenerator={() =>
-                  ImdiSessionGenerator.generate(directoryObject as Session)
+                  ImdiGenerator.generateSession(directoryObject as Session)
                 }
               />
             </TabPanel>

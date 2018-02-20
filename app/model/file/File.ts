@@ -2,7 +2,7 @@ import * as xml2js from "xml2js";
 import * as fs from "fs";
 import * as Path from "path";
 import * as filesize from "filesize";
-import { observable } from "mobx";
+import * as mobx from "mobx";
 import * as assert from "assert";
 import * as camelcase from "camelcase";
 import * as imagesize from "image-size";
@@ -10,7 +10,9 @@ import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
+const nodejsUtil = require("util");
 const moment = require("moment");
+
 ///export  enum Type {Project, Session, Person, Other }
 
 export class Contribution {
@@ -29,20 +31,6 @@ export abstract class File {
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
   public describedFilePath: string;
 
-  //does this need to be saved?
-  private dirty: boolean;
-  public isDirty(): boolean {
-    return this.dirty;
-  }
-  public considerDirty() {
-    if (this.dirty) {
-      console.log(`Already dirty: ${this.metadataFilePath}`);
-    } else {
-      console.log(`Considered dirty: ${this.metadataFilePath}`);
-    }
-    this.dirty = true;
-  }
-
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
@@ -52,9 +40,9 @@ export abstract class File {
   private xmlRootName: string;
   private fileExtensionForMetadata: string;
 
-  @observable public properties = new FieldSet();
+  @mobx.observable public properties = new FieldSet();
 
-  @observable public contributions = new Array<Contribution>();
+  @mobx.observable public contributions = new Array<Contribution>();
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -160,7 +148,7 @@ export abstract class File {
     // TODO read the .meta file that describes this file, if it exists
   }
 
-  public loadProperties(propertiesFromXml: any) {
+  private loadProperties(propertiesFromXml: any) {
     const keys = Object.keys(propertiesFromXml);
 
     for (const key of keys) {
@@ -242,27 +230,24 @@ export abstract class File {
     // so that we just have the object with its properties.
     const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
     this.loadProperties(properties);
+    this.watchForChange = mobx.reaction(
+      //NB: this will run when we first set it up, but only to collect the base state of things...
+      // it will not fire the function that marks this as dirty
+      // Function to check for a change
+      () => {
+        //console.log("Checking contents");
+        return this.getXml();
+      },
+      // Function fires when a change is detected
+      () => this.changed()
+    );
   }
 
-  public save() {
-    if (!this.dirty) {
-      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
-      return;
-    }
-    console.log(`Saving ${this.metadataFilePath}`);
-    //console.log("Save():" + JSON.stringify(this.properties.keys()));
-
-    // let json = `{"root":[`;
-    // this.properties.forEach((k, f: Field) => {
-    //   json += "{" + f.stringify() + "},";
-    // });
-    // json = json.replace(/(,$)/g, ""); //remove trailing comma
-    // json += "]}";
-
-    // console.log("Save() JSON:" + json);
-
-    // prettier-ignore
-    const root = xmlbuilder.create(this.xmlRootName, { version: '1.0', encoding: 'utf-8' });
+  private getXml(): string {
+    const root = xmlbuilder.create(this.xmlRootName, {
+      version: "1.0",
+      encoding: "utf-8"
+    });
     this.properties.forEach((k, f: Field) => {
       if (f.persist) {
         const t = f.typeAndValueForXml();
@@ -276,9 +261,18 @@ export abstract class File {
         }
       }
     });
-    //    root.element("notes", this.getTextProperty("notes")).up();
 
-    const xml = root.end({ pretty: true });
+    return root.end({ pretty: true });
+  }
+
+  public save() {
+    if (!this.dirty) {
+      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
+      return;
+    }
+    console.log(`Saving ${this.metadataFilePath}`);
+
+    const xml = this.getXml();
 
     if (this.describedFilePath.indexOf("sample data") > -1) {
       // console.log(
@@ -289,7 +283,7 @@ export abstract class File {
     } else {
       //console.log("writing:" + xml);
       fs.writeFileSync(this.metadataFilePath, xml);
-      this.dirty = false;
+      this.clearDirty();
     }
   }
 
@@ -363,6 +357,44 @@ export abstract class File {
       newFolderName
     );
     this.properties.setText("filename", Path.basename(this.describedFilePath));
+  }
+
+  /* ----------- Change Detection -----------
+    Enhance: move to its own class
+  */
+
+  private watchForChange: mobx.IReactionDisposer;
+
+  //does this need to be saved?
+  private dirty: boolean;
+  public isDirty(): boolean {
+    return this.dirty;
+  }
+
+  // This is/was called whenever a UI shows that has user-changable things.
+  // I did this before setting up the mobx.reaction system to actually notice
+  // when something changes. Leaving it around, made to do nothing, until I gain
+  // confidence in the new system.
+  public couldPossiblyBecomeDirty() {
+    if (this.dirty) {
+      //console.log(`Already dirty: ${this.metadataFilePath}`);
+    } else {
+      //console.log(`Considered dirty: ${this.metadataFilePath}`);
+    }
+    //this.dirty = true;
+  }
+  private clearDirty() {
+    this.dirty = false;
+    console.log("dirty cleared " + this.metadataFilePath);
+  }
+
+  private changed() {
+    if (this.dirty) {
+      console.log("changed() but already dirty " + this.metadataFilePath);
+    } else {
+      this.dirty = true;
+      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+    }
   }
 }
 

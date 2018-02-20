@@ -24,7 +24,7 @@ export default class FileList extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
     if (this.props.folder.selectedFile) {
-      this.props.folder.considerDirty();
+      this.props.folder.couldPossiblyBecomeDirty();
     }
     //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
     //https://nodejs.org/api/events.html#events_class_eventemitter
@@ -69,7 +69,7 @@ export default class FileList extends React.Component<IProps> {
       const selectedRow: number = e[0].rows![0];
       this.props.folder.selectedFile = this.props.folder.files[selectedRow];
       if (this.props.folder.selectedFile) {
-        this.props.folder.selectedFile.considerDirty();
+        this.props.folder.selectedFile.couldPossiblyBecomeDirty();
       }
     }
   }

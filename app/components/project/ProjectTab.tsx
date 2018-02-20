@@ -7,7 +7,7 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { AccessProtocolForm } from "./AccessProtocolForm";
-import ImdiCorpusGenerator from "../../export/imdiCorpus";
+import ImdiGenerator from "../../export/imdiGenerator";
 import XmlExportView from "../XmlExportView";
 
 interface IProps {
@@ -18,7 +18,7 @@ interface IProps {
 @observer
 export class ProjectTab extends React.Component<IProps> {
   public render() {
-    this.props.project.considerDirty();
+    this.props.project.couldPossiblyBecomeDirty();
     const kFirstTabToOpen = 4;
     return (
       <Tabs
@@ -91,7 +91,7 @@ export class ProjectTab extends React.Component<IProps> {
         <TabPanel>
           <XmlExportView
             contentGenerator={() =>
-              ImdiCorpusGenerator.generate(this.props.project)
+              ImdiGenerator.generateCorpus(this.props.project)
             }
           />
         </TabPanel>
