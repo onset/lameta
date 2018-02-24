@@ -35,11 +35,7 @@ export class AuthorityLists {
       const protocol = accessProtocols.find(
         (o: any) => o.protocol === protocolName
       );
-      if (protocol) {
-        this.accessChoices = protocol.choices;
-      } else {
-        this.accessProtocolChoices = [];
-      }
+      this.accessChoices = protocol ? protocol.choices : [];
     }
   }
 
