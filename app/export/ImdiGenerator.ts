@@ -10,12 +10,21 @@ export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
   private folder: Folder;
 
+  //We enable this when we want to keep unit test xpaths simple
+  private omitNamespaces: boolean;
+
   public static generateCorpus(project: Project): string {
     const generator = new ImdiGenerator(project);
     return generator.corpus();
   }
-  public static generateSession(session: Session): string {
+  public static generateSession(
+    session: Session,
+    omitNamespaces?: boolean
+  ): string {
     const generator = new ImdiGenerator(session);
+    if (omitNamespaces) {
+      generator.omitNamespaces = omitNamespaces;
+    }
     return generator.session();
   }
 
@@ -43,7 +52,8 @@ export default class ImdiGenerator {
 
     this.startXmlRoot();
     this.group("Session");
-    this.fieldLiteral("Name", session.displayName);
+    //this.fieldLiteral("Nxame", session.displayName);
+    this.field("xDate", "date");
     this.field("Title", "title");
     this.field("Description", "description");
 
@@ -73,8 +83,11 @@ export default class ImdiGenerator {
     this.tail = this.tail.element(elementName, value).up();
   }
   private startXmlRoot(): XmlBuilder.XMLElementOrXMLNode {
-    this.tail = XmlBuilder.create("METATRANSCRIPT")
-      .a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI")
+    this.tail = XmlBuilder.create("METATRANSCRIPT");
+    if (!this.omitNamespaces) {
+      this.tail.a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI");
+    }
+    this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
       .a("Originator", "SayMore Mac");
     return this.tail;
