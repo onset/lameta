@@ -390,6 +390,15 @@ form {
 .imdiView {
   height: 100%; // in project
   flex-grow: 1; // everywhere else
+  display: flex;
+  flex-direction: column;
+  input: {
+    width: 50px;
+  }
+  textarea {
+    height: 100%; // in project
+    flex-grow: 1; // everywhere else
+  }
 }
 
 .textView {

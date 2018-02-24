@@ -15,7 +15,7 @@ import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./ContributorsTable";
 import { Project } from "../model/Project/Project";
-import XmlExportView from "./XmlExportView";
+import ImdiView from "./ImdiView";
 import ImdiGenerator from "../export/imdiGenerator";
 import { File } from "../model/file/File";
 
@@ -154,11 +154,7 @@ export class FolderPane extends React.Component<IProps> {
             <TabPanel>todo</TabPanel>
             {notesPanel}
             <TabPanel>
-              <XmlExportView
-                contentGenerator={() =>
-                  ImdiGenerator.generateSession(directoryObject as Session)
-                }
-              />
+              <ImdiView folder={directoryObject} />
             </TabPanel>
           </Tabs>
         );

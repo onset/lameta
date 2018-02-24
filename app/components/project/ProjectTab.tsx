@@ -8,7 +8,7 @@ import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiGenerator from "../../export/imdiGenerator";
-import XmlExportView from "../XmlExportView";
+import ImdiView from "../ImdiView";
 
 interface IProps {
   project: Project;
@@ -89,11 +89,7 @@ export class ProjectTab extends React.Component<IProps> {
           </FolderPane>
         </TabPanel>
         <TabPanel>
-          <XmlExportView
-            contentGenerator={() =>
-              ImdiGenerator.generateCorpus(this.props.project)
-            }
-          />
+          <ImdiView folder={this.props.project} />
         </TabPanel>
       </Tabs>
     );

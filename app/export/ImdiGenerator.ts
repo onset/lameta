@@ -55,6 +55,10 @@ export default class ImdiGenerator {
     return this.makeString();
   }
 
+  //-----------------------------------------------------
+  // Utility methods to add various things to the xml
+  //-----------------------------------------------------
+
   private field(elementName: string, fieldName: string) {
     const v = this.folder.properties.getTextStringOrEmpty(fieldName);
     if (v && v.length > 0) {
