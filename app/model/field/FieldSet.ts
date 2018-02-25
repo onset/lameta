@@ -1,12 +1,16 @@
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
-import { Field, FieldType } from "./Field";
+import { Field, FieldType, IFieldDefinition } from "./Field";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
     const f = this.getValue(key);
     assert(f, `setText(${key}) assumes the value is already there.`);
     f.setValueFromString(value);
+  }
+  public getFieldDefinition(key: string): IFieldDefinition {
+    const f = this.getValue(key) as Field;
+    return f.definition;
   }
   public getTextStringOrEmpty(key: string): string {
     const s = this.getValue(key) as Field;

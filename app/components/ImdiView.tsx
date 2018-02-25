@@ -10,6 +10,10 @@ export interface IProps {
   // when the code changed
   //contentGenerator: (folder: Folder) => string;
   folder: Folder;
+
+  // note, folder will equal project if we're generating at the project level
+  // otherwise, folder will be a session or person
+  project: Project;
 }
 interface IState {
   manualRefresh: number;
@@ -23,7 +27,10 @@ export default class ImdiView extends React.Component<IProps, IState> {
   public render() {
     const xml =
       this.props.folder instanceof Session
-        ? ImdiGenerator.generateSession(this.props.folder as Session)
+        ? ImdiGenerator.generateSession(
+            this.props.folder as Session,
+            this.props.project
+          )
         : ImdiGenerator.generateCorpus(this.props.folder as Project);
 
     return (

@@ -154,7 +154,7 @@ export class FolderPane extends React.Component<IProps> {
             <TabPanel>todo</TabPanel>
             {notesPanel}
             <TabPanel>
-              <ImdiView folder={directoryObject} />
+              <ImdiView folder={directoryObject} project={this.props.project} />
             </TabPanel>
           </Tabs>
         );

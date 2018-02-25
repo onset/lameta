@@ -26,6 +26,8 @@ export interface IFieldDefinition {
   choices?: string[];
   complexChoices: IChoice[];
   order: number;
+  imdiRange?: string;
+  imdiIsClosedVocabulary?: boolean;
 }
 
 export enum FieldType {
@@ -91,6 +93,8 @@ export class Field {
     persist: boolean = true,
     choices: string[] = [],
     cssClass: string = ""
+    // imdiRange?: string,
+    // imdiIsClosedVocabulary?: boolean
   ) {
     this.key = key;
     this.englishLabel = englishLabel;

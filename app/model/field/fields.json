@@ -24,10 +24,14 @@
       "key": "region"
     },
     {
-      "key": "country"
+      "key": "country",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
+      "imdiIsClosedVocabulary": false
     },
     {
       "key": "continent",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
+      "imdiIsClosedVocabulary": true,
       "choices": [
         "Africa",
         "Asia",
