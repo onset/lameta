@@ -3,6 +3,7 @@ import { Folder } from "../model/Folder";
 import ImdiGenerator from "../export/imdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
+import { Person } from "../model/Project/Person/Person";
 //const HtmlTree = require("react-htmltree");
 
 export interface IProps {
@@ -25,13 +26,20 @@ export default class ImdiView extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const xml =
-      this.props.folder instanceof Session
-        ? ImdiGenerator.generateSession(
-            this.props.folder as Session,
-            this.props.project
-          )
-        : ImdiGenerator.generateCorpus(this.props.folder as Project);
+    let xml = "";
+    if (this.props.folder instanceof Session) {
+      xml = ImdiGenerator.generateSession(
+        this.props.folder as Session,
+        this.props.project
+      );
+    } else if (this.props.folder instanceof Project) {
+      xml = ImdiGenerator.generateCorpus(this.props.folder as Project);
+    } else {
+      xml = ImdiGenerator.generateActor(
+        this.props.folder as Person,
+        this.props.project
+      );
+    }
 
     return (
       <div className={"imdiView"}>

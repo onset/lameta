@@ -8,6 +8,7 @@ import { Field } from "../model/field/Field";
 const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
+import { Person } from "../model/Project/Person/Person";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -36,6 +37,18 @@ export default class ImdiGenerator {
       generator.omitNamespaces = omitNamespaces;
     }
     return generator.session();
+  }
+
+  public static generateActor(
+    person: Person,
+    project: Project,
+    omitNamespaces?: boolean
+  ): string {
+    const generator = new ImdiGenerator(person, project);
+    if (omitNamespaces) {
+      generator.omitNamespaces = omitNamespaces;
+    }
+    return generator.actor();
   }
 
   // note, folder wil equal project if we're generating at the project level
@@ -72,11 +85,45 @@ export default class ImdiGenerator {
     this.field("Contact", "contactPerson", this.project);
     this.exitGroup();
   }
+  private addActorsOfSession() {
+    this.group("Actors");
+    this.fieldLiteral("TODO", "Wire people to sessions and emit actors");
+    this.exitGroup();
+  }
   private addContentElement() {
     this.group("Content");
     this.field("Genre", "genre");
+    this.fieldLiteral("TODO", "More fields of session");
+    this.group("Languages");
+    this.fieldLiteral("TODO", "Emit Languages of the session");
+    this.exitGroup();
     this.exitGroup();
   }
+  private addLanguage(lang: string, isPrimaryTongue?: boolean) {
+    if (lang && lang.length > 0) {
+      this.group("Language");
+
+      //TODO: this should be ISO639-3:xyz
+      this.fieldLiteral("ID", "TODO:  ISO639-3:xyz");
+      //this.fieldLiteral("Id", lang);
+      this.fieldLiteral("Name", lang);
+
+      this.fieldLiteral("PrimaryLanguage", isPrimaryTongue ? "true" : "false");
+
+      // review: this is a to-literal definition of "mother tongue".
+      const motherTongue = (this
+        .folderInFocus as Person).properties.getTextStringOrEmpty(
+        "mothersLanguage"
+      );
+      this.fieldLiteral(
+        "MotherTongue",
+        lang === motherTongue ? "true" : "false"
+      );
+
+      this.exitGroup();
+    }
+  }
+
   private session() {
     const session = this.folderInFocus as Project;
 
@@ -91,6 +138,7 @@ export default class ImdiGenerator {
     this.addProjectLocation();
     this.addProjectInfo();
     this.addContentElement();
+    this.addActorsOfSession();
     this.exitGroup();
 
     this.group("Resources");
@@ -98,6 +146,7 @@ export default class ImdiGenerator {
       if (ImdiGenerator.isMediaFile(f.describedFilePath)) {
         this.group("MediaFile");
         this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+        this.fieldLiteral("TODO", "More fields of resource");
         this.exitGroup();
       }
     });
@@ -109,9 +158,30 @@ export default class ImdiGenerator {
         Path.basename(this.folderInFocus.metadataFile.metadataFilePath)
       );
     }
+    this.fieldLiteral("TODO", "More fields of written resource");
     this.exitGroup();
 
     this.exitGroup();
+    return this.makeString();
+  }
+
+  private actor() {
+    const person = this.folderInFocus as Person;
+
+    this.tail = XmlBuilder.create("Actor", { headless: true });
+    this.field("Name", "name");
+    this.fieldLiteral("TODO", "More fields of person");
+    this.group("Languages");
+    this.addLanguage(
+      person.properties.getTextStringOrEmpty("primaryLanguage"),
+      true
+    );
+    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage0"));
+    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage1"));
+    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage2"));
+    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage3"));
+    this.exitGroup();
+
     return this.makeString();
   }
 

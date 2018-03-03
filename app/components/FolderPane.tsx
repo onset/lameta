@@ -159,12 +159,14 @@ export class FolderPane extends React.Component<IProps> {
           </Tabs>
         );
       case "Person":
+        const kFirstPersonTabToOpen = 3;
         return (
-          <Tabs>
+          <Tabs defaultIndex={kFirstPersonTabToOpen}>
             <TabList>
               <Tab>Person</Tab>
               <Tab>Properties</Tab>
               <Tab>Notes</Tab>
+              <Tab>IMDI</Tab>
             </TabList>
             <TabPanel>
               <PersonForm
@@ -179,7 +181,10 @@ export class FolderPane extends React.Component<IProps> {
               />
             </TabPanel>
             {propertiesPanel}
-            {notesPanel}
+            {notesPanel}{" "}
+            <TabPanel>
+              <ImdiView folder={directoryObject} project={this.props.project} />
+            </TabPanel>
           </Tabs>
         );
       case "Audio":

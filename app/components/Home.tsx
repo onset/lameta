@@ -27,7 +27,7 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   public render() {
-    const kFirstTabToOpen = 1;
+    const kFirstTabToOpen = 2;
     return (
       <div className={styles.container} data-tid="container">
         <Tabs
