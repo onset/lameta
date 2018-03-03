@@ -24,7 +24,7 @@ export abstract class Folder {
   public directory: string = "";
   @observable public files: File[] = [];
   @observable public selectedFile: File | null;
-  protected metadataFile: File | null;
+  public metadataFile: File | null;
   protected previousFileNameBase: string;
 
   public constructor(

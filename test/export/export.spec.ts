@@ -31,7 +31,7 @@ expect.extend({
       console.log(sessionXml);
       return {
         message: () =>
-          `expected ${xpath} to be '${expectedValue}' but it did not match anything ${sessionXml}`,
+          `expected ${xpath} to be '${expectedValue}' but it did not match anything`,
         pass: false
       };
     }
@@ -188,6 +188,22 @@ it("should contain Country", () => {
   ).toDeclareVocabulary("http://www.mpi.nl/IMDI/Schema/Countries.xml");
 
   xexpect("METATRANSCRIPT/Session/MDGroup/Location/Country").toBeOpen();
+});
+it("should contain Project", () => {
+  expect(count("METATRANSCRIPT/Session/MDGroup/Project")).toBe(1);
+  xexpect("METATRANSCRIPT/Session/MDGroup/Project/Title").toMatch(
+    "Edolo Sample"
+  );
+});
+it("should contain Content", () => {
+  expect(count("METATRANSCRIPT/Session/MDGroup/Content")).toBe(1);
+  xexpect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("narrative");
+});
+it("should contain MediaFiles", () => {
+  expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
+  expect(
+    "METATRANSCRIPT/Session/Resources/WrittenResource/ResourceLink"
+  ).toMatch("ETR009.session");
 });
 
 function count(xpath: string): number {

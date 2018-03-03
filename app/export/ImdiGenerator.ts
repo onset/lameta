@@ -6,6 +6,8 @@ import { Moment } from "moment";
 import { Folder } from "../model/Folder";
 import { Field } from "../model/field/Field";
 const moment = require("moment");
+import { File } from "../model/file/File";
+import * as Path from "path";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -64,6 +66,17 @@ export default class ImdiGenerator {
     this.exitGroup();
   }
 
+  private addProjectInfo() {
+    this.group("Project");
+    this.field("Title", "title", this.project);
+    this.field("Contact", "contactPerson", this.project);
+    this.exitGroup();
+  }
+  private addContentElement() {
+    this.group("Content");
+    this.field("Genre", "genre");
+    this.exitGroup();
+  }
   private session() {
     const session = this.folderInFocus as Project;
 
@@ -76,9 +89,38 @@ export default class ImdiGenerator {
 
     this.group("MDGroup");
     this.addProjectLocation();
+    this.addProjectInfo();
+    this.addContentElement();
+    this.exitGroup();
 
     this.group("Resources");
+    this.folderInFocus.files.forEach((f: File) => {
+      if (ImdiGenerator.isMediaFile(f.describedFilePath)) {
+        this.group("MediaFile");
+        this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+        this.exitGroup();
+      }
+    });
+
+    this.group("WrittenResource");
+    if (this.folderInFocus.metadataFile != null) {
+      this.fieldLiteral(
+        "ResourceLink",
+        Path.basename(this.folderInFocus.metadataFile.metadataFilePath)
+      );
+    }
+    this.exitGroup();
+
+    this.exitGroup();
     return this.makeString();
+  }
+
+  private static isMediaFile(path: string): boolean {
+    return (
+      [".mp3", ".mp4", ".jpg", ".tiff"].indexOf(
+        Path.extname(path).toLowerCase()
+      ) > -1
+    );
   }
 
   //-----------------------------------------------------
