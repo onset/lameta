@@ -70,6 +70,7 @@ export default class CreateProjectDialog extends React.Component<
         <div className={"dialogContent"}>
           <h1>What would you like to call this project?</h1>
           <input
+            id="projectNameInput"
             autoFocus
             onChange={event =>
               this.setState({ projectName: event.target.value })
@@ -79,6 +80,7 @@ export default class CreateProjectDialog extends React.Component<
           <p className={"message " + messageClass}>{message}</p>
           <div className={"buttonRow"}>
             <button
+              id="okButton"
               onClick={() => this.handleCloseModal(true)}
               disabled={!projectNameIsViable}
             >

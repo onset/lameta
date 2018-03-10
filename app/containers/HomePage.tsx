@@ -110,7 +110,11 @@ export default class HomePage extends React.Component<IProps, IState> {
             </div>
             <div className={"choices"}>
               <img src="./img/create.png" />
-              <a onClick={() => this.createProject(false)}>
+              <a
+                className={"creatNewProjectLink"}
+                id="creatNewProjectLink"
+                onClick={() => this.createProject(false)}
+              >
                 Create New Project
               </a>
               <br />

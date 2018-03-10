@@ -3,7 +3,7 @@
  */
 
 const path = require("path");
-const { dependencies: externals } = require("./app/package-app.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
+const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
 module.exports = {
   module: {
