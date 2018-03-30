@@ -8,22 +8,14 @@ ELAR - Endangered Languages Archive
 
 # Choices
 
+* **O**
+
+  **O**pen
+
 * **U**
 
-  all Users (requires registration)
-
-* **RC**
-
-  Researchers and Community members
-
-* **C**
-
-  only Community members (normally requires application to Depositor)
+  ordinary **U**ser
 
 * **S**
 
-  only Subscribers (requires application to Depositor)
-
-* **(unspecified)**
-
-  only the Depositor and delegate can access
+  **S**ubscriber (must apply to depositor for access)
