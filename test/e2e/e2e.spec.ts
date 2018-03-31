@@ -1,5 +1,5 @@
 import * as electronPath from "electron";
-import * as webdriverio from "webdriverio";
+//import * as webdriverio from "webdriverio";
 import { Application } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -62,9 +62,16 @@ describe("main window", function spec() {
     await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
     await runner.goToPeopleTab();
     await runner.expectFolderListRowCount(4);
-    await runner.clickRowContaining("Awi Heole");
+    await delay(1000);
+    await runner.clickFolderRowWithText("Awi Heole");
     await runner.expectFileListRowCount(3);
-    await runner.clickRowContaining("Igali");
+    await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
     await runner.expectFileListRowCount(2);
+    await runner.click("button=New Person");
+    await runner.expectFileListRowCount(1);
+    await runner.click("li=Person");
+    await runner.typeField("Full Name", "joe");
+    await runner.shouldExist("//div[text()='joe']"); // the folder
+    await runner.shouldExist("//div/span[text()='joe.person']"); // the metadata file
   });
 });

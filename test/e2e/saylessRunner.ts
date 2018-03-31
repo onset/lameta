@@ -1,5 +1,5 @@
 import * as electronPath from "electron";
-import * as webdriverio from "webdriverio";
+//import * as webdriverio from "webdriverio";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -84,15 +84,23 @@ export default class SayLessRunner {
     console.log(log ? log : "Clicking " + selector);
     await this.browser.click(selector);
   }
-  public async clickRowContaining(match: string) {
+  public async clickFolderRowWithText(match: string) {
+    //NB: the docs show that div*= should give a partial match, but at the moment it's not working
+    // maybe spectron is behind.
     //const selector = `div*=${match}`; //nb: no quotes around the match
-    const selector = `//div[contains(.,"${match}")]/parent::div`;
+    //    const selector = `//div[contains(.,"${match}")]`;
+    //const selector = `//div[contains(text(), "${match}")]`;
+    const selector = `div=${match}`;
+
     await this.shouldExist(selector);
     const element = await this.app.client.element(selector);
     console.log(JSON.stringify(element));
     console.log("Clicking " + selector);
-    await this.app.client.click(selector);
-    await delay(2000);
+    //await this.app.client.click(element.value.ELEMENT);
+    //await this.app.client.click("selector");
+    await this.app.client.element(".folderList").click(selector);
+    console.log("Clicked on " + selector);
+    //await delay(500);
   }
   public async goToProjectTab() {
     await this.click(".tab-project");
@@ -135,19 +143,47 @@ export default class SayLessRunner {
     return this.expectTableRowsLength(".folderList", expectedRows);
   }
   public async expectFileListRowCount(expectedRows: number) {
-    return this.expectTableRowsLength(".fileList", expectedRows);
+    return this.expectBlueprintTableRowsLength(".fileList", expectedRows);
   }
-  public async expectTableRowsLength(selector: string, expectedRows: number) {
+
+  public async expectBlueprintTableRowsLength(
+    selector: string,
+    expectedRows: number
+  ) {
     await this.shouldExist(selector);
     await this.shouldExist(selector + " .bp-table-body-cells");
-    const elements = await this.app.client.elements(
+    const allRows = await this.app.client.elements(
       selector + " .bp-table-body-cells .bp-table-cell-col-0"
     );
-    const actual = elements.value.length;
+    const actual = allRows.value.length;
     assert(
       actual === expectedRows,
       `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
     );
+  }
+
+  public async expectTableRowsLength(selector: string, expectedRows: number) {
+    await this.shouldExist(selector);
+    const allRows = await this.app.client.elements(selector + " .rt-tr-group");
+    const paddingRows = await this.app.client.elements(
+      selector + " .rt-tr-group .-padRow"
+    );
+    const actual = allRows.value.length - paddingRows.value.length;
+    assert(
+      actual === expectedRows,
+      `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
+    );
+  }
+
+  public async typeField(fieldName: string, text: string) {
+    //return this.app.client.elementIdValue(fieldName, text);
+    await this.app.client.element(`[name="${fieldName}"]`).setValue(text);
+    // for some reason, doesn't take await
+    this.app.client.keys("\t");
+    await delay(100);
+    //      .element(`//textarea[@name="${fieldName}"]`)
+    //      .element(`[name="${fieldName}"]`)
+    //    .setValue(text);
   }
 }
 

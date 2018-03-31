@@ -32,6 +32,10 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
   .not-implemented {
     color: #becde4;
   }
+  .selected {
+    background-color: $people__cellOverlay--color;
+    border-color: $people__outline--color;
+  }
   .bp-table-selection-region {
     background-color: $people__cellOverlay--color;
     border-color: $people__outline--color;
