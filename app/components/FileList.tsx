@@ -42,8 +42,27 @@ export default class FileList extends React.Component<IProps> {
           //this will cause a re-render with the proper highlighting
           this.props.folder.selectedFile = file;
         }
+      } else {
+        this.addNormalContextMenu(eventProperties);
       }
     });
+  }
+
+  // Enhance: this shown when we did not right click on a file. So it should
+  // be moved to some global scope, rather than down in the FileList component.
+  private addNormalContextMenu(eventProperties: any) {
+    const webContents = remote.getCurrentWebContents();
+    const mainWindow = remote.getCurrentWindow(); // as any;
+    const { x, y } = eventProperties;
+
+    remote.Menu.buildFromTemplate([
+      {
+        label: "Inspect element",
+        click() {
+          (mainWindow as any).inspectElement(x, y);
+        }
+      }
+    ]).popup(mainWindow);
   }
 
   private makeCell(rowIndex: number, property: string) {
