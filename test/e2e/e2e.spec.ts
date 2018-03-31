@@ -56,9 +56,15 @@ describe("main window", function spec() {
 
   it("sample data", async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-    runner.createdProjectWithSampleData();
+    await runner.createdProjectWithSampleData();
     await runner.goToProjectTab();
     await runner.click("li=About This Project");
     await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
+    await runner.goToPeopleTab();
+    await runner.expectFolderListRowCount(4);
+    await runner.clickRowContaining("Awi Heole");
+    await runner.expectFileListRowCount(3);
+    await runner.clickRowContaining("Igali");
+    await runner.expectFileListRowCount(2);
   });
 });

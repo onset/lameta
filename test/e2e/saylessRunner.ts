@@ -3,6 +3,7 @@ import * as webdriverio from "webdriverio";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
+import * as assert from "assert";
 
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
 // See http://webdriver.io/api/state/isExisting.html# and friends for documentation.
@@ -83,9 +84,22 @@ export default class SayLessRunner {
     console.log(log ? log : "Clicking " + selector);
     await this.browser.click(selector);
   }
-
+  public async clickRowContaining(match: string) {
+    //const selector = `div*=${match}`; //nb: no quotes around the match
+    const selector = `//div[contains(.,"${match}")]/parent::div`;
+    await this.shouldExist(selector);
+    const element = await this.app.client.element(selector);
+    console.log(JSON.stringify(element));
+    console.log("Clicking " + selector);
+    await this.app.client.click(selector);
+    await delay(2000);
+  }
   public async goToProjectTab() {
     await this.click(".tab-project");
+    return delay(500);
+  }
+  public async goToPeopleTab() {
+    await this.click(".tab-people");
     return delay(500);
   }
 
@@ -113,7 +127,27 @@ export default class SayLessRunner {
 
     await this.type("input", this.kProjectName);
     await this.click("button", "clicking ok");
-    await delay(1000);
+    await this.app.client.waitForExist(".tab-project");
+    console.log("Project created with sample data.");
+  }
+
+  public async expectFolderListRowCount(expectedRows: number) {
+    return this.expectTableRowsLength(".folderList", expectedRows);
+  }
+  public async expectFileListRowCount(expectedRows: number) {
+    return this.expectTableRowsLength(".fileList", expectedRows);
+  }
+  public async expectTableRowsLength(selector: string, expectedRows: number) {
+    await this.shouldExist(selector);
+    await this.shouldExist(selector + " .bp-table-body-cells");
+    const elements = await this.app.client.elements(
+      selector + " .bp-table-body-cells .bp-table-cell-col-0"
+    );
+    const actual = elements.value.length;
+    assert(
+      actual === expectedRows,
+      `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
+    );
   }
 }
 
