@@ -38,19 +38,19 @@
       "port": 9223,
       "webRoot": "${workspaceRoot}",
       "timeout": 30000
-    },
-    {
-      //does not show the correct lines (i.e. jest using js instead of ts?)
-      "type": "node",
-      "request": "launch",
-      "name": "Jest Tests",
-      "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
-      "args": ["--runInBand"],
-      "preLaunchTask": "build",
-      "internalConsoleOptions": "openOnSessionStart",
-      "outFiles": ["${workspaceRoot}/app/dist/**/*"]
-      //"envFile": "${workspaceRoot}/.env"
     }
+    // {
+    //   //does not show the correct lines (i.e. jest using js instead of ts?)
+    //   "type": "node",
+    //   "request": "launch",
+    //   "name": "Jest Tests",
+    //   "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
+    //   "args": ["--runInBand"],
+    //   "preLaunchTask": "build",
+    //   "internalConsoleOptions": "openOnSessionStart",
+    //   "outFiles": ["${workspaceRoot}/app/dist/**/*"]
+    //   //"envFile": "${workspaceRoot}/.env"
+    // }
   ],
   "compounds": [
     // this runs, but doesn't build, hot-reload, etc.

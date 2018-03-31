@@ -49,14 +49,44 @@ export default class SayLessRunner {
   }
 
   public async shouldExist(selector: string, log?: string) {
-    console.log(log ? log : "Expecting " + selector);
-    expect(await this.app.client.isExisting(selector)).toBe(true);
+    //const element = await this.app.client.element(selector);
+    const exists = await this.app.client.isExisting(selector);
+
+    if (exists) {
+      console.log(log ? log : `Found element matching '${selector}'`);
+    } else {
+      console.log(log ? log : `Could not find element matching '${selector}'`);
+      throw new Error(`Could not find element matching '${selector}'`);
+    }
+    expect(exists).toBe(true);
+  }
+
+  public async expectFieldContentsByName(
+    name: string,
+    value: string,
+    log?: string
+  ) {
+    const selector = `[name='${name}']`;
+    await this.shouldExist(selector);
+    const actual = await this.app.client.getValue(selector);
+    if (actual === value) {
+      console.log(`${selector} has value ${actual}`);
+    } else {
+      throw new Error(
+        `Expected field matching ${selector} to be '${value}' but it was '${actual}'`
+      );
+    }
   }
 
   public async click(selector: string, log?: string) {
     await this.shouldExist(selector);
     console.log(log ? log : "Clicking " + selector);
     await this.browser.click(selector);
+  }
+
+  public async goToProjectTab() {
+    await this.click(".tab-project");
+    return delay(500);
   }
 
   public async type(selector: string, text: string, log?: string) {
@@ -73,4 +103,19 @@ export default class SayLessRunner {
     );
     fs.removeSync(p);
   }
+
+  public async createdProjectWithSampleData() {
+    await this.shouldExist(".startScreen");
+    await this.click("#createNewProjectWithSampleDataLink");
+    await this.shouldExist(".createProject");
+
+    //setting new project name
+
+    await this.type("input", this.kProjectName);
+    await this.click("button", "clicking ok");
+    await delay(1000);
+  }
 }
+
+const delay = (time: number) =>
+  new Promise(resolve => setTimeout(resolve, time));

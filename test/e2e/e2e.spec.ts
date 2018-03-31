@@ -50,8 +50,15 @@ describe("main window", function spec() {
     // if we restart, it should open up to our project again
     await runner.restart();
     await runner.click(".tab-sessions");
-    await delay(3000);
 
     //expect(await app.client.isExisting("[data-tid='container']")).toBe(true);
+  });
+
+  it("sample data", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    runner.createdProjectWithSampleData();
+    await runner.goToProjectTab();
+    await runner.click("li=About This Project");
+    await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
   });
 });

@@ -123,6 +123,7 @@ export default class HomePage extends React.Component<IProps, IState> {
               <br />
               <img src="./img/sample.png" />
               <a
+                id="createNewProjectWithSampleDataLink"
                 onClick={() => {
                   this.createProject(true);
                 }}

@@ -27,11 +27,13 @@ export class ProjectTab extends React.Component<IProps> {
         onSelect={() => this.props.project.saveFolderMetaData()}
       >
         <TabList>
-          <Tab>About This Project</Tab>
-          <Tab>Access Protocol</Tab>
-          <Tab>Description Documents</Tab>
-          <Tab>Other Documents</Tab>
-          <Tab>IMDI</Tab>
+          <Tab className={"tab-project-about"}>About This Project</Tab>
+          <Tab className={"tab-project-access"}>Access Protocol</Tab>
+          <Tab className={"tab-project-description-docs"}>
+            Description Documents
+          </Tab>
+          <Tab className={"tab-project-other-docs"}>Other Documents</Tab>
+          <Tab className={"tab-project-imdi"}>IMDI</Tab>
         </TabList>
         <TabPanel>
           <AutoForm
