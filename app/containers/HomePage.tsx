@@ -9,7 +9,7 @@ import * as Path from "path";
 import { remote, OpenDialogOptions } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-const { ipcRenderer } = require("electron");
+const { Menu, ipcRenderer } = require("electron");
 import Store = require("electron-store");
 const startBackground = require("../img/icon.png");
 
@@ -62,6 +62,26 @@ export default class HomePage extends React.Component<IProps, IState> {
     ipcRenderer.on("start-screen", () => {
       this.projectHolder.setProject(null);
     });
+
+    if (process.env.NODE_ENV === "development") {
+      // note that where UI elements offer a context menu to the user, they should
+      // do an e.preventDefault() to prevent this code from hiding their menu.
+      //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
+      //https://nodejs.org/api/events.html#events_class_eventemitter
+      const webContents = remote.getCurrentWebContents();
+      remote.getCurrentWebContents().on("context-menu", (e, props) => {
+        const { x, y } = props;
+        console.log("Main process go context click");
+        remote.Menu.buildFromTemplate([
+          {
+            label: "Inspect element",
+            click() {
+              remote.getCurrentWebContents().inspectElement(x, y);
+            }
+          }
+        ]).popup();
+      });
+    }
   }
   private handleCreateProjectDialogClose(
     directory: string,

@@ -42,10 +42,9 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
   }
   .folderList {
     border: solid 1px $people__outline--color;
+    cursor: pointer;
   }
-  .fileList {
-    border: solid 1px $people__outline--color;
-  }
+
   .react-tabs__tab-list {
     border-bottom: solid 1px $people__outline--color;
     .react-tabs__tab--selected {
@@ -248,6 +247,10 @@ form {
 }
 .sessions {
   background-color: $session--color;
+  .selected {
+    background-color: $session--color;
+    border-color: $session__outline--color;
+  }
   .react-tabs {
     background-color: $session--color;
   }
@@ -341,17 +344,19 @@ form {
 }
 
 .fileList {
+  border: solid 1px $people__outline--color;
+  cursor: pointer;
   background-color: white;
   width: 100%;
   position: relative; // needed by mask
   display: flex;
   flex-direction: column;
-  .bp-table-container {
-    // library code puts in 100%, which makes it take more space than the parent since it has a sybling
-    height: inherit;
-    flex-grow: 1;
-    background-color: inherit;
-  }
+  // .bp-table-container {
+  //   // library code puts in 100%, which makes it take more space than the parent since it has a sybling
+  //   height: inherit;
+  //   flex-grow: 1;
+  //   background-color: inherit;
+  // }
   button {
     background-color: inherit;
     border-color: transparent;
@@ -534,6 +539,7 @@ form {
   padding-left: 10px;
   padding-right: 10px;
   margin-bottom: 0;
+  height: 65px;
   padding-top: 5px;
   font-size: 12px;
   li {
@@ -709,7 +715,8 @@ img {
 .ReactTable {
   background-color: white;
   .rt-td {
-    overflow: unset; //allow comboboxes to draw list outside cell
+    // not needed? Note with it at "unset", in the filelist long names may spill over into next column
+    //overflow: unset; //allow comboboxes to draw list outside cell
   }
   .Select-control {
     border: none;

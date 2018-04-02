@@ -34,6 +34,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
   public render() {
     return (
       <div>
+        {/* TODO: change to react-table so we can drop this dependency on blueprintjs/table (and make editable cells) */}
         <Table
           numRows={this.props.fields.keys().length}
           isRowHeaderShown={false}

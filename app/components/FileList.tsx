@@ -1,131 +1,34 @@
+const { ipcRenderer } = require("electron");
 import * as React from "react";
-import { Table, Column, Cell, Regions, IRegion } from "@blueprintjs/table";
+import { default as ReactTable, RowInfo } from "react-table";
 import { computed } from "mobx";
 import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import { File } from "../model/file/File";
 import * as Dropzone from "react-dropzone";
 import { remote } from "electron";
+const moment = require("moment");
 import { Dictionary } from "typescript-collections";
 const { Menu } = require("electron");
 const electron = require("electron");
-
 export interface IProps {
   folder: Folder;
 }
-let globaltable: Table | null;
-let globalPropertiesForPendingContextMenu: any;
+
 @observer
 export default class FileList extends React.Component<IProps> {
-  public table: Table | null;
-  //private propertiesForPendingContextMenu: any;
-  private previousFileNames: WeakMap<File, string> = new WeakMap();
-
   constructor(props: IProps) {
     super(props);
     if (this.props.folder.selectedFile) {
       this.props.folder.couldPossiblyBecomeDirty();
     }
-    //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
-    //https://nodejs.org/api/events.html#events_class_eventemitter
-    const webContents = remote.getCurrentWebContents();
-    webContents.removeAllListeners("context-menu");
-    webContents.on("context-menu", (e: any, eventProperties: any) => {
-      const file = this.getFileFromClick(eventProperties);
-      if (file) {
-        if (this.props.folder.selectedFile === file) {
-          this.showContextMenu(eventProperties);
-        } else {
-          //handling the event can wait until we make sure the row we're going to operate on is highlighted
-          // didn't really go to this: this.propertiesForPendingContextMenu = properties;
-          globalPropertiesForPendingContextMenu = eventProperties;
-          //this will cause a re-render with the proper highlighting
-          this.props.folder.selectedFile = file;
-        }
-      } else {
-        this.addNormalContextMenu(eventProperties);
-      }
-    });
-  }
-
-  // Enhance: this shown when we did not right click on a file. So it should
-  // be moved to some global scope, rather than down in the FileList component.
-  private addNormalContextMenu(eventProperties: any) {
-    const webContents = remote.getCurrentWebContents();
-    const mainWindow = remote.getCurrentWindow(); // as any;
-    const { x, y } = eventProperties;
-
-    remote.Menu.buildFromTemplate([
-      {
-        label: "Inspect element",
-        click() {
-          (mainWindow as any).inspectElement(x, y);
-        }
-      }
-    ]).popup(mainWindow);
-  }
-
-  private makeCell(rowIndex: number, property: string) {
-    const p = this.props.folder.files[rowIndex].getTextProperty(property);
-    const x = p ? p.toString() : "no " + property;
-    //console.log(rowIndex + ":" + property + "=" + x);
-    return <Cell>{x}</Cell>;
-  }
-  private getSelectedFileRow() {
-    if (!this.props.folder.selectedFile) {
-      return [];
-    }
-    const i = this.props.folder.files.indexOf(this.props.folder.selectedFile);
-    return [Regions.row(i)];
-  }
-
-  private onSelection(e: IRegion[]) {
-    if (this.props.folder.selectedFile) {
-      this.props.folder.saveAllFilesInFolder();
-    }
-    //console.log("FileList:onSelection e:", e);
-    if (e.length > 0 && e[0] && e[0].rows && e[0].rows!.length > 0) {
-      const selectedRow: number = e[0].rows![0];
-      this.props.folder.selectedFile = this.props.folder.files[selectedRow];
-      if (this.props.folder.selectedFile) {
-        this.props.folder.selectedFile.couldPossiblyBecomeDirty();
-      }
-    }
-  }
-
-  private replaceall(replaceThis: string, withThis: string, inThis: string) {
-    withThis = withThis.replace(/\$/g, "$$$$");
-    return inThis.replace(
-      new RegExp(
-        replaceThis.replace(
-          /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|<>\-\&])/g,
-          "\\$&"
-        ),
-        "g"
-      ),
-      withThis
-    );
-  }
-  private getFileFromClick(eventProperties: any): File | null {
-    if (!globaltable) {
-      return null;
-    }
-    const { x, y } = eventProperties;
-    const rowNumber = globaltable.locator.convertPointToRow(y);
-    if (rowNumber < 0) {
-      return null;
-    }
-    if (rowNumber > this.props.folder.files.length - 1) {
-      return null;
-    }
-    return this.props.folder.files[rowNumber];
   }
 
   private onDrop(
     acceptedFiles: Dropzone.ImageFile[],
     rejectedFiles: Dropzone.ImageFile[]
   ) {
-    console.log(JSON.stringify(acceptedFiles));
+    //console.log(JSON.stringify(acceptedFiles));
     this.props.folder.addFiles(acceptedFiles);
   }
   private addFiles() {
@@ -136,6 +39,7 @@ export default class FileList extends React.Component<IProps> {
     });
   }
   public render() {
+    // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
     // What this mobxDummy is about:
     // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
@@ -146,6 +50,48 @@ export default class FileList extends React.Component<IProps> {
     const mobxDummy = this.props.folder.files.map(f =>
       f.getTextProperty("filename")
     );
+    // tslint:disable-next-line:no-this-assignment
+    const tableObject = this;
+    const columns = [
+      {
+        id: "name",
+        Header: "Name",
+        accessor: (d: any) => {
+          const f: File = d;
+          return f.getTextProperty("filename");
+        }
+      },
+      {
+        id: "type",
+        Header: "Type",
+        width: 72,
+        accessor: (d: any) => {
+          const f: File = d;
+          return f.getTextProperty("type");
+        }
+      },
+      {
+        id: "date",
+        Header: "Date",
+        accessor: (d: any) => {
+          const f: File = d;
+          const date = f.getTextProperty("date");
+          const locale = window.navigator.language;
+          moment.locale(locale);
+          return moment(date).format("L LT");
+        }
+      },
+      {
+        id: "size",
+        Header: "Size",
+        width: 75,
+        style: { textAlign: "right" },
+        accessor: (d: any) => {
+          const f: File = d;
+          return f.getTextProperty("size");
+        }
+      }
+    ];
     return (
       <Dropzone
         activeClassName={"drop-active"}
@@ -169,121 +115,64 @@ export default class FileList extends React.Component<IProps> {
             Add Files
           </button>
         </div>
-        <Table
-          numRows={this.props.folder.files.length}
-          isRowHeaderShown={false}
-          allowMultipleSelection={false}
-          // selectionModes={SelectionModes.ROWS_ONLY}
-          selectedRegions={this.getSelectedFileRow()}
-          onSelection={e => this.onSelection(e)}
-          columnWidths={[200, 80, 150, 70]}
-          ref={input => {
-            // the this wasn't bound correctly, despite being in a fat arrow function:  this.table = input;
-            globaltable = input;
-          }}
-        >
-          {/* <Column
-            name="Name"
-            renderCell={rowIndex => (
-              <Observer>
-                {() => {
-                  const p = this.props.folder.files[rowIndex].getTextProperty(
-                    "filename"
-                  );
-                  const x = p ? p.toString() : "no filename";
-                  return <Cell>{x}</Cell>;
-                }}
-              </Observer>
-            )}
-          />   */}
-          <Column
-            name="Name"
-            renderCell={rowIndex => {
-              const file = this.props.folder.files[rowIndex];
-              const p = file.getTextProperty("filename");
-              const displayName = p ? p.toString() : "no filename";
-
-              let className = "";
-              if (
-                this.previousFileNames.has(file) &&
-                this.previousFileNames.get(file) !== displayName
-              ) {
-                className = "fileNameChanged";
-                console.log(
-                  "change " +
-                    this.previousFileNames.get(file) +
-                    " to " +
-                    displayName
+        <ReactTable
+          showPagination={false}
+          data={this.props.folder.files}
+          columns={columns}
+          getTrProps={(state: any, rowInfo: any, column: any) => {
+            //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
+            return {
+              onContextMenu: (e: any) => {
+                e.preventDefault();
+                //First select the row
+                this.props.folder.selectedFile = rowInfo.original;
+                this.setState({}); // trigger re-render so that the following style: takes effect
+                //this event doesn't want to be accessed in the timeout, so store the coordinates
+                const x = e.clientX;
+                const y = e.clientY;
+                // then after it is selected, show the context menu
+                window.setTimeout(
+                  () => tableObject.showContextMenu(x, y, rowInfo.original),
+                  0
                 );
-              }
-              this.previousFileNames.set(file, displayName);
-              return (
-                <Cell>
-                  <span
-                    className={className}
-                    //todo: this removal seems to work, but then subsequently we don't seem to be getting the class name again.
-                    onAnimationEnd={e =>
-                      (e.target as any).classList.remove(className)
-                    }
-                  >
-                    {displayName}
-                  </span>
-                </Cell>
-              );
-            }}
-          />
-          <Column name="Type" renderCell={r => this.makeCell(r, "type")} />
-          <Column name="Date" renderCell={r => this.makeCell(r, "date")} />
-          <Column name="Size" renderCell={r => this.makeCell(r, "size")} />
-        </Table>
+              },
+              onClick: (e: any, t: any) => {
+                this.props.folder.selectedFile = rowInfo.original;
+                this.setState({}); // trigger re-render so that the following style: takes effect
+              },
+              className:
+                rowInfo && rowInfo.original === this.props.folder.selectedFile
+                  ? "selected"
+                  : ""
+            };
+          }}
+        />
       </Dropzone>
     );
   }
-  public componentDidUpdate(prevProps: IProps): void {
-    if (globalPropertiesForPendingContextMenu) {
-      // row wasn't selected first
-      // window.requestAnimationFrame(() => {
-      //        this.showPendingContextMenu();
-      //    });
-      window.setTimeout(() => {
-        const eventProperties = globalPropertiesForPendingContextMenu;
-        globalPropertiesForPendingContextMenu = null; // this is now handled
-        this.showContextMenu(eventProperties);
-      }, 100);
-    }
-  }
-  //NB: I settled on this approach after a bewildering stuggle in which a simpler approach,
-  // renderCell={this.renderName}, would actually give us a "this.session" in the renderName that
-  // was a *different session*. And yet within the element declaration, the "this.session" was
-  // correct. So presumably a different "this" altogether. Binding, arrow functions, etc. didn't help.
-  // So now makeCell is static and the element has to give it everthing.
-  /*  private static makeCellStatic = (
-    directoryObject: DirectoryObject,
-    rowIndex: number,
-    property: string
-  ) => {
-    const p = directoryObject.files[rowIndex].properties.getValue(property);
-    const x = p ? p.default : "no " + property;
-    //console.log(rowIndex + ":" + property + "=" + x);
-    return <Cell>{x}</Cell>;
-  };*/
+  // This is from an old implementation of the table... so far with react-table
+  // it seems to work to just do the setTimeout in the click handler, but i'm
+  // leaving this code for a bit in case I find a need for it after all.
+  // public componentDidUpdate(prevProps: IProps): void {
+  //   if (globalPropertiesForPendingContextMenu) {
+  //     // row wasn't selected first
+  //     // window.requestAnimationFrame(() => {
+  //     //        this.showPendingContextMenu();
+  //     //    });
+  //     window.setTimeout(() => {
+  //       const eventProperties = globalPropertiesForPendingContextMenu;
+  //       globalPropertiesForPendingContextMenu = null; // this is now handled
+  //       this.showContextMenu(eventProperties);
+  //     }, 100);
+  //   }
+  // }
 
-  private showContextMenu(eventProperties: any) {
+  private showContextMenu(x: number, y: number, file: File) {
     const mainWindow = remote.getCurrentWindow(); // as any;
-    const { x, y } = eventProperties;
-    const file = this.getFileFromClick(eventProperties);
     if (!file) {
       return;
     }
-    remote.Menu.buildFromTemplate([
-      process.env.NODE_ENV === "development"
-        ? {
-            label: "Inspect element",
-            click() {
-              (mainWindow as any).inspectElement(x, y);
-            }
-          }
-        : {},
+    let items = [
       {
         label: "Show in File Explorer",
         click: () => {
@@ -306,6 +195,33 @@ export default class FileList extends React.Component<IProps> {
           this.props.folder.moveFileToTrash(file);
         }
       }
-    ]).popup(mainWindow);
+    ];
+
+    if (process.env.NODE_ENV === "development") {
+      items = items.concat([
+        { type: "separator" },
+        {
+          label: "Inspect element",
+          click() {
+            (mainWindow as any).inspectElement(x, y);
+          }
+        }
+      ]);
+
+      remote.Menu.buildFromTemplate(items as any).popup(mainWindow);
+    }
+  }
+  private replaceall(replaceThis: string, withThis: string, inThis: string) {
+    withThis = withThis.replace(/\$/g, "$$$$");
+    return inThis.replace(
+      new RegExp(
+        replaceThis.replace(
+          /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|<>\-\&])/g,
+          "\\$&"
+        ),
+        "g"
+      ),
+      withThis
+    );
   }
 }

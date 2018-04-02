@@ -23,6 +23,15 @@ if (process.env.NODE_ENV === "development") {
   require("module").globalPaths.push(p); // eslint-disable-line
 }
 
+let contextMenuItems = [
+  { label: "blah blah", click: () => console.log("clickxlcf") }
+];
+// app.on("contextMenuItems", (event, items) => {
+//   console.log("got context menu items");
+//   //contextMenuItems = items;
+//   event.returnValue = 4;
+// });
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
@@ -73,18 +82,10 @@ app.on("ready", () =>
 
       if (process.env.NODE_ENV === "development") {
         mainWindow.openDevTools();
+        //NB: setting up the context menu happened here, in the boilerplate.
+        // But it proved difficult to override based on where the user clicked.
+        // So now the default context menu is handled on the home page.
         // mainWindow.webContents.on("context-menu", (e, props) => {
-        //   const { x, y } = props;
-
-        //   Menu.buildFromTemplate([
-        //     {
-        //       label: "Inspect element",
-        //       click() {
-        //         mainWindow.inspectElement(x, y);
-        //       }
-        //     }
-        //   ]).popup(mainWindow);
-        ///        });
       }
 
       // if (process.platform === "darwin") {
