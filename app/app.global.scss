@@ -7,18 +7,7 @@
 $select-input-height: 28px;
 @import "~react-select/scss/default";
 
-$header-background-color: white;
-$project--color: #e69664;
-$people--color: #becde4; // saymore was #c7cfdb;
-$session--color: #cff09f;
-$pane__interstitial--color: #f0f0f0;
-$pane__border--color: #abadb3;
-$session__outline--color: transparent; // #94c397;
-$people__outline--color: transparent; // #7092be;
-$project__outline--color: transparent; // #b64906;
-$session__cellOverlay--color: rgba(207, 240, 159, 0.28); //$session--color;
-$people__cellOverlay--color: rgba(16, 100, 228, 0.28); //$people--color;
-$project__cellOverlay--color: rgba(230, 150, 100, 0.28);
+@import "./colors";
 
 $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
@@ -29,7 +18,7 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
     color: #becde4;
   }
   .selected {
-    background-color: $people__cellOverlay--color;
+    background-color: $people__selected--color;
     border-color: $people__outline--color;
   }
   .folderList {
@@ -258,7 +247,7 @@ form {
       width: 100%;
       // &:hover,
       // &.react-tabs__tab--selected {
-      //   //background-color: $project__cellOverlay--color;
+      //   //background-color: $project__selected--color;
       //   font-weight: bold;
       // }
     }
@@ -317,23 +306,6 @@ form {
   margin-right: 6px;
 }
 
-.fileList {
-  border: solid 1px $people__outline--color;
-  cursor: pointer;
-  background-color: white;
-  width: 100%;
-  position: relative; // needed by mask
-  display: flex;
-  flex-direction: column;
-  button {
-    background-color: inherit;
-    border-color: transparent;
-    border-width: 1px;
-    &:hover {
-      border-color: $people__outline--color;
-    }
-  }
-}
 .paneTitle {
   display: none;
   // font-size: 19px;

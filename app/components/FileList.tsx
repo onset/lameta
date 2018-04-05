@@ -9,6 +9,8 @@ import * as Dropzone from "react-dropzone";
 import { remote } from "electron";
 const moment = require("moment");
 import { Dictionary } from "typescript-collections";
+import "./FileList.scss";
+
 const { Menu } = require("electron");
 const electron = require("electron");
 export interface IProps {

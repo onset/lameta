@@ -5,6 +5,7 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { Field, FieldType } from "../model/field/Field";
+import "./FolderList.scss";
 const titleCase = require("title-case");
 
 export interface IProps {

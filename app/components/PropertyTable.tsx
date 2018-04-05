@@ -3,6 +3,7 @@ import ReactTable from "react-table";
 import { observer } from "mobx-react";
 import { Field, FieldType } from "../model/field/Field";
 import { FieldSet } from "../model/field/FieldSet";
+import "./PropertyTable.scss";
 
 //const styles = require("./Sessions.scss");
 
@@ -43,6 +44,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
 
     return (
       <ReactTable
+        className={"properties"}
         showPagination={false}
         data={this.props.fields.values()}
         columns={columns}

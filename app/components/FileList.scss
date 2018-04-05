@@ -1,0 +1,19 @@
+@import "../colors";
+
+.fileList {
+  border: solid 1px $people__outline--color;
+  cursor: pointer;
+  background-color: white;
+  width: 100%;
+  position: relative; // needed by mask
+  display: flex;
+  flex-direction: column;
+  button {
+    background-color: inherit;
+    border-color: transparent;
+    border-width: 1px;
+    &:hover {
+      border-color: $people__outline--color;
+    }
+  }
+}
