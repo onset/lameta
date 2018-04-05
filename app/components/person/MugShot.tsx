@@ -5,6 +5,7 @@ import * as Dropzone from "react-dropzone";
 import * as fs from "fs-extra";
 import { MugshotPlaceholder } from "./MugshotPlaceholder";
 import ImageField from "../ImageField";
+import "../common.scss";
 
 export interface IProps {
   person: Person;

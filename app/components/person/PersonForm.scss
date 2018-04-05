@@ -1,0 +1,81 @@
+@import "../../colors";
+
+.personForm {
+  //display: grid;
+  //grid-auto-flow: column;
+  //grid-template-rows: repeat(4, 54px);
+  display: flex;
+  flex-direction: row;
+  .first-column {
+    margin-right: 10px;
+    .field {
+      width: calc(100% - 50px); // leave room for mom & dad icons
+    }
+  }
+
+  .language {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    .field {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .language-name {
+      width: 100px;
+      flex-grow: 1;
+      margin-right: 8px;
+      textarea {
+        width: 100%; //just fill container
+      }
+    }
+    .state.on {
+      background-color: $people__outline--color;
+    }
+  }
+  .nickname-and-code {
+    width: calc(100% - 50px); // leave room for mom & dad icons
+    display: flex;
+    justify-content: space-between;
+    .field {
+      width: 45%;
+
+      textarea {
+        width: 100%;
+      }
+    }
+  }
+  .upper-right-cluster {
+    // grid-row-start: 1;
+    // grid-row-end: 7;
+
+    display: flex;
+    height: 160px;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 300px;
+    position: relative; // allow image to be absolute
+
+    .birth,
+    .gender {
+      width: 80px;
+      textarea {
+        width: 60px;
+      }
+    }
+
+    .mugshot {
+      position: absolute;
+      right: 0;
+      margin-right: 0;
+
+      img {
+        object-fit: contain;
+        object-position: right top;
+        height: 160px;
+        width: 160px;
+      }
+    }
+  }
+}

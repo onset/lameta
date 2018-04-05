@@ -1,0 +1,51 @@
+.project {
+  //background-color: #F0F0F0;
+  height: 100%;
+  color: black;
+  display: flex; // put the tabs on the left
+
+  //left side
+  & > ul {
+    width: 200px;
+
+    //  turn off the tab look
+    .react-tabs__tab {
+      border: none;
+      border-radius: initial;
+      width: 100%;
+    }
+  }
+  .react-tabs__tab-list {
+    background-color: white;
+    width: 200px;
+  }
+  //right side
+  .react-tabs__tab-panel {
+    width: 100%;
+  }
+
+  .primary {
+    display: block; // just v-scroll if we don't have room
+  }
+  .primary,
+  .accessProtocol {
+    .field {
+      display: flex; // enables the following rule...
+      align-items: center; // which aligns labels and inputs
+      height: initial;
+
+      &.field__newSection {
+        margin-top: 2em;
+      }
+      label {
+        text-align: right;
+        width: 150px;
+        margin-right: 1em;
+      }
+
+      textarea {
+        width: 400px;
+      }
+    }
+  }
+}

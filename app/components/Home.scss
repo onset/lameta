@@ -28,3 +28,13 @@ $project-color: #e69664;
   //   }
   // }
 }
+
+.icon-and-label {
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 24px;
+    margin-right: 8px;
+  }
+}

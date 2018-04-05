@@ -1,0 +1,55 @@
+@import "../colors.scss";
+
+.startScreen {
+  padding: 4em;
+  color: black;
+  margin-left: auto;
+  margin-right: auto;
+  width: 500px;
+
+  //Can't have a real background image because I haven't figured out how to reference an
+  //image here and have it bundled in electron dist/, so having to us an img
+
+  .top {
+    width: 251px;
+    img {
+      width: 100px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block; // so it can be centered
+    }
+    h1 {
+      color: #182026;
+      font-weight: 600;
+      font-size: 40px;
+      margin-top: 0;
+      span {
+        color: $project--color;
+      }
+    }
+  }
+  .choices {
+    position: relative; // else gets blended with background image
+    font-size: 14pt;
+    margin-top: 2em;
+    img {
+      margin-right: 10px;
+      width: 20px;
+      display: inline-block;
+      vertical-align: sub; // no, I don't know why
+    }
+    a {
+      display: inline-block;
+      text-decoration: none !important;
+      color: black;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      //padding: 0.5em;
+      border: solid 1px transparent;
+      &:focus,
+      &:hover {
+        border-color: $project--color;
+      }
+    }
+  }
+}

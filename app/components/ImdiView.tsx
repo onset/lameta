@@ -4,6 +4,8 @@ import ImdiGenerator from "../export/imdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
+import "./ImdiView.scss";
+
 //const HtmlTree = require("react-htmltree");
 
 export interface IProps {

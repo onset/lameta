@@ -1,0 +1,61 @@
+@import "../../colors";
+.ReactModal__Content.createProject {
+  position: absolute;
+  border: 3px solid $project--color;
+  background: white;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  bottom: auto;
+  top: 50%;
+
+  .dialogTitle {
+    padding: 10px;
+  }
+  .dialogContent {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    h1 {
+      font-size: 12px;
+      height: 1em;
+      font-weight: bold;
+      margin: 0;
+    }
+    p.message {
+      font-size: 12px;
+      height: 1em;
+
+      &.error {
+        color: red;
+      }
+    }
+    input {
+      width: 326px; // this efectively controls the width of the whole dialog
+      height: 2em;
+      font-size: 12px;
+      margin-top: 11px; // In Windows, this must be odd else the top line is invisible. I kid you not.
+    }
+    .buttonRow {
+      align-self: flex-end;
+      float: right;
+      margin-top: 2em;
+      button {
+        width: auto;
+        min-width: 100px;
+        margin-left: 10px;
+      }
+      button:disabled {
+        color: lightgray;
+        border-color: lightgray;
+        border-style: solid;
+        border-width: 1px;
+      }
+    }
+  }
+}

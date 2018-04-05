@@ -93,10 +93,7 @@ textarea {
     border: solid 2px red;
   }
 }
-.Select {
-  //need to narrow the selector down
-  //width: 300px;
-}
+
 form {
   height: 100%;
   background-color: transparent; // $color-session;
@@ -124,13 +121,7 @@ form {
     }
   }
 }
-// .react-tabs__tab svg{
 
-// }
-
-.projectx .primary ul {
-  //display: block;
-}
 .componentTab {
   color: $session--color;
 
@@ -138,19 +129,6 @@ form {
     display: flex;
     flex-direction: column;
     width: 100%;
-    .folderList {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: white;
-
-      .blahblah {
-        flex-grow: 1; // take up all the vertical space except what newFolderBar needs
-        // library code puts in 100%, which makes it take more space than the parent since it has a sybling
-        height: inherit;
-        background-color: inherit;
-      }
-    }
 
     .newFolderBar {
       padding-top: 8px;
@@ -230,62 +208,7 @@ form {
     background-color: $people--color;
   }
 }
-.project {
-  //background-color: #F0F0F0;
-  height: 100%;
-  color: black;
-  display: flex; // put the tabs on the left
 
-  //left side
-  & > ul {
-    width: 200px;
-
-    //   // turn off the tab look
-    .react-tabs__tab {
-      border: none;
-      border-radius: initial;
-      width: 100%;
-      // &:hover,
-      // &.react-tabs__tab--selected {
-      //   //background-color: $project__selected--color;
-      //   font-weight: bold;
-      // }
-    }
-  }
-  .react-tabs__tab-list {
-    background-color: white;
-    width: 200px;
-  }
-  //right side
-  .react-tabs__tab-panel {
-    width: 100%;
-  }
-
-  .primary {
-    display: block; // just v-scroll if we don't have room
-  }
-  .primary,
-  .accessProtocol {
-    .field {
-      display: flex; // enables the following rule...
-      align-items: center; // which aligns labels and inputs
-      height: initial;
-
-      &.field__newSection {
-        margin-top: 2em;
-      }
-      label {
-        text-align: right;
-        width: 150px;
-        margin-right: 1em;
-      }
-
-      textarea {
-        width: 400px;
-      }
-    }
-  }
-}
 .componentTab {
   //background-color: #F0F0F0;
   height: 100%;
@@ -336,20 +259,6 @@ form {
   }
 }
 
-.imdiView {
-  height: 100%; // in project
-  flex-grow: 1; // everywhere else
-  display: flex;
-  flex-direction: column;
-  input: {
-    width: 50px;
-  }
-  textarea {
-    height: 100%; // in project
-    flex-grow: 1; // everywhere else
-  }
-}
-
 .textView {
   background-color: white;
   height: 100%;
@@ -392,115 +301,6 @@ form {
   }
 }
 
-.personForm {
-  //display: grid;
-  //grid-auto-flow: column;
-  //grid-template-rows: repeat(4, 54px);
-  display: flex;
-  flex-direction: row;
-  .first-column {
-    margin-right: 10px;
-    .field {
-      width: calc(100% - 50px); // leave room for mom & dad icons
-    }
-  }
-
-  .language {
-    margin-top: 0;
-    margin-bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    .field {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .language-name {
-      width: 100px;
-      flex-grow: 1;
-      margin-right: 8px;
-      textarea {
-        width: 100%; //just fill container
-      }
-    }
-    .state.on {
-      background-color: $people__outline--color;
-    }
-  }
-  .nickname-and-code {
-    width: calc(100% - 50px); // leave room for mom & dad icons
-    display: flex;
-    justify-content: space-between;
-    .field {
-      width: 45%;
-
-      textarea {
-        width: 100%;
-      }
-    }
-  }
-  .upper-right-cluster {
-    // grid-row-start: 1;
-    // grid-row-end: 7;
-
-    display: flex;
-    height: 160px;
-    flex-wrap: wrap;
-    flex-direction: column;
-    width: 300px;
-    position: relative; // allow image to be absolute
-
-    .birth,
-    .gender {
-      width: 80px;
-      textarea {
-        width: 60px;
-      }
-    }
-
-    .mugshot {
-      position: absolute;
-      right: 0;
-      margin-right: 0;
-
-      img {
-        object-fit: contain;
-        object-position: right top;
-        height: 160px;
-        width: 160px;
-      }
-    }
-  }
-}
-.fileBar {
-  //background-color: $pane__interstitial--color;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 0;
-  height: 65px;
-  padding-top: 5px;
-  font-size: 12px;
-  li {
-    list-style: none;
-  }
-  .menu {
-    li {
-      display: none;
-    }
-  }
-}
-
-.icon-and-label {
-  display: flex;
-  align-items: center;
-
-  img {
-    height: 24px;
-    margin-right: 8px;
-  }
-}
 .react-tabs__tab:hover,
 .react-tabs__tab--selected {
   font-weight: bold;
@@ -508,38 +308,6 @@ form {
 
 .mask {
   display: none;
-}
-.drop-active {
-  .mask {
-    text-align: center;
-    font-size: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: gray; // text color
-
-    z-index: 5000;
-    //border: dashed 8px lightgray;
-    background-color: rgba(256, 256, 256, 0.8);
-
-    position: absolute; // NB: parent must be position: relative
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    // make the dashed border inset
-    &:before {
-      content: "foo"; /* we need something or it will be invisible */
-      color: transparent;
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      top: 10px;
-      bottom: 10px;
-      border: 4px dashed lightgray;
-    }
-  }
 }
 
 // enhance: this is for when you click on a photo in the list... should be more defined
@@ -591,67 +359,6 @@ img {
   color: lightgray;
 }
 
-.ReactModal__Content.createProject {
-  position: absolute;
-  border: 3px solid $project--color;
-  background: white;
-  overflow: auto;
-  border-radius: 4px;
-  outline: none;
-
-  left: 50%;
-  right: auto;
-  transform: translate(-50%, -50%);
-  bottom: auto;
-  top: 50%;
-
-  .dialogTitle {
-    padding: 10px;
-  }
-  .dialogContent {
-    background-color: #f0f0f0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    h1 {
-      font-size: 12px;
-      height: 1em;
-      font-weight: bold;
-      margin: 0;
-    }
-    p.message {
-      font-size: 12px;
-      height: 1em;
-
-      &.error {
-        color: red;
-      }
-    }
-    input {
-      width: 326px; // this efectively controls the width of the whole dialog
-      height: 2em;
-      font-size: 12px;
-      margin-top: 11px; // In Windows, this must be odd else the top line is invisible. I kid you not.
-    }
-    .buttonRow {
-      align-self: flex-end;
-      float: right;
-      margin-top: 2em;
-      button {
-        width: auto;
-        min-width: 100px;
-        margin-left: 10px;
-      }
-      button:disabled {
-        color: lightgray;
-        border-color: lightgray;
-        border-style: solid;
-        border-width: 1px;
-      }
-    }
-  }
-}
-
 .ReactTable {
   background-color: white;
   .rt-td {
@@ -679,89 +386,3 @@ img {
     border: none;
   }
 }
-
-.startScreen {
-  padding: 4em;
-  color: black;
-  margin-left: auto;
-  margin-right: auto;
-  width: 500px;
-
-  //Can't have a real background image because I haven't figured out how to reference an
-  //image here and have it bundled in electron dist/, so having to us an img
-
-  .top {
-    width: 251px;
-    img {
-      width: 100px;
-      margin-left: auto;
-      margin-right: auto;
-      display: block; // so it can be centered
-    }
-    h1 {
-      color: #182026;
-      font-weight: 600;
-      font-size: 40px;
-      margin-top: 0;
-      span {
-        color: $project--color;
-      }
-    }
-  }
-  .choices {
-    position: relative; // else gets blended with background image
-    font-size: 14pt;
-    margin-top: 2em;
-    img {
-      margin-right: 10px;
-      width: 20px;
-      display: inline-block;
-      vertical-align: sub; // no, I don't know why
-    }
-    a {
-      display: inline-block;
-      text-decoration: none !important;
-      color: black;
-      margin-top: 1em;
-      margin-bottom: 1em;
-      //padding: 0.5em;
-      border: solid 1px transparent;
-      &:focus,
-      &:hover {
-        border-color: $project--color;
-      }
-    }
-  }
-}
-.fileNameChanged {
-  animation: pulse 1s linear;
-  animation-iteration-count: 1;
-  color: black;
-}
-@keyframes pulse {
-  0% {
-    color: red;
-  }
-  50% {
-    color: $project--color;
-  }
-  100% {
-    color: black;
-  }
-}
-// .fileNameChanged {
-//   animation: pulse 1s linear;
-//   animation-iteration-count: infinite;
-//   font-weight: 400;
-// }
-// @keyframes pulse {
-//   0% {
-//     font-weight: 400;
-//   }
-//   50% {
-//     font-weight: 700;
-//   }
-//   100% {
-//     font-weight: 400;
-//   }
-// }

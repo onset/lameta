@@ -2,6 +2,7 @@ import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
 import * as ReactModal from "react-modal";
+import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
 
 interface IProps {

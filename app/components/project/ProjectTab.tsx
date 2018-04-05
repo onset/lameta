@@ -9,6 +9,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiGenerator from "../../export/imdiGenerator";
 import ImdiView from "../ImdiView";
+import "./ProjectTab.scss";
 
 interface IProps {
   project: Project;

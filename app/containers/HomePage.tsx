@@ -12,6 +12,7 @@ const { app } = require("electron").remote;
 const { Menu, ipcRenderer } = require("electron");
 import Store = require("electron-store");
 const startBackground = require("../img/icon.png");
+import "./StartScreen.scss";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
