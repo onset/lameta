@@ -1,0 +1,27 @@
+.contributors {
+  background-color: white;
+  .rt-td {
+    // not needed? Note with it at "unset", in the filelist long names may spill over into next column
+    //overflow: unset; //allow comboboxes to draw list outside cell
+  }
+  .Select-control {
+    border: none;
+  }
+  .Select-arrow,
+  .Select-placeholder {
+    visibility: hidden;
+  }
+  .rt-td:hover .Select-arrow {
+    visibility: visible;
+  }
+  input {
+    border: none;
+    width: 100%; //fit within the column width
+  }
+  textarea {
+    overflow: hidden;
+    //white-space: nowrap;
+    height: auto; //go ahead and grow the row to show all the text
+    border: none;
+  }
+}

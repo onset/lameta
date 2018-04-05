@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../model/Project/Project";
 import { ComponentTab } from "./ComponentTab";
-
+import "./PeopleTab.scss";
 interface IProps {
   project: Project;
   authorityLists: AuthorityLists;

@@ -1,5 +1,10 @@
 @import "../colors";
 
-.properties .-odd {
-  background-color: $project__oddRowHighlight--color;
+.properties {
+  background-color: white;
+
+  .-odd {
+    //todo: should be different for sessions
+    background-color: $people__oddRowHighlight--color;
+  }
 }

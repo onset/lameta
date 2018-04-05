@@ -13,26 +13,7 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
 @import "~react-datepicker/dist/react-datepicker.css";
-.people {
-  .not-implemented {
-    color: #becde4;
-  }
-  .selected {
-    background-color: $people__selected--color;
-    border-color: $people__outline--color;
-  }
-  .folderList {
-    border: solid 1px $people__outline--color;
-    cursor: pointer;
-  }
 
-  .react-tabs__tab-list {
-    border-bottom: solid 1px $people__outline--color;
-    .react-tabs__tab--selected {
-      border-color: $people__outline--color;
-    }
-  }
-}
 .tab-project.react-tabs__tab--selected {
   background-color: $project--color;
 }
@@ -94,169 +75,18 @@ textarea {
   }
 }
 
-form {
-  height: 100%;
-  background-color: transparent; // $color-session;
-  overflow: auto;
-  //border: solid thin $color-session-outline;
-  margin: 8px;
-  // display: grid;
-  // grid-template-columns: 1fr 1fr;
-  // grid-gap: 8px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  justify-content: flex-start; // stack from top on all columns
-  // margin: 0 -8px;
-
-  .fill-form {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    textarea {
-      flex-grow: 1;
-    }
-  }
-}
-
-.componentTab {
-  color: $session--color;
-
-  .firstColumn {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .newFolderBar {
-      padding-top: 8px;
-      width: 100%;
-      height: 50px;
-      //border: solid blue;
-    }
-  }
-}
-.peopleTab {
-  color: $people--color;
-}
-
 .react-tabs {
   height: 100%;
   background-color: white;
 }
-.home {
-  overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
-  height: 100%;
 
-  .tab-panel-project {
-    background-color: $project--color;
-  }
-  .tab-panel-sessions {
-    background-color: $session--color;
-  }
-  .tab-panel-people {
-    background-color: $people--color;
-  }
-  & > .react-tabs__tab-panel--selected {
-    padding: 8px;
-    // background-color: $people-color;
-    height: 100%;
-
-    //border: solid pink;
-    display: flex;
-    // flex-grow: 1;
-    flex-direction: column;
-  }
-
-  //border: solid green;
-  display: flex;
-  flex-direction: column;
-}
-
-.sessions .react-tabs__tab-panel {
-  background-color: $session--color;
-  //border: solid thin $session__outline--color;
-}
-.people .react-tabs__tab-panel {
-  background-color: $people--color;
-  //border: solid thin $people__outline--color;
-}
-.project .react-tabs__tab-panel {
-  background-color: $project--color;
-  //border: solid thin $project__outline--color;
-  padding: 10px;
-  height: 100%; // unlike other tabs, this has tabs on left so can be taller
-}
-.sessions {
-  background-color: $session--color;
-  .selected {
-    background-color: $session--color;
-    border-color: $session__outline--color;
-  }
-  .react-tabs {
-    background-color: $session--color;
-  }
-  .react-tabs__tab-list {
-    background-color: $session--color;
-  }
-}
-.people {
-  background-color: $people--color;
-  .react-tabs__tab-list {
-    background-color: $people--color;
-  }
-}
-
-.componentTab {
-  //background-color: #F0F0F0;
-  height: 100%;
-  color: black;
-  display: flex;
-}
 .fileDetails {
   background-color: $pane__interstitial--color;
   border: solid thin $pane__border--color;
 }
 
-.sessionsList {
-  height: 100%;
-  background-color: white;
-  width: 300px;
-  color: black;
-  border: solid thin $pane__border--color;
-  margin-right: 6px;
-}
-
 .paneTitle {
   display: none;
-  // font-size: 19px;
-  // margin-top: 6px;
-  // margin-left: 6px;
-  // margin-bottom: 6px;
-}
-.project-documents .fileList {
-  min-height: 150px;
-}
-
-.filePane {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border: none;
-  .react-tabs {
-    //background-color: yellow !important; //shouldn't see this
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  .react-tabs__tab-panel--selected {
-    flex-grow: 1;
-
-    display: flex;
-    flex-direction: column;
-  }
 }
 
 .textView {
@@ -265,16 +95,6 @@ form {
   padding: 1em;
 }
 
-.project .filePane {
-  .react-tabs__tab-panel {
-    padding-left: 1px;
-    padding-top: 0px;
-    padding-right: 0;
-  }
-  .react-tabs__tab-list {
-    background-color: $project--color;
-  }
-}
 //make react-select style fit what we're doing with textarea
 .Select .Select-control {
   border-style: inset;
@@ -284,23 +104,6 @@ form {
   color: black !important; //react-select makes it some kind of almost-black
 }
 
-.field.access-protocol {
-  display: flex;
-  label {
-    width: 120px;
-    margin-right: 10px;
-  }
-  .protocol-documentation {
-    margin-top: 10px;
-    max-width: 600px;
-    h1 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 1em;
-    }
-  }
-}
-
 .react-tabs__tab:hover,
 .react-tabs__tab--selected {
   font-weight: bold;
@@ -308,11 +111,6 @@ form {
 
 .mask {
   display: none;
-}
-
-// enhance: this is for when you click on a photo in the list... should be more defined
-img {
-  width: 100%;
 }
 
 .Resizer.horizontal {
@@ -359,30 +157,8 @@ img {
   color: lightgray;
 }
 
-.ReactTable {
-  background-color: white;
-  .rt-td {
-    // not needed? Note with it at "unset", in the filelist long names may spill over into next column
-    //overflow: unset; //allow comboboxes to draw list outside cell
-  }
-  .Select-control {
-    border: none;
-  }
-  .Select-arrow,
-  .Select-placeholder {
-    visibility: hidden;
-  }
-  .rt-td:hover .Select-arrow {
-    visibility: visible;
-  }
-  input {
-    border: none;
-    width: 100%; //fit within the column width
-  }
-  textarea {
-    overflow: hidden;
-    //white-space: nowrap;
-    height: auto; //go ahead and grow the row to show all the text
-    border: none;
-  }
+.ReactTable .rt-thead.-header {
+  box-shadow: none;
+  //todo: this needs work
+  border-bottom: solid thin rgba(0, 0, 0, 0.5);
 }

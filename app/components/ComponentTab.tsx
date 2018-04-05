@@ -5,6 +5,8 @@ import { FolderPane } from "./FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../model/Project/Project";
+import "./ComponentTab.scss";
+
 //import SplitPane from "react-split-pane";
 const SplitPane = require("react-split-pane");
 

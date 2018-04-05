@@ -1,0 +1,33 @@
+@import "../colors";
+
+.people {
+  background-color: $people--color;
+  .react-tabs__tab-list {
+    background-color: $people--color;
+  }
+  .react-tabs {
+    background-color: $people--color;
+  }
+  .not-implemented {
+    color: #becde4;
+  }
+  .selected {
+    background-color: $people__selected--color;
+    border-color: $people__outline--color;
+  }
+  .folderList {
+    border: solid 1px $people__outline--color;
+    cursor: pointer;
+  }
+
+  .react-tabs__tab-list {
+    border-bottom: solid 1px $people__outline--color;
+    .react-tabs__tab--selected {
+      border-color: $people__outline--color;
+    }
+  }
+}
+// .people .react-tabs__tab-panel {
+//   background-color: $people--color;
+//   //border: solid thin $people__outline--color;
+// }

@@ -8,6 +8,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { Field } from "../../model/field/Field";
 import { Dictionary } from "typescript-collections";
 import TextFieldEdit from "../TextFieldEdit";
+import "./AccessProtocolForm.scss";
 
 // enhance: this is kinda lame... we could do this dynamically after we
 // figure out how to get certain the files packaged and accessible at runtime.

@@ -18,6 +18,7 @@ import { Project } from "../model/Project/Project";
 import ImdiView from "./ImdiView";
 import ImdiGenerator from "../export/imdiGenerator";
 import { File } from "../model/file/File";
+import "./FolderPane.scss";
 
 const SplitPane = require("react-split-pane");
 

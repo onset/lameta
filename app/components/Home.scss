@@ -1,5 +1,5 @@
-$people-color: #c7cfdb;
-$project-color: #e69664;
+@import "../colors.scss";
+
 :local {
   .container {
     height: 100%;
@@ -37,4 +37,32 @@ $project-color: #e69664;
     height: 24px;
     margin-right: 8px;
   }
+}
+.home {
+  overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
+  height: 100%;
+
+  .tab-panel-project {
+    background-color: $project--color;
+  }
+  .tab-panel-sessions {
+    background-color: $session--color;
+  }
+  .tab-panel-people {
+    background-color: $people--color;
+  }
+  & > .react-tabs__tab-panel--selected {
+    padding: 8px;
+    // background-color: $people-color;
+    height: 100%;
+
+    //border: solid pink;
+    display: flex;
+    // flex-grow: 1;
+    flex-direction: column;
+  }
+
+  //border: solid green;
+  display: flex;
+  flex-direction: column;
 }

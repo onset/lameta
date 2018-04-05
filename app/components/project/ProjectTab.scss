@@ -1,3 +1,5 @@
+@import "../../colors";
+
 .project {
   //background-color: #F0F0F0;
   height: 100%;
@@ -48,4 +50,25 @@
       }
     }
   }
+}
+
+.project .filePane {
+  .react-tabs__tab-panel {
+    padding-left: 1px;
+    padding-top: 0px;
+    padding-right: 0;
+  }
+  .react-tabs__tab-list {
+    background-color: $project--color;
+  }
+}
+
+.project-documents .fileList {
+  min-height: 150px;
+}
+.project .react-tabs__tab-panel {
+  background-color: $project--color;
+  //border: solid thin $project__outline--color;
+  padding: 10px;
+  height: 100%; // unlike other tabs, this has tabs on left so can be taller
 }

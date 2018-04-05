@@ -7,6 +7,8 @@ import DatePicker from "react-datepicker";
 import { Moment } from "moment";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../RoleChooser";
+import "./ContributorsTable.scss";
+
 const moment = require("moment");
 
 export interface IProps {
@@ -118,7 +120,12 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     ];
 
     return (
-      <ReactTable showPagination={false} data={c} columns={columns} />
+      <ReactTable
+        className={"contributors"}
+        showPagination={false}
+        data={c}
+        columns={columns}
+      />
       // <ReactTable data={[{name:"one"}]} columns={columns} />
     );
   }

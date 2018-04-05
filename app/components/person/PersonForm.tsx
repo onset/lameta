@@ -6,7 +6,7 @@ import { FieldSet } from "../../model/field/FieldSet";
 import LanguageEdit from "./LanguageEdit";
 import ClosedChoiceEdit from "../ClosedChoiceEdit";
 import MugShot from "./MugShot";
-//import "./PersonForm.scss";
+import "./PersonForm.scss";
 
 export interface IProps {
   person: Person;

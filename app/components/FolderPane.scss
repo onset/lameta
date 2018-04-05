@@ -1,0 +1,18 @@
+.filePane {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: none;
+  .react-tabs {
+    //background-color: yellow !important; //shouldn't see this
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .react-tabs__tab-panel--selected {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+  }
+}

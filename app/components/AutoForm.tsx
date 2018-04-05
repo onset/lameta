@@ -10,6 +10,7 @@ import { Folder } from "../model/Folder";
 import GenreChooser from "./session/GenreChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
+import "./Form.scss";
 
 export interface IProps {
   folder: Folder;
