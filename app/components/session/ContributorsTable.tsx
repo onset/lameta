@@ -1,12 +1,12 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldType } from "../model/field/Field";
-import { File, Contribution } from "../model/file/File";
+import { Field, FieldType } from "../../model/field/Field";
+import { File, Contribution } from "../../model/file/File";
 import ReactTable from "react-table";
 import DatePicker from "react-datepicker";
 import { Moment } from "moment";
-import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import RoleChooser from "../RoleChooser";
+import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import RoleChooser from "../../RoleChooser";
 import "./ContributorsTable.scss";
 
 const moment = require("moment");

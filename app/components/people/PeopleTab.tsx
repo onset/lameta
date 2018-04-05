@@ -1,10 +1,10 @@
 import * as React from "react";
-import { FolderList } from "./FolderList";
-import { Folder, IFolderSelection } from "../model/Folder";
+import { FolderList } from "../FolderList";
+import { Folder, IFolderSelection } from "../../model/Folder";
 import { observer } from "mobx-react";
-import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import { Project } from "../model/Project/Project";
-import { ComponentTab } from "./ComponentTab";
+import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import { Project } from "../../model/Project/Project";
+import { ComponentTab } from "../ComponentTab";
 import "./PeopleTab.scss";
 interface IProps {
   project: Project;

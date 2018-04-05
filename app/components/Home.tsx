@@ -13,11 +13,11 @@ const styles = require("./Home.scss");
 //import sessionIcon from "../../artwork/session.svg";
 // const sessionIcon = require("../../artwork/Female_Selected.png");
 //import * as sessionIcon from "./test.svg";
-import { SessionIcon } from "./SessionIcon";
-import { ProjectIcon } from "./ProjectIcon";
-import { PeopleIcon } from "./PeopleIcon";
-import { PeopleTab } from "./PeopleTab";
-import { SessionsTab } from "./SessionsTab";
+import { SessionIcon } from "./session/SessionIcon";
+import { ProjectIcon } from "./project/ProjectIcon";
+import { PeopleIcon } from "./people/PeopleIcon";
+import { PeopleTab } from "./people/PeopleTab";
+import { SessionsTab } from "./session/SessionsTab";
 
 export interface IProps {
   project: Project;

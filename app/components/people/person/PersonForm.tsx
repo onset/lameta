@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Person } from "../../model/Project/Person/Person";
+import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
-import TextFieldEdit from "../TextFieldEdit";
-import { FieldSet } from "../../model/field/FieldSet";
+import TextFieldEdit from "../../TextFieldEdit";
+import { FieldSet } from "../../../model/field/FieldSet";
 import LanguageEdit from "./LanguageEdit";
-import ClosedChoiceEdit from "../ClosedChoiceEdit";
+import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import MugShot from "./MugShot";
 import "./PersonForm.scss";
 
