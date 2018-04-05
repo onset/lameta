@@ -22,21 +22,13 @@ $project__cellOverlay--color: rgba(230, 150, 100, 0.28);
 
 $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/core/src/blueprint.scss";
-@import "~@blueprintjs/table/src/table.scss";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
 @import "~react-datepicker/dist/react-datepicker.css";
-.bp-table-cell {
-  z-index: 100; //put *above* the overlay that selected elements get, since that looks better than having a semitransparent color above
-}
 .people {
   .not-implemented {
     color: #becde4;
   }
   .selected {
-    background-color: $people__cellOverlay--color;
-    border-color: $people__outline--color;
-  }
-  .bp-table-selection-region {
     background-color: $people__cellOverlay--color;
     border-color: $people__outline--color;
   }
@@ -60,21 +52,6 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 }
 .tab-people.react-tabs__tab--selected {
   background-color: $people--color;
-}
-.sessions {
-  .bp-table-selection-region {
-    background-color: $session__cellOverlay--color;
-    border-color: $session__outline--color;
-  }
-  .folderList {
-    //border: solid 4px $session--color;
-  }
-}
-.project {
-  .bp-table-selection-region {
-    background-color: $project__cellOverlay--color;
-    border-color: $project__outline--color;
-  }
 }
 
 $color-interstitial: #f0f0f0;
@@ -178,7 +155,7 @@ form {
       flex-direction: column;
       background-color: white;
 
-      .bp-table-container {
+      .blahblah {
         flex-grow: 1; // take up all the vertical space except what newFolderBar needs
         // library code puts in 100%, which makes it take more space than the parent since it has a sybling
         height: inherit;
@@ -264,9 +241,6 @@ form {
     background-color: $people--color;
   }
 }
-.bp-table-quadrant {
-  background-color: white;
-}
 .project {
   //background-color: #F0F0F0;
   height: 100%;
@@ -351,12 +325,6 @@ form {
   position: relative; // needed by mask
   display: flex;
   flex-direction: column;
-  // .bp-table-container {
-  //   // library code puts in 100%, which makes it take more space than the parent since it has a sybling
-  //   height: inherit;
-  //   flex-grow: 1;
-  //   background-color: inherit;
-  // }
   button {
     background-color: inherit;
     border-color: transparent;
