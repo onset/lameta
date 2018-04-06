@@ -20,7 +20,7 @@ interface IProps {
 export class ProjectTab extends React.Component<IProps> {
   public render() {
     this.props.project.couldPossiblyBecomeDirty();
-    const kFirstTabToOpen = 4;
+    const kFirstTabToOpen = 0;
     return (
       <Tabs
         className={"project"}

@@ -3,7 +3,7 @@
 .sessions {
   background-color: $session--color;
   .selected {
-    background-color: $session--color;
+    background-color: $session__selected--color;
     border-color: $session__outline--color;
   }
   .react-tabs {

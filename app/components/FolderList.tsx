@@ -25,19 +25,24 @@ export class FolderList extends React.Component<IProps> {
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
     const mobxDummy = this.props.folders.map(f => f.displayName);
-    const columns = [
-      {
-        id: "name",
-        Header: "Name",
-        accessor: (d: any) => {
-          const f: Folder = d;
-          console.log(f.displayName);
-          //console.log(JSON.stringify(d));
-          return d.displayName;
+    const columns = this.props.columns.map((key, index) => {
+      const c: object = {
+        id: key,
+        width: this.props.columnWidths[index],
+        Header: titleCase(key),
+        accessor: (f: Folder) => {
+          const field = f.properties.getValue(key);
+          if (field.type === FieldType.Text) {
+            return field.toString();
+          }
+          if (field.type === FieldType.Date) {
+            return field.asLocaleDateString();
+          }
+          return "ERROR";
         }
-        //Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
-      }
-    ];
+      };
+      return c;
+    });
 
     return (
       <div className={"folderList"}>

@@ -124,7 +124,7 @@ export class FolderPane extends React.Component<IProps> {
 
     switch (file.type) {
       case "Session":
-        const kFirstTabToOpen = 4;
+        const kFirstTabToOpen = 0;
         return (
           <Tabs defaultIndex={kFirstTabToOpen}>
             <TabList>
@@ -160,7 +160,7 @@ export class FolderPane extends React.Component<IProps> {
           </Tabs>
         );
       case "Person":
-        const kFirstPersonTabToOpen = 3;
+        const kFirstPersonTabToOpen = 0;
         return (
           <Tabs defaultIndex={kFirstPersonTabToOpen}>
             <TabList>
