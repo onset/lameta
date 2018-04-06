@@ -143,23 +143,7 @@ export default class SayLessRunner {
     return this.expectTableRowsLength(".folderList", expectedRows);
   }
   public async expectFileListRowCount(expectedRows: number) {
-    return this.expectBlueprintTableRowsLength(".fileList", expectedRows);
-  }
-
-  public async expectBlueprintTableRowsLength(
-    selector: string,
-    expectedRows: number
-  ) {
-    await this.shouldExist(selector);
-    await this.shouldExist(selector + " .bp-table-body-cells");
-    const allRows = await this.app.client.elements(
-      selector + " .bp-table-body-cells .bp-table-cell-col-0"
-    );
-    const actual = allRows.value.length;
-    assert(
-      actual === expectedRows,
-      `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
-    );
+    return this.expectTableRowsLength(".fileList", expectedRows);
   }
 
   public async expectTableRowsLength(selector: string, expectedRows: number) {

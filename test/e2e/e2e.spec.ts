@@ -72,6 +72,6 @@ describe("main window", function spec() {
     await runner.click("li=Person");
     await runner.typeField("Full Name", "joe");
     await runner.shouldExist("//div[text()='joe']"); // the folder
-    await runner.shouldExist("//div/span[text()='joe.person']"); // the metadata file
+    await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
   });
 });
