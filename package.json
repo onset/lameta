@@ -150,7 +150,7 @@
     "json-loader": "^0.5.4",
     "markdown-loader": "^2.0.1",
     "node-sass": "^4.1.1",
-    "react-hot-loader": "^3.0.0-beta.6",
+    "react-hot-loader": "^4.0.1",
     "react-test-renderer": "^16.0.0",
     "sass-loader": "^6.0.6",
     "sinon": "^4.0.0",
