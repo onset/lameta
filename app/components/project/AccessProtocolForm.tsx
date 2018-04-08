@@ -34,8 +34,10 @@ interface IProps {
 export class AccessProtocolForm extends React.Component<IProps> {
   public render() {
     const protocol = this.props.protocolField.text.toLowerCase();
-    const documentationHtml = doc.getValue(protocol);
-
+    let documentationHtml = doc.getValue(protocol);
+    if (documentationHtml === undefined) {
+      documentationHtml = "ERROR";
+    }
     const customStuff =
       protocol === "custom" ? (
         <div>

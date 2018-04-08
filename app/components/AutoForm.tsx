@@ -122,7 +122,7 @@ export default class AutoForm extends React.Component<IProps> {
         //   .map(field => this.makeEdit(field))
 
         sortedKeys
-          .map(k => this.props.folder.properties.getValue(k))
+          .map(k => this.props.folder.properties.getValueOrThrow(k))
 
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}

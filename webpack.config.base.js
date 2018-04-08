@@ -6,16 +6,13 @@ const path = require("path");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
 module.exports = {
+  mode: "development",
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.tsx?$/,
-        loaders: ["react-hot-loader/webpack", "ts-loader"],
+        loaders: ["ts-loader"],
         exclude: /node_modules/
-      },
-      {
-        test: /\.json$/,
-        loader: "json-loader"
       },
       {
         test: /\.(html)$/,

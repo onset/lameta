@@ -11,6 +11,7 @@ const baseConfig = require("./webpack.config.base");
 const port = process.env.PORT || 3000;
 
 module.exports = merge(baseConfig, {
+  mode: "development",
   devtool: "inline-source-map",
 
   entry: [
@@ -31,7 +32,7 @@ module.exports = merge(baseConfig, {
     //     exclude: /node_modules/
     //   }
     // ],
-    loaders: [
+    rules: [
       // Add SASS support  - compile all .global.scss files and pipe it to style.css
       {
         test: /\.global\.scss$/,
@@ -134,10 +135,10 @@ module.exports = merge(baseConfig, {
 
     new webpack.NoEmitOnErrorsPlugin(),
 
-    // NODE_ENV should be production so that modules do not perform certain development checks
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("development")
-    }),
+    // // NODE_ENV should be production so that modules do not perform certain development checks
+    // new webpack.DefinePlugin({
+    //   "process.env.NODE_ENV": JSON.stringify("development")
+    // }),
 
     new webpack.LoaderOptionsPlugin({
       debug: true

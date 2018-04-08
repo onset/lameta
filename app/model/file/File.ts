@@ -50,7 +50,7 @@ export abstract class File {
   }
   private checkType(key: string, value: any) {
     if (this.properties.containsKey(key)) {
-      const a = typeof this.properties.getValue(key);
+      const a = typeof this.properties.getValueOrThrow(key);
       const b = typeof value;
       assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
@@ -96,7 +96,7 @@ export abstract class File {
     );
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
-    const p = this.properties.getValue(key); //as Field;
+    const p = this.properties.getValueOrThrow(key); //as Field;
     if (!p) {
       return ifMissing;
     }
@@ -104,7 +104,7 @@ export abstract class File {
   }
 
   public getTextField(key: string): Field {
-    return this.properties.getValue(key) as Field;
+    return this.properties.getValueOrThrow(key) as Field;
   }
 
   public constructor(
@@ -167,7 +167,7 @@ export abstract class File {
       const fixedKey = camelcase(key);
       // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
       if (this.properties.containsKey(fixedKey)) {
-        const v = this.properties.getValue(fixedKey);
+        const v = this.properties.getValueOrThrow(fixedKey);
         v.setValueFromString(textValue);
         //console.log("11111" + key);
       } else {

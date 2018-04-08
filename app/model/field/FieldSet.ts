@@ -4,23 +4,35 @@ import { Field, FieldType, IFieldDefinition } from "./Field";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
-    const f = this.getValue(key);
+    const f = this.getValueOrThrow(key);
     assert(f, `setText(${key}) assumes the value is already there.`);
     f.setValueFromString(value);
   }
+
+  // the dictionary implementation has a signature that includes undefined, which makes
+  // it *really* annoying to use, as TS will force you to check the return value every time
+  public getValueOrThrow(key: string): Field {
+    const f = super.getValue(key);
+    if (f === undefined) {
+      throw Error("This FieldSet has no value with key: " + key);
+    } else {
+      return f;
+    }
+  }
+
   public getFieldDefinition(key: string): IFieldDefinition {
-    const f = this.getValue(key) as Field;
+    const f = this.getValueOrThrow(key) as Field;
     return f.definition;
   }
   public getTextStringOrEmpty(key: string): string {
-    const s = this.getValue(key) as Field;
+    const s = this.getValueOrThrow(key) as Field;
     return s ? s.text : "";
   }
   public getTextField(key: string): Field {
-    return this.getValue(key) as Field;
+    return this.getValueOrThrow(key) as Field;
   }
   public getDateField(key: string): Field {
-    return this.getValue(key) as Field;
+    return this.getValueOrThrow(key) as Field;
   }
   public addDateProperty(key: string, date: Date) {
     this.checkType(key, date);
@@ -48,7 +60,7 @@ export class FieldSet extends Dictionary<string, Field> {
 
   private checkType(key: string, value: any) {
     if (this.containsKey(key)) {
-      const a = typeof this.getValue(key);
+      const a = typeof this.getValueOrThrow(key);
       const b = typeof value;
       assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }

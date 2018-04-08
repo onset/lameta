@@ -31,7 +31,7 @@ export class FolderList extends React.Component<IProps> {
         width: this.props.columnWidths[index],
         Header: titleCase(key),
         accessor: (f: Folder) => {
-          const field = f.properties.getValue(key);
+          const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
             return field.toString();
           }

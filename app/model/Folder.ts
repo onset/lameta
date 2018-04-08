@@ -68,7 +68,7 @@ export abstract class Folder {
     });
   }
   get type(): string {
-    const x = this.properties.getValue("type") as Field;
+    const x = this.properties.getValueOrThrow("type") as Field;
     return x ? x.text : "???";
   }
 

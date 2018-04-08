@@ -177,7 +177,7 @@ export class Project extends Folder {
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
     this.properties
-      .getValue("accessProtocol")
+      .getValueOrThrow("accessProtocol")
       .textHolder.map.intercept(change => {
         this.authorityLists.setAccessProtocol(
           change.newValue as string,
@@ -186,7 +186,7 @@ export class Project extends Folder {
         return change;
       });
     this.properties
-      .getValue("customAccessChoices")
+      .getValueOrThrow("customAccessChoices")
       .textHolder.map.intercept(change => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"

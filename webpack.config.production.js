@@ -10,6 +10,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const baseConfig = require("./webpack.config.base");
 
 module.exports = merge(baseConfig, {
+  mode: "production",
   devtool: "cheap-module-source-map",
 
   entry: ["./app/index"],
@@ -20,7 +21,7 @@ module.exports = merge(baseConfig, {
   },
 
   module: {
-    loaders: [
+    rules: [
       // Extract all .global.css to style.css as is
       {
         test: /\.(scss|sass)$/,
@@ -104,9 +105,9 @@ module.exports = merge(baseConfig, {
     new webpack.optimize.OccurrenceOrderPlugin(),
 
     // NODE_ENV should be production so that modules do not perform certain development checks
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    }),
+    // new webpack.DefinePlugin({
+    //   "process.env.NODE_ENV": JSON.stringify("production")
+    // }),
 
     new ExtractTextPlugin("style.css"),
 
