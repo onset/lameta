@@ -2,29 +2,21 @@
   "name": "saymore-light",
   "productName": "SayMore Light",
   "version": "0.10.0",
-  "description":
-    "File & metadata organization for language documentation projects.",
+  "description": "File & metadata organization for language documentation projects.",
   "main": "./main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js",
     "test-all": "npm run test && npm run build && npm run test-e2e",
     "test-watch": "npm test -- --watch",
-    "testw":
-      "cross-env NODE_ENV=test node --trace-warnings ./test/runTestsWatch.js",
-    "test-e2e":
-      "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
-    "hot-server":
-      "cross-env NODE_ENV=development node --max_old_space_size=2096 server.js",
-    "build-main":
-      "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
-    "build-renderer":
-      "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "testw": "cross-env NODE_ENV=test node --trace-warnings ./test/runTestsWatch.js",
+    "test-e2e": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
+    "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 server.js",
+    "build-main": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
+    "build-renderer": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
     "start": "cross-env NODE_ENV=production electron ./app/",
-    "start-hot":
-      "cross-env HOT=1 NODE_ENV=development electron ./app/main.development",
-    "start-hot-vscode":
-      "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main.development",
+    "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./app/main.development",
+    "start-hot-vscode": "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main.development",
     "postinstall": "npm run build",
     "dev": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
@@ -42,18 +34,30 @@
       }
     },
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/internals/mocks/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/internals/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node", "xml"],
-    "moduleDirectories": ["node_modules", "app/node_modules"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node",
+      "xml"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "app/node_modules"
+    ],
     "transform": {
       "^.+\\.js$": "babel-jest",
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
       "\\.xml$": "jest-raw-loader"
     },
-    "testMatch": ["**/?(*.)(spec|test).ts?(x)"]
+    "testMatch": [
+      "**/?(*.)(spec|test).ts?(x)"
+    ]
   },
   "build": {
     "productName": "SayMore Light",
@@ -81,48 +85,34 @@
       "main.js.map",
       "package.json"
     ],
-    "extraResources": ["artwork/"],
-    "extraFiles": ["sample data/"],
+    "extraResources": [
+      "artwork/"
+    ],
+    "extraFiles": [
+      "sample data/"
+    ],
     "directories": {
       "buildResources": "resources",
       "output": "release"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/windows.ico"
+    },
+    "mac": {
+      "icon": "build/mac.icns"
     },
     "linux": {
-      "target": ["deb", "AppImage"]
+      "target": [
+        "deb",
+        "AppImage"
+      ]
     }
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"
   },
-  "repository": {
-    "type": "git",
-    "url":
-      "git+https://github.com/irath96/electron-react-typescript-boilerplate.git"
-  },
-  "author": {
-    "name": "Alexander Rath",
-    "email": "irath96@gmail.com",
-    "url": "https://github.com/irath96"
-  },
   "license": "MIT",
-  "bugs": {
-    "url":
-      "https://github.com/irath96/electron-react-typescript-boilerplate/issues"
-  },
-  "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "react-router",
-    "flux",
-    "webpack",
-    "react-hot"
-  ],
-  "homepage":
-    "https://github.com/irath96/electron-react-typescript-boilerplate#readme",
   "devDependencies": {
     "@types/chai": "^4.1.2",
     "@types/enzyme": "^3.1.1",
@@ -151,7 +141,7 @@
     "enzyme-adapter-react-16": "^1.0.0",
     "express": "^4.14.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "file-loader": "^1.1.5",
+    "file-loader": "1.1.11",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^3.2.0",
     "identity-obj-proxy": "^3.0.0",
@@ -172,10 +162,9 @@
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.6.0",
     "typescript": "^2.7.2",
-    "url-loader": "^0.6.1",
+    "url-loader": "1.0.1",
     "webpack": "4.5.0",
     "webpack-cli": "^2.0.14",
-    "webpack-dev-middleware": "^1.9.0",
     "webpack-hot-middleware": "^2.13.2",
     "webpack-merge": "^2.0.0",
     "xmldom": "^0.1.27",
@@ -244,6 +233,7 @@
     "temp": "^0.8.3",
     "title-case": "^2.1.1",
     "typescript-collections": "^1.2.5",
+    "webpack-dev-middleware": "3.1.1",
     "xml2js": "^0.4.19",
     "xmlbuilder": "^9.0.4"
   },

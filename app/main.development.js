@@ -57,6 +57,18 @@ function fillLastMonitor() {
 }
 
 app.on("ready", () =>
+
+  // NB: __dirname is something like sayless\release\win-unpacked\resources\app.asar
+  // you can look in the asar file using a 7-zip plugin: http://www.tc4shell.com/en/7zip/asar/
+  // it looks like
+  // dist/
+  //    bundle.js
+  //    style.css
+  //    some fonts, maps, and stuff
+  // app.html
+  // main.js
+  // package.jon
+
   installExtensions().then(
     () => {
       mainWindow = new BrowserWindow({
@@ -64,7 +76,7 @@ app.on("ready", () =>
         width: 1024,
         height: 728,
         //windows
-        icon: path.join(__dirname, "../app/icons/windows.ico")
+        icon: path.join(__dirname, "../artwork/windows.ico")
         //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       });
@@ -79,7 +91,7 @@ app.on("ready", () =>
       mainWindow.on("closed", () => {
         mainWindow = null;
       });
-
+      mainWindow.openDevTools(); // temporary, during production build testing
       if (process.env.NODE_ENV === "development") {
         mainWindow.openDevTools();
         //NB: setting up the context menu happened here, in the boilerplate.

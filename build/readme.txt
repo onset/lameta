@@ -1,0 +1,1 @@
+This dir is here just to follow the instructions in https://github.com/electron-userland/electron-builder .

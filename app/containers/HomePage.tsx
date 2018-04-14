@@ -11,8 +11,9 @@ import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
 const { Menu, ipcRenderer } = require("electron");
 import Store = require("electron-store");
-const startBackground = require("../img/icon.png");
+
 import "./StartScreen.scss";
+const saylessicon = require("../img/icon.png");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -124,13 +125,13 @@ export default class HomePage extends React.Component<IProps, IState> {
         ) : (
           <div className={"startScreen"}>
             <div className={"top"}>
-              <img src="./img/icon.png" />
+              <img src={require("../img/icon.png")}/>
               <h1>
                 SayMore <span>Mac</span>
               </h1>
             </div>
             <div className={"choices"}>
-              <img src="./img/create.png" />
+              <img src={require("../img/create.png")} />
               <a
                 className={"creatNewProjectLink"}
                 id="creatNewProjectLink"
@@ -139,10 +140,10 @@ export default class HomePage extends React.Component<IProps, IState> {
                 Create New Project
               </a>
               <br />
-              <img src="./img/open.png" />
+              <img src={require("../img/open.png")} />
               <a onClick={() => this.openProject()}>Open SayMore Project</a>
               <br />
-              <img src="./img/sample.png" />
+              <img src={require("../img/sample.png")} />
               <a
                 id="createNewProjectWithSampleDataLink"
                 onClick={() => {
