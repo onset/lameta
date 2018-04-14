@@ -48,7 +48,7 @@ export class FolderList extends React.Component<IProps> {
       <div className={"folderList"}>
         <ReactTable
           showPagination={false}
-          data={this.props.folders}
+          data={this.props.folders.slice()} // slice is needed because this is a mobx observable array. See https://mobx.js.org/refguide/array.html#observable-arrays
           columns={columns}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.

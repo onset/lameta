@@ -119,7 +119,7 @@ export default class FileList extends React.Component<IProps> {
         </div>
         <ReactTable
           showPagination={false}
-          data={this.props.folder.files}
+          data={this.props.folder.files.slice()} // slice is needed because this is a mobx observable array. See https://mobx.js.org/refguide/array.html#observable-arrays
           columns={columns}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
