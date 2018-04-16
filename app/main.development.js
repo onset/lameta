@@ -6,6 +6,36 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 let menu;
 let template;
 let mainWindow = null;
+var util = require('util');
+ipcMain.on("click-menu", (event, menuPath)=>{
+  var menuItem;
+  //electron.dialog.showMessageBox({message:"parts:"+util.inspect(menuPath)});
+  for (var menuName of menuPath) {
+    if (!menuItem) {
+      //electron.dialog.showMessageBox({message:"template:"+util.inspect(template)});
+      menuItem = template.find(function (item) { return item.label === menuName; });
+      //electron.dialog.showMessageBox({message:"for "+menuName+" found:"+util.inspect(template)});
+    } else {
+      //electron.dialog.showMessageBox({message:"menuitem:"+util.inspect(menuItem)});
+      //electron.dialog.showMessageBox({message:"submenu:"+util.inspect(menuItem.submenu)});
+      menuItem = menuItem.submenu.find(function (item) { return item.label === menuName; });
+    }
+  }
+  
+  //electron.dialog.showMessageBox({message:"menuitem:"+util.inspect(menuItem)});
+  if (menuItem) {
+    var enabled = menuItem.enabled;
+    var visible = menuItem.visible;
+    var click = menuItem.click;
+    
+    if (enabled !== false && visible !== false && typeof click === 'function') {
+      //electron.dialog.showMessageBox({message:"clicking:"+util.inspect(menuItem)});
+      menuItem.click();
+    }
+  }
+  //electron.dialog.showMessageBox({message:"leaving ipc call"});
+  //mainWindow.webContents.send("start-screen");
+});
 
 if (process.env.NODE_ENV === "production") {
   const sourceMapSupport = require("source-map-support"); // eslint-disable-line
@@ -91,7 +121,7 @@ app.on("ready", () =>
       mainWindow.on("closed", () => {
         mainWindow = null;
       });
-      mainWindow.openDevTools(); // temporary, during production build testing
+      // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
       if (process.env.NODE_ENV === "development") {
         mainWindow.openDevTools();
         //NB: setting up the context menu happened here, in the boilerplate.

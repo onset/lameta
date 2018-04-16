@@ -4,6 +4,7 @@ import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as assert from "assert";
+//import { remote } from "electron";
 
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
 // See http://webdriver.io/api/state/isExisting.html# and friends for documentation.
@@ -29,6 +30,9 @@ export default class SayLessRunner {
     });
 
     await this.app.start();
+
+    // NOTE: if you get waitUntilWindowLoaded: Cannot read property 'isLoading' of undefined,
+    // ensure that the devtools isn't opened in the production build.
     return this.app.client.waitUntilWindowLoaded();
   }
 
@@ -42,6 +46,11 @@ export default class SayLessRunner {
 
   public get browser(): SpectronClient {
     return this.app.client;
+  }
+
+  public async clickMenu(menuName:string, item:string){
+    await delay(500);
+    await this.app.electron.ipcRenderer.send('click-menu', [menuName, item]);
   }
 
   public stop(): Promise<Application> {
@@ -86,6 +95,7 @@ export default class SayLessRunner {
     console.log(log ? log : "Clicking " + selector);
     await this.browser.click(selector);
   }
+
   public async clickFolderRowWithText(match: string) {
     //NB: the docs show that div*= should give a partial match, but at the moment it's not working
     // maybe spectron is behind.
@@ -108,11 +118,14 @@ export default class SayLessRunner {
     await this.click(".tab-project");
     return delay(500);
   }
+  public async goToSessionsTab() {
+    await this.click(".tab-sessions");
+    return delay(500);
+  }
   public async goToPeopleTab() {
     await this.click(".tab-people");
     return delay(500);
   }
-
   public async type(selector: string, text: string, log?: string) {
     await this.shouldExist(selector);
     console.log(log ? log : "Clicking " + selector);
@@ -128,7 +141,12 @@ export default class SayLessRunner {
     fs.removeSync(p);
   }
 
+  public async goToStartScreen(){
+    await this.clickMenu("&Project","&Start Screen");
+  }
+
   public async createdProjectWithSampleData() {
+    await this.goToStartScreen();
     await this.shouldExist(".startScreen");
     await this.click("#createNewProjectWithSampleDataLink");
     await this.shouldExist(".createProject");
@@ -155,10 +173,11 @@ export default class SayLessRunner {
       selector + " .rt-tr-group .-padRow"
     );
     const actual = allRows.value.length - paddingRows.value.length;
-    assert(
+    assert.ok(
       actual === expectedRows,
       `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
     );
+    console.log(`${selector} table has ${actual}/${expectedRows} rows`)
   }
 
   public async typeField(fieldName: string, text: string) {

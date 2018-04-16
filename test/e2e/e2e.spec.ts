@@ -12,6 +12,7 @@ import SayLessRunner from "./SayLessRunner";
 // with ctrl+shift+p, Jest:stop Runner. There may be a way to
 // stop it trying to run things in parrallel, that might help?
 
+
 const delay = (time: number) =>
   new Promise(resolve => setTimeout(resolve, time));
 
@@ -32,8 +33,21 @@ describe("main window", function spec() {
     expect(title).toBe("SayLess");
   });
 
+  it("can click menus", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    runner.clickMenu("&Project","&Start Screen");
+    await delay(1000);
+    await runner.goToProjectTab();
+    await delay(1000);
+    await runner.goToSessionsTab();
+    await delay(1000);
+    await runner.goToPeopleTab();
+    await delay(1000);
+  });
+
   it("smoketest", async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    runner.clickMenu("Project","Start Screen");
     await runner.shouldExist(".startScreen");
     await runner.click("#creatNewProjectLink");
     await runner.shouldExist(".createProject");
@@ -55,23 +69,28 @@ describe("main window", function spec() {
   });
 
   it("sample data", async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+    await delay(3000);
     await runner.createdProjectWithSampleData();
+   // await delay(1000);
     await runner.goToProjectTab();
+    //await delay(1000);
     await runner.click("li=About This Project");
     await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
     await runner.goToPeopleTab();
     await runner.expectFolderListRowCount(4);
-    await delay(1000);
+   // await delay(1000);
     await runner.clickFolderRowWithText("Awi Heole");
     await runner.expectFileListRowCount(3);
     await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
     await runner.expectFileListRowCount(2);
     await runner.click("button=New Person");
     await runner.expectFileListRowCount(1);
+   // await delay(1000);
     await runner.click("li=Person");
     await runner.typeField("Full Name", "joe");
     await runner.shouldExist("//div[text()='joe']"); // the folder
     await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
+   // await delay(3000);
   });
 });
