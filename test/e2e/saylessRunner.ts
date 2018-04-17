@@ -1,4 +1,4 @@
-//import * as electronPath from "electron";
+import {default as electronPath} from "electron";
 //import * as webdriverio from "webdriverio";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
@@ -22,8 +22,7 @@ export default class SayLessRunner {
     if (doClear) {
       this.removeProject(this.kProjectName);
     }
-    //TODO:
-    const electronPath = "C:/dev/sayless/node_modules/.bin/electron.cmd";
+
     this.app = new Application({
       path: electronPath.toString(),
       args: [Path.join(__dirname, "..", "..", "app")]
