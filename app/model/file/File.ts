@@ -335,10 +335,9 @@ export abstract class File {
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
-    if (
-      this.metadataFilePath !== this.describedFilePath &&
-      fs.existsSync(this.metadataFilePath)
-    ) {
+    const hasSeparateMetaDataFile =
+      this.metadataFilePath !== this.describedFilePath;
+    if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)) {
       this.metadataFilePath = this.internalUpdateNameBasedOnNewBaseName(
         this.metadataFilePath,
         newFolderName
@@ -356,6 +355,9 @@ export abstract class File {
       this.describedFilePath,
       newFolderName
     );
+    if (!hasSeparateMetaDataFile) {
+      this.metadataFilePath = this.describedFilePath;
+    }
     this.properties.setText("filename", Path.basename(this.describedFilePath));
   }
 

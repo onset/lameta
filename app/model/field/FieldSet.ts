@@ -25,8 +25,12 @@ export class FieldSet extends Dictionary<string, Field> {
     return f.definition;
   }
   public getTextStringOrEmpty(key: string): string {
-    const s = this.getValueOrThrow(key) as Field;
-    return s ? s.text : "";
+    try {
+      const s = this.getValueOrThrow(key) as Field;
+      return s.text;
+    } catch {
+      return "";
+    }
   }
   public getTextField(key: string): Field {
     return this.getValueOrThrow(key) as Field;
