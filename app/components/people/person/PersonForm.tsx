@@ -29,7 +29,7 @@ export default class PersonForm extends React.Component<IProps> {
             validate={(value: string) => this.props.validateFullName(value)}
             field={this.props.fields.getTextField("name")}
             onBlur={() => {
-              this.props.person.nameMightHaveChanged("name");
+              this.props.person.nameMightHaveChanged();
             }}
           />
           <div className={"nickname-and-code"}>

@@ -68,4 +68,9 @@ export class Person extends Folder {
     //console.log("saving " + person.getString("title"));
     //fs.writeFileSync(person.path + ".test", JSON.stringify(person), "utf8");
   }
+
+  // override
+  protected fieldContentThatControlsFolderName(): string {
+    return this.properties.getTextStringOrEmpty("name").trim();
+  }
 }

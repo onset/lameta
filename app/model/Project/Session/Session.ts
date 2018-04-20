@@ -51,4 +51,8 @@ export class Session extends Folder {
 
     return new Session(directory, metadataFile, files);
   }
+  // override
+  protected fieldContentThatControlsFolderName(): string {
+    return this.properties.getTextStringOrEmpty("id").trim();
+  }
 }

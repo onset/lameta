@@ -145,9 +145,12 @@ export abstract class Folder {
     this.directory = newDirPath;
   }
 
-  public nameMightHaveChanged(keyOfField: string) {
-    let s = this.properties.getTextStringOrEmpty(keyOfField).trim();
-    s = sanitize(s);
+  protected fieldContentThatControlsFolderName(): string {
+    return "UNUSED-IN-THIS-CLASS";
+  }
+
+  public nameMightHaveChanged() {
+    const s = sanitize(this.fieldContentThatControlsFolderName());
     if (s.length > 0 && s !== this.previousFileNameBase) {
       this.previousFileNameBase = s;
       this.renameFilesAndFolders(s);

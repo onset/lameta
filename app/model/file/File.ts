@@ -96,11 +96,12 @@ export abstract class File {
     );
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
-    const p = this.properties.getValueOrThrow(key); //as Field;
-    if (!p) {
+    try {
+      const p = this.properties.getValueOrThrow(key); //as Field;
+      return p.text;
+    } catch {
       return ifMissing;
     }
-    return p.text;
   }
 
   public getTextField(key: string): Field {

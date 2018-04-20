@@ -141,7 +141,7 @@ export class FolderPane extends React.Component<IProps> {
                 authorityLists={this.props.authorityLists}
                 fieldThatControlsFileNames={"id"}
                 fieldThatControlsFileNamesMightHaveChanged={key =>
-                  (this.props.folder as Session).nameMightHaveChanged(key)
+                  (this.props.folder as Session).nameMightHaveChanged()
                 }
                 validateFieldThatControlsFileNames={value =>
                   this.props.project.validateSessionId(
