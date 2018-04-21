@@ -27,7 +27,7 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   public render() {
-    const kFirstTabToOpen = 2;
+    const kFirstTabToOpen = 1;
     return (
       <div
         id="topLevelOfOpenProjectScreen"

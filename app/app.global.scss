@@ -162,3 +162,14 @@ textarea {
   //todo: this needs work
   border-bottom: solid thin rgba(0, 0, 0, 0.5);
 }
+
+//React-select
+.Select--multi .Select-value-icon {
+  border-right: none; // turn off the vertical separator line
+}
+.Select--multi .Select-value {
+  background-color: unset;
+  margin-top: 2px; // the default pushs it down too far
+  color: $session--color;
+  border-color: $session--color;
+}

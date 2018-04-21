@@ -60,7 +60,9 @@ export class Project extends Folder {
     this.selectedPerson = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
-    this.authorityLists = new AuthorityLists();
+    this.authorityLists = new AuthorityLists(() =>
+      this.persons.map(p => p.displayName)
+    );
 
     this.setupProtocolChoices();
   }

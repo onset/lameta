@@ -10,6 +10,8 @@ import { Folder } from "../model/Folder";
 import GenreChooser from "./session/GenreChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
+import PeopleChooser from "./session/PeopleChooser";
+
 import "./Form.scss";
 
 export interface IProps {
@@ -42,6 +44,14 @@ export default class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
+            />
+          );
+        } else if (f.definition.key === "participants") {
+          return (
+            <PeopleChooser
+              key={f.key} // for some reason we get a key error without this
+              field={field as Field}
+              getPeopleNames={this.props.authorityLists.getPeopleNames}
             />
           );
         } else if (

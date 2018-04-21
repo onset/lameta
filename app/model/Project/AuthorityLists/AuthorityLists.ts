@@ -1,5 +1,6 @@
 import * as xml2js from "xml2js";
 import * as fs from "fs";
+import { Person } from "../Person/Person";
 
 const accessProtocols = require("./AccessProtocols/AccessProtocols.json");
 
@@ -15,11 +16,13 @@ export interface IAccessProtocolChoice {
 }
 
 export class AuthorityLists {
+  public getPeopleNames: () => string[];
   public accessProtocolChoices: IAccessProtocolChoice[];
   public accessChoices: IChoice[];
   public roleChoices: IChoice[];
 
-  public constructor() {
+  public constructor(getPersons: () => string[]) {
+    this.getPeopleNames = getPersons;
     this.accessProtocolChoices = accessProtocols;
     this.accessChoices = [];
     this.loadRoles();
