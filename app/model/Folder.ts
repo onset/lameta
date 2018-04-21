@@ -153,6 +153,7 @@ export abstract class Folder {
     const s = sanitize(this.fieldContentThatControlsFolderName());
     if (s.length > 0 && s !== this.previousFileNameBase) {
       this.previousFileNameBase = s;
+      console.log("Renaming " + s);
       this.renameFilesAndFolders(s);
     }
   }
