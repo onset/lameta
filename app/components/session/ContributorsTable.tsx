@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import { Moment } from "moment";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../../RoleChooser";
+import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
 
 const moment = require("moment");
@@ -50,7 +51,22 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     console.log("Adding blank contribution");
     this.props.file.contributions.push(new Contribution());
   }
-
+  private renderPerson(cellInfo: any) {
+    const contribution = this.props.file.contributions[cellInfo.index];
+    const key: keyof Contribution = cellInfo.column.id;
+    return (
+      <PersonChooser
+        getPeopleNames={this.props.authorityLists.getPeopleNames}
+        name={contribution.name}
+        onChange={name => {
+          console.log("name:" + name);
+          contribution.name = name;
+          this.ensureOneBlankRow();
+          this.setState({}); // update to show the change
+        }}
+      />
+    );
+  }
   private renderEditableText(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     const key: keyof Contribution = cellInfo.column.id;
@@ -100,7 +116,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       {
         Header: "Name",
         accessor: "name",
-        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+        Cell: (cellInfo: any) => this.renderPerson(cellInfo)
       },
       {
         Header: "Role",
@@ -125,8 +141,8 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         showPagination={false}
         data={c}
         columns={columns}
+        minRows={0} // don't show empty rows
       />
-      // <ReactTable data={[{name:"one"}]} columns={columns} />
     );
   }
 }

@@ -30,9 +30,6 @@ export default class PeopleChooser extends React.Component<
     return titleCase(this.props.field.englishLabel);
   }
   private handleSelectChange(value) {
-    console.log("You've selected:", value);
-
-    //const s = value.map(v => v.value).join(";");
     this.props.field.setValueFromString(value);
   }
   public render() {
