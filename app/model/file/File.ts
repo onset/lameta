@@ -251,6 +251,40 @@ export abstract class File {
     });
     this.properties.forEach((k, f: Field) => {
       if (f.persist) {
+        if (f.key === "contributions") {
+          /*   <contributions type="xml">
+	<contributor>
+	  <name>Hatton</name>
+	  <role>recorder</role>
+	  <date>2010-09-10</date>
+	  <notes></notes>
+	</contributor>
+  </contributions>*/
+          root.element("contributions", { type: "xml" });
+          this.contributions.forEach(contribution => {
+            root.element("contributor");
+            if (contribution.name) {
+              root.element("name", contribution.name).up();
+            }
+            if (contribution.role) {
+              root.element("role", contribution.role).up();
+            }
+            if (contribution.date) {
+              if (moment(contribution.date).isValid()) {
+                const d = new Date(Date.parse(contribution.date));
+                root.element("date", d.toISOString()).up();
+              }
+            }
+            if (
+              contribution.comments &&
+              contribution.comments.trim().length > 0
+            ) {
+              root.element("comments", contribution.comments).up();
+            }
+            root.up();
+          });
+          root.up();
+        }
         const t = f.typeAndValueForXml();
         //console.log(k + " is a " + t[0] + " of value " + t[1]);
         assert(
