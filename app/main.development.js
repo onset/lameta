@@ -6,29 +6,33 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 let menu;
 let template;
 let mainWindow = null;
-var util = require('util');
-ipcMain.on("click-menu", (event, menuPath)=>{
+var util = require("util");
+ipcMain.on("click-menu", (event, menuPath) => {
   var menuItem;
   //electron.dialog.showMessageBox({message:"parts:"+util.inspect(menuPath)});
   for (var menuName of menuPath) {
     if (!menuItem) {
       //electron.dialog.showMessageBox({message:"template:"+util.inspect(template)});
-      menuItem = template.find(function (item) { return item.label === menuName; });
+      menuItem = template.find(function(item) {
+        return item.label === menuName;
+      });
       //electron.dialog.showMessageBox({message:"for "+menuName+" found:"+util.inspect(template)});
     } else {
       //electron.dialog.showMessageBox({message:"menuitem:"+util.inspect(menuItem)});
       //electron.dialog.showMessageBox({message:"submenu:"+util.inspect(menuItem.submenu)});
-      menuItem = menuItem.submenu.find(function (item) { return item.label === menuName; });
+      menuItem = menuItem.submenu.find(function(item) {
+        return item.label === menuName;
+      });
     }
   }
-  
+
   //electron.dialog.showMessageBox({message:"menuitem:"+util.inspect(menuItem)});
   if (menuItem) {
     var enabled = menuItem.enabled;
     var visible = menuItem.visible;
     var click = menuItem.click;
-    
-    if (enabled !== false && visible !== false && typeof click === 'function') {
+
+    if (enabled !== false && visible !== false && typeof click === "function") {
       //electron.dialog.showMessageBox({message:"clicking:"+util.inspect(menuItem)});
       menuItem.click();
     }
@@ -67,15 +71,19 @@ app.on("window-all-closed", () => {
 });
 
 const installExtensions = () => {
-  if (process.env.NODE_ENV === "development") {
-    const installer = require("electron-devtools-installer"); // eslint-disable-line global-require
+  // disabled this because I was getting an error:
+  /* (node:5960) UnhandledPromiseRejectionWarning: Unhandled promise rejection (rejection id: 2): Error: Version of Electron: 2.0.0 does not match required range ^1.2.1 for extension fmkadmapgofadopljbjfkapdkoienihi */
+  // I tried upgrading electron-devtools-installer to its latest, but
+  // it didn't help. See https://github.com/MarshallOfSound/electron-devtools-installer/issues/73
+  // if (process.env.NODE_ENV === "development") {
+  //   const installer = require("electron-devtools-installer"); // eslint-disable-line global-require
 
-    const extensions = ["REACT_DEVELOPER_TOOLS"];
-    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    return Promise.all(
-      extensions.map(name => installer.default(installer[name], forceDownload))
-    );
-  }
+  //   const extensions = ["REACT_DEVELOPER_TOOLS"];
+  //   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  //   return Promise.all(
+  //     extensions.map(name => installer.default(installer[name], forceDownload))
+  //   );
+  // }
 
   return Promise.resolve([]);
 };
@@ -87,7 +95,6 @@ function fillLastMonitor() {
 }
 
 app.on("ready", () =>
-
   // NB: __dirname is something like sayless\release\win-unpacked\resources\app.asar
   // you can look in the asar file using a 7-zip plugin: http://www.tc4shell.com/en/7zip/asar/
   // it looks like

@@ -81,7 +81,7 @@ export default class HomePage extends React.Component<IProps, IState> {
               remote.getCurrentWebContents().inspectElement(x, y);
             }
           }
-        ]).popup();
+        ]).popup({});
       });
     }
   }
@@ -125,7 +125,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         ) : (
           <div className={"startScreen"}>
             <div className={"top"}>
-              <img src={require("../img/icon.png")}/>
+              <img src={require("../img/icon.png")} />
               <h1>
                 SayMore <span>Mac</span>
               </h1>

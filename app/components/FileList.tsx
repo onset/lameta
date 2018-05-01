@@ -214,7 +214,7 @@ export default class FileList extends React.Component<IProps> {
         }
       ]);
 
-      remote.Menu.buildFromTemplate(items as any).popup(mainWindow);
+      remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
     }
   }
   private replaceall(replaceThis: string, withThis: string, inThis: string) {
