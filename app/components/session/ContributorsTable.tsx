@@ -39,16 +39,16 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     this.ensureOneBlankRow();
   }
   private ensureOneBlankRow() {
-    console.log("ensureOnBlankRow(): " + this.props.file.describedFilePath);
+    //console.log("ensureOnBlankRow(): " + this.props.file.describedFilePath);
     let i = this.props.file.contributions.length;
     while (i--) {
       const c = this.props.file.contributions[i];
       if (!c.name || c.name.length === 0) {
-        console.log("removing blank contribution at " + i);
+        //console.log("removing blank contribution at " + i);
         this.props.file.contributions.splice(i, 1);
       }
     }
-    console.log("Adding blank contribution");
+    //console.log("Adding blank contribution");
     this.props.file.contributions.push(new Contribution());
   }
   private renderPerson(cellInfo: any) {
@@ -111,7 +111,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
 
   public render() {
     //review: this seems wrong, having this data model change here in the render method...
-    const c = this.props.file.contributions; //.slice(); //make normal array
+    const contributors = this.props.file.contributions.slice(); //make normal array
     const columns = [
       {
         Header: "Name",
@@ -139,7 +139,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       <ReactTable
         className={"contributors"}
         showPagination={false}
-        data={c}
+        data={contributors}
         columns={columns}
         minRows={0} // don't show empty rows
       />

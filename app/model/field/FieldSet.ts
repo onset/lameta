@@ -1,6 +1,7 @@
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
 import { Field, FieldType, IFieldDefinition } from "./Field";
+import { Contribution } from "../file/File";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
@@ -61,7 +62,11 @@ export class FieldSet extends Dictionary<string, Field> {
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
-
+  public addContributionArrayProperty(key: string, value: Contribution[]): any {
+    const f = new Field(key, FieldType.Contributions, "unused");
+    f.contributorsArray = value;
+    this.setValue(key, f);
+  }
   private checkType(key: string, value: any) {
     if (this.containsKey(key)) {
       const a = typeof this.getValueOrThrow(key);

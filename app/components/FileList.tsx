@@ -139,6 +139,10 @@ export default class FileList extends React.Component<IProps> {
                 );
               },
               onClick: (e: any, t: any) => {
+                if (this.props.folder.selectedFile != null) {
+                  // will only save if it thinks it is dirty
+                  this.props.folder.selectedFile.save();
+                }
                 this.props.folder.selectedFile = rowInfo.original;
                 this.setState({}); // trigger re-render so that the following style: takes effect
               },

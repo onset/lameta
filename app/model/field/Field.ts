@@ -2,6 +2,7 @@ import { observable } from "mobx";
 import TextHolder from "./TextHolder";
 import * as assert from "assert";
 import { Moment } from "moment";
+import { Contribution } from "../file/File";
 const moment = require("moment");
 
 const titleCase = require("title-case");
@@ -33,7 +34,8 @@ export interface IFieldDefinition {
 export enum FieldType {
   Text,
   Date,
-  Image
+  Image,
+  Contributions
 }
 export enum FieldVisibility {
   Always,
@@ -53,6 +55,7 @@ export class Field {
   @observable public textHolder = new TextHolder();
   public choices: string[];
   public definition: IFieldDefinition;
+  public contributorsArray: Contribution[]; //review
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
   public static fromFieldDefinition(definition: IFieldDefinition): Field {

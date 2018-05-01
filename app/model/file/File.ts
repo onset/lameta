@@ -16,10 +16,11 @@ const moment = require("moment");
 ///export  enum Type {Project, Session, Person, Other }
 
 export class Contribution {
-  public name: string;
-  public role: string;
-  public date: string;
-  public comments: string;
+  //review this @mobx.observable
+  @mobx.observable public name: string;
+  @mobx.observable public role: string;
+  @mobx.observable public date: string;
+  @mobx.observable public comments: string;
 }
 
 export abstract class File {
@@ -143,9 +144,6 @@ export abstract class File {
     this.readMetadataFile();
 
     this.computeProperties(); //enhance: do this on demand, instead of for every file
-
-    this.contributions.push(new Contribution());
-    this.contributions[0].name = Path.basename(this.describedFilePath);
     // TODO read the .meta file that describes this file, if it exists
   }
 
@@ -229,14 +227,24 @@ export abstract class File {
     );
     // that will have a root with one child, like "Session" or "Meta". Zoom in on that
     // so that we just have the object with its properties.
-    const properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+    let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+    if (properties === "") {
+      //   Review: This happen if it finds, e.g. <Session/>.
+      properties = {};
+    }
+    //copies from this object (which is just the xml as an object) into this File object
     this.loadProperties(properties);
+    //review: this is looking kinda ugly... not sure what I want to do
+    // because contributions is only one array at the moment
+    this.properties.addContributionArrayProperty(
+      "contributions",
+      this.contributions
+    );
+
     this.watchForChange = mobx.reaction(
-      //NB: this will run when we first set it up, but only to collect the base state of things...
-      // it will not fire the function that marks this as dirty
-      // Function to check for a change
+      // Function to check for a change. Mobx looks at its result, and if it is different
+      // than the first run, it will call the second function.
       () => {
-        //console.log("Checking contents");
         return this.getXml();
       },
       // Function fires when a change is detected
@@ -252,54 +260,68 @@ export abstract class File {
     this.properties.forEach((k, f: Field) => {
       if (f.persist) {
         if (f.key === "contributions") {
-          /*   <contributions type="xml">
-	<contributor>
-	  <name>Hatton</name>
-	  <role>recorder</role>
-	  <date>2010-09-10</date>
-	  <notes></notes>
-	</contributor>
-  </contributions>*/
-          root.element("contributions", { type: "xml" });
+          const contributionsElement = root.element("contributions", {
+            type: "xml"
+          });
           this.contributions.forEach(contribution => {
-            root.element("contributor");
-            if (contribution.name) {
-              root.element("name", contribution.name).up();
-            }
-            if (contribution.role) {
-              root.element("role", contribution.role).up();
-            }
-            if (contribution.date) {
-              if (moment(contribution.date).isValid()) {
-                const d = new Date(Date.parse(contribution.date));
-                root.element("date", d.toISOString()).up();
+            if (contribution.name && contribution.name.trim().length > 0) {
+              let tail = contributionsElement.element("contributor");
+              if (contribution.name) {
+                //console.log("zzzzz:" + contribution.name);
+                tail = tail.element("name", contribution.name).up();
+              }
+              if (contribution.role) {
+                tail = tail.element("role", contribution.role).up();
+              }
+              this.writeDate(tail, contribution.date);
+              if (
+                contribution.comments &&
+                contribution.comments.trim().length > 0
+              ) {
+                tail = tail.element("comments", contribution.comments).up();
               }
             }
-            if (
-              contribution.comments &&
-              contribution.comments.trim().length > 0
-            ) {
-              root.element("comments", contribution.comments).up();
-            }
-            root.up();
           });
-          root.up();
-        }
-        const t = f.typeAndValueForXml();
-        //console.log(k + " is a " + t[0] + " of value " + t[1]);
-        assert(
-          k.indexOf("date") === -1 || t[0] === "date",
-          "SHOULDN'T " + k + " BE A DATE?"
-        );
-        if (t[1].length > 0) {
-          root.element(k, { type: t[0] }, t[1]).up();
+        } else {
+          const t = f.typeAndValueForXml();
+          //console.log(k + " is a " + t[0] + " of value " + t[1]);
+          if (t[0] === "date") {
+            this.writeDate(root, t[1]);
+          } else {
+            assert(
+              k.indexOf("date") === -1 || t[0] === "date",
+              "SHOULDN'T " + k + " BE A DATE?"
+            );
+            if (t[1].length > 0) {
+              root.element(k, { type: t[0] }, t[1]).up();
+            }
+          }
         }
       }
     });
 
-    return root.end({ pretty: true });
+    return root.end({ pretty: true, indent: "  " });
   }
 
+  private writeDate(
+    builder: xmlbuilder.XMLElementOrXMLNode,
+    dateString: string
+  ): xmlbuilder.XMLElementOrXMLNode {
+    const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
+    if (dateString) {
+      if (moment(dateString).isValid()) {
+        const d = moment(dateString);
+        return builder
+          .element(
+            "date",
+            { type: "date" },
+            d.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
+          )
+          .up();
+      }
+    }
+    return builder; // we didn't write anything
+  }
   public save() {
     if (!this.dirty) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
@@ -427,7 +449,7 @@ export abstract class File {
 
   private changed() {
     if (this.dirty) {
-      console.log("changed() but already dirty " + this.metadataFilePath);
+      //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
       console.log(`Changed and now dirty: ${this.metadataFilePath}`);

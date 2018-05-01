@@ -82,7 +82,7 @@ export class FolderPane extends React.Component<IProps> {
         )
       : "";
     const file = directoryObject.selectedFile;
-    console.log("getTabs:" + path);
+    //console.log("getTabs:" + path);
     // console.log("getTabs:" + directoryObject.path);
     // console.log("getTabs file:" + file.type);
     if (!file || path.length === 0) {
