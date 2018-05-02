@@ -61,7 +61,7 @@ export abstract class Folder {
     this.files.push(new OtherFile(dest));
   }
   public addFiles(files: object[]) {
-    assert(files.length > 0);
+    assert.ok(files.length > 0);
 
     files.forEach((f: any) => {
       this.addOneFile(f.path);
@@ -159,7 +159,7 @@ export abstract class Folder {
   }
 
   public saveFolderMetaData() {
-    assert(this.metadataFile);
+    assert.ok(this.metadataFile);
     if (this.metadataFile) {
       this.metadataFile.save();
     }

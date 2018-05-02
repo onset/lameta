@@ -55,7 +55,7 @@ export function select(xpath: string) {
   } catch (ex) {
     console.log("error in xpath: " + xpath);
     console.log(ex);
-    throw new Error("error in xpath: " + xpath);
+    throw new Error(`error in xpath: ${xpath} ${ex}`);
   }
 }
 

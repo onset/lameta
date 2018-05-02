@@ -109,7 +109,7 @@ export class Field {
     this.text = englishValue;
     this.choices = choices;
 
-    assert(
+    assert.ok(
       this.key.toLowerCase().indexOf("date") === -1 ||
         this.type === FieldType.Date,
       "SHOULDN'T " + key + " BE A DATE?"

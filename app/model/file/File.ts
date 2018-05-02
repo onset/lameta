@@ -1,11 +1,12 @@
 import * as xml2js from "xml2js";
 import * as fs from "fs";
 import * as Path from "path";
-import * as filesize from "filesize";
+//import * as filesize from "filesize";
+const filesize = require("filesize");
 import * as mobx from "mobx";
 import * as assert from "assert";
-import * as camelcase from "camelcase";
-import * as imagesize from "image-size";
+const camelcase = require("camelcase");
+const imagesize = require("image-size");
 import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
@@ -53,12 +54,12 @@ export abstract class File {
     if (this.properties.containsKey(key)) {
       const a = typeof this.properties.getValueOrThrow(key);
       const b = typeof value;
-      assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
+      assert.ok(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
   }
   protected addDatePropertyFromString(key: string, dateString: string) {
     // get a little paranoid with the date format
-    assert(moment(dateString).isValid()); //todo: handle bad data
+    assert.ok(moment(dateString).isValid()); //todo: handle bad data
     const date = new Date(Date.parse(dateString));
     this.checkType(key, date);
     const dateWeTrust = date.toISOString();
@@ -85,7 +86,7 @@ export abstract class File {
         persist
       )
     );
-    assert(value === this.properties.getTextField(key).text);
+    assert.ok(value === this.properties.getTextField(key).text);
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
@@ -288,7 +289,7 @@ export abstract class File {
           if (t[0] === "date") {
             this.writeDate(root, t[1]);
           } else {
-            assert(
+            assert.ok(
               k.indexOf("date") === -1 || t[0] === "date",
               "SHOULDN'T " + k + " BE A DATE?"
             );

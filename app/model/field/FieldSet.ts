@@ -6,7 +6,7 @@ import { Contribution } from "../file/File";
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
     const f = this.getValueOrThrow(key);
-    assert(f, `setText(${key}) assumes the value is already there.`);
+    assert.ok(f, `setText(${key}) assumes the value is already there.`);
     f.setValueFromString(value);
   }
 
@@ -71,7 +71,7 @@ export class FieldSet extends Dictionary<string, Field> {
     if (this.containsKey(key)) {
       const a = typeof this.getValueOrThrow(key);
       const b = typeof value;
-      assert(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
+      assert.ok(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
   }
 }
