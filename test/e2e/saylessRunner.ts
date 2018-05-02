@@ -142,6 +142,8 @@ export default class SayLessRunner {
 
   public async goToStartScreen(){
     await this.clickMenu("&Project","&Start Screen");
+    await delay(1000);
+    await this.shouldExist(".startScreen");
   }
 
   public async createdProjectWithSampleData() {
