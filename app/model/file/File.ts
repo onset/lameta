@@ -152,36 +152,61 @@ export abstract class File {
     const keys = Object.keys(propertiesFromXml);
 
     for (const key of keys) {
-      let value = propertiesFromXml[key];
-      if (value === undefined) {
-        value = "";
-      } else if (typeof value === "object") {
-        if (value.$ && value.$.type && value.$.type === "string") {
-          value = value._;
-        } else {
-          //console.log(            "Skippping " + key + " which was " + JSON.stringify(value)          );
-          continue;
-        }
-      }
-      const textValue: string = value;
-      const fixedKey = camelcase(key);
-      // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-      if (this.properties.containsKey(fixedKey)) {
-        const v = this.properties.getValueOrThrow(fixedKey);
-        v.setValueFromString(textValue);
-        //console.log("11111" + key);
+      if (key === "contributions") {
+        this.loadContributions(propertiesFromXml[key]);
       } else {
-        // bit of a hack, might not keep this
-        //console.log("000000 " + key);
-        if (key.toLowerCase().indexOf("date") > -1) {
-          this.addDatePropertyFromString(fixedKey, textValue);
+        //console.log("loadProperties key: " + key);
+        let value = propertiesFromXml[key];
+        if (value === undefined) {
+          value = "";
+        } else if (typeof value === "object") {
+          if (value.$ && value.$.type && value.$.type === "string") {
+            value = value._;
+          } else {
+            console.log(
+              "Skippping " + key + " which was " + JSON.stringify(value)
+            );
+            continue;
+          }
+        }
+        const textValue: string = value;
+        const fixedKey = camelcase(key);
+        // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
+        if (this.properties.containsKey(fixedKey)) {
+          const v = this.properties.getValueOrThrow(fixedKey);
+          v.setValueFromString(textValue);
+          //console.log("11111" + key);
         } else {
-          //console.log("extra" + fixedKey + "=" + value);
-          // otherwise treat it as a string
-          this.addTextProperty(fixedKey, textValue);
+          // bit of a hack, might not keep this
+          //console.log("000000 " + key);
+          if (key.toLowerCase().indexOf("date") > -1) {
+            this.addDatePropertyFromString(fixedKey, textValue);
+          } else {
+            //console.log("extra" + fixedKey + "=" + value);
+            // otherwise treat it as a string
+            this.addTextProperty(fixedKey, textValue);
+          }
         }
       }
     }
+  }
+
+  private loadContributions(contributionsFromXml: any) {
+    if (Array.isArray(contributionsFromXml.contributor)) {
+      for (const c of contributionsFromXml.contributor) {
+        this.loadOneContribution(c);
+      }
+    } else {
+      this.loadOneContribution(contributionsFromXml.contributor);
+    }
+  }
+  private loadOneContribution(contributionFromXml: any) {
+    const n = new Contribution();
+    n.name = contributionFromXml.name;
+    n.role = contributionFromXml.role;
+    n.date = contributionFromXml.date;
+    n.comments = contributionFromXml.comments;
+    this.contributions.push(n);
   }
 
   public computeProperties() {
@@ -218,7 +243,12 @@ export abstract class File {
     let xmlAsObject: any = {};
     xml2js.parseString(
       xml,
-      { async: false, explicitArray: false },
+      {
+        async: false,
+        explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+        //explicitArray: true, this also just... gives you a mess
+        //explicitChildren: true this makes even simple items have arrays... what a pain
+      },
       (err, result) => {
         if (err) {
           throw err;
@@ -233,6 +263,10 @@ export abstract class File {
       //   Review: This happen if it finds, e.g. <Session/>.
       properties = {};
     }
+    // else {
+    //   properties = properties.$$; // this is needed if xml2js.parstring() has explicitChildren:true
+    // }
+
     //copies from this object (which is just the xml as an object) into this File object
     this.loadProperties(properties);
     //review: this is looking kinda ugly... not sure what I want to do
@@ -324,25 +358,28 @@ export abstract class File {
     return builder; // we didn't write anything
   }
   public save() {
-    if (!this.dirty) {
-      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
-      return;
-    }
-    console.log(`Saving ${this.metadataFilePath}`);
+    console.log("SAVING DISABLED");
+    return;
 
-    const xml = this.getXml();
+    // if (!this.dirty) {
+    //   //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
+    //   return;
+    // }
+    // console.log(`Saving ${this.metadataFilePath}`);
 
-    if (this.describedFilePath.indexOf("sample data") > -1) {
-      // console.log(
-      //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
-      // );
-      console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
-      // console.log(xml);
-    } else {
-      //console.log("writing:" + xml);
-      fs.writeFileSync(this.metadataFilePath, xml);
-      this.clearDirty();
-    }
+    // const xml = this.getXml();
+
+    // if (this.describedFilePath.indexOf("sample data") > -1) {
+    //   // console.log(
+    //   //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
+    //   // );
+    //   console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
+    //   // console.log(xml);
+    // } else {
+    //   //console.log("writing:" + xml);
+    //   fs.writeFileSync(this.metadataFilePath, xml);
+    //   this.clearDirty();
+    // }
   }
 
   private getUniqueFilePath(intendedPath: string): string {
