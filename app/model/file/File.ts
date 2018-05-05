@@ -192,6 +192,9 @@ export abstract class File {
   }
 
   private loadContributions(contributionsFromXml: any) {
+    if (!contributionsFromXml.contributor) {
+      return;
+    }
     if (Array.isArray(contributionsFromXml.contributor)) {
       for (const c of contributionsFromXml.contributor) {
         this.loadOneContribution(c);
