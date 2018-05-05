@@ -9,9 +9,9 @@ import * as Path from "path";
 import { remote, OpenDialogOptions } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-const { Menu, ipcRenderer } = require("electron");
+const { Menu } = require("electron");
 import Store = require("electron-store");
-
+import SayLessMenu from "../menu";
 import "./StartScreen.scss";
 const saylessicon = require("../img/icon.png");
 
@@ -25,8 +25,9 @@ interface IState {
 @observer
 export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
-  @mobx.observable private projectHolder: ProjectHolder;
+  @mobx.observable public projectHolder: ProjectHolder;
   private userSettings: Store;
+  private menu: SayLessMenu;
 
   constructor(props: IProps) {
     super(props);
@@ -45,45 +46,15 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.projectHolder.setProject(null);
     }
   }
-  private createProject(useSample: boolean) {
+  public createProject(useSample: boolean) {
     this.setState({ showModal: true, useSampleProject: useSample });
   }
 
-  public componentDidMount() {
-    ipcRenderer.on("open-project", () => {
-      // if (this.projectHolder.project) {
-      //   this.projectHolder.project.saveAllFilesInFolder();
-      // }
-      this.openProject();
-    });
-    ipcRenderer.on("create-project", () => {
-      this.createProject(false);
-    });
-
-    //review: could just as well be "Close Project"; would do the same thing
-    ipcRenderer.on("start-screen", () => {
-      this.projectHolder.setProject(null);
-    });
-
-    if (process.env.NODE_ENV === "development") {
-      // note that where UI elements offer a context menu to the user, they should
-      // do an e.preventDefault() to prevent this code from hiding their menu.
-      //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
-      //https://nodejs.org/api/events.html#events_class_eventemitter
-      const webContents = remote.getCurrentWebContents();
-      remote.getCurrentWebContents().on("context-menu", (e, props) => {
-        const { x, y } = props;
-        console.log("Main process go context click");
-        remote.Menu.buildFromTemplate([
-          {
-            label: "Inspect element",
-            click() {
-              remote.getCurrentWebContents().inspectElement(x, y);
-            }
-          }
-        ]).popup({});
-      });
-    }
+  public componentWillMount() {
+    this.menu = new SayLessMenu(this);
+    this.menu.buildMainMenu();
+    this.menu.setupContentMenu();
+    this.menu.updateMainMenu();
   }
   private handleCreateProjectDialogClose(
     directory: string,
@@ -121,6 +92,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           <Home
             project={this.projectHolder.project}
             authorityLists={this.projectHolder.project.authorityLists}
+            menu={this.menu}
           />
         ) : (
           <div className={"startScreen"}>
@@ -170,7 +142,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     );
   }
 
-  private openProject() {
+  public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
       "SayLess"

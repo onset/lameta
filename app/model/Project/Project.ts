@@ -15,6 +15,7 @@ import {
   IAccessProtocolChoice
 } from "./AuthorityLists/AuthorityLists";
 import { remote } from "electron";
+import { isNullOrUndefined } from "util";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
@@ -266,5 +267,15 @@ export class Project extends Folder {
     for (const f of this.persons) {
       f.saveAllFilesInFolder();
     }
+  }
+
+  public canDeleteCurrentSession(): boolean {
+    return this.selectedSession.index >= 0;
+  }
+  public deleteCurrentSession() {
+    console.log("delete current session");
+
+    this.sessions.splice(this.selectedSession.index, 1);
+    this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
   }
 }

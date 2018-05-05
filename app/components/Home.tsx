@@ -18,10 +18,12 @@ import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
+import SayLessMenu from "../menu";
 
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
+  menu: SayLessMenu;
 }
 
 @observer
@@ -37,7 +39,11 @@ export default class Home extends React.Component<IProps> {
         <Tabs
           className={"home"}
           defaultIndex={kFirstTabToOpen}
-          onSelect={() => this.props.project.saveAllFilesInFolder()}
+          onSelect={() => {
+            this.props.project.saveAllFilesInFolder();
+            this.props.menu.updateMainMenu();
+            //updateMainMenu(this.props.project);
+          }}
         >
           <TabList>
             <Tab className={"react-tabs__tab tab-project"}>

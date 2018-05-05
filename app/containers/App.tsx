@@ -1,11 +1,8 @@
 import * as React from "react";
 import HomePage from "./HomePage";
 import { hot } from "react-hot-loader";
-import { buildMainMenu } from "./menu";
+
 export class App extends React.Component {
-  public componentDidMount() {
-    buildMainMenu();
-  }
   public render() {
     return (
       <div id="app">
