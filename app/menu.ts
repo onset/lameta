@@ -9,76 +9,122 @@ export default class SayLessMenu {
 
   public buildMainMenu() {}
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
-    const mainWindow = remote.getCurrentWindow(); // as any;
-    const template = [
-      {
-        label: "&Project",
-        submenu: [
-          {
-            label: "&Open Project...",
-            accelerator: "Ctrl+O",
-            click: () => this.homePage.openProject()
-          },
-          {
-            label: "&Create Project...",
-            click: () => this.homePage.createProject(false)
-          },
-          {
-            label: "&Start Screen",
-            click: () => this.homePage.projectHolder.setProject(null)
-          },
-          { type: "separator" },
-          {
-            label: "Export &Sessions...",
-            enabled: false
-          },
-          {
-            label: "Export &People...",
-            enabled: false
-          },
-          {
-            label: "&Archive using IMDI...",
-            enabled: false
-          },
-          { type: "separator" },
-          { role: "quit" }
-        ]
-      },
-      sessionMenu,
-      peopleMenu,
-      {
-        label: "&View",
-        submenu:
-          process.env.NODE_ENV === "development"
-            ? [
-                {
-                  label: "&Reload",
-                  accelerator: "Ctrl+R",
-                  click() {
-                    mainWindow.webContents.reload();
-                  }
-                },
-                {
-                  label: "Toggle &Developer Tools",
-                  accelerator: "Alt+Ctrl+I",
-                  click() {
-                    mainWindow.webContents.toggleDevTools();
-                  }
+    const mainWindow = remote.getCurrentWindow();
+    const macMenu = {
+      label: "SayMore Mac",
+      submenu: [
+        {
+          label: "About SayMore Mac",
+          selector: "orderFrontStandardAboutPanel:"
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: "Services",
+          submenu: []
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: "Hide SayMore Mac",
+          accelerator: "Command+H",
+          selector: "hide:"
+        },
+        {
+          label: "Hide Others",
+          accelerator: "Command+Shift+H",
+          selector: "hideOtherApplications:"
+        },
+        {
+          label: "Show All",
+          selector: "unhideAllApplications:"
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: "Quit",
+          accelerator: "Command+Q",
+          click() {
+            remote.app.quit();
+          }
+        }
+      ]
+    };
+    const projectMenu = {
+      label: "&Project",
+      submenu: [
+        {
+          label: "&Open Project...",
+          accelerator: "Ctrl+O",
+          click: () => this.homePage.openProject()
+        },
+        {
+          label: "&Create Project...",
+          click: () => this.homePage.createProject(false)
+        },
+        {
+          label: "&Start Screen",
+          click: () => this.homePage.projectHolder.setProject(null)
+        },
+        { type: "separator" },
+        {
+          label: "Export &Sessions...",
+          enabled: false
+        },
+        {
+          label: "Export &People...",
+          enabled: false
+        },
+        {
+          label: "&Archive using IMDI...",
+          enabled: false
+        },
+        { type: "separator" },
+        { role: "quit" }
+      ]
+    };
+    // sessionMenu,
+    // peopleMenu,
+    const viewMenu = {
+      label: "&View",
+      submenu:
+        process.env.NODE_ENV === "development"
+          ? [
+              {
+                label: "&Reload",
+                accelerator: "Ctrl+R",
+                click() {
+                  mainWindow.webContents.reload();
                 }
-              ]
-            : []
-      },
-      {
-        label: "Help",
-        submenu: []
-      }
-    ];
+              },
+              {
+                label: "Toggle &Developer Tools",
+                accelerator: "Alt+Ctrl+I",
+                click() {
+                  mainWindow.webContents.toggleDevTools();
+                }
+              }
+            ]
+          : []
+    };
+    const helpMenu = {
+      label: "Help",
+      submenu: []
+    };
+
+    const template = Array<any>();
+    if (process.platform === "darwin") {
+      template.push(macMenu);
+    }
+    template.push(projectMenu, sessionMenu, peopleMenu, viewMenu, helpMenu);
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );
 
-    mainWindow.setMenu(menu);
-    //Menu.setApplicationMenu(menu);
+    remote.Menu.setApplicationMenu(menu);
   }
   public setupContentMenu() {
     if (process.env.NODE_ENV === "development") {
@@ -102,51 +148,6 @@ export default class SayLessMenu {
     }
   }
 
-  // if (process.platform === "darwin") {
-  //   template = [
-  //     {
-  //       label: "Electron",
-  //       submenu: [
-  //         {
-  //           label: "About ElectronReact",
-  //           selector: "orderFrontStandardAboutPanel:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Services",
-  //           submenu: []
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Hide ElectronReact",
-  //           accelerator: "Command+H",
-  //           selector: "hide:"
-  //         },
-  //         {
-  //           label: "Hide Others",
-  //           accelerator: "Command+Shift+H",
-  //           selector: "hideOtherApplications:"
-  //         },
-  //         {
-  //           label: "Show All",
-  //           selector: "unhideAllApplications:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Quit",
-  //           accelerator: "Command+Q",
-  //           click() {
-  //             app.quit();
-  //           }
-  //         }
-  //       ]
-  //     },
   //     {
   //       label: "Edit",
   //       submenu: [
@@ -185,43 +186,7 @@ export default class SayLessMenu {
   //         }
   //       ]
   //     },
-  //     {
-  //       label: "View",
-  //       submenu:
-  //         process.env.NODE_ENV === "development"
-  //           ? [
-  //               {
-  //                 label: "Reload",
-  //                 accelerator: "Command+R",
-  //                 click() {
-  //                   mainWindow.webContents.reload();
-  //                 }
-  //               },
-  //               {
-  //                 label: "Toggle Full Screen",
-  //                 accelerator: "Ctrl+Command+F",
-  //                 click() {
-  //                   mainWindow.setFullScreen(!mainWindow.isFullScreen());
-  //                 }
-  //               },
-  //               {
-  //                 label: "Toggle Developer Tools",
-  //                 accelerator: "Alt+Command+I",
-  //                 click() {
-  //                   mainWindow.toggleDevTools();
-  //                 }
-  //               }
-  //             ]
-  //           : [
-  //               {
-  //                 label: "Toggle Full Screen",
-  //                 accelerator: "Ctrl+Command+F",
-  //                 click() {
-  //                   mainWindow.setFullScreen(!mainWindow.isFullScreen());
-  //                 }
-  //               }
-  //             ]
-  //     },
+
   //     {
   //       label: "Window",
   //       submenu: [
@@ -244,95 +209,4 @@ export default class SayLessMenu {
   //         }
   //       ]
   //     },
-  //     {
-  //       label: "Help",
-  //       submenu: []
-  //     }
-  //   ];
-
-  //   menu = Menu.buildFromTemplate(template);
-  //   Menu.setApplicationMenu(menu);
-  // } else {
-  // template = [
-  //   {
-  //     label: "&Project",
-  //     submenu: [
-  //       {
-  //         label: "&Open Project...",
-  //         accelerator: "Ctrl+O",
-  //         click() {
-  //           mainWindow.webContents.send("open-project");
-  //         }
-  //       },
-  //       {
-  //         label: "&Create Project...",
-
-  //         click() {
-  //           mainWindow.webContents.send("create-project");
-  //         }
-  //       },
-  //       {
-  //         label: "&Start Screen",
-
-  //         click() {
-  //           mainWindow.webContents.send("start-screen");
-  //         }
-  //       },
-  //       { type: "separator" },
-  //       {
-  //         label: "Export &Sessions...",
-  //         enabled: false
-  //       },
-  //       {
-  //         label: "Export &People...",
-  //         enabled: false
-  //       },
-  //       {
-  //         label: "&Archive using IMDI...",
-  //         enabled: false
-  //       },
-  //       { type: "separator" },
-  //       { role: "quit" }
-  //     ]
-  //   },
-  //   {
-  //     label: "&Session",
-  //     submenu: [
-  //       {
-  //         label: "Delete Session...",
-  //         click() {
-  //           mainWindow.webContents.send("delete-session");
-  //         }
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     label: "&View",
-  //     submenu:
-  //       process.env.NODE_ENV === "development"
-  //         ? [
-  //             {
-  //               label: "&Reload",
-  //               accelerator: "Ctrl+R",
-  //               click() {
-  //                 mainWindow.webContents.reload();
-  //               }
-  //             },
-  //             {
-  //               label: "Toggle &Developer Tools",
-  //               accelerator: "Alt+Ctrl+I",
-  //               click() {
-  //                 mainWindow.toggleDevTools();
-  //               }
-  //             }
-  //           ]
-  //         : []
-  //   },
-  //   {
-  //     label: "Help",
-  //     submenu: []
-  //   }
-  // ];
-  // menu = Menu.buildFromTemplate(template);
-  // mainWindow.setMenu(menu);
 }
