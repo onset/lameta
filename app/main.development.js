@@ -64,19 +64,15 @@ app.on("window-all-closed", () => {
 });
 
 const installExtensions = () => {
-  // disabled this because I was getting an error:
-  /* (node:5960) UnhandledPromiseRejectionWarning: Unhandled promise rejection (rejection id: 2): Error: Version of Electron: 2.0.0 does not match required range ^1.2.1 for extension fmkadmapgofadopljbjfkapdkoienihi */
-  // I tried upgrading electron-devtools-installer to its latest, but
-  // it didn't help. See https://github.com/MarshallOfSound/electron-devtools-installer/issues/73
-  // if (process.env.NODE_ENV === "development") {
-  //   const installer = require("electron-devtools-installer"); // eslint-disable-line global-require
+  if (process.env.NODE_ENV === "development") {
+    const installer = require("electron-devtools-installer"); // eslint-disable-line global-require
 
-  //   const extensions = ["REACT_DEVELOPER_TOOLS"];
-  //   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  //   return Promise.all(
-  //     extensions.map(name => installer.default(installer[name], forceDownload))
-  //   );
-  // }
+    const extensions = ["REACT_DEVELOPER_TOOLS"];
+    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+    return Promise.all(
+      extensions.map(name => installer.default(installer[name], forceDownload))
+    );
+  }
 
   return Promise.resolve([]);
 };
