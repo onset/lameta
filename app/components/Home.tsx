@@ -28,8 +28,74 @@ export interface IProps {
 
 @observer
 export default class Home extends React.Component<IProps> {
+  private kFirstTabToOpen = 1;
+  // private currentTabIndex: number = this.kFirstTabToOpen;
+
+  // NB: we have to actually reload menus becuase (as of this writing) electron menus
+  // don't take an enabled function. They only take and enabled value. So you have
+  // to reload the whole menu to control the enabled state of anything;
+  // https://github.com/electron/electron/issues/528 is somewhat related
+  private UpdateMenus(currentTabIndex: number) {
+    let enable = currentTabIndex === 1;
+    const sessionMenu = {
+      label: "&Session",
+      submenu: [
+        {
+          label: "New Session...",
+          enabled: enable,
+          click: () => {
+            if (this.props.project) {
+              this.props.project.addSession();
+            }
+          }
+        },
+        { type: "separator" },
+        {
+          label: "Delete Session...",
+          enabled: enable && this.props.project.canDeleteCurrentSession(),
+          click: () => {
+            if (this.props.project) {
+              this.props.project.deleteCurrentSession();
+            }
+          }
+        }
+      ]
+    };
+    enable = currentTabIndex === 2;
+    const peopleMenu = {
+      label: "&People",
+      submenu: [
+        {
+          label: "New Person...",
+          enabled: enable,
+          click: () => {
+            if (this.props.project) {
+              this.props.project.addPerson();
+            }
+          }
+        },
+        { type: "separator" },
+        {
+          label: "Delete Person...",
+          enabled: enable && this.props.project.canDeleteCurrentPerson(),
+          click: () => {
+            if (this.props.project) {
+              this.props.project.deleteCurrentPerson();
+            }
+          }
+        }
+      ]
+    };
+    this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
+  }
+
+  // just makes the sessions or person menu initially enabled if we are
+  // starting with them. Otherwise they will be disabled until you click
+  // on another tab and come back
+  public componentDidMount() {
+    this.UpdateMenus(this.kFirstTabToOpen);
+  }
   public render() {
-    const kFirstTabToOpen = 1;
     return (
       <div
         id="topLevelOfOpenProjectScreen"
@@ -38,11 +104,10 @@ export default class Home extends React.Component<IProps> {
       >
         <Tabs
           className={"home"}
-          defaultIndex={kFirstTabToOpen}
-          onSelect={() => {
+          defaultIndex={this.kFirstTabToOpen}
+          onSelect={(index: number) => {
             this.props.project.saveAllFilesInFolder();
-            this.props.menu.updateMainMenu();
-            //updateMainMenu(this.props.project);
+            this.UpdateMenus(index);
           }}
         >
           <TabList>

@@ -8,7 +8,7 @@ export default class SayLessMenu {
   }
 
   public buildMainMenu() {}
-  public updateMainMenu() {
+  public updateMainMenu(sessionMenu: any, peopleMenu: any) {
     const mainWindow = remote.getCurrentWindow(); // as any;
     const template = [
       {
@@ -44,22 +44,8 @@ export default class SayLessMenu {
           { role: "quit" }
         ]
       },
-      {
-        label: "&Session",
-        submenu: [
-          {
-            label: "Delete Session...",
-            enabled:
-              this.homePage.projectHolder.project &&
-              this.homePage.projectHolder.project.canDeleteCurrentSession(),
-            click: () => {
-              if (this.homePage.projectHolder.project) {
-                this.homePage.projectHolder.project.deleteCurrentSession();
-              }
-            }
-          }
-        ]
-      },
+      sessionMenu,
+      peopleMenu,
       {
         label: "&View",
         submenu:

@@ -272,10 +272,19 @@ export class Project extends Folder {
   public canDeleteCurrentSession(): boolean {
     return this.selectedSession.index >= 0;
   }
+  public canDeleteCurrentPerson(): boolean {
+    return this.selectedPerson.index >= 0;
+  }
   public deleteCurrentSession() {
     console.log("delete current session");
 
     this.sessions.splice(this.selectedSession.index, 1);
     this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
+  }
+  public deleteCurrentPerson() {
+    console.log("delete current session");
+
+    this.persons.splice(this.selectedPerson.index, 1);
+    this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
   }
 }
