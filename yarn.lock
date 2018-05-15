@@ -4324,6 +4324,10 @@ hosted-git-info@^2.1.4, hosted-git-info@^2.5.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.6.0.tgz#23235b29ab230c576aab0d4f13fc046b0b038222"
 
+hotkeys-js@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/hotkeys-js/-/hotkeys-js-3.3.1.tgz#cc3afda93381709cca264b49cf4394e0b7f78ba3"
+
 html-comment-regex@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/html-comment-regex/-/html-comment-regex-1.1.1.tgz#668b93776eaae55ebde8f3ad464b307a4963625e"

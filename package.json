@@ -208,6 +208,7 @@
     "fs-extra": "^5.0.0",
     "glob": "^7.1.2",
     "history": "^4.6.1",
+    "hotkeys-js": "^3.3.1",
     "image-size": "^0.6.1",
     "mobx": "^3.3.1",
     "mobx-react": "^4.3.4",

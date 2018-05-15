@@ -5,6 +5,18 @@ export default class SayLessMenu {
   private homePage: HomePage;
   public constructor(homePage: HomePage) {
     this.homePage = homePage;
+
+    // add some hotkeys that will work even in production, in case we need
+    // to debug
+    const hotkeys = require("hotkeys-js");
+    hotkeys("alt+ctrl+i", (event, handler) => {
+      event.preventDefault();
+      remote.getCurrentWindow().webContents.toggleDevTools();
+    });
+    hotkeys("ctrl+r", (event, handler) => {
+      event.preventDefault();
+      remote.getCurrentWindow().webContents.reload();
+    });
   }
 
   public buildMainMenu() {}
@@ -116,7 +128,7 @@ export default class SayLessMenu {
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
-    template.push(projectMenu, sessionMenu, peopleMenu, devMenu);
+    template.push(projectMenu, sessionMenu, peopleMenu);
     if (process.env.NODE_ENV === "development") {
       template.push(devMenu);
     }
