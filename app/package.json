@@ -1,17 +1,13 @@
 {
-  "name": "saymore-light",
-  "productName": "SayMore Light",
+  "name": "saymore-mac",
+  "productName": "SayMore Mac",
   "version": "0.1.0",
   "description":
     "File & metadata organization for language documentation projects.",
   "main": "./main.js",
   "author": {
-    "name": "John Hatton",
+    "name": "MEaCoM",
     "email": "john_hatton@sil.org"
-  },
-  "scripts": {
-    "postinstall":
-      "npm rebuild --runtime=electron --target=1.6.6 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "license": "MIT",
   "dependencies": {}
