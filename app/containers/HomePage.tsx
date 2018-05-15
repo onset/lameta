@@ -62,12 +62,16 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.setState({ showModal: false });
     if (directory) {
       fs.ensureDirSync(directory);
+
       if (useSampleProject) {
-        const sampleSourceDir = fs.realpathSync("sample data/Edolo sample");
+        const sampleSourceDir = fs.realpathSync(
+          Path.join(this.directoryAdjustment(), "sample data/Edolo sample")
+        );
         ncp.ncp(sampleSourceDir, directory, err => {
+          console.log("ncp err=" + err);
           const projectName = Path.basename(directory);
           fs.renameSync(
-            Path.join(directory, "Edolo Sample.sprj"),
+            Path.join(directory, "Edolo sample.sprj"),
             Path.join(directory, projectName + ".sprj")
           );
           this.projectHolder.setProject(Project.fromDirectory(directory));
@@ -78,7 +82,14 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.userSettings.set("previousProjectDirectory", directory);
     }
   }
-
+  private listDir(dir: string) {
+    fs.readdir(dir, (err, files) => {
+      console.log("listing " + dir);
+      files.forEach(file => {
+        console.log(file);
+      });
+    });
+  }
   public render() {
     const title = this.projectHolder.project
       ? this.projectHolder.project.displayName + " - SayLess"
@@ -164,5 +175,22 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.userSettings.set("previousProjectDirectory", directory);
       }
     });
+  }
+
+  // Get a path to prepend to any nodejs calls that are getting at files in the package,
+  // so that it works both from source and in an asar-packaged mac app.
+  // See https://github.com/electron-userland/electron-builder/issues/751
+  private directoryAdjustment(): string {
+    const rootDirectory = app.getAppPath();
+    // windows from source: "C:\myapp\node_modules\electron\dist\resources\default_app.asar"
+    // mac from source: "/Users/me/dev/saymore/node_modules/electron/dist/Electron.app/Contents/Resources/default_app.asar"
+    // mac from a package: <somewhere>"/my.app/Contents/Resources/app.asar"
+    if (rootDirectory.indexOf("default_app.asar") < 0) {
+      return Path.normalize(rootDirectory + "/../..");
+    } else {
+      // If we are run from outside of a packaged app, our working directory is the right place to be.
+      // And no, we can't just set our working directory to somewhere inside the asar. The OS can't handle that.
+      return "";
+    }
   }
 }
