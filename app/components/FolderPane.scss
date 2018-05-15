@@ -8,11 +8,16 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    background-color: transparent;
   }
   .react-tabs__tab-panel--selected {
     flex-grow: 1;
 
     display: flex;
     flex-direction: column;
+  }
+
+  .document-contents {
+    height: 500px !important; //hack
   }
 }

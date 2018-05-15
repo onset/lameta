@@ -28,7 +28,7 @@ export interface IProps {
 
 @observer
 export default class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 1;
+  private kFirstTabToOpen = 0;
   // private currentTabIndex: number = this.kFirstTabToOpen;
 
   // NB: we have to actually reload menus becuase (as of this writing) electron menus

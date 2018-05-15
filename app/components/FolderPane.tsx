@@ -88,11 +88,11 @@ export class FolderPane extends React.Component<IProps> {
     if (!file || path.length === 0) {
       return <br />;
     }
-    const notesPanel = (
+    const notesPanel = directoryObject.properties.getValue("notes") ? (
       <TabPanel>
         <Notes text={directoryObject.properties.getTextField("notes")} />
       </TabPanel>
-    );
+    ) : null;
     const propertiesPanel = (
       <TabPanel>
         <PropertyTable fields={file.properties} />

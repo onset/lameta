@@ -88,27 +88,24 @@ export default class SayLessMenu {
     };
     // sessionMenu,
     // peopleMenu,
-    const viewMenu = {
-      label: "&View",
-      submenu:
-        process.env.NODE_ENV === "development"
-          ? [
-              {
-                label: "&Reload",
-                accelerator: "Ctrl+R",
-                click() {
-                  mainWindow.webContents.reload();
-                }
-              },
-              {
-                label: "Toggle &Developer Tools",
-                accelerator: "Alt+Ctrl+I",
-                click() {
-                  mainWindow.webContents.toggleDevTools();
-                }
-              }
-            ]
-          : []
+    const devMenu = {
+      label: "&Developer",
+      submenu: [
+        {
+          label: "&Reload",
+          accelerator: "Ctrl+R",
+          click() {
+            mainWindow.webContents.reload();
+          }
+        },
+        {
+          label: "Toggle &Developer Tools",
+          accelerator: "Alt+Ctrl+I",
+          click() {
+            mainWindow.webContents.toggleDevTools();
+          }
+        }
+      ]
     };
     const helpMenu = {
       label: "Help",
@@ -119,7 +116,10 @@ export default class SayLessMenu {
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
-    template.push(projectMenu, sessionMenu, peopleMenu, viewMenu, helpMenu);
+    template.push(projectMenu, sessionMenu, peopleMenu, devMenu);
+    if (process.env.NODE_ENV === "development") {
+      template.push(devMenu);
+    }
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );
