@@ -14,6 +14,11 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
 @import "~react-datepicker/dist/react-datepicker.css";
 
+$default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
+
+$default-fonts: -apple-system, /* mac*/ "BlinkMacSystemFont",
+  /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
+
 .tab-project.react-tabs__tab--selected {
   background-color: $project--color;
 }
@@ -36,6 +41,7 @@ html,
   margin: 0;
   background-color: $color-interstitial;
   color: black; //blueprint messes with this
+  font-family: $default-fonts;
 }
 a {
   text-decoration: underline;
@@ -68,11 +74,11 @@ textarea {
   resize: none;
   height: 2em;
   width: 100%; //just fill the container
-  font-family: "segoe ui", "sans";
 
   &.invalid {
     border: solid 2px red;
   }
+  font-family: $default-fonts;
 }
 
 .react-tabs {
@@ -172,4 +178,31 @@ textarea {
   margin-top: 2px; // the default pushs it down too far
   color: $session--color;
   border-color: $session--color;
+}
+
+.okCancelButtonRow {
+  align-self: flex-end;
+  float: right;
+  margin-top: 2em;
+
+  // see flex-direction in a rule that incorporates os class from app
+  display: flex;
+  flex-direction: row; // use for mac & Ubuntu
+
+  button {
+    width: auto;
+    min-width: 100px;
+    margin-left: 10px;
+  }
+  button:disabled {
+    color: gray;
+    border-color: lightgray;
+    border-style: solid;
+    border-width: 1px;
+  }
+}
+
+.win32 .okCancelButtonRow {
+  // get the buttons ordered according to operating system preference
+  flex-direction: row-reverse;
 }

@@ -36,7 +36,7 @@ export class AccessProtocolForm extends React.Component<IProps> {
     const protocol = this.props.protocolField.text.toLowerCase();
     let documentationHtml = doc.getValue(protocol);
     if (documentationHtml === undefined) {
-      documentationHtml = "ERROR";
+      documentationHtml = ""; // will be empty for CUSTOM
     }
     const customStuff =
       protocol === "custom" ? (
