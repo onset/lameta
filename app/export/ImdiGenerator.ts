@@ -5,10 +5,14 @@ const titleCase = require("title-case");
 import { Moment } from "moment";
 import { Folder } from "../model/Folder";
 import { Field } from "../model/field/Field";
+const electron = require("electron");
 const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
+import Archiver = require("archiver");
+import { showInExplorer } from "../utilities";
+import * as fs from "fs";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -237,5 +241,60 @@ export default class ImdiGenerator {
   }
   private makeString(): string {
     return this.tail.end({ pretty: true });
+  }
+
+  public static saveImdiZip(project: Project) {
+    // create a file to stream archive data to.
+    const output = fs.createWriteStream(
+      Path.join(project.directory, `${project.displayName}_IMDI.zip`)
+    );
+    const archive = Archiver("zip");
+
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on("close", () => {
+      // console.log("saveImdiZip " + archive.pointer() + " total bytes");
+      // console.log(
+      //   "saveImdiZip archiver has been finalized and the output file descriptor has closed."
+      // );
+      showInExplorer(output.path as string);
+    });
+
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on("warning", err => {
+      if (err.code === "ENOENT") {
+        console.log("saveImdiZip Warning: " + err);
+      } else {
+        // throw error
+        throw err;
+      }
+    });
+
+    // good practice to catch this error explicitly
+    archive.on("error", err => {
+      console.log("saveImdiZip error: " + err);
+      alert("saveImdiZip error: " + err);
+    });
+
+    // pipe archive data to the file
+    archive.pipe(output);
+
+    archive.append(ImdiGenerator.generateCorpus(project), {
+      name: `${project.displayName}.imdi`
+    });
+    project.sessions.forEach((session: Session) => {
+      const imdi = ImdiGenerator.generateSession(session, project);
+      archive.append(imdi, {
+        name: `${session.filePrefix}.imdi`
+      });
+    });
+    project.persons.forEach((person: Person) => {
+      const imdi = ImdiGenerator.generateActor(person, project);
+      archive.append(imdi, {
+        name: `${person.filePrefix}.imdi`
+      });
+    });
+
+    archive.finalize();
   }
 }

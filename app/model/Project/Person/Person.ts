@@ -47,7 +47,7 @@ export class Person extends Folder {
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
     this.properties.setText("name", Path.basename(directory));
-    this.previousFileNameBase = this.properties.getTextStringOrEmpty("name");
+    this.safeFileNameBase = this.properties.getTextStringOrEmpty("name");
     this.properties.getValueOrThrow("name").textHolder.map.intercept(change => {
       // a problem with this is that it's going going get called for every keystroke
 

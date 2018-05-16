@@ -25,7 +25,7 @@ export abstract class Folder {
   @observable public files: File[] = [];
   @observable public selectedFile: File | null;
   public metadataFile: File | null;
-  protected previousFileNameBase: string;
+  protected safeFileNameBase: string;
 
   public constructor(
     directory: string,
@@ -151,8 +151,8 @@ export abstract class Folder {
 
   public nameMightHaveChanged() {
     const s = sanitize(this.fieldContentThatControlsFolderName());
-    if (s.length > 0 && s !== this.previousFileNameBase) {
-      this.previousFileNameBase = s;
+    if (s.length > 0 && s !== this.safeFileNameBase) {
+      this.safeFileNameBase = s;
       console.log("Renaming " + s);
       this.renameFilesAndFolders(s);
     }

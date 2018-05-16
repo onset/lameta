@@ -1,5 +1,6 @@
 import { Menu, remote } from "electron";
 import HomePage from "./containers/HomePage";
+import ImdiGenerator from "./export/imdiGenerator";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -21,6 +22,7 @@ export default class SayLessMenu {
 
   public buildMainMenu() {}
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
+    const haveProject = true; //this.homePage.projectHolder.project;
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
       label: "SayMore Mac",
@@ -91,8 +93,16 @@ export default class SayLessMenu {
           enabled: false
         },
         {
-          label: "&Archive using IMDI...",
-          enabled: false
+          label: "&Save Zip of IMDI files...",
+          // for some reason this hangs on startup: enabled: this.homePage.projectHolder.project,
+          enabled: haveProject,
+          click: () => {
+            if (this.homePage.projectHolder.project) {
+              ImdiGenerator.saveImdiZip(this.homePage.projectHolder.project);
+            } else {
+              alert("No project");
+            }
+          }
         },
         { type: "separator" },
         { role: "quit" }

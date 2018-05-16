@@ -17,7 +17,7 @@ export class Session extends Folder {
 
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
-    this.previousFileNameBase = this.properties.getTextStringOrEmpty("id");
+    this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
   }
   public static fromDirectory(directory: string): Session {
     const metadataFile = new FolderMetdataFile(

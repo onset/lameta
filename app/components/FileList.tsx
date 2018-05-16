@@ -10,6 +10,7 @@ import { remote } from "electron";
 const moment = require("moment");
 import { Dictionary } from "typescript-collections";
 import "./FileList.scss";
+import { showInExplorer } from "../utilities";
 
 const { Menu } = require("electron");
 const electron = require("electron");
@@ -185,12 +186,7 @@ export default class FileList extends React.Component<IProps> {
             ? "Show in Finder"
             : "Show in File Explorer",
         click: () => {
-          let path = file.describedFilePath;
-          if (process.platform === "win32") {
-            //https://github.com/electron/electron/issues/11617
-            path = this.replaceall("/", "\\", path);
-          }
-          electron.shell.showItemInFolder(path);
+          showInExplorer(file.describedFilePath);
         }
       },
       {
@@ -222,18 +218,5 @@ export default class FileList extends React.Component<IProps> {
 
       remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
     }
-  }
-  private replaceall(replaceThis: string, withThis: string, inThis: string) {
-    withThis = withThis.replace(/\$/g, "$$$$");
-    return inThis.replace(
-      new RegExp(
-        replaceThis.replace(
-          /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|<>\-\&])/g,
-          "\\$&"
-        ),
-        "g"
-      ),
-      withThis
-    );
   }
 }
