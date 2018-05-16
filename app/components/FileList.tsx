@@ -182,16 +182,19 @@ export default class FileList extends React.Component<IProps> {
       {
         label: "Show in File Explorer",
         click: () => {
-          //https://github.com/electron/electron/issues/11617
-          electron.shell.showItemInFolder(
-            this.replaceall("/", "\\", file.describedFilePath)
-          );
+          let path = file.describedFilePath;
+          if (process.platform === "win32") {
+            //https://github.com/electron/electron/issues/11617
+            path = this.replaceall("/", "\\", path);
+          }
+          electron.shell.showItemInFolder(path);
         }
       },
       {
         label: "Open in Program associate with this file",
         click: () => {
-          electron.shell.openExternal(file.describedFilePath);
+          // the "file://" prefix is required on mac, works fine on windows
+          electron.shell.openExternal("file://" + file.describedFilePath);
         }
       },
       { type: "separator" },
