@@ -180,7 +180,10 @@ export default class FileList extends React.Component<IProps> {
     }
     let items = [
       {
-        label: "Show in File Explorer",
+        label:
+          process.platform === "darwin"
+            ? "Show in Finder"
+            : "Show in File Explorer",
         click: () => {
           let path = file.describedFilePath;
           if (process.platform === "win32") {
@@ -191,7 +194,7 @@ export default class FileList extends React.Component<IProps> {
         }
       },
       {
-        label: "Open in Program associate with this file",
+        label: "Open in program associated with this file",
         click: () => {
           // the "file://" prefix is required on mac, works fine on windows
           electron.shell.openExternal("file://" + file.describedFilePath);

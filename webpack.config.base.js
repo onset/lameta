@@ -40,11 +40,22 @@ module.exports = {
           }
         ]
       },
-  
+
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: "url-loader"
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          }
+        ]
       }
     ]
   },
