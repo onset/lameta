@@ -72,6 +72,9 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts", ".tsx", ".json"],
     modules: [path.join(__dirname, "app"), "node_modules"]
+    // alias: {
+    //   _assets: path.resolve(__dirname, "assets")
+    // }
   },
 
   plugins: [],

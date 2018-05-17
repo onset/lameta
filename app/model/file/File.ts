@@ -11,6 +11,7 @@ import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
+import { locate } from "../../utilities";
 const nodejsUtil = require("util");
 const moment = require("moment");
 
@@ -501,7 +502,7 @@ export abstract class File {
 
   public getIconName(): string {
     const type = this.getTextProperty("type", "unknowntype");
-    return `img/file-icons/${type}.png`;
+    return locate(`assets/file-icons/${type}.png`);
   }
 }
 

@@ -12,8 +12,8 @@ const { app } = require("electron").remote;
 const { Menu } = require("electron");
 import Store = require("electron-store");
 import SayLessMenu from "../menu";
+import { locate } from "../utilities";
 import "./StartScreen.scss";
-const saylessicon = require("../img/icon.png");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -64,9 +64,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       fs.ensureDirSync(directory);
 
       if (useSampleProject) {
-        const sampleSourceDir = fs.realpathSync(
-          Path.join(this.directoryAdjustment(), "sample data/Edolo sample")
-        );
+        const sampleSourceDir = locate("sample data/Edolo sample");
         ncp.ncp(sampleSourceDir, directory, err => {
           console.log("ncp err=" + err);
           const projectName = Path.basename(directory);
@@ -107,13 +105,13 @@ export default class HomePage extends React.Component<IProps, IState> {
         ) : (
           <div className={"startScreen"}>
             <div className={"top"}>
-              <img src={require("../img/start-screen/icon.png")} />
+              <img src={locate("assets/start-screen/icon.png")} />
               <h1>
                 SayMore <span>Mac</span>
               </h1>
             </div>
             <div className={"choices"}>
-              <img src={require("../img/start-screen/create.png")} />
+              <img src={locate("assets/start-screen/create.png")} />
               <a
                 className={"creatNewProjectLink"}
                 id="creatNewProjectLink"
@@ -122,10 +120,10 @@ export default class HomePage extends React.Component<IProps, IState> {
                 Create New Project
               </a>
               <br />
-              <img src={require("../img/start-screen/open.png")} />
+              <img src={locate("assets/start-screen/open.png")} />
               <a onClick={() => this.openProject()}>Open SayMore Project</a>
               <br />
-              <img src={require("../img/start-screen/sample.png")} />
+              <img src={locate("assets/start-screen/sample.png")} />
               <a
                 id="createNewProjectWithSampleDataLink"
                 onClick={() => {
@@ -175,22 +173,5 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.userSettings.set("previousProjectDirectory", directory);
       }
     });
-  }
-
-  // Get a path to prepend to any nodejs calls that are getting at files in the package,
-  // so that it works both from source and in an asar-packaged mac app.
-  // See https://github.com/electron-userland/electron-builder/issues/751
-  private directoryAdjustment(): string {
-    const rootDirectory = app.getAppPath();
-    // windows from source: "C:\myapp\node_modules\electron\dist\resources\default_app.asar"
-    // mac from source: "/Users/me/dev/saymore/node_modules/electron/dist/Electron.app/Contents/Resources/default_app.asar"
-    // mac from a package: <somewhere>"/my.app/Contents/Resources/app.asar"
-    if (rootDirectory.indexOf("default_app.asar") < 0) {
-      return Path.normalize(rootDirectory + "/../..");
-    } else {
-      // If we are run from outside of a packaged app, our working directory is the right place to be.
-      // And no, we can't just set our working directory to somewhere inside the asar. The OS can't handle that.
-      return "";
-    }
   }
 }

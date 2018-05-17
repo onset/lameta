@@ -83,7 +83,7 @@
       "package.json"
     ],
     "extraResources": ["artwork/"],
-    "extraFiles": ["sample data/", "app/img/"],
+    "extraFiles": ["sample data/", "assets/"],
     "directories": {
       "buildResources": "resources",
       "output": "release"

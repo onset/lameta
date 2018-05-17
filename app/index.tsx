@@ -25,3 +25,8 @@ if ((module as any).hot) {
     );
   });
 }
+
+// const base = document.createElement("base");
+// console.log("Setting base to " + locate("app"));
+// base.setAttribute("href", locate("app"));
+// document.getElementsByTagName("head")[0].appendChild(base);
