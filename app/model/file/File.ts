@@ -132,15 +132,18 @@ export abstract class File {
       ["Person", /\.person$/i],
       ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
       ["Video", /\.((mp4))$/i],
+      ["ELAN", /\.((eaf))$/i],
       ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i],
       ["Text", /\.(txt)/i]
     ];
-    typePatterns.forEach(t => {
-      if (describedFilePath.match(t[1])) {
-        this.addTextProperty("type", t[0] as string, false);
-        //break;  alas, there is no break as yet.
-      }
+    const match = typePatterns.find(t => {
+      return !!describedFilePath.match(t[1]);
     });
+    const typeName = match
+      ? (match[0] as string)
+      : Path.extname(describedFilePath);
+
+    this.addTextProperty("type", typeName, false);
 
     this.readMetadataFile();
 

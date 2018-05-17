@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="" DATE="2011-06-24T16:18:11-08:00" FORMAT="2.7" VERSION="2.7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.7.xsd">
+  <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
+    <PROPERTY NAME="lastUsedAnnotationId">42</PROPERTY>
+    <MEDIA_DESCRIPTOR MEDIA_URL="ETR009_Tiny.mp4" MIME_TYPE="video/*" />
+    <MEDIA_DESCRIPTOR EXTRACTED_FROM="ETR009_Tiny.mp4" MEDIA_URL="ETR009_Tiny_StandardAudio.wav" MIME_TYPE="audio/x-wav" />
+  </HEADER>
+  <TIME_ORDER>
+    <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0" />
+    <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="3750" />
+    <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="3750" />
+    <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="7450" />
+    <TIME_SLOT TIME_SLOT_ID="ts5" TIME_VALUE="7450" />
+    <TIME_SLOT TIME_SLOT_ID="ts6" TIME_VALUE="10032" />
+  </TIME_ORDER>
+  <TIER DEFAULT_LOCALE="ipa-ext" LINGUISTIC_TYPE_REF="Transcription" TIER_ID="Transcription">
+    <ANNOTATION>
+      <ALIGNABLE_ANNOTATION ANNOTATION_ID="a37" TIME_SLOT_REF1="ts1" TIME_SLOT_REF2="ts2">
+        <ANNOTATION_VALUE>oh my</ANNOTATION_VALUE>
+      </ALIGNABLE_ANNOTATION>
+    </ANNOTATION>
+    <ANNOTATION>
+      <ALIGNABLE_ANNOTATION ANNOTATION_ID="a39" TIME_SLOT_REF1="ts3" TIME_SLOT_REF2="ts4">
+        <ANNOTATION_VALUE></ANNOTATION_VALUE>
+      </ALIGNABLE_ANNOTATION>
+    </ANNOTATION>
+    <ANNOTATION>
+      <ALIGNABLE_ANNOTATION ANNOTATION_ID="a41" TIME_SLOT_REF1="ts5" TIME_SLOT_REF2="ts6">
+        <ANNOTATION_VALUE></ANNOTATION_VALUE>
+      </ALIGNABLE_ANNOTATION>
+    </ANNOTATION>
+  </TIER>
+  <TIER DEFAULT_LOCALE="en" LINGUISTIC_TYPE_REF="Translation" PARENT_REF="Transcription" TIER_ID="Phrase Free Translation">
+    <ANNOTATION>
+      <REF_ANNOTATION ANNOTATION_ID="a38" ANNOTATION_REF="a37">
+        <ANNOTATION_VALUE>one day we were going fishing</ANNOTATION_VALUE>
+      </REF_ANNOTATION>
+    </ANNOTATION>
+    <ANNOTATION>
+      <REF_ANNOTATION ANNOTATION_ID="a40" ANNOTATION_REF="a39">
+        <ANNOTATION_VALUE></ANNOTATION_VALUE>
+      </REF_ANNOTATION>
+    </ANNOTATION>
+    <ANNOTATION>
+      <REF_ANNOTATION ANNOTATION_ID="a42" ANNOTATION_REF="a41">
+        <ANNOTATION_VALUE></ANNOTATION_VALUE>
+      </REF_ANNOTATION>
+    </ANNOTATION>
+  </TIER>
+  <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Transcription" TIME_ALIGNABLE="true" />
+  <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association" GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Translation" TIME_ALIGNABLE="false" />
+  <LOCALE LANGUAGE_CODE="ipa-ext" VARIANT="IPA Extended" />
+  <LOCALE LANGUAGE_CODE="ar" VARIANT="MLT Arabic" />
+  <LOCALE LANGUAGE_CODE="en" />
+  <CONSTRAINT DESCRIPTION="Time subdivision of parent annotation's time interval, no time gaps allowed within this interval" STEREOTYPE="Time_Subdivision" />
+  <CONSTRAINT DESCRIPTION="Symbolic subdivision of a parent annotation. Annotations refering to the same parent are ordered" STEREOTYPE="Symbolic_Subdivision" />
+  <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association" />
+  <CONSTRAINT DESCRIPTION="Time alignable annotations within the parent annotation's time interval, gaps are allowed" STEREOTYPE="Included_In" />
+</ANNOTATION_DOCUMENT>

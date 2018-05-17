@@ -18,6 +18,7 @@ import { Project } from "../model/Project/Project";
 import ImdiView from "./ImdiView";
 import ImdiGenerator from "../export/imdiGenerator";
 import { File } from "../model/file/File";
+const electron = require("electron");
 import "./FolderPane.scss";
 
 const SplitPane = require("react-split-pane");
@@ -244,15 +245,46 @@ export class FolderPane extends React.Component<IProps> {
             {standardMetaPanels}
           </Tabs>
         );
+      case "ELAN":
+        return (
+          <Tabs>
+            <TabList>
+              <Tab>ELAN</Tab>
+              {standardMetaTabs}
+            </TabList>
+            <TabPanel className="unhandledFileType">
+              <a
+                onClick={() => {
+                  // the "file://" prefix is required on mac, works fine on windows
+                  electron.shell.openExternal(
+                    "file://" + file.describedFilePath
+                  );
+                }}
+              >
+                Open in ELAN
+              </a>
+            </TabPanel>
+            {standardMetaPanels}
+          </Tabs>
+        );
       default:
         return (
           <Tabs>
             <TabList>
-              <Tab>View</Tab>
+              <Tab>File</Tab>
               {standardMetaTabs}
             </TabList>
-            <TabPanel>
-              <h1>todo</h1>
+            <TabPanel className="unhandledFileType">
+              <a
+                onClick={() => {
+                  // the "file://" prefix is required on mac, works fine on windows
+                  electron.shell.openExternal(
+                    "file://" + file.describedFilePath
+                  );
+                }}
+              >
+                Open in program associated with this file type
+              </a>
             </TabPanel>
             {standardMetaPanels}
           </Tabs>
