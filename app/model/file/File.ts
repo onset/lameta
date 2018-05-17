@@ -11,7 +11,7 @@ import * as musicmetadata from "musicmetadata";
 import { Field, FieldType } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
-import { locate } from "../../utilities";
+import { locate } from "../../crossPlatformUtilities";
 const nodejsUtil = require("util");
 const moment = require("moment");
 

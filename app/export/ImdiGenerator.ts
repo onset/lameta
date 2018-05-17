@@ -11,7 +11,7 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
 import Archiver = require("archiver");
-import { showInExplorer } from "../utilities";
+import { showInExplorer } from "../crossPlatformUtilities";
 import * as fs from "fs";
 
 export default class ImdiGenerator {

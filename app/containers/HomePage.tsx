@@ -12,7 +12,7 @@ const { app } = require("electron").remote;
 const { Menu } = require("electron");
 import Store = require("electron-store");
 import SayLessMenu from "../menu";
-import { locate } from "../utilities";
+import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 
 // tslint:disable-next-line:no-empty-interface

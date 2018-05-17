@@ -10,7 +10,7 @@ import { remote } from "electron";
 const moment = require("moment");
 import { Dictionary } from "typescript-collections";
 import "./FileList.scss";
-import { showInExplorer } from "../utilities";
+import { showInExplorer } from "../crossPlatformUtilities";
 
 const { Menu } = require("electron");
 const electron = require("electron");

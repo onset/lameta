@@ -10,11 +10,7 @@ export function showInExplorer(path: string) {
   electron.shell.showItemInFolder(path);
 }
 
-export function replaceall(
-  replaceThis: string,
-  withThis: string,
-  inThis: string
-) {
+function replaceall(replaceThis: string, withThis: string, inThis: string) {
   withThis = withThis.replace(/\$/g, "$$$$");
   return inThis.replace(
     new RegExp(
