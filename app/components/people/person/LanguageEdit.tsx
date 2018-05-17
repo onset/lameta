@@ -5,6 +5,7 @@ import TextFieldEdit from "./../../TextFieldEdit";
 import { Button } from "@blueprintjs/core";
 import { observable, intercept } from "mobx";
 import ParentButton from "./ParentButton";
+import { locate } from "../../../crossPlatformUtilities";
 
 export interface IProps {
   language: Field;
@@ -15,26 +16,13 @@ export interface IProps {
 
 @observer
 export default class LanguageEdit extends React.Component<IProps> {
+  private femaleSelected: string = locate("assets/Female_Selected.png");
+  private femaleNotSelected: string = locate("assets/Female_NotSelected.png");
+  private maleSelected: string = locate("assets/Male_Selected.png");
+  private maleNotSelected: string = locate("assets/Male_NotSelected.png");
   constructor(props: IProps) {
     super(props);
-    // this.mothersLanguage = this.wireParent(this.props.motherLanguage);
-    // this.fathersLanguage = this.wireParent(this.props.fatherLanguage);
   }
-
-  // private wireParent(parentLanguageField: Field) {
-  //   parent.value = parentLanguageField.text === this.props.language.text;
-  //   intercept(parent, change => {
-  //     console.log("------------- " + change.newValue);
-  //     parentLanguageField.setValueFromString(
-  //       change.newValue ? this.props.language.text : ""
-  //     );
-  //     if (this.props.changed) {
-  //       this.props.changed();
-  //     }
-  //     return change;
-  //   });
-  //   return parent;
-  // }
 
   public render() {
     //console.log("Render languageEdit:" + this.props.language.key);
@@ -48,15 +36,15 @@ export default class LanguageEdit extends React.Component<IProps> {
         <ParentButton
           childLanguage={this.props.language}
           parentLanguage={this.props.fatherLanguage}
-        >
-          {"F"}
-        </ParentButton>
+          selectedIcon={this.femaleSelected}
+          notSelectedIcon={this.femaleNotSelected}
+        />
         <ParentButton
           childLanguage={this.props.language}
           parentLanguage={this.props.motherLanguage}
-        >
-          {"M"}
-        </ParentButton>
+          selectedIcon={this.maleSelected}
+          notSelectedIcon={this.maleNotSelected}
+        />
       </div>
     );
   }

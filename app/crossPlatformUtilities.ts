@@ -24,12 +24,15 @@ function replaceall(replaceThis: string, withThis: string, inThis: string) {
   );
 }
 
+// just get it once
+const appPath = electron.remote.app.getAppPath();
+
 // Find a file or directory that is part of the distribution.
 // The path will vary when we're running from source vs in an asar-packaged mac app.
 // See https://github.com/electron-userland/electron-builder/issues/751
+
 export function locate(path: string): string {
-  const appPath = electron.remote.app.getAppPath();
-  console.log(`locate(${path})  appPath= ${appPath}`);
+  //console.log(`locate(${path})  appPath= ${appPath}`);
 
   // If we are run from outside of a packaged app, our working directory is the right place to be.
   // And no, we can't just set our working directory to somewhere inside the asar. The OS can't handle that.

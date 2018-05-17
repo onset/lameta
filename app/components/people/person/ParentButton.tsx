@@ -6,6 +6,9 @@ import TextFieldEdit from "../../TextFieldEdit";
 export interface IProps {
   parentLanguage: Field;
   childLanguage: Field;
+
+  selectedIcon: string;
+  notSelectedIcon: string;
 }
 
 @observer
@@ -38,7 +41,9 @@ export default class ParentButton extends React.Component<
           }
         }}
       >
-        {this.props.children}
+        <img
+          src={matching ? this.props.selectedIcon : this.props.notSelectedIcon}
+        />
       </button>
     );
   }

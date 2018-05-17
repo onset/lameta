@@ -13,6 +13,12 @@
     }
   }
 
+  .languageGroup {
+    border-bottom: solid 1px gray;
+    margin-bottom: 3px;
+    margin-top: 1em;
+  }
+
   .language {
     margin-top: 0;
     margin-bottom: 0;
@@ -30,8 +36,18 @@
         width: 100%; //just fill container
       }
     }
-    .state.on {
-      background-color: $people__outline--color;
+    .state {
+      border: none;
+      background-color: transparent;
+      &:focus {
+        outline: none;
+      }
+      &:hover {
+        border: solid thin blue;
+      }
+      // &.on {
+      //   background-color: $people__outline--color;
+      // }
     }
   }
   .nickname-and-code {
