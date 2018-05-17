@@ -107,13 +107,13 @@ export default class HomePage extends React.Component<IProps, IState> {
         ) : (
           <div className={"startScreen"}>
             <div className={"top"}>
-              <img src={require("../img/icon.png")} />
+              <img src={require("../img/start-screen/icon.png")} />
               <h1>
                 SayMore <span>Mac</span>
               </h1>
             </div>
             <div className={"choices"}>
-              <img src={require("../img/create.png")} />
+              <img src={require("../img/start-screen/create.png")} />
               <a
                 className={"creatNewProjectLink"}
                 id="creatNewProjectLink"
@@ -122,10 +122,10 @@ export default class HomePage extends React.Component<IProps, IState> {
                 Create New Project
               </a>
               <br />
-              <img src={require("../img/open.png")} />
+              <img src={require("../img/start-screen/open.png")} />
               <a onClick={() => this.openProject()}>Open SayMore Project</a>
               <br />
-              <img src={require("../img/sample.png")} />
+              <img src={require("../img/start-screen/sample.png")} />
               <a
                 id="createNewProjectWithSampleDataLink"
                 onClick={() => {

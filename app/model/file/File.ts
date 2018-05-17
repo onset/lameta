@@ -144,7 +144,6 @@ export abstract class File {
       : Path.extname(describedFilePath);
 
     this.addTextProperty("type", typeName, false);
-
     this.readMetadataFile();
 
     this.computeProperties(); //enhance: do this on demand, instead of for every file
@@ -498,6 +497,11 @@ export abstract class File {
       this.dirty = true;
       console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
+  }
+
+  public getIconName(): string {
+    const type = this.getTextProperty("type", "unknowntype");
+    return `img/file-icons/${type}.png`;
   }
 }
 

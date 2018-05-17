@@ -57,6 +57,16 @@ export default class FileList extends React.Component<IProps> {
     const tableObject = this;
     const columns = [
       {
+        id: "icon",
+        Header: "",
+        width: 30,
+        accessor: (d: any) => {
+          const f: File = d;
+          return f.getIconName();
+        },
+        Cell: props => <img src={props.value} />
+      },
+      {
         id: "name",
         Header: "Name",
         accessor: (d: any) => {
