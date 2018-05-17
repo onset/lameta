@@ -2,22 +2,30 @@
   "name": "saymore-light",
   "productName": "SayMore Light",
   "version": "0.10.0",
-  "description": "File & metadata organization for language documentation projects.",
+  "description":
+    "File & metadata organization for language documentation projects.",
   "main": "./main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js",
     "test-all": "npm run test && npm run build && npm run test-e2e",
     "test-watch": "npm test -- --watch",
-    "testw": "cross-env NODE_ENV=test node --trace-warnings ./test/runTestsWatch.js",
-    "test-e2e": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
+    "testw":
+      "cross-env NODE_ENV=test node --trace-warnings ./test/runTestsWatch.js",
+    "test-e2e":
+      "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
     "watch": "yarn webpack --watch --config webpack.config.electron.js",
-    "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 server.js",
-    "build-main": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
-    "build-renderer": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "hot-server":
+      "cross-env NODE_ENV=development node --max_old_space_size=2096 server.js",
+    "build-main":
+      "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
+    "build-renderer":
+      "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
     "start": "cross-env NODE_ENV=production electron ./app/",
-    "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./app/main.development",
-    "start-hot-vscode": "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main.development",
+    "start-hot":
+      "cross-env HOT=1 NODE_ENV=development electron ./app/main.development",
+    "start-hot-vscode":
+      "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main.development",
     "postinstall": "npm run build",
     "dev": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
@@ -35,30 +43,18 @@
       }
     },
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/internals/mocks/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/internals/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node",
-      "xml"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "app/node_modules"
-    ],
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node", "xml"],
+    "moduleDirectories": ["node_modules", "app/node_modules"],
     "transform": {
       "^.+\\.js$": "babel-jest",
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
       "\\.xml$": "jest-raw-loader"
     },
-    "testMatch": [
-      "**/?(*.)(spec|test).ts?(x)"
-    ]
+    "testMatch": ["**/?(*.)(spec|test).ts?(x)"]
   },
   "build": {
     "productName": "SayMore Light",
@@ -86,12 +82,8 @@
       "main.js.map",
       "package.json"
     ],
-    "extraResources": [
-      "artwork/"
-    ],
-    "extraFiles": [
-      "sample data/"
-    ],
+    "extraResources": ["artwork/"],
+    "extraFiles": ["sample data/", "app/img/"],
     "directories": {
       "buildResources": "resources",
       "output": "release"
@@ -104,10 +96,7 @@
       "icon": "build/mac.icns"
     },
     "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ]
+      "target": ["deb", "AppImage"]
     }
   },
   "bin": {
