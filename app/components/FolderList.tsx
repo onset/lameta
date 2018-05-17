@@ -4,8 +4,9 @@ import { default as ReactTable, RowInfo } from "react-table";
 import { Folder, IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
-import { Field, FieldType } from "../model/field/Field";
+import { Field, FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
+import { locate } from "../crossPlatformUtilities";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -16,6 +17,11 @@ export interface IProps {
 }
 @observer
 export class FolderList extends React.Component<IProps> {
+  private hasConsentPath = locate("assets/hasConsent.png");
+  private noConsentPath = locate("assets/noConsent.png");
+  constructor(props: IProps) {
+    super(props);
+  }
   public render() {
     // What this mobxDummy is about:
     // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
@@ -29,7 +35,11 @@ export class FolderList extends React.Component<IProps> {
       const c: object = {
         id: key,
         width: this.props.columnWidths[index],
-        Header: titleCase(key),
+        className: key,
+        Header:
+          this.props.folders.length > 0
+            ? this.props.folders[0].properties.getValueOrThrow(key).englishLabel
+            : titleCase(key),
         accessor: (f: Folder) => {
           const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
@@ -37,6 +47,24 @@ export class FolderList extends React.Component<IProps> {
           }
           if (field.type === FieldType.Date) {
             return field.asLocaleDateString();
+          }
+          if (field.type === FieldType.Function) {
+            const consentField = field as HasConsentField;
+            if (consentField.hasConsent()) {
+              return (
+                <img
+                  src={this.hasConsentPath}
+                  title="Found file with a name containing 'Consent'"
+                />
+              );
+            } else {
+              return (
+                <img
+                  src={this.noConsentPath}
+                  title="Found no file with a name containing 'Consent'"
+                />
+              );
+            }
           }
           return "ERROR";
         }

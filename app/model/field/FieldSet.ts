@@ -1,7 +1,8 @@
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
-import { Field, FieldType, IFieldDefinition } from "./Field";
+import { Field, FieldType, IFieldDefinition, HasConsentField } from "./Field";
 import { Contribution } from "../file/File";
+import { Person } from "../Project/Person/Person";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
@@ -43,7 +44,9 @@ export class FieldSet extends Dictionary<string, Field> {
     this.checkType(key, date);
     this.setValue(key, new Field(key, FieldType.Date, date.toISOString()));
   }
-
+  public addHasConsentProperty(person: Person) {
+    this.setValue("hasConsent", new HasConsentField(person));
+  }
   public manditoryTextProperty(key: string, value: string) {
     if (!this.containsKey(key)) {
       this.setValue(key, new Field(key, FieldType.Text, value));

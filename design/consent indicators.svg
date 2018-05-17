@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="consent indicators.svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient2250">
+      <stop
+         style="stop-color:#008700;stop-opacity:1;"
+         offset="0"
+         id="stop2252" />
+      <stop
+         style="stop-color:#006f00;stop-opacity:1;"
+         offset="1"
+         id="stop2254" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="285.88632"
+     inkscape:cy="811.64049"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1813"
+     inkscape:window-height="1177"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       inkscape:connector-curvature="0"
+       d="m 63.972564,62.218367 c 0,0 5.080709,5.72138 6.096851,8.05851 h 4.36941 c 1.829055,-5.58878 8.942048,-18.93123 15.038898,-23.60548 1.2632,-1.62412 -1.91015,-2.29452 -4.47102,-1.21937 -3.85961,1.6204 -11.138938,13.99239 -12.498548,16.96957 -1.930669,0.50807 -3.962953,-3.25166 -3.962953,-3.25166 z"
+       style="fill:#92b76e;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.04411665px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="check"
+       inkscape:export-filename="C:\dev\sayless\assets\hasConsent.png"
+       inkscape:export-xdpi="8.6000004"
+       inkscape:export-ydpi="8.6000004" />
+    <circle
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#92b76e;stroke-width:4.00000011;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="path4535"
+       cx="76.412109"
+       cy="57.801987"
+       r="21.640621"
+       inkscape:export-filename="C:\dev\sayless\assets\hasConsent.png"
+       inkscape:export-xdpi="8.6000004"
+       inkscape:export-ydpi="8.6000004" />
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#e09560;stroke-width:3.60349059;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="path4537"
+       sodipodi:sides="3"
+       sodipodi:cx="75.84204"
+       sodipodi:cy="122.06311"
+       sodipodi:r1="25.078276"
+       sodipodi:r2="12.539139"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 97.560465,134.60225 -21.718424,0 -21.718424,0 10.859211,-18.80871 10.859213,-18.808705 10.859213,18.808705 z"
+       inkscape:transform-center-y="-6.2695714"
+       inkscape:transform-center-x="-2.3213273e-006"
+       inkscape:export-filename="C:\dev\sayless\assets\noConsent.png"
+       inkscape:export-xdpi="9.8591223"
+       inkscape:export-ydpi="9.8591223" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:24.87992096px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e09560;fill-opacity:1;stroke:#e09560;stroke-width:0.62199801;stroke-opacity:1;"
+       x="70.729012"
+       y="129.17857"
+       id="text4541"
+       inkscape:export-filename="C:\dev\sayless\assets\noConsent.png"
+       inkscape:export-xdpi="9.8591223"
+       inkscape:export-ydpi="9.8591223"><tspan
+         sodipodi:role="line"
+         id="tspan4539"
+         x="70.729012"
+         y="129.17857"
+         style="fill:#e09560;fill-opacity:1;stroke-width:0.62199801;stroke:#e09560;stroke-opacity:1;">!</tspan></text>
+  </g>
+</svg>

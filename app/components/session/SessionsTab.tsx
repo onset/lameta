@@ -1,7 +1,4 @@
 import * as React from "react";
-import { FolderList } from "../FolderList";
-import { Folder, IFolderSelection } from "../../model/Folder";
-import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";

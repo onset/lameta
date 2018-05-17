@@ -3,6 +3,7 @@ import TextHolder from "./TextHolder";
 import * as assert from "assert";
 import { Moment } from "moment";
 import { Contribution } from "../file/File";
+import { Person } from "../Project/Person/Person";
 const moment = require("moment");
 
 const titleCase = require("title-case");
@@ -35,7 +36,8 @@ export enum FieldType {
   Text,
   Date,
   Image,
-  Contributions
+  Contributions,
+  Function
 }
 export enum FieldVisibility {
   Always,
@@ -167,5 +169,25 @@ export class Field {
       .replace(/\\t/g, "\\t")
       .replace(/\\b/g, "\\b")
       .replace(/\\f/g, "\\f");
+  }
+}
+export class HasConsentField extends Field {
+  private person: Person;
+  constructor(person: Person) {
+    super(
+      "hasConsent",
+      FieldType.Function,
+      undefined,
+      "Consent",
+      undefined,
+      undefined,
+      false
+    );
+    this.person = person;
+  }
+  public hasConsent(): boolean {
+    return !!this.person.files.find(
+      f => f.describedFilePath.indexOf("Consent") > -1
+    );
   }
 }

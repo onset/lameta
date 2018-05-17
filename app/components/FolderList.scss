@@ -12,6 +12,15 @@
     height: inherit;
     background-color: inherit;
   }
+  .hasConsent {
+    display: flex;
+    flex-direction: column;
+  }
+  img {
+    align-self: center;
+    height: 16px;
+    width: auto;
+  }
 }
 .fileBar {
   //background-color: $pane__interstitial--color;
