@@ -1,0 +1,30 @@
+@import "../../colors";
+
+.sessionForm {
+  display: grid;
+  height: 1px; // in practice this means "minimum, don't space out rows"
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(8, 1fr);
+  grid-auto-flow: column;
+  grid-gap: 10px 20px;
+
+  .date {
+    grid-row: 1;
+  }
+
+  .date,
+  .setting,
+  .location,
+  .access-chooser,
+  .description {
+    grid-column: 2;
+  }
+
+  .situation,
+  .description {
+    textarea {
+      height: 8em;
+      overflow-y: scroll;
+    }
+  }
+}

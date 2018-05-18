@@ -139,6 +139,7 @@ export class FolderPane extends React.Component<IProps> {
               <AutoForm
                 folder={directoryObject}
                 form="primary"
+                formClass="sessionForm"
                 authorityLists={this.props.authorityLists}
                 fieldThatControlsFileNames={"id"}
                 fieldThatControlsFileNamesMightHaveChanged={key =>
@@ -150,6 +151,19 @@ export class FolderPane extends React.Component<IProps> {
                     value
                   )
                 }
+                // session={directoryObject as Session}
+                // authorityLists={this.props.authorityLists}
+                // fields={directoryObject.properties}
+                // // fieldThatControlsFileNames={"id"}
+                // // fieldThatControlsFileNamesMightHaveChanged={key =>
+                // //   (this.props.folder as Session).nameMightHaveChanged()
+                // // }
+                // validateId={value =>
+                //   this.props.project.validateSessionId(
+                //     directoryObject as Session,
+                //     value
+                //   )
+                // }
               />
             </TabPanel>
             {propertiesPanel}

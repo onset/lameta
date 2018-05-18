@@ -97,7 +97,7 @@ export class Field {
     visibility: FieldVisibility = FieldVisibility.Always,
     persist: boolean = true,
     choices: string[] = [],
-    cssClass: string = ""
+    cssClass?: string
     // imdiRange?: string,
     // imdiIsClosedVocabulary?: boolean
   ) {
@@ -107,7 +107,7 @@ export class Field {
     this.type = type;
     this.visibility = visibility;
     this.persist = persist;
-    this.cssClass = cssClass;
+    this.cssClass = cssClass ? cssClass : key;
     this.text = englishValue;
     this.choices = choices;
 

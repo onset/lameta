@@ -76,11 +76,11 @@
   ],
   "session": [
     {
-      "key": "id"
+      "key": "id",
+      "englishLabel": "ID"
     },
     {
-      "key": "title",
-      "cssClass": "text-block"
+      "key": "title"
     },
     {
       "key": "participants",
@@ -90,8 +90,7 @@
       "key": "genre"
     },
     {
-      "key": "situation",
-      "cssClass": "text-block"
+      "key": "situation"
     },
     {
       "key": "setting"
@@ -103,8 +102,7 @@
       "key": "access"
     },
     {
-      "key": "description",
-      "cssClass": "text-block"
+      "key": "description"
     },
     {
       "key": "date",

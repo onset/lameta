@@ -11,12 +11,14 @@ import GenreChooser from "./session/GenreChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
 import PeopleChooser from "./session/PeopleChooser";
-
+import "./session/SessionForm.scss";
 import "./Form.scss";
 
 export interface IProps {
   folder: Folder;
   form: string; // only fields with this "form" property will show
+
+  formClass: string; // used to activate the right stylesheet
   authorityLists: AuthorityLists;
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
@@ -125,7 +127,9 @@ export default class AutoForm extends React.Component<IProps> {
     //   console.log("field.form " + field.key + "/" + field.form);
     // });
     return (
-      <form className={"autoForm " + this.props.form}>
+      <form
+        className={"autoForm " + this.props.form + " " + this.props.formClass}
+      >
         {// this.props.fields
         // .values()
         // .filter(field => field.form === this.props.form)

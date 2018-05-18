@@ -39,6 +39,7 @@ export class ProjectTab extends React.Component<IProps> {
         <TabPanel>
           <AutoForm
             form="primary"
+            formClass="project"
             folder={this.props.project}
             authorityLists={this.props.authorityLists}
           />
