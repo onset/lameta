@@ -9,7 +9,8 @@
   //left side
   & > ul {
     width: 200px;
-
+    padding: 10px;
+    list-style: none;
     //  turn off the tab look
     .react-tabs__tab {
       border: none;

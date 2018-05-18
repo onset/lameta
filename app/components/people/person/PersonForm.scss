@@ -1,22 +1,91 @@
 @import "../../../colors";
 
 .personForm {
-  //display: grid;
-  //grid-auto-flow: column;
-  //grid-template-rows: repeat(4, 54px);
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  height: 1px; // in practice this means "minimum, don't space out rows"
+  // the magic "59px" here is chosen to make the lang names line up with other fields even though
+  // they are inside of another div that also shows the mother/father icons
+  grid-template-columns: 1fr 1fr 59px 1fr 1fr;
+  grid-template-rows: repeat(8, 1fr);
+  grid-auto-flow: column;
+  grid-gap: 10px 20px;
+  grid-template-rows: 41px auto 41px; // hack for now
   .first-column {
-    margin-right: 10px;
+    margin-right: 100px;
     .field {
       width: calc(100% - 50px); // leave room for mom & dad icons
     }
   }
-
+  .full-right-side {
+    grid-column: 4 / 6;
+  }
+  .full-name {
+    grid-row: 1;
+  }
+  .nickname-and-code {
+    grid-row: 2;
+  }
+  .primary-language {
+    grid-row: 3/4;
+    grid-column: 1/4;
+  }
+  .primaryLanguageLearnedIn {
+    grid-row: 4;
+    display: inline-flex;
+    align-items: baseline;
+    label {
+      width: 100px;
+    }
+  }
+  .left-side {
+    grid-column: 1/3;
+  }
+  .other-languages {
+    grid-row: 5/8;
+    grid-column: 1/4;
+  }
+  .birth {
+    grid-row: 1;
+    grid-column: 4;
+  }
+  .birth,
+  .gender {
+    width: 100px;
+    select {
+      width: 100%;
+      height: 2em;
+    }
+  }
+  .nickname {
+    grid-column: 1;
+  }
+  .code {
+    grid-column: 2;
+  }
+  .mugshot {
+    grid-row: 1 / 3;
+    grid-column-start: 5;
+    .field {
+      img {
+        height: 114px;
+        width: auto;
+      }
+    }
+  }
+  .gender {
+    grid-row: 2;
+    grid-column: 4;
+  }
+  .howToContact {
+    grid-row: 3/5;
+    textarea {
+      overflow-y: scroll;
+    }
+  }
   .languageGroup {
     border-bottom: solid 1px gray;
     margin-bottom: 3px;
-    margin-top: 1em;
+    //margin-top: 1em;
   }
 
   .language {
@@ -44,53 +113,6 @@
       }
       &:hover {
         border: solid thin blue;
-      }
-      // &.on {
-      //   background-color: $people__outline--color;
-      // }
-    }
-  }
-  .nickname-and-code {
-    width: calc(100% - 50px); // leave room for mom & dad icons
-    display: flex;
-    justify-content: space-between;
-    .field {
-      width: 45%;
-
-      textarea {
-        width: 100%;
-      }
-    }
-  }
-  .upper-right-cluster {
-    // grid-row-start: 1;
-    // grid-row-end: 7;
-
-    display: flex;
-    height: 160px;
-    flex-wrap: wrap;
-    flex-direction: column;
-    width: 300px;
-    position: relative; // allow image to be absolute
-
-    .birth,
-    .gender {
-      width: 80px;
-      textarea {
-        width: 60px;
-      }
-    }
-
-    .mugshot {
-      position: absolute;
-      right: 0;
-      margin-right: 0;
-
-      img {
-        object-fit: contain;
-        object-position: right top;
-        height: 160px;
-        width: 160px;
       }
     }
   }

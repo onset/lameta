@@ -128,7 +128,8 @@
       "key": "primaryLanguage"
     },
     {
-      "key": "primaryLanguageLearnedIn"
+      "key": "primaryLanguageLearnedIn",
+      "englishLabel": "Learned in:"
     },
     {
       "key": "otherLanguage0"
