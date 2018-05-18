@@ -26,7 +26,8 @@
       "cross-env HOT=1 NODE_ENV=development electron ./app/main.development",
     "start-hot-vscode":
       "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main.development",
-    "postinstall": "npm run build",
+    "postinstallDISALBED": "npm run build",
+    "postinstall": "",
     "dev": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
     "package": "npm run build && build --publish never",
