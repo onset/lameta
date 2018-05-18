@@ -227,7 +227,7 @@ export class FolderPane extends React.Component<IProps> {
               {standardMetaTabs}
             </TabList>
             <TabPanel>
-              <img src={path} />
+              <img className="imageViewer" src={path} />
             </TabPanel>
             {standardMetaPanels}
           </Tabs>
