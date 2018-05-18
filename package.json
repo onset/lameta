@@ -1,6 +1,6 @@
 {
   "name": "saymore-light",
-  "productName": "SayMore Light",
+  "productName": "SayMore Mac",
   "version": "0.10.0",
   "description":
     "File & metadata organization for language documentation projects.",
@@ -58,7 +58,7 @@
     "testMatch": ["**/?(*.)(spec|test).ts?(x)"]
   },
   "build": {
-    "productName": "SayMore Light",
+    "productName": "SayMore Mac",
     "appId": "io.github.sillsdev.sayless",
     "dmg": {
       "contents": [
