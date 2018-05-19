@@ -13,6 +13,7 @@ import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
 import * as assert from "assert";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
 const sanitize = require("sanitize-filename");
 
 export class IFolderSelection {
@@ -81,7 +82,6 @@ export abstract class Folder {
     knownFields: IFieldDefinition[] = []
   ): File[] {
     const files = new Array<File>();
-
     // load the file containing metadata about this folder
     knownFields.forEach((f: IFieldDefinition, i: number) => {
       f.order = i;
@@ -115,18 +115,33 @@ export abstract class Folder {
     this.files.splice(index, 1);
   }
   public moveFileToTrash(file: File) {
-    this.forgetFile(file);
-    if (fs.existsSync(file.describedFilePath)) {
-      electron.shell.moveItemToTrash(file.describedFilePath);
-    }
-    if (
-      file.metadataFilePath &&
-      file.metadataFilePath !== file.describedFilePath
-    ) {
-      if (fs.existsSync(file.metadataFilePath)) {
-        electron.shell.moveItemToTrash(file.metadataFilePath);
+    ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
+      let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
+      if (fs.existsSync(file.describedFilePath)) {
+        electron.shell.showItemInFolder(file.describedFilePath);
+        continueTrashing = electron.shell.moveItemToTrash(
+          file.describedFilePath
+        );
+        if (!continueTrashing) {
+          window.alert("Failed to delete " + file.describedFilePath);
+        }
       }
-    }
+      if (
+        continueTrashing && // don't trash metadata if something went wrong trashing "described file"
+        file.metadataFilePath &&
+        file.metadataFilePath !== file.describedFilePath
+      ) {
+        if (fs.existsSync(file.metadataFilePath)) {
+          if (!electron.shell.moveItemToTrash(file.metadataFilePath)) {
+            window.alert("Failed to delete " + file.metadataFilePath);
+          }
+        }
+      }
+
+      if (continueTrashing) {
+        this.forgetFile(file);
+      }
+    });
   }
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;

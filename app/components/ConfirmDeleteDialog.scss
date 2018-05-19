@@ -1,0 +1,43 @@
+//@import "../../colors";
+.ReactModal__Content.confirmDelete {
+  position: absolute;
+  border: 3px solid red;
+  background: white;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  flex-direction: row;
+
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  bottom: auto;
+  top: 50%;
+
+  .dialogTitle {
+    padding: 10px;
+  }
+  .dialogContent {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      img {
+        width: auto;
+        height: 50px;
+      }
+    }
+    h1 {
+      font-size: 12px;
+      height: 1em;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    // .okCancelButtonRow  is defined in app.global.scss
+  }
+}

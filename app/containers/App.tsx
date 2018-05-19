@@ -1,12 +1,14 @@
 import * as React from "react";
 import HomePage from "./HomePage";
 import { hot } from "react-hot-loader";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
 
 export class App extends React.Component {
   public render() {
     return (
       <div id="app">
         <HomePage />
+        <ConfirmDeleteDialog />
       </div>
     );
   }

@@ -209,6 +209,7 @@ export default class FileList extends React.Component<IProps> {
       { type: "separator" },
       {
         label: "Delete File...",
+        enabled: file.canDelete,
         click: () => {
           this.props.folder.moveFileToTrash(file);
         }

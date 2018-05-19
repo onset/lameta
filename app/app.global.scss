@@ -16,6 +16,7 @@ $default-fonts: caption; // this supposed to be mapped to whatever the "system f
 $default-fonts: -apple-system, /* mac*/ "BlinkMacSystemFont",
   /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
 
+
 .tab-project.react-tabs__tab--selected {
   background-color: $project--color;
 }

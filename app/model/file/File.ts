@@ -42,6 +42,7 @@ export abstract class File {
 
   private xmlRootName: string;
   private fileExtensionForMetadata: string;
+  public canDelete: boolean;
 
   @mobx.observable public properties = new FieldSet();
 
@@ -115,8 +116,10 @@ export abstract class File {
     describedFilePath: string,
     metadataFilePath: string,
     xmlRootName: string,
-    fileExtensionForMetadata: string
+    fileExtensionForMetadata: string,
+    canDelete: boolean
   ) {
+    this.canDelete = canDelete;
     this.describedFilePath = describedFilePath;
     this.metadataFilePath = metadataFilePath;
     this.xmlRootName = xmlRootName;
@@ -166,9 +169,9 @@ export abstract class File {
           if (value.$ && value.$.type && value.$.type === "string") {
             value = value._;
           } else {
-            console.log(
-              "Skippping " + key + " which was " + JSON.stringify(value)
-            );
+            // console.log(
+            //   "Skipping " + key + " which was " + JSON.stringify(value)
+            // );
             continue;
           }
         }
@@ -496,7 +499,7 @@ export abstract class File {
       //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
   }
 
@@ -516,17 +519,22 @@ export class FolderMetdataFile extends File {
     fileExtensionForMetadata: string
   ) {
     const name = Path.basename(directory);
-
     //if the metadata file doesn't yet exist, just make an empty one.
     const metadataPath = Path.join(directory, name + fileExtensionForMetadata);
     if (!fs.existsSync(metadataPath)) {
       fs.writeFileSync(metadataPath, `<${xmlRootName}/>`);
     }
-    super(metadataPath, metadataPath, xmlRootName, fileExtensionForMetadata);
+    super(
+      metadataPath,
+      metadataPath,
+      xmlRootName,
+      fileExtensionForMetadata,
+      false
+    );
   }
 }
 export class OtherFile extends File {
   constructor(path: string) {
-    super(path, path + ".meta", "Meta", ".meta");
+    super(path, path + ".meta", "Meta", ".meta", true);
   }
 }
