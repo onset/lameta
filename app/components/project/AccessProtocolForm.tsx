@@ -23,6 +23,7 @@ doc.setValue("anla", require("./AccessProtocolDocumenation/anla.md"));
 doc.setValue("elar", require("./AccessProtocolDocumenation/elar.md"));
 doc.setValue("reap", require("./AccessProtocolDocumenation/reap.md"));
 doc.setValue("tla", require("./AccessProtocolDocumenation/tla.md"));
+doc.setValue("paradisec", require("./AccessProtocolDocumenation/paradisec.md"));
 
 interface IProps {
   protocolField: Field;
