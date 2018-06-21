@@ -62,10 +62,12 @@ a {
 }
 label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: bold;
 }
-
+li {
+  cursor: default;
+}
 .text-block textarea {
   height: 6em;
 }
@@ -74,6 +76,7 @@ textarea {
   resize: none;
   height: 2em;
   width: 100%; //just fill the container
+  font-size: 13px;
 
   &.invalid {
     border: solid 2px red;
