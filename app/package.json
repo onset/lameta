@@ -1,9 +1,8 @@
 {
   "name": "saymore-mac",
   "productName": "SayMore Mac",
-  "version": "0.1.0",
-  "description":
-    "File & metadata organization for language documentation projects.",
+  "version": "0.0.1",
+  "description": "File & metadata organization for language documentation projects.",
   "main": "./main.js",
   "author": {
     "name": "MEaCoM",

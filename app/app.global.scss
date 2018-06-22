@@ -15,6 +15,7 @@ $icon-font-path: "~@blueprintjs/core/resources/icons";
 @import "~react-datepicker/dist/react-datepicker.css";
 
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
+$default-font-size: 13px;
 
 $default-fonts: -apple-system, /* mac*/ "BlinkMacSystemFont",
   /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
@@ -62,7 +63,7 @@ a {
 }
 label {
   display: block;
-  font-size: 13px;
+  font-size: $default-font-size;
   font-weight: bold;
 }
 li {
@@ -71,12 +72,19 @@ li {
 .text-block textarea {
   height: 6em;
 }
+body,
+input,
+select,
+button,
+.Select--multi .Select-value {
+  font-size: $default-font-size;
+}
 textarea {
   border-style: inset;
   resize: none;
   height: 2em;
   width: 100%; //just fill the container
-  font-size: 13px;
+  font-size: $default-font-size;
 
   &.invalid {
     border: solid 2px red;
