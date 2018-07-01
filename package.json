@@ -188,6 +188,7 @@
     "@types/xml2js": "^0.4.2",
     "@types/xmlbuilder": "^0.0.32",
     "archiver": "^2.1.1",
+    "assert": "^1.4.1",
     "bourbon": "^4.3.4",
     "camelcase": "^4.1.0",
     "commonmark": "^0.28.1",
