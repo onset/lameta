@@ -14,6 +14,7 @@ import Store = require("electron-store");
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
+import log from "../log";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -28,6 +29,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   @mobx.observable public projectHolder: ProjectHolder;
   private userSettings: Store;
   private menu: SayLessMenu;
+  public static homePageForTests: HomePage;
 
   constructor(props: IProps) {
     super(props);
@@ -36,18 +38,36 @@ export default class HomePage extends React.Component<IProps, IState> {
       showModal: false,
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
-    //console.log("0000000" + app.getPath("userData"));
+
     this.userSettings = new Store({ name: "saymore-user-settings" });
-    const previousDirectory = this.userSettings.get("previousProjectDirectory");
+    let previousDirectory = this.userSettings.get("previousProjectDirectory");
+    console.log(
+      "************** process.env.startInStartScreen=" +
+        process.env.startInStartScreen
+    );
+    log.info(
+      "**************log process.env.startInStartScreen=" +
+        process.env.startInStartScreen
+    );
+    if (process.env.startInStartScreen === "true") {
+      previousDirectory = null;
+    }
     if (previousDirectory && fs.existsSync(previousDirectory)) {
       const project = Project.fromDirectory(previousDirectory);
       this.projectHolder.setProject(project);
     } else {
       this.projectHolder.setProject(null);
     }
+
+    HomePage.homePageForTests = this;
   }
   public createProject(useSample: boolean) {
     this.setState({ showModal: true, useSampleProject: useSample });
+  }
+
+  public goToStartScreenForTests() {
+    console.log("*********************goToStartScreenForTests()");
+    //this.projectHolder.setProject(null);
   }
 
   public componentWillMount() {

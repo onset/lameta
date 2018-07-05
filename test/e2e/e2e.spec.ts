@@ -12,6 +12,7 @@ import SayLessRunner from "./SayLessRunner";
 // with ctrl+shift+p, Jest:stop Runner. There may be a way to
 // stop it trying to run things in parrallel, that might help?
 
+/// MUST call with await, e.g. await delay(3000);
 const delay = (time: number) =>
   new Promise(resolve => setTimeout(resolve, time));
 
@@ -30,6 +31,12 @@ describe("main window", function spec() {
   it("should open window", async () => {
     const title = await runner.browser.getTitle();
     expect(title).toBe("SayLess");
+  });
+
+  it("should start in start screen", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    await delay(5000);
+    await runner.shouldExist(".startScreen");
   });
 
   it("can click menus", async () => {

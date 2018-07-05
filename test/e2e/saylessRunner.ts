@@ -1,11 +1,11 @@
-import {default as electronPath} from "electron";
+import { default as electronPath } from "electron";
 //import * as webdriverio from "webdriverio";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as assert from "assert";
 //import { remote } from "electron";
-
+import Winston from "winston";
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
 // See http://webdriver.io/api/state/isExisting.html# and friends for documentation.
 // At the moment (Mar 2018) the jest expect statements are kudgy with webdriverio.
@@ -17,8 +17,35 @@ export default class SayLessRunner {
   public app: Application;
   public kProjectName = "e2eproject";
 
-  public constructor() {}
+  public constructor() {
+    process.env.startInStartScreen = "true";
+    process.env.log = "e2e sayless.log";
+  }
+
   public async start(doClear: boolean = true): Promise<any> {
+    // if (fs.existsSync("sayless.log")) {
+    //   fs.removeSync("sayless.log");
+    // }
+
+    // const logger = Winston.createLogger({
+    //   transports: [
+    //     new Winston.transports.File({
+    //       filename: "sayless.log",
+    //       format: Winston.format.combine(
+    //         Winston.format.timestamp({
+    //           format: "hh:mm:ss"
+    //         }),
+    //         Winston.format.printf(
+    //           info => `${info.timestamp} ${info.level}: ${info.message}`
+    //         )
+    //       ),
+    //       handleExceptions: true
+    //     })
+    //   ]
+    // });
+
+    // logger.info("hello");
+
     if (doClear) {
       this.removeProject(this.kProjectName);
     }
@@ -28,6 +55,11 @@ export default class SayLessRunner {
       args: [Path.join(__dirname, "..", "..", "app")]
     });
 
+    // "Unable to find Electron app at ____\sayles\app" here can be caused
+    // by not having a webpack-build "main.js" there. You can get that if you
+    // have git-cleaned the src. "yarn dev" does not create it (seems to be
+    // all in memory?) and "yarn watch" only creates "bundle.js". At the moment
+    // only "yarn build" creates it.
     await this.app.start();
 
     // NOTE: if you get waitUntilWindowLoaded: Cannot read property 'isLoading' of undefined,
@@ -47,9 +79,9 @@ export default class SayLessRunner {
     return this.app.client;
   }
 
-  public async clickMenu(menuName:string, item:string){
+  public async clickMenu(menuName: string, item: string) {
     await delay(500);
-    await this.app.electron.ipcRenderer.send('click-menu', [menuName, item]);
+    await this.app.electron.ipcRenderer.send("click-menu", [menuName, item]);
   }
 
   public stop(): Promise<Application> {
@@ -140,8 +172,8 @@ export default class SayLessRunner {
     fs.removeSync(p);
   }
 
-  public async goToStartScreen(){
-    await this.clickMenu("&Project","&Start Screen");
+  public async goToStartScreen() {
+    //await this.clickMenu("&Project","&Start Screen");
     await delay(1000);
     await this.shouldExist(".startScreen");
   }
@@ -178,7 +210,7 @@ export default class SayLessRunner {
       actual === expectedRows,
       `Expected ${selector} table to have ${expectedRows} rows but it has ${actual}`
     );
-    console.log(`${selector} table has ${actual}/${expectedRows} rows`)
+    console.log(`${selector} table has ${actual}/${expectedRows} rows`);
   }
 
   public async typeField(fieldName: string, text: string) {
