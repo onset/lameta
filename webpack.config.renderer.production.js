@@ -10,14 +10,15 @@ const baseConfig = require("./webpack.config.base");
 
 module.exports = merge(baseConfig, {
   mode: "production",
-  devtool: "cheap-module-source-map",
+  //devtool: "cheap-module-source-map",
+  devtool: "inline-source-map",
 
   entry: ["./app/index"],
 
   output: {
     filename: "renderer-bundle.js",
     path: path.join(__dirname, "app/dist"),
-    publicPath: "../dist/"
+    publicPath: "./dist/"
   },
 
   module: {

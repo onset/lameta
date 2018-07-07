@@ -31,7 +31,7 @@ const appPath = electron.remote.app.getAppPath();
 // The path will vary when we're running from source vs in an asar-packaged mac app.
 // See https://github.com/electron-userland/electron-builder/issues/751
 
-export function locate(path: string): string {
+export function locate(relativePath: string): string {
   //console.log(`locate(${path})  appPath= ${appPath}`);
 
   // If we are run from outside of a packaged app, our working directory is the right place to be.
@@ -57,17 +57,27 @@ export function locate(path: string): string {
   // However electron manages to intercept filesytem calls so you can point into the insides of the app.
   // In this case, apppPath will be <somewhere>/my.app/Contents/Resources/app.asar
   // But the root we want, to be the same as the other situations, is in my.app/contents.
-
-  if (appPath.indexOf("default_app.asar") < 0) {
-    adjustment = Path.normalize(appPath + "/../..");
+  let adjustedPath = "";
+  if (appPath.indexOf("default_app.asar") >= 0) {
+    // mac installed. Leave adjustment alone.
+    adjustedPath = relativePath;
+  } else if (appPath.indexOf("app.asar") >= 0) {
+    // Running from windows install, or
+    adjustedPath = Path.join(appPath, "../..", relativePath);
+  } else {
+    // After a "yarn build-production", "yarn start", we are coming from sayless/app/dist. Just need to go up to app/
+    adjustedPath = Path.join(appPath, "..", relativePath);
   }
   //console.log(`locate(${path})  adjustment= ${adjustment}`);
+
   try {
-    const result = fs.realpathSync(Path.join(adjustment, path));
+    const result = fs.realpathSync(adjustedPath);
     //console.log(`locate(${path})  result= ${result}`);
     return result;
   } catch (err) {
-    console.error("Could not find: " + Path.join(adjustment, path));
+    console.error(
+      `Could not find: ${relativePath}. Looked in ${adjustedPath}. appPath was ${appPath}`
+    );
     return "";
   }
 }
