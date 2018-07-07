@@ -1,6 +1,7 @@
 import { Menu, remote } from "electron";
 import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/imdiGenerator";
+import log from "./log";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -20,8 +21,8 @@ export default class SayLessMenu {
     });
   }
 
-  public buildMainMenu() {}
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
+    log.info("updateMainMenu");
     const haveProject = true; //this.homePage.projectHolder.project;
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {

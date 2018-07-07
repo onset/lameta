@@ -15,6 +15,7 @@ module.exports = merge(baseConfig, {
   entry: ["./app/index"],
 
   output: {
+    filename: "renderer-bundle.js",
     path: path.join(__dirname, "app/dist"),
     publicPath: "../dist/"
   },

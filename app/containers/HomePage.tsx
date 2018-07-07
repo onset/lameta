@@ -72,7 +72,6 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentWillMount() {
     this.menu = new SayLessMenu(this);
-    this.menu.buildMainMenu();
     this.menu.setupContentMenu();
   }
   private handleCreateProjectDialogClose(

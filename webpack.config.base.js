@@ -93,7 +93,7 @@ module.exports = {
 
   output: {
     path: path.join(__dirname, "app"),
-    filename: "renderer-bundle.js",
+    //filename: "renderer-bundle.js",
 
     // https://github.com/webpack/webpack/issues/1114
     libraryTarget: "commonjs2"
