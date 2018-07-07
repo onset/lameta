@@ -14,6 +14,29 @@ module.exports = {
         loaders: ["ts-loader"],
         exclude: /node_modules/
       },
+      // Extract all .global.css to style.css as is
+      {
+        test: /\.(scss|sass)$/,
+        use: [
+          {
+            // I'm not sure about this difference
+            loader: devMode ? "style-loader" : MiniCssExtractPlugin.loader
+          },
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true, // could be dev only
+              modules: false,
+              importLoaders: 1,
+              localIdentName: "[name]__[local]__[hash:base64:5]"
+            }
+          },
+          {
+            loader: "sass-loader"
+          }
+        ]
+      },
+
       {
         test: /\.(html)$/,
         use: {
@@ -77,7 +100,14 @@ module.exports = {
     // }
   },
 
-  plugins: [],
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: devMode ? "[name].css" : "[name].[hash].css",
+      chunkFilename: devMode ? "[id].css" : "[id].[hash].css"
+    })
+  ],
 
   externals: Object.keys(externals || {})
 };
