@@ -2,19 +2,19 @@
  * Build config for electron 'Main Process' file
  */
 
-const webpack = require('webpack');
-const merge = require('webpack-merge');
-const baseConfig = require('./webpack.config.base');
+const webpack = require("webpack");
+const merge = require("webpack-merge");
+const baseConfig = require("./webpack.config.base");
 
 module.exports = merge(baseConfig, {
-  devtool: 'source-map',
+  devtool: "source-map",
 
-  entry: ['./app/main.development'],
+  entry: ["./app/main.development"],
 
-  // 'main.js' in root
+  // 'main-bundle.js' in root
   output: {
     path: __dirname,
-    filename: './app/main.js'
+    filename: "./app/main-bundle.js"
   },
 
   plugins: [
@@ -25,8 +25,8 @@ module.exports = merge(baseConfig, {
     //   { raw: true, entryOnly: false }
     // ),
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
+      "process.env": {
+        NODE_ENV: JSON.stringify("production")
       }
     })
   ],
@@ -35,7 +35,7 @@ module.exports = merge(baseConfig, {
    * Set target to Electron specific node.js env.
    * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
    */
-  target: 'electron-main',
+  target: "electron-main",
 
   /**
    * Disables webpack processing of __dirname and __filename.
@@ -45,5 +45,5 @@ module.exports = merge(baseConfig, {
   node: {
     __dirname: false,
     __filename: false
-  },
+  }
 });

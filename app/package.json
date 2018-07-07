@@ -2,9 +2,8 @@
   "name": "saymore-mac",
   "productName": "SayMore Mac",
   "version": "0.1.0",
-  "description":
-    "File & metadata organization for language documentation projects.",
-  "main": "./main.js",
+  "description": "File & metadata organization for language documentation projects.",
+  "main": "./main-bundle.js",
   "author": {
     "name": "MEaCoM",
     "email": "john_hatton@sil.org"

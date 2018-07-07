@@ -56,10 +56,10 @@ export default class SayLessRunner {
     });
 
     // "Unable to find Electron app at ____\sayles\app" here can be caused
-    // by not having a webpack-build "main.js" there. You can get that if you
+    // by not having a webpack-build "main-bundle.js" there. You can get that if you
     // have git-cleaned the src. "yarn dev" does not create it (seems to be
-    // all in memory?) and "yarn watch" only creates "bundle.js". At the moment
-    // only "yarn build" creates it.
+    // all in memory?) and "yarn watch-renderer" only creates "renderer-bundle.js".
+    // Use "yarn build" or "yarn watch-main" to build it.
     await this.app.start();
 
     // NOTE: if you get waitUntilWindowLoaded: Cannot read property 'isLoading' of undefined,

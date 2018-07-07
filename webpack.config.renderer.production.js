@@ -4,7 +4,6 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const merge = require("webpack-merge");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const baseConfig = require("./webpack.config.base");
@@ -22,26 +21,6 @@ module.exports = merge(baseConfig, {
 
   module: {
     rules: [
-      // Extract all .global.css to style.css as is
-      {
-        test: /\.(scss|sass)$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: "css-loader",
-              options: {
-                modules: false,
-                importLoaders: 1,
-                localIdentName: "[name]__[local]__[hash:base64:5]"
-              }
-            },
-            {
-              loader: "sass-loader"
-            }
-          ]
-        })
-      },
-
       // WOFF Font
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -103,8 +82,6 @@ module.exports = merge(baseConfig, {
     // new webpack.DefinePlugin({
     //   "process.env.NODE_ENV": JSON.stringify("production")
     // }),
-
-    new ExtractTextPlugin("style.css"),
 
     new HtmlWebpackPlugin({
       filename: "../app.html",

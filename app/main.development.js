@@ -50,12 +50,12 @@ app.on("ready", () =>
   // you can look in the asar file using a 7-zip plugin: http://www.tc4shell.com/en/7zip/asar/
   // it looks like
   // dist/
-  //    bundle.js
+  //    renderer-bundle.js
   //    style.css
   //    some fonts, maps, and stuff
   // app.html
-  // main.js
-  // package.jon
+  // main-bundle.js
+  // package.json
 
   installExtensions().then(() => {
     mainWindow = new BrowserWindow({
