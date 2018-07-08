@@ -45,12 +45,13 @@ module.exports = {
         ]
       },
 
-      {
-        test: /\.(html)$/,
-        use: {
-          loader: "html-loader"
-        }
-      },
+      // {
+      //   test: /\.(html)$/,
+      //   exclude: /app\.html/,
+      //   use: {
+      //     loader: "html-loader"
+      //   }
+      // },
       {
         test: /\.md$/,
         use: [
