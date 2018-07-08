@@ -2,7 +2,7 @@
 
 @import "~react-table/react-table.css";
 
-@import "~react-tabs/style/react-tabs.scss";
+@import "~react-tabs/style/react-tabs.css";
 
 $select-input-height: 28px;
 @import "~react-select/scss/default";
@@ -10,8 +10,8 @@ $select-input-height: 28px;
 @import "./colors";
 
 $icon-font-path: "~@blueprintjs/core/resources/icons";
-@import "~@blueprintjs/core/src/blueprint.scss";
-@import "~@blueprintjs/datetime/src/blueprint-datetime.scss";
+@import "~@blueprintjs/core/dist/blueprint.css";
+@import "~@blueprintjs/datetime/dist/blueprint-datetime.css";
 @import "~react-datepicker/dist/react-datepicker.css";
 
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui

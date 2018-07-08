@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
 const devMode = process.env.NODE_ENV !== "production";
+// didn't help var HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 
 module.exports = {
   mode: "development",
@@ -22,25 +23,30 @@ module.exports = {
         loaders: ["ts-loader"],
         exclude: /node_modules/
       },
-      // Extract all .global.css to style.css as is
+
       {
         test: /\.(scss|sass)$/,
+        exclude: /node_modules/,
         use: [
           {
-            // I'm not sure about this difference
+            // review: I don't know why we need to extract for production
             loader: devMode ? "style-loader" : MiniCssExtractPlugin.loader
           },
           {
             loader: "css-loader",
             options: {
-              sourceMap: true, // could be dev only
+              sourceMap: devMode,
               modules: false,
-              importLoaders: 1,
+              importLoaders: 1, // Number of loaders applied before CSS loader.
               localIdentName: "[name]__[local]__[hash:base64:5]"
             }
           },
           {
-            loader: "sass-loader"
+            loader: "sass-loader",
+            options: {
+              sourceMap: devMode
+            }
+            //loader: "fast-sass-loader" // <-- no source maps
           }
         ]
       },
@@ -76,6 +82,7 @@ module.exports = {
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
+        exclude: /node_modules/,
         use: "url-loader"
       },
       {
@@ -88,6 +95,55 @@ module.exports = {
             loader: "css-loader" // translates CSS into CommonJS
           }
         ]
+      },
+      // WOFF Font
+      {
+        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 10000,
+            mimetype: "application/font-woff"
+          }
+        }
+      },
+      // WOFF2 Font
+      {
+        test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 10000,
+            mimetype: "application/font-woff"
+          }
+        }
+      },
+      // TTF Font
+      {
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 10000,
+            mimetype: "application/octet-stream"
+          }
+        }
+      },
+      // EOT Font
+      {
+        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+        use: "file-loader"
+      },
+      // SVG Font
+      {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 10000,
+            mimetype: "image/svg+xml"
+          }
+        }
       }
     ]
   },
@@ -110,10 +166,15 @@ module.exports = {
   },
 
   plugins: [
+    // slowed both initial and incremental "watch" builds by a factor of 2-4: new HardSourceWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "style.css"
     })
   ],
+
+  optimization: {
+    splitChunks: {}
+  },
 
   externals: Object.keys(externals || {})
 };
