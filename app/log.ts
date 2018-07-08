@@ -4,7 +4,8 @@ import * as fs from "fs-extra";
 const name = process.env.log ? process.env.log : "sayless.log";
 
 if (fs.existsSync(name)) {
-  fs.removeSync(name);
+  // no: removing it makes vscode close the window: fs.removeSync(name);
+  fs.writeFileSync(name, "");
 }
 
 const log = Winston.createLogger({
