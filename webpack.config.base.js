@@ -6,7 +6,8 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
-const devMode = process.env.NODE_ENV !== "production";
+//test or development
+const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
 // didn't help var HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 
 module.exports = {
@@ -30,12 +31,14 @@ module.exports = {
         use: [
           {
             // review: I don't know why we need to extract for production
-            loader: devMode ? "style-loader" : MiniCssExtractPlugin.loader
+            loader: wantDevelopmentOptimizations
+              ? "style-loader"
+              : MiniCssExtractPlugin.loader
           },
           {
             loader: "css-loader",
             options: {
-              sourceMap: devMode,
+              sourceMap: wantDevelopmentOptimizations,
               modules: false,
               importLoaders: 1, // Number of loaders applied before CSS loader.
               localIdentName: "[name]__[local]__[hash:base64:5]"
@@ -44,7 +47,7 @@ module.exports = {
           {
             loader: "sass-loader",
             options: {
-              sourceMap: devMode
+              sourceMap: wantDevelopmentOptimizations
             }
             //loader: "fast-sass-loader" // <-- no source maps
           }

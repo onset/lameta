@@ -11,6 +11,9 @@ const baseConfig = require("./webpack.config.base");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
 
+//test or development
+const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
+
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
 // here to just turn on again.
@@ -34,7 +37,7 @@ module.exports = speedMeasurePlugin.wrap(
   // outputs timing each loader
   merge(baseConfig, {
     //https://github.com/stephencookdev/speed-measure-webpack-plugin
-    mode: "production",
+    mode: wantDevelopmentOptimizations ? "development" : "production",
     //devtool: "cheap-module-source-map",
     devtool: "inline-source-map",
     //devtool: "eval-source-map",
