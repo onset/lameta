@@ -2,8 +2,6 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
 import TextFieldEdit from "./../../TextFieldEdit";
-import { Button } from "@blueprintjs/core";
-import { observable, intercept } from "mobx";
 import ParentButton from "./ParentButton";
 import { locate } from "../../../crossPlatformUtilities";
 
