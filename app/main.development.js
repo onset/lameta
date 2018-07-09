@@ -80,6 +80,9 @@ app.on("ready", () =>
     });
     // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
     if (process.env.NODE_ENV === "development") {
+      console.log(
+        "If you hang here, it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run, turn off the settings, then renable."
+      );
       mainWindow.openDevTools();
       //NB: setting up the context menu happened here, in the boilerplate.
       // But it proved difficult to override based on where the user clicked.
