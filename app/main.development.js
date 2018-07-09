@@ -56,38 +56,39 @@ app.on("ready", () =>
   // app.html
   // main-bundle.js
   // package.json
+  {
+    installExtensions().then(() => {
+      mainWindow = new BrowserWindow({
+        show: false,
+        width: 1024,
+        height: 728,
+        //windows
+        icon: path.join(__dirname, "../artwork/windows.ico")
+        //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")
+        //mac icon: path.join(__dirname, "../app/icons/mac.icns")
+      });
 
-  installExtensions().then(() => {
-    mainWindow = new BrowserWindow({
-      show: false,
-      width: 1024,
-      height: 728,
-      //windows
-      icon: path.join(__dirname, "../artwork/windows.ico")
-      //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")
-      //mac icon: path.join(__dirname, "../app/icons/mac.icns")
-    });
+      mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-    mainWindow.loadURL(`file://${__dirname}/app.html`);
-
-    mainWindow.webContents.on("did-finish-load", () => {
-      mainWindow.show();
-      mainWindow.focus();
-      fillLastMonitor();
+      mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.show();
+        mainWindow.focus();
+        fillLastMonitor();
+      });
+      mainWindow.on("closed", () => {
+        mainWindow = null;
+      });
+      // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "*****If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+        );
+        mainWindow.openDevTools();
+        //NB: setting up the context menu happened here, in the boilerplate.
+        // But it proved difficult to override based on where the user clicked.
+        // So now the default context menu is handled on the home page.
+        // mainWindow.webContents.on("context-menu", (e, props) => {
+      }
     });
-    mainWindow.on("closed", () => {
-      mainWindow = null;
-    });
-    // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        "If you hang here, it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run, turn off the settings, then renable."
-      );
-      mainWindow.openDevTools();
-      //NB: setting up the context menu happened here, in the boilerplate.
-      // But it proved difficult to override based on where the user clicked.
-      // So now the default context menu is handled on the home page.
-      // mainWindow.webContents.on("context-menu", (e, props) => {
-    }
-  })
+  }
 );
