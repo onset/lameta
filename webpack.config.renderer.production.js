@@ -13,7 +13,7 @@ const speedMeasurePlugin = new SpeedMeasurePlugin();
 
 //test or development
 const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
-
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
 // here to just turn on again.
@@ -49,6 +49,17 @@ module.exports = speedMeasurePlugin.wrap(
       path: path.join(__dirname, "app/dist"),
       publicPath: "./dist/"
     },
+
+    // use the following if you're getting errors in the terminal, before source maps are available.
+    // it will eave the code alone so you have a greater chance of making use of the line numbers in the errors.
+    // optimization: {
+    //   minimizer: [
+    //     new UglifyJsPlugin({
+    //       sourceMap: true,
+    //       uglifyOptions: { mangle: false, compress: false }
+    //     })
+    //   ]
+    // },
 
     module: {
       rules: []
