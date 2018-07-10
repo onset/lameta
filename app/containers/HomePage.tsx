@@ -75,8 +75,12 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.menu = new SayLessMenu(this);
     this.menu.setupContentMenu();
   }
+  private isRunningFromSource(): boolean {
+    return /node_modules[\\/]electron[\\/]/.test(process.execPath);
+  }
+
   public componentDidMount() {
-    if (!isDev) {
+    if (!this.isRunningFromSource()) {
       window.alert(
         "Warning: this version of SayMore Mac not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
       );
@@ -87,12 +91,25 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.project.saveAllFilesInFolder();
       }
     });
-    // Save when we lose focuse. Review: this might take care of the quitting one, above.
-    remote.BrowserWindow.getFocusedWindow().on("blur", e => {
-      if (this.projectHolder.project) {
-        this.projectHolder.project.saveAllFilesInFolder();
+
+    // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
+    // was unavailble sometimes, particularly when running production build via "yarn start" on Windows.
+    // So we give it a few seconds and catch the problem if it still fails.
+    window.setTimeout(() => {
+      try {
+        // Save when we lose focuse. Review: this might take care of the quitting one, above.
+        remote.BrowserWindow.getFocusedWindow().on("blur", e => {
+          if (this.projectHolder.project) {
+            this.projectHolder.project.saveAllFilesInFolder();
+          }
+        });
+        console.log("Successfully set window blur event callback");
+      } catch (error) {
+        log.error(
+          "Error trying to set the window blur event callback: " + error
+        );
       }
-    });
+    }, 3000);
   }
   private handleCreateProjectDialogClose(
     directory: string,
