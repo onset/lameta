@@ -36,8 +36,9 @@ export class ComponentTab extends React.Component<IProps> {
       <div className={"componentTab " + this.props.folderTypeStyleClass}>
         <SplitPane
           split="vertical"
-          minSize={100}
           defaultSize={sp}
+          minHeight="auto"
+          height="auto"
           onChange={(size: any) => localStorage.setItem(splitterKey, size)}
         >
           <div className={"firstColumn"}>

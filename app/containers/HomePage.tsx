@@ -6,7 +6,7 @@ import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as ncp from "ncp";
 import * as Path from "path";
-import { remote, OpenDialogOptions } from "electron";
+import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
 const { Menu } = require("electron");
@@ -55,6 +55,23 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.menu.buildMainMenu();
     this.menu.setupContentMenu();
   }
+  public componentDidMount() {
+    window.alert(
+      "Warning: this version is not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
+    );
+    // Save when we're quiting. Review: does this cover shutdown?
+    window.addEventListener("beforeunload", e => {
+      if (this.projectHolder.project) {
+        this.projectHolder.project.saveAllFilesInFolder();
+      }
+    });
+    // Save when we lose focuse. Review: this might take care of the quitting one, above.
+    remote.BrowserWindow.getFocusedWindow().on("blur", e => {
+      if (this.projectHolder.project) {
+        this.projectHolder.project.saveAllFilesInFolder();
+      }
+    });
+  }
   private handleCreateProjectDialogClose(
     directory: string,
     useSampleProject: boolean
@@ -90,8 +107,8 @@ export default class HomePage extends React.Component<IProps, IState> {
   }
   public render() {
     const title = this.projectHolder.project
-      ? this.projectHolder.project.displayName + " - SayLess"
-      : "SayLess";
+      ? this.projectHolder.project.displayName + " - SayMore Mac"
+      : "SayMore Mac";
 
     remote.getCurrentWindow().setTitle(title);
     return (
@@ -153,7 +170,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "SayLess"
+      "SayMore"
     );
 
     const options: OpenDialogOptions = {
@@ -162,7 +179,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects
       properties: ["openFile"],
-      filters: [{ name: "SayMore/SayLess Project Files", extensions: ["sprj"] }]
+      filters: [{ name: "SayMore/SayMore Project Files", extensions: ["sprj"] }]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
       if (paths) {

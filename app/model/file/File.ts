@@ -364,28 +364,28 @@ export abstract class File {
     return builder; // we didn't write anything
   }
   public save() {
-    console.log("SAVING DISABLED");
-    return;
+    // console.log("SAVING DISABLED");
+    // return;
 
-    // if (!this.dirty) {
-    //   //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
-    //   return;
-    // }
-    // console.log(`Saving ${this.metadataFilePath}`);
+    if (!this.dirty) {
+      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
+      return;
+    }
+    console.log(`Saving ${this.metadataFilePath}`);
 
-    // const xml = this.getXml();
+    const xml = this.getXml();
 
-    // if (this.describedFilePath.indexOf("sample data") > -1) {
-    //   // console.log(
-    //   //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
-    //   // );
-    //   console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
-    //   // console.log(xml);
-    // } else {
-    //   //console.log("writing:" + xml);
-    //   fs.writeFileSync(this.metadataFilePath, xml);
-    //   this.clearDirty();
-    // }
+    if (this.describedFilePath.indexOf("sample data") > -1) {
+      // console.log(
+      //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
+      // );
+      console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
+      // console.log(xml);
+    } else {
+      //console.log("writing:" + xml);
+      fs.writeFileSync(this.metadataFilePath, xml);
+      this.clearDirty();
+    }
   }
 
   private getUniqueFilePath(intendedPath: string): string {

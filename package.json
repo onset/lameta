@@ -59,7 +59,7 @@
   },
   "build": {
     "productName": "SayMore Mac",
-    "appId": "io.github.sillsdev.sayless",
+    "appId": "io.github.MEaCM.saymore-mac",
     "dmg": {
       "contents": [
         {

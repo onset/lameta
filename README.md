@@ -1,6 +1,8 @@
-SayLess is reboot of SayMore as a web app wrapped in electron.
+SayMore Mac is reboot of SayMore (c# winforms) as a web app wrapped in electron.
 
 ## Get Started
+
+Install node, yarn, then
 
 ```bash
 $ yarn

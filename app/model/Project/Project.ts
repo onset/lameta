@@ -282,7 +282,7 @@ export class Project extends Folder {
     this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
   }
   public deleteCurrentPerson() {
-    console.log("delete current session");
+    console.log("delete current person");
 
     this.persons.splice(this.selectedPerson.index, 1);
     this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
