@@ -10,15 +10,15 @@ export default class SayLessMenu {
 
     // add some hotkeys that will work even in production, in case we need
     // to debug
-    const hotkeys = require("hotkeys-js");
-    hotkeys("alt+ctrl+i", (event, handler) => {
-      event.preventDefault();
-      remote.getCurrentWindow().webContents.toggleDevTools();
-    });
-    hotkeys("ctrl+r", (event, handler) => {
-      event.preventDefault();
-      remote.getCurrentWindow().webContents.reload();
-    });
+    // const hotkeys = require("hotkeys-js");
+    // hotkeys("alt+ctrl+i", (event, handler) => {
+    //   event.preventDefault();
+    //   remote.getCurrentWindow().webContents.toggleDevTools();
+    // });
+    // hotkeys("ctrl+r", (event, handler) => {
+    //   event.preventDefault();
+    //   remote.getCurrentWindow().webContents.reload();
+    // });
   }
 
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
