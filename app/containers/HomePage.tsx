@@ -15,6 +15,7 @@ import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
+const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -75,9 +76,11 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.menu.setupContentMenu();
   }
   public componentDidMount() {
-    window.alert(
-      "Warning: this version is not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
-    );
+    if (!isDev) {
+      window.alert(
+        "Warning: this version of SayMore Mac not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
+      );
+    }
     // Save when we're quiting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", e => {
       if (this.projectHolder.project) {
