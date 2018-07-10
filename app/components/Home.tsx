@@ -41,7 +41,7 @@ export default class Home extends React.Component<IProps> {
       label: "&Session",
       submenu: [
         {
-          label: "New Session...",
+          label: "New Session",
           enabled: enable,
           click: () => {
             if (this.props.project) {
@@ -66,7 +66,7 @@ export default class Home extends React.Component<IProps> {
       label: "&People",
       submenu: [
         {
-          label: "New Person...",
+          label: "New Person",
           enabled: enable,
           click: () => {
             if (this.props.project) {

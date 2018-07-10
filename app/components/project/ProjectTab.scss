@@ -23,8 +23,26 @@
     width: 200px;
   }
   //right side
-  .react-tabs__tab-panel {
+  .react-tabs__tab-panel--selected {
     width: 100%;
+    border: solid purple;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    .filePane {
+      border: solid purple;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+
+      .SplitPane {
+        border: solid blue;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: auto;
+      }
+    }
   }
 
   .primary {
@@ -63,6 +81,16 @@
     padding-left: 1px;
     padding-top: 0px;
     padding-right: 0;
+  }
+  .project .react-tabs__tab-panel--selected {
+    border: solid yellow !important;
+    display: flex;
+    flex: 1;
+  }
+  .project .react-tabs__tab-panel {
+    border: solid red !important;
+    display: flex;
+    flex: 1;
   }
   .react-tabs__tab-list {
     background-color: $project--color;
