@@ -97,8 +97,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     // So we give it a few seconds and catch the problem if it still fails.
     window.setTimeout(() => {
       try {
-        // Save when we lose focuse. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow().on("blur", e => {
+        // Save when we lose focus. Review: this might take care of the quitting one, above.
+        remote.BrowserWindow.getFocusedWindow()!.on("blur", e => {
           if (this.projectHolder.project) {
             this.projectHolder.project.saveAllFilesInFolder();
           }
