@@ -15,6 +15,7 @@ import { FieldSet } from "./field/FieldSet";
 import * as assert from "assert";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
 const sanitize = require("sanitize-filename");
+import { trash } from "../crossPlatformUtilities";
 
 export class IFolderSelection {
   @observable public index: number;
@@ -114,12 +115,13 @@ export abstract class Folder {
     const index = this.files.indexOf(file);
     this.files.splice(index, 1);
   }
+
   public moveFileToTrash(file: File) {
     ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.describedFilePath)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = Folder.trash(file.describedFilePath);
+        continueTrashing = trash(file.describedFilePath);
       }
       if (
         continueTrashing && // don't trash metadata if something went wrong trashing "described file"
@@ -127,7 +129,7 @@ export abstract class Folder {
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          Folder.trash(file.metadataFilePath);
+          trash(file.metadataFilePath);
         }
       }
 
@@ -136,16 +138,7 @@ export abstract class Folder {
       }
     });
   }
-  protected static trash(path: string): boolean {
-    // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
-    // So convert to backslashes as needed:
-    const fixedPath = Path.normalize(path).replace("/", Path.sep);
-    const success = electron.shell.moveItemToTrash(fixedPath);
-    if (!success) {
-      window.alert("Failed to delete " + fixedPath);
-    }
-    return success;
-  }
+
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);

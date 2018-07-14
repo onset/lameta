@@ -10,6 +10,17 @@ export function showInExplorer(path: string) {
   electron.shell.showItemInFolder(path);
 }
 
+export function trash(path: string): boolean {
+  // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
+  // So convert to backslashes as needed:
+  const fixedPath = Path.normalize(path).replace("/", Path.sep);
+  const success = electron.shell.moveItemToTrash(fixedPath);
+  if (!success) {
+    window.alert("Failed to delete " + fixedPath);
+  }
+  return success;
+}
+
 function replaceall(replaceThis: string, withThis: string, inThis: string) {
   withThis = withThis.replace(/\$/g, "$$$$");
   return inThis.replace(

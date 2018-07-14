@@ -4,6 +4,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { ComponentTab } from "./ComponentTab";
 import { IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
+import * as mobx from "mobx";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
@@ -30,6 +31,22 @@ export interface IProps {
 export default class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 1;
   // private currentTabIndex: number = this.kFirstTabToOpen;
+
+  public constructor(props: IProps) {
+    super(props);
+
+    //review: I'm not sure this is the cleanest way to handle this...
+    //at this time, electron doesn't appear to have a way to compute
+    //menu enabled-ness at the last moment. So if we add or delete a
+    // person or session, we need to update the corresponding menu
+    // becuase this may be the first person/session, or there may
+    // now be no persons/sessions.
+    mobx.observe(this.props.project.selectedPerson, change => {
+      console.log("about to update menu based on change in persons...");
+      this.UpdateMenus(2); // assume we are in the people tab at the moment
+      return change;
+    });
+  }
 
   // NB: we have to actually reload menus becuase (as of this writing) electron menus
   // don't take an enabled function. They only take and enabled value. So you have

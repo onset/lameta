@@ -16,6 +16,8 @@ import {
 } from "./AuthorityLists/AuthorityLists";
 import { remote } from "electron";
 import { isNullOrUndefined } from "util";
+import { trash } from "../../crossPlatformUtilities";
+import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
@@ -120,8 +122,8 @@ export class Project extends Folder {
       // else ignore it
     });
 
-    project.selectedSession.index = 0;
-    project.selectedPerson.index = 0;
+    project.selectedSession.index = project.sessions.length > 0 ? 0 : -1;
+    project.selectedPerson.index = project.persons.length > 0 ? 0 : -1;
 
     //project.files[0].save();
     // tslint:disable-next-line:no-unused-expression
@@ -273,6 +275,10 @@ export class Project extends Folder {
     return this.selectedSession.index >= 0;
   }
   public canDeleteCurrentPerson(): boolean {
+    console.log(
+      "canDeleteCurrentPerson sees selectedPerson.index = " +
+        this.selectedPerson.index
+    );
     return this.selectedPerson.index >= 0;
   }
   public deleteCurrentSession() {
@@ -282,9 +288,12 @@ export class Project extends Folder {
     this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
   }
   public deleteCurrentPerson() {
-    console.log("delete current person");
-
-    this.persons.splice(this.selectedPerson.index, 1);
-    this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
+    const person = this.persons[this.selectedPerson.index];
+    ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
+      if (trash(person.directory)) {
+        this.persons.splice(this.selectedPerson.index, 1);
+        this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
+      }
+    });
   }
 }
