@@ -118,13 +118,8 @@ export abstract class Folder {
     ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.describedFilePath)) {
-        electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = electron.shell.moveItemToTrash(
-          file.describedFilePath
-        );
-        if (!continueTrashing) {
-          window.alert("Failed to delete " + file.describedFilePath);
-        }
+        // electron.shell.showItemInFolder(file.describedFilePath);
+        continueTrashing = Folder.trash(file.describedFilePath);
       }
       if (
         continueTrashing && // don't trash metadata if something went wrong trashing "described file"
@@ -132,9 +127,7 @@ export abstract class Folder {
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          if (!electron.shell.moveItemToTrash(file.metadataFilePath)) {
-            window.alert("Failed to delete " + file.metadataFilePath);
-          }
+          Folder.trash(file.metadataFilePath);
         }
       }
 
@@ -142,6 +135,16 @@ export abstract class Folder {
         this.forgetFile(file);
       }
     });
+  }
+  protected static trash(path: string): boolean {
+    // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
+    // So convert to backslashes as needed:
+    const fixedPath = Path.normalize(path).replace("/", Path.sep);
+    const success = electron.shell.moveItemToTrash(fixedPath);
+    if (!success) {
+      window.alert("Failed to delete " + fixedPath);
+    }
+    return success;
   }
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;
