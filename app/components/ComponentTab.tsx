@@ -51,7 +51,8 @@ export class ComponentTab extends React.Component<IProps> {
             <div className={"newFolderBar"}>{this.props.children}</div>
           </div>
           {this.props.folders &&
-            this.props.folders.length > 0 && (
+            this.props.folders.length > 0 &&
+            this.props.selectedFolder.index > -1 && (
               <FolderPane
                 project={this.props.project}
                 folder={this.props.folders[this.props.selectedFolder.index]}

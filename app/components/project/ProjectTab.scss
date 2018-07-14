@@ -25,18 +25,18 @@
   //right side
   .react-tabs__tab-panel--selected {
     width: 100%;
-    border: solid purple;
+    //border: solid purple;
     display: flex;
     flex: 1;
     flex-direction: column;
     .filePane {
-      border: solid purple;
+      //border: solid purple;
       display: flex;
       flex: 1;
       flex-direction: column;
 
       .SplitPane {
-        border: solid blue;
+        //        border: solid blue;
         display: flex;
         flex: 1;
         flex-direction: column;

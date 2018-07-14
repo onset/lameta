@@ -42,9 +42,10 @@ export default class Home extends React.Component<IProps> {
     // becuase this may be the first person/session, or there may
     // now be no persons/sessions.
     mobx.observe(this.props.project.selectedPerson, change => {
-      console.log("about to update menu based on change in persons...");
       this.UpdateMenus(2); // assume we are in the people tab at the moment
-      return change;
+    });
+    mobx.observe(this.props.project.selectedSession, change => {
+      this.UpdateMenus(1); // assume we are in the people tab at the moment
     });
   }
 

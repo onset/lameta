@@ -275,17 +275,16 @@ export class Project extends Folder {
     return this.selectedSession.index >= 0;
   }
   public canDeleteCurrentPerson(): boolean {
-    console.log(
-      "canDeleteCurrentPerson sees selectedPerson.index = " +
-        this.selectedPerson.index
-    );
     return this.selectedPerson.index >= 0;
   }
   public deleteCurrentSession() {
-    console.log("delete current session");
-
-    this.sessions.splice(this.selectedSession.index, 1);
-    this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
+    const session = this.sessions[this.selectedSession.index];
+    ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
+      if (trash(session.directory)) {
+        this.sessions.splice(this.selectedSession.index, 1);
+        this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
+      }
+    });
   }
   public deleteCurrentPerson() {
     const person = this.persons[this.selectedPerson.index];

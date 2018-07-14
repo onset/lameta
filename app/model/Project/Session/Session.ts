@@ -12,7 +12,11 @@ export class Session extends Folder {
   }
 
   public get displayName(): string {
-    return this.properties.getTextStringOrEmpty("title");
+    return (
+      this.properties.getTextStringOrEmpty("title") ||
+      this.properties.getTextStringOrEmpty("id") ||
+      "unknown"
+    );
   }
 
   public constructor(directory: string, metadataFile: File, files: File[]) {
