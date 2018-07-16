@@ -96,8 +96,8 @@ export abstract class Folder {
     const filePaths = glob.sync(Path.join(directory, "*.*"));
     filePaths.forEach(path => {
       if (path !== folderMetaDataFile.metadataFilePath) {
-        // the .meta companion files will be read and loaded into the properties of
-        // the files they describe will be found and loaded, by the constructor of the ComponentFile
+        // We don't explicitly do anything with the the .meta companion files here,
+        // becuase the the constructor of the ComponentFile is responsible for finding & loading it, (or creating it if missing?).
         if (
           !path.endsWith(".meta") &&
           !path.endsWith(".test") &&

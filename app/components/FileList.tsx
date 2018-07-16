@@ -16,6 +16,7 @@ const { Menu } = require("electron");
 const electron = require("electron");
 export interface IProps {
   folder: Folder;
+  extraButtons?: object[];
 }
 
 @observer
@@ -114,16 +115,33 @@ export default class FileList extends React.Component<IProps> {
       >
         <div className={"mask"}>Drop files here</div>
         <div className={"fileBar"}>
-          <li className={"menu-open not-implemented"}>
+          <button className={"menu-open not-implemented"} disabled={true}>
             Open
-            <ul className={"menu"}>
+            {/* <ul className={"menu"}>
               <li className={"cmd-show-in-explorer"}>
                 Show in File Explorer...
               </li>
-            </ul>
-          </li>
-          <li className={"cmd-rename not-implemented"}>*Rename...</li>
-          <li className={"cmd-convert not-implemented"}>*Convert...</li>
+            </ul> */}
+          </button>
+          <button className={"cmd-rename not-implemented"} disabled={true}>
+            *Rename...
+          </button>
+          <button className={"cmd-convert not-implemented"} disabled={true}>
+            *Convert...
+          </button>
+          {this.props.extraButtons
+            ? this.props.extraButtons.map(c => (
+                <button
+                  key={(c as any).label}
+                  disabled={!(c as any).enabled(this.props.folder.selectedFile)}
+                  onClick={() =>
+                    (c as any).onClick(this.props.folder.selectedFile)
+                  }
+                >
+                  {(c as any).label}
+                </button>
+              ))
+            : null}
           <button className={"cmd-add-files"} onClick={() => this.addFiles()}>
             Add Files
           </button>

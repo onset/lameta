@@ -9,7 +9,7 @@
     background-color: $people--color;
   }
   .not-implemented {
-    color: #becde4;
+    color: $people__disabled--color;
   }
   .selected {
     background-color: $people__selected--color;
@@ -18,6 +18,11 @@
   .folderList {
     border: solid 1px $people__outline--color;
     cursor: pointer;
+  }
+  .fileList {
+    button:disabled {
+      color: $people__disabled--color !important;
+    }
   }
 
   .react-tabs__tab-list {

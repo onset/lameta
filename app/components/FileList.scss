@@ -9,16 +9,48 @@
   position: relative; // needed by mask
   display: flex;
   flex-direction: column;
-  button {
-    background-color: inherit;
-    border-color: transparent;
-    border-width: 1px;
-    &:hover {
-      border-color: $people__outline--color;
-    }
-  }
+
   img {
     height: 16px;
     width: auto;
+  }
+
+  .fileBar {
+    //background-color: $pane__interstitial--color;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 7px;
+    height: 65px;
+    padding-top: 5px;
+    font-size: 12px;
+    li {
+      list-style: none;
+    }
+    .menu {
+      li {
+        display: none;
+      }
+    }
+    button {
+      background-color: inherit;
+      border-color: transparent;
+      border-width: 1px;
+      font-size: 12px;
+      height: 21px; //hack for border
+      margin: 0;
+      border: solid 2px white;
+      &:hover {
+        border-color: $people--color;
+        border: solid 2px $people--color;
+      }
+      &:disabled {
+        color: lightgray;
+        border: solid 2px white !important;
+        cursor: not-allowed;
+      }
+    }
   }
 }

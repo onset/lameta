@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
-import { ComponentTab } from "./ComponentTab";
+import { ComponentTab } from "./componentTab/ComponentTab";
 import { IFolderSelection } from "../model/Folder";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
@@ -29,7 +29,7 @@ export interface IProps {
 
 @observer
 export default class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 1;
+  private kFirstTabToOpen = 2;
   // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {

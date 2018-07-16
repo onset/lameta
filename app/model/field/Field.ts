@@ -186,8 +186,6 @@ export class HasConsentField extends Field {
     this.person = person;
   }
   public hasConsent(): boolean {
-    return !!this.person.files.find(
-      f => f.describedFilePath.indexOf("Consent") > -1
-    );
+    return !!this.person.files.find(f => f.isLabeledAsConsent());
   }
 }

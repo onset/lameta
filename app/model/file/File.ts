@@ -124,7 +124,8 @@ export abstract class File {
     this.metadataFilePath = metadataFilePath;
     this.xmlRootName = xmlRootName;
     this.fileExtensionForMetadata = fileExtensionForMetadata;
-    this.addTextProperty("filename", Path.basename(describedFilePath), false);
+    this.addTextProperty("filename", "", false);
+    this.setFileNameProperty();
     this.addTextProperty("notes", "");
 
     const stats = fs.statSync(describedFilePath);
@@ -243,48 +244,50 @@ export abstract class File {
     }
   }
   public readMetadataFile() {
-    if (!fs.existsSync(this.metadataFilePath)) {
-      return;
-    }
+    if (fs.existsSync(this.metadataFilePath)) {
+      const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
 
-    const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
-
-    let xmlAsObject: any = {};
-    xml2js.parseString(
-      xml,
-      {
-        async: false,
-        explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
-        //explicitArray: true, this also just... gives you a mess
-        //explicitChildren: true this makes even simple items have arrays... what a pain
-      },
-      (err, result) => {
-        if (err) {
-          throw err;
+      let xmlAsObject: any = {};
+      xml2js.parseString(
+        xml,
+        {
+          async: false,
+          explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+          //explicitArray: true, this also just... gives you a mess
+          //explicitChildren: true this makes even simple items have arrays... what a pain
+        },
+        (err, result) => {
+          if (err) {
+            throw err;
+          }
+          xmlAsObject = result;
         }
-        xmlAsObject = result;
+      );
+      // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+      // so that we just have the object with its properties.
+      let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+      if (properties === "") {
+        //   Review: This happen if it finds, e.g. <Session/>.
+        properties = {};
       }
-    );
-    // that will have a root with one child, like "Session" or "Meta". Zoom in on that
-    // so that we just have the object with its properties.
-    let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
-    if (properties === "") {
-      //   Review: This happen if it finds, e.g. <Session/>.
-      properties = {};
+      // else {
+      //   properties = properties.$$; // this is needed if xml2js.parstring() has explicitChildren:true
+      // }
+
+      //copies from this object (which is just the xml as an object) into this File object
+      this.loadProperties(properties);
+      //review: this is looking kinda ugly... not sure what I want to do
+      // because contributions is only one array at the moment
+      this.properties.addContributionArrayProperty(
+        "contributions",
+        this.contributions
+      );
     }
-    // else {
-    //   properties = properties.$$; // this is needed if xml2js.parstring() has explicitChildren:true
-    // }
 
-    //copies from this object (which is just the xml as an object) into this File object
-    this.loadProperties(properties);
-    //review: this is looking kinda ugly... not sure what I want to do
-    // because contributions is only one array at the moment
-    this.properties.addContributionArrayProperty(
-      "contributions",
-      this.contributions
-    );
-
+    // It's important to do this *after* all the deserializing, so that we don't count the deserializing as a change
+    // and then re-save, which would make every file look as if it was modified today.
+    // And we also need to run it even if the meta file companion doesn't exist yet for some file, so that
+    // we'll create it if/when some property gets set.
     this.watchForChange = mobx.reaction(
       // Function to check for a change. Mobx looks at its result, and if it is different
       // than the first run, it will call the second function.
@@ -370,7 +373,7 @@ export abstract class File {
     // console.log("SAVING DISABLED");
     // return;
 
-    if (!this.dirty) {
+    if (!this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
@@ -413,7 +416,7 @@ export abstract class File {
   // jo.person  --> joe.person
   // jo_photo.jpg --> joe_photo.jpg
   // group_photo.jpg --> no change
-  private internalUpdateNameBasedOnNewBaseName(
+  private internalUpdateNameBasedOnNewFolderName(
     currentFilePath: string,
     newbase: string
   ): string {
@@ -436,13 +439,16 @@ export abstract class File {
     const parentDirectoryPortion = Path.dirname(directoryPortion);
     return Path.join(parentDirectoryPortion, newFolderName, filePortion);
   }
+  public isOnlyMetadata(): boolean {
+    return this.metadataFilePath === this.describedFilePath;
+  }
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
     const hasSeparateMetaDataFile =
       this.metadataFilePath !== this.describedFilePath;
     if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)) {
-      this.metadataFilePath = this.internalUpdateNameBasedOnNewBaseName(
+      this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
         this.metadataFilePath,
         newFolderName
       );
@@ -451,7 +457,7 @@ export abstract class File {
         newFolderName
       );
     }
-    this.describedFilePath = this.internalUpdateNameBasedOnNewBaseName(
+    this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
       this.describedFilePath,
       newFolderName
     );
@@ -462,9 +468,12 @@ export abstract class File {
     if (!hasSeparateMetaDataFile) {
       this.metadataFilePath = this.describedFilePath;
     }
-    this.properties.setText("filename", Path.basename(this.describedFilePath));
+    this.setFileNameProperty();
   }
 
+  private setFileNameProperty() {
+    this.properties.setText("filename", Path.basename(this.describedFilePath));
+  }
   /* ----------- Change Detection -----------
     Enhance: move to its own class
   */
@@ -506,6 +515,90 @@ export abstract class File {
   public getIconName(): string {
     const type = this.getTextProperty("type", "unknowntype");
     return locate(`assets/file-icons/${type}.png`);
+  }
+
+  // We're defining "core name" to be the file name (no directory) minus the extension
+  private getCoreName(): string {
+    return Path.basename(this.describedFilePath).replace(
+      Path.extname(this.describedFilePath),
+      ""
+    );
+  }
+  /**
+   * Return core name of the file modified to indicate the given role
+   *
+   * @param roleName e.g. "consent"
+   */
+  private getCoreNameWithRole(roleName: string): string {
+    // TODO: this needs to become a lot more sophisticated
+    return this.getCoreName() + "_" + roleName;
+  }
+  private tryToRenameToFunction(roleName: string): boolean {
+    if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
+      return true;
+    }
+    return false;
+  }
+
+  private tryToRenameBothFiles(newCoreName: string): boolean {
+    assert(
+      this.metadataFilePath !== this.describedFilePath,
+      "this method is not for renaming the person or session files"
+    );
+
+    this.save();
+    const newDescribedFilePath = Path.join(
+      Path.dirname(this.describedFilePath),
+      newCoreName + Path.extname(this.describedFilePath)
+    );
+
+    const newMetadataFilePath = newDescribedFilePath + ".meta";
+
+    if (
+      fs.existsSync(newDescribedFilePath) ||
+      fs.existsSync(newMetadataFilePath)
+    ) {
+      console.error(
+        "Cannot rename: one of the files that would result from the rename already exists."
+      );
+      return false;
+    }
+    try {
+      fs.renameSync(this.metadataFilePath, newMetadataFilePath);
+    } catch (err) {
+      return false;
+    }
+    try {
+      fs.renameSync(this.describedFilePath, newDescribedFilePath);
+    } catch (err) {
+      // oh my. We failed to rename the described file. Undo the rename of the metadata file.
+      try {
+        fs.renameSync(newMetadataFilePath, this.metadataFilePath);
+      } catch (err) {
+        return false;
+      }
+      return false;
+    }
+    this.describedFilePath = newDescribedFilePath;
+    this.metadataFilePath = newMetadataFilePath;
+    this.setFileNameProperty();
+    return true;
+  }
+
+  public isLabeledAsConsent(): boolean {
+    return this.describedFilePath.indexOf("Consent") > -1;
+  }
+  public canRenameForConsent(): boolean {
+    return !(this.isLabeledAsConsent() || this.isOnlyMetadata());
+  }
+  public renameForConsent() {
+    assert(!this.isOnlyMetadata());
+    assert(!this.isLabeledAsConsent());
+    if (!this.tryToRenameToFunction("Consent")) {
+      window.alert("Sorry, something prevented the rename");
+    }
+    console.log("renameForConsent " + this.describedFilePath);
+    //this.properties.setValue("hasConsent", true);
   }
 }
 

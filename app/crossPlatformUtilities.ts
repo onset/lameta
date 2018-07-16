@@ -86,9 +86,9 @@ export function locate(relativePath: string): string {
     //console.log(`locate(${path})  result= ${result}`);
     return result;
   } catch (err) {
-    console.error(
-      `Could not find: ${relativePath}. Looked in ${adjustedPath}. appPath was ${appPath}`
-    );
+    // console.error(
+    //   `Could not find: ${relativePath}. Looked in ${adjustedPath}. appPath was ${appPath}`
+    // );
     return "";
   }
 }

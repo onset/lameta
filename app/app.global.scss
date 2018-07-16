@@ -43,6 +43,10 @@ html,
 }
 a {
   text-decoration: underline;
+  color: blue;
+  &:visited {
+    color: blue; //don't change after they've clicked it once
+  }
 }
 .field {
   // display: flex;
@@ -86,6 +90,10 @@ textarea {
   &.invalid {
     border: solid 2px red;
   }
+  font-family: $default-fonts;
+}
+
+button {
   font-family: $default-fonts;
 }
 

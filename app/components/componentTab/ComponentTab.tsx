@@ -1,10 +1,10 @@
 import * as React from "react";
-import { FolderList } from "./FolderList";
-import { Folder, IFolderSelection } from "../model/Folder";
-import { FolderPane } from "./FolderPane";
+import { FolderList } from "../FolderList";
+import { Folder, IFolderSelection } from "../../model/Folder";
+import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
-import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import { Project } from "../model/Project/Project";
+import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import { Project } from "../../model/Project/Project";
 import "./ComponentTab.scss";
 
 //import SplitPane from "react-split-pane";
@@ -18,6 +18,8 @@ interface IProps {
   columnWidths: number[];
   authorityLists: AuthorityLists;
   project: Project;
+  folderListButtons?: JSX.Element[];
+  fileListButtons?: object[];
 }
 
 // Sorry, the name for this is bad... suggestions welcome.
@@ -48,7 +50,7 @@ export class ComponentTab extends React.Component<IProps> {
               columns={this.props.columns}
               columnWidths={this.props.columnWidths}
             />
-            <div className={"newFolderBar"}>{this.props.children}</div>
+            <div className={"newFolderBar"}>{this.props.folderListButtons}</div>
           </div>
           {this.props.folders &&
             this.props.folders.length > 0 &&
@@ -59,6 +61,7 @@ export class ComponentTab extends React.Component<IProps> {
                 folderTypeStyleClass={this.props.folderTypeStyleClass}
                 showStandardMetaTabs={true}
                 authorityLists={this.props.authorityLists}
+                fileListButtons={this.props.fileListButtons}
               >
                 <h3 className={"paneTitle"}>
                   {
@@ -71,5 +74,21 @@ export class ComponentTab extends React.Component<IProps> {
         </SplitPane>
       </div>
     );
+  }
+  // private static castArray(value) {
+  //   return Array.isArray(value) ? value : [value];
+  // }
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface IJustChildrenProps {}
+export class FileListButtons extends React.Component<IJustChildrenProps> {
+  public render() {
+    return this.props.children;
+  }
+}
+export class FolderListButtons extends React.Component<IJustChildrenProps> {
+  public render() {
+    return this.props.children;
   }
 }

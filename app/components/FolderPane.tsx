@@ -16,7 +16,6 @@ import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./session/ContributorsTable";
 import { Project } from "../model/Project/Project";
 import ImdiView from "./ImdiView";
-import ImdiGenerator from "../export/imdiGenerator";
 import { File } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";
@@ -29,6 +28,7 @@ export interface IProps {
   showStandardMetaTabs: boolean;
   authorityLists: AuthorityLists;
   project: Project;
+  fileListButtons?: object[];
 }
 
 @observer
@@ -68,7 +68,10 @@ export class FolderPane extends React.Component<IProps> {
           defaultSize={sp}
           onChange={(size: any) => localStorage.setItem(splitterKey, size)}
         >
-          <FileList folder={this.props.folder} />
+          <FileList
+            folder={this.props.folder}
+            extraButtons={this.props.fileListButtons}
+          />
           {this.tabs}
         </SplitPane>
       </div>
@@ -91,7 +94,8 @@ export class FolderPane extends React.Component<IProps> {
     }
     const notesPanel = directoryObject.properties.getValue("notes") ? (
       <TabPanel>
-        <Notes text={directoryObject.properties.getTextField("notes")} />
+        {/* <Notes text={directoryObject.properties.getTextField("notes")} /> */}
+        <Notes text={file.properties.getTextField("notes")} />
       </TabPanel>
     ) : null;
     const propertiesPanel = (
@@ -290,7 +294,9 @@ export class FolderPane extends React.Component<IProps> {
             </TabList>
             <TabPanel className="unhandledFileType">
               <a
-                onClick={() => {
+                href=""
+                onClick={e => {
+                  e.preventDefault(); // don't try to follow the link
                   // the "file://" prefix is required on mac, works fine on windows
                   electron.shell.openExternal(
                     "file://" + file.describedFilePath

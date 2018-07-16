@@ -24,13 +24,26 @@ export class FolderList extends React.Component<IProps> {
   }
   public render() {
     // What this mobxDummy is about:
-    // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
+    // What happens inside the table's cells is invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
     const mobxDummy = this.props.folders.map(f => f.displayName);
+    // TODO: currently this correctly fires if you *delete* the consent file (not very common!),
+    // but it doesn't work if you mark a file as consent. Should try again with updated mobx.
+    const mobxDummyConsent = this.props.folders.map(f => {
+      f.files.map(child => child.describedFilePath);
+    });
+    // const mobxDummyConsent = this.props.folders.map(f => {
+    //   const field = f.properties.getValueOrThrow(
+    //     "hasConsent"
+    //   ) as HasConsentField;
+    //   if (field) {
+    //     const dummyResult = field.hasConsent();
+    //   }
+    // });
     const columns = this.props.columns.map((key, index) => {
       const c: object = {
         id: key,
