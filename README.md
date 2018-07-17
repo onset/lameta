@@ -1,4 +1,4 @@
-SayMore Mac is reboot of SayMore (c# winforms) as a web app wrapped in electron.
+SayMore Mac is a reboot of SayMore (c# winforms) as a web app wrapped in electron.
 
 ## Get Started
 
