@@ -2,7 +2,8 @@ import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table";
 
 import { Folder, IFolderSelection } from "../model/Folder";
-import { observer } from "mobx-react";
+import * as mobxReact from "mobx-react";
+import * as mobx from "mobx";
 // tslint:disable-next-line:no-submodule-imports
 import { Field, FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
@@ -15,35 +16,33 @@ export interface IProps {
   columns: string[];
   columnWidths: number[];
 }
-@observer
+@mobxReact.observer
 export class FolderList extends React.Component<IProps> {
   private hasConsentPath = locate("assets/hasConsent.png");
   private noConsentPath = locate("assets/noConsent.png");
+  private m: mobx.IReactionDisposer;
   constructor(props: IProps) {
     super(props);
   }
+
   public render() {
-    // What this mobxDummy is about:
-    // What happens inside the table's cells is invisible to mobx; it doesn't
+    // Because the class has the mobxReact.observer decorator, mobx is watching the render function.
+    // But what happens inside the table's cells is invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
-    const mobxDummy = this.props.folders.map(f => f.displayName);
-    // TODO: currently this correctly fires if you *delete* the consent file (not very common!),
-    // but it doesn't work if you mark a file as consent. Should try again with updated mobx.
-    const mobxDummyConsent = this.props.folders.map(f => {
-      f.files.map(child => child.describedFilePath);
+    const mobxDummyWatchForDisplayName = this.props.folders.map(
+      f => f.displayName
+    );
+    // Similarly, the consent mark is derived from having some child file that has the word "Consent" in the file name.
+    // We explicitly do something with each file name, so that mobx will know it should re-run the render function
+    // as needed.
+    const mobxDummyWatchForConsentChange = this.props.folders.map(folder => {
+      folder.files.map(child => child.describedFilePath);
     });
-    // const mobxDummyConsent = this.props.folders.map(f => {
-    //   const field = f.properties.getValueOrThrow(
-    //     "hasConsent"
-    //   ) as HasConsentField;
-    //   if (field) {
-    //     const dummyResult = field.hasConsent();
-    //   }
-    // });
+
     const columns = this.props.columns.map((key, index) => {
       const c: object = {
         id: key,

@@ -129,7 +129,11 @@ export abstract class Folder {
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          trash(file.metadataFilePath);
+          const didTrashMetadataFile = trash(file.metadataFilePath);
+          assert(
+            didTrashMetadataFile,
+            "Failed to trash metadatafile:" + file.metadataFilePath
+          );
         }
       }
 
