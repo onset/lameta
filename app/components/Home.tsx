@@ -29,7 +29,7 @@ export interface IProps {
 
 @observer
 export default class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 2;
+  private kFirstTabToOpen = 1;
   // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {
@@ -41,11 +41,11 @@ export default class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // becuase this may be the first person/session, or there may
     // now be no persons/sessions.
+    mobx.observe(this.props.project.selectedSession, change => {
+      this.UpdateMenus(1); // assume we are in the session tab at the moment
+    });
     mobx.observe(this.props.project.selectedPerson, change => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
-    });
-    mobx.observe(this.props.project.selectedSession, change => {
-      this.UpdateMenus(1); // assume we are in the people tab at the moment
     });
   }
 

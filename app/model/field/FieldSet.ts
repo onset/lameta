@@ -65,6 +65,31 @@ export class FieldSet extends Dictionary<string, Field> {
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
+  // public addCustomProperty(key: string, value: string) {
+  //   const definition: IFieldDefinition = {
+  //     key,
+  //     englishLabel: key, // key is the englishLabel
+  //     //defaultValue?: string;
+  //     persist: true,
+  //     type: "Text",
+  //     //form,
+  //     //cssClass,
+  //     //choices,
+  //     //complexChoices: [],
+  //     order: 0,
+  //     //order: number;
+  //     //imdiRange?: string;
+  //     //imdiIsClosedVocabulary?: boolean;
+  //     isCustom: true
+  //   };
+  //   const f = Field.fromFieldDefinition(definition);
+  //   f.setValueFromString(value);
+  //   this.setValue(key, f);
+  // }
+
+  public addCustomProperty(f: Field) {
+    this.setValue(f.key, f);
+  }
   public addContributionArrayProperty(key: string, value: Contribution[]): any {
     const f = new Field(key, FieldType.Contributions, "unused");
     f.contributorsArray = value;
@@ -76,5 +101,15 @@ export class FieldSet extends Dictionary<string, Field> {
       const b = typeof value;
       assert.ok(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
+  }
+  // users are allow to rename a custom field.
+  public changeKeyOfCustomField(field: Field, newKey: string) {
+    assert(
+      this.containsKey(field.key),
+      "Could not find existing field with the old key in the properties dictionary"
+    );
+    this.remove(field.key);
+    field.key = newKey;
+    this.setValue(field.key, field);
   }
 }

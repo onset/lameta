@@ -3,8 +3,6 @@ import { observer } from "mobx-react";
 import TextFieldEdit from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
-import { Project } from "../model/Project/Project";
-import { FieldSet } from "../model/field/FieldSet";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Folder } from "../model/Folder";
 import GenreChooser from "./session/GenreChooser";
@@ -13,6 +11,7 @@ import AccessChooser from "./session/AccessChooser";
 import PeopleChooser from "./session/PeopleChooser";
 import "./session/SessionForm.scss";
 import "./Form.scss";
+import CustomFieldsTable from "./CustomFieldsTable";
 
 export interface IProps {
   folder: Folder;
@@ -28,12 +27,13 @@ export interface IProps {
 /** Constructs a form by looking at the properties of the given fields */
 @observer
 export default class AutoForm extends React.Component<IProps> {
-  //private sortedKeys: string[];
+  private sortedKeys: string[];
+
   constructor(props: IProps) {
     super(props);
   }
 
-  private makeEdit(field: Field) {
+  private makeEdit(field: Field): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
@@ -107,41 +107,27 @@ export default class AutoForm extends React.Component<IProps> {
   }
 
   public render() {
-    const sortedKeys = this.props.folder.properties
+    this.sortedKeys = this.props.folder.properties
       .values()
+      .filter(f => (f.definition ? !f.definition.isCustom : true))
       .sort(
         (a, b) =>
-          (a.definition ? a.definition.order : 1000) -
-          (b.definition ? b.definition.order : 1000)
+          (a.definition && a.definition.order ? a.definition.order : 1000) -
+          (b.definition && b.definition.order ? b.definition.order : 1000)
       )
       .map(f => f.key);
-    // console.log("---------");
-    // sortedKeys.forEach(k => console.log("key: " + k));
-    // sortedKeys
-    //   .map(k => {
-    //     console.log("key: " + k);
-    //     return this.props.fields.getValue(k);
-    //   })
-    // .forEach(field => {
-    //   console.log("field.form " + JSON.stringify(field));
-    //   console.log("field.form " + field.key + "/" + field.form);
-    // });
+
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
-        {// this.props.fields
-        // .values()
-        // .filter(field => field.form === this.props.form)
-        //   .map(field => this.makeEdit(field))
-
-        sortedKeys
+        {this.sortedKeys
           .map(k => this.props.folder.properties.getValueOrThrow(k))
 
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
-        {/* Items that don't come from fields are given to this component as children */}
-        {this.props.children}
+
+        <CustomFieldsTable folder={this.props.folder} />
       </form>
     );
   }

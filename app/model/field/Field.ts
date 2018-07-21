@@ -16,20 +16,21 @@ export interface IChoice {
   examples: string[];
 }
 
-export interface IFieldDefinition {
-  key: string;
-  englishLabel?: string;
-  defaultValue?: string;
-  persist: boolean;
-  type: string;
-  form: string; // what form this shows on, if not the main one
+export class IFieldDefinition {
+  public key: string;
+  public englishLabel?: string;
+  public defaultValue?: string;
+  public persist: boolean;
+  public type: string;
+  public form?: string; // what form this shows on, if not the main one
   //visibility?: string;
-  cssClass?: string;
-  choices?: string[];
-  complexChoices: IChoice[];
-  order: number;
-  imdiRange?: string;
-  imdiIsClosedVocabulary?: boolean;
+  public cssClass?: string;
+  public choices?: string[];
+  public complexChoices?: IChoice[];
+  public order?: number = 0;
+  public imdiRange?: string;
+  public imdiIsClosedVocabulary?: boolean;
+  public isCustom: boolean = false;
 }
 
 export enum FieldType {
@@ -47,12 +48,12 @@ export enum FieldVisibility {
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
 
 export class Field {
-  public readonly key: string;
-  public readonly englishLabel: string; // just for debugging at this point
+  public key: string;
+  public englishLabel: string;
   public readonly type: FieldType;
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
-  public readonly persist: boolean;
+  public persist: boolean;
   public readonly cssClass: string;
   @observable public textHolder = new TextHolder();
   public choices: string[];
@@ -111,6 +112,23 @@ export class Field {
     this.text = englishValue;
     this.choices = choices;
 
+    // Review: maybe it's lame to have some fields have a format definition, and some don't.
+    // this.definition = {
+    //   key,
+    //   englishLabel,
+    //   //defaultValue?: string;
+    //   persist,
+    //   type: type.toString(),
+    //   form,
+    //   cssClass,
+    //   choices,
+    //   complexChoices: [],
+    //   order: 1000,
+    //   //order: number;
+    //   //imdiRange?: string;
+    //   //imdiIsClosedVocabulary?: boolean;
+    //   isCustom: false
+    // };
     assert.ok(
       this.key.toLowerCase().indexOf("date") === -1 ||
         this.type === FieldType.Date,

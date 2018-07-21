@@ -48,16 +48,16 @@ a {
     color: blue; //don't change after they've clicked it once
   }
 }
-.field {
-  // display: flex;
-  // flex-direction: column;
-  // width: 100%;
+// .field {
+//   // display: flex;
+//   // flex-direction: column;
+//   // width: 100%;
 
-  //width: 30%;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  //margin-right: 8px;
-}
+//   //width: 30%;
+//   margin-top: 4px;
+//   margin-bottom: 4px;
+//   //margin-right: 8px;
+// }
 
 .field:not(.text-block) {
   //height: 40px;
@@ -92,7 +92,10 @@ textarea {
   }
   font-family: $default-fonts;
 }
-
+// no border when in a grid
+.rt-td textarea {
+  border: none;
+}
 button {
   font-family: $default-fonts;
 }
@@ -178,7 +181,15 @@ button {
   //todo: this needs work
   border-bottom: solid thin rgba(0, 0, 0, 0.5);
 }
+form .ReactTable {
+  border-style: inset;
+  border-color: rgb(169, 169, 169);
 
+  .rt-td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
 //React-select
 .Select--multi .Select-value-icon {
   border-right: none; // turn off the vertical separator line

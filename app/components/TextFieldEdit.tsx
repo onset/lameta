@@ -1,10 +1,11 @@
 import * as React from "react";
-import { observer } from "mobx-react";
+import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
   field: Field;
+  autoFocus?: boolean;
   hideLabel?: boolean;
   onBlur?: () => void;
   validate?: (value: string) => boolean;
@@ -13,7 +14,7 @@ interface IState {
   invalid: boolean;
 }
 // automatically update when the value changes
-@observer
+@mobx.observer
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export default class TextFieldEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>,
@@ -21,17 +22,9 @@ export default class TextFieldEdit extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    //this.onChange = this.onChange.bind(this);
     this.getLabel = this.getLabel.bind(this);
     this.state = { invalid: false };
   }
-
-  // this way gave us the wrong "this" (e.g 1st session when we were on the second
-  // private onChange(event: React.FormEvent<HTMLInputElement>) {
-  //   console.log("PolytextFiled setting field of " + this.props.text.default);
-  //   this.props.text.setDefault(event.currentTarget.value);
-  //   console.log("PolytextFiled now " + this.props.text.default);
-  // }
 
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
     text.text = event.currentTarget.value;
@@ -62,6 +55,7 @@ export default class TextFieldEdit extends React.Component<
       >
         {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
         <textarea
+          autoFocus={this.props.autoFocus}
           className={classname}
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}

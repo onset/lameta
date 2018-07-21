@@ -39,6 +39,7 @@ export abstract class Folder {
     this.files = files;
     this.selectedFile = metadataFile;
     this.properties.manditoryTextProperty("title", "untitled");
+    //this.properties.addCustomProperty("color", "blue");
   }
   public get filePrefix(): string {
     return Path.basename(Path.basename(this.directory));
@@ -189,6 +190,11 @@ export abstract class Folder {
   public couldPossiblyBecomeDirty() {
     if (this.metadataFile) {
       this.metadataFile.couldPossiblyBecomeDirty();
+    }
+  }
+  public wasChangeThatMobxDoesNotNotice() {
+    if (this.metadataFile) {
+      this.metadataFile.wasChangeThatMobxDoesNotNotice();
     }
   }
 }

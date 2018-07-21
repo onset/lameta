@@ -8,13 +8,13 @@ import * as assert from "assert";
 const camelcase = require("camelcase");
 const imagesize = require("image-size");
 import * as musicmetadata from "musicmetadata";
-import { Field, FieldType } from "../field/Field";
+import { Field, FieldType, IFieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 import { locate } from "../../crossPlatformUtilities";
 const nodejsUtil = require("util");
 const moment = require("moment");
-
+const titleCase = require("title-case");
 ///export  enum Type {Project, Session, Person, Other }
 
 export class Contribution {
@@ -74,20 +74,35 @@ export abstract class File {
       new Field(key, FieldType.Date, date.toISOString())
     );
   }
-  public addTextProperty(key: string, value: string, persist: boolean = true) {
-    //console.log("setting " + key + " to " + value);
-    this.properties.setValue(
+  public addTextProperty(
+    key: string,
+    value: string,
+    persist: boolean = true,
+    isCustom: boolean = false
+  ) {
+    const definition: IFieldDefinition = {
       key,
-      new Field(
-        key,
-        FieldType.Text,
-        value,
-        undefined,
-        undefined,
-        undefined,
-        persist
-      )
-    );
+      englishLabel: isCustom ? key : titleCase(key),
+      persist,
+      type: "Text",
+      isCustom
+    };
+    const f = Field.fromFieldDefinition(definition);
+    f.setValueFromString(value);
+    this.properties.setValue(key, f);
+
+    // //console.log("setting " + key + " to " + value);
+    // const field = new Field(
+    //   key,
+    //   FieldType.Text,
+    //   value,
+    //   undefined,
+    //   undefined,
+    //   undefined,
+    //   persist
+    // );
+    //this.properties.setValue(key, field);
+
     assert.ok(value === this.properties.getTextField(key).text);
   }
   public setTextProperty(key: string, value: string) {
@@ -159,41 +174,60 @@ export abstract class File {
     const keys = Object.keys(propertiesFromXml);
 
     for (const key of keys) {
-      if (key === "contributions") {
+      if (key.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[key]);
+      } else if (key.toLowerCase() === "customfields") {
+        console.log(JSON.stringify(propertiesFromXml[key]));
+        const customKeys = Object.keys(propertiesFromXml[key]);
+        for (const customKey of customKeys) {
+          // first one is just $":{"type":"xml"}
+          if (customKey !== "$") {
+            this.loadOnePersistantProperty(
+              customKey,
+              propertiesFromXml[key][customKey],
+              true // isCustom
+            );
+          }
+        }
       } else {
-        //console.log("loadProperties key: " + key);
-        let value = propertiesFromXml[key];
-        if (value === undefined) {
-          value = "";
-        } else if (typeof value === "object") {
-          if (value.$ && value.$.type && value.$.type === "string") {
-            value = value._;
-          } else {
-            // console.log(
-            //   "Skipping " + key + " which was " + JSON.stringify(value)
-            // );
-            continue;
-          }
-        }
-        const textValue: string = value;
-        const fixedKey = camelcase(key);
-        // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-        if (this.properties.containsKey(fixedKey)) {
-          const v = this.properties.getValueOrThrow(fixedKey);
-          v.setValueFromString(textValue);
-          //console.log("11111" + key);
-        } else {
-          // bit of a hack, might not keep this
-          //console.log("000000 " + key);
-          if (key.toLowerCase().indexOf("date") > -1) {
-            this.addDatePropertyFromString(fixedKey, textValue);
-          } else {
-            //console.log("extra" + fixedKey + "=" + value);
-            // otherwise treat it as a string
-            this.addTextProperty(fixedKey, textValue);
-          }
-        }
+        this.loadOnePersistantProperty(key, propertiesFromXml[key], false);
+      }
+    }
+  }
+
+  private loadOnePersistantProperty(
+    key: string,
+    value: any,
+    isCustom: boolean
+  ) {
+    //console.log("loadProperties key: " + key);
+    //console.log(JSON.stringify(value));
+    if (value === undefined) {
+      value = "";
+    } else if (typeof value === "object") {
+      if (value.$ && value.$.type && value.$.type === "string") {
+        value = value._;
+      } else {
+        console.log("Skipping " + key + " which was " + JSON.stringify(value));
+        return;
+      }
+    }
+    const textValue: string = value;
+    const fixedKey = camelcase(key);
+    // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
+    if (this.properties.containsKey(fixedKey)) {
+      const v = this.properties.getValueOrThrow(fixedKey);
+      v.setValueFromString(textValue);
+      //console.log("11111" + key);
+    } else {
+      // bit of a hack, might not keep this
+      //console.log("000000 " + key);
+      if (key.toLowerCase().indexOf("date") > -1) {
+        this.addDatePropertyFromString(fixedKey, textValue);
+      } else {
+        //console.log("extra" + fixedKey + "=" + value);
+        // otherwise treat it as a string
+        this.addTextProperty(fixedKey, textValue, true, isCustom);
       }
     }
   }
@@ -330,22 +364,36 @@ export abstract class File {
             }
           });
         } else {
-          const t = f.typeAndValueForXml();
-          //console.log(k + " is a " + t[0] + " of value " + t[1]);
-          if (t[0] === "date") {
-            this.writeDate(root, t[1]);
-          } else {
-            assert.ok(
-              k.indexOf("date") === -1 || t[0] === "date",
-              "SHOULDN'T " + k + " BE A DATE?"
-            );
-            if (t[1].length > 0) {
-              root.element(k, { type: t[0] }, t[1]).up();
+          if (!f.definition || !f.definition.isCustom) {
+            const t = f.typeAndValueForXml();
+            //console.log(k + " is a " + t[0] + " of value " + t[1]);
+            if (t[0] === "date") {
+              this.writeDate(root, t[1]);
+            } else {
+              assert.ok(
+                k.indexOf("date") === -1 || t[0] === "date",
+                "SHOULDN'T " + k + " BE A DATE?"
+              );
+              if (t[1].length > 0) {
+                root.element(k, { type: t[0] }, t[1]).up();
+              }
             }
           }
         }
       }
     });
+    const customParent = root.element("CustomFields", {
+      type: "xml"
+    });
+    this.properties.forEach((k, f: Field) => {
+      if (f.definition && f.definition.isCustom) {
+        const t = f.typeAndValueForXml();
+        if (k && k.length > 0 && t[1] && t[1].length > 0) {
+          customParent.element(k, { type: t[0] }, t[1]).up();
+        }
+      }
+    });
+    customParent.up();
 
     return root.end({ pretty: true, indent: "  " });
   }
@@ -505,11 +553,14 @@ export abstract class File {
 
   private changed() {
     if (this.dirty) {
-      //console.log("changed() but already dirty " + this.metadataFilePath);
+      console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
+  }
+  public wasChangeThatMobxDoesNotNotice() {
+    this.changed();
   }
 
   public getIconName(): string {

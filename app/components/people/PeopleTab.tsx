@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
-import { File } from "../../model/file/file";
+import { File } from "../../model/file/File";
 import {
   ComponentTab,
   FolderListButtons,
