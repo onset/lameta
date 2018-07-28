@@ -70,6 +70,16 @@ app.on("ready", () =>
 
       mainWindow.loadURL(`file://${__dirname}/app.html`);
 
+      // Send links to the browser, instead of opening new electron windows
+      var handleRedirect = (e, url) => {
+        if (url != mainWindow.webContents.getURL()) {
+          e.preventDefault();
+          require("electron").shell.openExternal(url);
+        }
+      };
+      mainWindow.webContents.on("will-navigate", handleRedirect);
+      mainWindow.webContents.on("new-window", handleRedirect);
+
       mainWindow.webContents.on("did-finish-load", () => {
         mainWindow.show();
         mainWindow.focus();

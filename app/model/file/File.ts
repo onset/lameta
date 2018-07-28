@@ -147,7 +147,7 @@ export abstract class File {
 
     const stats = fs.statSync(describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-    this.addDateProperty("date", stats.mtime);
+    this.addDateProperty("modifiedDate", stats.mtime);
 
     const typePatterns = [
       ["Session", /\.session$/i],
@@ -179,7 +179,7 @@ export abstract class File {
       if (key.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[key]);
       } else if (key.toLowerCase() === "customfields") {
-        console.log(JSON.stringify(propertiesFromXml[key]));
+        //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[key]);
         for (const customKey of customKeys) {
           // first one is just $":{"type":"xml"}
@@ -210,7 +210,7 @@ export abstract class File {
       if (value.$ && value.$.type && value.$.type === "string") {
         value = value._;
       } else {
-        console.log("Skipping " + key + " which was " + JSON.stringify(value));
+        //console.log("Skipping " + key + " which was " + JSON.stringify(value));
         return;
       }
     }
@@ -567,10 +567,10 @@ export abstract class File {
 
   private changed() {
     if (this.dirty) {
-      console.log("changed() but already dirty " + this.metadataFilePath);
+      //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
   }
   public wasChangeThatMobxDoesNotNotice() {

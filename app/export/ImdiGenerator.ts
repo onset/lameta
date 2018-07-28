@@ -1,11 +1,7 @@
 import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
-const titleCase = require("title-case");
-import { Moment } from "moment";
 import { Folder } from "../model/Folder";
-import { Field } from "../model/field/Field";
-const electron = require("electron");
 const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";

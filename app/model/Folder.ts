@@ -38,7 +38,6 @@ export abstract class Folder {
     this.metadataFile = metadataFile;
     this.files = files;
     this.selectedFile = metadataFile;
-    this.properties.manditoryTextProperty("title", "untitled");
     //this.properties.addCustomProperty("color", "blue");
   }
   public get filePrefix(): string {

@@ -200,30 +200,3 @@ form .ReactTable {
   color: $session--color;
   border-color: $session--color;
 }
-
-.okCancelButtonRow {
-  align-self: flex-end;
-  float: right;
-  margin-top: 2em;
-
-  // see flex-direction in a rule that incorporates os class from app
-  display: flex;
-  flex-direction: row; // use for mac & Ubuntu
-
-  button {
-    width: auto;
-    min-width: 100px;
-    margin-left: 10px;
-  }
-  button:disabled {
-    color: gray;
-    border-color: lightgray;
-    border-style: solid;
-    border-width: 1px;
-  }
-}
-
-.win32 .okCancelButtonRow {
-  // get the buttons ordered according to operating system preference
-  flex-direction: row-reverse;
-}

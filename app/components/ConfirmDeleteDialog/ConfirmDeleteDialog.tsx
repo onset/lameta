@@ -51,7 +51,8 @@ export default class ConfirmDeleteDialog extends React.Component<
           ariaHideApp={false}
           className="confirmDeleteDialog"
           isOpen={this.state.isOpen}
-          shouldCloseOnOverlayClick={false}
+          shouldCloseOnOverlayClick={true}
+          onRequestClose={() => this.handleCloseModal(false)}
         >
           <div className={"dialogTitle"}>Confirm Delete</div>
           <div className="dialogContent">
@@ -59,18 +60,21 @@ export default class ConfirmDeleteDialog extends React.Component<
               <img src={locate("assets/trash.png")} />
               <h1>{`${this.state.path} will be moved to the Trash`}</h1>
             </div>
-            <div className={"okCancelButtonRow"}>
-              {/* actual order of these will be platform-specific, controlled by
+            <div className={"bottomButtonRow"}>
+              <div className={"okCancelGroup"}>
+                {/* List as default last (in the corner). */}
+                {/* The actual order of these will be platform-specific, controlled by
           a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
-              <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
-              </button>
-              <button
-                id="deleteButton"
-                onClick={() => this.handleCloseModal(true)}
-              >
-                Delete
-              </button>
+                <button onClick={() => this.handleCloseModal(false)}>
+                  Cancel
+                </button>
+                <button
+                  id="deleteButton"
+                  onClick={() => this.handleCloseModal(true)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </ReactModal>

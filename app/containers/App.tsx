@@ -8,6 +8,7 @@ import * as ReactModal from "react-modal";
 export class App extends React.Component {
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
+    ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";
   }
 
   public render() {
