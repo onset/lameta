@@ -109,7 +109,10 @@ export default class AutoForm extends React.Component<IProps> {
   public render() {
     this.sortedKeys = this.props.folder.properties
       .values()
-      .filter(f => (f.definition ? !f.definition.isCustom : true))
+      .filter(
+        f =>
+          f.definition && f.definition.showOnAutoForm && !f.definition.isCustom
+      )
       .sort(
         (a, b) =>
           (a.definition && a.definition.order ? a.definition.order : 1000) -

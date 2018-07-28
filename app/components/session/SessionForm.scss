@@ -8,6 +8,10 @@
   grid-auto-flow: column;
   grid-gap: 10px 20px;
 
+  .id {
+    grid-row: 1;
+    grid-column: 1;
+  }
   .date {
     grid-row: 1;
   }

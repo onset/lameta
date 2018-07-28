@@ -2,7 +2,7 @@ import { File, OtherFile } from "./file/File";
 import * as electron from "electron";
 import { observable } from "mobx";
 import {
-  IFieldDefinition,
+  FieldDefinition,
   Field,
   FieldType,
   FieldVisibility
@@ -81,11 +81,15 @@ export abstract class Folder {
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
-    knownFields: IFieldDefinition[] = []
+    rawKnownFieldsFromJson: FieldDefinition[] = []
   ): File[] {
+    const knownFields: FieldDefinition[] = rawKnownFieldsFromJson.map(f => {
+      return new FieldDefinition(f);
+    });
+
     const files = new Array<File>();
     // load the file containing metadata about this folder
-    knownFields.forEach((f: IFieldDefinition, i: number) => {
+    knownFields.forEach((f: FieldDefinition, i: number) => {
       f.order = i;
       const field = Field.fromFieldDefinition(f);
       folderMetaDataFile.properties.setValue(field.key, field);

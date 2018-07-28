@@ -1,6 +1,6 @@
 import { Dictionary } from "typescript-collections";
 import * as assert from "assert";
-import { Field, FieldType, IFieldDefinition, HasConsentField } from "./Field";
+import { Field, FieldType, FieldDefinition, HasConsentField } from "./Field";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 
@@ -22,7 +22,7 @@ export class FieldSet extends Dictionary<string, Field> {
     }
   }
 
-  public getFieldDefinition(key: string): IFieldDefinition {
+  public getFieldDefinition(key: string): FieldDefinition {
     const f = this.getValueOrThrow(key) as Field;
     return f.definition;
   }

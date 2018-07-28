@@ -8,7 +8,7 @@ import * as assert from "assert";
 const camelcase = require("camelcase");
 const imagesize = require("image-size");
 import * as musicmetadata from "musicmetadata";
-import { Field, FieldType, IFieldDefinition } from "../field/Field";
+import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 import { locate } from "../../crossPlatformUtilities";
@@ -78,14 +78,16 @@ export abstract class File {
     key: string,
     value: string,
     persist: boolean = true,
-    isCustom: boolean = false
+    isCustom: boolean = false,
+    showOnAutoForm: boolean = false
   ) {
-    const definition: IFieldDefinition = {
+    const definition: FieldDefinition = {
       key,
       englishLabel: isCustom ? key : titleCase(key),
       persist,
       type: "Text",
-      isCustom
+      isCustom,
+      showOnAutoForm
     };
     const f = Field.fromFieldDefinition(definition);
     f.setValueFromString(value);
@@ -170,7 +172,7 @@ export abstract class File {
     // TODO read the .meta file that describes this file, if it exists
   }
 
-  private loadProperties(propertiesFromXml: any) {
+  private loadPropertiesFromXml(propertiesFromXml: any) {
     const keys = Object.keys(propertiesFromXml);
 
     for (const key of keys) {
@@ -212,6 +214,12 @@ export abstract class File {
         return;
       }
     }
+
+    /* ---------------TODO -------------*/
+    //It seems we are just overwriting field definitions here, so for example
+    //we just assume everythign found in the xml should be on the session autoform.
+    //TODO: merge what we find in the xml with what the fields.json definitions say.
+
     const textValue: string = value;
     const fixedKey = camelcase(key);
     // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
@@ -227,7 +235,13 @@ export abstract class File {
       } else {
         //console.log("extra" + fixedKey + "=" + value);
         // otherwise treat it as a string
-        this.addTextProperty(fixedKey, textValue, true, isCustom);
+        this.addTextProperty(
+          fixedKey,
+          textValue,
+          true,
+          isCustom,
+          true /*showOnAutoForm*/
+        );
       }
     }
   }
@@ -309,7 +323,7 @@ export abstract class File {
       // }
 
       //copies from this object (which is just the xml as an object) into this File object
-      this.loadProperties(properties);
+      this.loadPropertiesFromXml(properties);
       //review: this is looking kinda ugly... not sure what I want to do
       // because contributions is only one array at the moment
       this.properties.addContributionArrayProperty(

@@ -1,11 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import {
-  Field,
-  FieldType,
-  FieldVisibility,
-  IFieldDefinition
-} from "../model/field/Field";
+import { Field, FieldDefinition } from "../model/field/Field";
 import { Folder } from "../model/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";
@@ -77,13 +72,14 @@ export default class CustomFieldsTable extends React.Component<IProps> {
   }
 
   private makePlaceholderForNewCustomField() {
-    const definition: IFieldDefinition = {
+    const definition: FieldDefinition = {
       key: "placeholder",
       englishLabel: "",
       persist: false, // we'll change this if they make it real
       type: "Text",
       order: 0,
-      isCustom: true
+      isCustom: true,
+      showOnAutoForm: false // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }

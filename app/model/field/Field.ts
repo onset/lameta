@@ -16,7 +16,7 @@ export interface IChoice {
   examples: string[];
 }
 
-export class IFieldDefinition {
+export class FieldDefinition {
   public key: string;
   public englishLabel?: string;
   public defaultValue?: string;
@@ -31,6 +31,14 @@ export class IFieldDefinition {
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;
+  //awkward... this is not use for people, where we don't use the autoform
+  public showOnAutoForm: boolean = true;
+
+  // this constructor lets us take something read in from json and
+  // get a definition with any default values set above
+  public constructor(rawObject) {
+    Object.assign(this, rawObject);
+  }
 }
 
 export enum FieldType {
@@ -48,6 +56,7 @@ export enum FieldVisibility {
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
 
 export class Field {
+  //TODO: remove things that just repeat field definition
   public key: string;
   public englishLabel: string;
   public readonly type: FieldType;
@@ -57,11 +66,11 @@ export class Field {
   public readonly cssClass: string;
   @observable public textHolder = new TextHolder();
   public choices: string[];
-  public definition: IFieldDefinition;
+  public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
 
   // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
-  public static fromFieldDefinition(definition: IFieldDefinition): Field {
+  public static fromFieldDefinition(definition: FieldDefinition): Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";
     }
@@ -85,6 +94,9 @@ export class Field {
       choices,
       definition.cssClass
     );
+    // if (definition.showOnAutoForm === undefined) {
+    //   definition.showOnAutoForm = true;
+    // }
     f.definition = definition; // did this to retain complex choices without yet another new property...
     return f;
   }
