@@ -1,22 +1,7 @@
 //@import "../../colors";
-.ReactModal__Content.confirmDelete {
-  position: absolute;
-  border: 3px solid black;
-  background: white;
-  overflow: auto;
-  border-radius: 4px;
-  outline: none;
-  flex-direction: row;
+@import "../commonDialog.scss";
 
-  left: 50%;
-  right: auto;
-  transform: translate(-50%, -50%);
-  bottom: auto;
-  top: 50%;
-
-  .dialogTitle {
-    padding: 10px;
-  }
+.confirmDeleteDialog {
   .dialogContent {
     background-color: #f0f0f0;
     padding: 20px;

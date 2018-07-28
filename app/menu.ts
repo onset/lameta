@@ -2,6 +2,7 @@ import { Menu, remote } from "electron";
 import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/imdiGenerator";
 import log from "./log";
+import ExportDialog from "./components/export/ExportDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -86,23 +87,11 @@ export default class SayLessMenu {
         },
         { type: "separator" },
         {
-          label: "Export &Sessions...",
-          enabled: false
-        },
-        {
-          label: "Export &People...",
-          enabled: false
-        },
-        {
-          label: "&Save Zip of IMDI files...",
-          // for some reason this hangs on startup: enabled: this.homePage.projectHolder.project,
+          label: "Export &Project...",
+          accelerator: "Ctrl+E",
           enabled: haveProject,
           click: () => {
-            if (this.homePage.projectHolder.project) {
-              ImdiGenerator.saveImdiZip(this.homePage.projectHolder.project);
-            } else {
-              alert("No project");
-            }
+            ExportDialog.show();
           }
         },
         { type: "separator" },

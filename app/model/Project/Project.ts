@@ -17,7 +17,7 @@ import {
 import { remote } from "electron";
 import { isNullOrUndefined } from "util";
 import { trash } from "../../crossPlatformUtilities";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
+import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {

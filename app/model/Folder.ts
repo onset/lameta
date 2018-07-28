@@ -13,7 +13,7 @@ import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
 import * as assert from "assert";
-import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
+import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 const sanitize = require("sanitize-filename");
 import { trash } from "../crossPlatformUtilities";
 

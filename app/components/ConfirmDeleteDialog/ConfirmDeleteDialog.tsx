@@ -4,7 +4,7 @@ import * as Path from "path";
 import * as ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { locate } from "../crossPlatformUtilities";
+import { locate } from "../../crossPlatformUtilities";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -49,7 +49,7 @@ export default class ConfirmDeleteDialog extends React.Component<
       >
         <ReactModal
           ariaHideApp={false}
-          className="confirmDelete"
+          className="confirmDeleteDialog"
           isOpen={this.state.isOpen}
           shouldCloseOnOverlayClick={false}
         >
