@@ -239,11 +239,9 @@ export default class ImdiGenerator {
     return this.tail.end({ pretty: true });
   }
 
-  public static saveImdiZip(project: Project) {
+  public static saveImdiZip(project: Project, path: string) {
     // create a file to stream archive data to.
-    const output = fs.createWriteStream(
-      Path.join(project.directory, `${project.displayName}_IMDI.zip`)
-    );
+    const output = fs.createWriteStream(path);
     const archive = Archiver("zip");
 
     // listen for all archive data to be written
@@ -253,7 +251,6 @@ export default class ImdiGenerator {
       // console.log(
       //   "saveImdiZip archiver has been finalized and the output file descriptor has closed."
       // );
-      showInExplorer(output.path as string);
     });
 
     // good practice to catch warnings (ie stat failures and other non-blocking errors)

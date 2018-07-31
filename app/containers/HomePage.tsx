@@ -15,6 +15,7 @@ import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
+import ExportDialog from "../components/export/ExportDialog";
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -202,6 +203,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         ) : (
           ""
         )}
+        <ExportDialog projectHolder={this.projectHolder} />
       </div>
     );
   }

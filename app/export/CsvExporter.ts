@@ -95,9 +95,6 @@ export default class CsvExporter {
     ai = ai === -1 ? 1000 : ai;
     bi = bi === -1 ? 1000 : bi;
     if (ai !== bi) {
-      console.log(
-        `a:${a} ${ai}  b:${b} ${bi}  result:${ai > bi ? 1 : ai < bi ? -1 : 0}`
-      );
       return ai > bi ? 1 : ai < bi ? -1 : 0;
     }
     return a > b ? 1 : a < b ? -1 : 0;

@@ -1,7 +1,6 @@
 import CsvExporter from "./CsvExporter";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
-import * as Path from "path";
 import * as temp from "temp";
 
 // tslint:disable-next-line:no-submodule-imports
@@ -19,15 +18,15 @@ const kEol: string = require("os").EOL;
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   peopleCsv = new CsvExporter(project).makeCsvForPeople();
-  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
+  //  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
   sessionsCsv = new CsvExporter(project).makeCsvForSessions();
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
-  fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
+  //fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
   const projectCsv = new CsvExporter(project).makeCsvForProject();
   projectMatrix = parseSync(projectCsv);
-  fs.writeFileSync("d:/temp/projectCsv.csv", projectCsv);
+  //fs.writeFileSync("d:/temp/projectCsv.csv", projectCsv);
 });
 describe("csv exporter", () => {
   it("should produce the file requested", () => {
@@ -55,7 +54,7 @@ describe("csv encoding", () => {
   });
   it("should double quotes if there are quotes", () => {
     expect(CsvExporter.csvEncode('no, call me "John"')).toBe(
-      '"no, call me ""John"""'
+      '"please, call me ""John"""'
     );
   });
 });

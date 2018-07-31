@@ -2,11 +2,18 @@ import * as React from "react";
 import * as ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-
+import CsvExporter from "../../export/CsvExporter";
+import { Project, ProjectHolder } from "../../model/Project/Project";
+import { showInExplorer } from "../../crossPlatformUtilities";
+import ImdiGenerator from "../../export/imdiGenerator";
+import { remote } from "electron";
 // tslint:disable-next-line:no-empty-interface
-interface IProps {}
+interface IProps {
+  projectHolder: ProjectHolder;
+}
 interface IState {
   isOpen: boolean;
+  selectedOption: string;
 }
 export default class ExportDialog extends React.Component<IProps, IState> {
   private static singleton: ExportDialog;
@@ -14,29 +21,61 @@ export default class ExportDialog extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     ExportDialog.singleton = this;
-    this.state = { isOpen: false };
+    this.state = { isOpen: false, selectedOption: "csv" };
   }
 
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
-      // if (this.homePage.projectHolder.project) {
-      //   ImdiGenerator.saveImdiZip(this.homePage.projectHolder.project);
-      // } else {
-      //   alert("No project");
-      // }
+      remote.dialog.showSaveDialog(
+        {
+          title: "Save As",
+          defaultPath: `${this.props.projectHolder.project!.displayName}-${
+            this.state.selectedOption
+          }.zip`,
+          filters: [
+            {
+              extensions: ["zip"],
+              name: "ZIP Archive"
+            }
+          ]
+        },
+        path => {
+          if (path) {
+            if (this.state.selectedOption === "csv") {
+              const exporter = new CsvExporter(
+                this.props.projectHolder.project!
+              );
+              exporter.makeZipFile(path);
+              showInExplorer(path);
+            } else {
+              ImdiGenerator.saveImdiZip(
+                this.props.projectHolder.project!,
+                path
+              );
+            }
+            showInExplorer(path);
+            this.setState({ isOpen: false });
+          }
+        }
+      );
+    } else {
+      this.setState({ isOpen: false });
     }
-    this.setState({ isOpen: false });
   }
 
-  public componentWillUnMount() {
-    console.error("Export Dialog unmounting.");
+  private handleOptionChange(changeEvent) {
+    this.setState({
+      selectedOption: changeEvent.target.value
+    });
   }
+
   public static async show() {
     ExportDialog.singleton.setState({
       isOpen: true
     });
   }
   public render() {
+    const selectedOption = this.state.selectedOption;
     return (
       <CloseOnEscape
         onEscape={() => {
@@ -55,7 +94,13 @@ export default class ExportDialog extends React.Component<IProps, IState> {
             <fieldset>
               <legend>Choose an export format:</legend>
               <label>
-                <input type="radio" name="format" value="csv" />
+                <input
+                  type="radio"
+                  name="format"
+                  value="csv"
+                  checked={selectedOption === "csv"}
+                  onChange={e => this.handleOptionChange(e)}
+                />
                 Zip of CSVs
               </label>
 
@@ -63,19 +108,31 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 A single zip archive that contains one comma-separated file for
                 each of Project, Session, and People.
               </p>
-              <label>
-                <input type="radio" name="format" value="spreadsheet" />{" "}
+              {/* <label>
+                <input
+                  type="radio"
+                  name="format"
+                  value="spreadsheet"
+                  checked={true}
+                />
                 Spreadsheet
-              </label>
+              </label> */}
               <p>
                 A single file with sheets for each of Project, Session, and
                 People
               </p>
               <label>
-                <input type="radio" name="format" value="imdi" /> IMDI
+                <input
+                  type="radio"
+                  name="format"
+                  value="imdi"
+                  checked={selectedOption === "imdi"}
+                  onChange={e => this.handleOptionChange(e)}
+                />
+                IMDI
               </label>
               <p>
-                An single&nbsp;
+                A single&nbsp;
                 <a target="_blank" href="https://tla.mpi.nl/imdi-metadata/">
                   ISLE Meta Data Initiative
                 </a>

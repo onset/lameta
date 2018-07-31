@@ -2,7 +2,6 @@ import * as React from "react";
 import HomePage from "./HomePage";
 import { hot } from "react-hot-loader";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import ExportDialog from "../components/export/ExportDialog";
 import * as ReactModal from "react-modal";
 
 export class App extends React.Component {
@@ -16,7 +15,6 @@ export class App extends React.Component {
       <div id="app">
         <HomePage />
         <ConfirmDeleteDialog />
-        <ExportDialog />
       </div>
     );
   }

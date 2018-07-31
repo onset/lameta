@@ -2,21 +2,18 @@
 
 .exportDialog {
   .dialogContent {
-    //min-height: 500px;
     min-width: 600px;
     margin: 10px;
+    legend {
+      background-color: white;
+      padding-bottom: 5px;
+    }
     p {
       display: flex;
     }
-    // div {
-    //   display: flex;
-    //   //margin-left: 10px;
-    //   margin-top: 1em;
-    // }
 
     p {
       margin-left: 22px;
-      /* margin-bottom: 2em; */
       margin-top: 9px;
     }
   }
