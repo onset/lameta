@@ -1,6 +1,8 @@
 import CsvExporter from "./CsvExporter";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
+import * as Path from "path";
+import * as temp from "temp";
 
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");
@@ -27,8 +29,18 @@ beforeAll(() => {
   projectMatrix = parseSync(projectCsv);
   fs.writeFileSync("d:/temp/projectCsv.csv", projectCsv);
 });
-
 describe("csv exporter", () => {
+  it("should produce the file requested", () => {
+    temp.track(); // cleanup on exit: doesn't work
+    const path = temp.path({ suffix: ".zip" });
+    new CsvExporter(project).makeZipFile(path);
+    expect(fs.existsSync(path)).toBe(true);
+    temp.cleanupSync(); // doesn't work
+    fs.removeSync(path); // so we do it manually
+  });
+});
+
+describe("csv encoding", () => {
   it("should not be surrounded by quotes if not needed", () => {
     expect(CsvExporter.csvEncode("one two")).toBe("one two");
   });

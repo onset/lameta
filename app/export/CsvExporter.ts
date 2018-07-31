@@ -1,7 +1,9 @@
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder";
 const moment = require("moment");
-import Archiver = require("archiver");
+//import nodeArchiver = require("archiver");
+import * as nodeArchiver from "archiver";
+import * as fs from "fs";
 import { FieldDefinition } from "../model/field/Field";
 const kEol: string = require("os").EOL;
 
@@ -12,6 +14,39 @@ export default class CsvExporter {
 
   public constructor(project: Project) {
     this.project = project;
+  }
+
+  public makeZipFile(path: string) {
+    const output = fs.createWriteStream(path);
+    const archive = nodeArchiver.create("zip");
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on("close", () => {});
+
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on("warning", err => {
+      if (err.code === "ENOENT") {
+        console.log("csv makeZipFile Warning: " + err);
+      } else {
+        // throw error
+        throw err;
+      }
+    });
+
+    // good practice to catch this error explicitly
+    archive.on("error", err => {
+      console.log("csv makeZipFile error: " + err);
+      alert("csv makeZipFile error: " + err);
+    });
+
+    // pipe archive data to the file
+    archive.pipe(output);
+
+    archive.append(this.makeCsvForProject(), { name: "project.csv" });
+    archive.append(this.makeCsvForSessions(), { name: "sessions.csv" });
+    archive.append(this.makeCsvForPeople(), { name: "people.csv" });
+
+    archive.finalize();
   }
 
   private getKeys(folders: Folder[]): string[] {
