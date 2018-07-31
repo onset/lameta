@@ -85,7 +85,7 @@ export default class FileList extends React.Component<IProps> {
         }
       },
       {
-        id: "date",
+        id: "modifiedDate",
         Header: "Modified",
         accessor: (d: any) => {
           const f: File = d;

@@ -120,6 +120,7 @@ export default class AutoForm extends React.Component<IProps> {
       )
       .map(f => f.key);
 
+    //console.log(`Rendering Autoform of ${this.props.folder.displayName}`);
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}

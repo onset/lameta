@@ -22,14 +22,14 @@ export default class CustomFieldsTable extends React.Component<IProps> {
   }
 
   public componentWillMount() {
-    this.computeRows();
+    this.computeRows(this.props);
   }
   public componentWillReceiveProps(nextProps: IProps) {
-    //if <different className=""></different>
-    this.computeRows();
+    // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
+    this.computeRows(nextProps);
   }
-  private computeRows() {
-    this.fieldsForRows = this.props.folder.properties
+  private computeRows(nextProps: IProps) {
+    this.fieldsForRows = nextProps.folder.properties
       .values()
       .filter(f => (f.definition ? f.definition.isCustom : false))
       .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
@@ -38,9 +38,13 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     const placeHolder = this.makePlaceholderForNewCustomField();
     this.fieldsForRows.push(placeHolder);
 
-    this.fieldsForRows.forEach(f =>
-      console.log(`custom field row: ${f.key}= "${f.text}"`)
-    );
+    // this.fieldsForRows.forEach(f =>
+    //   console.log(
+    //     `custom field row: ${nextProps.folder.displayName} ${f.key}= "${
+    //       f.text
+    //     }"`
+    //   )
+    // );
   }
 
   private fieldLabelChanged(f: Field) {
@@ -48,7 +52,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       // we're updating
       if (f.englishLabel.trim().length === 0) {
         this.props.folder.properties.remove(f.key);
-        this.computeRows();
+        this.computeRows(this.props);
         this.forceUpdate();
       } else {
         this.props.folder.properties.changeKeyOfCustomField(f, f.englishLabel);
@@ -65,7 +69,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       this.props.folder.properties.addCustomProperty(f);
       // add a new placeholder
       this.focusField = f;
-      this.computeRows();
+      this.computeRows(this.props);
       this.forceUpdate();
     }
     this.props.folder.wasChangeThatMobxDoesNotNotice();
@@ -85,6 +89,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
   }
 
   public render() {
+    //console.log(`Rendering Custom fields of ${this.props.folder.displayName}`);
     //const customFields = this.getCustomFields();
 
     const customFieldTableColumns = [

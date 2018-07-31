@@ -184,7 +184,7 @@ export abstract class File {
         for (const customKey of customKeys) {
           // first one is just $":{"type":"xml"}
           if (customKey !== "$") {
-            this.loadOnePersistantProperty(
+            this.loadOnePersistentProperty(
               customKey,
               propertiesFromXml[key][customKey],
               true // isCustom
@@ -192,22 +192,25 @@ export abstract class File {
           }
         }
       } else {
-        this.loadOnePersistantProperty(key, propertiesFromXml[key], false);
+        this.loadOnePersistentProperty(key, propertiesFromXml[key], false);
       }
     }
   }
 
-  private loadOnePersistantProperty(
+  private loadOnePersistentProperty(
     key: string,
     value: any,
     isCustom: boolean
   ) {
-    //console.log("loadProperties key: " + key);
-    //console.log(JSON.stringify(value));
+    // console.log("loadProperties key: " + key);
+    // console.log(JSON.stringify(value));
     if (value === undefined) {
       value = "";
     } else if (typeof value === "object") {
-      if (value.$ && value.$.type && value.$.type === "string") {
+      if (
+        (value.$ && value.$.type && value.$.type === "string") ||
+        value.$.type === "date"
+      ) {
         value = value._;
       } else {
         //console.log("Skipping " + key + " which was " + JSON.stringify(value));
@@ -217,7 +220,7 @@ export abstract class File {
 
     /* ---------------TODO -------------*/
     //It seems we are just overwriting field definitions here, so for example
-    //we just assume everythign found in the xml should be on the session autoform.
+    //we just assume everything found in the xml should be on the session autoform.
     //TODO: merge what we find in the xml with what the fields.json definitions say.
 
     const textValue: string = value;
@@ -228,8 +231,8 @@ export abstract class File {
       v.setValueFromString(textValue);
       //console.log("11111" + key);
     } else {
-      // bit of a hack, might not keep this
-      //console.log("000000 " + key);
+      // Note: at least as of SayMore Windows 3.1, its files will have dates with the type "string"
+      // So we work around that by looking at the name of the key, to see if it contains the word "date"
       if (key.toLowerCase().indexOf("date") > -1) {
         this.addDatePropertyFromString(fixedKey, textValue);
       } else {
@@ -368,7 +371,7 @@ export abstract class File {
               if (contribution.role) {
                 tail = tail.element("role", contribution.role).up();
               }
-              this.writeDate(tail, contribution.date);
+              this.writeDate(tail, "date", contribution.date);
               if (
                 contribution.comments &&
                 contribution.comments.trim().length > 0
@@ -380,16 +383,21 @@ export abstract class File {
         } else {
           if (!f.definition || !f.definition.isCustom) {
             const t = f.typeAndValueForXml();
-            //console.log(k + " is a " + t[0] + " of value " + t[1]);
-            if (t[0] === "date") {
-              this.writeDate(root, t[1]);
+            const type = t[0];
+            const value = t[1];
+
+            if (type === "date") {
+              // console.log(
+              //   "date " + f.key + " is a " + type + " of value " + value
+              // );
+              this.writeDate(root, f.key, value);
             } else {
               assert.ok(
-                k.indexOf("date") === -1 || t[0] === "date",
+                k.indexOf("date") === -1 || type === "date",
                 "SHOULDN'T " + k + " BE A DATE?"
               );
-              if (t[1].length > 0) {
-                root.element(k, { type: t[0] }, t[1]).up();
+              if (value.length > 0) {
+                root.element(k, { type }, value).up();
               }
             }
           }
@@ -414,6 +422,7 @@ export abstract class File {
 
   private writeDate(
     builder: xmlbuilder.XMLElementOrXMLNode,
+    key: string,
     dateString: string
   ): xmlbuilder.XMLElementOrXMLNode {
     const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
@@ -422,8 +431,10 @@ export abstract class File {
         const d = moment(dateString);
         return builder
           .element(
-            "date",
-            { type: "date" },
+            key,
+            // As of SayMore Windows 3.1.4, it can't handle a type "date"; it can only read and write a "string",
+            // so instead of the more reasonable { type: "date" }, we are using this
+            { type: "string" },
             d.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
           )
           .up();

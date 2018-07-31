@@ -36,6 +36,7 @@ export default class DateFieldEdit extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
         <DatePicker
+          dateFormat="YYYY MMM DD"
           selected={m}
           //onChange={d => console.log("change " + d)}
           onChange={newDate => {
