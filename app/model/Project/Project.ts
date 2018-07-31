@@ -68,6 +68,8 @@ export class Project extends Folder {
     );
 
     this.setupProtocolChoices();
+
+    this.knownFields = knownFieldDefinitions.project; // for csv export
   }
 
   public static fromDirectory(directory: string): Project {

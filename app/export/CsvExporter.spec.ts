@@ -10,17 +10,22 @@ let peopleCsv: string;
 let peopleMatrix: any;
 let sessionsCsv: string;
 let sessionMatrix: any;
+let projectMatrix: any;
 
 const kEol: string = require("os").EOL;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   peopleCsv = new CsvExporter(project).makeCsvForPeople();
-  fs.writeFileSync("d:/temp/peoplecsv.txt", peopleCsv);
+  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
   sessionsCsv = new CsvExporter(project).makeCsvForSessions();
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
+  fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
+  const projectCsv = new CsvExporter(project).makeCsvForProject();
+  projectMatrix = parseSync(projectCsv);
+  fs.writeFileSync("d:/temp/projectCsv.csv", projectCsv);
 });
 
 describe("csv exporter", () => {
@@ -92,6 +97,12 @@ describe("sessions csv export", () => {
   });
   it("should contain customFields", () => {
     expect(session(1, "topic")).toBe("fishing");
+  });
+});
+
+describe("project csv export", () => {
+  it("should contain 1 line for header and 1 line for properties", () => {
+    expect(projectMatrix.length).toBe(2);
   });
 });
 

@@ -90,6 +90,10 @@ export default class CsvExporter {
     }
     return value;
   }
+
+  public makeCsvForProject(): string {
+    return this.getCsv([this.project]);
+  }
   public makeCsvForPeople(): string {
     return this.getCsv(this.project.persons);
   }
