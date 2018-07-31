@@ -1,19 +1,15 @@
-import { Session } from "../model/Project/Session/Session";
-import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder";
 const moment = require("moment");
-import { File } from "../model/file/File";
-import * as Path from "path";
-import { Person } from "../model/Project/Person/Person";
 import Archiver = require("archiver");
-import { showInExplorer } from "../crossPlatformUtilities";
-import * as fs from "fs";
-import { encode } from "punycode";
+import { FieldDefinition } from "../model/field/Field";
 const kEol: string = require("os").EOL;
+
+let currentKnownFields: FieldDefinition[];
 
 export default class CsvExporter {
   private project: Project;
+
   public constructor(project: Project) {
     this.project = project;
   }
@@ -29,11 +25,18 @@ export default class CsvExporter {
     });
     return foundFields;
   }
+
+  // folders: a set of person folders, or a set of session folders
   private getCsv(folders: Folder[]): string {
+    if (folders.length === 0) {
+      // without even one folder (one person, or one session), this code can't even determine the fields, so just bail
+      return "";
+    }
+    currentKnownFields = folders[0].knownFields;
     const blacklist = ["modifiedDate", "size", "type"];
-    const foundFields = this.getKeys(folders).filter(
-      k => blacklist.indexOf(k) === -1
-    );
+    const foundFields = this.getKeys(folders)
+      .filter(k => blacklist.indexOf(k) === -1)
+      .sort(this.sortFields);
     const header = foundFields.join(",");
     const lines = folders
       .map(folder => {
@@ -49,19 +52,21 @@ export default class CsvExporter {
 
     return header + kEol + lines;
   }
-  // onst lines = folders
-  //     .map(folder => {
-  //       const line = folder.properties
-  //         .keys()
-  //         .filter(k => blacklist.indexOf(k) === -1)
-  //         .map(key => {
-  //           const value = folder.properties.getTextStringOrEmpty(key);
-  //           return CsvExporter.csvEncode(value);
-  //         })
-  //         .join(",");
-  //       return line;
-  //     })
-  //     .join(kEol);
+
+  private sortFields(a: string, b: string): number {
+    let ai = currentKnownFields.findIndex(f => f.key === a);
+    let bi = currentKnownFields.findIndex(f => f.key === b);
+    // unlisted fields go to the end
+    ai = ai === -1 ? 1000 : ai;
+    bi = bi === -1 ? 1000 : bi;
+    if (ai !== bi) {
+      console.log(
+        `a:${a} ${ai}  b:${b} ${bi}  result:${ai > bi ? 1 : ai < bi ? -1 : 0}`
+      );
+      return ai > bi ? 1 : ai < bi ? -1 : 0;
+    }
+    return a > b ? 1 : a < b ? -1 : 0;
+  }
 
   public static csvEncode(value: string): string {
     let needsQuotes = false;

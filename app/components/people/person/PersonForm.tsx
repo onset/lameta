@@ -36,7 +36,7 @@ export default class PersonForm extends React.Component<IProps> {
 
         <TextFieldEdit
           className="nickname"
-          field={this.props.fields.getTextField("nickName")}
+          field={this.props.fields.getTextField("nickname")}
         />
         <TextFieldEdit
           className="code"

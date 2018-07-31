@@ -54,10 +54,10 @@ export class Person extends Folder {
 
       return change;
     });
+    this.knownFields = knownFieldDefinitions.person; // for csv export
   }
   public static fromDirectory(directory: string): Person {
     const metadataFile = new FolderMetdataFile(directory, "Person", ".person");
-
     const files = this.loadChildFiles(
       directory,
       metadataFile,

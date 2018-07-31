@@ -86,10 +86,10 @@ export default class FileList extends React.Component<IProps> {
       },
       {
         id: "date",
-        Header: "Date",
+        Header: "Modified",
         accessor: (d: any) => {
           const f: File = d;
-          const date = f.getTextProperty("date");
+          const date = f.getTextProperty("modifiedDate");
           const locale = window.navigator.language;
           moment.locale(locale);
           return moment(date).format("L LT");

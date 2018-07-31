@@ -24,7 +24,7 @@ beforeAll(() => {
 });
 
 describe("csv exporter", () => {
-  it("should not quotes if not needed", () => {
+  it("should not be surrounded by quotes if not needed", () => {
     expect(CsvExporter.csvEncode("one two")).toBe("one two");
   });
   it("should add quotes if there are commas", () => {
@@ -70,6 +70,11 @@ describe("people csv export", () => {
     expect(people(2, "otherLanguage0")).toBe("Huli");
     expect(people(2, "otherLanguage1")).toBe("Tok Pisin");
   });
+  it("should have name first", () => {
+    expect(location("name")).toBe(0);
+    expect(location("nickname")).toBe(1);
+    expect(location("code")).toBe(2);
+  });
 });
 
 describe("sessions csv export", () => {
@@ -90,6 +95,10 @@ describe("sessions csv export", () => {
   });
 });
 
+function location(key: string) {
+  expect(peopleMatrix[0]).toContainEqual(key);
+  return peopleMatrix[0].indexOf(key);
+}
 function people(line: number, key: string) {
   expect(peopleMatrix[0]).toContainEqual(key);
   const i = peopleMatrix[0].indexOf(key);

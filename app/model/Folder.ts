@@ -75,6 +75,7 @@ export abstract class Folder {
   }
 
   public abstract get displayName(): string;
+  public knownFields: FieldDefinition[];
 
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
