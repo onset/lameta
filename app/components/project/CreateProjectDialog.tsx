@@ -79,17 +79,21 @@ export default class CreateProjectDialog extends React.Component<
           />
 
           <p className={"message " + messageClass}>{message}</p>
-          <div className={"okCancelButtonRow"}>
-            {/* actual order of these will be platform-specific, controlled by
+          <div className="bottomButtonRow">
+            <div className="okCancelGroup">
+              {/* actual order of these will be platform-specific, controlled by
           app.global.scss */}
-            <button onClick={() => this.handleCloseModal(false)}>Cancel</button>
-            <button
-              id="okButton"
-              onClick={() => this.handleCloseModal(true)}
-              disabled={!projectNameIsViable}
-            >
-              OK
-            </button>
+              <button onClick={() => this.handleCloseModal(false)}>
+                Cancel
+              </button>
+              <button
+                id="okButton"
+                onClick={() => this.handleCloseModal(true)}
+                disabled={!projectNameIsViable}
+              >
+                OK
+              </button>
+            </div>
           </div>
         </div>
       </ReactModal>

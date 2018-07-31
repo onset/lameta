@@ -86,7 +86,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         "Warning: this version of SayMore Mac not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
       );
     }
-    // Save when we're quiting. Review: does this cover shutdown?
+    // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", e => {
       if (this.projectHolder.project) {
         this.projectHolder.project.saveAllFilesInFolder();
