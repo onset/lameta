@@ -7,6 +7,7 @@ import LanguageEdit from "./LanguageEdit";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import MugShot from "./MugShot";
 import "./PersonForm.scss";
+import CustomFieldsTable from "../../CustomFieldsTable";
 
 export interface IProps {
   person: Person;
@@ -116,7 +117,7 @@ export default class PersonForm extends React.Component<IProps> {
           field={this.props.fields.getTextField("primaryOccupation")}
           className="full-right-side"
         />
-        {/* </div> */}
+        <CustomFieldsTable folder={this.props.person} />
       </form>
     );
   }

@@ -133,7 +133,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     ];
 
     return (
-      <div>
+      <div className="customFieldsBlock">
         <label>Custom Fields</label>
         <ReactTable
           className="customFieldsTable"
