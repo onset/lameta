@@ -80,22 +80,10 @@ export abstract class Folder {
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
-    folderMetaDataFile: File,
-    rawKnownFieldsFromJson: FieldDefinition[] = []
+    folderMetaDataFile: File
   ): File[] {
-    const knownFields: FieldDefinition[] = rawKnownFieldsFromJson.map(f => {
-      return new FieldDefinition(f);
-    });
-
     const files = new Array<File>();
-    // load the file containing metadata about this folder with
-    // empty fields from the fields.json file
-    knownFields.forEach((f: FieldDefinition, i: number) => {
-      f.order = i;
-      const field = Field.fromFieldDefinition(f);
-      folderMetaDataFile.properties.setValue(field.key, field);
-      console.log("Setting prop from fields.json: " + field.key);
-    });
+
     folderMetaDataFile.readMetadataFile();
     files.push(folderMetaDataFile);
 

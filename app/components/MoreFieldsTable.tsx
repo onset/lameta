@@ -32,9 +32,7 @@ export default class MoreFieldsTable extends React.Component<IProps> {
     this.fieldsForRows = nextProps.folder.properties
       .values()
       .filter(f => (f.definition ? f.definition.extra : false));
-    //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
-
-    this.fieldsForRows.forEach(f => console.log("123" + f.englishLabel));
+    //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
   }
 
   public render() {

@@ -1,21 +1,17 @@
 import * as xml2js from "xml2js";
 import * as fs from "fs";
 import * as Path from "path";
-//import * as filesize from "filesize";
 const filesize = require("filesize");
 import * as mobx from "mobx";
 import * as assert from "assert";
 const camelcase = require("camelcase");
 const imagesize = require("image-size");
-import * as musicmetadata from "musicmetadata";
 import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 import { locate } from "../../crossPlatformUtilities";
-const nodejsUtil = require("util");
 const moment = require("moment");
 const titleCase = require("title-case");
-///export  enum Type {Project, Session, Person, Other }
 
 export class Contribution {
   //review this @mobx.observable
@@ -148,14 +144,25 @@ export abstract class File {
     this.metadataFilePath = metadataFilePath;
     this.xmlRootName = xmlRootName;
     this.fileExtensionForMetadata = fileExtensionForMetadata;
+
+    // NB: subclasses should call this (as super()), then read in their definitions, then let us finish by calling finishLoading();
+  }
+
+  // call this after loading in your definitions
+  protected finishLoading() {
+    this.addFieldsUsedInternally();
+    this.readMetadataFile();
+    this.computeProperties(); //enhance: do this on demand, instead of for every file
+  }
+
+  // These are fields that are computed and which we don't save, but which show up in the UI.
+  private addFieldsUsedInternally() {
     this.addTextProperty("filename", "", false);
     this.setFileNameProperty();
     this.addTextProperty("notes", "");
-
-    const stats = fs.statSync(describedFilePath);
+    const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime);
-
     const typePatterns = [
       ["Session", /\.session$/i],
       ["Person", /\.person$/i],
@@ -166,17 +173,12 @@ export abstract class File {
       ["Text", /\.(txt)/i]
     ];
     const match = typePatterns.find(t => {
-      return !!describedFilePath.match(t[1]);
+      return !!this.describedFilePath.match(t[1]);
     });
     const typeName = match
       ? (match[0] as string)
-      : Path.extname(describedFilePath);
-
+      : Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
-    this.readMetadataFile();
-
-    this.computeProperties(); //enhance: do this on demand, instead of for every file
-    // TODO read the .meta file that describes this file, if it exists
   }
 
   private loadPropertiesFromXml(propertiesFromXml: any) {
@@ -244,11 +246,6 @@ export abstract class File {
       knownPropertiesWithInterestingCasing.indexOf(key) > -1
         ? key
         : camelcase(key);
-
-    /* ---------------TODO -------------*/
-    //Are we ever overwriting field definitions here, so for example
-    //we just assume everything found in the xml should be on the session autoform.
-    //TODO: merge what we find in the xml with what the fields.json definitions say.
 
     // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
     if (this.properties.containsKey(fixedKey)) {
@@ -703,32 +700,9 @@ export abstract class File {
   }
 }
 
-// project, sessions, and person folders have a single metdata file describing their contents, and this ends
-// in a special extension (.sprj, .session, .person)
-//protected fileExtensionForFolderMetadata: string;
-export class FolderMetdataFile extends File {
-  constructor(
-    directory: string,
-    xmlRootName: string,
-    fileExtensionForMetadata: string
-  ) {
-    const name = Path.basename(directory);
-    //if the metadata file doesn't yet exist, just make an empty one.
-    const metadataPath = Path.join(directory, name + fileExtensionForMetadata);
-    if (!fs.existsSync(metadataPath)) {
-      fs.writeFileSync(metadataPath, `<${xmlRootName}/>`);
-    }
-    super(
-      metadataPath,
-      metadataPath,
-      xmlRootName,
-      fileExtensionForMetadata,
-      false
-    );
-  }
-}
 export class OtherFile extends File {
   constructor(path: string) {
     super(path, path + ".meta", "Meta", ".meta", true);
+    this.finishLoading();
   }
 }

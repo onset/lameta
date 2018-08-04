@@ -1,8 +1,9 @@
 import { Folder } from "../../Folder";
-import { File, FolderMetdataFile } from "../../file/File";
+import { File } from "../../file/File";
 import * as Path from "path";
 import { IChoice } from "../../field/Field";
 import mobx from "mobx";
+import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 const knownFieldDefinitions = require("../../field/fields.json");
 const genres = require("./genres.json");
 
@@ -25,17 +26,9 @@ export class Session extends Folder {
     this.knownFields = knownFieldDefinitions.session; // for csv export
   }
   public static fromDirectory(directory: string): Session {
-    const metadataFile = new FolderMetdataFile(
-      directory,
-      "Session",
-      ".session"
-    );
+    const metadataFile = new SessionMetadataFile(directory);
     metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
-    // const genreNames = genres.map((g: any) => g.label);
-    // const genreFieldDefinition = knownFieldDefinitions.session.find(
-    //   (o: any) => o.key === "genre"
-    // );
     const genreChoices = genres.map((g: any) => {
       return g as IChoice;
     });
@@ -44,22 +37,20 @@ export class Session extends Folder {
     );
 
     genreFieldDefinition.complexChoices = genreChoices;
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      knownFieldDefinitions.session
-    );
+    const files = this.loadChildFiles(directory, metadataFile);
 
-    //start autosave
-    // mobx.autorunAsync(
-    //   () => this.save(),
-    //   10 * 1000 /* min 10 seconds in between */
-    // );
+    //start autosave mobx.autorunAsync(() => this.save(),    10 * 1000 /* min 10 seconds in between */  );
 
     return new Session(directory, metadataFile, files);
   }
   // override
   protected fieldContentThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("id").trim();
+  }
+}
+
+export class SessionMetadataFile extends FolderMetadataFile {
+  constructor(directory: string) {
+    super(directory, "Session", ".session", knownFieldDefinitions.session);
   }
 }

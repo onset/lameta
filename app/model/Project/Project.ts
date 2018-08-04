@@ -5,7 +5,7 @@ import * as glob from "glob";
 import { Session } from "./Session/Session";
 import { IFolderSelection, Folder } from "../Folder";
 import { Person } from "./Person/Person";
-import { File, FolderMetdataFile } from "../file/File";
+import { File } from "../file/File";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 //import ImdiExporter from "../../export/imdiCorpus";
 import { ProjectDocuments } from "./ProjectDocuments";
@@ -18,6 +18,7 @@ import { remote } from "electron";
 import { isNullOrUndefined } from "util";
 import { trash } from "../../crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
@@ -73,7 +74,7 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
-    const metadataFile = new FolderMetdataFile(directory, "Project", ".sprj");
+    const metadataFile = new ProjectMetadataFile(directory);
 
     const descriptionFolder = ProjectDocuments.fromDirectory(
       directory,
@@ -85,11 +86,7 @@ export class Project extends Folder {
       "OtherDocuments"
     );
 
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      knownFieldDefinitions.project
-    );
+    const files = this.loadChildFiles(directory, metadataFile);
     // console.log(
     //   "Project had " + files.length + " files. " + JSON.stringify(files)
     // );
@@ -156,7 +153,7 @@ export class Project extends Folder {
       Path.join(this.directory, "Sessions"),
       "New Session"
     );
-    //const metadataFile = new FolderMetdataFile(dir, "Session", ".session");
+    //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir);
     session.properties.setText("id", Path.basename(dir));
     this.sessions.push(session);
@@ -168,7 +165,7 @@ export class Project extends Folder {
       Path.join(this.directory, "People"),
       "New Person"
     );
-    //const metadataFile = new FolderMetdataFile(dir, "Person", ".person");
+    //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = Person.fromDirectory(dir);
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
@@ -296,5 +293,10 @@ export class Project extends Folder {
         this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
       }
     });
+  }
+}
+export class ProjectMetadataFile extends FolderMetadataFile {
+  constructor(directory: string) {
+    super(directory, "Project", ".sprj", knownFieldDefinitions.project);
   }
 }

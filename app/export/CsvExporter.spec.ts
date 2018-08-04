@@ -53,7 +53,7 @@ describe("csv encoding", () => {
     expect(CsvExporter.csvEncode("one\r\ntwo")).toBe('"one\r\ntwo"');
   });
   it("should double quotes if there are quotes", () => {
-    expect(CsvExporter.csvEncode('no, call me "John"')).toBe(
+    expect(CsvExporter.csvEncode('please, call me "John"')).toBe(
       '"please, call me ""John"""'
     );
   });

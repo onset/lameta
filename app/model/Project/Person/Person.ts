@@ -1,10 +1,9 @@
 import { Folder } from "../../Folder";
-import { File, FolderMetdataFile } from "../../file/File";
+import { File } from "../../file/File";
 import * as Path from "path";
-import * as glob from "glob";
 const knownFieldDefinitions = require("../../field/fields.json");
 import * as fs from "fs-extra";
-import { computed } from "mobx";
+import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 
 export class Person extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -57,12 +56,8 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
   }
   public static fromDirectory(directory: string): Person {
-    const metadataFile = new FolderMetdataFile(directory, "Person", ".person");
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      knownFieldDefinitions.person
-    );
+    const metadataFile = new PersonMetadataFile(directory);
+    const files = this.loadChildFiles(directory, metadataFile);
     return new Person(directory, metadataFile, files);
   }
   public static saveFolderMetaData() {
@@ -73,5 +68,10 @@ export class Person extends Folder {
   // override
   protected fieldContentThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("name").trim();
+  }
+}
+export class PersonMetadataFile extends FolderMetadataFile {
+  constructor(directory: string) {
+    super(directory, "Person", ".person", knownFieldDefinitions.person);
   }
 }
