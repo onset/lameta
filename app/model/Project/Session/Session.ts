@@ -47,6 +47,13 @@ export class Session extends Folder {
   protected fieldContentThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("id").trim();
   }
+
+  public get hasMoreFieldsTable(): boolean {
+    return true;
+  }
+  public get hasCustomFieldsTable(): boolean {
+    return true;
+  }
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {

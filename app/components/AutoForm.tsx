@@ -42,6 +42,7 @@ export default class AutoForm extends React.Component<IProps> {
         if (f.choices && f.choices.length > 0) {
           return (
             <ClosedChoiceEdit
+              includeLabel={true}
               field={f}
               key={field.key}
               className={field.cssClass}
@@ -147,8 +148,16 @@ export default class AutoForm extends React.Component<IProps> {
 
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
-        <MoreFieldsTable folder={this.props.folder} />
-        <CustomFieldsTable folder={this.props.folder} />
+        {this.props.folder.hasMoreFieldsTable ? (
+          <MoreFieldsTable folder={this.props.folder} />
+        ) : (
+          ""
+        )}
+        {this.props.folder.hasCustomFieldsTable ? (
+          <CustomFieldsTable folder={this.props.folder} />
+        ) : (
+          ""
+        )}
       </form>
     );
   }

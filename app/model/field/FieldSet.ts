@@ -69,7 +69,7 @@ export class FieldSet extends Dictionary<string, Field> {
   //   const definition: IFieldDefinition = {
   //     key,
   //     englishLabel: key, // key is the englishLabel
-  //     //defaultValue?: string;
+  //     //default?: string;
   //     persist: true,
   //     type: "Text",
   //     //form,

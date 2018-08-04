@@ -97,6 +97,7 @@ export default class PersonForm extends React.Component<IProps> {
           field={this.props.fields.getTextField("birthYear")}
         />
         <ClosedChoiceEdit
+          includeLabel={true}
           className={"gender"}
           field={this.props.fields.getTextField("gender")}
         />

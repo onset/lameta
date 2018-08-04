@@ -19,7 +19,7 @@ export interface IChoice {
 export class FieldDefinition {
   public key: string;
   public englishLabel?: string;
-  public defaultValue?: string;
+  public default?: string;
   public persist: boolean;
   public type: string;
   public form?: string; // what form this shows on, if not the main one
@@ -88,7 +88,7 @@ export class Field {
     const f = new Field(
       definition.key,
       type,
-      definition.defaultValue,
+      definition.default,
       definition.englishLabel,
       definition.form,
       FieldVisibility.Always, //todo
@@ -124,13 +124,15 @@ export class Field {
     this.persist = persist;
     this.cssClass = cssClass ? cssClass : key;
     this.text = englishValue;
-    this.choices = choices;
+    this.choices = choices.filter(c => {
+      return c.indexOf("//") !== 0; // we dont yet have webpack allowing comments in json, so we strip out elements that start with //
+    });
 
     // Review: maybe it's lame to have some fields have a format definition, and some don't.
     // this.definition = {
     //   key,
     //   englishLabel,
-    //   //defaultValue?: string;
+    //   //default?: string;
     //   persist,
     //   type: type.toString(),
     //   form,

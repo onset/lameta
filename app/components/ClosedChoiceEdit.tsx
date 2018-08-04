@@ -4,6 +4,7 @@ import { Field } from "../model/field/Field";
 const titleCase = require("title-case");
 
 export interface IProps {
+  includeLabel: boolean;
   field: Field;
 }
 
@@ -38,18 +39,23 @@ export default class ClosedChoiceEdit extends React.Component<
   }
 
   public render() {
+    const v = ClosedChoiceEdit.getValue(this.props.field);
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.getLabel()}</label>
+        {this.props.includeLabel ? <label>{this.getLabel()}</label> : ""}
         <select
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
-          value={ClosedChoiceEdit.getValue(this.props.field)}
+          value={v}
           onChange={event => {
             ClosedChoiceEdit.onChange(event, this.props.field);
           }}
         >
           {//NB: an error about keys here means that the choices were not unique
-          this.props.field.choices.map(s => <option key={s}>{s}</option>)}
+          this.props.field.choices.map(s => (
+            <option key={s} value={s}>
+              {s === "unspecified" ? "" : s}
+            </option>
+          ))}
         </select>
       </div>
     );

@@ -44,6 +44,12 @@ export abstract class Folder {
     return Path.basename(Path.basename(this.directory));
   }
 
+  public get hasMoreFieldsTable(): boolean {
+    return false;
+  }
+  public get hasCustomFieldsTable(): boolean {
+    return false;
+  }
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural
   // to think of these properties as belonging to the (Project/Session/Person) itself.

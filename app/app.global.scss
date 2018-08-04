@@ -93,8 +93,14 @@ textarea {
   font-family: $default-fonts;
 }
 // no border when in a grid
-.rt-td textarea {
-  border: none;
+.rt-td {
+  textarea {
+    border: none;
+  }
+  select {
+    border: none;
+    width: 100%;
+  }
 }
 button {
   font-family: $default-fonts;

@@ -110,7 +110,16 @@
     },
     {
       "key": "Involvement",
-      "extra": "true"
+      "extra": "true",
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "elicited",
+        "non-elicited",
+        "no-observer"
+      ],
+      "default": "unspecified"
     },
     {
       "key": "Location_Country",
@@ -130,7 +139,16 @@
     },
     {
       "key": "Planning_Type",
-      "extra": "true"
+      "extra": "true",
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "spontaneous",
+        "semi-spontaneous",
+        "planned"
+      ],
+      "default": "unspecified"
     },
     {
       "key": "Sub-Genre",
@@ -139,7 +157,17 @@
     },
     {
       "key": "Social_Context",
-      "extra": "true"
+      "extra": "true",
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "family",
+        "private",
+        "public",
+        "controlled environment"
+      ],
+      "default": "unspecified"
     }
   ],
   "person": [

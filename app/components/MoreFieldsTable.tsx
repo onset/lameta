@@ -7,6 +7,7 @@ import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
+import ClosedChoiceEdit from "./ClosedChoiceEdit";
 
 export interface IProps {
   folder: Folder;
@@ -50,14 +51,27 @@ export default class MoreFieldsTable extends React.Component<IProps> {
         Header: "Value",
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
-          return (
-            <TextFieldEdit
-              hideLabel={true}
-              className={field.cssClass}
-              key={field.key}
-              field={field as Field}
-            />
-          );
+
+          const f = field as Field;
+          if (f.choices && f.choices.length > 0) {
+            return (
+              <ClosedChoiceEdit
+                includeLabel={false}
+                field={f}
+                key={field.key}
+                className={field.cssClass}
+              />
+            );
+          } else {
+            return (
+              <TextFieldEdit
+                hideLabel={true}
+                className={field.cssClass}
+                key={field.key}
+                field={field as Field}
+              />
+            );
+          }
         }
       }
     ];
