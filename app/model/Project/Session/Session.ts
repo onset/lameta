@@ -30,6 +30,8 @@ export class Session extends Folder {
       "Session",
       ".session"
     );
+    metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
+
     // const genreNames = genres.map((g: any) => g.label);
     // const genreFieldDefinition = knownFieldDefinitions.session.find(
     //   (o: any) => o.key === "genre"

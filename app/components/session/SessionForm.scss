@@ -16,6 +16,12 @@
     grid-row: 1;
   }
 
+  .title,
+  .situation,
+  .participants,
+  .genre {
+    grid-column: 1;
+  }
   .date,
   .setting,
   .location,
@@ -32,8 +38,16 @@
     }
   }
 }
+.moreFieldsBlock {
+  grid-column: 1;
 
-.customFieldsTable {
-  background-color: white;
-  //min-height: 100px;
+  .moreFieldsTable {
+    background-color: white;
+  }
+}
+.customFieldsBlock {
+  grid-column: 2;
+  .customFieldsTable {
+    background-color: white;
+  }
 }

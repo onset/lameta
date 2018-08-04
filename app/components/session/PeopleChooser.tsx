@@ -39,7 +39,7 @@ export default class PeopleChooser extends React.Component<
         label: c
       });
     });
-    console.log("participants=" + this.props.field.text);
+    //console.log("participants=" + this.props.field.text);
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>

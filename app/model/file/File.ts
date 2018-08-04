@@ -91,6 +91,13 @@ export abstract class File {
     };
     const f = Field.fromFieldDefinition(definition);
     f.setValueFromString(value);
+
+    if (key === "Sub-Genre") {
+      console.log(
+        "addTextProperty(Sub-Genre) " +
+          JSON.stringify(this.properties.getValue(key))
+      );
+    }
     this.properties.setValue(key, f);
 
     // //console.log("setting " + key + " to " + value);
@@ -218,13 +225,31 @@ export abstract class File {
       }
     }
 
+    const textValue: string = value;
+
+    // We want to preserve input and output with SayMore Windows, which at this time has properties with a variety of conventions
+    const knownPropertiesWithInterestingCasing = [
+      "Location_Country",
+      "Location_Region",
+      "Location_Continent",
+      "Location_Address",
+      "Planning_Type",
+      "Sub-Genre" /*misspelled*/,
+      "Social_Context",
+      "Involvement"
+    ];
+
+    // todo: need a comment about why we ever change the key (I don't remember at the moment)...
+    const fixedKey =
+      knownPropertiesWithInterestingCasing.indexOf(key) > -1
+        ? key
+        : camelcase(key);
+
     /* ---------------TODO -------------*/
-    //It seems we are just overwriting field definitions here, so for example
+    //Are we ever overwriting field definitions here, so for example
     //we just assume everything found in the xml should be on the session autoform.
     //TODO: merge what we find in the xml with what the fields.json definitions say.
 
-    const textValue: string = value;
-    const fixedKey = camelcase(key);
     // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
     if (this.properties.containsKey(fixedKey)) {
       const v = this.properties.getValueOrThrow(fixedKey);

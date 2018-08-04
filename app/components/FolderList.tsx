@@ -94,9 +94,9 @@ export class FolderList extends React.Component<IProps> {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
               onClick: (e: any, t: any) => {
-                console.log(
-                  "row " + JSON.stringify(rowInfo.original.directory)
-                );
+                // console.log(
+                //   "row " + JSON.stringify(rowInfo.original.directory)
+                // );
                 this.props.selectedFolder.index = rowInfo.index;
                 this.setState({}); // trigger re-render so that the following style: takes effect
               },

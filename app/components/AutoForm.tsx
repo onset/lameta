@@ -12,6 +12,7 @@ import PeopleChooser from "./session/PeopleChooser";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
+import MoreFieldsTable from "./MoreFieldsTable";
 
 export interface IProps {
   folder: Folder;
@@ -39,7 +40,13 @@ export default class AutoForm extends React.Component<IProps> {
       case FieldType.Text:
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
-          return <ClosedChoiceEdit field={f} key={field.key} />;
+          return (
+            <ClosedChoiceEdit
+              field={f}
+              key={field.key}
+              className={field.cssClass}
+            />
+          );
         } else if (f.definition && f.definition.key === "access") {
           return (
             <AccessChooser
@@ -53,6 +60,7 @@ export default class AutoForm extends React.Component<IProps> {
             <PeopleChooser
               key={f.key} // for some reason we get a key error without this
               field={field as Field}
+              className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
             />
           );
@@ -61,7 +69,13 @@ export default class AutoForm extends React.Component<IProps> {
           f.definition.complexChoices &&
           f.definition.complexChoices.length > 0
         ) {
-          return <GenreChooser field={f} key={field.key} />;
+          return (
+            <GenreChooser
+              field={f}
+              key={field.key}
+              className={field.cssClass}
+            />
+          );
         } else if (
           this.props.fieldThatControlsFileNamesMightHaveChanged &&
           this.props.fieldThatControlsFileNames &&
@@ -111,7 +125,10 @@ export default class AutoForm extends React.Component<IProps> {
       .values()
       .filter(
         f =>
-          f.definition && f.definition.showOnAutoForm && !f.definition.isCustom
+          f.definition &&
+          f.definition.showOnAutoForm &&
+          !f.definition.isCustom &&
+          !f.definition.extra
       )
       .sort(
         (a, b) =>
@@ -130,7 +147,7 @@ export default class AutoForm extends React.Component<IProps> {
 
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
-
+        <MoreFieldsTable folder={this.props.folder} />
         <CustomFieldsTable folder={this.props.folder} />
       </form>
     );

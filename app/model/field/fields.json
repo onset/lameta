@@ -107,6 +107,39 @@
     {
       "key": "date",
       "type": "Date"
+    },
+    {
+      "key": "Involvement",
+      "extra": "true"
+    },
+    {
+      "key": "Location_Country",
+      "extra": "true"
+    },
+    {
+      "key": "Location_Region",
+      "extra": "true"
+    },
+    {
+      "key": "Location_Continent",
+      "extra": "true"
+    },
+    {
+      "key": "Location_Address",
+      "extra": "true"
+    },
+    {
+      "key": "Planning_Type",
+      "extra": "true"
+    },
+    {
+      "key": "Sub-Genre",
+      "englishLabel": "Subgenre",
+      "extra": "true"
+    },
+    {
+      "key": "Social_Context",
+      "extra": "true"
     }
   ],
   "person": [

@@ -88,11 +88,13 @@ export abstract class Folder {
     });
 
     const files = new Array<File>();
-    // load the file containing metadata about this folder
+    // load the file containing metadata about this folder with
+    // empty fields from the fields.json file
     knownFields.forEach((f: FieldDefinition, i: number) => {
       f.order = i;
       const field = Field.fromFieldDefinition(f);
       folderMetaDataFile.properties.setValue(field.key, field);
+      console.log("Setting prop from fields.json: " + field.key);
     });
     folderMetaDataFile.readMetadataFile();
     files.push(folderMetaDataFile);

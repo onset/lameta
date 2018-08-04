@@ -31,6 +31,8 @@ export class FieldDefinition {
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;
+  // this is for the fields in session that appear under "More Fields"
+  public extra?: boolean = false;
   //awkward... this is not use for people, where we don't use the autoform
   public showOnAutoForm: boolean = true;
 
@@ -69,7 +71,7 @@ export class Field {
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
 
-  // these definitions normally come from fields.json, which in turn can come form a google spreadsheet with json export
+  // these definitions normally come from fields.json, which in turn can come from a google spreadsheet with json export
   public static fromFieldDefinition(definition: FieldDefinition): Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";
