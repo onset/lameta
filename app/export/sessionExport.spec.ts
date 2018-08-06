@@ -1,9 +1,6 @@
-import ImdiGenerator from "../../app/export/imdiGenerator";
-import { File } from "../../app/model/file/File";
-import { Project } from "../../app/model/Project/Project";
-import { Session } from "../../app/model/Project/Session/Session";
-const XPATH = require("xpath");
-const dom = require("xmldom").DOMParser;
+import ImdiGenerator from "./imdiGenerator";
+import { Project } from "../model/Project/Project";
+import { Session } from "../model/Project/Session/Session";
 import {
   setResultXml,
   xexpect as expect,
