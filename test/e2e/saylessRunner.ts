@@ -73,10 +73,12 @@ export default class SayLessRunner {
   //
   // close the app and start, but don't touch any settings, existing projects, etc.
   //
-  public async restart(): Promise<Application> {
+  public async restart(cleanProject: boolean): Promise<any> {
     await this.stop();
     process.env.startInStartScreen = "false";
-    return this.start(false);
+    await this.start(cleanProject);
+    process.env.startInStartScreen = "true";
+    return delay(1);
   }
 
   public get browser(): SpectronClient {
@@ -97,7 +99,7 @@ export default class SayLessRunner {
 
   public async shouldExist(selector: string, log?: string) {
     //const element = await this.app.client.element(selector);
-    const exists = await this.app.client.isExisting(selector);
+    const exists = await this.app.client.waitForExist(selector, 2 * 1000);
 
     if (exists) {
       console.log(log ? log : `Found element matching '${selector}'`);
@@ -168,6 +170,7 @@ export default class SayLessRunner {
   }
 
   public removeProject(projectName: string) {
+    console.log("***** enter removeProject()");
     // note: at the point that this is called, the app hasn't started,
     // so we can't use this.app.electron
     // TODO: will this work on mac?
@@ -178,6 +181,7 @@ export default class SayLessRunner {
     //   projectName
     // );
     fs.removeSync(p);
+    console.log("***** finished removeProject()");
   }
 
   public async goToStartScreen() {
@@ -187,8 +191,11 @@ export default class SayLessRunner {
   }
 
   public async createdProjectWithSampleData() {
+    console.log("10");
     await this.goToStartScreen();
+    console.log("20");
     await this.shouldExist(".startScreen");
+    console.log("30");
     await this.click("#createNewProjectWithSampleDataLink");
     await this.shouldExist(".createProject");
 

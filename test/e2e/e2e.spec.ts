@@ -16,9 +16,13 @@ describe("main window", function spec() {
 
   const kProjectName = "e2eproject";
   beforeAll(async () => {
+    console.log("&&&&&&&&&&&&&&&&&&&&& beforeAll");
     return runner.start();
   });
-
+  beforeEach(async () => {
+    console.log("%%%%%%%%%%%%%%%%%%%% beforeEach");
+    process.env.startInStartScreen = "true";
+  });
   afterAll(() => {
     return runner.stop();
   });
@@ -30,7 +34,7 @@ describe("main window", function spec() {
 
   it("should start in start screen", async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-    await delay(5000);
+    //await delay(5000);
     await runner.shouldExist(".startScreen");
   });
 
@@ -39,51 +43,54 @@ describe("main window", function spec() {
     await runner.goToStartScreen();
   });
 
-  it("smoketest", async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-    await runner.goToStartScreen();
-    await runner.shouldExist(".startScreen");
-    await runner.click("#creatNewProjectLink");
-    await runner.shouldExist(".createProject");
+  // it("smoketest", async () => {
+  //   console.log("-------------Smoketest-------");
+  //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+  //   await runner.goToStartScreen();
+  //   await runner.shouldExist(".startScreen");
+  //   await runner.click("#creatNewProjectLink");
+  //   await runner.shouldExist(".createProject");
 
-    //setting new project name
+  //   //setting new project name
 
-    await runner.type("input", runner.kProjectName);
-    await runner.click("#okButton", "clicking ok");
+  //   await runner.type("input", runner.kProjectName);
+  //   await runner.click("#okButton", "clicking ok");
+  //   // look around
+  //   await runner.click(".tab-sessions");
+  //   await runner.click(".tab-project");
 
-    // look around
-    await runner.click(".tab-sessions");
-    await runner.click(".tab-project");
+  //   // if we restart, it should open up to our project again
+  //   await runner.restart(false);
+  //   await runner.click(".tab-sessions");
 
-    // if we restart, it should open up to our project again
-    await runner.restart();
-    await runner.click(".tab-sessions");
+  //   //expect(await app.client.isExisting("[data-tid='container']")).toBe(true);
+  // });
 
-    //expect(await app.client.isExisting("[data-tid='container']")).toBe(true);
-  });
+  // it("sample data", async () => {
+  //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
-  it("sample data", async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
-    await runner.createdProjectWithSampleData();
-    // await delay(1000);
-    await runner.goToProjectTab();
-    //await delay(1000);
-    await runner.click("li=About This Project");
-    await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
-    await runner.goToPeopleTab();
-    await runner.expectFolderListRowCount(4);
-    // await delay(1000);
-    await runner.clickFolderRowWithText("Awi Heole");
-    await runner.expectFileListRowCount(3);
-    await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
-    await runner.expectFileListRowCount(2);
-    await runner.click("button=New Person");
-    await runner.expectFileListRowCount(1);
-    // await delay(1000);
-    await runner.click("li=Person");
-    await runner.typeField("Full Name", "joe");
-    await runner.shouldExist("//div[text()='joe']"); // the folder
-    await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
-    // await delay(3000);
-  });
+  //   await runner.restart(true);
+  //   await delay(1000);
+  //   await runner.createdProjectWithSampleData();
+  //   // await delay(1000);
+  //   await runner.goToProjectTab();
+  //   //await delay(1000);
+  //   await runner.click("li=About This Project");
+  //   await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
+  //   await runner.goToPeopleTab();
+  //   await runner.expectFolderListRowCount(4);
+  //   // await delay(1000);
+  //   await runner.clickFolderRowWithText("Awi Heole");
+  //   await runner.expectFileListRowCount(3);
+  //   await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
+  //   await runner.expectFileListRowCount(2);
+  //   await runner.click("button=New Person");
+  //   await runner.expectFileListRowCount(1);
+  //   // await delay(1000);
+  //   await runner.click("li=Person");
+  //   await runner.typeField("Full Name", "joe");
+  //   await runner.shouldExist("//div[text()='joe']"); // the folder
+  //   await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
+  //   // await delay(3000);
+  // });
 });
