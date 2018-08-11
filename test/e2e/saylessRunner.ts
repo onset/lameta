@@ -6,6 +6,9 @@ import * as Path from "path";
 import * as assert from "assert";
 //import { remote } from "electron";
 import Winston from "winston";
+import os from "os";
+//const { app } = require("electron").remote;
+
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
 // See http://webdriver.io/api/state/isExisting.html# and friends for documentation.
 // At the moment (Mar 2018) the jest expect statements are kudgy with webdriverio.
@@ -59,7 +62,7 @@ export default class SayLessRunner {
     // by not having a webpack-build "main-bundle.js" there. You can get that if you
     // have git-cleaned the src. "yarn dev" does not create it (seems to be
     // all in memory?) and "yarn watch-renderer" only creates "renderer-bundle.js".
-    // Use "yarn build" or "yarn watch-main" to build it.
+    // Use "yarn build-production" or "yarn watch-main" to build it.
     await this.app.start();
 
     // NOTE: if you get waitUntilWindowLoaded: Cannot read property 'isLoading' of undefined,
@@ -72,6 +75,7 @@ export default class SayLessRunner {
   //
   public async restart(): Promise<Application> {
     await this.stop();
+    process.env.startInStartScreen = "false";
     return this.start(false);
   }
 
@@ -164,11 +168,15 @@ export default class SayLessRunner {
   }
 
   public removeProject(projectName: string) {
-    const p = Path.join(
-      "C:/Users/hatto/Documents", ////app.getPath("documents"), TODO
-      "SayLess",
-      projectName
-    );
+    // note: at the point that this is called, the app hasn't started,
+    // so we can't use this.app.electron
+    // TODO: will this work on mac?
+    const p = Path.join(os.homedir(), "documents", "SayMore Mac", projectName);
+    // const p = Path.join(
+    //   this.app.electron.remote.app.getPath("documents"),
+    //   "SayMore Mac",
+    //   projectName
+    // );
     fs.removeSync(p);
   }
 
@@ -187,7 +195,7 @@ export default class SayLessRunner {
     //setting new project name
 
     await this.type("input", this.kProjectName);
-    await this.click("button", "clicking ok");
+    await this.click("#okButton", "clicking ok");
     await this.app.client.waitForExist(".tab-project");
     console.log("Project created with sample data.");
   }

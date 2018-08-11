@@ -1,8 +1,3 @@
-import * as electronPath from "electron";
-//import * as webdriverio from "webdriverio";
-import { Application } from "spectron";
-import * as fs from "fs-extra";
-import * as Path from "path";
 import SayLessRunner from "./SayLessRunner";
 
 // NOTE: if using JEST vscode extension, it doesn't seem to run in the background
@@ -30,7 +25,7 @@ describe("main window", function spec() {
 
   it("should open window", async () => {
     const title = await runner.browser.getTitle();
-    expect(title).toBe("SayLess");
+    expect(title).toBe("SayMore Mac");
   });
 
   it("should start in start screen", async () => {
@@ -39,7 +34,7 @@ describe("main window", function spec() {
     await runner.shouldExist(".startScreen");
   });
 
-  it("can click menus", async () => {
+  test.skip("can click menus", async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     await runner.goToStartScreen();
   });
@@ -54,7 +49,7 @@ describe("main window", function spec() {
     //setting new project name
 
     await runner.type("input", runner.kProjectName);
-    await runner.click("button", "clicking ok");
+    await runner.click("#okButton", "clicking ok");
 
     // look around
     await runner.click(".tab-sessions");
