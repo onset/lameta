@@ -128,7 +128,10 @@ export default class SayLessMenu {
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
-    template.push(projectMenu, sessionMenu, peopleMenu);
+    // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
+    if (sessionMenu) {
+      template.push(projectMenu, sessionMenu, peopleMenu);
+    }
     if (process.env.NODE_ENV === "development") {
       template.push(devMenu);
     }

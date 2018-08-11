@@ -75,6 +75,8 @@ export default class HomePage extends React.Component<IProps, IState> {
   public componentWillMount() {
     this.menu = new SayLessMenu(this);
     this.menu.setupContentMenu();
+    // do this in case we're just opening to the start screen. Otherwise, we get some confusing default Electron menu
+    this.menu.updateMainMenu(undefined, undefined);
   }
   private isRunningFromSource(): boolean {
     return /node_modules[\\/]electron[\\/]/.test(process.execPath);
