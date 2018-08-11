@@ -1,4 +1,4 @@
-import SayLessRunner from "./SayLessRunner";
+import SayLessRunner from "./SaylessRunner";
 
 // NOTE: if using JEST vscode extension, it doesn't seem to run in the background
 // like with normal unit tests, but when you click "Debug" to run a test, it will
@@ -16,12 +16,10 @@ describe("main window", function spec() {
 
   const kProjectName = "e2eproject";
   beforeAll(async () => {
-    console.log("&&&&&&&&&&&&&&&&&&&&& beforeAll");
     return runner.start();
   });
   beforeEach(async () => {
-    console.log("%%%%%%%%%%%%%%%%%%%% beforeEach");
-    process.env.startInStartScreen = "true";
+    runner.RemoveTestArtifacts();
   });
   afterAll(() => {
     return runner.stop();
@@ -33,64 +31,65 @@ describe("main window", function spec() {
   });
 
   it("should start in start screen", async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-    //await delay(5000);
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
     await runner.shouldExist(".startScreen");
   });
 
-  test.skip("can click menus", async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    await runner.goToStartScreen();
+  it("can click menus", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+    await runner.clickMenu("Test", "Menu Test");
+    await runner.expectWindowTitle("Menu Test Invoked");
   });
 
-  // it("smoketest", async () => {
-  //   console.log("-------------Smoketest-------");
-  //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-  //   await runner.goToStartScreen();
-  //   await runner.shouldExist(".startScreen");
-  //   await runner.click("#creatNewProjectLink");
-  //   await runner.shouldExist(".createProject");
+  it("smoketest", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+    await runner.goToStartScreen();
 
-  //   //setting new project name
+    await runner.clickMenu("Test", "Menu Test");
 
-  //   await runner.type("input", runner.kProjectName);
-  //   await runner.click("#okButton", "clicking ok");
-  //   // look around
-  //   await runner.click(".tab-sessions");
-  //   await runner.click(".tab-project");
+    await runner.shouldExist(".startScreen");
+    await runner.click("#creatNewProjectLink");
+    await runner.shouldExist(".createProject");
 
-  //   // if we restart, it should open up to our project again
-  //   await runner.restart(false);
-  //   await runner.click(".tab-sessions");
+    //setting new project name
 
-  //   //expect(await app.client.isExisting("[data-tid='container']")).toBe(true);
-  // });
+    await runner.type("input", runner.kProjectName);
+    await runner.click("#okButton", "clicking ok");
+    // look around
+    await runner.click(".tab-sessions");
+    await runner.click(".tab-project");
 
-  // it("sample data", async () => {
-  //   jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+    // if we restart, it should open up to our project again
+    await runner.restart(false);
+    await runner.click(".tab-sessions");
+    await runner.goToStartScreen();
+    await runner.shouldExist(".startScreen");
+  });
 
-  //   await runner.restart(true);
-  //   await delay(1000);
-  //   await runner.createdProjectWithSampleData();
-  //   // await delay(1000);
-  //   await runner.goToProjectTab();
-  //   //await delay(1000);
-  //   await runner.click("li=About This Project");
-  //   await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
-  //   await runner.goToPeopleTab();
-  //   await runner.expectFolderListRowCount(4);
-  //   // await delay(1000);
-  //   await runner.clickFolderRowWithText("Awi Heole");
-  //   await runner.expectFileListRowCount(3);
-  //   await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
-  //   await runner.expectFileListRowCount(2);
-  //   await runner.click("button=New Person");
-  //   await runner.expectFileListRowCount(1);
-  //   // await delay(1000);
-  //   await runner.click("li=Person");
-  //   await runner.typeField("Full Name", "joe");
-  //   await runner.shouldExist("//div[text()='joe']"); // the folder
-  //   await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
-  //   // await delay(3000);
-  // });
+  it("sample data", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+
+    //await runner.restart(true);
+    await runner.goToStartScreen();
+    await runner.createdProjectWithSampleData();
+
+    await runner.goToProjectTab();
+
+    await runner.click("li=About This Project");
+    await runner.expectFieldContentsByName("Project Title", "Edolo Sample");
+    await runner.goToPeopleTab();
+    await runner.expectFolderListRowCount(4);
+
+    await runner.clickFolderRowWithText("Awi Heole");
+    await runner.expectFileListRowCount(3);
+    await runner.clickFolderRowWithText("Igali Sagali (Joseph)");
+    await runner.expectFileListRowCount(2);
+    await runner.click("button=New Person");
+    await runner.expectFileListRowCount(1);
+
+    await runner.click("li=Person");
+    await runner.typeField("Full Name", "joe");
+    await runner.shouldExist("//div[text()='joe']"); // the folder
+    await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
+  });
 });

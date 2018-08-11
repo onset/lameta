@@ -119,6 +119,17 @@ export default class SayLessMenu {
         }
       ]
     };
+    const testMenu = {
+      label: "Test",
+      submenu: [
+        {
+          label: "Menu Test",
+          click() {
+            mainWindow.setTitle("Menu Test Invoked");
+          }
+        }
+      ]
+    };
     const helpMenu = {
       label: "Help",
       submenu: []
@@ -135,6 +146,9 @@ export default class SayLessMenu {
     if (process.env.NODE_ENV === "development") {
       template.push(devMenu);
     }
+    //if (process.env.NODE_ENV === "test") {
+    template.push(testMenu);
+    //}
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );

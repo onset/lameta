@@ -1,12 +1,11 @@
 import { default as electronPath } from "electron";
-//import * as webdriverio from "webdriverio";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as assert from "assert";
-//import { remote } from "electron";
 import Winston from "winston";
 import os from "os";
+import menuAddon from "spectron-menu-addon";
 //const { app } = require("electron").remote;
 
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
@@ -39,7 +38,7 @@ export default class SayLessRunner {
     //           format: "hh:mm:ss"
     //         }),
     //         Winston.format.printf(
-    //           info => `${info.timestamp} ${info.level}: ${info.message}`
+    //           info => `${iPnfo.timestamp} ${info.level}: ${info.message}`
     //         )
     //       ),
     //       handleExceptions: true
@@ -50,12 +49,13 @@ export default class SayLessRunner {
     // logger.info("hello");
 
     if (doClear) {
-      this.removeProject(this.kProjectName);
+      this.RemoveTestArtifacts();
     }
 
-    this.app = new Application({
+    this.app = menuAddon.createApplication({
       path: electronPath.toString(),
       args: [Path.join(__dirname, "..", "..", "app")]
+      //didn't seem to work.. maybe something else overrides  env: { NODE_ENV: "test" }
     });
 
     // "Unable to find Electron app at ____\sayles\app" here can be caused
@@ -68,6 +68,10 @@ export default class SayLessRunner {
     // NOTE: if you get waitUntilWindowLoaded: Cannot read property 'isLoading' of undefined,
     // ensure that the devtools isn't opened in the production build.
     return this.app.client.waitUntilWindowLoaded();
+  }
+
+  public RemoveTestArtifacts() {
+    this.removeProject(this.kProjectName);
   }
 
   //
@@ -87,7 +91,10 @@ export default class SayLessRunner {
 
   public async clickMenu(menuName: string, item: string) {
     await delay(500);
-    await this.app.electron.ipcRenderer.send("click-menu", [menuName, item]);
+    const menu = await menuAddon.getMenuItem(menuName, item);
+    expect(menu).toBeTruthy();
+    //await this.app.electron.ipcRenderer.send("click-menu", [menuName, item]);
+    await menuAddon.clickMenu(menuName, item);
   }
 
   public stop(): Promise<Application> {
@@ -108,6 +115,12 @@ export default class SayLessRunner {
       throw new Error(`Could not find element matching '${selector}'`);
     }
     expect(exists).toBe(true);
+  }
+
+  public async expectWindowTitle(title: string, log?: string) {
+    await delay(500);
+    const t = await this.app.browserWindow.getTitle();
+    expect(t).toBe(title);
   }
 
   public async expectFieldContentsByName(
@@ -170,7 +183,6 @@ export default class SayLessRunner {
   }
 
   public removeProject(projectName: string) {
-    console.log("***** enter removeProject()");
     // note: at the point that this is called, the app hasn't started,
     // so we can't use this.app.electron
     // TODO: will this work on mac?
@@ -181,21 +193,27 @@ export default class SayLessRunner {
     //   projectName
     // );
     fs.removeSync(p);
-    console.log("***** finished removeProject()");
   }
 
   public async goToStartScreen() {
-    //await this.clickMenu("&Project","&Start Screen");
+    try {
+      await this.app.client.waitForExist(".startScreen", 1000);
+    } catch (error) {
+      await this.clickMenu("&Project", "&Start Screen");
+      await this.shouldExist(".startScreen");
+    }
+  }
+
+  // goToStartScreen() is working strangely...
+  public async goToStartScreenHack() {
+    await this.clickMenu("&Project", "&Start Screen");
     await delay(1000);
     await this.shouldExist(".startScreen");
   }
 
   public async createdProjectWithSampleData() {
-    console.log("10");
     await this.goToStartScreen();
-    console.log("20");
     await this.shouldExist(".startScreen");
-    console.log("30");
     await this.click("#createNewProjectWithSampleDataLink");
     await this.shouldExist(".createProject");
 

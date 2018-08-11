@@ -7040,6 +7040,10 @@ spectron-keys@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/spectron-keys/-/spectron-keys-0.0.1.tgz#45c3aa535e85fe5f5c71fd18cfa43927826f65db"
 
+spectron-menu-addon@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/spectron-menu-addon/-/spectron-menu-addon-0.3.3.tgz#528e1e0e9f85ddeb6414b250adb99643058c7831"
+
 spectron@^3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/spectron/-/spectron-3.8.0.tgz#122c3562fd7e92b7cdf6f94094aa495b150dfa51"
