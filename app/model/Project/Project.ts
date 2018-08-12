@@ -1,28 +1,22 @@
 import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
-import * as glob from "glob";
 import { Session } from "./Session/Session";
 import { IFolderSelection, Folder } from "../Folder";
 import { Person } from "./Person/Person";
 import { File } from "../file/File";
-import { Field, FieldType, FieldVisibility } from "../field/Field";
-//import ImdiExporter from "../../export/imdiCorpus";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
-import {
-  AuthorityLists,
-  IAccessProtocolChoice
-} from "./AuthorityLists/AuthorityLists";
+import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import { remote } from "electron";
-import { isNullOrUndefined } from "util";
 import { trash } from "../../crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
-  @mobx.observable private projectInternal: Project | null;
+  @mobx.observable
+  private projectInternal: Project | null;
   public get project(): Project | null {
     return this.projectInternal;
   }
@@ -40,10 +34,14 @@ export class ProjectHolder {
 }
 
 export class Project extends Folder {
-  @mobx.observable public selectedSession: IFolderSelection;
-  @mobx.observable public selectedPerson: IFolderSelection;
-  @mobx.observable public sessions: Session[] = [];
-  @mobx.observable public persons: Person[] = [];
+  @mobx.observable
+  public selectedSession: IFolderSelection;
+  @mobx.observable
+  public selectedPerson: IFolderSelection;
+  @mobx.observable
+  public sessions: Session[] = [];
+  @mobx.observable
+  public persons: Person[] = [];
 
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
