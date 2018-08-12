@@ -1,16 +1,30 @@
 const spawn = require("cross-spawn");
 const path = require("path");
 
-const s = `\\${path.sep}`;
-const pattern =
-  process.argv[2] === "e2e"
-    ? `test${s}e2e${s}.+\\.spec\\.tsx?`
-    : `..${s}(?!e2e${s})[^${s}]+${s}.+\\.(spec|test)\\.tsx?$`;
+let pattern;
+switch (process.argv[2]) {
+  case "e2e":
+    pattern = "test/e2e/.+\\.spec\\.tsx?";
+    break;
+  case "unit":
+    pattern = "(?<!e2e).(spec|test)\\.tsx?";
+    break;
+  default:
+    pattern = ".(spec|test)\\.tsx?";
+}
+
+let cliSwitch = "";
+if (process.argv[2] && process.argv[2].startsWith("--")) {
+  cliSwitch = process.argv[2];
+} else if (process.argv[3] && process.argv[3].startsWith("--")) {
+  cliSwitch = process.argv[3];
+}
 const result = spawn.sync(
   path.normalize("./node_modules/.bin/jest"),
-  process.argv[2] && process.argv[2].startsWith("--")
-    ? [pattern, process.argv[2]]
-    : [pattern],
+  // process.argv[2] && process.argv[2].startsWith("--")
+  //   ? [pattern, process.argv[2]]
+  //   : [pattern],
+  [pattern, cliSwitch],
   { stdio: "inherit" }
 );
 
