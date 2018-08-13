@@ -4,7 +4,7 @@ import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
-/*
+
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
   fs.writeFileSync(path, "pretend contents");
@@ -23,7 +23,7 @@ describe("FolderMetadataFile constructor", () => {
   it("should make the appropriate metadata file if it doesn't exist", () => {
     //temp.track();
     const dir = temp.mkdirSync("blah");
-    const f = new FolderMetadataFile(dir, "Session", ".session");
+    const f = new SessionMetadataFile(dir);
     const files = fs.readdirSync(dir);
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
@@ -42,17 +42,17 @@ describe("file", () => {
     expect(f2.getTextField("notes").text).toBe(notes);
   });
 });
-*/
-// describe("file", () => {
-//   it("should roundtrip custom field", () => {
-//     const mediaFilePath = getPretendAudioFile();
-//     const f = new OtherFile(mediaFilePath);
-//     f.setTextProperty("customone", "hello");
-//     f.save();
-//     const f2 = new OtherFile(mediaFilePath);
-//     expect(f2.getTextField("customone").text).toBe("hello");
-//   });
-// });
+
+describe("file", () => {
+  it("should roundtrip custom field", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath);
+    f.setTextProperty("customone", "hello");
+    f.save();
+    const f2 = new OtherFile(mediaFilePath);
+    expect(f2.getTextField("customone").text).toBe("hello");
+  });
+});
 
 describe("FolderMetadataFile", () => {
   it("can roundtrip sample session file", () => {
@@ -75,7 +75,7 @@ describe("FolderMetadataFile", () => {
 
     expect(newXml).toBe(originalXml);
   });
-  test.only("can roundtrip sample project file", () => {
+  it("can roundtrip sample project file", () => {
     const originalPath = "./sample data/Edolo sample/Edolo sample.sprj";
     const originalXml: string = fs.readFileSync(originalPath, "utf8");
     const newDir = Path.join(temp.dir, "Edolo sample");
