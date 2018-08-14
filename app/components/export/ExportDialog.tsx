@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactModal from "react-modal";
+import ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import CsvExporter from "../../export/CsvExporter";

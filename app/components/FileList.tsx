@@ -5,7 +5,7 @@ import { computed } from "mobx";
 import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import { File } from "../model/file/File";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { remote } from "electron";
 const moment = require("moment");
 import { Dictionary } from "typescript-collections";

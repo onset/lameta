@@ -12,20 +12,23 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
-import * as assert from "assert";
+import assert from "assert";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 const sanitize = require("sanitize-filename");
 import { trash } from "../crossPlatformUtilities";
 
 export class IFolderSelection {
-  @observable public index: number;
+  @observable
+  public index: number;
 }
 
 // Project, Session, or Person
 export abstract class Folder {
   public directory: string = "";
-  @observable public files: File[] = [];
-  @observable public selectedFile: File | null;
+  @observable
+  public files: File[] = [];
+  @observable
+  public selectedFile: File | null;
   public metadataFile: File | null;
   protected safeFileNameBase: string;
 

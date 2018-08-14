@@ -18,7 +18,7 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-
+    "esModuleInterop": true,
     "outDir": "dist"
   },
   "files": ["app/index.tsx"],

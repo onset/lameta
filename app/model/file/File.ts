@@ -3,22 +3,26 @@ import * as fs from "fs";
 import * as Path from "path";
 const filesize = require("filesize");
 import * as mobx from "mobx";
-import * as assert from "assert";
+import assert from "assert";
 const camelcase = require("camelcase");
 const imagesize = require("image-size");
 import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import * as xmlbuilder from "xmlbuilder";
 import { locate } from "../../crossPlatformUtilities";
-const moment = require("moment");
+import moment from "moment";
 const titleCase = require("title-case");
 
 export class Contribution {
   //review this @mobx.observable
-  @mobx.observable public name: string;
-  @mobx.observable public role: string;
-  @mobx.observable public date: string;
-  @mobx.observable public comments: string;
+  @mobx.observable
+  public name: string;
+  @mobx.observable
+  public role: string;
+  @mobx.observable
+  public date: string;
+  @mobx.observable
+  public comments: string;
 }
 
 export abstract class File {
@@ -28,7 +32,8 @@ export abstract class File {
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
-  @mobx.observable public describedFilePath: string;
+  @mobx.observable
+  public describedFilePath: string;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -40,9 +45,11 @@ export abstract class File {
   private fileExtensionForMetadata: string;
   public canDelete: boolean;
 
-  @mobx.observable public properties = new FieldSet();
+  @mobx.observable
+  public properties = new FieldSet();
 
-  @mobx.observable public contributions = new Array<Contribution>();
+  @mobx.observable
+  public contributions = new Array<Contribution>();
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -56,12 +63,35 @@ export abstract class File {
     }
   }
   protected addDatePropertyFromString(key: string, dateString: string) {
-    // get a little paranoid with the date format
-    assert.ok(moment(dateString).isValid()); //todo: handle bad data
-    const date = new Date(Date.parse(dateString));
-    this.checkType(key, date);
-    const dateWeTrust = date.toISOString();
-    this.properties.setValue(key, new Field(key, FieldType.Date, dateWeTrust));
+    // Note: I am finding it rather hard to not mess up dates, because in javascript
+    // everything (including moment) wants to over-think things and convert dates
+    // to one's local timezone. You get bugs like having the file say 2015-3-21, but
+    // then saving as 2015-3-20 because you're running this in America. Ugghhh.
+    // It's just too easy to mess up. So what I'm trying for now
+    // is to confine anything that could mess with the date to 2 places: here,
+    // at import time where we have to be permissive, and when displaying in the UI.
+    // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
+
+    //assert.ok(moment(dateString).isValid()); //todo: handle bad data
+
+    this.properties.setValue(
+      key,
+      new Field(
+        key,
+        FieldType.Date,
+        this.normalizeIncomingDateString(dateString)
+      )
+    );
+  }
+  protected normalizeIncomingDateString(dateString: string): string {
+    if (!dateString || dateString.trim().length === 0) {
+      return "";
+    }
+    const date = moment(dateString);
+    const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
+    // if there is time info, throw that away.
+    const standardizedDate = date.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT);
+    return standardizedDate;
   }
   protected addDateProperty(key: string, date: Date) {
     this.checkType(key, date);
@@ -247,27 +277,34 @@ export abstract class File {
         ? key
         : camelcase(key);
 
+    // ---- DATES  --
+    if (key.toLowerCase().indexOf("date") > -1) {
+      const normalizedDateString = this.normalizeIncomingDateString(textValue);
+      if (this.properties.containsKey(fixedKey)) {
+        const existingDateField = this.properties.getValueOrThrow(fixedKey);
+        existingDateField.setValueFromString(normalizedDateString);
+        //console.log("11111" + key);
+      } else {
+        this.addDatePropertyFromString(fixedKey, normalizedDateString);
+      }
+    }
+
+    // --- Text ----
     // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-    if (this.properties.containsKey(fixedKey)) {
+    else if (this.properties.containsKey(fixedKey)) {
       const v = this.properties.getValueOrThrow(fixedKey);
       v.setValueFromString(textValue);
       //console.log("11111" + key);
     } else {
-      // Note: at least as of SayMore Windows 3.1, its files will have dates with the type "string"
-      // So we work around that by looking at the name of the key, to see if it contains the word "date"
-      if (key.toLowerCase().indexOf("date") > -1) {
-        this.addDatePropertyFromString(fixedKey, textValue);
-      } else {
-        //console.log("extra" + fixedKey + "=" + value);
-        // otherwise treat it as a string
-        this.addTextProperty(
-          fixedKey,
-          textValue,
-          true,
-          isCustom,
-          true /*showOnAutoForm*/
-        );
-      }
+      //console.log("extra" + fixedKey + "=" + value);
+      // otherwise treat it as a string
+      this.addTextProperty(
+        fixedKey,
+        textValue,
+        true,
+        isCustom,
+        true /*showOnAutoForm*/
+      );
     }
   }
 
@@ -449,19 +486,20 @@ export abstract class File {
   ): xmlbuilder.XMLElementOrXMLNode {
     const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
     if (dateString) {
-      if (moment(dateString).isValid()) {
-        const d = moment(dateString);
-        return builder
-          .element(
-            key,
-            // As of SayMore Windows 3.1.4, it can't handle a type "date"; it can only read and write a "string",
-            // so instead of the more reasonable { type: "date" }, we are using this
-            { type: "string" },
-            d.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
-          )
-          .up();
-      }
+      // if (moment(dateString).isValid()) {
+      //   const d = moment(dateString);
+      //   return builder
+      //     .element(
+      //       key,
+      //       // As of SayMore Windows 3.1.4, it can't handle a type "date"; it can only read and write a "string",
+      //       // so instead of the more reasonable { type: "date" }, we are using this
+      //       { type: "string" },
+      //       d.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
+      //     )
+      //     .up();
+      return builder.element(key, dateString).up();
     }
+
     return builder; // we didn't write anything
   }
   public save() {
@@ -472,7 +510,7 @@ export abstract class File {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
-    console.log(`Saving ${this.metadataFilePath}`);
+    //    console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml();
 
@@ -595,7 +633,7 @@ export abstract class File {
   }
   private clearDirty() {
     this.dirty = false;
-    console.log("dirty cleared " + this.metadataFilePath);
+    //console.log("dirty cleared " + this.metadataFilePath);
   }
 
   private changed() {

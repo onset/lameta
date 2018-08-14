@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
-import * as ReactModal from "react-modal";
+import ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../crossPlatformUtilities";

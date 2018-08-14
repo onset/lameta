@@ -66,7 +66,8 @@ export class Field {
   public readonly visibility: FieldVisibility;
   public persist: boolean;
   public readonly cssClass: string;
-  @observable public textHolder = new TextHolder();
+  @observable
+  public textHolder = new TextHolder();
   public choices: string[];
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
@@ -145,11 +146,17 @@ export class Field {
     //   //imdiIsClosedVocabulary?: boolean;
     //   isCustom: false
     // };
-    assert.ok(
-      this.key.toLowerCase().indexOf("date") === -1 ||
-        this.type === FieldType.Date,
-      "SHOULDN'T " + key + " BE A DATE?"
-    );
+    //assert.ok(
+    // this.key.toLowerCase().indexOf("date") === -1 ||
+    //   this.type === FieldType.Date,
+    // "SHOULDN'T " + key + " BE A DATE?"
+    //);
+    if (
+      this.key.toLowerCase().indexOf("date") > -1 &&
+      this.type !== FieldType.Date
+    ) {
+      console.error(key + " should be a date?");
+    }
   }
 
   get text(): string {
@@ -165,21 +172,27 @@ export class Field {
     this.text = s;
   }
 
-  public asDate(): Date {
-    return new Date(Date.parse(this.text));
-  }
+  // public asDate(): Date {
+  //   const x = new Date("2015-03-25Z");
+  //   const y = x.getUTCDate();
+  //   const z = this.text.indexOf("Z") > -1 ? this.text : this.text + "Z";
+  //   return new Date(this.text);
+  // }
 
   public asISODateString(): string {
-    if (moment(this.text).isValid()) {
-      return this.asDate().toISOString();
-    }
-    return "";
+    // our rule is that we always keep strings in "YYYY-MM-DD" format, and it's always UTC
+    return this.text;
   }
   public asLocaleDateString(): string {
-    if (moment(this.text).isValid()) {
-      return this.asDate().toLocaleDateString();
-    }
-    return "";
+    // if (moment(this.text).isValid()) {
+    //   return this.asDate().toLocaleDateString();
+    // }
+    // return "";
+
+    // maybe someday. But at the moment, javascript's date stuff is so eager to get into timezones
+    // that it's introducing buts. So for now let' keep it simple by just sticking to storing dates only as
+    // "YYYY-MM-DD" format string, and always UTC
+    return this.text;
   }
   public typeAndValueForXml(): [string, string] {
     switch (this.type) {
