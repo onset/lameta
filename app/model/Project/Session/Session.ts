@@ -58,6 +58,12 @@ export class Session extends Folder {
 
 export class SessionMetadataFile extends FolderMetadataFile {
   constructor(directory: string) {
-    super(directory, "Session", ".session", knownFieldDefinitions.session);
+    super(
+      directory,
+      "Session",
+      true,
+      ".session",
+      knownFieldDefinitions.session
+    );
   }
 }

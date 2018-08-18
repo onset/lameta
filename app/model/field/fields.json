@@ -13,7 +13,8 @@
       "key": "iso639Code"
     },
     {
-      "key": "vernacularISO3CodeAndName"
+      "key": "vernacularIso3CodeAndName",
+      "tagInSayMoreClassic": "VernacularISO3CodeAndName"
     },
     {
       "key": "location",
@@ -71,6 +72,7 @@
     },
     {
       "key": "dateAvailable",
+      "tagInSayMoreClassic": "DateAvailable",
       "type": "Date"
     }
   ],

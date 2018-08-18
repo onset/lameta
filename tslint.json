@@ -2,7 +2,7 @@
   "extends": ["tslint:latest", "tslint-config-prettier"],
   "rules": {
     "no-empty": false,
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": false,
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-var-requires": false,

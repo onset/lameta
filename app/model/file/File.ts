@@ -42,6 +42,7 @@ export abstract class File {
   public metadataFilePath: string;
 
   private xmlRootName: string;
+  private doOutputTypeInXmlTags: boolean;
   private fileExtensionForMetadata: string;
   public canDelete: boolean;
 
@@ -166,6 +167,7 @@ export abstract class File {
     describedFilePath: string,
     metadataFilePath: string,
     xmlRootName: string,
+    doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     canDelete: boolean
   ) {
@@ -173,6 +175,7 @@ export abstract class File {
     this.describedFilePath = describedFilePath;
     this.metadataFilePath = metadataFilePath;
     this.xmlRootName = xmlRootName;
+    this.doOutputTypeInXmlTags = doOutputTypeInXmlTags;
     this.fileExtensionForMetadata = fileExtensionForMetadata;
 
     // NB: subclasses should call this (as super()), then read in their definitions, then let us finish by calling finishLoading();
@@ -217,7 +220,10 @@ export abstract class File {
     for (const key of keys) {
       if (key.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[key]);
-      } else if (key.toLowerCase() === "customfields") {
+      }
+
+      // <CustomFields>
+      else if (key.toLowerCase() === "customfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[key]);
         for (const customKey of customKeys) {
@@ -227,6 +233,21 @@ export abstract class File {
               customKey,
               propertiesFromXml[key][customKey],
               true // isCustom
+            );
+          }
+        }
+      }
+      // <AdditionalFields>
+      else if (key.toLowerCase() === "additionalfields") {
+        //        console.log(JSON.stringify(propertiesFromXml[key]));
+        const additionalKeys = Object.keys(propertiesFromXml[key]);
+        for (const additionalKey of additionalKeys) {
+          // first one is just $":{"type":"xml"}
+          if (additionalKey !== "$") {
+            this.loadOnePersistentProperty(
+              additionalKey,
+              propertiesFromXml[key][additionalKey],
+              false
             );
           }
         }
@@ -415,6 +436,13 @@ export abstract class File {
       encoding: "utf-8"
     });
     this.properties.forEach((k, f: Field) => {
+      // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
+      // for now we just use those same tags when writing so that the file can be opened in that SM
+      const tag =
+        f.definition && f.definition.tagInSayMoreClassic
+          ? f.definition.tagInSayMoreClassic
+          : k;
+
       if (f.persist) {
         if (f.key === "contributions") {
           const contributionsElement = root.element("contributions", {
@@ -449,14 +477,19 @@ export abstract class File {
               // console.log(
               //   "date " + f.key + " is a " + type + " of value " + value
               // );
-              this.writeDate(root, f.key, value);
+              this.writeDate(root, tag, value);
             } else {
               assert.ok(
                 k.indexOf("date") === -1 || type === "date",
                 "SHOULDN'T " + k + " BE A DATE?"
               );
               if (value.length > 0) {
-                root.element(k, { type }, value).up();
+                // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
+                if (this.doOutputTypeInXmlTags) {
+                  root.element(tag, { type }, value).up();
+                } else {
+                  root.element(tag, value).up();
+                }
               }
             }
           }
@@ -481,7 +514,7 @@ export abstract class File {
 
   private writeDate(
     builder: xmlbuilder.XMLElementOrXMLNode,
-    key: string,
+    tag: string,
     dateString: string
   ): xmlbuilder.XMLElementOrXMLNode {
     const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
@@ -497,16 +530,16 @@ export abstract class File {
       //       d.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
       //     )
       //     .up();
-      return builder.element(key, dateString).up();
+      return builder.element(tag, dateString).up();
     }
 
     return builder; // we didn't write anything
   }
-  public save() {
+  public save(forceSave: boolean = false) {
     // console.log("SAVING DISABLED");
     // return;
 
-    if (!this.dirty && fs.existsSync(this.metadataFilePath)) {
+    if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
@@ -522,8 +555,12 @@ export abstract class File {
       // console.log(xml);
     } else {
       //console.log("writing:" + xml);
-      fs.writeFileSync(this.metadataFilePath, xml);
-      this.clearDirty();
+      try {
+        fs.writeFileSync(this.metadataFilePath, xml);
+        this.clearDirty();
+      } catch (error) {
+        console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
+      }
     }
   }
 
@@ -740,7 +777,7 @@ export abstract class File {
 
 export class OtherFile extends File {
   constructor(path: string) {
-    super(path, path + ".meta", "Meta", ".meta", true);
+    super(path, path + ".meta", "Meta", false, ".meta", true);
     this.finishLoading();
   }
 }

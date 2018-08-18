@@ -72,6 +72,6 @@ export class Person extends Folder {
 }
 export class PersonMetadataFile extends FolderMetadataFile {
   constructor(directory: string) {
-    super(directory, "Person", ".person", knownFieldDefinitions.person);
+    super(directory, "Person", true, ".person", knownFieldDefinitions.person);
   }
 }

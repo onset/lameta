@@ -42,6 +42,34 @@ describe("Project Read", () => {
       "2015-12-31"
     );
   });
+  it("should read vernacularISO3CodeAndName", () => {
+    const f = GetProjectFileWithOneField(
+      "VernacularISO3CodeAndName",
+      "dde: Doondo"
+    );
+    expect(f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")).toBe(
+      "dde: Doondo"
+    );
+  });
+  it("should read Doondo Project", () => {
+    const doondoPath = "c:/dev/Doondo";
+    if (fs.existsSync(doondoPath)) {
+      const f = new ProjectMetadataFile(doondoPath);
+      expect(f.properties.getDateField("dateAvailable").asISODateString()).toBe(
+        "2015-03-05"
+      );
+      expect(f.properties.getTextStringOrEmpty("title")).toBe(
+        "Doondo Language Documentation Corpus"
+      );
+      expect(f.properties.getTextStringOrEmpty("projectDescription")).toBe(
+        "This corpus includes 7 hours of original audio recordings in Doondo."
+      );
+      expect(f.properties.getTextStringOrEmpty("accessProtocol")).toBe("REAP");
+      expect(
+        f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")
+      ).toBe("dde: Doondo");
+    }
+  });
 });
 
 function GetProjectFileWithOneField(

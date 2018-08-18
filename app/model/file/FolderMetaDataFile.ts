@@ -9,6 +9,7 @@ export class FolderMetadataFile extends File {
   constructor(
     directory: string,
     xmlRootName: string,
+    doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     rawKnownFieldsFromJson: FieldDefinition[]
   ) {
@@ -22,6 +23,7 @@ export class FolderMetadataFile extends File {
       metadataPath,
       metadataPath,
       xmlRootName,
+      doOutputTypeInXmlTags,
       fileExtensionForMetadata,
       false
     );

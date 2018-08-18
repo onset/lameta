@@ -295,6 +295,6 @@ export class Project extends Folder {
 }
 export class ProjectMetadataFile extends FolderMetadataFile {
   constructor(directory: string) {
-    super(directory, "Project", ".sprj", knownFieldDefinitions.project);
+    super(directory, "Project", false, ".sprj", knownFieldDefinitions.project);
   }
 }

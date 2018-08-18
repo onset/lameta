@@ -1,7 +1,5 @@
 import { observable } from "mobx";
 import TextHolder from "./TextHolder";
-import * as assert from "assert";
-import { Moment } from "moment";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 const moment = require("moment");
@@ -35,6 +33,8 @@ export class FieldDefinition {
   public extra?: boolean = false;
   //awkward... this is not use for people, where we don't use the autoform
   public showOnAutoForm: boolean = true;
+  // SayMore Windows, at least through version 3.3, has inconsistent capitalization
+  public tagInSayMoreClassic?: string;
 
   // this constructor lets us take something read in from json and
   // get a definition with any default values set above
