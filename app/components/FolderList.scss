@@ -6,6 +6,9 @@
   flex-direction: column;
   background-color: white;
 
+  .ReactTable {
+    //flex-grow: 1; // otherwise it shrinks down to the number of rows and looks wierd
+  }
   .blahblah {
     flex-grow: 1; // take up all the vertical space except what newFolderBar needs
     // library code puts in 100%, which makes it take more space than the parent since it has a sybling
