@@ -1,5 +1,6 @@
 import { Dictionary } from "typescript-collections";
 import assert from "assert";
+const camelcase = require("camelcase");
 import { Field, FieldType, FieldDefinition, HasConsentField } from "./Field";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
@@ -20,6 +21,22 @@ export class FieldSet extends Dictionary<string, Field> {
     } else {
       return f;
     }
+  }
+
+  // SayMore Classic has a mix of ways to name tags, and it... didn't sit well with me,
+  // so all keys in this SayMore are camelCase, internally.
+  // Then we map to and from the xml so we still use the same tags for I/O, but maybe
+  // someday well migrate to a format that is consistent.
+  public getKeyFromXmlTag(tag: string): string {
+    // In fields.json, all tags in SayMore Classic which are not camelCase have a "tagInSayMoreClassic".
+
+    const match = this.values().find(
+      field => field.definition && field.definition.tagInSayMoreClassic === tag
+    );
+    if (match) {
+      return match.key;
+    }
+    return camelcase(tag);
   }
 
   public getFieldDefinition(key: string): FieldDefinition {

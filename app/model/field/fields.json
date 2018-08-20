@@ -79,7 +79,8 @@
   "session": [
     {
       "key": "id",
-      "englishLabel": "ID"
+      "englishLabel": "ID",
+      "persist": "false"
     },
     {
       "key": "title"
@@ -111,7 +112,8 @@
       "type": "Date"
     },
     {
-      "key": "Involvement",
+      "key": "involvement",
+      "tagInSayMoreClassic": "Involvement",
       "extra": "true",
       "choices": [
         "unspecified",
@@ -124,23 +126,28 @@
       "default": "unspecified"
     },
     {
-      "key": "Location_Country",
+      "key": "locationCountry",
+      "tagInSayMoreClassic": "Location_Country",
       "extra": "true"
     },
     {
-      "key": "Location_Region",
+      "key": "locationRegion",
+      "tagInSayMoreClassic": "Location_Region",
       "extra": "true"
     },
     {
-      "key": "Location_Continent",
+      "key": "locationContinent",
+      "tagInSayMoreClassic": "Location_Continent",
       "extra": "true"
     },
     {
-      "key": "Location_Address",
+      "key": "locationAddress",
+      "tagInSayMoreClassic": "Location_Address",
       "extra": "true"
     },
     {
-      "key": "Planning_Type",
+      "key": "planningType",
+      "tagInSayMoreClassic": "Planning_Type",
       "extra": "true",
       "choices": [
         "unspecified",
@@ -153,12 +160,14 @@
       "default": "unspecified"
     },
     {
-      "key": "Sub-Genre",
+      "key": "subgenre",
+      "tagInSayMoreClassic": "Sub-Genre",
       "englishLabel": "Subgenre",
       "extra": "true"
     },
     {
-      "key": "Social_Context",
+      "key": "socialContext",
+      "tagInSayMoreClassic": "Social_Context",
       "extra": "true",
       "choices": [
         "unspecified",

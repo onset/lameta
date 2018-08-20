@@ -279,24 +279,7 @@ export abstract class File {
     }
 
     const textValue: string = value;
-
-    // We want to preserve input and output with SayMore Windows, which at this time has properties with a variety of conventions
-    const knownPropertiesWithInterestingCasing = [
-      "Location_Country",
-      "Location_Region",
-      "Location_Continent",
-      "Location_Address",
-      "Planning_Type",
-      "Sub-Genre" /*misspelled*/,
-      "Social_Context",
-      "Involvement"
-    ];
-
-    // todo: need a comment about why we ever change the key (I don't remember at the moment)...
-    const fixedKey =
-      knownPropertiesWithInterestingCasing.indexOf(key) > -1
-        ? key
-        : camelcase(key);
+    const fixedKey = this.properties.getKeyFromXmlTag(key);
 
     // ---- DATES  --
     if (key.toLowerCase().indexOf("date") > -1) {

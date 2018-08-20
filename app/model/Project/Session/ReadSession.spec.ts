@@ -29,7 +29,7 @@ describe("Session Read", () => {
       "AdditionalFields",
       '<Location_Country type="string">Congo Republic of the</Location_Country>'
     );
-    expect(f.getTextProperty("Location_Country")).toBe("Congo Republic of the");
+    expect(f.getTextProperty("locationCountry")).toBe("Congo Republic of the");
   });
 });
 

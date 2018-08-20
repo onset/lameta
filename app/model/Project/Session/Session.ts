@@ -22,6 +22,7 @@ export class Session extends Folder {
 
   public constructor(directory: string, metadataFile: File, files: File[]) {
     super(directory, metadataFile, files);
+    this.properties.setText("id", Path.basename(directory));
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
     this.knownFields = knownFieldDefinitions.session; // for csv export
   }
