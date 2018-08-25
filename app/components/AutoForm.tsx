@@ -131,14 +131,19 @@ export default class AutoForm extends React.Component<IProps> {
           !f.definition.isCustom &&
           !f.definition.isAdditional
       )
-      .sort(
-        (a, b) =>
-          (a.definition && a.definition.order ? a.definition.order : 1000) -
-          (b.definition && b.definition.order ? b.definition.order : 1000)
-      )
+      .sort((a, b) => {
+        const x =
+          (a.definition && a.definition.order !== undefined
+            ? a.definition.order
+            : 1000) -
+          (b.definition && b.definition.order !== undefined
+            ? b.definition.order
+            : 1000);
+
+        return x;
+      })
       .map(f => f.key);
 
-    //console.log(`Rendering Autoform of ${this.props.folder.displayName}`);
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}
