@@ -4,7 +4,7 @@ import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { Contribution } from "./File";
 import assert from "assert";
 
-// public so that unit tests can get it without going through files
+// This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
@@ -15,81 +15,145 @@ export default function getSayMoreXml(
     version: "1.0",
     encoding: "utf-8"
   });
-  properties.forEach((k, f: Field) => {
-    // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
-    // for now we just use those same tags when writing so that the file can be opened in that SM
-    const tag =
-      f.definition && f.definition.tagInSayMoreClassic
-        ? f.definition.tagInSayMoreClassic
-        : k;
 
-    if (f.persist) {
-      if (f.key === "contributions") {
-        const contributionsElement = root.element("contributions", {
-          type: "xml"
-        });
-        contributions.forEach(contribution => {
-          if (contribution.name && contribution.name.trim().length > 0) {
-            let tail = contributionsElement.element("contributor");
-            if (contribution.name) {
-              //console.log("zzzzz:" + contribution.name);
-              tail = tail.element("name", contribution.name).up();
-            }
-            if (contribution.role) {
-              tail = tail.element("role", contribution.role).up();
-            }
-            writeDate(tail, "date", contribution.date);
-            if (
-              contribution.comments &&
-              contribution.comments.trim().length > 0
-            ) {
-              tail = tail.element("comments", contribution.comments).up();
-            }
-          }
-        });
-      } else {
-        if (!f.definition || !f.definition.isCustom) {
-          const t = f.typeAndValueForXml();
-          const type = t[0];
-          const value = t[1];
-
-          if (type === "date") {
-            // console.log(
-            //   "date " + f.key + " is a " + type + " of value " + value
-            // );
-            writeDate(root, tag, value);
-          } else {
-            assert.ok(
-              k.indexOf("date") === -1 || type === "date",
-              "SHOULDN'T " + k + " BE A DATE?"
-            );
-            if (value.length > 0) {
-              // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
-              if (doOutputTypeInXmlTags) {
-                root.element(tag, { type }, value).up();
-              } else {
-                root.element(tag, value).up();
-              }
-            }
-          }
-        }
-      }
-    }
-  });
-  const customParent = root.element("CustomFields", {
-    type: "xml"
-  });
-  properties.forEach((k, f: Field) => {
-    if (f.definition && f.definition.isCustom) {
-      const t = f.typeAndValueForXml();
-      if (k && k.length > 0 && t[1] && t[1].length > 0) {
-        customParent.element(k, { type: t[0] }, t[1]).up();
-      }
-    }
-  });
-  customParent.up();
+  const fields = properties.values().filter(field => field.persist);
+  writeNormalFields(root, fields, doOutputTypeInXmlTags);
+  writeContributions(root, contributions);
+  writeFieldGroup(
+    root,
+    fields.filter(f => f.definition && f.definition.isAdditional),
+    "AdditionalFields"
+  );
+  writeFieldGroup(
+    root,
+    fields.filter(f => f.definition && f.definition.isCustom),
+    "CustomFields"
+  );
 
   return root.end({ pretty: true, indent: "  " });
+}
+
+function writeNormalFields(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  allFields: Field[],
+  doOutputTypeInXmlTags: boolean
+) {
+  allFields
+    .filter(field => !field.definition || !field.definition.isCustom)
+    .filter(field => field.type !== FieldType.Contributions)
+    .forEach(field => {
+      writeField(root, field, doOutputTypeInXmlTags);
+    });
+}
+
+// "Additional Fields are labeled "More Fields" in the UI.
+// JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
+function writeFieldGroup(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  fields: Field[],
+  groupTag: string
+) {
+  const groupParent = root.element(groupTag, {
+    type: "xml"
+  });
+
+  let didWriteAtLeastOne = false;
+  fields.forEach((f: Field) => {
+    const v = f.typeAndValueEscapedForXml().value;
+    if (v && v.length > 0 && v !== "unspecified") {
+      writeField(
+        groupParent,
+        f,
+        true /* we only have these additional fields for sessions, and sessions have type on the xml tag*/
+      );
+      didWriteAtLeastOne = true;
+    }
+  });
+  if (didWriteAtLeastOne) {
+    groupParent.up();
+  } else {
+    groupParent.up();
+    groupParent.remove();
+  }
+}
+
+// function writeCustomFields(
+//   root: xmlbuilder.XMLElementOrXMLNode,
+//   allFields: Field[]
+// ) {
+//   const customParent = root.element("CustomFields", {
+//     type: "xml"
+//   });
+
+//   allFields.forEach((f: Field) => {
+//     if (f.definition && f.definition.isCustom) {
+//       //const t = f.typeAndValueForXml();
+//       const { type, value } = f.typeAndValueEscapedForXml();
+//       if (f.key && f.key.length > 0 && value && value.length > 0) {
+//         customParent.element(f.key, { type }, value).up();
+//       }
+//     }
+//   });
+
+//   customParent.up();
+// }
+function writeContributions(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  contributions: Contribution[]
+) {
+  const contributionsElement = root.element("contributions", {
+    type: "xml"
+  });
+  contributions.forEach(contribution => {
+    if (contribution.name && contribution.name.trim().length > 0) {
+      let tail = contributionsElement.element("contributor");
+      if (contribution.name) {
+        tail = tail.element("name", contribution.name).up();
+      }
+      if (contribution.role) {
+        tail = tail.element("role", contribution.role).up();
+      }
+      writeDate(tail, "date", contribution.date);
+      if (contribution.comments && contribution.comments.trim().length > 0) {
+        tail = tail.element("comments", contribution.comments).up();
+      }
+    }
+  });
+}
+
+function writeField(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  field: Field,
+  doOutputTypeInXmlTags: boolean
+) {
+  const { type, value } = field.typeAndValueEscapedForXml();
+
+  // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
+  // for now we just use those same tags when writing so that the file can be opened in that SM
+  const tag =
+    field.definition && field.definition.tagInSayMoreClassic
+      ? field.definition.tagInSayMoreClassic
+      : field.key;
+
+  if (type === "date") {
+    // console.log(
+    //   "date " + f.key + " is a " + type + " of value " + value
+    // );
+    writeDate(root, tag, value);
+  } else {
+    assert.ok(
+      field.key.indexOf("date") === -1 || type === "date",
+      "SHOULDN'T " + field.key + " BE A DATE?"
+    );
+    if (value.length > 0) {
+      // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
+      if (doOutputTypeInXmlTags) {
+        root.element(tag, { type }, value).up();
+      } else {
+        root.element(tag, value).up();
+      }
+    }
+  }
 }
 
 function writeDate(

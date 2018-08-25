@@ -32,7 +32,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
   private computeRows(nextProps: IProps) {
     this.fieldsForRows = nextProps.folder.properties
       .values()
-      .filter(f => (f.definition ? f.definition.additional : false));
+      .filter(f => (f.definition ? f.definition.isAdditional : false));
     //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
   }
 

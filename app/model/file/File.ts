@@ -146,10 +146,17 @@ export abstract class File {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
     //We can read the upper case ones, but then we convert them to lower case initial
     const correctedKey = camelcase(key);
-    this.properties.setValue(
-      key,
-      new Field(correctedKey, FieldType.Text, value)
-    );
+
+    // we want to re-use any existing field... among other things, that preserves the field definition
+    const existing: Field | undefined = this.properties.getValue(key);
+    if (existing) {
+      existing.setValueFromString(value);
+    } else {
+      this.properties.setValue(
+        key,
+        new Field(correctedKey, FieldType.Text, value)
+      );
+    }
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
     try {

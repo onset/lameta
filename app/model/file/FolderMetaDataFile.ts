@@ -37,6 +37,7 @@ export class FolderMetadataFile extends File {
     const knownFields: FieldDefinition[] = rawKnownFieldsFromJson.map(f => {
       return new FieldDefinition(f);
     });
+
     // load the file containing metadata about this folder with
     // empty fields from the fields.json file
     knownFields.forEach((f: FieldDefinition, i: number) => {

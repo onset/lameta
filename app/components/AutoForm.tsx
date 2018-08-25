@@ -129,7 +129,7 @@ export default class AutoForm extends React.Component<IProps> {
           f.definition &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
-          !f.definition.additional
+          !f.definition.isAdditional
       )
       .sort(
         (a, b) =>

@@ -29,8 +29,8 @@ export class FieldDefinition {
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;
-  // this is for the fields in session that appear under "More Fields"
-  public additional?: boolean = false;
+  // this is for the fields in session that appear under "More Fields".
+  public isAdditional?: boolean = false;
   //awkward... this is not use for people, where we don't use the autoform
   public showOnAutoForm: boolean = true;
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization
@@ -40,6 +40,7 @@ export class FieldDefinition {
   // get a definition with any default values set above
   public constructor(rawObject) {
     Object.assign(this, rawObject);
+    this.isAdditional = rawObject.additional === "true";
   }
 }
 
@@ -194,12 +195,13 @@ export class Field {
     // "YYYY-MM-DD" format string, and always UTC
     return this.text;
   }
-  public typeAndValueForXml(): [string, string] {
+
+  public typeAndValueEscapedForXml(): { type: string; value: string } {
     switch (this.type) {
       case FieldType.Text:
-        return ["string", Field.escapeSpecialChars(this.text)];
+        return { type: "string", value: Field.escapeSpecialChars(this.text) };
       case FieldType.Date:
-        return ["date", this.asISODateString()];
+        return { type: "date", value: this.asISODateString() };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }
