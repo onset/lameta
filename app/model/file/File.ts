@@ -109,24 +109,32 @@ export abstract class File {
     isCustom: boolean = false,
     showOnAutoForm: boolean = false
   ) {
-    const definition: FieldDefinition = {
-      key,
-      englishLabel: isCustom ? key : titleCase(key),
-      persist,
-      type: "Text",
-      isCustom,
-      showOnAutoForm
-    };
-    const f = Field.fromFieldDefinition(definition);
-    f.setValueFromString(value);
+    // if this field (and more importantly, its definition, already exists, just stick in a new value)
+    const field = this.properties.getValue(key);
+    if (field) {
+      field.setValueFromString(value);
+    }
+    // otherwise make up a field with a generic definition and stick the value in there
+    else {
+      const definition = {
+        key,
+        englishLabel: isCustom ? key : titleCase(key),
+        persist,
+        type: "Text",
+        isCustom,
+        showOnAutoForm
+      };
 
+      const f = Field.fromFieldDefinition(definition);
+      f.setValueFromString(value);
+      this.properties.setValue(key, f);
+    }
     if (key === "Sub-Genre") {
       console.log(
         "addTextProperty(Sub-Genre) " +
           JSON.stringify(this.properties.getValue(key))
       );
     }
-    this.properties.setValue(key, f);
 
     // //console.log("setting " + key + " to " + value);
     // const field = new Field(
@@ -315,7 +323,7 @@ export abstract class File {
         textValue,
         true,
         isCustom,
-        true /*showOnAutoForm*/
+        undefined /*showOnAutoForm*/
       );
     }
   }

@@ -10,9 +10,6 @@
       "cssClass": "text-block"
     },
     {
-      "key": "iso639Code"
-    },
-    {
       "key": "vernacularIso3CodeAndName",
       "tagInSayMoreClassic": "VernacularISO3CodeAndName"
     },
