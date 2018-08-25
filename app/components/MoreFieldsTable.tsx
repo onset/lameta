@@ -14,7 +14,7 @@ export interface IProps {
 }
 
 @observer
-export default class MoreFieldsTable extends React.Component<IProps> {
+export default class AdditionalFieldsTable extends React.Component<IProps> {
   private fieldsForRows: Field[];
   private focusField: Field;
   constructor(props: IProps) {
@@ -32,12 +32,12 @@ export default class MoreFieldsTable extends React.Component<IProps> {
   private computeRows(nextProps: IProps) {
     this.fieldsForRows = nextProps.folder.properties
       .values()
-      .filter(f => (f.definition ? f.definition.extra : false));
+      .filter(f => (f.definition ? f.definition.additional : false));
     //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
   }
 
   public render() {
-    const customFieldTableColumns = [
+    const additionalFieldTableColumns = [
       {
         id: "name",
         Header: "Field",
@@ -78,13 +78,15 @@ export default class MoreFieldsTable extends React.Component<IProps> {
 
     return (
       <div className="moreFieldsBlock">
+        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in SayMore Mac we
+          too are using the 'additional' term internally, and 'more' in the English label. */}
         <label>More Fields</label>
         <ReactTable
           className="moreFieldsTable"
           noDataText=""
           showPagination={false}
           data={this.fieldsForRows}
-          columns={customFieldTableColumns}
+          columns={additionalFieldTableColumns}
           minRows={1} //don't add extra blank rows
         />
       </div>

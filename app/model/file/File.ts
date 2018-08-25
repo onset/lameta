@@ -413,7 +413,8 @@ export abstract class File {
     );
   }
 
-  private getXml(): string {
+  // public so that unit tests can get it without going through files
+  public getXml(): string {
     const root = xmlbuilder.create(this.xmlRootName, {
       version: "1.0",
       encoding: "utf-8"

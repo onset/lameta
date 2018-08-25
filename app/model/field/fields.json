@@ -114,7 +114,7 @@
     {
       "key": "involvement",
       "tagInSayMoreClassic": "Involvement",
-      "extra": "true",
+      "additional": "true",
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -128,27 +128,27 @@
     {
       "key": "locationCountry",
       "tagInSayMoreClassic": "Location_Country",
-      "extra": "true"
+      "additional": "true"
     },
     {
       "key": "locationRegion",
       "tagInSayMoreClassic": "Location_Region",
-      "extra": "true"
+      "additional": "true"
     },
     {
       "key": "locationContinent",
       "tagInSayMoreClassic": "Location_Continent",
-      "extra": "true"
+      "additional": "true"
     },
     {
       "key": "locationAddress",
       "tagInSayMoreClassic": "Location_Address",
-      "extra": "true"
+      "additional": "true"
     },
     {
       "key": "planningType",
       "tagInSayMoreClassic": "Planning_Type",
-      "extra": "true",
+      "additional": "true",
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -163,12 +163,12 @@
       "key": "subgenre",
       "tagInSayMoreClassic": "Sub-Genre",
       "englishLabel": "Subgenre",
-      "extra": "true"
+      "additional": "true"
     },
     {
       "key": "socialContext",
       "tagInSayMoreClassic": "Social_Context",
-      "extra": "true",
+      "additional": "true",
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",

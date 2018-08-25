@@ -30,7 +30,7 @@ export class FieldDefinition {
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;
   // this is for the fields in session that appear under "More Fields"
-  public extra?: boolean = false;
+  public additional?: boolean = false;
   //awkward... this is not use for people, where we don't use the autoform
   public showOnAutoForm: boolean = true;
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization

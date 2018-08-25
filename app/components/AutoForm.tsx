@@ -12,7 +12,7 @@ import PeopleChooser from "./session/PeopleChooser";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
-import MoreFieldsTable from "./MoreFieldsTable";
+import AdditionalFieldsTable from "./MoreFieldsTable";
 
 export interface IProps {
   folder: Folder;
@@ -129,7 +129,7 @@ export default class AutoForm extends React.Component<IProps> {
           f.definition &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
-          !f.definition.extra
+          !f.definition.additional
       )
       .sort(
         (a, b) =>
@@ -149,7 +149,7 @@ export default class AutoForm extends React.Component<IProps> {
           .filter(field => field.form === this.props.form)
           .map(field => this.makeEdit(field))}
         {this.props.folder.hasMoreFieldsTable ? (
-          <MoreFieldsTable folder={this.props.folder} />
+          <AdditionalFieldsTable folder={this.props.folder} />
         ) : (
           ""
         )}
