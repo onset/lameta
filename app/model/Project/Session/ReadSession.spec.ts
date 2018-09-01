@@ -25,6 +25,46 @@ describe("Session Read", () => {
       "2013-01-08"
     );
   });
+
+  // Working with old data files, I found that some version of saymore had created this: <date type="string">11/22/2011 4:26:36 AM</date>
+  it("should register error about ambiguous dates", () => {
+    // This version of SayMore does not write ambiguous, but we guard against any old data that may have them
+    // by making a persistent note about the unparseable original and setting to blank.
+
+    let f = GetSessionFileWithOneField("date", "11/23/2011 4:26:36 AM");
+    expect(f.properties.getDateField("date").asISODateString()).toBe("");
+    expect(
+      f.properties.getTextStringOrEmpty("notes").indexOf("Error")
+    ).toBeGreaterThan(-1);
+
+    f = GetSessionFileWithOneField("date", "24/11/2011 4:26:36 AM");
+    expect(f.properties.getDateField("date").asISODateString()).toBe("");
+    expect(
+      f.properties.getTextStringOrEmpty("notes").indexOf("Error")
+    ).toBeGreaterThan(-1);
+
+    f = GetSessionFileWithOneField("date", "25/11/2011");
+    expect(f.properties.getDateField("date").asISODateString()).toBe("");
+    expect(
+      f.properties.getTextStringOrEmpty("notes").indexOf("Error")
+    ).toBeGreaterThan(-1);
+
+    f = GetSessionFileWithOneField("date", "11/25/2011");
+    expect(f.properties.getDateField("date").asISODateString()).toBe("");
+    expect(
+      f.properties.getTextStringOrEmpty("notes").indexOf("Error")
+    ).toBeGreaterThan(-1);
+  });
+
+  it("should handle a format seen for modified-date", () => {
+    // We shouldn't be trying to understand these dates... I don't know why SayMore Classic even saved them,
+    // but they are in some legacy data so I wanted to nail down that we could handle them by stripping off the time.
+    const f = GetSessionFileWithOneField("date", "2013-01-08T09:34:32.000Z");
+    expect(f.properties.getDateField("date").asISODateString()).toBe(
+      "2013-01-08"
+    );
+  });
+
   it("should read addition fields", () => {
     const f = GetSessionFileWithOneField(
       "AdditionalFields",

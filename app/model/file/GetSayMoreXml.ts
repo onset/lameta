@@ -161,7 +161,6 @@ function writeDate(
   tag: string,
   dateString: string
 ): xmlbuilder.XMLElementOrXMLNode {
-  const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
   if (dateString) {
     // if (moment(dateString).isValid()) {
     //   const d = moment(dateString);

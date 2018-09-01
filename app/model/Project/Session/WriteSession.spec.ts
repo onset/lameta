@@ -28,6 +28,13 @@ describe("Session Write", () => {
     setResultXml(f.getXml());
     expect("Session/location").toMatch("Centreville, Brazzaville");
   });
+  it("should write date of session in YYYY-MM-DD format", () => {
+    const f = new SessionMetadataFile(projectDirectory);
+    const d = f.properties.getDateField("date");
+    d.setValueFromString("2000-10-22");
+    setResultXml(f.getXml());
+    expect("Session/date").toMatch("2000-10-22");
+  });
 
   it("should write custom text field", () => {
     const f = new SessionMetadataFile(projectDirectory);

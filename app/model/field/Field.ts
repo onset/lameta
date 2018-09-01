@@ -19,7 +19,7 @@ export class FieldDefinition {
   public englishLabel?: string;
   public default?: string;
   public persist: boolean;
-  public type: string;
+  public type: string = "Text";
   public form?: string; // what form this shows on, if not the main one
   //visibility?: string;
   public cssClass?: string;
@@ -78,10 +78,24 @@ export class Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";
     }
-
-    const type = definition.type
-      ? FieldType[definition.type as keyof typeof FieldType]
-      : FieldType.Text;
+    let type = FieldType.Text;
+    switch (definition.type.toLowerCase()) {
+      case "date":
+        type = FieldType.Date;
+        break;
+      case "image":
+        type = FieldType.Image;
+        break;
+      case "contributions":
+        type = FieldType.Contributions;
+        break;
+      case "function":
+        type = FieldType.Function;
+        break;
+      case "text":
+      default:
+        type = FieldType.Text;
+    }
     const choices = definition.choices ? definition.choices : [];
 
     // console.log(
@@ -156,7 +170,7 @@ export class Field {
       this.key.toLowerCase().indexOf("date") > -1 &&
       this.type !== FieldType.Date
     ) {
-      console.error(key + " should be a date?");
+      console.error(key + " should be a date? ");
     }
   }
 

@@ -89,18 +89,42 @@ export abstract class File {
     if (!dateString || dateString.trim().length === 0) {
       return "";
     }
-    const date = moment(dateString);
+    let date: moment.Moment;
+
+    date = moment(dateString, "YYYY-MM-DD", true /*strict*/);
+    if (!date.isValid()) {
+      //console.error(`Could not parse ${dateString} strictly.`);
+      date = moment(dateString, moment.ISO_8601); // e.g. "2010-01-01T05:06:07"
+      if (!date.isValid()) {
+        const notes = this.getTextProperty("notes", "");
+        this.setTextProperty(
+          "notes",
+          `Parsing Error: SayMore could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+            moment.now()
+          ).toString()}`
+        );
+        return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+      }
+    }
     const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
     // if there is time info, throw that away.
     const standardizedDate = date.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT);
     return standardizedDate;
   }
-  protected addDateProperty(key: string, date: Date) {
+  protected addDateProperty(key: string, date: Date, persist: boolean = true) {
     this.checkType(key, date);
-    this.properties.setValue(
+    const definition = {
       key,
-      new Field(key, FieldType.Date, date.toISOString())
-    );
+      englishLabel: key,
+      persist,
+      type: "Date",
+      isCustom: false,
+      showOnAutoForm: false
+    };
+
+    const f = Field.fromFieldDefinition(definition);
+    f.setValueFromString(date.toISOString());
+    this.properties.setValue(key, f);
   }
   public addTextProperty(
     key: string,
@@ -212,6 +236,7 @@ export abstract class File {
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime);
+    console.log("md=" + this.getTextProperty("modifiedDate"));
     const typePatterns = [
       ["Session", /\.session$/i],
       ["Person", /\.person$/i],
