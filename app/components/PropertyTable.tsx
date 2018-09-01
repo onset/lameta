@@ -29,7 +29,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
       {
         id: "value",
         Header: "Value",
-        width: 200,
+        //width: 200,
         accessor: (f: Field) => {
           if (f.type === FieldType.Text) {
             return f.toString();
@@ -37,7 +37,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
           if (f.type === FieldType.Date) {
             return f.asLocaleDateString();
           }
-          return "ERROR";
+          return "(This type not currently handled in property table)";
         }
       }
     ];

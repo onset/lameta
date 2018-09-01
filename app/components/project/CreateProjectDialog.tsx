@@ -31,7 +31,7 @@ export default class CreateProjectDialog extends React.Component<
   private getChosenPath(): string {
     return Path.join(
       app.getPath("documents"),
-      "SayMore Mac",
+      "SayMore",
       this.state.projectName
     );
   }

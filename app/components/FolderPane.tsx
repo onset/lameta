@@ -134,7 +134,6 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs defaultIndex={kFirstTabToOpen}>
             <TabList>
               <Tab>Session</Tab>
-              <Tab>Properties</Tab>
               <Tab>Status &amp; Stages</Tab>
               <Tab>Notes</Tab>
               <Tab>IMDI</Tab>
@@ -170,8 +169,11 @@ export class FolderPane extends React.Component<IProps> {
                 // }
               />
             </TabPanel>
-            {propertiesPanel}
-            <TabPanel>todo</TabPanel>
+            <TabPanel>
+              <div className="todo">
+                -- This feature has not been implemented yet --
+              </div>
+            </TabPanel>{" "}
             {notesPanel}
             <TabPanel>
               <ImdiView folder={directoryObject} project={this.props.project} />
@@ -184,7 +186,7 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs defaultIndex={kFirstPersonTabToOpen}>
             <TabList>
               <Tab>Person</Tab>
-              <Tab>Properties</Tab>
+              <Tab>Contributions</Tab>
               <Tab>Notes</Tab>
               <Tab>IMDI</Tab>
             </TabList>
@@ -200,8 +202,12 @@ export class FolderPane extends React.Component<IProps> {
                 fields={directoryObject.properties}
               />
             </TabPanel>
-            {propertiesPanel}
-            {notesPanel}{" "}
+            <TabPanel>
+              <div className="todo">
+                -- This feature has not been implemented yet --
+              </div>
+            </TabPanel>
+            {notesPanel}
             <TabPanel>
               <ImdiView folder={directoryObject} project={this.props.project} />
             </TabPanel>
