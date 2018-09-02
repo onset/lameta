@@ -9,9 +9,14 @@ const { dependencies: externals } = require("./app/package.json"); // must be pa
 //test or development
 const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
 // didn't help var HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
+const {
+  BugsnagBuildReporterPlugin,
+  BugsnagSourceMapUploaderPlugin
+} = require("webpack-bugsnag-plugins");
 
 module.exports = {
   mode: "development",
+  devtool: "source-map", // <-- As of Sept 2018, really, this is the only one that works with typescript
   stats: {
     //turn off all the "Entrypoint mini-css-extract-plugin =" messages
     entrypoints: false,
@@ -181,3 +186,16 @@ module.exports = {
 
   externals: Object.keys(externals || {})
 };
+
+if (process.env.NODE_ENV === "production") {
+  //Bugsnag says: "It's a good idea to only run this plugin when you're building a bundle
+  // that will be released, rather than for every development build"
+
+  module.exports.plugins.push(
+    new BugsnagSourceMapUploaderPlugin({
+      apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+      appVersion: require("./package.json").version,
+      overwrite: true
+    })
+  );
+}

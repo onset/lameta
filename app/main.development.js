@@ -68,6 +68,10 @@ app.on("ready", () =>
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       });
 
+      // Ideally the main-bundle.js should be in app/dist, but Electron
+      // doesn't allow us to reach up a level for the app.html like this:
+      //mainWindow.loadURL(`file://${__dirname}/../app.html`);
+      // so at the moment we're putting the main-bundle.js up in app and use this
       mainWindow.loadURL(`file://${__dirname}/app.html`);
 
       // Send links to the browser, instead of opening new electron windows

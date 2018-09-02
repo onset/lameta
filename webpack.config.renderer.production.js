@@ -11,9 +11,9 @@ const baseConfig = require("./webpack.config.base");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
 
-//test or development
-const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const { BugsnagBuildReporterPlugin } = require("webpack-bugsnag-plugins");
+
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
 // here to just turn on again.
@@ -37,10 +37,7 @@ module.exports = speedMeasurePlugin.wrap(
   // outputs timing each loader
   merge(baseConfig, {
     //https://github.com/stephencookdev/speed-measure-webpack-plugin
-    mode: wantDevelopmentOptimizations ? "development" : "production",
-    //devtool: "cheap-module-source-map",
-    devtool: "inline-source-map",
-    //devtool: "eval-source-map",
+    mode: process.env.NODE_ENV === "production" ? "production" : "development",
 
     entry: ["./app/index"],
 
@@ -70,7 +67,7 @@ module.exports = speedMeasurePlugin.wrap(
 
       // https://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
       // https://github.com/webpack/webpack/issues/864
-      new webpack.optimize.OccurrenceOrderPlugin()
+      new webpack.optimize.OccurrenceOrderPlugin(),
 
       // NODE_ENV should be production so that modules do not perform certain development checks
       // new webpack.DefinePlugin({
@@ -84,6 +81,17 @@ module.exports = speedMeasurePlugin.wrap(
       //   template: "app/app.html",
       //   inject: false
       // })
+
+      // as far as I know, we just need to report this once per build, so we don't need this done for main.
+      new BugsnagBuildReporterPlugin(
+        {
+          apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+          appVersion: require("./package.json").version
+        },
+        {
+          /* opts */
+        }
+      )
     ],
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
