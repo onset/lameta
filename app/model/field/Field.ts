@@ -198,15 +198,18 @@ export class Field {
     // our rule is that we always keep strings in "YYYY-MM-DD" format, and it's always UTC
     return this.text;
   }
-  public asLocaleDateString(): string {
-    // if (moment(this.text).isValid()) {
-    //   return this.asDate().toLocaleDateString();
-    // }
-    // return "";
-
-    // maybe someday. But at the moment, javascript's date stuff is so eager to get into timezones
-    // that it's introducing buts. So for now let' keep it simple by just sticking to storing dates only as
-    // "YYYY-MM-DD" format string, and always UTC
+  public asDateDisplayString(): string {
+    const m = moment(this.text);
+    if (m.isValid()) {
+      return m.format("ll"); // Aug 11 2017
+    }
+    return this.text;
+  }
+  public asDateTimeDisplayString(): string {
+    const m = moment(this.text);
+    if (m.isValid()) {
+      return m.format("lll"); // Aug 11 2017
+    }
     return this.text;
   }
 

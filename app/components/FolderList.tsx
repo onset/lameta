@@ -58,7 +58,7 @@ export class FolderList extends React.Component<IProps> {
             return field.toString();
           }
           if (field.type === FieldType.Date) {
-            return field.asLocaleDateString();
+            return field.asDateDisplayString();
           }
           if (field.type === FieldType.Function) {
             const consentField = field as HasConsentField;

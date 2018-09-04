@@ -35,7 +35,7 @@ export default class PropertyTable extends React.Component<IProps, IState> {
             return f.toString();
           }
           if (f.type === FieldType.Date) {
-            return f.asLocaleDateString();
+            return f.asDateDisplayString();
           }
           return "(This type not currently handled in property table)";
         }
