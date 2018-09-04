@@ -1,7 +1,7 @@
 {
   "name": "saymore-mac",
   "productName": "SayMore Mac",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {

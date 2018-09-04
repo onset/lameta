@@ -28,7 +28,8 @@ interface IState {
 @observer
 export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
-  @mobx.observable public projectHolder: ProjectHolder;
+  @mobx.observable
+  public projectHolder: ProjectHolder;
   private userSettings: Store;
   private menu: SayLessMenu;
   public static homePageForTests: HomePage;
@@ -148,9 +149,10 @@ export default class HomePage extends React.Component<IProps, IState> {
     });
   }
   public render() {
-    const title = this.projectHolder.project
+    let title = this.projectHolder.project
       ? this.projectHolder.project.displayName + " - SayMore Mac"
       : "SayMore Mac";
+    title += " " + require("../package.json").version;
 
     remote.getCurrentWindow().setTitle(title);
     return (

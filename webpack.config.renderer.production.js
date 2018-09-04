@@ -86,7 +86,7 @@ module.exports = speedMeasurePlugin.wrap(
       new BugsnagBuildReporterPlugin(
         {
           apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
-          appVersion: require("./package.json").version
+          appVersion: require("./app/package.json").version
         },
         {
           /* opts */

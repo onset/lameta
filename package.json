@@ -1,8 +1,4 @@
 {
-  "name": "saymore-mac",
-  "productName": "SayMore Mac",
-  "version": "0.0.2",
-  "description": "File & metadata organization for language documentation projects.",
   "main": "./app/main-bundle.js",
   "scripts": {
     "test-all": "npm run test-unit && npm run build-production && npm run test-e2e",
