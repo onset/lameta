@@ -65,8 +65,8 @@
     ]
   },
   "build": {
-    "productName": "SayMore Mac",
-    "appId": "io.github.MEaCM.saymore-mac",
+    "productName": "SayMore JS",
+    "appId": "io.github.MEaCoM.saymore-js",
     "dmg": {
       "contents": [
         {

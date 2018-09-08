@@ -1,7 +1,7 @@
 mac bugs
 --------
 / Default font. Most labels are ok, but text fields showing “segue ui”/“sans” are bad but using body default are ok.
-SayMore light --> SayMore Mac
+SayMore light --> SayMore JS
 
 / Sessions & People lists are not full height
 \If you close the window, doesn’t Quit. If you then do menu quit, doesn’t work.

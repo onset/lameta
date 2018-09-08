@@ -232,7 +232,7 @@ export default class ImdiGenerator {
     }
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
-      .a("Originator", "SayMore Mac");
+      .a("Originator", "SayMore JS");
     return this.tail;
   }
   private makeString(): string {

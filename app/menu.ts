@@ -29,10 +29,10 @@ export default class SayLessMenu {
     const haveProject = true; //this.homePage.projectHolder.project;
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: "SayMore Mac",
+      label: "SayMore JS",
       submenu: [
         {
-          label: "About SayMore Mac",
+          label: "About SayMore JS",
           selector: "orderFrontStandardAboutPanel:"
         },
         {
@@ -46,7 +46,7 @@ export default class SayLessMenu {
           type: "separator"
         },
         {
-          label: "Hide SayMore Mac",
+          label: "Hide SayMore JS",
           accelerator: "Command+H",
           selector: "hide:"
         },

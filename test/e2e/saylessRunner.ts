@@ -189,7 +189,7 @@ export default class SayLessRunner {
     const p = Path.join(os.homedir(), "documents", "SayMore", projectName);
     // const p = Path.join(
     //   this.app.electron.remote.app.getPath("documents"),
-    //   "SayMore Mac",
+    //   "SayMore JS",
     //   projectName
     // );
     fs.removeSync(p);

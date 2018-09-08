@@ -1,12 +1,11 @@
 {
-  "name": "saymore-mac",
-  "productName": "SayMore Mac",
+  "name": "saymore-js",
+  "productName": "SayMore JS",
   "version": "0.0.2",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
-    "name": "MEaCoM",
-    "email": "john_hatton@sil.org"
+    "name": "MEaCoM"
   },
   "license": "MIT",
   "dependencies": {}
