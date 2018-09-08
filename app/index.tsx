@@ -7,7 +7,16 @@ import Root from "./containers/Root";
 import { remote } from "electron";
 import "./app.global.scss";
 
-const bugsnagClient = bugsnag("f8b144863f4723ebb4bdd6c747c5d7b6");
+export const bugsnagClient = bugsnag({
+  apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+  appVersion: require("./package.json").version,
+  notifyReleaseStages: ["production"],
+  releaseStage: process.env.NODE_ENV // so we'll only send bugsnag notices if this matches those listed above in notifyReleaseStages
+});
+console.log("bugsnag set to appVersion: " + bugsnagClient.config.appVersion);
+// bugsnagClient.notify(
+//   new Error("Test notify from index.tsx for installed version")
+// );
 
 document.body.setAttribute("class", remote.process.platform);
 render(

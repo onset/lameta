@@ -11,7 +11,15 @@
     },
     {
       "key": "vernacularIso3CodeAndName",
-      "tagInSayMoreClassic": "VernacularISO3CodeAndName"
+      "englishLabel": "Primary Content Language",
+      "tagInSayMoreClassic": "VernacularISO3CodeAndName",
+      "type": "language"
+    },
+    {
+      "key": "analysisISO3CodeAndName",
+      "englishLabel": "Primary Analysis/Working Language",
+      "tagInSayMoreClassic": "AnalysisISO3CodeAndName",
+      "type": "language"
     },
     {
       "key": "location",

@@ -13,6 +13,7 @@ import "./session/SessionForm.scss";
 import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
 import AdditionalFieldsTable from "./MoreFieldsTable";
+import IsoLanguageEdit from "./IsoLanguageEdit";
 
 export interface IProps {
   folder: Folder;
@@ -114,6 +115,14 @@ export default class AutoForm extends React.Component<IProps> {
             className={field.cssClass}
             key={field.key}
             date={field as Field}
+          />
+        );
+      case FieldType.Language:
+        return (
+          <IsoLanguageEdit
+            key={field.key}
+            className={field.cssClass}
+            language={field}
           />
         );
       default:

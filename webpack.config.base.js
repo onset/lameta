@@ -195,6 +195,7 @@ if (process.env.NODE_ENV === "production") {
     new BugsnagSourceMapUploaderPlugin({
       apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
       appVersion: require("./app/package.json").version,
+
       overwrite: true
     })
   );

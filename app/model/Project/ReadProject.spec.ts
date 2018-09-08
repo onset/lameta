@@ -51,6 +51,15 @@ describe("Project Read", () => {
       "dde: Doondo"
     );
   });
+  it("should read AnalysisISO3CodeAndName", () => {
+    const f = GetProjectFileWithOneField(
+      "AnalysisISO3CodeAndName",
+      "dde: Doondo"
+    );
+    expect(f.properties.getTextStringOrEmpty("analysisISO3CodeAndName")).toBe(
+      "dde: Doondo"
+    );
+  });
   it("should read Doondo Project", () => {
     const doondoPath = "c:/dev/Doondo";
     if (fs.existsSync(doondoPath)) {

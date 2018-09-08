@@ -49,6 +49,7 @@ export enum FieldType {
   Date,
   Image,
   Contributions,
+  Language,
   Function
 }
 export enum FieldVisibility {
@@ -88,6 +89,9 @@ export class Field {
         break;
       case "contributions":
         type = FieldType.Contributions;
+        break;
+      case "language":
+        type = FieldType.Language;
         break;
       case "function":
         type = FieldType.Function;
@@ -219,6 +223,9 @@ export class Field {
         return { type: "string", value: Field.escapeSpecialChars(this.text) };
       case FieldType.Date:
         return { type: "date", value: this.asISODateString() };
+      case FieldType.Language:
+        return { type: "language", value: this.text };
+
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }

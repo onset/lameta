@@ -17,6 +17,13 @@ describe("Project Write", () => {
   it("should round-trip DateAvailable", () => {
     AttemptRoundTripOfOneField("dateAvailable", "DateAvailable", "2015-03-05");
   });
+  it("should round-trip AnalysisISO3CodeAndName", () => {
+    AttemptRoundTripOfOneField(
+      "analysisISO3CodeAndName",
+      "AnalysisISO3CodeAndName",
+      "foo: Foo"
+    );
+  });
   it("should write vernacularIso3CodeAndName with same case as SayMore Windows Classic does", () => {
     const f = GetProjectFileWithOneField(
       "VernacularISO3CodeAndName",

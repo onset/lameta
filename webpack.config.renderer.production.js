@@ -44,7 +44,9 @@ module.exports = speedMeasurePlugin.wrap(
     output: {
       filename: "renderer-bundle.js",
       path: path.join(__dirname, "app/dist"),
-      publicPath: `http://localhost:${port}/dist/` // this is "as the browser will get it"
+      // this is what we get when running "yarn dev": publicPath: `http://localhost:${port}/dist/` // this is "as the browser will get it"
+      // this is what we get when running "yarn start":
+      publicPath: "file:///**/renderer-bundle.js"
     },
 
     // use the following if you're getting errors in the terminal, before source maps are available.

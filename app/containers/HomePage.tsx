@@ -168,7 +168,7 @@ export default class HomePage extends React.Component<IProps, IState> {
             <div className={"top"}>
               <img src={locate("assets/start-screen/icon.png")} />
               <h1>
-                SayMore <span>Mac</span>
+                SayMore <span>JS</span>
               </h1>
             </div>
             <div className={"choices"}>

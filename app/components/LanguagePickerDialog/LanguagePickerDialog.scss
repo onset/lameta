@@ -1,0 +1,54 @@
+//@import "../../colors";
+@import "../commonDialog.scss";
+
+.languagePickerDialog {
+  .dialogContent {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    width: 500px;
+    .picker {
+      flex: 1; //grow, pushing ok/cancel buttons to bottom
+
+      .code {
+        min-width: 40px;
+        display: inline-block;
+      }
+      .selected {
+        //background-color: lightgrey;
+        font-weight: bold;
+        font-size: large;
+      }
+
+      input {
+        border-top: solid 1px black; // I don't know what is cutting off the top border, without this
+        width: 100%;
+      }
+      ul {
+        padding: 0;
+        list-style: none;
+        max-height: 380px;
+        overflow: auto; // show scroll if needed
+      }
+      li:hover {
+        background-color: lightgray;
+      }
+    }
+    //     .row {
+    //       display: flex;
+    //       flex-direction: row;
+    //       img {
+    //         width: auto;
+    //         height: 50px;
+    //       }
+    //     }
+    //     h1 {
+    //       font-size: 12px;
+    //       height: 1em;
+    //       font-weight: bold;
+    //       margin: 0;
+    //     }
+  }
+}
