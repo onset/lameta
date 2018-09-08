@@ -20,7 +20,7 @@ module.exports = merge(baseConfig, {
   ],
 
   output: {
-    publicPath: `http://localhost:${port}/dist/`,
+    publicPath: `http://localhost:${port}/dist/`, // this is "as the browser will get it"
     filename: "renderer-bundle.js"
   },
 

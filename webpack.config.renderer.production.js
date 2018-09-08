@@ -13,7 +13,7 @@ const speedMeasurePlugin = new SpeedMeasurePlugin();
 
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const { BugsnagBuildReporterPlugin } = require("webpack-bugsnag-plugins");
-
+const port = process.env.PORT || 3000;
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
 // here to just turn on again.
@@ -44,7 +44,7 @@ module.exports = speedMeasurePlugin.wrap(
     output: {
       filename: "renderer-bundle.js",
       path: path.join(__dirname, "app/dist"),
-      publicPath: "./dist/"
+      publicPath: `http://localhost:${port}/dist/` // this is "as the browser will get it"
     },
 
     // use the following if you're getting errors in the terminal, before source maps are available.

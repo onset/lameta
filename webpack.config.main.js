@@ -6,6 +6,7 @@ const webpack = require("webpack");
 const merge = require("webpack-merge");
 const baseConfig = require("./webpack.config.base");
 const path = require("path");
+const port = process.env.PORT || 3000;
 
 module.exports = merge(baseConfig, {
   entry: ["./app/main.development"],
@@ -22,7 +23,7 @@ module.exports = merge(baseConfig, {
 
     // so at the moment we're putting the main-bundle.js up in app and use this
     path: path.join(__dirname, "app"),
-    publicPath: "./" // needed by bugsnag sourcemap upload
+    publicPath: `http://localhost:${port}/` // needed by bugsnag sourcemap upload
   },
 
   plugins: [
