@@ -104,7 +104,7 @@ export default class ImdiGenerator {
       this.group("Language");
 
       //TODO: this should be ISO639-3:xyz
-      this.fieldLiteral("ID", "TODO:  ISO639-3:xyz");
+      this.fieldLiteral("Id", "TODO:  ISO639-3:xyz");
       //this.fieldLiteral("Id", lang);
       this.fieldLiteral("Name", lang);
 

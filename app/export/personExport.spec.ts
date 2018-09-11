@@ -25,6 +25,13 @@ describe("actor imdi export", () => {
     expect("Actor/Name").toMatch("Awi Heole");
     expect(count("Actor/Languages/Language")).toBe(3);
   });
+  // it("should write actor language id fields correctly", () => {
+  //   expect(
+  //     count(
+  //       "Actor/Languages/Language[Id[text()='ISO639-3:etr']]/MotherTongue[text()='true']"
+  //     )
+  //   ).toBe(1);
+
   it("should label languages correctly", () => {
     expect(
       count(
