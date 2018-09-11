@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "node"
+  - "8.10.0"
+
+os:
+  - linux
+
+cache:
+  directories:
+    - node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
+    - $HOME/.npm/_prebuilds
