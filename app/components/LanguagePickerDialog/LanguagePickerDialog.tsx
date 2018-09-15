@@ -13,8 +13,6 @@ interface IState {
   //topSuggestion: any;
 }
 
-const languageIndex = require("./SilLanguageDataIndex.json");
-
 export default class LanguagePickerDialog extends React.Component<
   IProps,
   IState
@@ -61,25 +59,25 @@ export default class LanguagePickerDialog extends React.Component<
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
 
-    const suggestions =
-      inputLength === 0
-        ? []
-        : languageIndex.filter(
-            lang =>
-              // case and diacritic insensitive
-              lang.name
-                .slice(0, inputLength)
-                .localeCompare(inputValue, undefined, {
-                  sensitivity: "base"
-                }) ||
-              lang.code.two === inputValue ||
-              lang.code.three === inputValue ||
-              lang.altNames.find(alt =>
-                alt.localeCompare(inputValue, undefined, {
-                  sensitivity: "base"
-                })
-              )
-          );
+    const suggestions = [];
+    // inputLength === 0
+    //   ? []
+    //   : languageIndex.filter(
+    //       lang =>
+    //         // case and diacritic insensitive
+    //         lang.name
+    //           .slice(0, inputLength)
+    //           .localeCompare(inputValue, undefined, {
+    //             sensitivity: "base"
+    //           }) ||
+    //         lang.code.two === inputValue ||
+    //         lang.code.three === inputValue ||
+    //         lang.altNames.find(alt =>
+    //           alt.localeCompare(inputValue, undefined, {
+    //             sensitivity: "base"
+    //           })
+    //         )
+    //     );
 
     return suggestions;
   }

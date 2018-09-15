@@ -1,4 +1,6 @@
-import Trie from "./trie";
+import TrieSearch from "trie-search";
+
+const languageIndex = require("./SilLanguageDataIndex.json");
 
 class Language {
   public name: string;
@@ -16,20 +18,38 @@ class Language {
 
 export default class LanguageFinder {
   private langs = new Array<Language>();
-  private Trie;
+  private trie: TrieSearch;
   constructor() {
-    this.langs.push(
-      new Language({ name: "English", code: { three: "eng", two: "en" } })
-    );
-    this.langs.push(new Language({ name: "Sause", code: { three: "sao" } }));
+    this.trie = new TrieSearch("name", ["code", "two"], ["code", "three"]);
+    this.trie.addAll(languageIndex);
   }
   public find(prefix: string): Language[] {
-    return this.langs
-      .filter(l => {
-        return (
-          l.iso639_3 === prefix || l.iso639_2 === prefix || l.name === prefix
-        );
-      })
-      .map(l => l);
+    const matches = this.trie.get(prefix);
+    return matches
+      .map(m => new Language(m))
+      .sort((a: Language, b: Language) => {
+        if (
+          // a.name.localeCompare(prefix, undefined, { sensitivity: "base" }) ===
+          //   0 ||
+          a.name.toLowerCase() === prefix.toLowerCase() ||
+          a.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
+          a.iso639_3.toLowerCase() === prefix.toLowerCase() ||
+          (a.iso639_2 && a.iso639_2.toLowerCase() === prefix.toLowerCase())
+        ) {
+          return -1;
+        }
+        if (
+          // b.name.localeCompare(prefix, undefined, { sensitivity: "base" }) ===
+          //   0 ||
+          b.name.toLowerCase() === prefix.toLowerCase() ||
+          b.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
+          b.iso639_3.toLowerCase() === prefix.toLowerCase() ||
+          (b.iso639_2 && b.iso639_2.toLowerCase() === prefix.toLowerCase())
+        ) {
+          return 1;
+        }
+
+        return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+      });
   }
 }
