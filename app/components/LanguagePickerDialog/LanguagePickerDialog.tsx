@@ -13,7 +13,7 @@ interface IState {
   //topSuggestion: any;
 }
 
-const iso6392List = require("iso-639-2");
+const languageIndex = require("./SilLanguageDataIndex.json");
 
 export default class LanguagePickerDialog extends React.Component<
   IProps,
@@ -64,10 +64,21 @@ export default class LanguagePickerDialog extends React.Component<
     const suggestions =
       inputLength === 0
         ? []
-        : iso6392List.filter(
+        : languageIndex.filter(
             lang =>
-              lang.name.toLowerCase().slice(0, inputLength) === inputValue ||
-              lang.iso6392B === inputValue
+              // case and diacritic insensitive
+              lang.name
+                .slice(0, inputLength)
+                .localeCompare(inputValue, undefined, {
+                  sensitivity: "base"
+                }) ||
+              lang.code.two === inputValue ||
+              lang.code.three === inputValue ||
+              lang.altNames.find(alt =>
+                alt.localeCompare(inputValue, undefined, {
+                  sensitivity: "base"
+                })
+              )
           );
 
     return suggestions;
@@ -75,10 +86,10 @@ export default class LanguagePickerDialog extends React.Component<
   public render() {
     const suggestions = this.state.suggestions;
     const topSuggestionCode =
-      suggestions.length > 0 ? suggestions[0].iso6392B : "";
+      suggestions.length > 0 ? suggestions[0].code.three : "";
     const value = this.state.isoCode;
     const inputProps = {
-      placeholder: "Type language name",
+      placeholder: "Type language name or code",
       value,
       onChange: (event, { newValue }) => this.setState({ isoCode: newValue }),
       autoFocus: true
@@ -111,12 +122,12 @@ export default class LanguagePickerDialog extends React.Component<
                 renderSuggestion={suggestion => (
                   <div
                     className={
-                      suggestion.iso6392B === topSuggestionCode
+                      suggestion.code.three === topSuggestionCode
                         ? "selected"
                         : ""
                     }
                   >
-                    <span className="code">{`${suggestion.iso6392B}`}</span>
+                    <span className="code">{`${suggestion.code.three}`}</span>
                     {`${suggestion.name}`}
                   </div>
                 )}
