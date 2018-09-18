@@ -38,9 +38,10 @@
     margin-right: 8px;
   }
 }
-.home {
+.tabComponent {
   overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
   height: 100%;
+  flex: 1;
 
   .tab-panel-project {
     background-color: $project--color;
@@ -65,4 +66,12 @@
   //border: solid green;
   display: flex;
   flex-direction: column;
+}
+
+#tabContainer {
+  flex: 1; //grow to fill as much as is can (up to edge of notification bar)
+}
+#topLevelOfOpenProjectScreen {
+  display: flex;
+  flex-direction: row;
 }

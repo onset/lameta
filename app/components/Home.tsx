@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 //import SessionsPage from "../containers/SessionsPage";
-import { ComponentTab } from "./componentTab/ComponentTab";
-import { IFolderSelection } from "../model/Folder";
+import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
 import { Session } from "../model/Project/Session/Session";
@@ -20,6 +19,7 @@ import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../menu";
+import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 
 export interface IProps {
   project: Project;
@@ -30,6 +30,7 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 0;
+  notificationBar: NotificationBar | null;
   // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {
@@ -120,57 +121,68 @@ export default class Home extends React.Component<IProps> {
         className={styles.container}
         data-tid="container"
       >
-        <Tabs
-          className={"home"}
-          defaultIndex={this.kFirstTabToOpen}
-          onSelect={(index: number) => {
-            this.props.project.saveAllFilesInFolder();
-            this.UpdateMenus(index);
-          }}
-        >
-          <TabList>
-            <Tab className={"react-tabs__tab tab-project"}>
-              <div className={"icon-and-label"}>
-                <ProjectIcon />
-                <span>Project</span>
-              </div>
-            </Tab>
-            <Tab className={"react-tabs__tab tab-sessions"}>
-              <div className={"icon-and-label"}>
-                {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
+        <div id="tabContainer">
+          <Tabs
+            className={"tabComponent"}
+            defaultIndex={this.kFirstTabToOpen}
+            onSelect={(index: number) => {
+              this.props.project.saveAllFilesInFolder();
+              this.UpdateMenus(index);
+            }}
+          >
+            <TabList>
+              <Tab className={"react-tabs__tab tab-project"}>
+                <div className={"icon-and-label"}>
+                  <ProjectIcon />
+                  <span>Project</span>
+                </div>
+              </Tab>
+              <Tab className={"react-tabs__tab tab-sessions"}>
+                <div className={"icon-and-label"}>
+                  {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
               <div dangerouslySetInnerHTML={{ __html: sessionIcon.data }} /> */}
-                {/* <img src={sessionIcon} /> */}
-                <SessionIcon />
-                {/* <SessionIcon /> */}
-                <span>Sessions</span>
-              </div>
-            </Tab>
-            <Tab className={"react-tabs__tab tab-people"}>
-              <div className={"icon-and-label"}>
-                <PeopleIcon />
-                <span>People</span>
-              </div>
-            </Tab>
-          </TabList>
-          <TabPanel className={"tab-panel-project"}>
-            <ProjectTab
-              project={this.props.project}
-              authorityLists={this.props.authorityLists}
-            />
-          </TabPanel>
-          <TabPanel className={"tab-panel-sessions"}>
-            <SessionsTab
-              project={this.props.project}
-              authorityLists={this.props.authorityLists}
-            />
-          </TabPanel>
-          <TabPanel className={"tab-panel-people"}>
-            <PeopleTab
-              project={this.props.project}
-              authorityLists={this.props.authorityLists}
-            />
-          </TabPanel>
-        </Tabs>
+                  {/* <img src={sessionIcon} /> */}
+                  <SessionIcon />
+                  {/* <SessionIcon /> */}
+                  <span>Sessions</span>
+                </div>
+              </Tab>
+              <Tab className={"react-tabs__tab tab-people"}>
+                <div className={"icon-and-label"}>
+                  <PeopleIcon />
+                  <span>People</span>
+                </div>
+              </Tab>
+            </TabList>
+            <TabPanel className={"tab-panel-project"}>
+              <ProjectTab
+                project={this.props.project}
+                authorityLists={this.props.authorityLists}
+              />
+            </TabPanel>
+            <TabPanel className={"tab-panel-sessions"}>
+              <SessionsTab
+                project={this.props.project}
+                authorityLists={this.props.authorityLists}
+              />
+            </TabPanel>
+            <TabPanel className={"tab-panel-people"}>
+              <PeopleTab
+                project={this.props.project}
+                authorityLists={this.props.authorityLists}
+              />
+            </TabPanel>
+          </Tabs>
+          {/* gets placed on top right of the tabs */}
+          <NotificationIndicator
+            onClick={() => {
+              if (this.notificationBar) {
+                this.notificationBar.toggle();
+              }
+            }}
+          />
+        </div>
+        <NotificationBar ref={r => (this.notificationBar = r)} />
       </div>
     );
   }

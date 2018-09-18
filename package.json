@@ -198,6 +198,7 @@
     "@types/react-dropzone": "4.1",
     "@types/react-modal": "^3.1.1",
     "@types/react-select": "^1.0.60",
+    "@types/react-sidebar": "^3.0.0",
     "@types/react-table": "^6.7.0",
     "@types/react-tabs": "^1.0.3",
     "@types/sanitize-filename": "^1.1.28",
