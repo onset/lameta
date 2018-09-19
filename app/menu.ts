@@ -1,6 +1,6 @@
 import { Menu, remote } from "electron";
 import HomePage from "./containers/HomePage";
-import ImdiGenerator from "./export/imdiGenerator";
+import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import bugsnag from "bugsnag-js";

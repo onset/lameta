@@ -1,4 +1,4 @@
-import ImdiGenerator from "./imdiGenerator";
+import ImdiGenerator from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
 import {

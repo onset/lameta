@@ -5,7 +5,7 @@ import CloseOnEscape from "react-close-on-escape";
 import CsvExporter from "../../export/CsvExporter";
 import { Project, ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../crossPlatformUtilities";
-import ImdiGenerator from "../../export/imdiGenerator";
+import ImdiGenerator from "../../export/ImdiGenerator";
 import { remote } from "electron";
 // tslint:disable-next-line:no-empty-interface
 interface IProps {

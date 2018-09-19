@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Folder } from "../model/Folder";
-import ImdiGenerator from "../export/imdiGenerator";
+import ImdiGenerator from "../export/ImdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
