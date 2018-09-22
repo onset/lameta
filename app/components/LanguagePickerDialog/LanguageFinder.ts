@@ -1,7 +1,5 @@
 import TrieSearch from "trie-search";
 
-const languageIndex = require("./SilLanguageDataIndex.json");
-
 class Language {
   public name: string;
   // tslint:disable-next-line:variable-name
@@ -19,36 +17,43 @@ class Language {
 export default class LanguageFinder {
   private langs = new Array<Language>();
   private trie: TrieSearch;
-  constructor() {
+
+  constructor(indexForTesting: any = undefined) {
+    // currently this uses a trie, which is overkill for this number of items,
+    // but I'm using it because I do need prefix matching and this library does that.
+
+    // Enhance this TrieSearch doesn't provide a way to include our alternative language name arrays
+    // Ehance allow for matching even if close (e.g. levenshtein distance)
+    // Configure the trie to match what is in the index json
     this.trie = new TrieSearch("name", ["code", "two"], ["code", "three"]);
-    this.trie.addAll(languageIndex);
+
+    this.trie.addAll(
+      indexForTesting ? indexForTesting : require("./SilLanguageDataIndex.json")
+    );
+  }
+  private matchesPrefix(language, prefix: string): boolean {
+    return (
+      language.name.toLowerCase() === prefix.toLowerCase() ||
+      language.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
+      language.iso639_3.toLowerCase() === prefix.toLowerCase() ||
+      (language.iso639_2 &&
+        language.iso639_2.toLowerCase() === prefix.toLowerCase())
+    );
   }
   public find(prefix: string): Language[] {
+    // gives us hits on name & codes that start with the prefix
     const matches = this.trie.get(prefix);
     return matches
       .map(m => new Language(m))
       .sort((a: Language, b: Language) => {
-        if (
-          // a.name.localeCompare(prefix, undefined, { sensitivity: "base" }) ===
-          //   0 ||
-          a.name.toLowerCase() === prefix.toLowerCase() ||
-          a.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
-          a.iso639_3.toLowerCase() === prefix.toLowerCase() ||
-          (a.iso639_2 && a.iso639_2.toLowerCase() === prefix.toLowerCase())
-        ) {
+        //we want exact matches to sort before just prefix matches
+        if (this.matchesPrefix(a, prefix)) {
           return -1;
         }
-        if (
-          // b.name.localeCompare(prefix, undefined, { sensitivity: "base" }) ===
-          //   0 ||
-          b.name.toLowerCase() === prefix.toLowerCase() ||
-          b.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
-          b.iso639_3.toLowerCase() === prefix.toLowerCase() ||
-          (b.iso639_2 && b.iso639_2.toLowerCase() === prefix.toLowerCase())
-        ) {
+        if (this.matchesPrefix(b, prefix)) {
           return 1;
         }
-
+        // nothing matches exactly, so sort based on base character (disregarding diacritics)
         return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
       });
   }
