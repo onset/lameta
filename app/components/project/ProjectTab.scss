@@ -54,6 +54,8 @@
       display: flex; // enables the following rule...
       align-items: center; // which aligns labels and inputs
       height: initial;
+      //      min-height: 36px;
+      margin-bottom: 20px;
 
       &.field__newSection {
         margin-top: 2em;

@@ -2,6 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import LanguagePickerDialog from "./LanguagePickerDialog/LanguagePickerDialog";
+import "./IsoLanguageEdit.scss";
 
 export interface IProps {
   language: Field;
@@ -18,12 +19,16 @@ export default class IsoLanguageEdit extends React.Component<
 
   public render() {
     return (
-      <div
-        className={"field " + this.props.className}
-        onClick={() => LanguagePickerDialog.show(this.props.language.form)}
-      >
+      <div className={"field " + this.props.className}>
         <label>{this.props.language.englishLabel}</label>
-        <div>{this.props.language.form}</div>
+        <a
+          className="languageEdit"
+          onClick={() => LanguagePickerDialog.show(this.props.language)}
+        >
+          {this.props.language.text && this.props.language.text.length > 0
+            ? this.props.language.text
+            : "choose..."}
+        </a>
       </div>
     );
   }

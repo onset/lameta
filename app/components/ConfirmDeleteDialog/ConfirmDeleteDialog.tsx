@@ -59,22 +59,22 @@ export default class ConfirmDeleteDialog extends React.Component<
             <div className="row">
               <img src={locate("assets/trash.png")} />
               <h1>{`${this.state.path} will be moved to the Trash`}</h1>
-            </div>
-            <div className={"bottomButtonRow"}>
-              <div className={"okCancelGroup"}>
-                {/* List as default last (in the corner). */}
-                {/* The actual order of these will be platform-specific, controlled by
+            </div>{" "}
+          </div>
+          <div className={"bottomButtonRow"}>
+            <div className={"okCancelGroup"}>
+              {/* List as default last (in the corner). */}
+              {/* The actual order of these will be platform-specific, controlled by
           a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
-                <button onClick={() => this.handleCloseModal(false)}>
-                  Cancel
-                </button>
-                <button
-                  id="deleteButton"
-                  onClick={() => this.handleCloseModal(true)}
-                >
-                  Delete
-                </button>
-              </div>
+              <button onClick={() => this.handleCloseModal(false)}>
+                Cancel
+              </button>
+              <button
+                id="deleteButton"
+                onClick={() => this.handleCloseModal(true)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </ReactModal>

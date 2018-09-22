@@ -5,12 +5,23 @@
   .dialogContent {
     background-color: #f0f0f0;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    width: 500px;
+    display: grid !important;
+    grid-template-columns: 100px 1fr;
+    grid-gap: 10px;
+    label {
+      text-align: right;
+    }
+    .codeEntry {
+      width: 30px;
+    }
+    .name {
+      width: 300px;
+    }
+    /* this is for the type ahead, which isn't ready yet
     .picker {
       flex: 1; //grow, pushing ok/cancel buttons to bottom
+
+
 
       .code {
         min-width: 40px;
@@ -33,7 +44,7 @@
       li:hover {
         background-color: lightgray;
       }
-    }
+    }*/
     //     .row {
     //       display: flex;
     //       flex-direction: row;

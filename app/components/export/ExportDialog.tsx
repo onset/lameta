@@ -139,19 +139,16 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 &nbsp;XML file.
               </p>
             </fieldset>
-            <div className={"bottomButtonRow"}>
-              {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
-              <div className={"okCancelGroup"}>
-                <button onClick={() => this.handleCloseModal(false)}>
-                  Cancel
-                </button>
-                <button
-                  id="okButton"
-                  onClick={() => this.handleCloseModal(true)}
-                >
-                  Export
-                </button>
-              </div>
+          </div>
+          <div className={"bottomButtonRow"}>
+            {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
+            <div className={"okCancelGroup"}>
+              <button onClick={() => this.handleCloseModal(false)}>
+                Cancel
+              </button>
+              <button id="okButton" onClick={() => this.handleCloseModal(true)}>
+                Export
+              </button>
             </div>
           </div>
         </ReactModal>

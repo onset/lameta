@@ -11,13 +11,13 @@
     },
     {
       "key": "vernacularIso3CodeAndName",
-      "englishLabel": "Primary Content Language",
+      "englishLabel": "Content Language",
       "tagInSayMoreClassic": "VernacularISO3CodeAndName",
       "type": "language"
     },
     {
       "key": "analysisISO3CodeAndName",
-      "englishLabel": "Primary Analysis/Working Language",
+      "englishLabel": "Working Language",
       "tagInSayMoreClassic": "AnalysisISO3CodeAndName",
       "type": "language"
     },
