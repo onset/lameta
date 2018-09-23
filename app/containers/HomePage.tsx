@@ -84,11 +84,17 @@ export default class HomePage extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    if (!this.isRunningFromSource()) {
-      window.alert(
-        "Warning: this version of SayMore JS not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
-      );
-    }
+    //if (!this.isRunningFromSource()) {
+    // NB: From code (at least on windows), it is safe to just show windows.alert. But on macos, when run from DMG,
+    // a blank window comes up, and the alert is hidden behind it. So the timeout here is just to get it in front.
+    window.setTimeout(
+      () =>
+        window.alert(
+          `Thanks for helping to test SayMore JS! Warning: this is not even a "beta", so you could easily lose your work.`
+        ),
+      2000
+    );
+    //}
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", e => {
       if (this.projectHolder.project) {
@@ -97,7 +103,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     });
 
     // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailble sometimes, particularly when running production build via "yarn start" on Windows.
+    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
     // So we give it a few seconds and catch the problem if it still fails.
     window.setTimeout(() => {
       try {

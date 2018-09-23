@@ -169,6 +169,9 @@ export default class ImdiGenerator {
     const person = this.folderInFocus as Person;
 
     this.tail = XmlBuilder.create("Actor", { headless: true });
+    this.tail.comment(
+      "***** IMDI export is not implemented yet. This is just a bit of scaffolding *****"
+    );
     this.field("Name", "name");
     this.fieldLiteral("TODO", "More fields of person");
     this.group("Languages");
@@ -233,6 +236,9 @@ export default class ImdiGenerator {
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
       .a("Originator", "SayMore JS");
+    this.tail.comment(
+      "***** IMDI export is not implemented yet. This is just a bit of scaffolding *****"
+    );
     return this.tail;
   }
   private makeString(): string {

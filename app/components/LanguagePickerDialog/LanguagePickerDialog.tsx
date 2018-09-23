@@ -10,7 +10,7 @@ interface IProps {}
 interface IState {
   isOpen: boolean;
   field: Field | undefined;
-  isoCode: string;
+  langCode: string;
   name: string;
   suggestions: any[];
   //topSuggestion: any;
@@ -31,7 +31,7 @@ export default class LanguagePickerDialog extends React.Component<
     this.state = {
       isOpen: false,
       field: undefined,
-      isoCode: "",
+      langCode: "",
       name: "",
       suggestions: []
       //topSuggestion: {}
@@ -41,7 +41,7 @@ export default class LanguagePickerDialog extends React.Component<
   private handleCloseModal(doSave: boolean) {
     if (doSave && this.state.field) {
       this.state.field.setValueFromString(
-        this.state.isoCode + " : " + this.state.name
+        this.state.langCode + " : " + this.state.name
       );
     }
     this.setState({ isOpen: false });
@@ -51,7 +51,7 @@ export default class LanguagePickerDialog extends React.Component<
     if (!field.text || field.text.trim().length === 0) {
       LanguagePickerDialog.singleton.change({
         field,
-        isoCode: "",
+        langCode: "",
         name: "",
         isOpen: true
       });
@@ -64,7 +64,7 @@ export default class LanguagePickerDialog extends React.Component<
     if (parts.length === 2) {
       LanguagePickerDialog.singleton.change({
         field,
-        isoCode: parts[0].trim(),
+        langCode: parts[0].trim(),
         name: parts[1].trim(),
         isOpen: true
       });
@@ -114,15 +114,15 @@ export default class LanguagePickerDialog extends React.Component<
   }
   public render() {
     const haveValidFields =
-      this.state.isoCode.length === 3 && this.state.name.length > 0;
+      this.state.langCode.length === 3 && this.state.name.length > 0;
     const suggestions = this.state.suggestions;
     const topSuggestionCode =
       suggestions.length > 0 ? suggestions[0].code.three : "";
-    const value = this.state.isoCode;
+    const value = this.state.langCode;
     const inputProps = {
       placeholder: "Type language name or code",
       value,
-      onChange: (event, { newValue }) => this.setState({ isoCode: newValue }),
+      onChange: (event, { newValue }) => this.setState({ langCode: newValue }),
       autoFocus: true
     };
     return (
@@ -140,12 +140,12 @@ export default class LanguagePickerDialog extends React.Component<
         >
           <div className={"dialogTitle"}>Choose Language</div>
           <div className="dialogContent">
-            <label>ISO 639-3 Code</label>
+            <label>Language Code</label>
             <input
               className="codeEntry"
               type="text"
-              value={this.state.isoCode}
-              onChange={e => this.change({ isoCode: e.target.value })}
+              value={this.state.langCode}
+              onChange={e => this.change({ langCode: e.target.value })}
             />
             <label>Name</label>
             <input

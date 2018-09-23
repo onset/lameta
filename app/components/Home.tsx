@@ -30,7 +30,7 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 0;
-  notificationBar: NotificationBar | null;
+  private notificationBar: NotificationBar | null;
   // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {
@@ -174,15 +174,15 @@ export default class Home extends React.Component<IProps> {
             </TabPanel>
           </Tabs>
           {/* gets placed on top right of the tabs */}
-          <NotificationIndicator
+          {/* <NotificationIndicator
             onClick={() => {
               if (this.notificationBar) {
                 this.notificationBar.toggle();
               }
             }}
-          />
+          /> */}
         </div>
-        <NotificationBar ref={r => (this.notificationBar = r)} />
+        {/* <NotificationBar ref={r => (this.notificationBar = r)} /> */}
       </div>
     );
   }
