@@ -93,6 +93,9 @@ textarea {
   font-family: $default-fonts;
 }
 // no border when in a grid
+.rt-tbody {
+  cursor: pointer;
+}
 .rt-td {
   textarea {
     border: none;

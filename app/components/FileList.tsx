@@ -1,18 +1,13 @@
-const { ipcRenderer } = require("electron");
 import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table";
-import { computed } from "mobx";
 import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder";
 import { File } from "../model/file/File";
 import Dropzone from "react-dropzone";
 import { remote } from "electron";
-const moment = require("moment");
-import { Dictionary } from "typescript-collections";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
 
-const { Menu } = require("electron");
 const electron = require("electron");
 export interface IProps {
   folder: Folder;
@@ -41,6 +36,12 @@ export default class FileList extends React.Component<IProps> {
         this.props.folder.addFiles(paths.map(p => ({ path: p })));
       }
     });
+  }
+  public componentDidUpdate() {
+    // scroll to top whenever we change to a new folder
+    document
+      .getElementsByClassName("fileList")[0]
+      .getElementsByClassName("rt-tbody")[0].scrollTop = 0;
   }
   public render() {
     // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
@@ -150,6 +151,8 @@ export default class FileList extends React.Component<IProps> {
           </button>
         </div>
         <ReactTable
+          //key={this.props.folder.directory}
+          className="fileList"
           showPagination={false}
           data={this.props.folder.files.slice()} // slice is needed because this is a mobx observable array. See https://mobx.js.org/refguide/array.html#observable-arrays
           columns={columns}
