@@ -84,17 +84,17 @@ export default class HomePage extends React.Component<IProps, IState> {
   }
 
   public componentDidMount() {
-    //if (!this.isRunningFromSource()) {
-    // NB: From code (at least on windows), it is safe to just show windows.alert. But on macos, when run from DMG,
-    // a blank window comes up, and the alert is hidden behind it. So the timeout here is just to get it in front.
-    window.setTimeout(
-      () =>
-        window.alert(
-          `Thanks for helping to test SayMore JS! Warning: this is not even a "beta", so you could easily lose your work.`
-        ),
-      2000
-    );
-    //}
+    if (!this.isRunningFromSource()) {
+      // NB: From code (at least on windows), it is safe to just show windows.alert. But on macos, when run from DMG,
+      // a blank window comes up, and the alert is hidden behind it. So the timeout here is just to get it in front.
+      window.setTimeout(
+        () =>
+          window.alert(
+            `Thanks for helping to test SayMore JS! Warning: this is not even a "beta", so you could easily lose your work.`
+          ),
+        2000
+      );
+    }
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", e => {
       if (this.projectHolder.project) {

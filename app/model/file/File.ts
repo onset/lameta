@@ -353,6 +353,7 @@ export abstract class File {
   }
 
   private loadContributions(contributionsFromXml: any) {
+    //console.log("loadContributions() " + this.metadataFilePath);
     if (!contributionsFromXml.contributor) {
       return;
     }
@@ -365,6 +366,7 @@ export abstract class File {
     }
   }
   private loadOneContribution(contributionFromXml: any) {
+    //console.log("loadOneContribution() " + this.metadataFilePath);
     const n = new Contribution();
     n.name = contributionFromXml.name;
     n.role = contributionFromXml.role;
@@ -397,7 +399,14 @@ export abstract class File {
         break;
     }
   }
+  private haveReadMetadataFile: boolean = false;
   public readMetadataFile() {
+    if (this.haveReadMetadataFile) {
+      console.error("Already read metadataFile of " + this.metadataFilePath);
+      return;
+    }
+    this.haveReadMetadataFile = true;
+    //console.log("readMetadataFile() " + this.metadataFilePath);
     if (fs.existsSync(this.metadataFilePath)) {
       const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
 
@@ -452,13 +461,23 @@ export abstract class File {
       () => this.changed()
     );
   }
+  private inGetXml: boolean = false;
   public getXml() {
-    return getSayMoreXml(
-      this.xmlRootName,
-      this.properties,
-      this.contributions,
-      this.doOutputTypeInXmlTags
-    );
+    if (this.inGetXml) {
+      throw new Error("Loop detected in getXml() for " + this.metadataFilePath);
+    }
+    this.inGetXml = true;
+    try {
+      //console.log("getXml() of " + this.metadataFilePath);
+      return getSayMoreXml(
+        this.xmlRootName,
+        this.properties,
+        this.contributions,
+        this.doOutputTypeInXmlTags
+      );
+    } finally {
+      this.inGetXml = false;
+    }
   }
 
   public save(forceSave: boolean = false) {

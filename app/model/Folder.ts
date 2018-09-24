@@ -93,7 +93,6 @@ export abstract class Folder {
   ): File[] {
     const files = new Array<File>();
 
-    folderMetaDataFile.readMetadataFile();
     files.push(folderMetaDataFile);
 
     //collect the other files and the metdata files they are paired with
