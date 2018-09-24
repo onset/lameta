@@ -32,8 +32,8 @@ export class Person extends Folder {
     }
 
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
-    fs.copySync(path, renamedPhotoPath);
-    this.addOneFile(renamedPhotoPath);
+
+    this.addOneFile(path, renamedPhotoPath);
   }
 
   public get displayName(): string {

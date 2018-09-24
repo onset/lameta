@@ -65,9 +65,13 @@ export abstract class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string) {
+  public addOneFile(path: string, newFileName?: string) {
     console.log("copy in " + path);
-    const dest = Path.join(this.directory, Path.basename(path));
+
+    const dest = Path.join(
+      this.directory,
+      newFileName ? newFileName : Path.basename(path)
+    );
     fs.copySync(path, dest);
     this.files.push(new OtherFile(dest));
   }
