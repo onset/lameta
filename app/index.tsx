@@ -2,10 +2,11 @@ import bugsnag from "bugsnag-js";
 import createPlugin from "bugsnag-react";
 import * as React from "react";
 import { render } from "react-dom";
-import { AppContainer } from "react-hot-loader";
-import Root from "./containers/Root";
 import { remote } from "electron";
 import "./app.global.scss";
+import App from "./containers/App";
+import { setConfig } from "react-hot-loader";
+setConfig({ logLevel: "debug" });
 
 export const bugsnagClient = bugsnag({
   apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
@@ -19,28 +20,19 @@ console.log("bugsnag set to appVersion: " + bugsnagClient.config.appVersion);
 // );
 
 document.body.setAttribute("class", remote.process.platform);
-render(
-  <AppContainer>
-    <Root />
-  </AppContainer>,
-  document.getElementById("root")
-);
+const ErrorBoundary = bugsnagClient.use(createPlugin(React));
+render(<App />, document.getElementById("root"));
 
-if ((module as any).hot) {
-  (module as any).hot.accept("./containers/Root", () => {
-    const NextRoot = require("./containers/Root").default;
-    const ErrorBoundary = bugsnagClient.use(createPlugin(React));
-    render(
-      <ErrorBoundary>
-        <AppContainer>
-          <NextRoot />
-        </AppContainer>{" "}
-      </ErrorBoundary>,
+// if ((module as any).hot) {
 
-      document.getElementById("root")
-    );
-  });
-}
+//   render(
+//     <ErrorBoundary>
+//       <App />
+//     </ErrorBoundary>,
+
+//     document.getElementById("root")
+//   );
+// }
 
 // const base = document.createElement("base");
 // console.log("Setting base to " + locate("app"));
