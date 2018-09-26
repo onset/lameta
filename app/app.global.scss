@@ -42,6 +42,7 @@ html,
   font-family: $default-fonts;
 }
 a {
+  cursor: pointer;
   text-decoration: underline;
   color: blue;
   &:visited {
