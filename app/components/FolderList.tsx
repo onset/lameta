@@ -1,5 +1,5 @@
 import * as React from "react";
-import { default as ReactTable, RowInfo } from "react-table";
+import { default as ReactTable, Resize } from "react-table";
 
 import { Folder, IFolderSelection } from "../model/Folder";
 import * as mobxReact from "mobx-react";
@@ -8,9 +8,11 @@ import * as mobx from "mobx";
 import { Field, FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
 import { locate } from "../crossPlatformUtilities";
+import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 const titleCase = require("title-case");
 
 export interface IProps {
+  nameForPersistingUsersTableConfiguration: string;
   folders: Folder[];
   selectedFolder: IFolderSelection;
   columns: string[];
@@ -21,8 +23,14 @@ export class FolderList extends React.Component<IProps> {
   private hasConsentPath = locate("assets/hasConsent.png");
   private noConsentPath = locate("assets/noConsent.png");
   private m: mobx.IReactionDisposer;
+  private columnWidthManager: ReactTableColumnWidthManager;
   constructor(props: IProps) {
     super(props);
+    this.columnWidthManager = new ReactTableColumnWidthManager(
+      this.props.nameForPersistingUsersTableConfiguration + ".columnWidths",
+      this.props.columns,
+      this.props.columnWidths
+    );
   }
 
   public render() {
@@ -46,7 +54,7 @@ export class FolderList extends React.Component<IProps> {
     const columns = this.props.columns.map((key, index) => {
       const c: object = {
         id: key,
-        width: this.props.columnWidths[index],
+        width: this.columnWidthManager.columnWidths[key],
         className: key,
         Header:
           this.props.folders.length > 0
@@ -90,6 +98,9 @@ export class FolderList extends React.Component<IProps> {
           showPagination={false}
           data={this.props.folders}
           columns={columns}
+          onResizedChange={(resizedState: Resize[]) =>
+            this.columnWidthManager.handleResizedChange(resizedState)
+          }
           pageSize={this.props.folders.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.

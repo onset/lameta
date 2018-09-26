@@ -11,6 +11,7 @@ import "./ComponentTab.scss";
 const SplitPane = require("react-split-pane");
 
 interface IProps {
+  nameForPersistingUsersTableConfiguration: string;
   folders: Folder[];
   selectedFolder: IFolderSelection;
   folderTypeStyleClass: string;
@@ -45,6 +46,9 @@ export class ComponentTab extends React.Component<IProps> {
         >
           <div className={"firstColumn"}>
             <FolderList
+              nameForPersistingUsersTableConfiguration={
+                this.props.nameForPersistingUsersTableConfiguration
+              }
               folders={this.props.folders}
               selectedFolder={this.props.selectedFolder}
               columns={this.props.columns}

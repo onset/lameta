@@ -35,6 +35,7 @@ export class PeopleTab extends React.Component<IProps> {
 
     return (
       <ComponentTab
+        nameForPersistingUsersTableConfiguration="people"
         project={this.props.project}
         folders={this.props.project.persons}
         selectedFolder={this.props.project.selectedPerson}

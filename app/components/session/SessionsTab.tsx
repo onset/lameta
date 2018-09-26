@@ -25,6 +25,7 @@ export class SessionsTab extends React.Component<IProps> {
     );
     return (
       <ComponentTab
+        nameForPersistingUsersTableConfiguration="sessions"
         project={this.props.project}
         folders={this.props.project.sessions}
         selectedFolder={this.props.project.selectedSession}
