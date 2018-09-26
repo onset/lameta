@@ -88,7 +88,7 @@ export class FolderList extends React.Component<IProps> {
       <div className={"folderList"}>
         <ReactTable
           showPagination={false}
-          data={this.props.folders.slice()} // slice is needed because this is a mobx observable array. See https://mobx.js.org/refguide/array.html#observable-arrays
+          data={this.props.folders}
           columns={columns}
           pageSize={this.props.folders.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
           getTrProps={(state: any, rowInfo: any, column: any) => {

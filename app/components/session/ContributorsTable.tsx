@@ -111,7 +111,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
 
   public render() {
     //review: this seems wrong, having this data model change here in the render method...
-    const contributors = this.props.file.contributions.slice(); //make normal array
+    const contributors = this.props.file.contributions;
     const columns = [
       {
         Header: "Name",
