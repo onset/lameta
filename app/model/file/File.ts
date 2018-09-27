@@ -376,6 +376,8 @@ export abstract class File {
   }
 
   public computeProperties() {
+    // TODO: this is running on every single file, I think, at startup. Better to do only as needed.
+
     switch (this.type) {
       case "Audio":
         if (this.describedFilePath.match(/\.((mp3)|(ogg))$/i)) {
@@ -396,6 +398,22 @@ export abstract class File {
         const dimensions = imagesize(this.describedFilePath);
         this.addTextProperty("width", dimensions.width.toString());
         this.addTextProperty("height", dimensions.height.toString());
+        break;
+      case "Video":
+        // const ffprobe = require("ffprobe");
+        // const ffprobeStatic = require("ffprobe-static");
+
+        // ffprobe(
+        //   this.describedFilePath,
+        //   { path: ffprobeStatic.path },
+        //   (err, info) => {
+        //     if (err) {
+        //       console.error("ffprobe gave" + err);
+        //     } else {
+        //       console.log(info);
+        //     }
+        //   }
+        // );
         break;
     }
   }

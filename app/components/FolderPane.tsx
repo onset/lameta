@@ -236,9 +236,13 @@ export class FolderPane extends React.Component<IProps> {
               {standardMetaTabs}
             </TabList>
             <TabPanel>
-              <ReactPlayer url={path}>
-                <source src={path} />
-              </ReactPlayer>
+              <ReactPlayer
+                url={path}
+                controls
+                onError={e => {
+                  console.error("video error:" + e);
+                }}
+              />
             </TabPanel>
             {standardMetaPanels}
           </Tabs>
