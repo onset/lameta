@@ -1,13 +1,14 @@
 {
   "main": "./app/main-bundle.js",
   "scripts": {
+    "clear_jest": "jest --clearCache",
     "//test is what travis will run": "",
     "test": "npm run test-unit",
     "test-all": "npm run test-unit && npm run build-production && npm run test-e2e",
-    "test-unit": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit",
-    "test-unit-watch": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit --watch",
-    "test-e2e": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
-    "test-e2e-watch": "cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e --watch",
+    "test-unit": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit",
+    "test-unit-watch": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit --watch",
+    "test-e2e": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e",
+    "test-e2e-watch": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js e2e --watch",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//----watch ": "note that the development config doesn't actually write out a file, that's why these are using production",
     "watch-renderer": "cross-env NODE_ENV=test node ./node_modules/webpack/bin/webpack --watch --info-verbosity verbose --config webpack.config.renderer.production.js",
