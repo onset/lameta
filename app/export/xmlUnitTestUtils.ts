@@ -179,3 +179,24 @@ expect.extend({
     return assertAttribute(xpath, "Type", "OpenVocabulary");
   }
 });
+expect.extend({
+  toHaveAttributeValue(xpath, attributeName, attributeValue) {
+    return assertAttribute(xpath, attributeName, attributeValue);
+  }
+});
+expect.extend({
+  toHaveText(xpath, text) {
+    if (value(xpath) === text) {
+      return {
+        message: () => "",
+        pass: true
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${xpath}, which is "${value(xpath)}", to equal "${text}".`,
+        pass: false
+      };
+    }
+  }
+});

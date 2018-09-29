@@ -25,34 +25,21 @@ describe("actor imdi export", () => {
     expect("Actor/Name").toMatch("Awi Heole");
     expect(count("Actor/Languages/Language")).toBe(3);
   });
-  // it("should write actor language id fields correctly", () => {
-  //   expect(
-  //     count(
-  //       "Actor/Languages/Language[Id[text()='ISO639-3:etr']]/MotherTongue[text()='true']"
-  //     )
-  //   ).toBe(1);
-
   it("should label languages correctly", () => {
+    expect("Actor/Languages/Language[1]").toHaveText("ISO639-3:etr");
     expect(
-      count(
-        "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
-      )
-    ).toBe(1);
+      "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
+    ).toHaveCount(1);
     expect(
-      count(
-        "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
-      )
-    ).toBe(1);
+      "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
+    ).toHaveCount(1);
 
+    /* "Mother Tongue" doesn't actually mean "mother's language. SM doesn't have a way to express MT at the moment.
     expect(
-      count(
         "Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
-      )
-    ).toBe(1);
+    ).toHaveCount(1);*/
     expect(
-      count(
-        "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
-      )
-    ).toBe(1);
+      "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
+    ).toHaveCount(1);
   });
 });

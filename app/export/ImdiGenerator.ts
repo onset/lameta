@@ -7,7 +7,6 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
 import Archiver = require("archiver");
-import { showInExplorer } from "../crossPlatformUtilities";
 import * as fs from "fs";
 
 export default class ImdiGenerator {
@@ -19,12 +18,19 @@ export default class ImdiGenerator {
   private folderInFocus: Folder;
 
   private project: Folder;
+  private mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
 
-  public static generateCorpus(project: Project): string {
+  public static generateCorpus(
+    project: Project,
+    omitNamespaces?: boolean
+  ): string {
     const generator = new ImdiGenerator(project, project);
+    if (omitNamespaces) {
+      generator.omitNamespaces = omitNamespaces;
+    }
     return generator.corpus();
   }
   public static generateSession(
@@ -63,11 +69,15 @@ export default class ImdiGenerator {
 
     this.group("Corpus");
     this.field("Name", "id");
+    // we don't have a separate title vs. name field
+    this.fieldLiteral("Name", project.displayName);
     this.fieldLiteral("Title", project.displayName);
+
     this.field("Description", "projectDescription");
 
     for (const session of project.sessions) {
-      this.field("CorpusLink", "id");
+      this.fieldLiteral("CorpusLink", session.filePrefix + ".imdi");
+      this.attribute("Name", "id", session);
     }
 
     return this.makeString();
@@ -103,15 +113,25 @@ export default class ImdiGenerator {
     if (lang && lang.length > 0) {
       this.group("Language");
 
-      //TODO: this should be ISO639-3:xyz
-      this.fieldLiteral("Id", "TODO:  ISO639-3:xyz");
+      const iso639 = "???"; //lookup(lang);
+      this.fieldLiteral("Id", "ISO639-3:" + iso639);
       //this.fieldLiteral("Id", lang);
       this.fieldLiteral("Name", lang);
+      this.attributeLiteral(
+        "Link",
+        "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
+      );
 
       this.fieldLiteral("PrimaryLanguage", isPrimaryTongue ? "true" : "false");
+      this.attributeLiteral("Type", "ClosedVocabulary");
+      this.attributeLiteral(
+        "Link",
+        "http://www.mpi.nl/IMDI/Schema/Boolean.xml"
+      );
 
-      // review: this is a to-literal definition of "mother tongue".
-      const motherTongue = (this
+      // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
+      // so I'm leaving it out entirely for now.
+      /*const motherTongue = (this
         .folderInFocus as Person).properties.getTextStringOrEmpty(
         "mothersLanguage"
       );
@@ -119,7 +139,7 @@ export default class ImdiGenerator {
         "MotherTongue",
         lang === motherTongue ? "true" : "false"
       );
-
+*/
       this.exitGroup();
     }
   }
@@ -203,7 +223,6 @@ export default class ImdiGenerator {
   private field(elementName: string, fieldName: string, folder?: Folder) {
     //if they specified a folder, use that, otherwise use the current default
     const f = folder ? folder : this.folderInFocus;
-
     const v = f.properties.getTextStringOrEmpty(fieldName);
     if (v && v.length > 0) {
       this.tail = this.tail.element(elementName, v);
@@ -215,8 +234,22 @@ export default class ImdiGenerator {
           : "OpenVocabulary";
         this.tail.attribute("Type", type);
       }
+      this.mostRecentElement = this.tail;
       this.tail = this.tail.up();
     }
+  }
+
+  private attribute(attributeName: string, fieldName: string, folder?: Folder) {
+    //if they specified a folder, use that, otherwise use the current default
+    const f = folder ? folder : this.folderInFocus;
+
+    const v = f.properties.getTextStringOrEmpty(fieldName);
+    if (v && v.length > 0) {
+      this.tail = this.mostRecentElement.attribute(attributeName, v);
+    }
+  }
+  private attributeLiteral(attributeName: string, value: string) {
+    this.mostRecentElement.attribute(attributeName, value);
   }
   private group(elementName: string) {
     this.tail = this.tail.element(elementName);
@@ -226,19 +259,24 @@ export default class ImdiGenerator {
   }
   private fieldLiteral(elementName: string, value: string) {
     console.assert(value);
-    this.tail = this.tail.element(elementName, value).up();
+    const newElement = this.tail.element(elementName, value);
+    this.mostRecentElement = newElement;
+    this.tail = newElement.up();
   }
   private startXmlRoot(): XmlBuilder.XMLElementOrXMLNode {
     this.tail = XmlBuilder.create("METATRANSCRIPT");
     if (!this.omitNamespaces) {
       this.tail.a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI");
+      this.tail.a("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      this.tail.a(
+        "xsi:schemaLocation",
+        "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd"
+      );
     }
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
       .a("Originator", "SayMore JS");
-    this.tail.comment(
-      "***** IMDI export is not implemented yet. This is just a bit of scaffolding *****"
-    );
+    this.tail.comment("***** IMDI export is not fully implemented yet.  *****");
     return this.tail;
   }
   private makeString(): string {
@@ -278,7 +316,7 @@ export default class ImdiGenerator {
     // pipe archive data to the file
     archive.pipe(output);
 
-    archive.append(ImdiGenerator.generateCorpus(project), {
+    archive.append(ImdiGenerator.generateCorpus(project, false), {
       name: `${project.displayName}.imdi`
     });
     project.sessions.forEach((session: Session) => {

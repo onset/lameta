@@ -33,13 +33,13 @@ export default class LanguageEdit extends React.Component<IProps> {
         />
         <ParentButton
           childLanguage={this.props.language}
-          parentLanguage={this.props.fatherLanguage}
+          parentLanguage={this.props.motherLanguage}
           selectedIcon={this.femaleSelected}
           notSelectedIcon={this.femaleNotSelected}
         />
         <ParentButton
           childLanguage={this.props.language}
-          parentLanguage={this.props.motherLanguage}
+          parentLanguage={this.props.fatherLanguage}
           selectedIcon={this.maleSelected}
           notSelectedIcon={this.maleNotSelected}
         />
