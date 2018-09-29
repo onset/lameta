@@ -8,6 +8,7 @@ import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
 import Archiver = require("archiver");
 import * as fs from "fs";
+import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -22,6 +23,21 @@ export default class ImdiGenerator {
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
+  private languageFinder: LanguageFinder;
+
+  // note, folder wil equal project if we're generating at the project level
+  // otherwise, folder will be a session or person
+  private constructor(
+    folder: Folder,
+    project: Project,
+    languageFinder?: LanguageFinder
+  ) {
+    this.folderInFocus = folder;
+    this.project = project;
+    this.languageFinder = languageFinder
+      ? languageFinder
+      : new LanguageFinder();
+  }
 
   public static generateCorpus(
     project: Project,
@@ -48,21 +64,17 @@ export default class ImdiGenerator {
   public static generateActor(
     person: Person,
     project: Project,
-    omitNamespaces?: boolean
+    omitNamespaces?: boolean,
+    languageFinder?: LanguageFinder
   ): string {
-    const generator = new ImdiGenerator(person, project);
+    const generator = new ImdiGenerator(person, project, languageFinder);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
     return generator.actor();
   }
 
-  // note, folder wil equal project if we're generating at the project level
-  // otherwise, folder will be a session or person
-  private constructor(folder: Folder, project: Project) {
-    this.folderInFocus = folder;
-    this.project = project;
-  }
+  // see https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_Catalogue_3.0.0.pdf for details
   private corpus(): string {
     const project = this.folderInFocus as Project;
     this.startXmlRoot().a("Type", "CORPUS");
@@ -113,8 +125,20 @@ export default class ImdiGenerator {
     if (lang && lang.length > 0) {
       this.group("Language");
 
-      const iso639 = "???"; //lookup(lang);
-      this.fieldLiteral("Id", "ISO639-3:" + iso639);
+      // Enhance: this matching algorithm is far from ideal.
+      // It won't match on alternate names
+      const matches = this.languageFinder.find(lang);
+      const code =
+        matches.length > 0 &&
+        // matches one of the names of the first choice exactly except for case and diacritics
+        matches[0].someNameMatches(lang)
+          ? matches[0].iso639_3
+          : "???";
+
+      // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
+      // a variety of codes to be used. However ELAR in particular apparently can only
+      // consume the ISO639-3 variety in 2018.
+      this.fieldLiteral("Id", "ISO639-3:" + code);
       //this.fieldLiteral("Id", lang);
       this.fieldLiteral("Name", lang);
       this.attributeLiteral(
@@ -144,6 +168,7 @@ export default class ImdiGenerator {
     }
   }
 
+  // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private session() {
     const session = this.folderInFocus as Project;
 
@@ -185,6 +210,7 @@ export default class ImdiGenerator {
     return this.makeString();
   }
 
+  // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private actor() {
     const person = this.folderInFocus as Person;
 
@@ -193,6 +219,16 @@ export default class ImdiGenerator {
       "***** IMDI export is not implemented yet. This is just a bit of scaffolding *****"
     );
     this.field("Name", "name");
+    this.field("FullName", "name");
+    this.field("Code", "code");
+    this.field("EthnicGroup", "ethnicGroup");
+    // Note: age is relative to this session's date.
+    // Note: for children in particular, IMDI need more than year. It wants years;months.days,
+    // but SayMore currently only has a "birth year".
+    this.field("Age", "???TODO???");
+    this.field("Birthdate", "birthYear");
+    this.field("Sex", "gender");
+    this.field("Education", "education");
     this.fieldLiteral("TODO", "More fields of person");
     this.group("Languages");
     this.addLanguage(

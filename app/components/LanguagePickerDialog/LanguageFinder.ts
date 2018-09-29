@@ -12,18 +12,29 @@ class Language {
     //most languages do not have a 2 letter code
     this.iso639_2 = jsonFromIndex.code.two;
   }
+  public someNameMatches(name: string): boolean {
+    return this.allNames().some(
+      n =>
+        this.name.localeCompare(name, undefined, {
+          sensitivity: "base"
+        }) === 0
+    );
+  }
+  public allNames(): string[] {
+    return [this.name]; // don't have altnames yet
+  }
 }
 
 export default class LanguageFinder {
   private langs = new Array<Language>();
   private trie: TrieSearch;
 
-  constructor(indexForTesting: any = undefined) {
+  constructor(indexForTesting?) {
     // currently this uses a trie, which is overkill for this number of items,
     // but I'm using it because I do need prefix matching and this library does that.
 
     // Enhance this TrieSearch doesn't provide a way to include our alternative language name arrays
-    // Ehance allow for matching even if close (e.g. levenshtein distance)
+    // Enhance allow for matching even if close (e.g. levenshtein distance)
     // Configure the trie to match what is in the index json
     this.trie = new TrieSearch("name", ["code", "two"], ["code", "three"]);
 

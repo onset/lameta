@@ -483,7 +483,9 @@
     },
     {
       "key": "gender",
-      "choices": ["Male", "Female"]
+      "choices": ["Male", "Female"],
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
+      "imdiIsClosedVocabulary": true
     },
     {
       "key": "howToContact"
