@@ -70,6 +70,19 @@ it("should contain Content", () => {
   expect(count("METATRANSCRIPT/Session/MDGroup/Content")).toBe(1);
   expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("narrative");
 });
+it("should contain Actors", () => {
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor").toHaveCount(2);
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/Name").toMatch(
+    "Awi Heole"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/BirthDate").toMatch(
+    "1972"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Name").toMatch(
+    "Ilawi Amosa"
+  );
+  // the rest of the actor checks are done in actorImdi.spec.ts
+});
 it("should contain MediaFiles", () => {
   expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
   expect(

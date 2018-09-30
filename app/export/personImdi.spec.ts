@@ -51,27 +51,33 @@ beforeEach(() => {});
 
 describe("actor imdi export", () => {
   it("should contain Actor", () => {
-    expect("Actor/Name").toMatch("Awi Heole");
-    expect(count("Actor/Languages/Language")).toBe(3);
+    expect("IMDIFragment/Actor/Name").toMatch("Awi Heole");
+    expect(count("IMDIFragment/Actor/Languages/Language")).toBe(3);
   });
   it("should label languages correctly", () => {
-    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");
-    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:tpi");
-    expect("Actor/Languages/Language[3]/Id").toHaveText("ISO639-3:hui");
+    expect("IMDIFragment/Actor/Languages/Language[1]/Id").toHaveText(
+      "ISO639-3:etr"
+    );
+    expect("IMDIFragment/Actor/Languages/Language[2]/Id").toHaveText(
+      "ISO639-3:tpi"
+    );
+    expect("IMDIFragment/Actor/Languages/Language[3]/Id").toHaveText(
+      "ISO639-3:hui"
+    );
 
     expect(
-      "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
+      "IMDIFragment/Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
     ).toHaveCount(1);
 
     /* "Mother Tongue" doesn't actually mean "mother's language". SM doesn't have a way to express MT at the moment.
     expect(
-      "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
+      "IMDIFragment/Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
     ).toHaveCount(1);
     expect(
-        "Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
+        "IMDIFragment/Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
     ).toHaveCount(1);*/
     expect(
-      "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
+      "IMDIFragment/Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
   });
 });

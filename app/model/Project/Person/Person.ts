@@ -6,6 +6,12 @@ import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 
 export class Person extends Folder {
+  public nameMatches(name: string): boolean {
+    return (
+      name.toLowerCase() ===
+      this.properties.getTextStringOrEmpty("name").toLowerCase()
+    );
+  }
   public get metadataFileExtensionWithDot(): string {
     return ".person";
   }

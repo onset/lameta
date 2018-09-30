@@ -18,7 +18,7 @@ export default class ImdiGenerator {
   // will include some data from the parent project (which is also a folder)
   private folderInFocus: Folder;
 
-  private project: Folder;
+  private project: Project;
   private mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
 
   //We enable this when we want to keep unit test xpaths simple
@@ -71,7 +71,9 @@ export default class ImdiGenerator {
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
-    return generator.actor();
+    generator.tail = XmlBuilder.create("IMDIFragment", { headless: true });
+    generator.actor(person);
+    return generator.makeString();
   }
 
   // see https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_Catalogue_3.0.0.pdf for details
@@ -109,8 +111,24 @@ export default class ImdiGenerator {
   }
   private addActorsOfSession() {
     this.group("Actors");
-    this.fieldLiteral("TODO", "Wire people to sessions and emit actors");
-    this.exitGroup();
+    const session = this.folderInFocus as Session;
+    session.properties
+      .getTextStringOrEmpty("participants")
+      .split(";")
+      .forEach(name => {
+        const trimmedName = name.trim();
+        const person = this.project.findPerson(trimmedName);
+        if (person) {
+          this.actor(person);
+        } else {
+          this.group("Actor");
+          this.tail.comment(
+            `Could not find a person with name "${trimmedName}"`
+          );
+          this.exitGroup(); //</Actor>
+        }
+      });
+    this.exitGroup(); //</Actors>
   }
   private addContentElement() {
     this.group("Content");
@@ -170,8 +188,6 @@ export default class ImdiGenerator {
 
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private session() {
-    const session = this.folderInFocus as Project;
-
     this.startXmlRoot();
     this.group("Session");
     this.field("Name", "id");
@@ -211,24 +227,22 @@ export default class ImdiGenerator {
   }
 
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
-  private actor() {
-    const person = this.folderInFocus as Person;
-
-    this.tail = XmlBuilder.create("Actor", { headless: true });
+  private actor(person: Person) {
+    this.group("Actor");
     this.tail.comment(
-      "***** IMDI export is not implemented yet. This is just a bit of scaffolding *****"
+      "***** IMDI export is not complete yet in this version of SayMore.  *****"
     );
-    this.field("Name", "name");
-    this.field("FullName", "name");
-    this.field("Code", "code");
-    this.field("EthnicGroup", "ethnicGroup");
+    this.field("Name", "name", person);
+    this.field("FullName", "name", person);
+    this.field("Code", "code", person);
+    this.field("EthnicGroup", "ethnicGroup", person);
     // Note: age is relative to this session's date.
     // Note: for children in particular, IMDI need more than year. It wants years;months.days,
     // but SayMore currently only has a "birth year".
-    this.field("Age", "???TODO???");
-    this.field("Birthdate", "birthYear");
-    this.field("Sex", "gender");
-    this.field("Education", "education");
+    this.field("Age", "???TODO???", person);
+    this.field("BirthDate", "birthYear", person);
+    this.field("Sex", "gender", person);
+    this.field("Education", "education", person);
     this.fieldLiteral("TODO", "More fields of person");
     this.group("Languages");
     this.addLanguage(
@@ -239,9 +253,9 @@ export default class ImdiGenerator {
     this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage1"));
     this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage2"));
     this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage3"));
-    this.exitGroup();
+    this.exitGroup(); // </Languages>
 
-    return this.makeString();
+    this.exitGroup(); //</Actor>
   }
 
   private static isMediaFile(path: string): boolean {
