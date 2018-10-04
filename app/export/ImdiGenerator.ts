@@ -100,14 +100,27 @@ export default class ImdiGenerator {
     this.group("Location");
     this.field("Continent", "continent", this.project);
     this.field("Country", "country", this.project);
+    //Region - We don't currently have this field.
+    this.field("Address", "location", this.project);
     this.exitGroup();
   }
 
   private addProjectInfo() {
     this.group("Project");
-    this.field("Title", "title", this.project);
-    this.field("Contact", "contactPerson", this.project);
-    this.exitGroup();
+    //// we don't currently have a different name vs. title
+    this.field("Name", "title", this.project); //A short name or abbreviation of the project.
+    this.field("Title", "title", this.project); // The full title of the project.
+
+    // <ID/>   We don't currently have an ID field for projects.
+    this.group("Contact");
+    this.field("Name", "contactPerson", this.project);
+    //<Address> We don't currently have this field.
+    //<Email> We don't currently have this field.
+    //<Organization> We don't currently have this field.
+    this.exitGroup(); // Contact
+    //"An elaborate description of the scope and goals of the project."
+    this.field("Description", "projectDescription", this.project);
+    this.exitGroup(); // Project
   }
   private addActorsOfSession() {
     this.group("Actors");
@@ -196,12 +209,34 @@ export default class ImdiGenerator {
     this.field("Description", "description");
 
     this.group("MDGroup");
-    this.addProjectLocation();
-    this.addProjectInfo();
-    this.addContentElement();
-    this.addActorsOfSession();
-    this.exitGroup();
+    /**/ this.sessionLocation();
+    /**/ this.addProjectInfo();
+    /**/ this.addCustomKeys();
+    /**/ this.addContentElement();
+    /**/ this.addActorsOfSession();
+    this.exitGroup(); // MDGroup
 
+    this.sessionResourcesGroup();
+
+    this.exitGroup(); //Session
+    return this.makeString();
+  }
+  // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
+  private addCustomKeys() {
+    //TODO
+    // QUESTION: the schema actually says <xsd:documentation>Project keys</xsd:documentation>. So these can't be session keys?
+    // for now I'm going to assume that was a mistake in the schema.
+  }
+  private sessionLocation() {
+    this.group("Location");
+    this.field("Continent", "locationContinent");
+    this.field("Country", "locationCountry");
+    this.field("Region", "locationRegion");
+    this.field("Address", "locationAddress");
+    this.exitGroup();
+  }
+
+  private sessionResourcesGroup() {
     this.group("Resources");
     this.folderInFocus.files.forEach((f: File) => {
       if (ImdiGenerator.isMediaFile(f.describedFilePath)) {
@@ -211,7 +246,6 @@ export default class ImdiGenerator {
         this.exitGroup();
       }
     });
-
     this.group("WrittenResource");
     if (this.folderInFocus.metadataFile != null) {
       this.fieldLiteral(
@@ -220,10 +254,7 @@ export default class ImdiGenerator {
       );
     }
     this.fieldLiteral("TODO", "More fields of written resource");
-    this.exitGroup();
-
-    this.exitGroup();
-    return this.makeString();
+    this.exitGroup(); // Resources
   }
 
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details

@@ -384,6 +384,8 @@
     {
       "key": "locationCountry",
       "tagInSayMoreClassic": "Location_Country",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
+      "imdiIsClosedVocabulary": false,
       "additional": "true"
     },
     {
@@ -394,6 +396,8 @@
     {
       "key": "locationContinent",
       "tagInSayMoreClassic": "Location_Continent",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
+      "imdiIsClosedVocabulary": true,
       "additional": "true"
     },
     {

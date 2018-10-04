@@ -40,3 +40,5 @@ dist
 .idea
 
 \.vs/
+
+*.code-workspace
