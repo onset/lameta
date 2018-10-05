@@ -39,10 +39,11 @@ export default class ImdiView extends React.Component<IProps, IState> {
     } else if (this.props.target instanceof Project) {
       xml = ImdiGenerator.generateCorpus(this.props.target as Project);
     } else if (this.props.target instanceof Person) {
-      xml = ImdiGenerator.generateActor(
-        this.props.target as Person,
+      const generator = new ImdiGenerator(
+        this.props.target,
         this.props.project
       );
+      xml = generator.actor(this.props.target as Person) as string;
     } else if (this.props.target instanceof File) {
       const generator = new ImdiGenerator(
         this.props.project,

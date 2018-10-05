@@ -38,46 +38,42 @@ beforeAll(() => {
     }
   ]);
 
+  const generator = new ImdiGenerator(person, project, subsetLanguageFinder);
   setResultXml(
-    ImdiGenerator.generateActor(
-      person,
-      project,
-      true /*omit namespace*/,
-      subsetLanguageFinder
-    )
+    generator.actor(person) as string
+    // ImdiGenerator.generateActor(
+    //   person,
+    //   project,
+    //   true /*omit namespace*/,
+    //   subsetLanguageFinder
+    // )
   );
 });
 beforeEach(() => {});
 
 describe("actor imdi export", () => {
   it("should contain Actor", () => {
-    expect("IMDIFragment/Actor/Name").toMatch("Awi Heole");
-    expect(count("IMDIFragment/Actor/Languages/Language")).toBe(3);
+    expect("Actor/Name").toMatch("Awi Heole");
+    expect(count("Actor/Languages/Language")).toBe(3);
   });
   it("should label languages correctly", () => {
-    expect("IMDIFragment/Actor/Languages/Language[1]/Id").toHaveText(
-      "ISO639-3:etr"
-    );
-    expect("IMDIFragment/Actor/Languages/Language[2]/Id").toHaveText(
-      "ISO639-3:tpi"
-    );
-    expect("IMDIFragment/Actor/Languages/Language[3]/Id").toHaveText(
-      "ISO639-3:hui"
-    );
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");
+    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:tpi");
+    expect("Actor/Languages/Language[3]/Id").toHaveText("ISO639-3:hui");
 
     expect(
-      "IMDIFragment/Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
+      "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
     ).toHaveCount(1);
 
     /* "Mother Tongue" doesn't actually mean "mother's language". SM doesn't have a way to express MT at the moment.
     expect(
-      "IMDIFragment/Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
+      "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
     ).toHaveCount(1);
     expect(
-        "IMDIFragment/Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
+        "Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
     ).toHaveCount(1);*/
     expect(
-      "IMDIFragment/Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
+      "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
   });
 });

@@ -61,21 +61,6 @@ export default class ImdiGenerator {
     return generator.session();
   }
 
-  public static generateActor(
-    person: Person,
-    project: Project,
-    omitNamespaces?: boolean,
-    languageFinder?: LanguageFinder
-  ): string {
-    const generator = new ImdiGenerator(person, project, languageFinder);
-    if (omitNamespaces) {
-      generator.omitNamespaces = omitNamespaces;
-    }
-    generator.tail = XmlBuilder.create("IMDIFragment", { headless: true });
-    generator.actor(person);
-    return generator.makeString();
-  }
-
   // see https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_Catalogue_3.0.0.pdf for details
   private corpus(): string {
     const project = this.folderInFocus as Project;
@@ -232,8 +217,18 @@ export default class ImdiGenerator {
   }
   private sessionLocation() {
     this.startGroup("Location");
-    this.field("Continent", "locationContinent");
-    this.field("Country", "locationCountry");
+    this.field(
+      "Continent",
+      "locationContinent",
+      this.folderInFocus,
+      /* project fallback */ "continent"
+    );
+    this.field(
+      "Country",
+      "locationCountry",
+      this.folderInFocus,
+      /* project fallback */ "country"
+    );
     this.field("Region", "locationRegion");
     this.field("Address", "locationAddress");
     this.exitGroup();
@@ -312,45 +307,63 @@ export default class ImdiGenerator {
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
-  private actor(person: Person) {
-    this.startGroup("Actor");
-    this.tail.comment(
-      "***** IMDI export is not complete yet in this version of SayMore.  *****"
-    );
-    this.field("Name", "name", person);
-    this.field("FullName", "name", person);
-    this.field("Code", "code", person);
-    this.field("EthnicGroup", "ethnicGroup", person);
-    // Note: age is relative to this session's date.
-    // Note: for children in particular, IMDI need more than year. It wants years;months.days,
-    // but SayMore currently only has a "birth year".
-    this.field("Age", "???TODO???", person);
-    this.field("BirthDate", "birthYear", person);
-    this.field("Sex", "gender", person);
-    this.field("Education", "education", person);
-    this.fieldLiteral("TODO", "More fields of person");
-    this.startGroup("Languages");
-    this.addLanguage(
-      person.properties.getTextStringOrEmpty("primaryLanguage"),
-      true
-    );
-    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage0"));
-    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage1"));
-    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage2"));
-    this.addLanguage(person.properties.getTextStringOrEmpty("otherLanguage3"));
-    this.exitGroup(); // </Languages>
-
-    this.exitGroup(); //</Actor>
+  public actor(person: Person): string | null {
+    return this.outputGroup("Actor", () => {
+      this.tail.comment(
+        "***** IMDI export is not complete yet in this version of SayMore.  *****"
+      );
+      this.field("Name", "name", person);
+      this.field("FullName", "name", person);
+      this.field("Code", "code", person);
+      this.field("EthnicGroup", "ethnicGroup", person);
+      // Note: age is relative to this session's date.
+      // Note: for children in particular, IMDI need more than year. It wants years;months.days,
+      // but SayMore currently only has a "birth year".
+      this.field("Age", "???TODO???", person);
+      this.field("BirthDate", "birthYear", person);
+      this.field("Sex", "gender", person);
+      this.field("Education", "education", person);
+      this.fieldLiteral("TODO", "More fields of person");
+      this.startGroup("Languages");
+      this.addLanguage(
+        person.properties.getTextStringOrEmpty("primaryLanguage"),
+        true
+      );
+      this.addLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage0")
+      );
+      this.addLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage1")
+      );
+      this.addLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage2")
+      );
+      this.addLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage3")
+      );
+      this.exitGroup(); // </Languages>
+    });
   }
 
   //-----------------------------------------------------
   // Utility methods to add various things to the xml
   //-----------------------------------------------------
 
-  private field(elementName: string, fieldName: string, folder?: Folder) {
+  private field(
+    elementName: string,
+    fieldName: string,
+    folder?: Folder,
+    projectFallbackFieldName?: string
+  ) {
     //if they specified a folder, use that, otherwise use the current default
     const f = folder ? folder : this.folderInFocus;
-    const v = f.properties.getTextStringOrEmpty(fieldName);
+    let v = f.properties.getTextStringOrEmpty(fieldName);
+    if (projectFallbackFieldName && (!v || v.length === 0)) {
+      v = this.project.properties.getTextStringOrEmpty(
+        projectFallbackFieldName
+      );
+    }
+
     if (v && v.length > 0) {
       this.tail = this.tail.element(elementName, v);
       const definition = f.properties.getFieldDefinition(fieldName);
@@ -463,12 +476,12 @@ export default class ImdiGenerator {
         name: `${session.filePrefix}.imdi`
       });
     });
-    project.persons.forEach((person: Person) => {
-      const imdi = ImdiGenerator.generateActor(person, project);
-      archive.append(imdi, {
-        name: `${person.filePrefix}.imdi`
-      });
-    });
+    // project.persons.forEach((person: Person) => {
+    //   const imdi = this.actor(person, project);
+    //   archive.append(imdi, {
+    //     name: `${person.filePrefix}.imdi`
+    //   });
+    // });
 
     archive.finalize();
   }
