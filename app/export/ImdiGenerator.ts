@@ -267,7 +267,7 @@ export default class ImdiGenerator {
 
   public resourceFile(f: File): string | null {
     const isMediaFile =
-      [".mp3", ".mp4", ".jpg", ".tiff"].indexOf(
+      [".mp3", ".mp4", ".jpg", ".png", ".tiff"].indexOf(
         Path.extname(f.describedFilePath).toLowerCase()
       ) > -1;
     if (isMediaFile) {
@@ -276,12 +276,31 @@ export default class ImdiGenerator {
       return this.writtenResource(f);
     }
   }
+  private getImdiMediaFileType(saymoreType: string) {
+    // build in ones are audio, video, image, document, drawing,text
+    // this is an "open vocabulary", so we can have others
+    switch (saymoreType) {
+      case "Audio":
+        return "audio";
+      case "Video":
+        return "video";
+      case "ELAN":
+        return "elan"; // not in predefined list
+      case "Image":
+        return "image";
+      case "Text":
+        return "text";
+      default:
+        return "document";
+    }
+  }
   public mediaFile(f: File): string | null {
     return this.outputGroup("MediaFile", () => {
       this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+
       this.fieldLiteral(
         "Type",
-        "TODO",
+        this.getImdiMediaFileType(f.type),
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
@@ -291,19 +310,26 @@ export default class ImdiGenerator {
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
+      this.field("Size", "size", f);
       this.addCustomKeys();
-      this.fieldLiteral("TODO", "More fields of resource");
     });
   }
   public writtenResource(f: File): string | null {
     return this.outputGroup("WrittenResource", () => {
-      if (this.folderInFocus.metadataFile != null) {
-        this.fieldLiteral(
-          "ResourceLink",
-          Path.basename(this.folderInFocus.metadataFile.metadataFilePath)
-        );
-      }
-      this.fieldLiteral("TODO", "More fields of written resource");
+      this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+
+      // WrittenResource types
+      // (each of these has subcategories)
+      // Unknown, Unspecified, Primary Text, Annotation (sub category has things like gesture, phonetic, phonology, morphology, syntax, etc)
+      // Lexical Analysis, Ethnography, Study
+      this.fieldLiteral(
+        "Type",
+        // the only type we can deduce is that ELAN is for annotation
+        f.type === "ELAN" ? "Annotation" : "Unspecified",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
+      );
+      this.field("Size", "size", f);
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
@@ -352,11 +378,11 @@ export default class ImdiGenerator {
   private field(
     elementName: string,
     fieldName: string,
-    folder?: Folder,
+    target?: Folder | File,
     projectFallbackFieldName?: string
   ) {
     //if they specified a folder, use that, otherwise use the current default
-    const f = folder ? folder : this.folderInFocus;
+    const f = target ? target : this.folderInFocus;
     let v = f.properties.getTextStringOrEmpty(fieldName);
     if (projectFallbackFieldName && (!v || v.length === 0)) {
       v = this.project.properties.getTextStringOrEmpty(
