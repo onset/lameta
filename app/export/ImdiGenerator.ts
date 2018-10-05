@@ -9,6 +9,7 @@ import { Person } from "../model/Project/Person/Person";
 import Archiver = require("archiver");
 import * as fs from "fs";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+import { Set } from "typescript-collections";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -24,6 +25,8 @@ export default class ImdiGenerator {
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
   private languageFinder: LanguageFinder;
+
+  private keysThatHaveBeenOutput = new Set<string>();
 
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
@@ -131,10 +134,19 @@ export default class ImdiGenerator {
   private addContentElement() {
     this.group("Content", () => {
       this.field("Genre", "genre");
+      this.field("SubGenre", "subgenre");
       this.element("TODO", "More fields of session");
+      this.group("CommunicationContext", () => {
+        this.field("Involvement", "involvement");
+        this.field("PlanningType", "planningType");
+        this.field("SocialContext", "socialContext");
+        // SayMore currently doesn't have Interactivity, EventStructure, Channel
+      });
       this.group("Languages", () => {
         this.element("TODO", "Emit Languages of the session");
       });
+      this.addCustomKeys(this.folderInFocus);
+      this.field("Description", "description");
     });
   }
   private addLanguage(lang: string, isPrimaryTongue?: boolean) {
@@ -196,7 +208,6 @@ export default class ImdiGenerator {
     this.startGroup("MDGroup");
     /**/ this.sessionLocation();
     /**/ this.addProjectInfo();
-    /**/ this.addCustomKeys();
     /**/ this.addContentElement();
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
@@ -208,12 +219,32 @@ export default class ImdiGenerator {
   }
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
   // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
-  private addCustomKeys() {
-    //TODO: some of the "More fields" will go here
-    //TODO: all of the "custom fields" will go here
-    //TODO: some (all?) of "properties" will go here. E.g., media recording equipment.
-    // QUESTION: the schema actually says <xsd:documentation>Project keys</xsd:documentation>. So these can't be session keys?
-    // for now I'm going to assume that was a mistake in the schema.
+  private addCustomKeys(target: File | Folder) {
+    const blacklist = ["modifiedDate", "type", "filename", "size"];
+    this.group("Keys", () => {
+      target.properties.keys().forEach(key => {
+        // only output things that don't have an explicit home in IMDI.
+        // TODO: this is a good step, but it does output a large number of things that
+        // we might not want to output. E.g. for  session: filename, size, modifiedDate, type("Session"), contributions
+        // That means either we list a black list here, or on the field definition. And once we get into storing things
+        // in the definition, maybe we might as well just have the definition tell us if it should go in Keys? E.g.
+        // all custom fields would say yes, plus those in the fields.json set that we don't have a home for. The 3rd set
+        // is things that the code adds, like type, size, modified date, etc. For now, using a blacklist here.
+
+        if (
+          !this.keysThatHaveBeenOutput.contains(target.type + "." + key) &&
+          blacklist.indexOf(key) < 0
+        ) {
+          const v = target.properties.getTextStringOrEmpty(key);
+          if (v && v.length > 0) {
+            this.tail = this.tail.element("Key", v);
+            this.mostRecentElement = this.tail;
+            this.attributeLiteral("Name", key);
+            this.tail = this.tail.up();
+          }
+        }
+      });
+    });
   }
   private sessionLocation() {
     this.startGroup("Location");
@@ -311,7 +342,7 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
       this.field("Size", "size", f);
-      this.addCustomKeys();
+      this.addCustomKeys(f);
     });
   }
   public writtenResource(f: File): string | null {
@@ -330,6 +361,7 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
       );
       this.field("Size", "size", f);
+      this.addCustomKeys(f);
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
@@ -388,6 +420,8 @@ export default class ImdiGenerator {
       v = this.project.properties.getTextStringOrEmpty(
         projectFallbackFieldName
       );
+    } else {
+      this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
     }
 
     if (v && v.length > 0) {
