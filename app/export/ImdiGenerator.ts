@@ -69,13 +69,13 @@ export default class ImdiGenerator {
     this.startGroup("Corpus");
     this.field("Name", "id");
     // we don't have a separate title vs. name field
-    this.fieldLiteral("Name", project.displayName);
-    this.fieldLiteral("Title", project.displayName);
+    this.element("Name", project.displayName);
+    this.element("Title", project.displayName);
 
     this.field("Description", "projectDescription");
 
     for (const session of project.sessions) {
-      this.fieldLiteral("CorpusLink", session.filePrefix + ".imdi");
+      this.element("CorpusLink", session.filePrefix + ".imdi");
       this.attribute("Name", "id", session);
     }
 
@@ -129,13 +129,13 @@ export default class ImdiGenerator {
     this.exitGroup(); //</Actors>
   }
   private addContentElement() {
-    this.startGroup("Content");
-    this.field("Genre", "genre");
-    this.fieldLiteral("TODO", "More fields of session");
-    this.startGroup("Languages");
-    this.fieldLiteral("TODO", "Emit Languages of the session");
-    this.exitGroup();
-    this.exitGroup();
+    this.group("Content", () => {
+      this.field("Genre", "genre");
+      this.element("TODO", "More fields of session");
+      this.group("Languages", () => {
+        this.element("TODO", "Emit Languages of the session");
+      });
+    });
   }
   private addLanguage(lang: string, isPrimaryTongue?: boolean) {
     if (lang && lang.length > 0) {
@@ -154,15 +154,15 @@ export default class ImdiGenerator {
       // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
       // a variety of codes to be used. However ELAR in particular apparently can only
       // consume the ISO639-3 variety in 2018.
-      this.fieldLiteral("Id", "ISO639-3:" + code);
+      this.element("Id", "ISO639-3:" + code);
       //this.fieldLiteral("Id", lang);
-      this.fieldLiteral("Name", lang);
+      this.element("Name", lang);
       this.attributeLiteral(
         "Link",
         "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
       );
 
-      this.fieldLiteral("PrimaryLanguage", isPrimaryTongue ? "true" : "false");
+      this.element("PrimaryLanguage", isPrimaryTongue ? "true" : "false");
       this.attributeLiteral("Type", "ClosedVocabulary");
       this.attributeLiteral(
         "Link",
@@ -248,7 +248,7 @@ export default class ImdiGenerator {
   // either just start a new xml group if they are being called as part of a
   // larger xml document creation, or start a whole new document, if they
   // are being called in isolation.
-  private outputGroup(
+  private group(
     elementName: string,
     addGroupContents: () => void
   ): string | null {
@@ -295,16 +295,16 @@ export default class ImdiGenerator {
     }
   }
   public mediaFile(f: File): string | null {
-    return this.outputGroup("MediaFile", () => {
-      this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+    return this.group("MediaFile", () => {
+      this.element("ResourceLink", Path.basename(f.describedFilePath));
 
-      this.fieldLiteral(
+      this.element(
         "Type",
         this.getImdiMediaFileType(f.type),
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
-      this.fieldLiteral(
+      this.element(
         "Format",
         "TODO",
         false,
@@ -315,14 +315,14 @@ export default class ImdiGenerator {
     });
   }
   public writtenResource(f: File): string | null {
-    return this.outputGroup("WrittenResource", () => {
-      this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+    return this.group("WrittenResource", () => {
+      this.element("ResourceLink", Path.basename(f.describedFilePath));
 
       // WrittenResource types
       // (each of these has subcategories)
       // Unknown, Unspecified, Primary Text, Annotation (sub category has things like gesture, phonetic, phonology, morphology, syntax, etc)
       // Lexical Analysis, Ethnography, Study
-      this.fieldLiteral(
+      this.element(
         "Type",
         // the only type we can deduce is that ELAN is for annotation
         f.type === "ELAN" ? "Annotation" : "Unspecified",
@@ -334,7 +334,7 @@ export default class ImdiGenerator {
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(person: Person): string | null {
-    return this.outputGroup("Actor", () => {
+    return this.group("Actor", () => {
       this.tail.comment(
         "***** IMDI export is not complete yet in this version of SayMore.  *****"
       );
@@ -349,7 +349,7 @@ export default class ImdiGenerator {
       this.field("BirthDate", "birthYear", person);
       this.field("Sex", "gender", person);
       this.field("Education", "education", person);
-      this.fieldLiteral("TODO", "More fields of person");
+      this.element("TODO", "More fields of person");
       this.startGroup("Languages");
       this.addLanguage(
         person.properties.getTextStringOrEmpty("primaryLanguage"),
@@ -423,7 +423,7 @@ export default class ImdiGenerator {
   private exitGroup() {
     this.tail = this.tail.up();
   }
-  private fieldLiteral(
+  private element(
     elementName: string,
     value: string,
     isClosedVocabulary?,
