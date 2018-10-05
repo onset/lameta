@@ -4,6 +4,7 @@ import ImdiGenerator from "../export/ImdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
+import { File } from "../model/file/File";
 import "./ImdiView.scss";
 
 //const HtmlTree = require("react-htmltree");
@@ -12,7 +13,7 @@ export interface IProps {
   // including the function prevented the react hot loader from giving us new xml
   // when the code changed
   //contentGenerator: (folder: Folder) => string;
-  folder: Folder;
+  target: any;
 
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
@@ -29,18 +30,25 @@ export default class ImdiView extends React.Component<IProps, IState> {
 
   public render() {
     let xml = "";
-    if (this.props.folder instanceof Session) {
+
+    if (this.props.target instanceof Session) {
       xml = ImdiGenerator.generateSession(
-        this.props.folder as Session,
+        this.props.target as Session,
         this.props.project
       );
-    } else if (this.props.folder instanceof Project) {
-      xml = ImdiGenerator.generateCorpus(this.props.folder as Project);
-    } else {
+    } else if (this.props.target instanceof Project) {
+      xml = ImdiGenerator.generateCorpus(this.props.target as Project);
+    } else if (this.props.target instanceof Person) {
       xml = ImdiGenerator.generateActor(
-        this.props.folder as Person,
+        this.props.target as Person,
         this.props.project
       );
+    } else if (this.props.target instanceof File) {
+      const generator = new ImdiGenerator(
+        this.props.project,
+        this.props.project
+      );
+      xml = generator.resourceFile(this.props.target as File) as string;
     }
 
     return (

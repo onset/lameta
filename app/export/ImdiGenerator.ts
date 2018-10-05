@@ -27,7 +27,7 @@ export default class ImdiGenerator {
 
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
-  private constructor(
+  public constructor(
     folder: Folder,
     project: Project,
     languageFinder?: LanguageFinder
@@ -81,7 +81,7 @@ export default class ImdiGenerator {
     const project = this.folderInFocus as Project;
     this.startXmlRoot().a("Type", "CORPUS");
 
-    this.group("Corpus");
+    this.startGroup("Corpus");
     this.field("Name", "id");
     // we don't have a separate title vs. name field
     this.fieldLiteral("Name", project.displayName);
@@ -97,7 +97,7 @@ export default class ImdiGenerator {
     return this.makeString();
   }
   private addProjectLocation() {
-    this.group("Location");
+    this.startGroup("Location");
     this.field("Continent", "continent", this.project);
     this.field("Country", "country", this.project);
     //Region - We don't currently have this field.
@@ -106,13 +106,13 @@ export default class ImdiGenerator {
   }
 
   private addProjectInfo() {
-    this.group("Project");
+    this.startGroup("Project");
     //// we don't currently have a different name vs. title
     this.field("Name", "title", this.project); //A short name or abbreviation of the project.
     this.field("Title", "title", this.project); // The full title of the project.
 
     // <ID/>   We don't currently have an ID field for projects.
-    this.group("Contact");
+    this.startGroup("Contact");
     this.field("Name", "contactPerson", this.project);
     //<Address> We don't currently have this field.
     //<Email> We don't currently have this field.
@@ -123,7 +123,7 @@ export default class ImdiGenerator {
     this.exitGroup(); // Project
   }
   private addActorsOfSession() {
-    this.group("Actors");
+    this.startGroup("Actors");
     const session = this.folderInFocus as Session;
     session.properties
       .getTextStringOrEmpty("participants")
@@ -134,7 +134,7 @@ export default class ImdiGenerator {
         if (person) {
           this.actor(person);
         } else {
-          this.group("Actor");
+          this.startGroup("Actor");
           this.tail.comment(
             `Could not find a person with name "${trimmedName}"`
           );
@@ -144,17 +144,17 @@ export default class ImdiGenerator {
     this.exitGroup(); //</Actors>
   }
   private addContentElement() {
-    this.group("Content");
+    this.startGroup("Content");
     this.field("Genre", "genre");
     this.fieldLiteral("TODO", "More fields of session");
-    this.group("Languages");
+    this.startGroup("Languages");
     this.fieldLiteral("TODO", "Emit Languages of the session");
     this.exitGroup();
     this.exitGroup();
   }
   private addLanguage(lang: string, isPrimaryTongue?: boolean) {
     if (lang && lang.length > 0) {
-      this.group("Language");
+      this.startGroup("Language");
 
       // Enhance: this matching algorithm is far from ideal.
       // It won't match on alternate names
@@ -202,13 +202,13 @@ export default class ImdiGenerator {
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private session() {
     this.startXmlRoot();
-    this.group("Session");
+    this.startGroup("Session");
     this.field("Name", "id");
     this.field("Date", "date");
     this.field("Title", "title");
     this.field("Description", "description");
 
-    this.group("MDGroup");
+    this.startGroup("MDGroup");
     /**/ this.sessionLocation();
     /**/ this.addProjectInfo();
     /**/ this.addCustomKeys();
@@ -222,13 +222,16 @@ export default class ImdiGenerator {
     return this.makeString();
   }
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
+  // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
   private addCustomKeys() {
-    //TODO
+    //TODO: some of the "More fields" will go here
+    //TODO: all of the "custom fields" will go here
+    //TODO: some (all?) of "properties" will go here. E.g., media recording equipment.
     // QUESTION: the schema actually says <xsd:documentation>Project keys</xsd:documentation>. So these can't be session keys?
     // for now I'm going to assume that was a mistake in the schema.
   }
   private sessionLocation() {
-    this.group("Location");
+    this.startGroup("Location");
     this.field("Continent", "locationContinent");
     this.field("Country", "locationCountry");
     this.field("Region", "locationRegion");
@@ -237,29 +240,80 @@ export default class ImdiGenerator {
   }
 
   private sessionResourcesGroup() {
-    this.group("Resources");
+    this.startGroup("Resources");
     this.folderInFocus.files.forEach((f: File) => {
-      if (ImdiGenerator.isMediaFile(f.describedFilePath)) {
-        this.group("MediaFile");
-        this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
-        this.fieldLiteral("TODO", "More fields of resource");
-        this.exitGroup();
-      }
+      this.resourceFile(f);
     });
-    this.group("WrittenResource");
-    if (this.folderInFocus.metadataFile != null) {
-      this.fieldLiteral(
-        "ResourceLink",
-        Path.basename(this.folderInFocus.metadataFile.metadataFilePath)
-      );
-    }
-    this.fieldLiteral("TODO", "More fields of written resource");
     this.exitGroup(); // Resources
   }
 
+  // when testing/developing, it has proved helpful to generate small portions
+  // of the overall imdi, e.g. to show the imdi that will be generated for a
+  // single media file. Methods for various elements can use this method to
+  // either just start a new xml group if they are being called as part of a
+  // larger xml document creation, or start a whole new document, if they
+  // are being called in isolation.
+  private outputGroup(
+    elementName: string,
+    addGroupContents: () => void
+  ): string | null {
+    const isStandalone = !this.tail;
+    if (isStandalone) {
+      this.tail = XmlBuilder.create(elementName, { headless: true });
+      addGroupContents();
+      return this.makeString();
+    } else {
+      this.startGroup(elementName);
+      addGroupContents();
+      this.exitGroup();
+      return null; // we're building a larger xml doc, no need for the string yet
+    }
+  }
+
+  public resourceFile(f: File): string | null {
+    const isMediaFile =
+      [".mp3", ".mp4", ".jpg", ".tiff"].indexOf(
+        Path.extname(f.describedFilePath).toLowerCase()
+      ) > -1;
+    if (isMediaFile) {
+      return this.mediaFile(f);
+    } else {
+      return this.writtenResource(f);
+    }
+  }
+  public mediaFile(f: File): string | null {
+    return this.outputGroup("MediaFile", () => {
+      this.fieldLiteral("ResourceLink", Path.basename(f.describedFilePath));
+      this.fieldLiteral(
+        "Type",
+        "TODO",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
+      );
+      this.fieldLiteral(
+        "Format",
+        "TODO",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
+      );
+      this.addCustomKeys();
+      this.fieldLiteral("TODO", "More fields of resource");
+    });
+  }
+  public writtenResource(f: File): string | null {
+    return this.outputGroup("WrittenResource", () => {
+      if (this.folderInFocus.metadataFile != null) {
+        this.fieldLiteral(
+          "ResourceLink",
+          Path.basename(this.folderInFocus.metadataFile.metadataFilePath)
+        );
+      }
+      this.fieldLiteral("TODO", "More fields of written resource");
+    });
+  }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private actor(person: Person) {
-    this.group("Actor");
+    this.startGroup("Actor");
     this.tail.comment(
       "***** IMDI export is not complete yet in this version of SayMore.  *****"
     );
@@ -275,7 +329,7 @@ export default class ImdiGenerator {
     this.field("Sex", "gender", person);
     this.field("Education", "education", person);
     this.fieldLiteral("TODO", "More fields of person");
-    this.group("Languages");
+    this.startGroup("Languages");
     this.addLanguage(
       person.properties.getTextStringOrEmpty("primaryLanguage"),
       true
@@ -287,14 +341,6 @@ export default class ImdiGenerator {
     this.exitGroup(); // </Languages>
 
     this.exitGroup(); //</Actor>
-  }
-
-  private static isMediaFile(path: string): boolean {
-    return (
-      [".mp3", ".mp4", ".jpg", ".tiff"].indexOf(
-        Path.extname(path).toLowerCase()
-      ) > -1
-    );
   }
 
   //-----------------------------------------------------
@@ -332,15 +378,26 @@ export default class ImdiGenerator {
   private attributeLiteral(attributeName: string, value: string) {
     this.mostRecentElement.attribute(attributeName, value);
   }
-  private group(elementName: string) {
+  private startGroup(elementName: string) {
     this.tail = this.tail.element(elementName);
   }
   private exitGroup() {
     this.tail = this.tail.up();
   }
-  private fieldLiteral(elementName: string, value: string) {
+  private fieldLiteral(
+    elementName: string,
+    value: string,
+    isClosedVocabulary?,
+    vocabularyUrl?
+  ) {
     console.assert(value);
     const newElement = this.tail.element(elementName, value);
+    if (isClosedVocabulary === true || isClosedVocabulary === false) {
+      newElement.attribute("Link", vocabularyUrl);
+      const type = isClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
+      newElement.attribute("Type", type);
+    }
+
     this.mostRecentElement = newElement;
     this.tail = newElement.up();
   }

@@ -112,18 +112,33 @@ export class FolderPane extends React.Component<IProps> {
         />
       </TabPanel>
     );
+    const imdiPanel = (
+      <TabPanel>
+        <ImdiView
+          target={
+            file.type === "Session" || file.type === "Person"
+              ? directoryObject
+              : file
+          }
+          project={this.props.project}
+        />
+      </TabPanel>
+    );
     const standardMetaTabs = this.props.showStandardMetaTabs ? (
       <>
         <Tab>Properties</Tab>
         <Tab>Contributors</Tab>
         <Tab>Notes</Tab>
+        <Tab>IMDI</Tab>
       </>
     ) : null;
+
     const standardMetaPanels = this.props.showStandardMetaTabs ? (
       <>
         {propertiesPanel}
         {contributorsPanel}
         {notesPanel}
+        {imdiPanel}
       </>
     ) : null;
 
@@ -175,9 +190,7 @@ export class FolderPane extends React.Component<IProps> {
               </div>
             </TabPanel>{" "}
             {notesPanel}
-            <TabPanel>
-              <ImdiView folder={directoryObject} project={this.props.project} />
-            </TabPanel>
+            {imdiPanel}
           </Tabs>
         );
       case "Person":
@@ -208,9 +221,7 @@ export class FolderPane extends React.Component<IProps> {
               </div>
             </TabPanel>
             {notesPanel}
-            <TabPanel>
-              <ImdiView folder={directoryObject} project={this.props.project} />
-            </TabPanel>
+            {imdiPanel}
           </Tabs>
         );
       case "Audio":

@@ -92,7 +92,7 @@ export class ProjectTab extends React.Component<IProps> {
           </FolderPane>
         </TabPanel>
         <TabPanel>
-          <ImdiView folder={this.props.project} project={this.props.project} />
+          <ImdiView target={this.props.project} project={this.props.project} />
         </TabPanel>
       </Tabs>
     );
