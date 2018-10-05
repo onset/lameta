@@ -5,7 +5,15 @@ import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
 import { File } from "../model/file/File";
+//import SyntaxHighlighter from 'react-syntax-highlighter';
 import "./ImdiView.scss";
+
+import SyntaxHighlighter, {
+  registerLanguage
+} from "react-syntax-highlighter/light";
+import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
+import syntaxStyle from "./ImdiSyntaxStyle";
+registerLanguage("xml", xmlLang);
 
 //const HtmlTree = require("react-htmltree");
 
@@ -63,13 +71,16 @@ export default class ImdiView extends React.Component<IProps, IState> {
             }}
           /> */}
         </div>
-        <textarea
+        {/* <textarea
           readOnly
           className={"imdiView"}
           value={xml}
           // this.props.contentGenerator(this.props.folder) +
           // this.state.manualRefresh
-        />
+        /> */}
+        <SyntaxHighlighter language="xml" style={syntaxStyle}>
+          {xml}
+        </SyntaxHighlighter>
       </div>
     );
   }
