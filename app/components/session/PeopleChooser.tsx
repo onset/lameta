@@ -39,13 +39,19 @@ export default class PeopleChooser extends React.Component<
         label: c
       });
     });
+    //react-select would not find an item if there
+    // was a space after the semicolon
+    const fixedListOfNames = this.props.field.text
+      .split(";")
+      .map(s => s.trim())
+      .concat(";");
     //console.log("participants=" + this.props.field.text);
     return (
       <div className={"field " + this.props.className}>
         <label>{this.getLabel()}</label>
         <ReactSelect
           name={this.props.field.englishLabel}
-          value={this.props.field.text}
+          value={fixedListOfNames}
           // onChange={(s: any) => {
           //   this.props.field.text = (s && s.value ? s.value : "") as string;
           // }}
