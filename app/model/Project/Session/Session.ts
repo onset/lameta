@@ -57,17 +57,52 @@ export class Session extends Folder {
   }
   public getAllContributionsToAllFiles(): Contribution[] {
     const c = new Array<Contribution>();
+
+    this.files.forEach(f =>
+      f.contributions.forEach(con => {
+        if (
+          con.name &&
+          con.name.length > 0 &&
+          con.role &&
+          con.role.length > 0
+        ) {
+          // If a person has multiple roles, we list them once for each role. But if
+          // the roles are the same, then we don't list them again.
+          if (
+            !c.some(
+              x =>
+                x.name.toLowerCase() === con.name.toLocaleLowerCase() &&
+                x.role === con.role
+            )
+          ) {
+            c.push(con);
+          }
+        }
+      })
+    );
+
+    //In addition to being listed in the contributors list for one of the constituent files,
+    // people can also be listed as a "particpant", which until we tighten up the semantics,
+    // we will take to mean a "speaker".
     this.getParticipantNames().forEach((name: string) => {
-      // 'speaker' is obviously not right for sessions that aren't about
-      // speaking... but at the moment that's what SayMore classic
-      // assumes, so we don't have another way of knowing from this
-      // list what they contributed; they need to show up as a
-      // contributor to one of our constituent file. This may
-      // change; we could get rid of "participants" and just let
-      // the session itself have a "contributors" list
-      c.push(new Contribution(name, "speaker", "", ""));
+      if (
+        // possibly they are already listed in the contributions
+        !c.some(
+          x =>
+            x.name.toLowerCase() === name.toLocaleLowerCase() &&
+            x.role === "speaker"
+        )
+      ) {
+        // 'speaker' is obviously not right for sessions that aren't about
+        // speaking... but at the moment that's what SayMore classic
+        // assumes, so we don't have another way of knowing from this
+        // list what they contributed; they need to show up as a
+        // contributor to one of our constituent file. This may
+        // change; we could get rid of "participants" and just let
+        // the session itself have a "contributors" list
+        c.push(new Contribution(name, "speaker", "", ""));
+      }
     });
-    this.files.forEach(f => f.contributions.forEach(con => c.push(con)));
     return c;
   }
   public getParticipantNames(): string[] {

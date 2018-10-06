@@ -117,8 +117,12 @@ export default class ImdiGenerator {
       const trimmedName = contribution.name.trim();
       const person = this.project.findPerson(trimmedName);
       if (person) {
-        //review: is there a place for comments?
-        this.actor(person, contribution.role);
+        this.actor(
+          person,
+          contribution.role,
+          // send in any contribution comments to be listed under the <Keys> element
+          [{ name: "contribution-comments", text: contribution.comments }]
+        );
       } else {
         this.startGroup("Actor");
         this.tail.comment(`Could not find a person with name "${trimmedName}"`);
@@ -217,8 +221,14 @@ export default class ImdiGenerator {
   }
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
   // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
-  private addCustomKeys(target: File | Folder) {
-    const blacklist = ["modifiedDate", "type", "filename", "size"];
+  private addCustomKeys(target: File | Folder, moreKeys?: any[]) {
+    const blacklist = [
+      "modifiedDate",
+      "type",
+      "filename",
+      "size",
+      "contributions"
+    ];
     this.group("Keys", () => {
       target.properties.keys().forEach(key => {
         // only output things that don't have an explicit home in IMDI.
@@ -242,6 +252,14 @@ export default class ImdiGenerator {
           }
         }
       });
+      if (moreKeys) {
+        moreKeys.forEach(m => {
+          this.tail = this.tail.element("Key", m.text);
+          this.mostRecentElement = this.tail;
+          this.attributeLiteral("Name", m.name);
+          this.tail = this.tail.up();
+        });
+      }
     });
   }
   private sessionLocation() {
@@ -363,7 +381,7 @@ export default class ImdiGenerator {
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
-  public actor(person: Person, role: string): string | null {
+  public actor(person: Person, role: string, moreKeys?: any[]): string | null {
     return this.group("Actor", () => {
       this.tail.comment(
         "***** IMDI export is not complete yet in this version of SayMore.  *****"
@@ -399,6 +417,7 @@ export default class ImdiGenerator {
         person.properties.getTextStringOrEmpty("otherLanguage3")
       );
       this.exitGroup(); // </Languages>
+      this.addCustomKeys(person, moreKeys);
     });
   }
 

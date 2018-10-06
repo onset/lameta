@@ -71,17 +71,21 @@ it("should contain Content", () => {
   expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("narrative");
 });
 it("should contain Actors", () => {
-  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor").toHaveCount(2);
+  // should get 2 speakers, on one recorder
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor").toHaveCount(3);
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/Name").toMatch(
-    "Awi Heole"
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/BirthDate").toMatch(
-    "1972"
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/Role").toMatch(
-    "speaker"
+    "Hatton"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Name").toMatch(
+    "Awi Heole"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/BirthDate").toMatch(
+    "1972"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Role").toMatch(
+    "speaker"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[3]/Name").toMatch(
     "Ilawi Amosa"
   );
   // the rest of the actor checks are done in actorImdi.spec.ts
