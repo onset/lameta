@@ -24,6 +24,18 @@ export class Contribution {
   public date: string;
   @mobx.observable
   public comments: string;
+
+  public constructor(
+    name: string,
+    role: string,
+    date: string,
+    comments: string
+  ) {
+    this.name = name;
+    this.role = role;
+    this.date = date;
+    this.comments = comments;
+  }
 }
 
 export abstract class File {
@@ -367,11 +379,12 @@ export abstract class File {
   }
   private loadOneContribution(contributionFromXml: any) {
     //console.log("loadOneContribution() " + this.metadataFilePath);
-    const n = new Contribution();
-    n.name = contributionFromXml.name;
-    n.role = contributionFromXml.role;
-    n.date = contributionFromXml.date;
-    n.comments = contributionFromXml.comments;
+    const n = new Contribution(
+      contributionFromXml.name,
+      contributionFromXml.role,
+      contributionFromXml.date,
+      contributionFromXml.comments
+    );
     this.contributions.push(n);
   }
 

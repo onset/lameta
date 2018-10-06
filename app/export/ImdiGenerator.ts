@@ -113,22 +113,20 @@ export default class ImdiGenerator {
   private addActorsOfSession() {
     this.startGroup("Actors");
     const session = this.folderInFocus as Session;
-    session.properties
-      .getTextStringOrEmpty("participants")
-      .split(";")
-      .forEach(name => {
-        const trimmedName = name.trim();
-        const person = this.project.findPerson(trimmedName);
-        if (person) {
-          this.actor(person);
-        } else {
-          this.startGroup("Actor");
-          this.tail.comment(
-            `Could not find a person with name "${trimmedName}"`
-          );
-          this.exitGroup(); //</Actor>
-        }
-      });
+    session.getAllContributionsToAllFiles().forEach(contribution => {
+      const trimmedName = contribution.name.trim();
+      const person = this.project.findPerson(trimmedName);
+      if (person) {
+        //review: is there a place for comments?
+        this.actor(person, contribution.role);
+      } else {
+        this.startGroup("Actor");
+        this.tail.comment(`Could not find a person with name "${trimmedName}"`);
+        this.element("Role", contribution.role);
+        this.element("Name", trimmedName);
+        this.exitGroup(); //</Actor>
+      }
+    });
     this.exitGroup(); //</Actors>
   }
   private addContentElement() {
@@ -365,11 +363,12 @@ export default class ImdiGenerator {
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
-  public actor(person: Person): string | null {
+  public actor(person: Person, role: string): string | null {
     return this.group("Actor", () => {
       this.tail.comment(
         "***** IMDI export is not complete yet in this version of SayMore.  *****"
       );
+      this.element("Role", role);
       this.field("Name", "name", person);
       this.field("FullName", "name", person);
       this.field("Code", "code", person);

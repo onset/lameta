@@ -51,7 +51,10 @@ export default class ImdiView extends React.Component<IProps, IState> {
         this.props.target,
         this.props.project
       );
-      xml = generator.actor(this.props.target as Person) as string;
+      xml = generator.actor(
+        this.props.target as Person,
+        "will get role in context of session"
+      ) as string;
     } else if (this.props.target instanceof File) {
       const generator = new ImdiGenerator(
         this.props.project,

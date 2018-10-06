@@ -78,6 +78,9 @@ it("should contain Actors", () => {
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/BirthDate").toMatch(
     "1972"
   );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/Role").toMatch(
+    "speaker"
+  );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Name").toMatch(
     "Ilawi Amosa"
   );

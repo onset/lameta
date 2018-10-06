@@ -49,7 +49,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       }
     }
     //console.log("Adding blank contribution");
-    this.props.file.contributions.push(new Contribution());
+    this.props.file.contributions.push(new Contribution("", "", "", ""));
   }
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];

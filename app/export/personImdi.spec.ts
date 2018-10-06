@@ -40,7 +40,7 @@ beforeAll(() => {
 
   const generator = new ImdiGenerator(person, project, subsetLanguageFinder);
   setResultXml(
-    generator.actor(person) as string
+    generator.actor(person, "pretend-role") as string
     // ImdiGenerator.generateActor(
     //   person,
     //   project,

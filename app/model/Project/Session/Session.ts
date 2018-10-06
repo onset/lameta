@@ -1,5 +1,5 @@
 import { Folder } from "../../Folder";
-import { File } from "../../file/File";
+import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { IChoice } from "../../field/Field";
 import mobx from "mobx";
@@ -54,6 +54,27 @@ export class Session extends Folder {
   }
   public get hasCustomFieldsTable(): boolean {
     return true;
+  }
+  public getAllContributionsToAllFiles(): Contribution[] {
+    const c = new Array<Contribution>();
+    this.getParticipantNames().forEach((name: string) => {
+      // 'speaker' is obviously not right for sessions that aren't about
+      // speaking... but at the moment that's what SayMore classic
+      // assumes, so we don't have another way of knowing from this
+      // list what they contributed; they need to show up as a
+      // contributor to one of our constituent file. This may
+      // change; we could get rid of "participants" and just let
+      // the session itself have a "contributors" list
+      c.push(new Contribution(name, "speaker", "", ""));
+    });
+    this.files.forEach(f => f.contributions.forEach(con => c.push(con)));
+    return c;
+  }
+  public getParticipantNames(): string[] {
+    return this.properties
+      .getTextStringOrEmpty("participants")
+      .split(";")
+      .map(s => s.trim());
   }
 }
 
