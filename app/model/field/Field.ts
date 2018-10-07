@@ -2,8 +2,7 @@ import { observable } from "mobx";
 import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
-const moment = require("moment");
-
+import moment from "moment";
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
@@ -215,6 +214,36 @@ export class Field {
       return m.format("lll"); // Aug 11 2017
     }
     return this.text;
+  }
+  public asDate(): Date | undefined {
+    const m = moment(this.text);
+    if (m.isValid()) {
+      return m.toDate();
+    } else {
+      return undefined;
+    }
+  }
+
+  /*  This is currently used for IMDI export.
+     Its docs say: Please enter the age in the following format: YY or YY;MM or YY;MM.DD.
+      If the exact age is not known, it is nevertheless useful to enter an approximate age. This will allow you later to 
+      conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
+  */
+
+  public ageOn(referenceDate: Date): string {
+    if (this.text.trim.length === 0) {
+      return "";
+    }
+    const referenceMoment = moment(referenceDate);
+    const birthMoment = moment(this.text);
+    if (referenceMoment.isValid() && birthMoment.isValid()) {
+      const duration = moment.duration(referenceMoment.diff(birthMoment)); // referenceMoment.from(birthMoment);
+      // this would be good if we had actual birthdates: const r = `${x.years()};${x.months()}.${x.days()}`;
+      // but we currently only have year, so this will give us the year (rounding down)
+      return duration.years().toString();
+    } else {
+      return "";
+    }
   }
 
   public typeAndValueEscapedForXml(): { type: string; value: string } {

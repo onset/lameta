@@ -3,6 +3,7 @@ import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder";
 const moment = require("moment");
+import { Moment } from "moment";
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
@@ -117,9 +118,11 @@ export default class ImdiGenerator {
       const trimmedName = contribution.name.trim();
       const person = this.project.findPerson(trimmedName);
       if (person) {
+        const referenceDate = session.properties.getDateField("date").asDate();
         this.actor(
           person,
           contribution.role,
+          referenceDate,
           // send in any contribution comments to be listed under the <Keys> element
           [{ name: "contribution-comments", text: contribution.comments }]
         );
@@ -381,7 +384,12 @@ export default class ImdiGenerator {
     });
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
-  public actor(person: Person, role: string, moreKeys?: any[]): string | null {
+  public actor(
+    person: Person,
+    role: string,
+    referenceDate?: Date | undefined,
+    moreKeys?: any[]
+  ): string | null {
     return this.group("Actor", () => {
       this.tail.comment(
         "***** IMDI export is not complete yet in this version of SayMore.  *****"
@@ -394,7 +402,34 @@ export default class ImdiGenerator {
       // Note: age is relative to this session's date.
       // Note: for children in particular, IMDI need more than year. It wants years;months.days,
       // but SayMore currently only has a "birth year".
-      this.field("Age", "???TODO???", person);
+      /* Note, IMDI actually has this as an age range:
+
+      <!--  Age Range    -->
+      <xsd:complexType name="AgeRange_Type">
+        <xsd:annotation>
+          <xsd:documentation>Specifies age of a person in the form of a range</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="imdi:AgeRange_Value_Type">
+            <xsd:attributeGroup ref="imdi:ProfileAttributes"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+
+      Then other docs say: The age of the actor. Please enter the age in the following format: YY or YY;MM or YY;MM.DD.
+      If the exact age is not known, it is nevertheless useful to enter an approximate age. This will allow you later to 
+      conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
+      */
+      if (referenceDate) {
+        const age = person.ageOn(referenceDate);
+        if (age && age.length > 0) {
+          this.element("Age", age);
+        } else {
+          this.tail.comment("Could not compute age");
+        }
+      } else {
+        this.tail.comment("Age calculation requires session reference date.");
+      }
       this.field("BirthDate", "birthYear", person);
       this.field("Sex", "gender", person);
       this.field("Education", "education", person);

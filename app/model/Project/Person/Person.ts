@@ -5,7 +5,12 @@ const knownFieldDefinitions = require("../../field/fields.json");
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 
+const moment = require("moment");
+
 export class Person extends Folder {
+  public ageOn(referenceDate: Date): string {
+    return this.properties.getDateField("birthYear").ageOn(referenceDate);
+  }
   public nameMatches(name: string): boolean {
     return (
       name.toLowerCase() ===
