@@ -56,26 +56,22 @@ export class Session extends Folder {
     return true;
   }
   public getAllContributionsToAllFiles(): Contribution[] {
-    const c = new Array<Contribution>();
+    const contributionsToList = new Array<Contribution>();
 
     this.files.forEach(f =>
-      f.contributions.forEach(con => {
-        if (
-          con.name &&
-          con.name.length > 0 &&
-          con.role &&
-          con.role.length > 0
-        ) {
+      f.contributions.forEach(c => {
+        if (c.name && c.name.length > 0 && c.role && c.role.length > 0) {
           // If a person has multiple roles, we list them once for each role. But if
           // the roles are the same, then we don't list them again.
           if (
-            !c.some(
-              x =>
-                x.name.toLowerCase() === con.name.toLocaleLowerCase() &&
-                x.role === con.role
+            !contributionsToList.some(
+              existingContribution =>
+                existingContribution.name.toLowerCase() ===
+                  c.name.toLocaleLowerCase() &&
+                existingContribution.role === c.role
             )
           ) {
-            c.push(con);
+            contributionsToList.push(c);
           }
         }
       })
@@ -87,7 +83,7 @@ export class Session extends Folder {
     this.getParticipantNames().forEach((name: string) => {
       if (
         // possibly they are already listed in the contributions
-        !c.some(
+        !contributionsToList.some(
           x =>
             x.name.toLowerCase() === name.toLocaleLowerCase() &&
             x.role === "speaker"
@@ -100,10 +96,10 @@ export class Session extends Folder {
         // contributor to one of our constituent file. This may
         // change; we could get rid of "participants" and just let
         // the session itself have a "contributors" list
-        c.push(new Contribution(name, "speaker", "", ""));
+        contributionsToList.push(new Contribution(name, "speaker", "", ""));
       }
     });
-    return c;
+    return contributionsToList;
   }
   public getParticipantNames(): string[] {
     return this.properties

@@ -148,13 +148,37 @@ export default class ImdiGenerator {
         // SayMore currently doesn't have Interactivity, EventStructure, Channel
       });
       this.group("Languages", () => {
-        this.element("TODO", "Emit Languages of the session");
+        this.addSessionLanguage(
+          "vernacularIso3CodeAndName",
+          "Content Language"
+        );
+        this.addSessionLanguage("analysisISO3CodeAndName", "Working Language");
       });
       this.addCustomKeys(this.folderInFocus);
       this.field("Description", "description");
     });
   }
-  private addLanguage(lang: string, isPrimaryTongue?: boolean) {
+  private addSessionLanguage(key: string, description: string) {
+    // Note, SayMore Sessions don't currently have their own language...
+    // so we have to get these languages from the project
+    const parts = this.project.properties
+      .getTextStringOrEmpty(key)
+      .split(":")
+      .map(s => s.trim());
+    if (parts.length === 2) {
+      this.group("Language", () => {
+        this.element("Id", "ISO639-3:" + parts[0]);
+        this.element(
+          "Name",
+          parts[1],
+          false,
+          "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
+        );
+        this.element("Description", description);
+      });
+    }
+  }
+  private addActorLanguage(lang: string, isPrimaryTongue?: boolean) {
     if (lang && lang.length > 0) {
       this.startGroup("Language");
 
@@ -391,9 +415,6 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
-      this.tail.comment(
-        "***** IMDI export is not complete yet in this version of SayMore.  *****"
-      );
       this.element("Role", role);
       this.field("Name", "name", person);
       this.field("FullName", "name", person);
@@ -435,20 +456,20 @@ export default class ImdiGenerator {
       this.field("Education", "education", person);
       this.element("TODO", "More fields of person");
       this.startGroup("Languages");
-      this.addLanguage(
+      this.addActorLanguage(
         person.properties.getTextStringOrEmpty("primaryLanguage"),
         true
       );
-      this.addLanguage(
+      this.addActorLanguage(
         person.properties.getTextStringOrEmpty("otherLanguage0")
       );
-      this.addLanguage(
+      this.addActorLanguage(
         person.properties.getTextStringOrEmpty("otherLanguage1")
       );
-      this.addLanguage(
+      this.addActorLanguage(
         person.properties.getTextStringOrEmpty("otherLanguage2")
       );
-      this.addLanguage(
+      this.addActorLanguage(
         person.properties.getTextStringOrEmpty("otherLanguage3")
       );
       this.exitGroup(); // </Languages>
