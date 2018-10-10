@@ -6,6 +6,7 @@ import * as Path from "path";
 import PropertyTable from "./PropertyTable";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
+import StatusControl from "./StatusControl";
 import ReactPlayer from "react-player";
 import PersonForm from "./people/person/PersonForm";
 import { Person } from "../model/Project/Person/Person";
@@ -150,7 +151,7 @@ export class FolderPane extends React.Component<IProps> {
           <Tabs defaultIndex={kFirstTabToOpen}>
             <TabList>
               <Tab>Session</Tab>
-              <Tab>Status &amp; Stages</Tab>
+              <Tab>Status</Tab>
               <Tab>Notes</Tab>
               <Tab>IMDI</Tab>
             </TabList>
@@ -193,10 +194,10 @@ export class FolderPane extends React.Component<IProps> {
               </SMErrorBoundary>
             </TabPanel>
             <TabPanel>
-              <div className="todo">
-                -- This feature has not been implemented yet --
-              </div>
-            </TabPanel>{" "}
+              <StatusControl
+                statusField={directoryObject.properties.getTextField("status")}
+              />
+            </TabPanel>
             {notesPanel}
             {imdiPanel}
           </Tabs>

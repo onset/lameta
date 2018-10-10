@@ -364,6 +364,13 @@
       "key": "description"
     },
     {
+      "key": "status",
+      "choices": ["Incoming", "In Progress", "Finished", "Skipped"],
+      "default": "Incoming",
+      "//": "don't show on main form",
+      "form": "status"
+    },
+    {
       "key": "date",
       "type": "Date"
     },

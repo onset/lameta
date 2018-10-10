@@ -1,0 +1,17 @@
+#statusRadioGroup {
+  margin: 1em;
+
+  div {
+    margin-bottom: 1em;
+
+    img {
+      width: auto;
+      margin-right: 10px;
+      margin-bottom: -1px; // align with the following radio & label
+    }
+    label {
+      display: inline-block;
+      font-weight: normal;
+    }
+  }
+}

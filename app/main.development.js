@@ -69,6 +69,7 @@ app.on("ready", () =>
         show: false,
         width: 1024,
         height: 728,
+        plugins: true, // to enable the pdf-viewer built in to electron
         //windows
         icon: path.join(__dirname, "../artwork/windows.ico")
         //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")

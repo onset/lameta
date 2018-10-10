@@ -2,7 +2,7 @@ import { Folder } from "../../Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { IChoice } from "../../field/Field";
-import mobx from "mobx";
+import * as mobx from "mobx";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 const knownFieldDefinitions = require("../../field/fields.json");
 const genres = require("./genres.json");
@@ -28,7 +28,7 @@ export class Session extends Folder {
   }
   public static fromDirectory(directory: string): Session {
     const metadataFile = new SessionMetadataFile(directory);
-    metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
+    //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
     const genreChoices = genres.map((g: any) => {
       return g as IChoice;
@@ -119,5 +119,14 @@ export class SessionMetadataFile extends FolderMetadataFile {
       ".session",
       knownFieldDefinitions.session
     );
+    /* I'm not needing it now, but here is an example of how to see what is changing
+    a property. Set a breakpoint where the console.log is, look at the call stack,
+    and you're done.
+
+    const thingGettingChangedMysteriously = this.getTextField("status")
+      .textHolder.map;
+    mobx.observe(thingGettingChangedMysteriously, (change: any) => {
+      console.log(`** status  '${change.oldValue}' --> '${change.newValue}'`);
+    });*/
   }
 }
