@@ -19,6 +19,7 @@ import ImdiView from "./ImdiView";
 import { File } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";
+import SMErrorBoundary from "./SMErrorBoundary";
 
 const SplitPane = require("react-split-pane");
 
@@ -154,35 +155,42 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>IMDI</Tab>
             </TabList>
             <TabPanel>
-              <AutoForm
-                folder={directoryObject}
-                form="primary"
-                formClass="sessionForm"
-                authorityLists={this.props.authorityLists}
-                fieldThatControlsFileNames={"id"}
-                fieldThatControlsFileNamesMightHaveChanged={key =>
-                  (this.props.folder as Session).nameMightHaveChanged()
-                }
-                validateFieldThatControlsFileNames={value =>
-                  this.props.project.validateSessionId(
-                    directoryObject as Session,
-                    value
-                  )
-                }
-                // session={directoryObject as Session}
-                // authorityLists={this.props.authorityLists}
-                // fields={directoryObject.properties}
-                // // fieldThatControlsFileNames={"id"}
-                // // fieldThatControlsFileNamesMightHaveChanged={key =>
-                // //   (this.props.folder as Session).nameMightHaveChanged()
-                // // }
-                // validateId={value =>
-                //   this.props.project.validateSessionId(
-                //     directoryObject as Session,
-                //     value
-                //   )
-                // }
-              />
+              {" "}
+              <SMErrorBoundary
+                context={`${directoryObject.displayName} ${
+                  directoryObject.metadataFile!.describedFilePath
+                } Session AutoForm`}
+              >
+                <AutoForm
+                  folder={directoryObject}
+                  form="primary"
+                  formClass="sessionForm"
+                  authorityLists={this.props.authorityLists}
+                  fieldThatControlsFileNames={"id"}
+                  fieldThatControlsFileNamesMightHaveChanged={key =>
+                    (this.props.folder as Session).nameMightHaveChanged()
+                  }
+                  validateFieldThatControlsFileNames={value =>
+                    this.props.project.validateSessionId(
+                      directoryObject as Session,
+                      value
+                    )
+                  }
+                  // session={directoryObject as Session}
+                  // authorityLists={this.props.authorityLists}
+                  // fields={directoryObject.properties}
+                  // // fieldThatControlsFileNames={"id"}
+                  // // fieldThatControlsFileNamesMightHaveChanged={key =>
+                  // //   (this.props.folder as Session).nameMightHaveChanged()
+                  // // }
+                  // validateId={value =>
+                  //   this.props.project.validateSessionId(
+                  //     directoryObject as Session,
+                  //     value
+                  //   )
+                  // }
+                />
+              </SMErrorBoundary>
             </TabPanel>
             <TabPanel>
               <div className="todo">
@@ -204,16 +212,22 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>IMDI</Tab>
             </TabList>
             <TabPanel>
-              <PersonForm
-                validateFullName={value => {
-                  return this.props.project.validatePersonFullName(
-                    directoryObject as Person,
-                    value
-                  );
-                }}
-                person={directoryObject as Person}
-                fields={directoryObject.properties}
-              />
+              <SMErrorBoundary
+                context={`${directoryObject.displayName} ${
+                  directoryObject.metadataFile!.describedFilePath
+                } PersonForm`}
+              >
+                <PersonForm
+                  validateFullName={value => {
+                    return this.props.project.validatePersonFullName(
+                      directoryObject as Person,
+                      value
+                    );
+                  }}
+                  person={directoryObject as Person}
+                  fields={directoryObject.properties}
+                />{" "}
+              </SMErrorBoundary>
             </TabPanel>
             <TabPanel>
               <div className="todo">

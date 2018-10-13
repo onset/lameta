@@ -3,8 +3,6 @@ import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
-import bugsnag from "bugsnag-js";
-const bugsnagClient = bugsnag("f8b144863f4723ebb4bdd6c747c5d7b6");
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -128,7 +126,6 @@ export default class SayLessMenu {
         {
           label: "Test bugsnag",
           click() {
-            bugsnagClient.notify(new Error("Test notify bugsnag from menu"));
           }
         }
       ]

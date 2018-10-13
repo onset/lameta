@@ -12,7 +12,7 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
 
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const { BugsnagBuildReporterPlugin } = require("webpack-bugsnag-plugins");
+
 const port = process.env.PORT || 3000;
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
@@ -69,7 +69,7 @@ module.exports = speedMeasurePlugin.wrap(
 
       // https://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
       // https://github.com/webpack/webpack/issues/864
-      new webpack.optimize.OccurrenceOrderPlugin(),
+      new webpack.optimize.OccurrenceOrderPlugin()
 
       // NODE_ENV should be production so that modules do not perform certain development checks
       // new webpack.DefinePlugin({
@@ -85,15 +85,6 @@ module.exports = speedMeasurePlugin.wrap(
       // })
 
       // as far as I know, we just need to report this once per build, so we don't need this done for main.
-      new BugsnagBuildReporterPlugin(
-        {
-          apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
-          appVersion: require("./app/package.json").version
-        },
-        {
-          /* opts */
-        }
-      )
     ],
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works

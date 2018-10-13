@@ -20,6 +20,7 @@ import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
+import SMErrorBoundary from "./SMErrorBoundary";
 
 export interface IProps {
   project: Project;
@@ -161,10 +162,12 @@ export default class Home extends React.Component<IProps> {
               />
             </TabPanel>
             <TabPanel className={"tab-panel-sessions"}>
-              <SessionsTab
-                project={this.props.project}
-                authorityLists={this.props.authorityLists}
-              />
+              <SMErrorBoundary>
+                <SessionsTab
+                  project={this.props.project}
+                  authorityLists={this.props.authorityLists}
+                />
+              </SMErrorBoundary>
             </TabPanel>
             <TabPanel className={"tab-panel-people"}>
               <PeopleTab

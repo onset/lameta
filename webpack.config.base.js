@@ -9,10 +9,6 @@ const { dependencies: externals } = require("./app/package.json"); // must be pa
 //test or development
 const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
 // didn't help var HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
-const {
-  BugsnagBuildReporterPlugin,
-  BugsnagSourceMapUploaderPlugin
-} = require("webpack-bugsnag-plugins");
 
 module.exports = {
   mode: "development",
@@ -188,15 +184,4 @@ module.exports = {
 };
 
 if (process.env.NODE_ENV === "production") {
-  //Bugsnag says: "It's a good idea to only run this plugin when you're building a bundle
-  // that will be released, rather than for every development build"
-
-  module.exports.plugins.push(
-    new BugsnagSourceMapUploaderPlugin({
-      apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
-      appVersion: require("./app/package.json").version,
-
-      overwrite: true
-    })
-  );
 }
