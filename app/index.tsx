@@ -4,6 +4,11 @@ import { remote } from "electron";
 import "./app.global.scss";
 import App from "./containers/App";
 import { setConfig } from "react-hot-loader";
+
+import { initializeSentry } from "./init-sentry";
+
+initializeSentry();
+
 setConfig({ logLevel: "debug" });
 
 document.body.setAttribute("class", remote.process.platform);

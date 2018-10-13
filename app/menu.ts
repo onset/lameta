@@ -125,8 +125,7 @@ export default class SayLessMenu {
         },
         {
           label: "Test bugsnag",
-          click() {
-          }
+          click() {}
         }
       ]
     };
@@ -134,9 +133,10 @@ export default class SayLessMenu {
       label: "Test",
       submenu: [
         {
-          label: "Menu Test",
+          label: "Send Error Report Test",
           click() {
             mainWindow.setTitle("Menu Test Invoked");
+            throw new Error("Test error from menu " + new Date().getTime()); // add timestamp so that sentry doesn't swallow duplicates
           }
         }
       ]

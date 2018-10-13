@@ -1,6 +1,8 @@
 const path = require("path");
 const electron = require("electron");
 
+require("./init-sentry").initializeSentry();
+
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 
 let mainWindow = null;
@@ -66,7 +68,7 @@ app.on("ready", () =>
         icon: path.join(__dirname, "../artwork/windows.ico")
         //linxu icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
-      }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`);
+      }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this
 
       /* For hot loading, this is how https://github.com/s-h-a-d-o-w/rhl-electron-quick-start does it, 
        but I get 
@@ -75,8 +77,9 @@ app.on("ready", () =>
       if (process.env.NODE_ENV === "development") {
         mainWindow.loadURL("http://localhost:3000/app.html");
       } else {
-       */ // so at the moment we're putting the main-bundle.js up in app and use this
-      mainWindow.loadURL(`file://${__dirname}/app.html`);
+       */ mainWindow.loadURL(
+        `file://${__dirname}/app.html`
+      );
 
       /*}*/
 

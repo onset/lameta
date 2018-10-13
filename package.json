@@ -182,6 +182,8 @@
     "xpath": "^0.0.27"
   },
   "dependencies": {
+    "@sentry/electron": "^0.11.0",
+    "@sentry/node": "^4.1.1",
     "@types/archiver": "^2.1.1",
     "@types/camelcase": "^4.1.0",
     "@types/commonmark": "^0.27.0",

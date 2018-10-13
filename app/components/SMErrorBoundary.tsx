@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as Sentry from "@sentry/electron";
 
 interface IProps {
   context?: string;
@@ -18,6 +19,8 @@ class SMErrorBoundary extends Component<IProps, IState> {
 
   public componentDidCatch(e) {
     this.setState({ hasError: true, error: e.message });
+    const sentryId = Sentry.captureException(e);
+    console.log("sentry id = " + sentryId);
   }
 
   public render() {
