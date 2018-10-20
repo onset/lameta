@@ -1,7 +1,12 @@
 const path = require("path");
 const electron = require("electron");
 
+/* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
+See https://github.com/getsentry/sentry-electron/issues/92. Probably don't really need the "electron" version anyhow,
+could just use the node or web sdk's?
 require("./init-sentry").initializeSentry();
+const { initializeSentry } = require("./init-sentry");
+*/
 
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 

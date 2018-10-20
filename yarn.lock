@@ -28,7 +28,7 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@sentry/browser@^4.0.5":
+"@sentry/browser@~4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-4.1.1.tgz#9db1e765bf2afcbe0fb44b028abdf5c74d6e77b0"
   integrity sha512-rmkGlTh0AL3Jf0DvF3BluChIyzPkkYpNgIwEHjxTUiLp6BQdgwakZuzBqSPJrEs+jMsKMoesOuJ/fAAG0K7+Ew==
@@ -37,7 +37,7 @@
     "@sentry/types" "4.1.0"
     "@sentry/utils" "4.1.1"
 
-"@sentry/core@4.1.1", "@sentry/core@^4.0.5":
+"@sentry/core@4.1.1", "@sentry/core@~4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-4.1.1.tgz#013ee6ee32033b9a404da5bd27f5a2417dcb1a89"
   integrity sha512-QJExTxZ1ZA5P/To5gOwd3sowukXW0N/Q9nfu8biRDNa+YURn6ElLjO0fD6eIBqX1f3npo/kTiWZwFBc7LXEzSg==
@@ -47,17 +47,17 @@
     "@sentry/types" "4.1.0"
     "@sentry/utils" "4.1.1"
 
-"@sentry/electron@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.11.0.tgz#f0ecd01c67b5c7f8684b586b53850001493c2af9"
-  integrity sha512-yj1W7wWb/U0FBk7cOikwdRlKyAH7oXVJ1t9rFBPzdlBx3ZA2rF3Z/ge1Dk/bS4lJ7H1EQ1mQ8EQP8ldCKwVg9A==
+"@sentry/electron@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.12.1.tgz#a654eb382b188c71c582b4fed942e9de210ff4e5"
+  integrity sha512-hdPdE1qWFxgsht0usssBal34IAvMgVZN1bPd8m+jTcZQtzYBNzier8VOLF3btf1OLPnMD6+wrcl3ab3XIQCoxA==
   dependencies:
-    "@sentry/browser" "^4.0.5"
-    "@sentry/core" "^4.0.5"
-    "@sentry/minimal" "^4.0.5"
-    "@sentry/node" "^4.0.5"
-    "@sentry/types" "^4.0.0"
-    "@sentry/utils" "^4.0.5"
+    "@sentry/browser" "~4.1.1"
+    "@sentry/core" "~4.1.1"
+    "@sentry/minimal" "~4.1.1"
+    "@sentry/node" "~4.1.1"
+    "@sentry/types" "~4.1.0"
+    "@sentry/utils" "~4.1.1"
     electron-fetch "1.1.0"
     form-data "2.3.2"
     util.promisify "1.0.0"
@@ -70,7 +70,7 @@
     "@sentry/types" "4.1.0"
     "@sentry/utils" "4.1.1"
 
-"@sentry/minimal@4.1.1", "@sentry/minimal@^4.0.5":
+"@sentry/minimal@4.1.1", "@sentry/minimal@~4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-4.1.1.tgz#46d8a35e0d82b0903ed83dba21d8344b601145a5"
   integrity sha512-xRKWA46OGnZinJyTljDUel53emPP9mb/XNi/kF6SBaVDOUXl7HAB8kP7Bn7eLBwOanxN8PbYoAzh/lIQXWTmDg==
@@ -78,7 +78,7 @@
     "@sentry/hub" "4.1.1"
     "@sentry/types" "4.1.0"
 
-"@sentry/node@^4.0.5", "@sentry/node@^4.1.1":
+"@sentry/node@^4.1.1", "@sentry/node@~4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@sentry/node/-/node-4.1.1.tgz#a4d268e8a63c2a91e911e37fd3140f36ac10c5b6"
   integrity sha512-wbo8F2IqZW+exlOyQzQ7+bPNPXIYmG2g73ZgHFh0x3MHVOTSKgfiO3BzCqmFyUDhxqkEL23PQqLhM07GEtH3Bw==
@@ -92,12 +92,12 @@
     md5 "2.2.1"
     stack-trace "0.0.10"
 
-"@sentry/types@4.1.0", "@sentry/types@^4.0.0":
+"@sentry/types@4.1.0", "@sentry/types@~4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-4.1.0.tgz#ebffb9857abbecaad5d1c00152a50f72ac9757a5"
   integrity sha512-KY7B9wYs1NACHlYzG4OuP6k4uQJkyDPJppftjj3NJYShfwdDTO1I2Swkhhb5dJMEMMMpBJGxXmiqZ2mX5ErISQ==
 
-"@sentry/utils@4.1.1", "@sentry/utils@^4.0.5":
+"@sentry/utils@4.1.1", "@sentry/utils@~4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-4.1.1.tgz#5624517d582c870348f234df27c509db95d4fdc6"
   integrity sha512-XMvGqAWATBrRkOF0lkt0Ij8of2mRmp4WeFTUAgiKzCekxfUBLBaTb4wTaFXz1cnnnjVTwcAq72qBRMhHwQ0IIg==
