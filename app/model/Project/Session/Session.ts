@@ -60,7 +60,7 @@ export class Session extends Folder {
 
     this.files.forEach(f =>
       f.contributions.forEach(c => {
-        if (c.name && c.name.length > 0 && c.role && c.role.length > 0) {
+        if (c.name && c.name.trim().length > 0 && c.role && c.role.length > 0) {
           // If a person has multiple roles, we list them once for each role. But if
           // the roles are the same, then we don't list them again.
           if (
@@ -82,6 +82,7 @@ export class Session extends Folder {
     // we will take to mean a "speaker".
     this.getParticipantNames().forEach((name: string) => {
       if (
+        name.trim().length > 0 &&
         // possibly they are already listed in the contributions
         !contributionsToList.some(
           x =>
