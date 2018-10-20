@@ -745,8 +745,9 @@ export abstract class File {
     assert(!this.isLabeledAsConsent());
     if (!this.tryToRenameToFunction("Consent")) {
       window.alert("Sorry, something prevented the rename");
+    } else {
+      console.log("renameForConsent " + this.describedFilePath);
     }
-    console.log("renameForConsent " + this.describedFilePath);
     //this.properties.setValue("hasConsent", true);
   }
 }

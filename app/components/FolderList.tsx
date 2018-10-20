@@ -9,6 +9,8 @@ import { Field, FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
 import { locate } from "../crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
+import { Session } from "../model/Project/Session/Session";
+import { Person } from "../model/Project/Person/Person";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -22,7 +24,6 @@ export interface IProps {
 export class FolderList extends React.Component<IProps> {
   private hasConsentPath = locate("assets/hasConsent.png");
   private noConsentPath = locate("assets/noConsent.png");
-  private m: mobx.IReactionDisposer;
   private columnWidthManager: ReactTableColumnWidthManager;
   constructor(props: IProps) {
     super(props);
@@ -39,16 +40,24 @@ export class FolderList extends React.Component<IProps> {
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
-    // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
-    // when the user does something that causes a rename.
-    const mobxDummyWatchForDisplayName = this.props.folders.map(
-      f => f.displayName
-    );
-    // Similarly, the consent mark is derived from having some child file that has the word "Consent" in the file name.
-    // We explicitly do something with each file name, so that mobx will know it should re-run the render function
-    // as needed.
-    const mobxDummyWatchForConsentChange = this.props.folders.map(folder => {
-      folder.files.map(child => child.describedFilePath);
+    this.props.folders.map(folder => {
+      // Access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
+      // when the user does something that causes a rename.
+      const dummy = folder.displayName;
+      if (folder instanceof Session) {
+        const dummyId = folder.properties.getTextStringOrEmpty("id");
+      }
+
+      // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
+      // We explicitly do something with each file name, so that mobx will know it should re-run the render function
+      // as needed.
+      if (folder instanceof Person) {
+        folder.files.forEach(child => child.describedFilePath);
+      }
+      // The Session status also needs to be immediately updated in the table view.
+      if (folder instanceof Session) {
+        folder.metadataFile!.getTextProperty("status");
+      }
     });
 
     const columns = this.props.columns.map((key, index) => {
@@ -63,7 +72,16 @@ export class FolderList extends React.Component<IProps> {
         accessor: (f: Folder) => {
           const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
-            return field.toString();
+            if (field.key === "status") {
+              return (
+                <img
+                  title={field.text}
+                  src={require(`../img/status-${field.text}.png`)}
+                />
+              );
+            } else {
+              return field.toString();
+            }
           }
           if (field.type === FieldType.Date) {
             return field.asDateDisplayString();

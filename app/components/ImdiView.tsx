@@ -74,13 +74,6 @@ export default class ImdiView extends React.Component<IProps, IState> {
             }}
           /> */}
         </div>
-        {/* <textarea
-          readOnly
-          className={"imdiView"}
-          value={xml}
-          // this.props.contentGenerator(this.props.folder) +
-          // this.state.manualRefresh
-        /> */}
         <SyntaxHighlighter language="xml" style={syntaxStyle}>
           {xml}
         </SyntaxHighlighter>
