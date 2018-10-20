@@ -562,7 +562,6 @@ export default class ImdiGenerator {
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
       .a("Originator", "SayMore JS");
-    this.tail.comment("***** IMDI export is not fully implemented yet.  *****");
     return this.tail;
   }
   private makeString(): string {

@@ -66,9 +66,6 @@ export class ProjectTab extends React.Component<IProps> {
               Add documents here that describe the projects and corpus.
             </strong>
             <br />
-            <a>How these are archived</a>
-            <br /> <br />
-            <br />
           </FolderPane>
         </TabPanel>
         <TabPanel>
@@ -79,14 +76,10 @@ export class ProjectTab extends React.Component<IProps> {
             showStandardMetaTabs={false}
             authorityLists={this.props.authorityLists}
           >
-            {" "}
             <strong>
               Add documents here that don't seem to fit anywhere else. An
               example would be documents explaining how the project was funded.
             </strong>
-            <br />
-            <a>How these are archived</a>
-            <br />
             <br />
             <br />
           </FolderPane>

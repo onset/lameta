@@ -4,8 +4,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
-import { Session } from "../model/Project/Session/Session";
-import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";

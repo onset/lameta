@@ -9,7 +9,6 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-const { Menu } = require("electron");
 import Store = require("electron-store");
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
@@ -146,14 +145,14 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.userSettings.set("previousProjectDirectory", directory);
     }
   }
-  private listDir(dir: string) {
-    fs.readdir(dir, (err, files) => {
-      console.log("listing " + dir);
-      files.forEach(file => {
-        console.log(file);
-      });
-    });
-  }
+  // private listDir(dir: string) {
+  //   fs.readdir(dir, (err, files) => {
+  //     console.log("listing " + dir);
+  //     files.forEach(file => {
+  //       console.log(file);
+  //     });
+  //   });
+  // }
   public render() {
     let title = this.projectHolder.project
       ? this.projectHolder.project.displayName + " - SayMore JS"
