@@ -5,6 +5,7 @@ import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDelete
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
+import { I18nProvider } from "@lingui/react";
 
 export class App extends React.Component {
   public componentDidMount() {
@@ -15,10 +16,12 @@ export class App extends React.Component {
   public render() {
     return (
       <div id="app">
+        <I18nProvider language="en">
         <HomePage />
         <ConfirmDeleteDialog />
         <LanguagePickerDialog />
         <RenameFileDialog />
+        </I18nProvider>
       </div>
     );
   }

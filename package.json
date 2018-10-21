@@ -37,6 +37,9 @@
     "cleanup": "mop -v",
     "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
+  "lingui": {
+    "sourceLocale": "en"
+  },
   "jest": {
     "globals": {
       "ts-jest": {
@@ -137,6 +140,11 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.1.0",
+    "@lingui/babel-preset-react": "^2.7.0",
     "@types/chai": "^4.1.2",
     "@types/enzyme": "^3.1.1",
     "@types/history": "^4.5.2",
@@ -147,7 +155,10 @@
     "@types/react-hot-loader": "^4.1.0",
     "@types/sinon": "^2.3.1",
     "asar": "^0.13.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^22.4.1",
+    "babel-loader": "^8.0.4",
+    "babel-plugin-macros": "^2.4.2",
     "boiler-room-custodian": "^0.6.2",
     "chai": "^4.1.2",
     "chai-webdriverio": "^0.4.3",
@@ -199,6 +210,12 @@
   "dependencies": {
     "@sentry/electron": "^0.13.0",
     "@sentry/node": "^4.2.4",
+    "@lingui/cli": "^2.7.0",
+    "@lingui/core": "^2.7.0",
+    "@lingui/macro": "^2.7.0",
+    "@lingui/react": "^2.7.0",
+    "@sentry/electron": "^0.12.1",
+    "@sentry/node": "^4.1.1",
     "@types/archiver": "^2.1.1",
     "@types/camelcase": "^4.1.0",
     "@types/commonmark": "^0.27.0",
@@ -209,6 +226,8 @@
     "@types/fs-extra": "^5.0.0",
     "@types/glob": "^5.0.33",
     "@types/image-size": "^0.0.29",
+    "@types/lingui__core": "^2.1.1",
+    "@types/lingui__react": "^2.5.0",
     "@types/musicmetadata": "^2.0.4",
     "@types/ncp": "^2.0.1",
     "@types/prop-types": "^15.5.2",

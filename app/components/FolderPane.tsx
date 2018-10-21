@@ -128,21 +128,21 @@ export class FolderPane extends React.Component<IProps> {
       </TabPanel>
     );
     const standardMetaTabs = this.props.showStandardMetaTabs ? (
-      <>
+      <div>
         <Tab>Properties</Tab>
         <Tab>Contributors</Tab>
         <Tab>Notes</Tab>
         <Tab>IMDI</Tab>
-      </>
+      </div>
     ) : null;
 
     const standardMetaPanels = this.props.showStandardMetaTabs ? (
-      <>
+      <div>
         {propertiesPanel}
         {contributorsPanel}
         {notesPanel}
         {imdiPanel}
-      </>
+      </div>
     ) : null;
 
     switch (file.type) {
