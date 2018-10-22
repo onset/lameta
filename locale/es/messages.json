@@ -1,12 +1,6 @@
 {
-  "msg.header": {
-    "translation": "",
-    "origin": [
-      [
-        "app/components/AutoForm.tsx",
-        87
-      ]
-    ],
-    "obsolete": true
+  "autoform.hello": {
+    "translation": "hola",
+    "origin": [["app/components/AutoForm.tsx", 100]]
   }
 }
