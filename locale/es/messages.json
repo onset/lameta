@@ -4,8 +4,9 @@
     "origin": [
       [
         "app/components/AutoForm.tsx",
-        88
+        87
       ]
-    ]
+    ],
+    "obsolete": true
   }
 }

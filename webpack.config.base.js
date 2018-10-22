@@ -32,6 +32,11 @@ module.exports = {
   // ],
   module: {
     rules: [
+      // {
+      //   test: /\.js$/,
+      //   loader: "babel-loader",
+      //   include: /@lingui/
+      // },
       {
         test: /\.tsx?$/,
         loaders: ["babel-loader", "ts-loader"],

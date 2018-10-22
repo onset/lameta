@@ -2,7 +2,7 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "module": "commonjs",
-    "jsx": "preserve",
+    "jsx": "react",
     "target": "es2016",
     "lib": ["dom", "es6", "dom.iterable", "scripthost"],
     "types": [],
