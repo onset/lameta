@@ -11,7 +11,8 @@ export class FolderMetadataFile extends File {
     xmlRootName: string,
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
-    rawKnownFieldsFromJson: FieldDefinition[]
+    rawKnownFieldsFromJson: FieldDefinition[],
+    customFieldRegistry: string[]
   ) {
     const name = Path.basename(directory);
     //if the metadata file doesn't yet exist, just make an empty one.
@@ -27,7 +28,10 @@ export class FolderMetadataFile extends File {
       fileExtensionForMetadata,
       false
     );
-
+    //console.log("customfieldregistry size=" + customFieldRegistry.length);
+    this.customFieldNamesRegistry = customFieldRegistry
+      ? customFieldRegistry
+      : new Array<string>();
     this.readDefinitionsFromJson(rawKnownFieldsFromJson);
 
     this.finishLoading();

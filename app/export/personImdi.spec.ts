@@ -14,7 +14,10 @@ let person: Person;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
-  person = Person.fromDirectory("sample data/Edolo sample/People/Awi Heole");
+  person = Person.fromDirectory(
+    "sample data/Edolo sample/People/Awi Heole",
+    new Array<string>()
+  );
   const subsetLanguageFinder = new LanguageFinder([
     {
       name: "Edolo",

@@ -47,6 +47,10 @@ export abstract class Folder {
     return Path.basename(Path.basename(this.directory));
   }
 
+  // this array is shared by all members of a kind of folder,
+  // i.e. all sessions share one, all peope share one
+  public sharedCustomFieldNames: string[];
+
   public get hasMoreFieldsTable(): boolean {
     return false;
   }
@@ -193,14 +197,14 @@ export abstract class Folder {
     }
   }
 
-  public couldPossiblyBecomeDirty() {
-    if (this.metadataFile) {
-      this.metadataFile.couldPossiblyBecomeDirty();
-    }
-  }
   public wasChangeThatMobxDoesNotNotice() {
     if (this.metadataFile) {
       this.metadataFile.wasChangeThatMobxDoesNotNotice();
+    }
+  }
+  public recomputedChangeWatcher() {
+    if (this.metadataFile) {
+      this.metadataFile.recomputedChangeWatcher();
     }
   }
 }

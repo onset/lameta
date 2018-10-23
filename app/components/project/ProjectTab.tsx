@@ -18,7 +18,6 @@ interface IProps {
 @observer
 export class ProjectTab extends React.Component<IProps> {
   public render() {
-    this.props.project.couldPossiblyBecomeDirty();
     const kFirstTabToOpen = 0;
     return (
       <Tabs

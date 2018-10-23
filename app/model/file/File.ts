@@ -65,6 +65,8 @@ export abstract class File {
   @mobx.observable
   public contributions = new Array<Contribution>();
 
+  public customFieldNamesRegistry: string[]; // = new Array<string>();
+
   get type(): string {
     const x = this.properties.getValue("type") as Field;
     return x ? x.text : "???";
@@ -314,6 +316,9 @@ export abstract class File {
     value: any,
     isCustom: boolean
   ) {
+    if (isCustom && this.customFieldNamesRegistry.indexOf(key) === -1) {
+      this.customFieldNamesRegistry.push(key);
+    }
     // console.log("loadProperties key: " + key);
     // console.log(JSON.stringify(value));
     if (value === undefined) {
@@ -477,34 +482,22 @@ export abstract class File {
         this.contributions
       );
     }
-
-    // It's important to do this *after* all the deserializing, so that we don't count the deserializing as a change
-    // and then re-save, which would make every file look as if it was modified today.
-    // And we also need to run it even if the meta file companion doesn't exist yet for some file, so that
-    // we'll create it if/when some property gets set.
-    this.watchForChange = mobx.reaction(
-      // Function to check for a change. Mobx looks at its result, and if it is different
-      // than the first run, it will call the second function.
-      () => {
-        return this.getXml();
-      },
-      // Function fires when a change is detected
-      () => this.changed()
-    );
+    this.recomputedChangeWatcher();
   }
   private inGetXml: boolean = false;
-  public getXml() {
+  public getXml(doOutputEmptyCustomFields: boolean = false) {
     if (this.inGetXml) {
       throw new Error("Loop detected in getXml() for " + this.metadataFilePath);
     }
     this.inGetXml = true;
     try {
-      //console.log("getXml() of " + this.metadataFilePath);
+      //console.log("-----------getXml() of " + this.metadataFilePath);
       return getSayMoreXml(
         this.xmlRootName,
         this.properties,
         this.contributions,
-        this.doOutputTypeInXmlTags
+        this.doOutputTypeInXmlTags,
+        doOutputEmptyCustomFields
       );
     } finally {
       this.inGetXml = false;
@@ -521,7 +514,7 @@ export abstract class File {
     }
     //    console.log(`Saving ${this.metadataFilePath}`);
 
-    const xml = this.getXml();
+    const xml = this.getXml(false);
 
     if (this.describedFilePath.indexOf("sample data") > -1) {
       // console.log(
@@ -624,26 +617,11 @@ export abstract class File {
     Enhance: move to its own class
   */
 
-  private watchForChange: mobx.IReactionDisposer;
+  private watchForChangeDisposer: mobx.IReactionDisposer;
 
   //does this need to be saved?
   private dirty: boolean;
-  public isDirty(): boolean {
-    return this.dirty;
-  }
 
-  // This is/was called whenever a UI shows that has user-changable things.
-  // I did this before setting up the mobx.reaction system to actually notice
-  // when something changes. Leaving it around, made to do nothing, until I gain
-  // confidence in the new system.
-  public couldPossiblyBecomeDirty() {
-    if (this.dirty) {
-      //console.log(`Already dirty: ${this.metadataFilePath}`);
-    } else {
-      //console.log(`Considered dirty: ${this.metadataFilePath}`);
-    }
-    //this.dirty = true;
-  }
   private clearDirty() {
     this.dirty = false;
     //console.log("dirty cleared " + this.metadataFilePath);
@@ -651,7 +629,7 @@ export abstract class File {
 
   private changed() {
     if (this.dirty) {
-      //console.log("changed() but already dirty " + this.metadataFilePath);
+      // console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
       //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
@@ -659,6 +637,27 @@ export abstract class File {
   }
   public wasChangeThatMobxDoesNotNotice() {
     this.changed();
+  }
+
+  public recomputedChangeWatcher() {
+    if (this.watchForChangeDisposer) {
+      this.watchForChangeDisposer();
+    }
+    // It's important to do this *after* all the deserializing, so that we don't count the deserializing as a change
+    // and then re-save, which would make every file look as if it was modified today.
+    // And we also need to run it even if the meta file companion doesn't exist yet for some file, so that
+    // we'll create it if/when some property gets set.
+    this.watchForChangeDisposer = mobx.reaction(
+      // Function to check for a change. Mobx looks at its result, and if it is different
+      // than the first run, it will call the second function.
+      // IMPORTANT! the only change it can see is what gets into the xml result. Mobx is *not* looking at access here. So if a
+      // field is not written (because it is blank), this is not going to detect that the field was added or removed.
+      () => {
+        return this.getXml(true);
+      },
+      // Function fires when a change is detected
+      () => this.changed()
+    );
   }
 
   public getIconName(): string {

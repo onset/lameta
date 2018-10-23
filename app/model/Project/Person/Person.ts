@@ -66,8 +66,11 @@ export class Person extends Folder {
     });
     this.knownFields = knownFieldDefinitions.person; // for csv export
   }
-  public static fromDirectory(directory: string): Person {
-    const metadataFile = new PersonMetadataFile(directory);
+  public static fromDirectory(
+    directory: string,
+    customFieldRegistry: string[]
+  ): Person {
+    const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(directory, metadataFile);
     return new Person(directory, metadataFile, files);
   }
@@ -82,7 +85,14 @@ export class Person extends Folder {
   }
 }
 export class PersonMetadataFile extends FolderMetadataFile {
-  constructor(directory: string) {
-    super(directory, "Person", true, ".person", knownFieldDefinitions.person);
+  constructor(directory: string, customFieldRegistry?: string[]) {
+    super(
+      directory,
+      "Person",
+      true,
+      ".person",
+      knownFieldDefinitions.person,
+      customFieldRegistry ? customFieldRegistry : []
+    );
   }
 }

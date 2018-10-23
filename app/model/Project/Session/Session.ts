@@ -26,8 +26,14 @@ export class Session extends Folder {
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
     this.knownFields = knownFieldDefinitions.session; // for csv export
   }
-  public static fromDirectory(directory: string): Session {
-    const metadataFile = new SessionMetadataFile(directory);
+  public static fromDirectory(
+    directory: string,
+    customFieldRegistry: string[]
+  ): Session {
+    const metadataFile = new SessionMetadataFile(
+      directory,
+      customFieldRegistry
+    );
     //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
     const genreChoices = genres.map((g: any) => {
@@ -55,6 +61,7 @@ export class Session extends Folder {
   public get hasCustomFieldsTable(): boolean {
     return true;
   }
+
   public getAllContributionsToAllFiles(): Contribution[] {
     const contributionsToList = new Array<Contribution>();
 
@@ -111,13 +118,14 @@ export class Session extends Folder {
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
-  constructor(directory: string) {
+  constructor(directory: string, customFieldRegistry?: string[]) {
     super(
       directory,
       "Session",
       true,
       ".session",
-      knownFieldDefinitions.session
+      knownFieldDefinitions.session,
+      customFieldRegistry ? customFieldRegistry : []
     );
     /* I'm not needing it now, but here is an example of how to see what is changing
     a property. Set a breakpoint where the console.log is, look at the call stack,

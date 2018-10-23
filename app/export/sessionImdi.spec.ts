@@ -13,7 +13,10 @@ let session: Session;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
-  session = Session.fromDirectory("sample data/Edolo sample/Sessions/ETR009");
+  session = Session.fromDirectory(
+    "sample data/Edolo sample/Sessions/ETR009",
+    new Array<string>()
+  );
   setResultXml(
     ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
   );
@@ -27,6 +30,7 @@ describe("session imdi export", () => {
   it("should contain Session/Name", () => {
     expect(count("METATRANSCRIPT/Session/Name")).toBe(1);
   });
+
   it("should contain Session/Name", () => {
     expect(value("METATRANSCRIPT/Session/Name")).toBe("ETR009");
   });

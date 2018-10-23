@@ -18,9 +18,6 @@ export interface IProps {
 export default class FileList extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
-    if (this.props.folder.selectedFile) {
-      this.props.folder.couldPossiblyBecomeDirty();
-    }
   }
 
   private onDrop(

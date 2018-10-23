@@ -21,6 +21,7 @@ export interface IProps {
 
   formClass: string; // used to activate the right stylesheet
   authorityLists: AuthorityLists;
+  //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
   validateFieldThatControlsFileNames?: (value: string) => boolean;

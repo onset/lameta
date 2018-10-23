@@ -43,6 +43,8 @@ export class Project extends Folder {
   @mobx.observable
   public persons: Person[] = [];
 
+  public customSessionFieldRegistry: string[] = [];
+  public customPeopleFieldRegistry: string[] = [];
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
@@ -102,7 +104,10 @@ export class Project extends Folder {
       const dir = Path.join(sesssionsDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         // console.log(dir);
-        const session = Session.fromDirectory(dir);
+        const session = Session.fromDirectory(
+          dir,
+          project.customSessionFieldRegistry
+        );
         project.sessions.push(session);
       }
       // else ignore it
@@ -113,7 +118,10 @@ export class Project extends Folder {
       const dir = Path.join(peopleDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         //console.log(dir);
-        const person = Person.fromDirectory(dir);
+        const person = Person.fromDirectory(
+          dir,
+          project.customPeopleFieldRegistry
+        );
         project.persons.push(person);
       }
       // else ignore it
@@ -152,7 +160,7 @@ export class Project extends Folder {
       "New Session"
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
-    const session = Session.fromDirectory(dir);
+    const session = Session.fromDirectory(dir, this.customSessionFieldRegistry);
     session.properties.setText("id", Path.basename(dir));
     this.sessions.push(session);
     this.selectedSession.index = this.sessions.length - 1;
@@ -164,7 +172,7 @@ export class Project extends Folder {
       "New Person"
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
-    const person = Person.fromDirectory(dir);
+    const person = Person.fromDirectory(dir, this.customPeopleFieldRegistry);
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
@@ -300,6 +308,13 @@ export class Project extends Folder {
 }
 export class ProjectMetadataFile extends FolderMetadataFile {
   constructor(directory: string) {
-    super(directory, "Project", false, ".sprj", knownFieldDefinitions.project);
+    super(
+      directory,
+      "Project",
+      false,
+      ".sprj",
+      knownFieldDefinitions.project,
+      []
+    );
   }
 }

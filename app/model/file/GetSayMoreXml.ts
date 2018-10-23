@@ -9,7 +9,8 @@ export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
   contributions: Contribution[],
-  doOutputTypeInXmlTags: boolean
+  doOutputTypeInXmlTags: boolean,
+  doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
   const root = xmlbuilder.create(xmlRootName, {
     version: "1.0",
@@ -22,12 +23,14 @@ export default function getSayMoreXml(
   writeFieldGroup(
     root,
     fields.filter(f => f.definition && f.definition.isAdditional),
-    "AdditionalFields"
+    "AdditionalFields",
+    false // only custom fields might need special treatment
   );
   writeFieldGroup(
     root,
     fields.filter(f => f.definition && f.definition.isCustom),
-    "CustomFields"
+    "CustomFields",
+    doOutputEmptyCustomFields
   );
 
   return root.end({ pretty: true, indent: "  " });
@@ -51,7 +54,8 @@ function writeNormalFields(
 function writeFieldGroup(
   root: xmlbuilder.XMLElementOrXMLNode,
   fields: Field[],
-  groupTag: string
+  groupTag: string,
+  doOutputEmptyFields: boolean // used for watching empty custom fields
 ) {
   const groupParent = root.element(groupTag, {
     type: "xml"
@@ -60,11 +64,12 @@ function writeFieldGroup(
   let didWriteAtLeastOne = false;
   fields.forEach((f: Field) => {
     const v = f.typeAndValueEscapedForXml().value;
-    if (v && v.length > 0 && v !== "unspecified") {
+    if (doOutputEmptyFields || (v && v.length > 0 && v !== "unspecified")) {
       writeField(
         groupParent,
         f,
-        true /* we only have these additional fields for sessions, and sessions have type on the xml tag*/
+        true /* we only have these additional fields for sessions & people, which have type on the xml tag*/,
+        doOutputEmptyFields
       );
       didWriteAtLeastOne = true;
     }
@@ -124,7 +129,8 @@ function writeContributions(
 function writeField(
   root: xmlbuilder.XMLElementOrXMLNode,
   field: Field,
-  doOutputTypeInXmlTags: boolean
+  doOutputTypeInXmlTags: boolean,
+  doOutputEmptyFields: boolean = false
 ) {
   const { type, value } = field.typeAndValueEscapedForXml();
 
@@ -145,7 +151,7 @@ function writeField(
       field.key.indexOf("date") === -1 || type === "date",
       "SHOULDN'T " + field.key + " BE A DATE?"
     );
-    if (value.length > 0) {
+    if (doOutputEmptyFields || value.length > 0) {
       // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
       if (doOutputTypeInXmlTags) {
         root.element(tag, { type }, value).up();

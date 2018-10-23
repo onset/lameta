@@ -167,6 +167,7 @@ export class FolderPane extends React.Component<IProps> {
                   form="primary"
                   formClass="sessionForm"
                   authorityLists={this.props.authorityLists}
+                  //customFieldNames={this.props.customFieldNames}
                   fieldThatControlsFileNames={"id"}
                   fieldThatControlsFileNamesMightHaveChanged={key =>
                     (this.props.folder as Session).nameMightHaveChanged()

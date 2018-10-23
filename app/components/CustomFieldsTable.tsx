@@ -29,25 +29,53 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     this.computeRows(nextProps);
   }
   private computeRows(nextProps: IProps) {
+    const customFieldsInThisFileAlready = nextProps.folder.properties
+      .values()
+      .filter(f => (f.definition ? f.definition.isCustom : false));
+
+    let didAddOneOrMoreFields = false;
+    //figure out what custom fields are out there on other files of this
+    // type that we should make place for
+    nextProps.folder
+      .metadataFile!.customFieldNamesRegistry.filter(
+        n => !customFieldsInThisFileAlready.some(f => f.key === n)
+      )
+      .forEach(n => {
+        didAddOneOrMoreFields = true;
+        //actually add this field to the file, empty for now. When saving,
+        // empty ones are not going to be saved to disk anyhow.
+        nextProps.folder.properties.addCustomProperty(
+          this.makeFieldForUnusedCustomField(n, n)
+        );
+      });
+
+    // When the file set up its dirty detection, this field did not exist on this file.
+    // Now we have added it, and if the user does decide to type something in there,
+    // it would not not be noticed by the dirty detection. So just have it reset
+    // based on the fields it has now.
+    // NOTE that this will be called basically every time they run SayMore on every
+    // file that they display which can have custom fields, unless all custom fields
+    // are non-empty. I expect this to be very fast, though... the time it takes is
+    // roughly the time to construct the xml string that we would save if we were writing
+    // to disk.
+    if (didAddOneOrMoreFields) {
+      nextProps.folder.recomputedChangeWatcher();
+    }
+
     this.fieldsForRows = nextProps.folder.properties
       .values()
       .filter(f => (f.definition ? f.definition.isCustom : false))
       .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
 
     // add one blank row
-    const placeHolder = this.makePlaceholderForNewCustomField();
+    const placeHolder = this.makePlaceholderForCustomField();
     this.fieldsForRows.push(placeHolder);
-
-    // this.fieldsForRows.forEach(f =>
-    //   console.log(
-    //     `custom field row: ${nextProps.folder.displayName} ${f.key}= "${
-    //       f.text
-    //     }"`
-    //   )
-    // );
   }
 
   private fieldLabelChanged(f: Field) {
+    //review: what should happen if we have a couple instances of a custom field
+    // and we change the name of one of the instances?
+
     if (f.definition.persist) {
       // we're updating
       if (f.englishLabel.trim().length === 0) {
@@ -62,9 +90,21 @@ export default class CustomFieldsTable extends React.Component<IProps> {
         // ignore empty placehholders
         return;
       }
-      // we're adding
+      // we're adding a new field because the user typed in a field name
       console.log(`adding custom field ${f.englishLabel}=${f.text}`);
+
       f.key = f.englishLabel;
+
+      // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
+      //review do this here?
+      if (
+        this.props.folder.metadataFile!.customFieldNamesRegistry.indexOf(
+          f.key
+        ) === -1
+      ) {
+        this.props.folder.metadataFile!.customFieldNamesRegistry.push(f.key);
+      }
+
       f.persist = f.definition.persist = true; // But what if it is empty? Let the saving code worry about that.
       this.props.folder.properties.addCustomProperty(f);
       // add a new placeholder
@@ -75,7 +115,20 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     this.props.folder.wasChangeThatMobxDoesNotNotice();
   }
 
-  private makePlaceholderForNewCustomField() {
+  private makeFieldForUnusedCustomField(key: string, englishLabel: string) {
+    const definition: FieldDefinition = {
+      key,
+      englishLabel,
+      persist: true,
+      type: "Text",
+      order: 0,
+      isCustom: true,
+      showOnAutoForm: false // we do show it, but in the custom table
+    };
+    return Field.fromFieldDefinition(definition);
+  }
+
+  private makePlaceholderForCustomField() {
     const definition: FieldDefinition = {
       key: "placeholder",
       englishLabel: "",
