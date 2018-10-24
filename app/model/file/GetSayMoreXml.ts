@@ -151,12 +151,12 @@ function writeField(
       field.key.indexOf("date") === -1 || type === "date",
       "SHOULDN'T " + field.key + " BE A DATE?"
     );
-    if (doOutputEmptyFields || value.length > 0) {
+    if (doOutputEmptyFields || value.trim().length > 0) {
       // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
       if (doOutputTypeInXmlTags) {
-        root.element(tag, { type }, value).up();
+        root.element(tag, { type }, value.trim()).up();
       } else {
-        root.element(tag, value).up();
+        root.element(tag, value.trim()).up();
       }
     }
   }

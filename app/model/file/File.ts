@@ -147,6 +147,14 @@ export abstract class File {
     isCustom: boolean = false,
     showOnAutoForm: boolean = false
   ) {
+    // assert.notEqual(
+    //   value,
+    //   undefined,
+    //   `addTextProperty('${key}') was given a value of undefined`
+    // );
+    if (value === undefined) {
+      value = "";
+    }
     // if this field (and more importantly, its definition, already exists, just stick in a new value)
     const field = this.properties.getValue(key);
     if (field) {
@@ -186,7 +194,12 @@ export abstract class File {
     // );
     //this.properties.setValue(key, field);
 
-    assert.ok(value === this.properties.getTextField(key).text);
+    assert.ok(
+      value === this.properties.getTextField(key).text,
+      `expected value of '${key}', '${value}'==='${
+        this.properties.getTextField(key).text
+      }'`
+    );
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
@@ -316,7 +329,16 @@ export abstract class File {
     value: any,
     isCustom: boolean
   ) {
-    if (isCustom && this.customFieldNamesRegistry.indexOf(key) === -1) {
+    //for some reason xml gives us undefined for things with just a space. Let's just trim while we're at it.
+    if (value === undefined) {
+      value = "";
+    }
+
+    if (
+      isCustom &&
+      value.length > 0 &&
+      this.customFieldNamesRegistry.indexOf(key) === -1
+    ) {
       this.customFieldNamesRegistry.push(key);
     }
     // console.log("loadProperties key: " + key);
