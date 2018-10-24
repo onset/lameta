@@ -27,7 +27,7 @@ export default class TextFieldEdit extends React.Component<
   }
 
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
-    text.text = event.currentTarget.value;
+    text.text = event.currentTarget.value.trim();
     this.setState({ invalid: false });
   }
 

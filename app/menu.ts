@@ -1,4 +1,4 @@
-import { Menu, remote } from "electron";
+import { Menu, remote, ipcRenderer } from "electron";
 import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
@@ -159,9 +159,9 @@ export default class SayLessMenu {
     if (sessionMenu) {
       template.push(projectMenu, sessionMenu, peopleMenu);
     }
-    if (process.env.NODE_ENV === "development") {
-      template.push(devMenu);
-    }
+    // if (process.env.NODE_ENV === "development") {
+    template.push(devMenu);
+    //  }
     //if (process.env.NODE_ENV === "test") {
     template.push(testMenu);
     //}

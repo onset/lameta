@@ -19,7 +19,11 @@ export class SessionsTab extends React.Component<IProps> {
   public render() {
     const folderListButtons = new Array<JSX.Element>();
     folderListButtons.push(
-      <button key="newSession" onClick={e => this.props.project.addSession()}>
+      <button
+        id="newSession"
+        key="newSession"
+        onClick={e => this.props.project.addSession()}
+      >
         New Session
       </button>
     );

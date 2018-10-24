@@ -334,13 +334,6 @@ export abstract class File {
       value = "";
     }
 
-    if (
-      isCustom &&
-      value.length > 0 &&
-      this.customFieldNamesRegistry.indexOf(key) === -1
-    ) {
-      this.customFieldNamesRegistry.push(key);
-    }
     // console.log("loadProperties key: " + key);
     // console.log(JSON.stringify(value));
     if (value === undefined) {
@@ -358,8 +351,18 @@ export abstract class File {
     }
 
     const textValue: string = value;
-    const fixedKey = this.properties.getKeyFromXmlTag(key);
 
+    if (isCustom) {
+      console.log("custom " + key);
+    }
+    if (
+      isCustom &&
+      textValue.length > 0 &&
+      this.customFieldNamesRegistry.indexOf(key) === -1
+    ) {
+      this.customFieldNamesRegistry.push(key);
+    }
+    const fixedKey = this.properties.getKeyFromXmlTag(key);
     // ---- DATES  --
     if (key.toLowerCase().indexOf("date") > -1) {
       const normalizedDateString = this.normalizeIncomingDateString(textValue);

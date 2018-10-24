@@ -22,6 +22,7 @@ export default class SayLessRunner {
   public constructor() {
     process.env.startInStartScreen = "true";
     process.env.log = "e2e sayless.log";
+    process.env.NODE_ENV = "development"; //show debug
   }
 
   public async start(doClear: boolean = true): Promise<any> {
@@ -109,7 +110,7 @@ export default class SayLessRunner {
     const exists = await this.app.client.waitForExist(selector, 2 * 1000);
 
     if (exists) {
-      console.log(log ? log : `Found element matching '${selector}'`);
+      // console.log(log ? log : `Found element matching '${selector}'`);
     } else {
       console.log(log ? log : `Could not find element matching '${selector}'`);
       throw new Error(`Could not find element matching '${selector}'`);
@@ -117,6 +118,37 @@ export default class SayLessRunner {
     expect(exists).toBe(true);
   }
 
+  public async shouldNotExist(selector: string, log?: string) {
+    //const element = await this.app.client.element(selector);
+    const exists = await this.app.client.isExisting(selector);
+
+    // if (exists) {
+    //   throw new Error(`Should not have found element matching '${selector}'`);
+    // }
+    expect(exists).toBe(false);
+  }
+
+  public async expectCustomFieldWithText(name: string, text: string) {
+    return this.shouldExist(`//textarea[@name='${name}' and text()='${text}']`);
+  }
+  public async expectCustomField(name: string) {
+    return this.shouldExist(`//textarea[text()='${name}']`);
+  }
+  public async expectNoCustomField(name: string) {
+    return this.shouldNotExist(`//textarea[text()='${name}']`);
+  }
+
+  public async typeInCustomField(name: string, text: string) {
+    const selector = `//div[contains(@class,'field')]/textarea[@name='${name}']`;
+    await this.click(selector);
+
+    if (text.length === 0) {
+      // webdriver has trouble clearing fields, I have tried many workarounds (they say it's a chrome problem, so maybe it will go away someday)
+      // meanwhile, let's just send a " " instead.
+      text = " ";
+    }
+    return this.browser.setValue(selector, text);
+  }
   public async expectWindowTitle(title: string, log?: string) {
     await delay(500);
     const t = await this.app.browserWindow.getTitle();
@@ -142,7 +174,7 @@ export default class SayLessRunner {
 
   public async click(selector: string, log?: string) {
     await this.shouldExist(selector);
-    console.log(log ? log : "Clicking " + selector);
+    //console.log(log ? log : "Clicking " + selector);
     await this.browser.click(selector);
   }
 
@@ -176,9 +208,9 @@ export default class SayLessRunner {
     await this.click(".tab-people");
     return delay(500);
   }
-  public async type(selector: string, text: string, log?: string) {
+  public async clickAndType(selector: string, text: string, log?: string) {
     await this.shouldExist(selector);
-    console.log(log ? log : "Clicking " + selector);
+    //console.log(log ? log : "Clicking " + selector);
     await this.browser.setValue("input", text);
   }
 
@@ -219,10 +251,10 @@ export default class SayLessRunner {
 
     //setting new project name
 
-    await this.type("input", this.kProjectName);
+    await this.clickAndType("input", this.kProjectName);
     await this.click("#okButton", "clicking ok");
     await this.app.client.waitForExist(".tab-project");
-    console.log("Project created with sample data.");
+    //console.log("Project created with sample data.");
   }
 
   public async expectFolderListRowCount(expectedRows: number) {
@@ -246,15 +278,34 @@ export default class SayLessRunner {
     console.log(`${selector} table has ${actual}/${expectedRows} rows`);
   }
 
-  public async typeField(fieldName: string, text: string) {
+  public async typeFieldByNameAndTab(fieldName: string, text: string) {
     //return this.app.client.elementIdValue(fieldName, text);
     await this.app.client.element(`[name="${fieldName}"]`).setValue(text);
+    // for some reason, doesn't take await
+    this.app.client.keys("\t");
+    await delay(100);
+  }
+  public async typeFieldBySelectorAndTab(selector: string, text: string) {
+    //return this.app.client.elementIdValue(fieldName, text);
+    await this.app.client.element(selector).setValue(text);
     // for some reason, doesn't take await
     this.app.client.keys("\t");
     await delay(100);
     //      .element(`//textarea[@name="${fieldName}"]`)
     //      .element(`[name="${fieldName}"]`)
     //    .setValue(text);
+  }
+  public async typeKeys(text: string) {
+    this.app.client.keys(text);
+    await delay(100);
+  }
+
+  public async selectFolder(nthFolderStartingWith1: number) {
+    return this.click(
+      "(//div[contains(@class,'folderList')]//div[contains(@class,'rt-tr-group')])[" +
+        nthFolderStartingWith1 +
+        "]"
+    );
   }
 }
 

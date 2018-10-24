@@ -53,7 +53,7 @@ describe("main window", function spec() {
 
     //setting new project name
 
-    await runner.type("input", runner.kProjectName);
+    await runner.clickAndType("input", runner.kProjectName);
     await runner.click("#okButton", "clicking ok");
     // look around
     await runner.click(".tab-sessions");
@@ -88,8 +88,53 @@ describe("main window", function spec() {
     await runner.expectFileListRowCount(1);
 
     await runner.click("li=Person");
-    await runner.typeField("Full Name", "joe");
+    await runner.typeFieldByNameAndTab("Full Name", "joe");
     await runner.shouldExist("//div[text()='joe']"); // the folder
     await runner.shouldExist("//div[text()='joe.person']"); // the metadata file
+  });
+
+  it("custom field creation, sharing, and deletion", async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100 * 1000;
+
+    await runner.goToStartScreen();
+    await runner.createdProjectWithSampleData();
+
+    await runner.goToSessionsTab();
+    await runner.typeFieldByNameAndTab("placeholder", "color");
+    await runner.typeKeys("orange");
+
+    // now make a new session
+    await runner.click("#newSession");
+
+    // that session should show a place for color now
+    await runner.expectCustomField("color");
+    // and it should be empty
+    await runner.expectCustomFieldWithText("color", "");
+    // type in blue
+    await runner.typeInCustomField("color", "blue");
+
+    // reload everything to make sure it got saved
+    await runner.restart(false);
+    await runner.goToSessionsTab();
+    // go back to the second folder, the one we created
+    await runner.selectFolder(2);
+    // confirm that it has color "blue"
+    await runner.expectCustomFieldWithText("color", "blue");
+    // now lets make sure we can remove it from one session
+    await runner.typeInCustomField("color", "");
+    await runner.restart(false);
+    await runner.goToSessionsTab();
+    await runner.selectFolder(2);
+    await runner.expectCustomFieldWithText("color", "");
+
+    // finally let's remove it completely from the project by also clearing the value from the other session
+    await runner.selectFolder(1);
+    await runner.typeInCustomField("color", "");
+
+    // currently the unused custom fields don't disappear until you restart.
+    await runner.restart(false);
+    await runner.goToSessionsTab();
+    await runner.expectNoCustomField("color");
+    //return runner.app.client.debug();
   });
 });
