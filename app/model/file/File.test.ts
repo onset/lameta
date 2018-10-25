@@ -4,6 +4,7 @@ import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
+import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -23,7 +24,7 @@ describe("FolderMetadataFile constructor", () => {
   it("should make the appropriate metadata file if it doesn't exist", () => {
     //temp.track();
     const dir = temp.mkdirSync("blah");
-    const f = new SessionMetadataFile(dir);
+    const f = new SessionMetadataFile(dir, new CustomFieldRegistry());
     const files = fs.readdirSync(dir);
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
@@ -67,7 +68,7 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "ETR009.session");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new SessionMetadataFile(newDir);
+    const f = new SessionMetadataFile(newDir, new CustomFieldRegistry());
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");
@@ -86,7 +87,7 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "Edolo sample.sprj");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new ProjectMetadataFile(newDir);
+    const f = new ProjectMetadataFile(newDir, new CustomFieldRegistry());
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");

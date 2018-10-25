@@ -2,6 +2,7 @@ import { ProjectMetadataFile } from "./Project";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
+import { CustomFieldRegistry } from "./CustomFieldRegistry";
 
 let projectDirectory;
 let projectName;
@@ -89,5 +90,5 @@ function GetProjectFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Project><${tag}>${content}</${tag}></Project>`
   );
-  return new ProjectMetadataFile(projectDirectory);
+  return new ProjectMetadataFile(projectDirectory, new CustomFieldRegistry());
 }

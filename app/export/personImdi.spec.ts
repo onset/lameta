@@ -8,6 +8,7 @@ import {
   value
 } from "./xmlUnitTestUtils";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 
 let project: Project;
 let person: Person;
@@ -16,7 +17,7 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
-    new Array<string>()
+    new CustomFieldRegistry()
   );
   const subsetLanguageFinder = new LanguageFinder([
     {

@@ -4,6 +4,7 @@ import * as Path from "path";
 import { IChoice } from "../../field/Field";
 import * as mobx from "mobx";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
+import { CustomFieldRegistry } from "../CustomFieldRegistry";
 const knownFieldDefinitions = require("../../field/fields.json");
 const genres = require("./genres.json");
 
@@ -28,7 +29,7 @@ export class Session extends Folder {
   }
   public static fromDirectory(
     directory: string,
-    customFieldRegistry: string[]
+    customFieldRegistry: CustomFieldRegistry
   ): Session {
     const metadataFile = new SessionMetadataFile(
       directory,
@@ -118,14 +119,14 @@ export class Session extends Folder {
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customFieldRegistry?: string[]) {
+  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
       directory,
       "Session",
       true,
       ".session",
       knownFieldDefinitions.session,
-      customFieldRegistry ? customFieldRegistry : []
+      customFieldRegistry
     );
     /* I'm not needing it now, but here is an example of how to see what is changing
     a property. Set a breakpoint where the console.log is, look at the call stack,

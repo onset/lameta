@@ -11,6 +11,7 @@ import { FieldSet } from "../field/FieldSet";
 import { locate } from "../../crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
+import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 
 const titleCase = require("title-case");
 
@@ -65,7 +66,7 @@ export abstract class File {
   @mobx.observable
   public contributions = new Array<Contribution>();
 
-  public customFieldNamesRegistry: string[]; // = new Array<string>();
+  public customFieldNamesRegistry: CustomFieldRegistry;
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -355,12 +356,8 @@ export abstract class File {
     if (isCustom) {
       console.log("custom " + key);
     }
-    if (
-      isCustom &&
-      textValue.length > 0 &&
-      this.customFieldNamesRegistry.indexOf(key) === -1
-    ) {
-      this.customFieldNamesRegistry.push(key);
+    if (isCustom && textValue.length > 0) {
+      this.customFieldNamesRegistry.encountered(this.type, key);
     }
     const fixedKey = this.properties.getKeyFromXmlTag(key);
     // ---- DATES  --

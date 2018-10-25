@@ -3,6 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { Field } from "../../field/Field";
+import { CustomFieldRegistry } from "../CustomFieldRegistry";
 
 let sessionDirectory;
 let sessionName;
@@ -90,5 +91,5 @@ function GetSessionFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Session><${tag}>${content}</${tag}></Session>`
   );
-  return new SessionMetadataFile(sessionDirectory);
+  return new SessionMetadataFile(sessionDirectory, new CustomFieldRegistry());
 }

@@ -12,6 +12,7 @@ import { remote } from "electron";
 import { trash } from "../../crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { CustomFieldRegistry } from "./CustomFieldRegistry";
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
@@ -43,8 +44,8 @@ export class Project extends Folder {
   @mobx.observable
   public persons: Person[] = [];
 
-  public customSessionFieldRegistry: string[] = [];
-  public customPeopleFieldRegistry: string[] = [];
+  public customFieldRegistry: CustomFieldRegistry;
+
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
@@ -54,9 +55,12 @@ export class Project extends Folder {
     metadataFile: File,
     files: File[],
     descriptionFolder: Folder,
-    otherDocsFolder: Folder
+    otherDocsFolder: Folder,
+    customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, metadataFile, files);
+    this.customFieldRegistry = customFieldRegistry;
+
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
     }
@@ -74,7 +78,11 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
-    const metadataFile = new ProjectMetadataFile(directory);
+    const customFieldRegistry = new CustomFieldRegistry();
+    const metadataFile = new ProjectMetadataFile(
+      directory,
+      customFieldRegistry
+    );
 
     const descriptionFolder = ProjectDocuments.fromDirectory(
       directory,
@@ -96,7 +104,8 @@ export class Project extends Folder {
       metadataFile,
       files,
       descriptionFolder,
-      otherDocsFolder
+      otherDocsFolder,
+      customFieldRegistry
     );
     const sesssionsDir = Path.join(directory, "Sessions");
     fs.ensureDirSync(sesssionsDir);
@@ -104,10 +113,7 @@ export class Project extends Folder {
       const dir = Path.join(sesssionsDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         // console.log(dir);
-        const session = Session.fromDirectory(
-          dir,
-          project.customSessionFieldRegistry
-        );
+        const session = Session.fromDirectory(dir, project.customFieldRegistry);
         project.sessions.push(session);
       }
       // else ignore it
@@ -118,10 +124,7 @@ export class Project extends Folder {
       const dir = Path.join(peopleDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         //console.log(dir);
-        const person = Person.fromDirectory(
-          dir,
-          project.customPeopleFieldRegistry
-        );
+        const person = Person.fromDirectory(dir, project.customFieldRegistry);
         project.persons.push(person);
       }
       // else ignore it
@@ -160,7 +163,7 @@ export class Project extends Folder {
       "New Session"
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
-    const session = Session.fromDirectory(dir, this.customSessionFieldRegistry);
+    const session = Session.fromDirectory(dir, this.customFieldRegistry);
     session.properties.setText("id", Path.basename(dir));
     this.sessions.push(session);
     this.selectedSession.index = this.sessions.length - 1;
@@ -172,7 +175,7 @@ export class Project extends Folder {
       "New Person"
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
-    const person = Person.fromDirectory(dir, this.customPeopleFieldRegistry);
+    const person = Person.fromDirectory(dir, this.customFieldRegistry);
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
@@ -307,14 +310,14 @@ export class Project extends Folder {
   }
 }
 export class ProjectMetadataFile extends FolderMetadataFile {
-  constructor(directory: string) {
+  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
       directory,
       "Project",
       false,
       ".sprj",
       knownFieldDefinitions.project,
-      []
+      customFieldRegistry
     );
   }
 }

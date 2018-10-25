@@ -4,6 +4,7 @@ import * as Path from "path";
 const knownFieldDefinitions = require("../../field/fields.json");
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
+import { CustomFieldRegistry } from "../CustomFieldRegistry";
 
 const moment = require("moment");
 
@@ -68,7 +69,7 @@ export class Person extends Folder {
   }
   public static fromDirectory(
     directory: string,
-    customFieldRegistry: string[]
+    customFieldRegistry: CustomFieldRegistry
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(directory, metadataFile);
@@ -85,14 +86,14 @@ export class Person extends Folder {
   }
 }
 export class PersonMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customFieldRegistry?: string[]) {
+  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
       directory,
       "Person",
       true,
       ".person",
       knownFieldDefinitions.person,
-      customFieldRegistry ? customFieldRegistry : []
+      customFieldRegistry
     );
   }
 }

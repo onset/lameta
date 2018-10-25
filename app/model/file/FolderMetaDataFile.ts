@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as Path from "path";
 import { Field, FieldDefinition } from "../field/Field";
 import { File } from "./File";
+import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -12,7 +13,7 @@ export class FolderMetadataFile extends File {
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     rawKnownFieldsFromJson: FieldDefinition[],
-    customFieldRegistry: string[]
+    customFieldRegistry: CustomFieldRegistry
   ) {
     const name = Path.basename(directory);
     //if the metadata file doesn't yet exist, just make an empty one.
@@ -28,10 +29,7 @@ export class FolderMetadataFile extends File {
       fileExtensionForMetadata,
       false
     );
-    //console.log("customfieldregistry size=" + customFieldRegistry.length);
-    this.customFieldNamesRegistry = customFieldRegistry
-      ? customFieldRegistry
-      : new Array<string>();
+    this.customFieldNamesRegistry = customFieldRegistry;
     this.readDefinitionsFromJson(rawKnownFieldsFromJson);
 
     this.finishLoading();

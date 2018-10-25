@@ -2,6 +2,7 @@ import { ProjectMetadataFile } from "../Project/Project";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
+import { CustomFieldRegistry } from "./CustomFieldRegistry";
 
 let projectDirectory;
 let projectName;
@@ -63,7 +64,7 @@ describe("Project Read", () => {
   it("should read Doondo Project", () => {
     const doondoPath = "c:/dev/Doondo";
     if (fs.existsSync(doondoPath)) {
-      const f = new ProjectMetadataFile(doondoPath);
+      const f = new ProjectMetadataFile(doondoPath, new CustomFieldRegistry());
       expect(f.properties.getDateField("dateAvailable").asISODateString()).toBe(
         "2015-03-05"
       );
@@ -90,5 +91,5 @@ function GetProjectFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Project><${tag}>${content}</${tag}></Project>`
   );
-  return new ProjectMetadataFile(projectDirectory);
+  return new ProjectMetadataFile(projectDirectory, new CustomFieldRegistry());
 }

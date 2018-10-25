@@ -7,6 +7,7 @@ import {
   count,
   value
 } from "./xmlUnitTestUtils";
+import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 
 let project: Project;
 let session: Session;
@@ -15,7 +16,7 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   session = Session.fromDirectory(
     "sample data/Edolo sample/Sessions/ETR009",
-    new Array<string>()
+    new CustomFieldRegistry()
   );
   setResultXml(
     ImdiGenerator.generateSession(session, project, true /*omit namespace*/)

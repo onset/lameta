@@ -37,9 +37,10 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     //figure out what custom fields are out there on other files of this
     // type that we should make place for
     nextProps.folder
-      .metadataFile!.customFieldNamesRegistry.filter(
-        n => !customFieldsInThisFileAlready.some(f => f.key === n)
+      .metadataFile!.customFieldNamesRegistry.getKeysForFileType(
+        this.props.folder.metadataFile!.type
       )
+      .filter(n => !customFieldsInThisFileAlready.some(f => f.key === n))
       .forEach(n => {
         didAddOneOrMoreFields = true;
         //actually add this field to the file, empty for now. When saving,
@@ -97,13 +98,10 @@ export default class CustomFieldsTable extends React.Component<IProps> {
 
       // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
       //review do this here?
-      if (
-        this.props.folder.metadataFile!.customFieldNamesRegistry.indexOf(
-          f.key
-        ) === -1
-      ) {
-        this.props.folder.metadataFile!.customFieldNamesRegistry.push(f.key);
-      }
+      this.props.folder.metadataFile!.customFieldNamesRegistry.encountered(
+        this.props.folder.metadataFile!.type,
+        f.key
+      );
 
       f.persist = f.definition.persist = true; // But what if it is empty? Let the saving code worry about that.
       this.props.folder.properties.addCustomProperty(f);
