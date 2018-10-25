@@ -6,6 +6,7 @@ import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
 const imagesize = require("image-size");
+import { loadPropInfoIntoFile } from "./MediaInfo";
 import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import { locate } from "../../crossPlatformUtilities";
@@ -440,20 +441,8 @@ export abstract class File {
         this.addTextProperty("height", dimensions.height.toString());
         break;
       case "Video":
-        // const ffprobe = require("ffprobe");
-        // const ffprobeStatic = require("ffprobe-static");
-
-        // ffprobe(
-        //   this.describedFilePath,
-        //   { path: ffprobeStatic.path },
-        //   (err, info) => {
-        //     if (err) {
-        //       console.error("ffprobe gave" + err);
-        //     } else {
-        //       console.log(info);
-        //     }
-        //   }
-        // );
+        // nb: this is not synchronous
+        loadPropInfoIntoFile(this);
         break;
     }
   }
