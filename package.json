@@ -29,11 +29,11 @@
     "//----dev": "this is the normal day-to-day way of running while developing, with hot-loading",
     "dev": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
-    "//----packaging": "The second build here is to electron-builder. See 'build' below",
-    "package": "npm run build-production && build --publish never",
-    "package-win": "npm run build-production && build --win --x64",
-    "package-linux": "npm run build-production && build --linux",
-    "package-all": "npm run build-production && build -mwl",
+    "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
+    "package": "npm run build-production && electron-builder --publish never",
+    "package-win": "npm run build-production && electron-builder --win --x64",
+    "package-linux": "npm run build-production && electron-builder --linux",
+    "package-all": "npm run build-production && electron-builder -mwl",
     "cleanup": "mop -v",
     "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
@@ -69,6 +69,7 @@
       "**/?(*.)(spec|test).ts?(x)"
     ]
   },
+  "//This 'build' section is for electron-builder": "",
   "build": {
     "productName": "SayMore JS",
     "appId": "io.github.MEaCoM.saymore-js",
