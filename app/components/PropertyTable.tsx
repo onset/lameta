@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { Field, FieldType } from "../model/field/Field";
 import { FieldSet } from "../model/field/FieldSet";
 import "./PropertyTable.scss";
+import { getInfoForFile } from "./mediaInfo";
 
 //const styles = require("./Sessions.scss");
 

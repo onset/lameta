@@ -3,6 +3,7 @@
  */
 
 const path = require("path");
+var webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
@@ -173,6 +174,10 @@ module.exports = {
     // slowed both initial and incremental "watch" builds by a factor of 2-4: new HardSourceWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "style.css"
+    }),
+    // see https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/573
+    new webpack.DefinePlugin({
+      "process.env.FLUENTFFMPEG_COV": false
     })
   ],
 

@@ -10,6 +10,17 @@ const { initializeSentry } = require("./init-sentry");
 
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 
+// Put this on global so that the renderer process can get at it.
+// When running from code, the path is something like <somewhere>saymore-js\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
+// When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json
+// see https://stackoverflow.com/a/43389268/723299
+global.ffprobepath = require("ffprobe-static").path.replace(
+  "app.asar",
+  "node_modules/ffprobe-static"
+);
+
+console.log("Setting global.ffprobepath to " + global.ffprobepath);
+
 let mainWindow = null;
 
 if (process.env.NODE_ENV === "production") {
