@@ -3,7 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import FileList from "./FileList";
 import { observer } from "mobx-react";
 import * as Path from "path";
-import PropertyTable from "./PropertyTable";
+import PropertyPanel from "./PropertyPanel";
 import { Folder } from "../model/Folder";
 import Notes from "./Notes";
 import StatusControl from "./StatusControl";
@@ -102,7 +102,7 @@ export class FolderPane extends React.Component<IProps> {
     ) : null;
     const propertiesPanel = (
       <TabPanel>
-        <PropertyTable fields={file.properties} />
+        <PropertyPanel file={file} />
       </TabPanel>
     );
     const contributorsPanel = (

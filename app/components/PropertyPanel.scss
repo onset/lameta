@@ -1,0 +1,35 @@
+@import "../colors";
+
+.propertyPanel {
+  display: flex;
+
+  .propertiesColumn {
+    flex-grow: 1;
+    h1 {
+      font-size: 14px;
+      //text-align: center;
+      margin-bottom: 4px;
+    }
+    .mediaStatsTable {
+      border: none;
+      background-color: transparent;
+      .rt-thead {
+        display: none;
+      }
+      .rt-tr-group {
+        border: none;
+      }
+    }
+  }
+  .customPropertiesColumn {
+    margin-left: 20px;
+    .customPropertiesTable {
+      background-color: white;
+
+      .-odd {
+        //todo: should be different for sessions
+        background-color: $sessions__oddRowHighlight--color;
+      }
+    }
+  }
+}

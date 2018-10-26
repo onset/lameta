@@ -242,6 +242,7 @@
     "glob": "^7.1.2",
     "history": "^4.6.1",
     "hotkeys-js": "^3.3.1",
+    "humanize-duration": "^3.15.3",
     "image-size": "^0.6.1",
     "mobx": "^5.1.2",
     "mobx-react": "^5.2.8",

@@ -5,8 +5,6 @@ const filesize = require("filesize");
 import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
-const imagesize = require("image-size");
-import { loadPropInfoIntoFile } from "./MediaInfo";
 import { Field, FieldType, FieldDefinition } from "../field/Field";
 import { FieldSet } from "../field/FieldSet";
 import { locate } from "../../crossPlatformUtilities";
@@ -254,7 +252,6 @@ export abstract class File {
   protected finishLoading() {
     this.addFieldsUsedInternally();
     this.readMetadataFile();
-    this.computeProperties(); //enhance: do this on demand, instead of for every file
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
@@ -354,9 +351,6 @@ export abstract class File {
 
     const textValue: string = value;
 
-    if (isCustom) {
-      console.log("custom " + key);
-    }
     if (isCustom && textValue.length > 0) {
       this.customFieldNamesRegistry.encountered(this.type, key);
     }
@@ -416,36 +410,6 @@ export abstract class File {
     this.contributions.push(n);
   }
 
-  public computeProperties() {
-    // TODO: this is running on every single file, I think, at startup. Better to do only as needed.
-
-    switch (this.type) {
-      case "Audio":
-        if (this.describedFilePath.match(/\.((mp3)|(ogg))$/i)) {
-          //TODO: this is killing unrleated unit testing... presumably because the callback happens after the tests are done?
-          // musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
-          //   if (err) {
-          //     console.log("Error:" + err.message);
-          //   }
-          //   this.addTextProperty(
-          //     "duration",
-          //     err ? "????" : metadata.duration.toString() // <-- haven't see this work yet. I think we'll give in and ship with ffmpeg eventually
-          //   );
-          //   // todo bit rate & such, which musicmetadata doesn't give us
-          // });
-        }
-        break;
-      case "Image":
-        const dimensions = imagesize(this.describedFilePath);
-        this.addTextProperty("width", dimensions.width.toString());
-        this.addTextProperty("height", dimensions.height.toString());
-        break;
-      case "Video":
-        // nb: this is not synchronous
-        loadPropInfoIntoFile(this);
-        break;
-    }
-  }
   private haveReadMetadataFile: boolean = false;
   public readMetadataFile() {
     if (this.haveReadMetadataFile) {
