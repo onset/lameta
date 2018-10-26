@@ -45,7 +45,11 @@ export class Session extends Folder {
     );
 
     genreFieldDefinition.complexChoices = genreChoices;
-    const files = this.loadChildFiles(directory, metadataFile);
+    const files = this.loadChildFiles(
+      directory,
+      metadataFile,
+      customFieldRegistry
+    );
 
     //start autosave mobx.autorunAsync(() => this.save(),    10 * 1000 /* min 10 seconds in between */  );
 

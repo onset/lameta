@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field, FieldDefinition } from "../model/field/Field";
-import { Folder } from "../model/Folder";
+import { File } from "../model/file/File";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";
@@ -9,7 +9,7 @@ import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
 
 export interface IProps {
-  folder: Folder;
+  file: File;
 }
 
 @observer
@@ -22,30 +22,28 @@ export default class CustomFieldsTable extends React.Component<IProps> {
   }
 
   public componentWillMount() {
-    this.computeRows(this.props);
+    this.computeRows(this.props.file);
   }
   public componentWillReceiveProps(nextProps: IProps) {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
-    this.computeRows(nextProps);
+    this.computeRows(nextProps.file);
   }
-  private computeRows(nextProps: IProps) {
-    const customFieldsInThisFileAlready = nextProps.folder.properties
+  private computeRows(file: File) {
+    const customFieldsInThisFileAlready = file.properties
       .values()
       .filter(f => (f.definition ? f.definition.isCustom : false));
 
     let didAddOneOrMoreFields = false;
     //figure out what custom fields are out there on other files of this
     // type that we should make place for
-    nextProps.folder
-      .metadataFile!.customFieldNamesRegistry.getKeysForFileType(
-        this.props.folder.metadataFile!.type
-      )
+    file.customFieldNamesRegistry
+      .getKeysForFileType(file.type)
       .filter(n => !customFieldsInThisFileAlready.some(f => f.key === n))
       .forEach(n => {
         didAddOneOrMoreFields = true;
         //actually add this field to the file, empty for now. When saving,
         // empty ones are not going to be saved to disk anyhow.
-        nextProps.folder.properties.addCustomProperty(
+        file.properties.addCustomProperty(
           this.makeFieldForUnusedCustomField(n, n)
         );
       });
@@ -60,10 +58,10 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     // roughly the time to construct the xml string that we would save if we were writing
     // to disk.
     if (didAddOneOrMoreFields) {
-      nextProps.folder.recomputedChangeWatcher();
+      file.recomputedChangeWatcher();
     }
 
-    this.fieldsForRows = nextProps.folder.properties
+    this.fieldsForRows = file.properties
       .values()
       .filter(f => (f.definition ? f.definition.isCustom : false))
       .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
@@ -80,11 +78,11 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     if (f.definition.persist) {
       // we're updating
       if (f.englishLabel.trim().length === 0) {
-        this.props.folder.properties.remove(f.key);
-        this.computeRows(this.props);
+        this.props.file.properties.remove(f.key);
+        this.computeRows(this.props.file);
         this.forceUpdate();
       } else {
-        this.props.folder.properties.changeKeyOfCustomField(f, f.englishLabel);
+        this.props.file.properties.changeKeyOfCustomField(f, f.englishLabel);
       }
     } else {
       if (f.englishLabel.trim().length === 0) {
@@ -98,19 +96,19 @@ export default class CustomFieldsTable extends React.Component<IProps> {
 
       // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
       //review do this here?
-      this.props.folder.metadataFile!.customFieldNamesRegistry.encountered(
-        this.props.folder.metadataFile!.type,
+      this.props.file.customFieldNamesRegistry.encountered(
+        this.props.file.type,
         f.key
       );
 
       f.persist = f.definition.persist = true; // But what if it is empty? Let the saving code worry about that.
-      this.props.folder.properties.addCustomProperty(f);
+      this.props.file.properties.addCustomProperty(f);
       // add a new placeholder
       this.focusField = f;
-      this.computeRows(this.props);
+      this.computeRows(this.props.file);
       this.forceUpdate();
     }
-    this.props.folder.wasChangeThatMobxDoesNotNotice();
+    this.props.file.wasChangeThatMobxDoesNotNotice();
   }
 
   private makeFieldForUnusedCustomField(key: string, englishLabel: string) {
@@ -147,6 +145,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       {
         id: "name",
         Header: "Field",
+        maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return (

@@ -80,7 +80,7 @@ export default class MediaStats extends React.Component<IProps> {
       {
         id: "key",
         Header: "Stat",
-        width: 120,
+        width: 80,
         accessor: key => key
       },
       {
@@ -97,6 +97,7 @@ export default class MediaStats extends React.Component<IProps> {
         showPagination={false}
         data={this.stats.keys()}
         columns={columns}
+        minRows={0}
       />
     );
   }

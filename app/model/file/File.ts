@@ -727,8 +727,11 @@ export abstract class File {
 }
 
 export class OtherFile extends File {
-  constructor(path: string) {
+  constructor(path: string, customFieldRegistry?: CustomFieldRegistry) {
     super(path, path + ".meta", "Meta", false, ".meta", true);
+    if (customFieldRegistry) {
+      this.customFieldNamesRegistry = customFieldRegistry;
+    }
     this.finishLoading();
   }
 }

@@ -169,7 +169,7 @@ export default class AutoForm extends React.Component<IProps> {
           ""
         )}
         {this.props.folder.hasCustomFieldsTable ? (
-          <CustomFieldsTable folder={this.props.folder} />
+          <CustomFieldsTable file={this.props.folder.metadataFile!} />
         ) : (
           ""
         )}

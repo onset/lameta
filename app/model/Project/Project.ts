@@ -94,7 +94,11 @@ export class Project extends Folder {
       "OtherDocuments"
     );
 
-    const files = this.loadChildFiles(directory, metadataFile);
+    const files = this.loadChildFiles(
+      directory,
+      metadataFile,
+      customFieldRegistry
+    );
     // console.log(
     //   "Project had " + files.length + " files. " + JSON.stringify(files)
     // );

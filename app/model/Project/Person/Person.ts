@@ -72,7 +72,11 @@ export class Person extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
-    const files = this.loadChildFiles(directory, metadataFile);
+    const files = this.loadChildFiles(
+      directory,
+      metadataFile,
+      customFieldRegistry
+    );
     return new Person(directory, metadataFile, files);
   }
   public static saveFolderMetaData() {

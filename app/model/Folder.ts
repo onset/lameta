@@ -16,6 +16,7 @@ import assert from "assert";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 const sanitize = require("sanitize-filename");
 import { trash } from "../crossPlatformUtilities";
+import { CustomFieldRegistry } from "./Project/CustomFieldRegistry";
 
 export class IFolderSelection {
   @observable
@@ -97,7 +98,8 @@ export abstract class Folder {
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
-    folderMetaDataFile: File
+    folderMetaDataFile: File,
+    customFieldRegistry: CustomFieldRegistry
   ): File[] {
     const files = new Array<File>();
 
@@ -115,7 +117,7 @@ export abstract class Folder {
           Path.normalize(path) !==
             Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
-          const file = new OtherFile(path);
+          const file = new OtherFile(path, customFieldRegistry);
           files.push(file);
         }
       }

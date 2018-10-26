@@ -118,7 +118,7 @@ export default class PersonForm extends React.Component<IProps> {
           field={this.props.fields.getTextField("primaryOccupation")}
           className="full-right-side"
         />
-        <CustomFieldsTable folder={this.props.person} />
+        <CustomFieldsTable file={this.props.person.metadataFile!} />
       </form>
     );
   }

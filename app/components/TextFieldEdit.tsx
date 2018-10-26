@@ -27,7 +27,11 @@ export default class TextFieldEdit extends React.Component<
   }
 
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
-    text.text = event.currentTarget.value.trim();
+    // NB: Don't trim here. It is tempting, because at the end of the day we'd
+    // like it trimmed, but if you do it here, it's not possible to even
+    // type a space.
+    // NO: text.text = event.currentTarget.value.trim();
+    text.text = event.currentTarget.value;
     this.setState({ invalid: false });
   }
 
