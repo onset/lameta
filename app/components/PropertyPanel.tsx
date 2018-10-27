@@ -22,7 +22,10 @@ export default class PropertyPanel extends React.Component<IProps> {
           )}
         </div>
         <div className="propertiesColumn customPropertiesColumn">
-          <CustomFieldsTable file={this.props.file} />
+          <CustomFieldsTable
+            firstColumnHeaderText="Custom Field"
+            file={this.props.file}
+          />
         </div>
       </div>
     );

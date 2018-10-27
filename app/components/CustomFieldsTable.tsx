@@ -10,6 +10,7 @@ import FieldNameEdit from "./FieldNameEdit";
 
 export interface IProps {
   file: File;
+  firstColumnHeaderText?: string;
 }
 
 @observer
@@ -144,7 +145,9 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     const customFieldTableColumns = [
       {
         id: "name",
-        Header: "Field",
+        Header: this.props.firstColumnHeaderText
+          ? this.props.firstColumnHeaderText
+          : "Field",
         maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
