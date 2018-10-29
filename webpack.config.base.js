@@ -19,6 +19,17 @@ module.exports = {
     entrypoints: false,
     children: false
   },
+  // externals: [
+  //   {
+  //     "iconv-loader": "iconv-loader"
+  //   },
+  //   {
+  //     "fluent-ffmpeg": "fluent-ffmpeg"
+  //   },
+  //   {
+  //     "@sentry/electron": "@sentry/electron"
+  //   }
+  // ],
   module: {
     rules: [
       {

@@ -28,81 +28,81 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@sentry/browser@~4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-4.1.1.tgz#9db1e765bf2afcbe0fb44b028abdf5c74d6e77b0"
-  integrity sha512-rmkGlTh0AL3Jf0DvF3BluChIyzPkkYpNgIwEHjxTUiLp6BQdgwakZuzBqSPJrEs+jMsKMoesOuJ/fAAG0K7+Ew==
+"@sentry/browser@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-4.2.3.tgz#8ee405ba5cad5875945ebbfd5441daa9771bff7f"
+  integrity sha512-XvuIc1aclz4zuP2LamDuSy62/gl1mmNxzF+Ni5L8mcghBDq0urnOdkblVQgzqGoH8mc2QfjEctGa5djWxg3Bpg==
   dependencies:
-    "@sentry/core" "4.1.1"
-    "@sentry/types" "4.1.0"
-    "@sentry/utils" "4.1.1"
+    "@sentry/core" "4.2.3"
+    "@sentry/types" "4.2.3"
+    "@sentry/utils" "4.2.3"
 
-"@sentry/core@4.1.1", "@sentry/core@~4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-4.1.1.tgz#013ee6ee32033b9a404da5bd27f5a2417dcb1a89"
-  integrity sha512-QJExTxZ1ZA5P/To5gOwd3sowukXW0N/Q9nfu8biRDNa+YURn6ElLjO0fD6eIBqX1f3npo/kTiWZwFBc7LXEzSg==
+"@sentry/core@4.2.3", "@sentry/core@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-4.2.3.tgz#58d45e0e6b3f805e9ccd2c32fdff40bc612a7f80"
+  integrity sha512-xo5rvksftnaEdnKbdokyfuqgMnuqw1DFp0lDboIFHlEBcQde/AdThEgLujJWmbVNI3Cg7g8/HvP65f7QBjKfOw==
   dependencies:
-    "@sentry/hub" "4.1.1"
-    "@sentry/minimal" "4.1.1"
-    "@sentry/types" "4.1.0"
-    "@sentry/utils" "4.1.1"
+    "@sentry/hub" "4.2.3"
+    "@sentry/minimal" "4.2.3"
+    "@sentry/types" "4.2.3"
+    "@sentry/utils" "4.2.3"
 
-"@sentry/electron@^0.12.1":
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.12.1.tgz#a654eb382b188c71c582b4fed942e9de210ff4e5"
-  integrity sha512-hdPdE1qWFxgsht0usssBal34IAvMgVZN1bPd8m+jTcZQtzYBNzier8VOLF3btf1OLPnMD6+wrcl3ab3XIQCoxA==
+"@sentry/electron@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.13.0.tgz#fb990d582b93b80338e00dde79958b1b65835ac9"
+  integrity sha512-7sg2agOSF1MduIo6Kjb66oP3EaTeOUN250ODM0Z3vNO/Lc77dqzfQe45dQ7EjUXy8VFQfyg/iIVSIxzCp9TZZQ==
   dependencies:
-    "@sentry/browser" "~4.1.1"
-    "@sentry/core" "~4.1.1"
-    "@sentry/minimal" "~4.1.1"
-    "@sentry/node" "~4.1.1"
-    "@sentry/types" "~4.1.0"
-    "@sentry/utils" "~4.1.1"
+    "@sentry/browser" "~4.2.3"
+    "@sentry/core" "~4.2.3"
+    "@sentry/minimal" "~4.2.3"
+    "@sentry/node" "~4.2.3"
+    "@sentry/types" "~4.2.3"
+    "@sentry/utils" "~4.2.3"
     electron-fetch "1.1.0"
     form-data "2.3.2"
     util.promisify "1.0.0"
 
-"@sentry/hub@4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-4.1.1.tgz#ef093fe4f42587c7868b66299584b5a9f9d67fc6"
-  integrity sha512-VmcZOgcbFjJzK1oQNwcFP/wgfoWQr24dFv1C0uwdXldNXx3mwyUVkomvklBHz90HwiahsI/gCc+ZmbC3ECQk2Q==
+"@sentry/hub@4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-4.2.3.tgz#90b84d351051cd537e36836d38dd4ae4b90617bb"
+  integrity sha512-7Jc/wz3vybYm1RX2wk/4zAQS8fo3uxvXYBkRfpm3OmnGgTlwDEmJwtegeGWFqufxLl85brZ19V1KAdulmO206A==
   dependencies:
-    "@sentry/types" "4.1.0"
-    "@sentry/utils" "4.1.1"
+    "@sentry/types" "4.2.3"
+    "@sentry/utils" "4.2.3"
 
-"@sentry/minimal@4.1.1", "@sentry/minimal@~4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-4.1.1.tgz#46d8a35e0d82b0903ed83dba21d8344b601145a5"
-  integrity sha512-xRKWA46OGnZinJyTljDUel53emPP9mb/XNi/kF6SBaVDOUXl7HAB8kP7Bn7eLBwOanxN8PbYoAzh/lIQXWTmDg==
+"@sentry/minimal@4.2.3", "@sentry/minimal@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-4.2.3.tgz#f7cde49e797fa75df652bcb95fb06a8a4df4d7ac"
+  integrity sha512-Hus7LUeJDGsYpT2RTe6bUjG7mHG9uQoyDmW6pYUMN2dhD+cP5cPoTIXO4yxokwgAeDa+GH2/UXoASWc4s2eA2w==
   dependencies:
-    "@sentry/hub" "4.1.1"
-    "@sentry/types" "4.1.0"
+    "@sentry/hub" "4.2.3"
+    "@sentry/types" "4.2.3"
 
-"@sentry/node@^4.1.1", "@sentry/node@~4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-4.1.1.tgz#a4d268e8a63c2a91e911e37fd3140f36ac10c5b6"
-  integrity sha512-wbo8F2IqZW+exlOyQzQ7+bPNPXIYmG2g73ZgHFh0x3MHVOTSKgfiO3BzCqmFyUDhxqkEL23PQqLhM07GEtH3Bw==
+"@sentry/node@^4.2.3", "@sentry/node@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-4.2.3.tgz#7e0c46919836afb76fb6d54212eb7800872379cc"
+  integrity sha512-15xiTO3CrBSEg4x6EdPYBwcw+fzQ6QjMw6pttdafgQLwOuX0xY5ry2u+qVuE0HXyz9kBx3RhwiVV/A4RJTbiuQ==
   dependencies:
-    "@sentry/core" "4.1.1"
-    "@sentry/hub" "4.1.1"
-    "@sentry/types" "4.1.0"
-    "@sentry/utils" "4.1.1"
+    "@sentry/core" "4.2.3"
+    "@sentry/hub" "4.2.3"
+    "@sentry/types" "4.2.3"
+    "@sentry/utils" "4.2.3"
     cookie "0.3.1"
     lsmod "1.0.0"
     md5 "2.2.1"
     stack-trace "0.0.10"
 
-"@sentry/types@4.1.0", "@sentry/types@~4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-4.1.0.tgz#ebffb9857abbecaad5d1c00152a50f72ac9757a5"
-  integrity sha512-KY7B9wYs1NACHlYzG4OuP6k4uQJkyDPJppftjj3NJYShfwdDTO1I2Swkhhb5dJMEMMMpBJGxXmiqZ2mX5ErISQ==
+"@sentry/types@4.2.3", "@sentry/types@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-4.2.3.tgz#e53df8ac5c2419d333be8671972a2db6d34de230"
+  integrity sha512-Z7laXlLtLSEXcKzgcD2caWPMTM8sAvR86rssYM5uYb3azC5PO0aAvuhjokkdv1+Ke1Bg7lkaNZamiCSyaH/9xg==
 
-"@sentry/utils@4.1.1", "@sentry/utils@~4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-4.1.1.tgz#5624517d582c870348f234df27c509db95d4fdc6"
-  integrity sha512-XMvGqAWATBrRkOF0lkt0Ij8of2mRmp4WeFTUAgiKzCekxfUBLBaTb4wTaFXz1cnnnjVTwcAq72qBRMhHwQ0IIg==
+"@sentry/utils@4.2.3", "@sentry/utils@~4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-4.2.3.tgz#46119e0938308245054984303ee1b049a7ab7523"
+  integrity sha512-D6+M1081wCwGp8adWV3KFOxrxFmVyjMJ45x6/TnYvXdgDyc+t28oil21FHeKhwjld9eMqgQ5Tf1OOvos1MNBQg==
   dependencies:
-    "@sentry/types" "4.1.0"
+    "@sentry/types" "4.2.3"
 
 "@sinonjs/formatio@^2.0.0":
   version "2.0.0"
@@ -8332,10 +8332,10 @@ react-dropzone@4.1:
     attr-accept "^1.0.3"
     prop-types "^15.5.7"
 
-react-hot-loader@^4.3.3:
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/react-hot-loader/-/react-hot-loader-4.3.3.tgz#37409a3341c7787563d0972007ba02521f82f5d5"
-  integrity sha512-N2yYEfI8mIeE9DffyMHrHQz0WryDdF8d1CJ4rpQ15hNAu3xco6wQ6JtKIIc/8w0igFWh2XpV0rIkuE4tpKLivQ==
+react-hot-loader@^4.3.11:
+  version "4.3.11"
+  resolved "https://registry.yarnpkg.com/react-hot-loader/-/react-hot-loader-4.3.11.tgz#fe5cf7be7700c249b58293f977c1e6e0900f0d87"
+  integrity sha512-T0G5jURyTsFLoiW6MTr5Q35UHC/B2pmYJ7+VBjk8yMDCEABRmCGy4g6QwxoB4pWg4/xYvVTa/Pbqnsgx/+NLuA==
   dependencies:
     fast-levenshtein "^2.0.6"
     global "^4.3.0"
