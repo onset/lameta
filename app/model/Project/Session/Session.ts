@@ -21,8 +21,13 @@ export class Session extends Folder {
     );
   }
 
-  public constructor(directory: string, metadataFile: File, files: File[]) {
-    super(directory, metadataFile, files);
+  public constructor(
+    directory: string,
+    metadataFile: File,
+    files: File[],
+    customFieldRegistry: CustomFieldRegistry
+  ) {
+    super(directory, metadataFile, files, customFieldRegistry);
     this.properties.setText("id", Path.basename(directory));
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
     this.knownFields = knownFieldDefinitions.session; // for csv export
@@ -53,7 +58,7 @@ export class Session extends Folder {
 
     //start autosave mobx.autorunAsync(() => this.save(),    10 * 1000 /* min 10 seconds in between */  );
 
-    return new Session(directory, metadataFile, files);
+    return new Session(directory, metadataFile, files, customFieldRegistry);
   }
   // override
   protected fieldContentThatControlsFolderName(): string {

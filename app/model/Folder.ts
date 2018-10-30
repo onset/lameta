@@ -32,12 +32,15 @@ export abstract class Folder {
   public selectedFile: File | null;
   public metadataFile: File | null;
   protected safeFileNameBase: string;
+  protected customFieldRegistry: CustomFieldRegistry;
 
   public constructor(
     directory: string,
     metadataFile: File | null,
-    files: File[]
+    files: File[],
+    customFieldRegistry: CustomFieldRegistry
   ) {
+    this.customFieldRegistry = customFieldRegistry;
     this.directory = directory;
     this.metadataFile = metadataFile;
     this.files = files;
@@ -47,10 +50,6 @@ export abstract class Folder {
   public get filePrefix(): string {
     return Path.basename(Path.basename(this.directory));
   }
-
-  // this array is shared by all members of a kind of folder,
-  // i.e. all sessions share one, all peope share one
-  public sharedCustomFieldNames: string[];
 
   public get hasMoreFieldsTable(): boolean {
     return false;
@@ -78,7 +77,7 @@ export abstract class Folder {
       newFileName ? newFileName : Path.basename(path)
     );
     fs.copySync(path, dest);
-    this.files.push(new OtherFile(dest));
+    this.files.push(new OtherFile(dest, this.customFieldRegistry));
   }
   public addFiles(files: object[]) {
     assert.ok(files.length > 0);

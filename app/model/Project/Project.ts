@@ -44,8 +44,6 @@ export class Project extends Folder {
   @mobx.observable
   public persons: Person[] = [];
 
-  public customFieldRegistry: CustomFieldRegistry;
-
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
@@ -58,8 +56,7 @@ export class Project extends Folder {
     otherDocsFolder: Folder,
     customFieldRegistry: CustomFieldRegistry
   ) {
-    super(directory, metadataFile, files);
-    this.customFieldRegistry = customFieldRegistry;
+    super(directory, metadataFile, files, customFieldRegistry);
 
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
@@ -86,12 +83,14 @@ export class Project extends Folder {
 
     const descriptionFolder = ProjectDocuments.fromDirectory(
       directory,
-      "DescriptionDocuments"
+      "DescriptionDocuments",
+      customFieldRegistry
     );
 
     const otherDocsFolder = ProjectDocuments.fromDirectory(
       directory,
-      "OtherDocuments"
+      "OtherDocuments",
+      customFieldRegistry
     );
 
     const files = this.loadChildFiles(

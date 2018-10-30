@@ -55,8 +55,13 @@ export class Person extends Folder {
       : this.properties.getTextStringOrEmpty("name");
   }
 
-  public constructor(directory: string, metadataFile: File, files: File[]) {
-    super(directory, metadataFile, files);
+  public constructor(
+    directory: string,
+    metadataFile: File,
+    files: File[],
+    customFieldRegistry: CustomFieldRegistry
+  ) {
+    super(directory, metadataFile, files, customFieldRegistry);
     this.properties.setText("name", Path.basename(directory));
     this.properties.addHasConsentProperty(this);
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("name");
@@ -77,7 +82,7 @@ export class Person extends Folder {
       metadataFile,
       customFieldRegistry
     );
-    return new Person(directory, metadataFile, files);
+    return new Person(directory, metadataFile, files, customFieldRegistry);
   }
   public static saveFolderMetaData() {
     //console.log("saving " + person.getString("title"));
