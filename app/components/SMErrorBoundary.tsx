@@ -19,8 +19,11 @@ class SMErrorBoundary extends Component<IProps, IState> {
 
   public componentDidCatch(e) {
     this.setState({ hasError: true, error: e.message });
-    const sentryId = Sentry.captureException(e);
-    console.log("sentry id = " + sentryId);
+    if (!process.env.HOT) {
+      //see comment in index.tsx
+      const sentryId = Sentry.captureException(e);
+      console.log("sentry id = " + sentryId);
+    }
   }
 
   public render() {

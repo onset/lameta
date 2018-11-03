@@ -198,7 +198,7 @@
   },
   "dependencies": {
     "@sentry/electron": "^0.13.0",
-    "@sentry/node": "^4.2.3",
+    "@sentry/node": "^4.2.4",
     "@types/archiver": "^2.1.1",
     "@types/camelcase": "^4.1.0",
     "@types/commonmark": "^0.27.0",
