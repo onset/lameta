@@ -18,6 +18,10 @@ export class Person extends Folder {
       this.properties.getTextStringOrEmpty("name").toLowerCase()
     );
   }
+  public get nameForMatchingContribution(): string {
+    return this.properties.getTextStringOrEmpty("name");
+  }
+
   public get metadataFileExtensionWithDot(): string {
     return ".person";
   }

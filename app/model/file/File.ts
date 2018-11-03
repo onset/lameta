@@ -17,13 +17,14 @@ const titleCase = require("title-case");
 export class Contribution {
   //review this @mobx.observable
   @mobx.observable
-  public name: string;
+  public name: string; // this is the contributor
   @mobx.observable
   public role: string;
   @mobx.observable
   public date: string;
   @mobx.observable
   public comments: string;
+  public sessionName: string; // not persisted; just used by the UI when listing contributions for a person
 
   public constructor(
     name: string,

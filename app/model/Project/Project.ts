@@ -4,7 +4,7 @@ import * as Path from "path";
 import { Session } from "./Session/Session";
 import { IFolderSelection, Folder } from "../Folder";
 import { Person } from "./Person/Person";
-import { File } from "../file/File";
+import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
@@ -310,6 +310,27 @@ export class Project extends Folder {
     return this.persons.find(p => {
       return p.nameMatches(name);
     });
+  }
+  public getContributionsMatchingPersonName(person: Person): Contribution[] {
+    const name = person.nameForMatchingContribution.toLocaleLowerCase();
+    const arraysOfMatchingContributions = this.sessions.map(session => {
+      return session
+        .getAllContributionsToAllFiles()
+        .map(contribution => {
+          if (contribution.name.toLowerCase() === name) {
+            // the session name isn't normall part of the contribution because it is owned
+            // by the session. But we stick it in here for display purposes. Alternatively,
+            // we could stick in the session itself; might be useful for linking back to it.
+            contribution.sessionName = session.displayName;
+            return contribution;
+          }
+          return undefined;
+        })
+        .filter(c => c); // remove the undefined's;
+    });
+
+    //flatten
+    return [].concat.apply([], arraysOfMatchingContributions);
   }
 }
 export class ProjectMetadataFile extends FolderMetadataFile {

@@ -21,6 +21,7 @@ import { File } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
+import { PersonContributions } from "./PersonContributions";
 
 const SplitPane = require("react-split-pane");
 
@@ -232,9 +233,10 @@ export class FolderPane extends React.Component<IProps> {
               </SMErrorBoundary>
             </TabPanel>
             <TabPanel>
-              <div className="todo">
-                -- This feature has not been implemented yet --
-              </div>
+              <PersonContributions
+                person={directoryObject as Person}
+                project={this.props.project}
+              />
             </TabPanel>
             {notesPanel}
             {imdiPanel}
