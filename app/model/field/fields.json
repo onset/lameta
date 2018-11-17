@@ -2,10 +2,12 @@
   "project": [
     {
       "key": "title",
-      "englishLabel": "Project Title"
+      "englishLabel": "Project Title",
+      "tagInSayMoreClassic": "Title"
     },
     {
       "key": "projectDescription",
+      "tagInSayMoreClassic": "ProjectDescription",
       "englishLabel": "Description",
       "cssClass": "text-block"
     },
@@ -24,13 +26,16 @@
     {
       "key": "location",
       "englishLabel": "Location/Address",
+      "tagInSayMoreClassic": "Location",
       "cssClass": "field__newSection"
     },
     {
-      "key": "region"
+      "key": "region",
+      "tagInSayMoreClassic": "Region"
     },
     {
       "key": "country",
+      "tagInSayMoreClassic": "Country",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       "imdiIsClosedVocabulary": false,
       "choices": [
@@ -287,6 +292,7 @@
     },
     {
       "key": "continent",
+      "tagInSayMoreClassic": "Continent",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       "imdiIsClosedVocabulary": true,
       "choices": [
@@ -303,28 +309,35 @@
 
     {
       "key": "fundingProjectTitle",
+      "tagInSayMoreClassic": "FundingProjectTitle",
       "cssClass": "field__newSection"
     },
     {
       "key": "accessProtocol",
       "form": "accessProtocol",
+      "tagInSayMoreClassic": "AccessProtocol",
       "englishLabel": "Access Protocol used by this project"
     },
     {
       "key": "customAccessChoices",
       "form": "accessProtocol",
+      "//": "Older Windows SM actually didn't store this in the sprj at all",
+      "tagInSayMoreClassic": "CustomAccessProtocol",
       "englishLabel": "Custom access choices"
     },
     {
       "key": "depositor",
+      "tagInSayMoreClassic": "Depositor",
       "cssClass": "field__newSection"
     },
     {
-      "key": "rightsHolder"
+      "key": "rightsHolder",
+      "tagInSayMoreClassic": "RightsHolder"
     },
 
     {
-      "key": "contactPerson"
+      "key": "contactPerson",
+      "tagInSayMoreClassic": "ContactPerson"
     },
     {
       "key": "dateAvailable",
@@ -365,12 +378,7 @@
     },
     {
       "key": "status",
-      "choices": [
-        "Incoming",
-        "In_Progress",
-        "Finished",
-        "Skipped"
-      ],
+      "choices": ["Incoming", "In_Progress", "Finished", "Skipped"],
       "default": "Incoming",
       "//": "don't show on main form",
       "form": "status"
