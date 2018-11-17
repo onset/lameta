@@ -2,6 +2,7 @@ import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
 import ReactModal from "react-modal";
+const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
 
@@ -32,7 +33,7 @@ export default class CreateProjectDialog extends React.Component<
     return Path.join(
       app.getPath("documents"),
       "SayMore",
-      this.state.projectName
+      sanitize(this.state.projectName)
     );
   }
 
