@@ -403,26 +403,26 @@
     },
     {
       "key": "locationCountry",
-      "tagInSayMoreClassic": "Location_Country",
+      "tagInSayMoreClassic": "Country",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       "imdiIsClosedVocabulary": false,
       "additional": "true"
     },
     {
       "key": "locationRegion",
-      "tagInSayMoreClassic": "Location_Region",
+      "tagInSayMoreClassic": "Region",
       "additional": "true"
     },
     {
       "key": "locationContinent",
-      "tagInSayMoreClassic": "Location_Continent",
+      "tagInSayMoreClassic": "Continent",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       "imdiIsClosedVocabulary": true,
       "additional": "true"
     },
     {
       "key": "locationAddress",
-      "tagInSayMoreClassic": "Location_Address",
+      "tagInSayMoreClassic": "Location",
       "additional": "true"
     },
     {
