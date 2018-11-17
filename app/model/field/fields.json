@@ -365,7 +365,12 @@
     },
     {
       "key": "status",
-      "choices": ["Incoming", "In Progress", "Finished", "Skipped"],
+      "choices": [
+        "Incoming",
+        "In_Progress",
+        "Finished",
+        "Skipped"
+      ],
       "default": "Incoming",
       "//": "don't show on main form",
       "form": "status"

@@ -28,7 +28,8 @@ export default class StatusControl extends React.Component<IProps> {
                 <img src={require(`../img/status-${s}.png`)} />
                 <label>
                   <Radio value={s} />
-                  {s}
+                  {/* saymore windows classic used "In_Progress" as the key */}
+                  {s.replace("_", " ")}
                 </label>
               </div>
             );

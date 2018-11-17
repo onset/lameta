@@ -74,10 +74,7 @@ export class FolderList extends React.Component<IProps> {
           if (field.type === FieldType.Text) {
             if (field.key === "status") {
               return (
-                <img
-                  title={field.text}
-                  src={require(`../img/status-${field.text}.png`)}
-                />
+                <img title={field.text} src={this.getStatusIcon(field.text)} />
               );
             } else {
               return field.toString();
@@ -139,6 +136,15 @@ export class FolderList extends React.Component<IProps> {
         />
       </div>
     );
+  }
+
+  private getStatusIcon(status: string) {
+    try {
+      return require(`../img/status-${status}.png`);
+    } catch (e) {
+      // there is some status this version doesn't understand
+      return require(`../img/Warning.png`);
+    }
   }
 }
 
