@@ -109,7 +109,7 @@ export abstract class Folder {
     filePaths.forEach(path => {
       if (path !== folderMetaDataFile.metadataFilePath) {
         // We don't explicitly do anything with the the .meta companion files here,
-        // becuase the the constructor of the ComponentFile is responsible for finding & loading it, (or creating it if missing?).
+        // because the the constructor of the ComponentFile is responsible for finding & loading it, (or creating it if missing?).
         if (
           !path.endsWith(".meta") &&
           !path.endsWith(".test") &&

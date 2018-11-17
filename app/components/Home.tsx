@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-//import SessionsPage from "../containers/SessionsPage";
 import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
@@ -8,9 +7,6 @@ import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 const styles = require("./Home.scss");
-//import sessionIcon from "../../artwork/session.svg";
-// const sessionIcon = require("../../artwork/Female_Selected.png");
-//import * as sessionIcon from "./test.svg";
 import { SessionIcon } from "./session/SessionIcon";
 import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
@@ -39,7 +35,7 @@ export default class Home extends React.Component<IProps> {
     //at this time, electron doesn't appear to have a way to compute
     //menu enabled-ness at the last moment. So if we add or delete a
     // person or session, we need to update the corresponding menu
-    // becuase this may be the first person/session, or there may
+    // because this may be the first person/session, or there may
     // now be no persons/sessions.
     mobx.observe(this.props.project.selectedSession, change => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
@@ -49,7 +45,7 @@ export default class Home extends React.Component<IProps> {
     });
   }
 
-  // NB: we have to actually reload menus becuase (as of this writing) electron menus
+  // NB: we have to actually reload menus because (as of this writing) electron menus
   // don't take an enabled function. They only take and enabled value. So you have
   // to reload the whole menu to control the enabled state of anything;
   // https://github.com/electron/electron/issues/528 is somewhat related
