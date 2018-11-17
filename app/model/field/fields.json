@@ -468,6 +468,7 @@
     },
     {
       "key": "nickname",
+      "tagInSayMoreClassic": "nickName",
       "englishLabel": "Nickname"
     },
     {
