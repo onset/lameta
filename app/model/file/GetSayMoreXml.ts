@@ -17,31 +17,36 @@ export default function getSayMoreXml(
     encoding: "utf-8"
   });
 
-  const fields = properties.values().filter(field => field.persist);
-  writeNormalFields(root, fields, doOutputTypeInXmlTags);
+  const propertiesToPersist = properties
+    .values()
+    .filter(field => field.persist);
+  writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
   writeContributions(root, contributions);
-  writeFieldGroup(
+
+  // "Additional Fields are labeled "More Fields" in the UI.
+  // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
+  writeElementGroup(
     root,
-    fields.filter(f => f.definition && f.definition.isAdditional),
+    propertiesToPersist.filter(f => f.definition && f.definition.isAdditional),
     "AdditionalFields",
     false // only custom fields might need special treatment
   );
-  writeFieldGroup(
+  writeElementGroup(
     root,
-    fields.filter(f => f.definition && f.definition.isCustom),
+    propertiesToPersist.filter(f => f.definition && f.definition.isCustom),
     "CustomFields",
     doOutputEmptyCustomFields
   );
-
+  //writeElementsWeDontUnderstand();
   return root.end({ pretty: true, indent: "  " });
 }
-
-function writeNormalFields(
+//function writeElementsWeDontUnderstand() {}
+function writeSimplePropertyElements(
   root: xmlbuilder.XMLElementOrXMLNode,
-  allFields: Field[],
+  properties: Field[],
   doOutputTypeInXmlTags: boolean
 ) {
-  allFields
+  properties
     .filter(field => !field.definition || !field.definition.isCustom)
     .filter(field => field.type !== FieldType.Contributions)
     .forEach(field => {
@@ -49,9 +54,7 @@ function writeNormalFields(
     });
 }
 
-// "Additional Fields are labeled "More Fields" in the UI.
-// JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
-function writeFieldGroup(
+function writeElementGroup(
   root: xmlbuilder.XMLElementOrXMLNode,
   fields: Field[],
   groupTag: string,
@@ -82,26 +85,6 @@ function writeFieldGroup(
   }
 }
 
-// function writeCustomFields(
-//   root: xmlbuilder.XMLElementOrXMLNode,
-//   allFields: Field[]
-// ) {
-//   const customParent = root.element("CustomFields", {
-//     type: "xml"
-//   });
-
-//   allFields.forEach((f: Field) => {
-//     if (f.definition && f.definition.isCustom) {
-//       //const t = f.typeAndValueForXml();
-//       const { type, value } = f.typeAndValueEscapedForXml();
-//       if (f.key && f.key.length > 0 && value && value.length > 0) {
-//         customParent.element(f.key, { type }, value).up();
-//       }
-//     }
-//   });
-
-//   customParent.up();
-// }
 function writeContributions(
   root: xmlbuilder.XMLElementOrXMLNode,
   contributions: Contribution[]

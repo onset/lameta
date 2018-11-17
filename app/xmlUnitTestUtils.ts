@@ -45,6 +45,11 @@ export function value(xpath: string): string {
   return select(xpath)[0].textContent;
 }
 export function select(xpath: string) {
+  if (resultDom === undefined) {
+    throw new Error(
+      "resultDom was undefined in select(). Make sure you called setResultXml()"
+    );
+  }
   try {
     const nodes = XPATH.selectWithResolver(
       xpath,
@@ -94,7 +99,10 @@ expect.extend({
     } else {
       console.log(resultXml);
       return {
-        message: () => `expected ${xpath} to be '${expectedValue}'`,
+        message: () =>
+          `expected ${xpath} to be '${expectedValue}'  but it was '${value(
+            xpath
+          )}'`,
         pass: false
       };
     }

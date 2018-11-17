@@ -7,7 +7,7 @@ import {
   xexpect as expect,
   count,
   value
-} from "../../../export/xmlUnitTestUtils";
+} from "../../../xmlUnitTestUtils";
 import { Field, FieldType, FieldDefinition } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 const os = require("os");

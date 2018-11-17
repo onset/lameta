@@ -6,7 +6,7 @@ import {
   xexpect as expect,
   count,
   value
-} from "./xmlUnitTestUtils";
+} from "../xmlUnitTestUtils";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 

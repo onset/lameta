@@ -11,7 +11,7 @@ import { locate } from "../../crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-
+const knownFieldDefinitions = require("../field/fields.json");
 const titleCase = require("title-case");
 
 export class Contribution {
@@ -141,6 +141,11 @@ export abstract class File {
     f.setValueFromString(date.toISOString());
     this.properties.setValue(key, f);
   }
+  //this would be used for round-tripping nested xml that we don't understand
+  // public addObjectProperty(key: string, value: object) {
+  //   this.addTextProperty(key, JSON.stringify(value));
+  // }
+
   public addTextProperty(
     key: string,
     value: string,
@@ -165,7 +170,9 @@ export abstract class File {
     else {
       const definition = {
         key,
-        englishLabel: isCustom ? key : titleCase(key),
+        // no: don't mess with the case of things we don't know about, we will probably just be round-tripping this
+        //  englishLabel: isCustom ? key : titleCase(key),
+        englishLabel: key,
         persist,
         type: "Text",
         isCustom,
@@ -340,12 +347,19 @@ export abstract class File {
       value = "";
     } else if (typeof value === "object") {
       if (
-        (value.$ && value.$.type && value.$.type === "string") ||
-        value.$.type === "date"
+        value.$ &&
+        value.$.type &&
+        (value.$.type === "string" || value.$.type === "date")
       ) {
         value = value._;
-      } else {
-        //console.log("Skipping " + key + " which was " + JSON.stringify(value));
+      }
+      // if we decide we do need to roundtrip nested unknown elements
+      //else {
+      //   this.addObjectProperty(key, value);
+      //   return;
+      // }
+      else {
+        console.log("Skipping " + key + " which was " + JSON.stringify(value));
         return;
       }
     }
@@ -355,7 +369,32 @@ export abstract class File {
     if (isCustom && textValue.length > 0) {
       this.customFieldNamesRegistry.encountered(this.type, key);
     }
-    const fixedKey = this.properties.getKeyFromXmlTag(key);
+
+    // this is getting messy... we don't want to enforce our casing
+    // on keys that we don't understand, because we need to round-trip them.
+    // Starting to wish I just used whatever the xml element name was for the
+    // key, regardless. Since SayMore Windows Classic uses all manor of case
+    // styles for elements... ending up with all this code to work around that.
+    let fixedKey = key;
+    if (
+      // if we know about this field, then we know how to roundtrip correctly
+      // already.
+      // Note the following would give a false positive if the key was
+      // known in, say, session, but we are currently loading a person.
+      // Since we do not expect and new versions of SayMore Classic,
+      // (which could theoretically introduce such a situation),
+      // I'm living with that risk.
+      Object.keys(knownFieldDefinitions).some((
+        area // e.g. project, session, person
+      ) =>
+        knownFieldDefinitions[area].find(
+          (d: any) => d.key.toLowerCase() === key.toLowerCase()
+        )
+      )
+    ) {
+      fixedKey = this.properties.getKeyFromXmlTag(key);
+    }
+
     // ---- DATES  --
     if (key.toLowerCase().indexOf("date") > -1) {
       const normalizedDateString = this.normalizeIncomingDateString(textValue);

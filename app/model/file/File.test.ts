@@ -5,11 +5,59 @@ import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import {
+  setResultXml,
+  xexpect as expect,
+  count,
+  value
+} from "../../xmlUnitTestUtils";
+import { Session } from "electron";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
   fs.writeFileSync(path, "pretend contents");
   return path;
+}
+
+function writeSessionFile(
+  contents: string
+): { tmpFolder; sessionFolder; filePath } {
+  const tmpFolder = temp.mkdirSync();
+  const sessionFolder = Path.join(tmpFolder, "test");
+  fs.mkdirSync(sessionFolder);
+  const filePath = Path.join(sessionFolder, "test.session");
+  fs.writeFileSync(
+    filePath,
+    `
+  <?xml version="1.0" encoding="utf-8"?>
+  <Session>
+    ${contents}
+  </Session>`
+  );
+  return { tmpFolder, sessionFolder, filePath };
+}
+
+function runTestsOnMetadataFile(contents: string, tests: () => any) {
+  let sessionFolder;
+  let filePath;
+  let tmpFolder;
+  ({ tmpFolder, sessionFolder, filePath } = writeSessionFile(contents));
+
+  // note, we are using a session to run these just because we need something
+  // concrete. It would be an improvement to do it in some more generic way.
+  const f = new SessionMetadataFile(sessionFolder, new CustomFieldRegistry());
+  fs.removeSync(filePath); // remove the old file, just to make sure
+  f.save(/*forceSave*/ true);
+  try {
+    setResultXml(fs.readFileSync(filePath, "utf8"));
+    tests();
+  } finally {
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  }
 }
 
 describe("file.save()", () => {
@@ -52,6 +100,32 @@ describe("file", () => {
     f.save();
     const f2 = new OtherFile(mediaFilePath);
     expect(f2.getTextField("customone").text).toBe("hello");
+  });
+
+  // e.g., SayMore Windows Classic has more fields that we do; we need
+  // to preserve those so that people don't lose their work
+  // just because they tried out this version of SayMore
+  it("should roundtrip xml elements it doesn't understand", () => {
+    runTestsOnMetadataFile(
+      `
+    <stage_transcriptionN type="string">Complete</stage_transcriptionN>
+    <something_With_craZy_casING>foobar</something_With_craZy_casING>
+    <title type="string">war &amp; peace</title>`,
+      () => {
+        // this is a field we don't have but SayMore Windows Classic does
+        expect("Session/stage_transcriptionN").toMatch("Complete");
+        // did we roundtrip the type attribute?
+        expect("Session/stage_transcriptionN[@type='string']").toHaveCount(1);
+
+        expect("Session/something_With_craZy_casING").toHaveCount(1);
+
+        /***** Things we can't roundtrip yet. (SayMore Windows 3.x doesn't need any of this as far as I know)
+         *  If @type isn't "date" or "string"
+         *  If there are other attributes
+         *  If there is nested xml
+         */
+      }
+    );
   });
 });
 
