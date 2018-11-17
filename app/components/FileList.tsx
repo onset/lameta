@@ -247,8 +247,7 @@ export default class FileList extends React.Component<IProps> {
           }
         }
       ]);
-
-      remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
     }
+      remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
   }
 }
