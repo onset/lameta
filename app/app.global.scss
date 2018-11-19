@@ -31,6 +31,10 @@ $color-interstitial: #f0f0f0;
 * {
   box-sizing: border-box;
 }
+
+$field-height: 2em;
+$label-to-field-sep: 3px;
+
 body,
 html,
 #root,
@@ -69,7 +73,7 @@ label {
   font-weight: bold;
 }
 label + textarea {
-  margin-top: 3px;
+  margin-top: $label-to-field-sep;
 }
 li {
   cursor: default;
@@ -87,7 +91,7 @@ button,
 textarea {
   border-style: inset;
   resize: none;
-  height: 2em;
+  height: $field-height;
   width: 100%; //just fill the container
   font-size: $default-font-size;
 
@@ -223,4 +227,10 @@ form .ReactTable {
   margin-left: auto;
   margin-right: auto;
   margin-top: 3em;
+}
+
+.date-picker {
+  margin-top: $label-to-field-sep;
+
+  height: $field-height;
 }
