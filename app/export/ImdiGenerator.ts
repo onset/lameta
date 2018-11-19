@@ -85,14 +85,6 @@ export default class ImdiGenerator {
 
     return this.makeString();
   }
-  private addProjectLocation() {
-    this.startGroup("Location");
-    this.field("Continent", "continent", this.project);
-    this.field("Country", "country", this.project);
-    //Region - We don't currently have this field.
-    this.field("Address", "location", this.project);
-    this.exitGroup();
-  }
 
   private addProjectInfo() {
     this.startGroup("Project");
@@ -520,7 +512,7 @@ export default class ImdiGenerator {
 
     const v = f.properties.getTextStringOrEmpty(fieldName);
     if (v && v.length > 0) {
-      this.tail = this.mostRecentElement.attribute(attributeName, v);
+      this.mostRecentElement.attribute(attributeName, v);
     }
   }
   private attributeLiteral(attributeName: string, value: string) {
