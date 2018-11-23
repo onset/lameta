@@ -155,7 +155,9 @@ export default class HomePage extends React.Component<IProps, IState> {
   // }
   public render() {
     let title = this.projectHolder.project
-      ? this.projectHolder.project.displayName + " - SayMore JS"
+      ? `${Path.basename(this.projectHolder.project.directory)}/ ${
+          this.projectHolder.project.displayName
+        }  - SayMore JS`
       : "SayMore JS";
     title += " " + require("../package.json").version;
 
