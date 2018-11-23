@@ -7,6 +7,7 @@ import Dropzone from "react-dropzone";
 import { remote } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
+import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
 
 const electron = require("electron");
 export interface IProps {
@@ -14,10 +15,19 @@ export interface IProps {
   extraButtons?: object[];
 }
 
+interface IState {
+  inRenameMode: boolean;
+}
+export interface IProps {
+  folder: Folder;
+  extraButtons?: object[];
+}
+
 @observer
-export default class FileList extends React.Component<IProps> {
+export default class FileList extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
+    this.state = { inRenameMode: false };
   }
 
   private onDrop(
@@ -107,6 +117,9 @@ export default class FileList extends React.Component<IProps> {
         }
       }
     ];
+    const canRenameCurrentFile =
+      this.props.folder.selectedFile !== this.props.folder.metadataFile;
+
     return (
       <Dropzone
         activeClassName={"drop-active"}
@@ -124,11 +137,17 @@ export default class FileList extends React.Component<IProps> {
               </li>
             </ul> */}
           </button>
-          <button className={"cmd-rename not-implemented"} disabled={true}>
-            *Rename...
-          </button>
-          <button className={"cmd-convert not-implemented"} disabled={true}>
-            *Convert...
+          <button
+            className={"cmd-rename"}
+            disabled={!canRenameCurrentFile}
+            onClick={() =>
+              RenameFileDialog.show(
+                this.props.folder.selectedFile!,
+                this.props.folder
+              )
+            }
+          >
+            Rename...
           </button>
           {this.props.extraButtons
             ? this.props.extraButtons.map(c => (
@@ -227,6 +246,12 @@ export default class FileList extends React.Component<IProps> {
           electron.shell.openExternal("file://" + file.describedFilePath);
         }
       },
+      {
+        label: "Rename...",
+        click: () => {
+          RenameFileDialog.show(file, this.props.folder);
+        }
+      },
       { type: "separator" },
       {
         label: "Delete File...",
@@ -248,6 +273,6 @@ export default class FileList extends React.Component<IProps> {
         }
       ]);
     }
-      remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
+    remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
   }
 }

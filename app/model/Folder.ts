@@ -154,6 +154,12 @@ export abstract class Folder {
       }
     });
   }
+  public renameChildWithFilenameMinusExtension(
+    childFile: File,
+    newCoreName: string
+  ): boolean {
+    return childFile.tryToRenameBothFiles(newCoreName);
+  }
 
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;

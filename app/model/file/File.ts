@@ -703,7 +703,7 @@ export abstract class File {
     return false;
   }
 
-  private tryToRenameBothFiles(newCoreName: string): boolean {
+  public tryToRenameBothFiles(newCoreName: string): boolean {
     assert(
       this.metadataFilePath !== this.describedFilePath,
       "this method is not for renaming the person or session files"

@@ -4,6 +4,7 @@ import { hot } from "react-hot-loader";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
+import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 
 export class App extends React.Component {
   public componentDidMount() {
@@ -17,6 +18,7 @@ export class App extends React.Component {
         <HomePage />
         <ConfirmDeleteDialog />
         <LanguagePickerDialog />
+        <RenameFileDialog />
       </div>
     );
   }
