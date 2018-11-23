@@ -404,26 +404,26 @@
     },
     {
       "key": "locationCountry",
-      "tagInSayMoreClassic": "Country",
+      "tagInSayMoreClassic": "Location_Country",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       "imdiIsClosedVocabulary": false,
       "additional": "true"
     },
     {
       "key": "locationRegion",
-      "tagInSayMoreClassic": "Region",
+      "tagInSayMoreClassic": "Location_Region",
       "additional": "true"
     },
     {
       "key": "locationContinent",
-      "tagInSayMoreClassic": "Continent",
+      "tagInSayMoreClassic": "Location_Continent",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       "imdiIsClosedVocabulary": true,
       "additional": "true"
     },
     {
       "key": "locationAddress",
-      "tagInSayMoreClassic": "Location",
+      "tagInSayMoreClassic": "Location_Address",
       "additional": "true"
     },
     {
