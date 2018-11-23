@@ -464,7 +464,9 @@
   "person": [
     {
       "key": "name",
-      "englishLabel": "Full Name"
+      "englishLabel": "Full Name",
+      "//": "SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.",
+      "persist": "false"
     },
     {
       "key": "nickname",

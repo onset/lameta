@@ -173,7 +173,7 @@ export class Field {
       this.key.toLowerCase().indexOf("date") > -1 &&
       this.type !== FieldType.Date
     ) {
-      console.error(key + " should be a date? ");
+      console.log("***" + key + " should be a date? ");
     }
   }
 

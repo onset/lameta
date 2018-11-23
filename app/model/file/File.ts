@@ -269,7 +269,7 @@ export abstract class File {
     this.addTextProperty("notes", "");
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-    this.addDateProperty("modifiedDate", stats.mtime);
+    this.addDateProperty("modifiedDate", stats.mtime, false);
     const typePatterns = [
       ["Session", /\.session$/i],
       ["Person", /\.person$/i],
