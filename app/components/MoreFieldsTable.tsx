@@ -6,7 +6,6 @@ import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
-import FieldNameEdit from "./FieldNameEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 
 export interface IProps {

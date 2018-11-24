@@ -118,6 +118,9 @@ textarea {
 .rt-td {
   textarea {
     border: none;
+    &.invalid {
+      border: solid 2px red;
+    }
   }
   select {
     border: none;
