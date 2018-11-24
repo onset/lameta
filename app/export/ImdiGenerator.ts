@@ -133,7 +133,6 @@ export default class ImdiGenerator {
     this.group("Content", () => {
       this.field("Genre", "genre");
       this.field("SubGenre", "subgenre");
-      this.element("TODO", "More fields of session");
       this.group("CommunicationContext", () => {
         this.field("Involvement", "involvement");
         this.field("PlanningType", "planningType");
@@ -408,7 +407,7 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
-      this.element("Role", role);
+      this.element("Role", role && role.length > 0 ? role : "unspecified");
       this.field("Name", "name", person);
       this.field("FullName", "name", person);
       this.field("Code", "code", person);
@@ -447,7 +446,6 @@ export default class ImdiGenerator {
       this.field("BirthDate", "birthYear", person);
       this.field("Sex", "gender", person);
       this.field("Education", "education", person);
-      this.element("TODO", "More fields of person");
       this.startGroup("Languages");
       this.addActorLanguage(
         person.properties.getTextStringOrEmpty("primaryLanguage"),

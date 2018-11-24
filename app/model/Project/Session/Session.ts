@@ -77,7 +77,10 @@ export class Session extends Folder {
 
     this.files.forEach(f =>
       f.contributions.forEach(c => {
-        if (c.name && c.name.trim().length > 0 && c.role && c.role.length > 0) {
+        if (
+          c.name &&
+          c.name.trim().length > 0 /*&& c.role && c.role.length > 0*/
+        ) {
           // If a person has multiple roles, we list them once for each role. But if
           // the roles are the same, then we don't list them again.
           if (
