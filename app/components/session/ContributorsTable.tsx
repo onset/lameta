@@ -24,32 +24,26 @@ interface IState {
 export default class ContributorsTable extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-
-    // this.state = {
-    //   selectedContribution: this.props.file.contributions[
-    //     this.props.file.contributions.length - 1
-    //   ]
-    // };
   }
   public componentWillMount() {
-    this.ensureOneBlankRow();
+    this.ensureOneBlankRow(this.props);
   }
   public componentWillReceiveProps(nextProps: IProps) {
     //if <different className=""></different>
-    this.ensureOneBlankRow();
+    this.ensureOneBlankRow(nextProps);
   }
-  private ensureOneBlankRow() {
-    //console.log("ensureOnBlankRow(): " + this.props.file.describedFilePath);
-    let i = this.props.file.contributions.length;
+  private ensureOneBlankRow(propToUse: IProps) {
+    console.log("ensureOnBlankRow(): " + propToUse.file.describedFilePath);
+    let i = propToUse.file.contributions.length;
     while (i--) {
-      const c = this.props.file.contributions[i];
+      const c = propToUse.file.contributions[i];
       if (!c.name || c.name.length === 0) {
         //console.log("removing blank contribution at " + i);
-        this.props.file.contributions.splice(i, 1);
+        propToUse.file.contributions.splice(i, 1);
       }
     }
     //console.log("Adding blank contribution");
-    this.props.file.contributions.push(new Contribution("", "", "", ""));
+    propToUse.file.contributions.push(new Contribution("", "", "", ""));
   }
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
@@ -61,7 +55,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         onChange={name => {
           console.log("name:" + name);
           contribution.name = name;
-          this.ensureOneBlankRow();
+          this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}
       />

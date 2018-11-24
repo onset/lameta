@@ -75,7 +75,6 @@ export default class MediaStats extends React.Component<IProps, IState> {
                   })
                 );
                 this.addStat("Format", result.format.format_long_name);
-                console.log(JSON.stringify(result));
                 result.streams.forEach(stream => {
                   this.processStreamStats(stream);
                 });
