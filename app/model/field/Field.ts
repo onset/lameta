@@ -39,7 +39,8 @@ export class FieldDefinition {
   // get a definition with any default values set above
   public constructor(rawObject) {
     Object.assign(this, rawObject);
-    this.isAdditional = rawObject.additional === "true";
+    this.isAdditional =
+      rawObject.additional === true || rawObject.additional === "true";
   }
 }
 

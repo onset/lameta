@@ -349,7 +349,7 @@
     {
       "key": "id",
       "englishLabel": "ID",
-      "persist": "false"
+      "persist": false
     },
     {
       "key": "title"
@@ -391,7 +391,7 @@
     {
       "key": "involvement",
       "tagInSayMoreClassic": "Involvement",
-      "additional": "true",
+      "additional": true,
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -407,29 +407,29 @@
       "tagInSayMoreClassic": "Location_Country",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       "imdiIsClosedVocabulary": false,
-      "additional": "true"
+      "additional": true
     },
     {
       "key": "locationRegion",
       "tagInSayMoreClassic": "Location_Region",
-      "additional": "true"
+      "additional": true
     },
     {
       "key": "locationContinent",
       "tagInSayMoreClassic": "Location_Continent",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       "imdiIsClosedVocabulary": true,
-      "additional": "true"
+      "additional": true
     },
     {
       "key": "locationAddress",
       "tagInSayMoreClassic": "Location_Address",
-      "additional": "true"
+      "additional": true
     },
     {
       "key": "planningType",
       "tagInSayMoreClassic": "Planning_Type",
-      "additional": "true",
+      "additional": true,
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -444,12 +444,12 @@
       "key": "subgenre",
       "tagInSayMoreClassic": "Sub-Genre",
       "englishLabel": "Subgenre",
-      "additional": "true"
+      "additional": true
     },
     {
       "key": "socialContext",
       "tagInSayMoreClassic": "Social_Context",
-      "additional": "true",
+      "additional": true,
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -467,7 +467,7 @@
       "key": "name",
       "englishLabel": "Full Name",
       "//": "SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.",
-      "persist": "false"
+      "persist": false
     },
     {
       "key": "nickname",
