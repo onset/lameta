@@ -66,10 +66,14 @@ describe("Session Read", () => {
     );
   });
 
-  it("should read additional fields", () => {
+  // in many cases, the key used internally to this version of SayMore
+  // does not match the element name. This is especially true in the
+  // AdditionalFields area. Here, the xml tag is Location_Country, but our
+  // key is locationCountry:
+  it("should read additional fields and convert name", () => {
     const f = GetSessionFileWithOneField(
       "AdditionalFields",
-      '<Country type="string">Congo Republic of the</Country>'
+      '<Location_Country type="string">Congo Republic of the</Location_Country>'
     );
     expect(f.getTextProperty("locationCountry")).toBe("Congo Republic of the");
     let x: Field = f.properties.getValueOrThrow("locationCountry");
@@ -79,6 +83,14 @@ describe("Session Read", () => {
     f.setTextProperty("locationCountry", "somewhere else");
     x = f.properties.getValueOrThrow("locationCountry");
     expect(x.definition.isAdditional).toBeTruthy();
+  });
+
+  it("should read choices that vary by case", () => {
+    const f = GetSessionFileWithOneField(
+      "AdditionalFields",
+      '<Planning_Type type="string">pLAnNed</Planning_Type>'
+    );
+    expect(f.getTextProperty("planningType")).toBe("planned");
   });
 });
 

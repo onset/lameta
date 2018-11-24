@@ -87,6 +87,13 @@ select,
 button,
 .Select--multi .Select-value {
   font-size: $default-font-size;
+  font-family: $default-fonts;
+}
+input,
+select,
+.Select--multi .Select-value {
+  margin-left: -3px; // make it line up in grids
+  height: $field-height; //match textarea so grid rows are the same height
 }
 textarea {
   border-style: inset;

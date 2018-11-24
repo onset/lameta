@@ -289,50 +289,53 @@ export abstract class File {
   }
 
   private loadPropertiesFromXml(propertiesFromXml: any) {
-    const keys = Object.keys(propertiesFromXml);
+    const tags = Object.keys(propertiesFromXml);
 
-    for (const key of keys) {
-      if (key.toLocaleLowerCase() === "contributions") {
-        this.loadContributions(propertiesFromXml[key]);
+    for (const tag of tags) {
+      if (tag.toLocaleLowerCase() === "contributions") {
+        this.loadContributions(propertiesFromXml[tag]);
       }
 
       // <CustomFields>
-      else if (key.toLowerCase() === "customfields") {
+      else if (tag.toLowerCase() === "customfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
-        const customKeys = Object.keys(propertiesFromXml[key]);
+        const customKeys = Object.keys(propertiesFromXml[tag]);
         for (const customKey of customKeys) {
           // first one is just $":{"type":"xml"}
           if (customKey !== "$") {
             this.loadOnePersistentProperty(
               customKey,
-              propertiesFromXml[key][customKey],
+              propertiesFromXml[tag][customKey],
               true // isCustom
             );
           }
         }
       }
       // <AdditionalFields>
-      else if (key.toLowerCase() === "additionalfields") {
+      else if (tag.toLowerCase() === "additionalfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
-        const additionalKeys = Object.keys(propertiesFromXml[key]);
-        for (const additionalKey of additionalKeys) {
+        const tagsInAdditionalFieldSection = Object.keys(
+          propertiesFromXml[tag]
+        );
+        for (const childTag of tagsInAdditionalFieldSection) {
           // first one is just $":{"type":"xml"}
-          if (additionalKey !== "$") {
+          if (childTag !== "$") {
             this.loadOnePersistentProperty(
-              additionalKey,
-              propertiesFromXml[key][additionalKey],
+              childTag,
+              propertiesFromXml[tag][childTag],
               false
             );
           }
         }
       } else {
-        this.loadOnePersistentProperty(key, propertiesFromXml[key], false);
+        // "Normal" fields
+        this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
       }
     }
   }
 
   private loadOnePersistentProperty(
-    key: string,
+    xmlTag: string,
     value: any,
     isCustom: boolean
   ) {
@@ -355,11 +358,13 @@ export abstract class File {
       }
       // if we decide we do need to roundtrip nested unknown elements
       //else {
-      //   this.addObjectProperty(key, value);
+      //   this.addObjectProperty(elementName, value);
       //   return;
       // }
       else {
-        console.log("Skipping " + key + " which was " + JSON.stringify(value));
+        console.log(
+          "Skipping " + xmlTag + " which was " + JSON.stringify(value)
+        );
         return;
       }
     }
@@ -367,7 +372,7 @@ export abstract class File {
     const textValue: string = value;
 
     if (isCustom && textValue.length > 0) {
-      this.customFieldNamesRegistry.encountered(this.type, key);
+      this.customFieldNamesRegistry.encountered(this.type, xmlTag);
     }
 
     // this is getting messy... we don't want to enforce our casing
@@ -375,7 +380,7 @@ export abstract class File {
     // Starting to wish I just used whatever the xml element name was for the
     // key, regardless. Since SayMore Windows Classic uses all manor of case
     // styles for elements... ending up with all this code to work around that.
-    let fixedKey = key;
+    let fixedKey = xmlTag;
     if (
       // if we know about this field, then we know how to roundtrip correctly
       // already.
@@ -388,15 +393,17 @@ export abstract class File {
         area // e.g. project, session, person
       ) =>
         knownFieldDefinitions[area].find(
-          (d: any) => d.key.toLowerCase() === key.toLowerCase()
+          (d: any) =>
+            d.key.toLowerCase() === xmlTag.toLowerCase() ||
+            d.tagInSayMoreClassic === xmlTag
         )
       )
     ) {
-      fixedKey = this.properties.getKeyFromXmlTag(key);
+      fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
     }
 
     // ---- DATES  --
-    if (key.toLowerCase().indexOf("date") > -1) {
+    if (xmlTag.toLowerCase().indexOf("date") > -1) {
       const normalizedDateString = this.normalizeIncomingDateString(textValue);
       if (this.properties.containsKey(fixedKey)) {
         const existingDateField = this.properties.getValueOrThrow(fixedKey);

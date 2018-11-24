@@ -187,7 +187,25 @@ export class Field {
     return this.text;
   }
   public setValueFromString(s: string): any {
-    this.text = s;
+    // if this field has choices, set it to
+    if (this.choices && this.choices.length > 0) {
+      const match = this.choices.find(
+        c => c.toLowerCase() === s.toLocaleLowerCase()
+      );
+      if (match) {
+        this.text = match;
+      } else {
+        //TODO Log a problem where users can see it
+        console.log(
+          `Warning: the field ${
+            this.englishLabel
+          } is a choice list but the value, ${s}, is not one of the choices in this version.`
+        );
+        this.text = s;
+      }
+    } else {
+      this.text = s;
+    }
   }
 
   // public asDate(): Date {
