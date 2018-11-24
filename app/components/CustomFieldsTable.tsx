@@ -175,7 +175,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
               field={field as Field}
               // if we go to the placeholder row and make it "real", then a new
               // row gets created underneath, which would normally
-              // cause the cursor to go down there. Istead, we
+              // cause the cursor to go down there. Instead, we
               // want the focus to go to the value column of the newly created
               // custom field
               autoFocus={this.focusField === field}

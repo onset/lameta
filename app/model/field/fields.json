@@ -390,6 +390,7 @@
     },
     {
       "key": "involvement",
+      "englishLabel": "Researcher Involvement",
       "tagInSayMoreClassic": "Involvement",
       "additional": true,
       "choices": [
