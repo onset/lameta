@@ -71,8 +71,8 @@
   },
   "//This 'build' section is for electron-builder": "",
   "build": {
-    "productName": "SayMore JS",
-    "appId": "io.github.MEaCoM.saymore-js",
+    "productName": "SayMore X",
+    "appId": "io.github.MEaCoM.saymore-x",
     "asarUnpack": [
       "node_modules/ffprobe-static/*"
     ],

@@ -77,7 +77,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
 
     return (
       <div className="moreFieldsBlock">
-        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in SayMore JS we
+        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in SayMore X we
           too are using the 'additional' term internally, and 'more' in the English label. */}
         <label>More Fields</label>
         <ReactTable

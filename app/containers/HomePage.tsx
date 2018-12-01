@@ -89,7 +89,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       window.setTimeout(
         () =>
           window.alert(
-            `Thanks for helping to test SayMore JS! Warning: this is not even a "beta", so you could easily lose your work.`
+            `Thanks for helping to test SayMore X! Warning: this is not even a "beta", so you could easily lose your work.`
           ),
         2000
       );
@@ -157,8 +157,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     let title = this.projectHolder.project
       ? `${Path.basename(this.projectHolder.project.directory)}/ ${
           this.projectHolder.project.displayName
-        }  - SayMore JS`
-      : "SayMore JS";
+        }  - SayMore X`
+      : "SayMore X";
     title += " " + require("../package.json").version;
 
     remote.getCurrentWindow().setTitle(title);
@@ -172,34 +172,41 @@ export default class HomePage extends React.Component<IProps, IState> {
           />
         ) : (
           <div className={"startScreen"}>
-            <div className={"top"}>
-              <img src={locate("assets/start-screen/icon.png")} />
-              <h1>
-                SayMore <span>JS</span>
-              </h1>
-            </div>
-            <div className={"choices"}>
-              <img src={locate("assets/start-screen/create.png")} />
-              <a
-                className={"creatNewProjectLink"}
-                id="creatNewProjectLink"
-                onClick={() => this.createProject(false)}
-              >
-                Create New Project
-              </a>
-              <br />
-              <img src={locate("assets/start-screen/open.png")} />
-              <a onClick={() => this.openProject()}>Open SayMore Project</a>
-              <br />
-              <img src={locate("assets/start-screen/sample.png")} />
-              <a
-                id="createNewProjectWithSampleDataLink"
-                onClick={() => {
-                  this.createProject(true);
-                }}
-              >
-                Create New Project with Sample Data
-              </a>
+            <div className={"core"}>
+              <div className={"top"}>
+                <img src={locate("assets/start-screen/icon.png")} />
+                <h1>
+                  SayMore<span>x</span>
+                </h1>
+              </div>
+              <div className={"choices"}>
+                <img src={locate("assets/start-screen/create.png")} />
+                <a
+                  className={"creatNewProjectLink"}
+                  id="creatNewProjectLink"
+                  onClick={() => this.createProject(false)}
+                >
+                  Create New Project
+                </a>
+                <br />
+                <img src={locate("assets/start-screen/open.png")} />
+                <a onClick={() => this.openProject()}>Open SayMore Project</a>
+                <br />
+                <img src={locate("assets/start-screen/sample.png")} />
+                <a
+                  id="createNewProjectWithSampleDataLink"
+                  onClick={() => {
+                    this.createProject(true);
+                  }}
+                >
+                  Create New Project with Sample Data
+                </a>
+              </div>
+              <p className="description">
+                SayMore<sub>X</sub> is a cross-platform rewrite of SayMore. At
+                this point, SayMore<sub>X</sub> lacks the BOLD (Basic Oral
+                Language Documentation) features of the original SayMore.
+              </p>
             </div>
           </div>
         )}

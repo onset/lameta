@@ -1,12 +1,17 @@
 @import "../colors.scss";
 
 .startScreen {
-  padding: 4em;
   color: black;
-  margin-left: auto;
-  margin-right: auto;
-  width: 500px;
+  background-color: white;
 
+  height: 100%;
+
+  .core {
+    width: 500px;
+    padding: 4em;
+    margin-left: auto;
+    margin-right: auto;
+  }
   //Can't have a real background image because I haven't figured out how to reference an
   //image here and have it bundled in electron dist/, so having to us an img
 
@@ -23,15 +28,19 @@
       font-weight: 600;
       font-size: 40px;
       margin-top: 0;
+      // the "x"
       span {
         color: $project--color;
+        position: relative;
+        bottom: -0.3em;
+        font-weight: normal;
       }
     }
   }
   .choices {
     position: relative; // else gets blended with background image
     font-size: 14pt;
-    margin-top: 2em;
+    //margin-top: 2em;
     img {
       margin-right: 10px;
       width: 20px;
@@ -43,7 +52,7 @@
       text-decoration: none !important;
       color: black;
       margin-top: 1em;
-      margin-bottom: 1em;
+      //margin-bottom: 1em;
       //padding: 0.5em;
       border: solid 1px transparent;
       &:focus,
@@ -51,5 +60,10 @@
         border-color: $project--color;
       }
     }
+  }
+  p.description {
+    font-size: 12pt;
+    color: darkgray;
+    font-style: italic;
   }
 }

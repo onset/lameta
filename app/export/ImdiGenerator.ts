@@ -551,7 +551,7 @@ export default class ImdiGenerator {
     }
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
-      .a("Originator", "SayMore JS");
+      .a("Originator", "SayMore X");
     return this.tail;
   }
   private makeString(): string {
