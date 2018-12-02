@@ -6,6 +6,7 @@ import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePic
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
+import catalogEs from "../../locale/en/messages.js";
 
 export class App extends React.Component {
   public componentDidMount() {
@@ -14,13 +15,14 @@ export class App extends React.Component {
   }
 
   public render() {
+    const catalogs = { es: catalogEs };
     return (
       <div id="app">
-        <I18nProvider language="en">
-        <HomePage />
-        <ConfirmDeleteDialog />
-        <LanguagePickerDialog />
-        <RenameFileDialog />
+        <I18nProvider language="es" catalogs={catalogs}>
+          <HomePage />
+          <ConfirmDeleteDialog />
+          <LanguagePickerDialog />
+          <RenameFileDialog />
         </I18nProvider>
       </div>
     );

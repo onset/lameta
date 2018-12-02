@@ -176,7 +176,8 @@ export default class AutoForm extends React.Component<IProps> {
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
         {/* the lingui extractor sees this if not commented: */}
-        {<Trans id="autoform.goodbye">goodbye</Trans>}
+        {<Trans id="autoform.goodbye">goodbye default</Trans>}
+        {<Trans>one</Trans>}
         {/* But it doesn't compile (update: does with babel set up juuuuuust right). gives Critical dependency: the request of a dependency is an expression */}
         {/* But it doesn't see this plain vanilla js with _ and t */}
         {/* Also the t doesn't compile.  */}

@@ -1,11 +1,6 @@
 {
   "autoform.goodbye": {
-    "translation": "bye bye",
-    "origin": [
-      [
-        "app/components/AutoForm.tsx",
-        101
-      ]
-    ]
+    "translation": "eeeeeeeeeeeee",
+    "origin": [["app/components/AutoForm.tsx", 101]]
   }
 }
