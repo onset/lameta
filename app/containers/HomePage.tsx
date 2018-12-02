@@ -9,7 +9,7 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import Store = require("electron-store");
+import Store from "electron-store";
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";

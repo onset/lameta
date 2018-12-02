@@ -126,78 +126,79 @@ export default class LanguagePickerDialog extends React.Component<
       autoFocus: true
     };
     return (
-      <CloseOnEscape
-        onEscape={() => {
-          this.handleCloseModal(false);
-        }}
-      >
-        <ReactModal
-          ariaHideApp={false}
-          className="languagePickerDialog"
-          isOpen={this.state.isOpen}
-          shouldCloseOnOverlayClick={true}
-          onRequestClose={() => this.handleCloseModal(false)}
-        >
-          <div className={"dialogTitle"}>Choose Language</div>
-          <div className="dialogContent">
-            <label>Language Code</label>
-            <input
-              className="codeEntry"
-              type="text"
-              value={this.state.langCode}
-              onChange={e => this.change({ langCode: e.target.value })}
-            />
-            <label>Name</label>
-            <input
-              className="name"
-              type="text"
-              value={this.state.name}
-              onChange={e => this.change({ name: e.target.value })}
-            />
-            {/* <div className="picker">
-              <Autosuggest
-                suggestions={suggestions}
-                onSuggestionsFetchRequested={p =>
-                  this.onSuggestionsFetchRequested(p)
-                }
-                onSuggestionsClearRequested={() =>
-                  this.onSuggestionsClearRequested()
-                }
-                getSuggestionValue={suggestion => suggestion.name}
-                renderSuggestion={suggestion => (
-                  <div
-                    className={
-                      suggestion.code.three === topSuggestionCode
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    <span className="code">{`${suggestion.code.three}`}</span>
-                    {`${suggestion.name}`}
-                  </div>
-                )}
-                alwaysRenderSuggestions={true}
-                shouldRenderSuggestions={() => true}
-                inputProps={inputProps}
-              />
-            </div> */}
-          </div>
-          <div className={"bottomButtonRow"}>
-            <div className={"okCancelGroup"}>
-              <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
-              </button>
-              <button
-                id="okButton"
-                disabled={!haveValidFields}
-                onClick={() => this.handleCloseModal(true)}
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </ReactModal>
-      </CloseOnEscape>
+      <div />
+      // <CloseOnEscape
+      //   onEscape={() => {
+      //     this.handleCloseModal(false);
+      //   }}
+      // >
+      //   <ReactModal
+      //     ariaHideApp={false}
+      //     className="languagePickerDialog"
+      //     isOpen={this.state.isOpen}
+      //     shouldCloseOnOverlayClick={true}
+      //     onRequestClose={() => this.handleCloseModal(false)}
+      //   >
+      //     <div className={"dialogTitle"}>Choose Language</div>
+      //     <div className="dialogContent">
+      //       <label>Language Code</label>
+      //       <input
+      //         className="codeEntry"
+      //         type="text"
+      //         value={this.state.langCode}
+      //         onChange={e => this.change({ langCode: e.target.value })}
+      //       />
+      //       <label>Name</label>
+      //       <input
+      //         className="name"
+      //         type="text"
+      //         value={this.state.name}
+      //         onChange={e => this.change({ name: e.target.value })}
+      //       />
+      //       {/* <div className="picker">
+      //         <Autosuggest
+      //           suggestions={suggestions}
+      //           onSuggestionsFetchRequested={p =>
+      //             this.onSuggestionsFetchRequested(p)
+      //           }
+      //           onSuggestionsClearRequested={() =>
+      //             this.onSuggestionsClearRequested()
+      //           }
+      //           getSuggestionValue={suggestion => suggestion.name}
+      //           renderSuggestion={suggestion => (
+      //             <div
+      //               className={
+      //                 suggestion.code.three === topSuggestionCode
+      //                   ? "selected"
+      //                   : ""
+      //               }
+      //             >
+      //               <span className="code">{`${suggestion.code.three}`}</span>
+      //               {`${suggestion.name}`}
+      //             </div>
+      //           )}
+      //           alwaysRenderSuggestions={true}
+      //           shouldRenderSuggestions={() => true}
+      //           inputProps={inputProps}
+      //         />
+      //       </div> */}
+      //     </div>
+      //     <div className={"bottomButtonRow"}>
+      //       <div className={"okCancelGroup"}>
+      //         <button onClick={() => this.handleCloseModal(false)}>
+      //           Cancel
+      //         </button>
+      //         <button
+      //           id="okButton"
+      //           disabled={!haveValidFields}
+      //           onClick={() => this.handleCloseModal(true)}
+      //         >
+      //           OK
+      //         </button>
+      //       </div>
+      //     </div>
+      //   </ReactModal>
+      // </CloseOnEscape>
     );
   }
 }

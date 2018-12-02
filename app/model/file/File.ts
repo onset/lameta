@@ -39,7 +39,7 @@ export class Contribution {
   }
 }
 
-export abstract class File {
+export /*babel doesn't like this: abstract*/ class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
 

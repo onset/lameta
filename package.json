@@ -35,10 +35,10 @@
     "package-linux": "npm run build-production && electron-builder --linux",
     "package-all": "npm run build-production && electron-builder -mwl",
     "cleanup": "mop -v",
-    "tslint-check": "tslint-config-prettier-check ./tslint.json"
-  },
-  "lingui": {
-    "sourceLocale": "en"
+    "tslint-check": "tslint-config-prettier-check ./tslint.json",
+    "lingui-add": "lingui add-locale",
+    "lingui-extract": "lingui extract",
+    "lingui-compile": "lingui compile"
   },
   "jest": {
     "globals": {
@@ -141,7 +141,9 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-decorators": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.1.0",
     "@lingui/babel-preset-react": "^2.7.2",
@@ -194,7 +196,6 @@
     "speed-measure-webpack-plugin": "^1.2.3",
     "style-loader": "^0.19.0",
     "ts-jest": "^23.10.2",
-    "ts-loader": "5.2.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "typescript": "^3.1.1",
@@ -208,14 +209,12 @@
     "xpath": "^0.0.27"
   },
   "dependencies": {
-    "@sentry/electron": "^0.13.0",
-    "@sentry/node": "^4.2.4",
+    "@sentry/electron": "^0.12.1",
+    "@sentry/node": "^4.1.1",
     "@lingui/cli": "^2.7.2",
     "@lingui/core": "^2.7.2",
     "@lingui/macro": "^2.7.2",
     "@lingui/react": "^2.7.2",
-    "@sentry/electron": "^0.12.1",
-    "@sentry/node": "^4.1.1",
     "@types/archiver": "^2.1.1",
     "@types/camelcase": "^4.1.0",
     "@types/commonmark": "^0.27.0",

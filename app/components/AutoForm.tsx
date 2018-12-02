@@ -37,7 +37,7 @@ export interface IProps {
 @observer
 export default class AutoForm extends React.Component<IProps> {
   private sortedKeys: string[];
-  i18n: I18n;
+  private i18n: I18n;
 
   constructor(props: IProps) {
     super(props);
@@ -46,7 +46,7 @@ export default class AutoForm extends React.Component<IProps> {
     this.i18n = setupI18n({
       language: "es",
       catalogs: {
-        en: englishMessages,
+        //en: englishMessages,
         es: spanishMessages
       }
     });
@@ -176,12 +176,12 @@ export default class AutoForm extends React.Component<IProps> {
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
         {/* the lingui extractor sees this if not commented: */}
-        {/* {<Trans id="autoform.hello">hello</Trans>} */}
-        {/* But it doesn't compile. gives Critical dependency: the request of a dependeny is an expression */}
+        {<Trans id="autoform.goodbye">goodbye</Trans>}
+        {/* But it doesn't compile (update: does with babel set up juuuuuust right). gives Critical dependency: the request of a dependency is an expression */}
         {/* But it doesn't see this plain vanilla js with _ and t */}
         {/* Also the t doesn't compile.  */}
         {/* {this.i18n._(t("autoform.hello")`hello`)} */}
-        {this.i18n._("autoform.hello", {}, { defaults: "hello" })}
+        {this.i18n._("autoform.hello", {}, { defaults: "hello default" })}
         {this.sortedKeys
           .map(k => this.props.folder.properties.getValueOrThrow(k))
 

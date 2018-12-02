@@ -1,0 +1,11 @@
+{
+
+      "localeDir": "locale/",
+      "srcPathDirs": ["app/components/AutoForm.tsx"],
+      "format": "lingui",
+      "srcPathIgnorePatterns": [
+         "/node_modules/",
+         "/dist/"
+      ]
+   
+}

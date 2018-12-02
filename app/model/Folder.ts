@@ -1,5 +1,4 @@
 import { File, OtherFile } from "./file/File";
-import * as electron from "electron";
 import { observable } from "mobx";
 import {
   FieldDefinition,
@@ -24,7 +23,7 @@ export class IFolderSelection {
 }
 
 // Project, Session, or Person
-export abstract class Folder {
+export /*babel doesn't like this: abstract*/ class Folder {
   public directory: string = "";
   @observable
   public files: File[] = [];

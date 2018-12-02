@@ -1,6 +1,11 @@
 {
-  "autoform.hello": {
-    "translation": "hola",
-    "origin": [["app/components/AutoForm.tsx", 100]]
+  "autoform.goodbye": {
+    "translation": "adios",
+    "origin": [
+      [
+        "app/components/AutoForm.tsx",
+        101
+      ]
+    ]
   }
 }

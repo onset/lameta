@@ -3,7 +3,7 @@ import ReactTable from "react-table";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 import { File } from "../model/file/File";
-import ffmpeg = require("fluent-ffmpeg");
+import ffmpeg from "fluent-ffmpeg";
 import { Dictionary } from "typescript-collections";
 import SMErrorBoundary from "./SMErrorBoundary";
 const imagesize = require("image-size");
