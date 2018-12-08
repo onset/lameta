@@ -172,11 +172,21 @@ export default class SayLessMenu {
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
-    template.push(editMenu);
 
     // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
     if (sessionMenu) {
-      template.push(projectMenu, sessionMenu, peopleMenu);
+      template.push(projectMenu);
+
+      if (process.platform === "darwin") {
+        // in order to get normal editing keys to work (e.g. cmd-v for paste), I had
+        // to add an edit menu on mac. If there is a way to get this without the menu,
+        // that would be great.
+        // Meanwhile, it's not clear where this should go in the order. If it's to the left
+        // of the Project menu, that looks weird, because the Project menu acts like a "File" menu.
+        template.push(editMenu);
+      }
+
+      template.push(sessionMenu, peopleMenu);
     }
     // if (process.env.NODE_ENV === "development") {
     template.push(devMenu);
