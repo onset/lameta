@@ -110,11 +110,13 @@ export default class SayLessMenu {
           click: () => {
             ExportDialog.show();
           }
-        },
-        { type: "separator" },
-        { role: "quit" }
+        }
       ]
     };
+    if (process.platform != "darwin") {
+      projectMenu.submenu.push({ type: "separator" });
+      projectMenu.submenu.push({ role: "quit" } as any);
+    }
     // sessionMenu,
     // peopleMenu,
     const devMenu = {
