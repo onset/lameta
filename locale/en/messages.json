@@ -1,6 +1,14 @@
 {
   "autoform.goodbye": {
     "translation": "eeeeeeeeeeeee",
-    "origin": [["app/components/AutoForm.tsx", 101]]
+    "origin": [
+      [
+        "app/components/AutoForm.tsx",
+        101
+      ]
+    ]
+  },
+  "field.project.title": {
+    "obsolete": true
   }
 }
