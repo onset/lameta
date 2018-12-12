@@ -8,11 +8,16 @@
       width: auto;
       margin-right: 10px;
       margin-bottom: -4px; // mac align with the following radio & label
+
       // windows is handled below
     }
     label {
       display: inline-block;
       font-weight: normal;
+
+      input {
+        height: auto;
+      }
     }
   }
 }
