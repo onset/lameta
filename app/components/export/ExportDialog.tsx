@@ -112,7 +112,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 each of Project, Session, and People.
               </p>
 
-              <label>
+              {/* <label>
                 <input
                   type="radio"
                   name="format"
@@ -125,7 +125,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
               <p>
                 A single file with sheets for each of Project, Session, and
                 People
-              </p>
+              </p> */}
 
               <label>
                 <input
