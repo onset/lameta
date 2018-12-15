@@ -12,6 +12,6 @@
       ],
       "extractBabelOptions": {
             "plugins": ["@babel/plugin-syntax-dynamic-import", "macros"],
-              "presets": ["@babel/preset-react", "@lingui/babel-preset-react"]
+              "presets": [ "@babel/preset-env","@babel/preset-react", "@lingui/babel-preset-react"]
       },
 }

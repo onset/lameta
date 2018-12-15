@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2018-12-15 10:13-0700\n"
+"POT-Creation-Date: 2018-12-15 15:06-0700\n"
 "Mime-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,12 +29,36 @@ msgstr ""
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
+#: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:59
+msgid "Cancel"
+msgstr ""
+
+#: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:44
+msgid "Confirm Delete"
+msgstr ""
+
+#: app/menu.ts:77
+msgid "Create Project..."
+msgstr ""
+
+#: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:62
+msgid "Delete"
+msgstr ""
+
 #: app/components/project/ProjectTab.tsx:29
 msgid "Description Documents"
 msgstr ""
 
+#: app/menu.ts:86
+msgid "Export Project..."
+msgstr ""
+
 #: app/components/project/ProjectTab.tsx:35
 msgid "IMDI"
+msgstr ""
+
+#: app/menu.ts:72
+msgid "Open Project..."
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:32
@@ -46,13 +70,18 @@ msgid "People"
 msgstr ""
 
 #: app/components/Home.tsx:112
+#: app/menu.ts:69
 msgid "Project"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:29
-#~ msgid "ProjectTab.DescriptionDocuments"
-#~ msgstr ""
-
 #: app/components/Home.tsx:118
 msgid "Sessions"
+msgstr ""
+
+#: app/menu.ts:81
+msgid "Start Screen"
+msgstr ""
+
+#: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:50
+msgid "{0} will be moved to the Trash"
 msgstr ""

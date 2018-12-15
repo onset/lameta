@@ -3,6 +3,8 @@ import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
+import { t } from "@lingui/macro";
+import { i18n } from "l10nUtils";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -70,24 +72,24 @@ export default class SayLessMenu {
       ]
     };
     const projectMenu = {
-      label: "&Project",
+      label: "&" + i18n._(t`Project`),
       submenu: [
         {
-          label: "&Open Project...",
+          label: "&" + i18n._(t`Open Project...`),
           accelerator: "Ctrl+O",
           click: () => this.homePage.openProject()
         },
         {
-          label: "&Create Project...",
+          label: "&" + i18n._(t`Create Project...`),
           click: () => this.homePage.createProject(false)
         },
         {
-          label: "&Start Screen",
+          label: "&" + i18n._(t`Start Screen`),
           click: () => this.homePage.projectHolder.setProject(null)
         },
         { type: "separator" },
         {
-          label: "Export &Project...",
+          label: "&" + i18n._(t`Export Project...`),
           accelerator: "Ctrl+E",
           enabled: haveProject,
           click: () => {

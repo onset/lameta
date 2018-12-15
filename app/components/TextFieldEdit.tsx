@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-import lookup from "../fieldTranslation";
+import { lookup } from "../l10nUtils";
 const titleCase = require("title-case");
 
 export interface IProps {
