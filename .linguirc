@@ -2,7 +2,7 @@
 
       "localeDir": "locale/",
       "srcPathDirs": ["app/"],
-      "format": "lingui",
+      "format": "po",
       "fallbackLocale": "en",
       "sourceLocale": "en-code",
       "srcPathIgnorePatterns": [

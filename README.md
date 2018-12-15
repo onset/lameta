@@ -6,6 +6,7 @@ Install node, yarn, then
 
 ```bash
 $ yarn
+$ yarn lingui-compile
 $ yarn dev
 ```
 

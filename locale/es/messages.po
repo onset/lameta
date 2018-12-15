@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2018-12-15 10:13-0700\n"
+"Mime-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: crowdin.com\n"
+"Language: es\n"
+"Project-Id-Version: saymorex\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2018-12-15 17:19\n"
+"Last-Translator: saymorex <hattonjohn+saymorex@gmail.com>\n"
+"Language-Team: Spanish\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: messages.po\n"
+
+#: app/components/project/ProjectTab.tsx:23
+msgid "About This Project"
+msgstr "Acerca de este proyecto"
+
+#: app/components/project/ProjectTab.tsx:26
+msgid "Access Protocol"
+msgstr "Protocolo de acceso"
+
+#: app/components/project/ProjectTab.tsx:47
+msgid "Add documents here that describe the projects and corpus."
+msgstr "Agregar aquí los documentos que describen el proyecto y el corpus."
+
+#: app/components/project/ProjectTab.tsx:57
+msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
+msgstr "Agregar documentos aquí que no pertenecen en otro lugar (por ejemplo, documentos con información sobre el financiamiento del proyecto)."
+
+#: app/components/project/ProjectTab.tsx:29
+msgid "Description Documents"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:35
+msgid "IMDI"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:32
+msgid "Other Documents"
+msgstr "Otros documentos"
+
+#: app/components/Home.tsx:124
+msgid "People"
+msgstr "Personas"
+
+#: app/components/Home.tsx:112
+msgid "Project"
+msgstr "Proyecto"
+
+#: app/components/project/ProjectTab.tsx:29
+#~ msgid "ProjectTab.DescriptionDocuments"
+#~ msgstr ""
+
+#: app/components/Home.tsx:118
+msgid "Sessions"
+msgstr "Sesiones"
+

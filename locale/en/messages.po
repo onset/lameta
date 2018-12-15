@@ -1,0 +1,58 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2018-12-15 10:13-0700\n"
+"Mime-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: app/components/project/ProjectTab.tsx:23
+msgid "About This Project"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:26
+msgid "Access Protocol"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:47
+msgid "Add documents here that describe the projects and corpus."
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:57
+msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:29
+msgid "Description Documents"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:35
+msgid "IMDI"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:32
+msgid "Other Documents"
+msgstr ""
+
+#: app/components/Home.tsx:124
+msgid "People"
+msgstr ""
+
+#: app/components/Home.tsx:112
+msgid "Project"
+msgstr ""
+
+#: app/components/project/ProjectTab.tsx:29
+#~ msgid "ProjectTab.DescriptionDocuments"
+#~ msgstr ""
+
+#: app/components/Home.tsx:118
+msgid "Sessions"
+msgstr ""

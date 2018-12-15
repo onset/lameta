@@ -34,9 +34,7 @@ export class ProjectTab extends React.Component<IProps> {
             <Trans>Access Protocol</Trans>
           </Tab>
           <Tab className={"tab-project-description-docs"}>
-            <Trans id="ProjectTab.DescriptionDocuments">
-              Description Documents
-            </Trans>
+            <Trans>Description Documents</Trans>
           </Tab>
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>

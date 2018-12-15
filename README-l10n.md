@@ -54,3 +54,5 @@ I have not found a way to get the default string out to the extracted files. I w
 ```
 
 To put "Other Documents" in at least the English PO file, but no. So I can see no way that a Translator can actually translate. So for now all the ids are just the English. Sigh again...
+
+"po" was the only format of lingui's three options that Crowdin could handle.

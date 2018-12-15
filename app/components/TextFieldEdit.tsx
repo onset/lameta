@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
+import lookup from "../fieldTranslation";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -39,7 +40,7 @@ export default class TextFieldEdit extends React.Component<
     if (this.props.field === undefined) {
       return "Null Text";
     }
-    return this.props.field.englishLabel;
+    return lookup(this.props.field.englishLabel);
   }
 
   private static getValue(text: Field): string {

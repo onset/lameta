@@ -15,6 +15,7 @@ import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
+import { Trans } from "@lingui/react";
 
 export interface IProps {
   project: Project;
@@ -129,23 +130,19 @@ export default class Home extends React.Component<IProps> {
               <Tab className={"react-tabs__tab tab-project"}>
                 <div className={"icon-and-label"}>
                   <ProjectIcon />
-                  <span>Project</span>
+                  <Trans>Project</Trans>
                 </div>
               </Tab>
               <Tab className={"react-tabs__tab tab-sessions"}>
                 <div className={"icon-and-label"}>
-                  {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
-              <div dangerouslySetInnerHTML={{ __html: sessionIcon.data }} /> */}
-                  {/* <img src={sessionIcon} /> */}
                   <SessionIcon />
-                  {/* <SessionIcon /> */}
-                  <span>Sessions</span>
+                  <Trans>Sessions</Trans>
                 </div>
               </Tab>
               <Tab className={"react-tabs__tab tab-people"}>
                 <div className={"icon-and-label"}>
                   <PeopleIcon />
-                  <span>People</span>
+                  <Trans>People</Trans>
                 </div>
               </Tab>
             </TabList>
