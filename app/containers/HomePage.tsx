@@ -9,7 +9,8 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import Store from "electron-store";
+import { userSettings } from "./settings";
+
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
@@ -29,7 +30,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
   @mobx.observable
   public projectHolder: ProjectHolder;
-  private userSettings: Store;
+
   private menu: SayLessMenu;
   public static homePageForTests: HomePage;
 
@@ -41,8 +42,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
 
-    this.userSettings = new Store({ name: "saymore-user-settings" });
-    let previousDirectory = this.userSettings.get("previousProjectDirectory");
+    let previousDirectory = userSettings.get("previousProjectDirectory");
     console.log(
       "************** process.env.startInStartScreen=" +
         process.env.startInStartScreen
@@ -142,7 +142,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       } else {
         this.projectHolder.setProject(Project.fromDirectory(directory));
       }
-      this.userSettings.set("previousProjectDirectory", directory);
+      userSettings.set("previousProjectDirectory", directory);
     }
   }
   // private listDir(dir: string) {
@@ -246,7 +246,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(
           Project.fromDirectory(fs.realpathSync(directory))
         );
-        this.userSettings.set("previousProjectDirectory", directory);
+        userSettings.set("previousProjectDirectory", directory);
       }
     });
   }

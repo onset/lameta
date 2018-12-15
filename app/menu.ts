@@ -4,7 +4,7 @@ import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
-import { i18n } from "l10nUtils";
+import { i18n, setUILanguage } from "l10nUtils";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -95,6 +95,24 @@ export default class SayLessMenu {
           click: () => {
             ExportDialog.show();
           }
+        },
+        { type: "separator" },
+        {
+          label: i18n._(t`Interface Language`),
+          submenu: [
+            {
+              label: "English",
+              click: () => {
+                setUILanguage("en");
+              }
+            },
+            {
+              label: "Español",
+              click: () => {
+                setUILanguage("es");
+              }
+            }
+          ]
         },
         { type: "separator" },
         { role: "quit" }

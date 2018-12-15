@@ -44,9 +44,6 @@ We don't have a way to make lingui scan the fields.json file that is used for fi
 
 Under SayMoreX Settings, there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
 
-I have not been able to get any of the macros to work:
-i18n.\_(t`Static Message`)
-
 I have not found a way to get the default string out to the extracted files. I would expect
 
 ```
@@ -56,3 +53,25 @@ I have not found a way to get the default string out to the extracted files. I w
 To put "Other Documents" in at least the English PO file, but no. So I can see no way that a Translator can actually translate. So for now all the ids are just the English. Sigh again...
 
 "po" was the only format of lingui's three options that Crowdin could handle.
+
+# How to add a language
+
+In Crowdin:settings:translations:Target Languages, add the language.
+
+`yarn lingui-add xyz`
+
+`yarn lingui-extract`
+
+Upload the locale/xyz/messages.po file to crowdin
+
+[TODO: how to add it to the fields.csv... I think you might have to add the column to the file, then upload it to crowdin. ]
+
+In `l10nUtils.ts`, add "xyz", e.g.
+
+    `const languages = ["en", "es", "fr", "xyz"];`
+
+# How to get translations
+
+In Crowdin:Translations:Build & Download. Take the resulting files and replace the ones in the codebase.
+
+`yarn lingui-compile`
