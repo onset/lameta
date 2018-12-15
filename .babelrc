@@ -5,5 +5,5 @@
     "@lingui/babel-preset-react",
     "@babel/preset-typescript"
   ],
-  "plugins": ["babel-plugin-macros"]
+  "plugins": ["macros", "@babel/plugin-syntax-dynamic-import"]
 }

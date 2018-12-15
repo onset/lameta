@@ -1,10 +1,65 @@
 {
-  "autoform.goodbye": {
-    "translation": "ffffffffffffff",
+  "About This Project": {
+    "translation": "",
     "origin": [
       [
-        "app/components/AutoForm.tsx",
-        101
+        "app/components/project/ProjectTab.tsx",
+        23
+      ]
+    ]
+  },
+  "Access Protocol": {
+    "translation": "",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        26
+      ]
+    ]
+  },
+  "Add documents here that describe the projects and corpus.": {
+    "translation": "",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        49
+      ]
+    ]
+  },
+  "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded.": {
+    "translation": "",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        59
+      ]
+    ]
+  },
+  "IMDI": {
+    "translation": "",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        37
+      ]
+    ]
+  },
+  "Other Documents": {
+    "translation": "",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        34
+      ]
+    ]
+  },
+  "ProjectTab.DescriptionDocuments": {
+    "translation": "",
+    "defaults": "Description Documents",
+    "origin": [
+      [
+        "app/components/project/ProjectTab.tsx",
+        29
       ]
     ]
   }

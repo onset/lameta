@@ -1,11 +1,17 @@
 {
 
       "localeDir": "locale/",
-      "srcPathDirs": ["app/components/AutoForm.tsx"],
+      "srcPathDirs": ["app/"],
       "format": "lingui",
+      "fallbackLocale": "en",
+      "sourceLocale": "en-code",
       "srcPathIgnorePatterns": [
          "/node_modules/",
-         "/dist/"
-      ]
-   
+         "/dist/",
+         ".*bundle.js"
+      ],
+      "extractBabelOptions": {
+            "plugins": ["@babel/plugin-syntax-dynamic-import", "macros"],
+              "presets": ["@babel/preset-react", "@lingui/babel-preset-react"]
+      },
 }

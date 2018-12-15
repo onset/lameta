@@ -9,6 +9,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
+import { Trans } from "@lingui/macro";
 
 interface IProps {
   project: Project;
@@ -26,13 +27,23 @@ export class ProjectTab extends React.Component<IProps> {
         onSelect={() => this.props.project.saveFolderMetaData()}
       >
         <TabList>
-          <Tab className={"tab-project-about"}>About This Project</Tab>
-          <Tab className={"tab-project-access"}>Access Protocol</Tab>
-          <Tab className={"tab-project-description-docs"}>
-            Description Documents
+          <Tab className={"tab-project-about"}>
+            <Trans>About This Project</Trans>
           </Tab>
-          <Tab className={"tab-project-other-docs"}>Other Documents</Tab>
-          <Tab className={"tab-project-imdi"}>IMDI</Tab>
+          <Tab className={"tab-project-access"}>
+            <Trans>Access Protocol</Trans>
+          </Tab>
+          <Tab className={"tab-project-description-docs"}>
+            <Trans id="ProjectTab.DescriptionDocuments">
+              Description Documents
+            </Trans>
+          </Tab>
+          <Tab className={"tab-project-other-docs"}>
+            <Trans>Other Documents</Trans>
+          </Tab>
+          <Tab className={"tab-project-imdi"}>
+            <Trans>IMDI</Trans>
+          </Tab>
         </TabList>
         <TabPanel>
           <AutoForm
@@ -62,7 +73,9 @@ export class ProjectTab extends React.Component<IProps> {
             authorityLists={this.props.authorityLists}
           >
             <strong>
-              Add documents here that describe the projects and corpus.
+              <Trans>
+                Add documents here that describe the projects and corpus.
+              </Trans>
             </strong>
             <br />
           </FolderPane>
@@ -76,8 +89,11 @@ export class ProjectTab extends React.Component<IProps> {
             authorityLists={this.props.authorityLists}
           >
             <strong>
-              Add documents here that don't seem to fit anywhere else. An
-              example would be documents explaining how the project was funded.
+              <Trans>
+                Add documents here that don't seem to fit anywhere else. An
+                example would be documents explaining how the project was
+                funded.
+              </Trans>
             </strong>
             <br />
             <br />

@@ -1,54 +1,54 @@
-key,Context,En
-project.title,project,Project Title
-project.projectDescription,project,Description
-project.vernacularIso3CodeAndName,project,Content Language
-project.analysisISO3CodeAndName,project,Working Language
-project.location,project,Location/Address
-project.region,project,Region
-project.country,project,Country
-project.continent,project,Continent
-project.Africa,project,Africa
-project.Asia,project,Asia
-project.Australia,project,Australia
-project.Europe,project,Europe
-project.North-America,project,North-America
-project.Middle-America,project,Middle-America
-project.Oceania,project,Oceania
-project.South-America,project,South-America
-project.fundingProjectTitle,project,Funding Project Title
-project.accessProtocol,project,Access Protocol Used By This Project
-project.customAccessChoices,project,Custom Access Choices
-project.depositor,project,Depositor
-project.rightsHolder,project,Rights Holder
-project.contactPerson,project,Contact Person
-project.dateAvailable,project,Date Available
-session.id,session,Id
-session.title,session,Title
-session.participants,session,People
-session.genre,session,Genre
-session.situation,session,Situation
-session.setting,session,Setting
-session.location,session,Location
-session.access,session,Access
-session.description,session,Description
-session.status,session,Status
-session.date,session,Date
-session.involvement,session,Researcher Involvement
-session.locationCountry,session,Location Country
-session.locationRegion,session,Location Region
-session.locationContinent,session,Location Continent
-session.locationAddress,session,Location Address
-session.planningType,session,Planning Type
-session.subgenre,session,Subgenre
-session.socialContext,session,Social Context
-person.name,person,Full Name
-person.nickname,person,Nickname
-person.code,person,Code
-person.primaryLanguage,person,Primary Language
-person.primaryLanguageLearnedIn,person,Learned In:
-person.education,person,Education
-person.birthYear,person,Birthyear
-person.gender,person,Gender
-person.howToContact,person,How To Contact
-person.ethnicGroup,person,Ethnic Group
-person.primaryOccupation,person,Primary Occupation
+"key","Context","En","Es", "Fr"
+"project.title","project","Project Title","Project Title"
+"project.projectDescription","project","Description","Descripción"
+"project.vernacularIso3CodeAndName","project","Content Language","Content Language"
+"project.analysisISO3CodeAndName","project","Working Language","Working Language"
+"project.location","project","Location/Address","Ubicación/Dirección"
+"project.region","project","Region","Región"
+"project.country","project","Country","País"
+"project.continent","project","Continent","Continente"
+"project.Africa","project","Africa","África"
+"project.Asia","project","Asia","Asia", "Asie"
+"project.Australia","project","Australia","Australia"
+"project.Europe","project","Europe","Europa"
+"project.North-America","project","North-America","Norteamérica"
+"project.Middle-America","project","Middle-America","Centroamérica"
+"project.Oceania","project","Oceania","Oceanía"
+"project.South-America","project","South-America","Sudamérica"
+"project.fundingProjectTitle","project","Funding Project Title","Título del proyecto de financiación"
+"project.accessProtocol","project","Access Protocol Used By This Project","Protocolo de acceso usadopor este proyecto"
+"project.customAccessChoices","project","Custom Access Choices","Opciones de acceso personalizadas"
+"project.depositor","project","Depositor","Depositante"
+"project.rightsHolder","project","Rights Holder","Titular de los derechos"
+"project.contactPerson","project","Contact Person","Persona de contacto"
+"project.dateAvailable","project","Date Available","Fecha disponible"
+"session.id","session","Id","ID"
+"session.title","session","Title","Título"
+"session.participants","session","People","Personas"
+"session.genre","session","Genre","Género"
+"session.situation","session","Situation","Situación"
+"session.setting","session","Setting","Escena"
+"session.location","session","Location","Lugar"
+"session.access","session","Access","Acces&o"
+"session.description","session","Description","Descripción"
+"session.status","session","Status","Estado"
+"session.date","session","Date","Fecha"
+"session.involvement","session","Researcher Involvement","Researcher Involvement"
+"session.locationCountry","session","Location Country","País"
+"session.locationRegion","session","Location Region","Región"
+"session.locationContinent","session","Location Continent","Continente"
+"session.locationAddress","session","Location Address","Dirección"
+"session.planningType","session","Planning Type","Tipo de planeamiento"
+"session.subgenre","session","Subgenre","Subgénero"
+"session.socialContext","session","Social Context","Contexto social"
+"person.name","person","Full Name","Nombre completo"
+"person.nickname","person","Nickname","Sobrenombre"
+"person.code","person","Code","Código"
+"person.primaryLanguage","person","Primary Language","Idioma principa&l"
+"person.primaryLanguageLearnedIn","person","Learned In:","Lugar de aprendizaje:"
+"person.education","person","Education","Educación"
+"person.birthYear","person","Birthyear","Año de nacimiento"
+"person.gender","person","Gender","Género"
+"person.howToContact","person","How To Contact","Información de contacto"
+"person.ethnicGroup","person","Ethnic Group","Grupo étnico"
+"person.primaryOccupation","person","Primary Occupation","Ocupación principal"
