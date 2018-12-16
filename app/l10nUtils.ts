@@ -12,9 +12,16 @@ languages.forEach(
   code => (catalogs[code] = require(`../locale/${code}/messages.js`))
 );
 
-export let currentUILanguage = userSettings.get("uiLanguage", "en");
+export let currentUILanguage = userSettings.get("uiLanguage", "");
+// if the language in the settings isn't one this version supports,
+// or if there was no setting for this and we have the default (empty string)
 if (languages.indexOf(currentUILanguage) < 0) {
-  currentUILanguage = "en";
+  // See if their OS's language is one we support
+  currentUILanguage = remote.app.getLocale();
+  // Do we have a localization for that language? If not, the default is English.
+  if (languages.indexOf(currentUILanguage) < 0) {
+    currentUILanguage = "en";
+  }
 }
 export function setUILanguage(code: string): void {
   currentUILanguage = code;
