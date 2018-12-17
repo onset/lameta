@@ -1,7 +1,7 @@
 import { Folder } from "../../Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
-import { IChoice } from "../../field/Field";
+import { IChoice, FieldDefinition } from "../../field/Field";
 import * as mobx from "mobx";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
@@ -42,14 +42,6 @@ export class Session extends Folder {
     );
     //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
-    const genreChoices = genres.map((g: any) => {
-      return g as IChoice;
-    });
-    const genreFieldDefinition = knownFieldDefinitions.session.find(
-      (o: any) => o.key === "genre"
-    );
-
-    genreFieldDefinition.complexChoices = genreChoices;
     const files = this.loadChildFiles(
       directory,
       metadataFile,

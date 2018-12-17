@@ -13,6 +13,9 @@ import { trash } from "../../crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
+import { IChoice, FieldDefinition } from "../field/Field";
+
+const genres = require("./Session/genres.json");
 
 const knownFieldDefinitions = require("../field/fields.json");
 export class ProjectHolder {
@@ -70,6 +73,7 @@ export class Project extends Folder {
     );
 
     this.setupProtocolChoices();
+    this.setupGenreDefinition();
 
     this.knownFields = knownFieldDefinitions.project; // for csv export
   }
@@ -214,6 +218,19 @@ export class Project extends Folder {
         );
         return change;
       });
+  }
+
+  private setupGenreDefinition() {
+    const genreChoices = genres.map((g: any) => {
+      return g as IChoice;
+    });
+    console.assert(genreChoices.length > 0);
+
+    const genreFieldDefinition = knownFieldDefinitions.session.find(
+      (o: any) => o.key === "genre"
+    ) as FieldDefinition;
+
+    genreFieldDefinition.complexChoices = genreChoices;
   }
 
   protected validateFieldThatControlsFolderName(
