@@ -14,8 +14,8 @@ msgstr ""
 "Plural-Forms: \n"
 
 #: app/components/FileList.tsx:197
-msgid "\"Open in program associated with this file type"
-msgstr ""
+#~ msgid "\"Open in program associated with this file type"
+#~ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:101
 msgid "A single ISLE Meta Data Initiative XML file."
@@ -240,6 +240,10 @@ msgstr ""
 
 #: app/components/FolderPane.tsx:233
 msgid "Open in ELAN"
+msgstr ""
+
+#: app/components/FileList.tsx:197
+msgid "Open in program associated with this file type"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:32

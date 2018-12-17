@@ -251,7 +251,7 @@ export default class FileList extends React.Component<IProps, IState> {
         }
       },
       {
-        label: i18n._(t`"Open in program associated with this file type`),
+        label: i18n._(t`Open in program associated with this file type`),
         click: () => {
           // the "file://" prefix is required on mac, works fine on windows
           electron.shell.openExternal("file://" + file.describedFilePath);

@@ -1,21 +1,24 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2018-12-15 15:08-0700\n"
+"POT-Creation-Date: 2018-12-15 15:06-0700\n"
 "Mime-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: @lingui/cli\n"
+"X-Generator: crowdin.com\n"
 "Language: es\n"
-"Project-Id-Version: \n"
+"Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Plural-Forms: \n"
+"PO-Revision-Date: 2018-12-17 23:21\n"
+"Last-Translator: saymorex <hattonjohn+saymorex@gmail.com>\n"
+"Language-Team: Spanish\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: messages.po\n"
 
 #: app/components/FileList.tsx:197
-msgid "\"Open in program associated with this file type"
-msgstr ""
+#~ msgid "\"Open in program associated with this file type"
+#~ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:101
 msgid "A single ISLE Meta Data Initiative XML file."
@@ -35,7 +38,7 @@ msgstr "Acerca de este proyecto"
 
 #: app/components/session/AccessChooser.tsx:26
 msgid "Access"
-msgstr ""
+msgstr "Acceso"
 
 #: app/components/project/ProjectTab.tsx:26
 msgid "Access Protocol"
@@ -43,7 +46,7 @@ msgstr "Protocolo de acceso"
 
 #: app/components/FileList.tsx:132
 msgid "Add Files"
-msgstr ""
+msgstr "Agregar archivos"
 
 #: app/components/project/ProjectTab.tsx:47
 msgid "Add documents here that describe the projects and corpus."
@@ -56,7 +59,7 @@ msgstr "Agregar documentos aquí que no pertenecen en otro lugar (por ejemplo, d
 #: app/components/FolderPane.tsx:168
 #: app/l10nUtils.ts:53
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:59
 #: app/components/export/ExportDialog.tsx:109
@@ -70,15 +73,15 @@ msgstr "Confirmar la eliminación"
 
 #: app/components/FolderPane.tsx:142
 msgid "Contributions"
-msgstr ""
+msgstr "Contribuciones"
 
 #: app/components/FolderPane.tsx:87
 msgid "Contributors"
-msgstr ""
+msgstr "Colaboradores"
 
 #: app/menu.ts:84
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: app/containers/HomePage.tsx:146
 msgid "Create New Project"
@@ -98,11 +101,11 @@ msgstr ""
 
 #: app/menu.ts:109
 msgid "Create Project..."
-msgstr ""
+msgstr "Crear proyecto..."
 
 #: app/components/CustomFieldsTable.tsx:158
 msgid "Custom Fields"
-msgstr ""
+msgstr "Campos definidos por el usuario"
 
 #: app/menu.ts:82
 msgid "Cut"
@@ -110,23 +113,23 @@ msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:62
 msgid "Delete"
-msgstr ""
+msgstr "Borrar"
 
 #: app/components/FileList.tsx:211
 msgid "Delete File..."
-msgstr ""
+msgstr "Borrar archivo..."
 
 #: app/components/Home.tsx:85
 msgid "Delete Person..."
-msgstr ""
+msgstr "Borrar persona..."
 
 #: app/components/Home.tsx:60
 msgid "Delete Session..."
-msgstr ""
+msgstr "Borrar sesión..."
 
 #: app/components/project/ProjectTab.tsx:29
 msgid "Description Documents"
-msgstr ""
+msgstr "Documentos descriptivos"
 
 #: app/components/FolderPane.tsx:224
 msgid "ELAN"
@@ -138,19 +141,19 @@ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:112
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: app/components/export/ExportDialog.tsx:77
 msgid "Export Project"
-msgstr ""
+msgstr "Exportar proyecto"
 
 #: app/menu.ts:118
 msgid "Export Project..."
-msgstr ""
+msgstr "Exportar proyecto..."
 
 #: app/components/CustomFieldsTable.tsx:132
 msgid "Field"
-msgstr ""
+msgstr "Campo"
 
 #: app/components/FolderPane.tsx:242
 msgid "File"
@@ -158,11 +161,11 @@ msgstr ""
 
 #: app/model/Project/Project.ts:192
 msgid "Full Name"
-msgstr ""
+msgstr "Nombre completo"
 
 #: app/menu.ts:212
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: app/menu.ts:48
 msgid "Hide Others"
@@ -174,19 +177,19 @@ msgstr ""
 
 #: app/model/Project/Project.ts:189
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: app/components/FolderPane.tsx:93
 #: app/components/FolderPane.tsx:117
 #: app/components/FolderPane.tsx:148
 #: app/components/project/ProjectTab.tsx:35
 msgid "IMDI"
-msgstr ""
+msgstr "IMDI"
 
 #: app/components/FolderPane.tsx:198
 #: app/l10nUtils.ts:51
 msgid "Image"
-msgstr ""
+msgstr "Imagen"
 
 #: app/menu.ts:127
 msgid "Interface Language"
@@ -198,36 +201,36 @@ msgstr ""
 
 #: app/components/MoreFieldsTable.tsx:61
 msgid "More Fields"
-msgstr ""
+msgstr "Más campos"
 
 #: app/components/FileList.tsx:75
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: app/components/Home.tsx:75
 #: app/model/Project/Project.ts:127
 msgid "New Person"
-msgstr ""
+msgstr "Nueva persona"
 
 #: app/components/Home.tsx:50
 #: app/components/session/SessionsTab.tsx:16
 #: app/model/Project/Project.ts:118
 msgid "New Session"
-msgstr ""
+msgstr "Nueva Sesión"
 
 #: app/components/FolderPane.tsx:90
 #: app/components/FolderPane.tsx:114
 #: app/components/FolderPane.tsx:145
 msgid "Notes"
-msgstr ""
+msgstr "Notas"
 
 #: app/components/project/CreateProjectDialog.tsx:62
 msgid "OK"
-msgstr ""
+msgstr "Aceptar"
 
 #: app/components/FileList.tsx:120
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: app/containers/HomePage.tsx:171
 #: app/menu.ts:104
@@ -236,10 +239,14 @@ msgstr ""
 
 #: app/containers/HomePage.tsx:151
 msgid "Open SayMore Project"
-msgstr ""
+msgstr "Abrir proyecto de SayMore"
 
 #: app/components/FolderPane.tsx:233
 msgid "Open in ELAN"
+msgstr ""
+
+#: app/components/FileList.tsx:197
+msgid "Open in program associated with this file type"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:32
@@ -258,7 +265,7 @@ msgstr "Personas"
 #: app/components/FolderPane.tsx:139
 #: app/l10nUtils.ts:47
 msgid "Person"
-msgstr ""
+msgstr "Persona"
 
 #: app/components/Home.tsx:114
 #: app/l10nUtils.ts:43
@@ -268,7 +275,7 @@ msgstr "Proyecto"
 
 #: app/components/FolderPane.tsx:84
 msgid "Properties"
-msgstr ""
+msgstr "Propiedades"
 
 #: app/menu.ts:60
 msgid "Quit"
@@ -281,7 +288,7 @@ msgstr ""
 #: app/components/FileList.tsx:124
 #: app/components/FileList.tsx:204
 msgid "Rename..."
-msgstr ""
+msgstr "Cambiar el nombre..."
 
 #: app/components/export/ExportDialog.tsx:30
 msgid "Save As"
@@ -303,7 +310,7 @@ msgstr ""
 #: app/components/Home.tsx:47
 #: app/l10nUtils.ts:45
 msgid "Session"
-msgstr ""
+msgstr "Sesión"
 
 #: app/components/Home.tsx:120
 msgid "Sessions"
@@ -315,7 +322,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:191
 msgid "Show in File Explorer"
-msgstr ""
+msgstr "Mostrar en el explorador de archivos"
 
 #: app/components/FileList.tsx:190
 msgid "Show in Finder"
@@ -323,7 +330,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:106
 msgid "Size"
-msgstr ""
+msgstr "Tamaño"
 
 #: app/menu.ts:113
 msgid "Start Screen"
@@ -331,7 +338,7 @@ msgstr ""
 
 #: app/components/FolderPane.tsx:111
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: app/components/FolderPane.tsx:211
 msgid "Text"
@@ -347,28 +354,28 @@ msgstr ""
 
 #: app/components/FileList.tsx:83
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: app/menu.ts:72
 msgid "Undo"
-msgstr ""
+msgstr "Deshacer"
 
 #: app/components/CustomFieldsTable.tsx:143
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: app/components/FolderPane.tsx:183
 #: app/l10nUtils.ts:49
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: app/components/project/CreateProjectDialog.tsx:49
 msgid "What would you like to call this project?"
-msgstr ""
+msgstr "¿Cómo desea llamar este proyecto?"
 
 #: app/components/export/ExportDialog.tsx:36
 msgid "ZIP Archive"
-msgstr ""
+msgstr "Archivo ZIP"
 
 #: app/components/export/ExportDialog.tsx:84
 msgid "Zip of CSVs"
@@ -377,3 +384,4 @@ msgstr ""
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:50
 msgid "{0} will be moved to the Trash"
 msgstr ""
+

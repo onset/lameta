@@ -123,7 +123,7 @@ export default class AutoForm extends React.Component<IProps> {
           <IsoLanguageEdit
             key={field.key}
             className={field.cssClass}
-            language={field}
+            field={field}
           />
         );
       default:

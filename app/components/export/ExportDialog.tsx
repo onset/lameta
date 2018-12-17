@@ -100,7 +100,9 @@ export default class ExportDialog extends React.Component<IProps, IState> {
           </div>
           <div className="dialogContent">
             <fieldset>
-              <legend>Choose an export format:</legend>
+              <legend>
+                <Trans>Choose an export format:</Trans>
+              </legend>
               <label>
                 <input
                   type="radio"

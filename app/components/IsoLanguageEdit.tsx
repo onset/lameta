@@ -5,7 +5,7 @@ import LanguagePickerDialog from "./LanguagePickerDialog/LanguagePickerDialog";
 import "./IsoLanguageEdit.scss";
 
 export interface IProps {
-  language: Field;
+  field: Field;
 }
 
 // automatically update when the value changes
@@ -18,15 +18,16 @@ export default class IsoLanguageEdit extends React.Component<
   }
 
   public render() {
+    const label = this.props.field.labelInUILanguage;
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.props.language.englishLabel}</label>
+        <label>{label}</label>
         <a
           className="languageEdit"
-          onClick={() => LanguagePickerDialog.show(this.props.language)}
+          onClick={() => LanguagePickerDialog.show(this.props.field)}
         >
-          {this.props.language.text && this.props.language.text.length > 0
-            ? this.props.language.text
+          {this.props.field.text && this.props.field.text.length > 0
+            ? this.props.field.text
             : "choose..."}
         </a>
       </div>

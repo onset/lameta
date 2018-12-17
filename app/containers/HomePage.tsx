@@ -235,7 +235,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "SayMore"
+      "SayMore" // we don't translate this
     );
 
     const options: OpenDialogOptions = {
@@ -244,7 +244,9 @@ export default class HomePage extends React.Component<IProps, IState> {
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects
       properties: ["openFile"],
-      filters: [{ name: "SayMore/SayMore Project Files", extensions: ["sprj"] }]
+      filters: [
+        { name: i18n._(t`SayMore/SayMore Project Files`), extensions: ["sprj"] }
+      ]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
       if (paths) {
