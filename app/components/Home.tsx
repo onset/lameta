@@ -16,6 +16,8 @@ import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   project: Project;
@@ -53,10 +55,10 @@ export default class Home extends React.Component<IProps> {
   private UpdateMenus(currentTabIndex: number) {
     let enable = currentTabIndex === 1;
     const sessionMenu = {
-      label: "&Session",
+      label: "&" + i18n._(t`Session`),
       submenu: [
         {
-          label: "New Session",
+          label: i18n._(t`New Session`),
           enabled: enable,
           click: () => {
             if (this.props.project) {
@@ -66,7 +68,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: "Delete Session...",
+          label: i18n._(t`Delete Session...`),
           enabled: enable && this.props.project.canDeleteCurrentSession(),
           click: () => {
             if (this.props.project) {
@@ -78,10 +80,10 @@ export default class Home extends React.Component<IProps> {
     };
     enable = currentTabIndex === 2;
     const peopleMenu = {
-      label: "&People",
+      label: "&" + i18n._(t`People`),
       submenu: [
         {
-          label: "New Person",
+          label: i18n._(t`New Person`),
           enabled: enable,
           click: () => {
             if (this.props.project) {
@@ -91,7 +93,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: "Delete Person...",
+          label: i18n._(t`Delete Person...`),
           enabled: enable && this.props.project.canDeleteCurrentPerson(),
           click: () => {
             if (this.props.project) {

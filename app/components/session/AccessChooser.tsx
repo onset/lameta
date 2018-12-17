@@ -6,6 +6,7 @@ import { Creatable, Option, OptionValues } from "react-select";
 import ReactSelectClass from "react-select";
 import { observable } from "mobx";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import { Trans } from "@lingui/react";
 
 const titleCase = require("title-case");
 
@@ -30,7 +31,9 @@ export default class AccessChooser extends React.Component<IProps> {
 
     return (
       <div className={"field access-chooser"}>
-        <label>{"Access"}</label>
+        <label>
+          <Trans>Access</Trans>
+        </label>
         <ReactSelectClass
           name={this.props.field.englishLabel}
           value={this.props.field.text}

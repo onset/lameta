@@ -2,12 +2,9 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
-import {
-  ComponentTab,
-  FolderListButtons,
-  FileListButtons
-} from "../componentTab/ComponentTab";
+import { ComponentTab } from "../componentTab/ComponentTab";
 import "./SessionsTab.scss";
+import { Trans } from "@lingui/react";
 
 interface IProps {
   project: Project;
@@ -24,7 +21,7 @@ export class SessionsTab extends React.Component<IProps> {
         key="newSession"
         onClick={e => this.props.project.addSession()}
       >
-        New Session
+        <Trans>New Session</Trans>
       </button>
     );
     return (

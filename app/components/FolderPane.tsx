@@ -353,7 +353,7 @@ export class FolderPane extends React.Component<IProps> {
                   );
                 }}
               >
-                Open in ELAN
+                <Trans>Open in ELAN</Trans>
               </a>
             </TabPanel>
             {standardMetaPanels}

@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: app/components/FileList.tsx:197
+msgid "\"Open in program associated with this file type"
+msgstr ""
+
 #: app/components/export/ExportDialog.tsx:101
 msgid "A single ISLE Meta Data Initiative XML file."
 msgstr ""
@@ -29,8 +33,16 @@ msgstr ""
 msgid "About This Project"
 msgstr ""
 
+#: app/components/session/AccessChooser.tsx:26
+msgid "Access"
+msgstr ""
+
 #: app/components/project/ProjectTab.tsx:26
 msgid "Access Protocol"
+msgstr ""
+
+#: app/components/FileList.tsx:132
+msgid "Add Files"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:47
@@ -42,6 +54,7 @@ msgid "Add documents here that don't seem to fit anywhere else. An example would
 msgstr ""
 
 #: app/components/FolderPane.tsx:168
+#: app/l10nUtils.ts:53
 msgid "Audio"
 msgstr ""
 
@@ -87,12 +100,28 @@ msgstr ""
 msgid "Create Project..."
 msgstr ""
 
+#: app/components/CustomFieldsTable.tsx:158
+msgid "Custom Fields"
+msgstr ""
+
 #: app/menu.ts:82
 msgid "Cut"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:62
 msgid "Delete"
+msgstr ""
+
+#: app/components/FileList.tsx:211
+msgid "Delete File..."
+msgstr ""
+
+#: app/components/Home.tsx:85
+msgid "Delete Person..."
+msgstr ""
+
+#: app/components/Home.tsx:60
+msgid "Delete Session..."
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:29
@@ -119,11 +148,19 @@ msgstr ""
 msgid "Export Project..."
 msgstr ""
 
+#: app/components/CustomFieldsTable.tsx:132
+msgid "Field"
+msgstr ""
+
 #: app/components/FolderPane.tsx:242
 msgid "File"
 msgstr ""
 
-#: app/menu.ts:206
+#: app/model/Project/Project.ts:192
+msgid "Full Name"
+msgstr ""
+
+#: app/menu.ts:212
 msgid "Help"
 msgstr ""
 
@@ -135,6 +172,10 @@ msgstr ""
 msgid "Hide SayMore X"
 msgstr ""
 
+#: app/model/Project/Project.ts:189
+msgid "ID"
+msgstr ""
+
 #: app/components/FolderPane.tsx:93
 #: app/components/FolderPane.tsx:117
 #: app/components/FolderPane.tsx:148
@@ -143,11 +184,35 @@ msgid "IMDI"
 msgstr ""
 
 #: app/components/FolderPane.tsx:198
+#: app/l10nUtils.ts:51
 msgid "Image"
 msgstr ""
 
 #: app/menu.ts:127
 msgid "Interface Language"
+msgstr ""
+
+#: app/components/FileList.tsx:92
+msgid "Modified"
+msgstr ""
+
+#: app/components/MoreFieldsTable.tsx:61
+msgid "More Fields"
+msgstr ""
+
+#: app/components/FileList.tsx:75
+msgid "Name"
+msgstr ""
+
+#: app/components/Home.tsx:75
+#: app/model/Project/Project.ts:127
+msgid "New Person"
+msgstr ""
+
+#: app/components/Home.tsx:50
+#: app/components/session/SessionsTab.tsx:16
+#: app/model/Project/Project.ts:118
+msgid "New Session"
 msgstr ""
 
 #: app/components/FolderPane.tsx:90
@@ -160,6 +225,10 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: app/components/FileList.tsx:120
+msgid "Open"
+msgstr ""
+
 #: app/containers/HomePage.tsx:171
 #: app/menu.ts:104
 msgid "Open Project..."
@@ -167,6 +236,10 @@ msgstr ""
 
 #: app/containers/HomePage.tsx:151
 msgid "Open SayMore Project"
+msgstr ""
+
+#: app/components/FolderPane.tsx:233
+msgid "Open in ELAN"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:32
@@ -177,15 +250,18 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: app/components/Home.tsx:124
+#: app/components/Home.tsx:72
+#: app/components/Home.tsx:126
 msgid "People"
 msgstr ""
 
 #: app/components/FolderPane.tsx:139
+#: app/l10nUtils.ts:47
 msgid "Person"
 msgstr ""
 
-#: app/components/Home.tsx:112
+#: app/components/Home.tsx:114
+#: app/l10nUtils.ts:43
 #: app/menu.ts:101
 msgid "Project"
 msgstr ""
@@ -200,6 +276,11 @@ msgstr ""
 
 #: app/menu.ts:77
 msgid "Redo"
+msgstr ""
+
+#: app/components/FileList.tsx:124
+#: app/components/FileList.tsx:204
+msgid "Rename..."
 msgstr ""
 
 #: app/components/export/ExportDialog.tsx:30
@@ -219,15 +300,29 @@ msgid "Services"
 msgstr ""
 
 #: app/components/FolderPane.tsx:108
+#: app/components/Home.tsx:47
+#: app/l10nUtils.ts:45
 msgid "Session"
 msgstr ""
 
-#: app/components/Home.tsx:118
+#: app/components/Home.tsx:120
 msgid "Sessions"
 msgstr ""
 
 #: app/menu.ts:53
 msgid "Show All"
+msgstr ""
+
+#: app/components/FileList.tsx:191
+msgid "Show in File Explorer"
+msgstr ""
+
+#: app/components/FileList.tsx:190
+msgid "Show in Finder"
+msgstr ""
+
+#: app/components/FileList.tsx:106
+msgid "Size"
 msgstr ""
 
 #: app/menu.ts:113
@@ -242,11 +337,28 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
+#: app/model/Project/Project.ts:165
+msgid "The {fieldNameInUiLanguage} cannot be empty"
+msgstr ""
+
+#: app/model/Project/Project.ts:174
+msgid "There is already a {folderKind} with the name '{value}'"
+msgstr ""
+
+#: app/components/FileList.tsx:83
+msgid "Type"
+msgstr ""
+
 #: app/menu.ts:72
 msgid "Undo"
 msgstr ""
 
+#: app/components/CustomFieldsTable.tsx:143
+msgid "Value"
+msgstr ""
+
 #: app/components/FolderPane.tsx:183
+#: app/l10nUtils.ts:49
 msgid "Video"
 msgstr ""
 

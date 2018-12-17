@@ -7,6 +7,7 @@ import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
+import { Trans } from "@lingui/react";
 
 export interface IProps {
   folder: Folder;
@@ -79,7 +80,9 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
       <div className="moreFieldsBlock">
         {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in SayMore X we
           too are using the 'additional' term internally, and 'more' in the English label. */}
-        <label>More Fields</label>
+        <label>
+          <Trans>More Fields</Trans>
+        </label>
         <ReactTable
           className="moreFieldsTable"
           noDataText=""

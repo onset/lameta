@@ -4,6 +4,7 @@
 import { setupI18n, I18n } from "@lingui/core";
 import { userSettings } from "./containers/settings";
 import { remote } from "electron";
+import { t } from "@lingui/macro";
 
 const languages = ["en", "es", "fr", "ps"];
 export const catalogs = {};
@@ -43,11 +44,34 @@ export let i18n = setupI18n({
 // and it lives as a second file on Crowdin.com that has to be translated.
 import fields from "../locale/fields.csv";
 import { Field } from "./model/field/Field";
+
+export function translateFileType(englishTypeName: string): string {
+  switch (englishTypeName) {
+    case "Project":
+      return i18n._(t`Project`);
+    case "Session":
+      return i18n._(t`Session`);
+    case "Person":
+      return i18n._(t`Person`);
+    case "Video":
+      return i18n._(t`Video`);
+    case "Image":
+      return i18n._(t`Image`);
+    case "Audio":
+      return i18n._(t`Audio`);
+    default:
+      return englishTypeName; // e.g. "mp3"
+  }
+}
+
 export function translateFieldLabel(field: Field): string {
   if (field === undefined) {
     return "LABEL ERROR";
   }
 
+  if (currentUILanguage === "ps") {
+    return "Pseudo" + field.englishLabel;
+  }
   // in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
   const key =
     currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);

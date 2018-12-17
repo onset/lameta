@@ -60,7 +60,7 @@ In Crowdin:settings:translations:Target Languages, add the language.
 
 `yarn lingui-add xyz`
 
-`yarn lingui-extract`
+`yarn lingui-extract` (note: this will fail if the program is running)
 
 Upload the locale/xyz/messages.po file to crowdin
 
@@ -78,4 +78,4 @@ In Crowdin:Translations:Build & Download. Take the resulting files and replace t
 
 # Pseudo localization
 
-I could not get lingui to make the pseudo js file following the instructions that said the name could be anything. It makes the po file, but `yarn lingui-compile` does not make the js file. If I change the name in .lingui to "ps", then I do get a js file. Note, this pseudo localization is on for the stuff that goes through lingui; i.e. not the strings in fields.json and genres.json.
+I could not get lingui to make the pseudo js file following the instructions that said the name could be anything. It makes the po file, but `yarn lingui-compile` does not make the js file. If I change the name in .lingui to "ps", then I do get a js file. Note, this pseudo localization is on for the stuff that goes through lingui; i.e. not the strings in fields.json and genres.json. Those should show with the word "pseudo" prepended to the English name.

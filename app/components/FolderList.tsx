@@ -67,7 +67,8 @@ export class FolderList extends React.Component<IProps> {
         className: key,
         Header:
           this.props.folders.length > 0
-            ? this.props.folders[0].properties.getValueOrThrow(key).englishLabel
+            ? this.props.folders[0].properties.getValueOrThrow(key)
+                .labelInUILanguage
             : titleCase(key),
         accessor: (f: Folder) => {
           const field = f.properties.getValueOrThrow(key);
