@@ -7,6 +7,8 @@ import { Project, ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../crossPlatformUtilities";
 import ImdiGenerator from "../../export/ImdiGenerator";
 import { remote } from "electron";
+import * as Path from "path";
+
 // tslint:disable-next-line:no-empty-interface
 interface IProps {
   projectHolder: ProjectHolder;
@@ -29,9 +31,10 @@ export default class ExportDialog extends React.Component<IProps, IState> {
       remote.dialog.showSaveDialog(
         {
           title: "Save As",
-          defaultPath: `${this.props.projectHolder.project!.displayName}-${
-            this.state.selectedOption
-          }.zip`,
+          //${Path.basename(this.projectHolder.project.directory)}
+          defaultPath: `${Path.basename(
+            this.props.projectHolder.project!.directory
+          )}-${this.state.selectedOption}.zip`,
           filters: [
             {
               extensions: ["zip"],
@@ -108,19 +111,22 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 A single zip archive that contains one comma-separated file for
                 each of Project, Session, and People.
               </p>
+
               {/* <label>
                 <input
                   type="radio"
                   name="format"
                   value="spreadsheet"
                   checked={true}
+                  disabled={true}
                 />
-                Spreadsheet
-              </label> */}
+                Spreadsheet (not implemented yet)
+              </label>
               <p>
                 A single file with sheets for each of Project, Session, and
                 People
-              </p>
+              </p> */}
+
               <label>
                 <input
                   type="radio"

@@ -71,6 +71,23 @@ export default class SayLessMenu {
         }
       ]
     };
+    const editMenu = {
+      label: "Edit",
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        {
+          label: "Select All",
+          accelerator: "CmdOrCtrl+A",
+          selector: "selectAll:"
+        }
+      ]
+    };
+
     const projectMenu = {
       label: "&" + i18n._(t`Project`),
       submenu: [
@@ -118,6 +135,10 @@ export default class SayLessMenu {
         { role: "quit" }
       ]
     };
+    if (process.platform != "darwin") {
+      projectMenu.submenu.push({ type: "separator" });
+      projectMenu.submenu.push({ role: "quit" } as any);
+    }
     // sessionMenu,
     // peopleMenu,
     const devMenu = {
@@ -175,9 +196,21 @@ export default class SayLessMenu {
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
+
     // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
     if (sessionMenu) {
-      template.push(projectMenu, sessionMenu, peopleMenu);
+      template.push(projectMenu);
+
+      if (process.platform === "darwin") {
+        // in order to get normal editing keys to work (e.g. cmd-v for paste), I had
+        // to add an edit menu on mac. If there is a way to get this without the menu,
+        // that would be great.
+        // Meanwhile, it's not clear where this should go in the order. If it's to the left
+        // of the Project menu, that looks weird, because the Project menu acts like a "File" menu.
+        template.push(editMenu);
+      }
+
+      template.push(sessionMenu, peopleMenu);
     }
     // if (process.env.NODE_ENV === "development") {
     template.push(devMenu);

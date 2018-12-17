@@ -67,11 +67,11 @@ export default class AutoForm extends React.Component<IProps> {
               getPeopleNames={this.props.authorityLists.getPeopleNames}
             />
           );
-        } else if (
-          f.definition &&
-          f.definition.complexChoices &&
-          f.definition.complexChoices.length > 0
-        ) {
+        } else if (f.definition && f.definition.key === "genre") {
+          console.assert(
+            f.definition!.complexChoices &&
+              f.definition!.complexChoices!.length > 0
+          );
           return (
             <GenreChooser
               field={f}

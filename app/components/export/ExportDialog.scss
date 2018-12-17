@@ -16,5 +16,11 @@
       margin-left: 22px;
       margin-top: 9px;
     }
+
+    input {
+      //global sets this to the field height (2em), but that messes up
+      // radios in this dialog, at least on mac.
+      height: auto;
+    }
   }
 }

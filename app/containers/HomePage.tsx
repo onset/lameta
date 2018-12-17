@@ -202,11 +202,11 @@ export default class HomePage extends React.Component<IProps, IState> {
                   Create New Project with Sample Data
                 </a>
               </div>
-              <p className="description">
+              {/* <p className="description">
                 SayMore<sub>X</sub> is a cross-platform rewrite of SayMore. At
                 this point, SayMore<sub>X</sub> lacks the BOLD (Basic Oral
                 Language Documentation) features of the original SayMore.
-              </p>
+              </p> */}
             </div>
           </div>
         )}

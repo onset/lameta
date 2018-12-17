@@ -113,8 +113,9 @@ export default class LanguagePickerDialog extends React.Component<
     return suggestions;
   }
   public render() {
+    const codePattern = /^[a-zA-Z]{2,3}(-[a-zA-Z]{2,3})?$/;
     const haveValidFields =
-      this.state.langCode.length === 3 && this.state.name.length > 0;
+      codePattern.test(this.state.langCode) && this.state.name.length > 0;
     const suggestions = this.state.suggestions;
     const topSuggestionCode =
       suggestions.length > 0 ? suggestions[0].code.three : "";

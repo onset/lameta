@@ -244,3 +244,15 @@ form .ReactTable {
 
   height: $field-height;
 }
+
+//take up the whole cell, because else you get dead areas where you click and nothing happens
+// I know, I know, it looks... wrong...
+.rt-td .react-datepicker-wrapper {
+  width: 100%;
+  .react-datepicker__input-container {
+    width: 100%;
+    .input {
+      width: 100%;
+    }
+  }
+}

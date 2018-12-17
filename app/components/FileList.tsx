@@ -34,8 +34,16 @@ export default class FileList extends React.Component<IProps, IState> {
     acceptedFiles: Dropzone.ImageFile[],
     rejectedFiles: Dropzone.ImageFile[]
   ) {
-    //console.log(JSON.stringify(acceptedFiles));
-    this.props.folder.addFiles(acceptedFiles);
+    if (acceptedFiles.length > 0) {
+      // if there is an error in here, it leave the drop zone in an active state, and you have to restart
+      // so we catch the error
+      try {
+        //console.log(JSON.stringify(acceptedFiles));
+        this.props.folder.addFiles(acceptedFiles);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
   private addFiles() {
     remote.dialog.showOpenDialog({}, paths => {
@@ -124,7 +132,7 @@ export default class FileList extends React.Component<IProps, IState> {
       <Dropzone
         activeClassName={"drop-active"}
         className={"fileList"}
-        onDrop={this.onDrop.bind(this)}
+        onDrop={(acepted, rejected) => this.onDrop(acepted, rejected)}
         disableClick
       >
         <div className={"mask"}>Drop files here</div>
