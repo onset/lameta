@@ -42,7 +42,7 @@ export let i18n = setupI18n({
 // I don't have a way of making the lingui-extract scanner scan our fields.json, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
 import fields from "../locale/fields.csv";
-export function lookup(english: string): string {
+export function translateFieldLabel(english: string): string {
   // in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
   const key =
     currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);

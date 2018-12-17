@@ -5,12 +5,14 @@ import DatePicker from "react-datepicker";
 import { Moment } from "moment";
 import { Field } from "../model/field/Field";
 const moment = require("moment");
+import { translateFieldLabel } from "../l10nUtils";
+
 // tslint:disable-next-line:no-submodule-imports
 
 //const styles = require("./Sessions.scss");
 
 export interface IProps {
-  date: Field;
+  field: Field;
 }
 
 // automatically update when the value changes
@@ -21,22 +23,25 @@ export default class DateFieldEdit extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    this.getLabel = this.getLabel.bind(this);
   }
 
   private getLabel() {
-    return this.props.date.englishLabel;
+    if (this.props.field === undefined) {
+      return "Null Text";
+    }
+    return translateFieldLabel(this.props.field.englishLabel);
   }
 
   public render() {
-    const m: Moment = this.props.date.text
-      ? moment(this.props.date.text)
+    const label = this.getLabel();
+    const m: Moment = this.props.field.text
+      ? moment(this.props.field.text)
       : null;
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.getLabel()}</label>
+        <label>{label}</label>
         <DatePicker
-        className="date-picker"
+          className="date-picker"
           dateFormat="ll"
           selected={m}
           //onChange={d => console.log("change " + d)}
@@ -44,7 +49,7 @@ export default class DateFieldEdit extends React.Component<
             if (newDate != null) {
               // TODO: while this is changing the value, it's not propagating back to our props so you don't see the change immediately
               const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
-              this.props.date.setValueFromString(
+              this.props.field.setValueFromString(
                 newDate.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
               );
             }
