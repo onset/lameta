@@ -5,6 +5,7 @@
       "format": "po",
       "fallbackLocale": "en",
       "sourceLocale": "en-code",
+      "pseudoLocale": "ps",
       "srcPathIgnorePatterns": [
          "/node_modules/",
          "/dist/",
@@ -13,5 +14,5 @@
       "extractBabelOptions": {
             "plugins": ["@babel/plugin-syntax-dynamic-import", "macros"],
               "presets": [ "@babel/preset-env","@babel/preset-react", "@lingui/babel-preset-react"]
-      },
+      }
 }

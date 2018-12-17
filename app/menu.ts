@@ -128,6 +128,18 @@ export default class SayLessMenu {
               click: () => {
                 setUILanguage("es");
               }
+            },
+            {
+              label: "français",
+              click: () => {
+                setUILanguage("fr");
+              }
+            },
+            {
+              label: "Pseudo",
+              click: () => {
+                setUILanguage("ps");
+              }
             }
           ]
         },
@@ -135,7 +147,7 @@ export default class SayLessMenu {
         { role: "quit" }
       ]
     };
-    if (process.platform != "darwin") {
+    if (process.platform !== "darwin") {
       projectMenu.submenu.push({ type: "separator" });
       projectMenu.submenu.push({ role: "quit" } as any);
     }
