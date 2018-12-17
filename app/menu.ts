@@ -1,10 +1,9 @@
-import { Menu, remote, ipcRenderer } from "electron";
+import { remote } from "electron";
 import HomePage from "./containers/HomePage";
-import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
-import { i18n, setUILanguage } from "l10nUtils";
+import { i18n, setUILanguage } from "./l10nUtils";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -29,41 +28,41 @@ export default class SayLessMenu {
     const haveProject = true; //this.homePage.projectHolder.project;
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: "SayMore X",
+      label: i18n._(t`SayMore X`),
       submenu: [
         {
-          label: "About SayMore X",
+          label: i18n._(t`About SayMore X`),
           selector: "orderFrontStandardAboutPanel:"
         },
         {
           type: "separator"
         },
         {
-          label: "Services",
+          label: i18n._(t`Services`),
           submenu: []
         },
         {
           type: "separator"
         },
         {
-          label: "Hide SayMore X",
+          label: i18n._(t`Hide SayMore X`),
           accelerator: "Command+H",
           selector: "hide:"
         },
         {
-          label: "Hide Others",
+          label: i18n._(t`Hide Others`),
           accelerator: "Command+Shift+H",
           selector: "hideOtherApplications:"
         },
         {
-          label: "Show All",
+          label: i18n._(t`Show All`),
           selector: "unhideAllApplications:"
         },
         {
           type: "separator"
         },
         {
-          label: "Quit",
+          label: i18n._(t`Quit`),
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
@@ -72,16 +71,32 @@ export default class SayLessMenu {
       ]
     };
     const editMenu = {
-      label: "Edit",
+      label: i18n._(t`Edit`),
       submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
         {
-          label: "Select All",
+          label: i18n._(t`Undo`),
+          accelerator: "CmdOrCtrl+Z",
+          selector: "undo:"
+        },
+        {
+          label: i18n._(t`Redo`),
+          accelerator: "Shift+CmdOrCtrl+Z",
+          selector: "redo:"
+        },
+        { type: "separator" },
+        { label: i18n._(t`Cut`), accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        {
+          label: i18n._(t`Copy`),
+          accelerator: "CmdOrCtrl+C",
+          selector: "copy:"
+        },
+        {
+          label: i18n._(t`Paste`),
+          accelerator: "CmdOrCtrl+V",
+          selector: "paste:"
+        },
+        {
+          label: i18n._(t`Select All`),
           accelerator: "CmdOrCtrl+A",
           selector: "selectAll:"
         }
@@ -200,7 +215,7 @@ export default class SayLessMenu {
       ]
     };
     const helpMenu = {
-      label: "Help",
+      label: i18n._(t`Help`),
       submenu: []
     };
 
@@ -257,66 +272,4 @@ export default class SayLessMenu {
       });
     }
   }
-
-  //     {
-  //       label: "Edit",
-  //       submenu: [
-  //         {
-  //           label: "Undo",
-  //           accelerator: "Command+Z",
-  //           selector: "undo:"
-  //         },
-  //         {
-  //           label: "Redo",
-  //           accelerator: "Shift+Command+Z",
-  //           selector: "redo:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Cut",
-  //           accelerator: "Command+X",
-  //           selector: "cut:"
-  //         },
-  //         {
-  //           label: "Copy",
-  //           accelerator: "Command+C",
-  //           selector: "copy:"
-  //         },
-  //         {
-  //           label: "Paste",
-  //           accelerator: "Command+V",
-  //           selector: "paste:"
-  //         },
-  //         {
-  //           label: "Select All",
-  //           accelerator: "Command+A",
-  //           selector: "selectAll:"
-  //         }
-  //       ]
-  //     },
-
-  //     {
-  //       label: "Window",
-  //       submenu: [
-  //         {
-  //           label: "Minimize",
-  //           accelerator: "Command+M",
-  //           selector: "performMiniaturize:"
-  //         },
-  //         {
-  //           label: "Close",
-  //           accelerator: "Command+W",
-  //           selector: "performClose:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Bring All to Front",
-  //           selector: "arrangeInFront:"
-  //         }
-  //       ]
-  //     },
 }

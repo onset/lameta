@@ -9,7 +9,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react";
 
 interface IProps {
   project: Project;

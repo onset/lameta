@@ -5,6 +5,9 @@ import ReactModal from "react-modal";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
+import { t } from "@lingui/macro";
+import { i18n } from "../../l10nUtils";
+import { Trans } from "@lingui/react";
 
 interface IProps {
   isOpen: boolean;
@@ -58,8 +61,8 @@ export default class CreateProjectDialog extends React.Component<
     }
 
     const title = this.props.useSampleProject
-      ? "Create Project Using Sample Data"
-      : "Create New Saymore Project";
+      ? i18n._(t`Create Project Using Sample Data`)
+      : i18n._(t`Create New Saymore Project`);
     return (
       <ReactModal
         ariaHideApp={false}
@@ -70,7 +73,9 @@ export default class CreateProjectDialog extends React.Component<
       >
         <div className={"dialogTitle"}>{title}</div>
         <div className={"dialogContent"}>
-          <h1>What would you like to call this project?</h1>
+          <h1>
+            <Trans>What would you like to call this project?</Trans>
+          </h1>
           <input
             id="projectNameInput"
             autoFocus
@@ -85,13 +90,15 @@ export default class CreateProjectDialog extends React.Component<
           <div className="okCancelGroup">
             {/* actual order of these will be platform-specific, controlled by
           app.global.scss */}
-            <button onClick={() => this.handleCloseModal(false)}>Cancel</button>
+            <button onClick={() => this.handleCloseModal(false)}>
+              <Trans>Cancel</Trans>
+            </button>
             <button
               id="okButton"
               onClick={() => this.handleCloseModal(true)}
               disabled={!projectNameIsViable}
             >
-              OK
+              <Trans>OK</Trans>
             </button>
           </div>
         </div>

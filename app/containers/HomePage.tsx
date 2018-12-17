@@ -16,6 +16,9 @@ import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
 import ExportDialog from "../components/export/ExportDialog";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../l10nUtils";
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -176,6 +179,7 @@ export default class HomePage extends React.Component<IProps, IState> {
               <div className={"top"}>
                 <img src={locate("assets/start-screen/icon.png")} />
                 <h1>
+                  {/* we don't localize this */}
                   SayMore<span>x</span>
                 </h1>
               </div>
@@ -186,11 +190,13 @@ export default class HomePage extends React.Component<IProps, IState> {
                   id="creatNewProjectLink"
                   onClick={() => this.createProject(false)}
                 >
-                  Create New Project
+                  <Trans>Create New Project</Trans>
                 </a>
                 <br />
                 <img src={locate("assets/start-screen/open.png")} />
-                <a onClick={() => this.openProject()}>Open SayMore Project</a>
+                <a onClick={() => this.openProject()}>
+                  <Trans>Open SayMore Project</Trans>
+                </a>
                 <br />
                 <img src={locate("assets/start-screen/sample.png")} />
                 <a
@@ -199,7 +205,7 @@ export default class HomePage extends React.Component<IProps, IState> {
                     this.createProject(true);
                   }}
                 >
-                  Create New Project with Sample Data
+                  <Trans>Create New Project with Sample Data</Trans>
                 </a>
               </div>
               {/* <p className="description">
@@ -233,7 +239,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     );
 
     const options: OpenDialogOptions = {
-      title: "Open Project...",
+      title: i18n._(t`Open Project...`),
       defaultPath: defaultProjectParentDirectory,
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects

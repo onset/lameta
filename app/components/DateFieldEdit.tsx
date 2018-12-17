@@ -5,11 +5,6 @@ import DatePicker from "react-datepicker";
 import { Moment } from "moment";
 import { Field } from "../model/field/Field";
 const moment = require("moment");
-import { translateFieldLabel } from "../l10nUtils";
-
-// tslint:disable-next-line:no-submodule-imports
-
-//const styles = require("./Sessions.scss");
 
 export interface IProps {
   field: Field;
@@ -25,15 +20,8 @@ export default class DateFieldEdit extends React.Component<
     super(props);
   }
 
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return translateFieldLabel(this.props.field.englishLabel);
-  }
-
   public render() {
-    const label = this.getLabel();
+    const label: string = this.props.field.labelInUILanguage;
     const m: Moment = this.props.field.text
       ? moment(this.props.field.text)
       : null;

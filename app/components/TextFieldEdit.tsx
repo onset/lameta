@@ -1,8 +1,6 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-import { translateFieldLabel } from "../l10nUtils";
-const titleCase = require("title-case");
 
 export interface IProps {
   field: Field;
@@ -35,13 +33,6 @@ export default class TextFieldEdit extends React.Component<
     this.setState({ invalid: false });
   }
 
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return translateFieldLabel(this.props.field.englishLabel);
-  }
-
   private static getValue(text: Field): string {
     if (text === undefined) {
       return "Null Text";
@@ -51,7 +42,7 @@ export default class TextFieldEdit extends React.Component<
 
   public render() {
     const classname = this.state.invalid ? "invalid" : "";
-    const label = this.getLabel();
+    const label: string = this.props.field.labelInUILanguage;
     return (
       <div
         className={
