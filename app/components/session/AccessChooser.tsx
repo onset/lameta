@@ -1,13 +1,11 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
-import { Creatable, Option, OptionValues } from "react-select";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
-import { observable } from "mobx";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-
-const titleCase = require("title-case");
+import { Trans } from "@lingui/react";
+import { translateAccessProtocol } from "../../l10nUtils";
 
 export interface IProps {
   field: Field;
@@ -24,13 +22,19 @@ export default class AccessChooser extends React.Component<IProps> {
     const options = this.props.authorityLists.accessChoices.map(c => {
       return new Object({
         value: c.label,
-        label: c.label + (c.description.length > 0 ? ":  " + c.description : "")
+        label:
+          translateAccessProtocol(c.label) +
+          (c.description.length > 0
+            ? ":  " + c.description // not localized yet
+            : "")
       });
     });
 
     return (
       <div className={"field access-chooser"}>
-        <label>{"Access"}</label>
+        <label>
+          <Trans>Access</Trans>
+        </label>
         <ReactSelectClass
           name={this.props.field.englishLabel}
           value={this.props.field.text}

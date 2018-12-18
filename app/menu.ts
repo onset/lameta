@@ -1,8 +1,9 @@
-import { Menu, remote, ipcRenderer } from "electron";
+import { remote, shell } from "electron";
 import HomePage from "./containers/HomePage";
-import ImdiGenerator from "./export/ImdiGenerator";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
+import { t } from "@lingui/macro";
+import { i18n, setUILanguage, currentUILanguage } from "./l10nUtils";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -27,41 +28,41 @@ export default class SayLessMenu {
     const haveProject = true; //this.homePage.projectHolder.project;
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: "SayMore X",
+      label: i18n._(t`SayMore X`),
       submenu: [
         {
-          label: "About SayMore X",
+          label: i18n._(t`About SayMore X`),
           selector: "orderFrontStandardAboutPanel:"
         },
         {
           type: "separator"
         },
         {
-          label: "Services",
+          label: i18n._(t`Services`),
           submenu: []
         },
         {
           type: "separator"
         },
         {
-          label: "Hide SayMore X",
+          label: i18n._(t`Hide SayMore X`),
           accelerator: "Command+H",
           selector: "hide:"
         },
         {
-          label: "Hide Others",
+          label: i18n._(t`Hide Others`),
           accelerator: "Command+Shift+H",
           selector: "hideOtherApplications:"
         },
         {
-          label: "Show All",
+          label: i18n._(t`Show All`),
           selector: "unhideAllApplications:"
         },
         {
           type: "separator"
         },
         {
-          label: "Quit",
+          label: i18n._(t`Quit`),
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
@@ -70,16 +71,32 @@ export default class SayLessMenu {
       ]
     };
     const editMenu = {
-      label: "Edit",
+      label: i18n._(t`Edit`),
       submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
         {
-          label: "Select All",
+          label: i18n._(t`Undo`),
+          accelerator: "CmdOrCtrl+Z",
+          selector: "undo:"
+        },
+        {
+          label: i18n._(t`Redo`),
+          accelerator: "Shift+CmdOrCtrl+Z",
+          selector: "redo:"
+        },
+        { type: "separator" },
+        { label: i18n._(t`Cut`), accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        {
+          label: i18n._(t`Copy`),
+          accelerator: "CmdOrCtrl+C",
+          selector: "copy:"
+        },
+        {
+          label: i18n._(t`Paste`),
+          accelerator: "CmdOrCtrl+V",
+          selector: "paste:"
+        },
+        {
+          label: i18n._(t`Select All`),
           accelerator: "CmdOrCtrl+A",
           selector: "selectAll:"
         }
@@ -87,33 +104,80 @@ export default class SayLessMenu {
     };
 
     const projectMenu = {
-      label: "&Project",
+      label: "&" + i18n._(t`Project`),
       submenu: [
         {
-          label: "&Open Project...",
+          label: "&" + i18n._(t`Open Project...`),
           accelerator: "Ctrl+O",
           click: () => this.homePage.openProject()
         },
         {
-          label: "&Create Project...",
+          label: "&" + i18n._(t`Create Project...`),
           click: () => this.homePage.createProject(false)
         },
         {
-          label: "&Start Screen",
+          label: "&" + i18n._(t`Start Screen`),
           click: () => this.homePage.projectHolder.setProject(null)
         },
         { type: "separator" },
         {
-          label: "Export &Project...",
+          label: "&" + i18n._(t`Export Project...`),
           accelerator: "Ctrl+E",
           enabled: haveProject,
           click: () => {
             ExportDialog.show();
           }
+        },
+        { type: "separator" },
+        {
+          label: i18n._(t`Interface Language`),
+
+          submenu: [
+            {
+              label: "English",
+              type: "radio",
+              click: () => {
+                setUILanguage("en");
+              },
+              checked: currentUILanguage === "en"
+            },
+            {
+              label: "Español (27%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("es");
+              },
+              checked: currentUILanguage === "es"
+            },
+            {
+              label: "Français  (24%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("fr");
+              },
+              checked: currentUILanguage === "fr"
+            },
+            process.env.NODE_ENV === "development"
+              ? {
+                  label: "Pseudo",
+                  type: "radio",
+                  click: () => {
+                    setUILanguage("ps");
+                  },
+                  checked: currentUILanguage === "ps"
+                }
+              : { type: "separator" },
+            {
+              label: "Help translate",
+              click: () => {
+                shell.openExternal("https://crowdin.com/project/saymorex");
+              }
+            }
+          ]
         }
       ]
     };
-    if (process.platform != "darwin") {
+    if (process.platform !== "darwin") {
       projectMenu.submenu.push({ type: "separator" });
       projectMenu.submenu.push({ role: "quit" } as any);
     }
@@ -166,7 +230,7 @@ export default class SayLessMenu {
       ]
     };
     const helpMenu = {
-      label: "Help",
+      label: i18n._(t`Help`),
       submenu: []
     };
 
@@ -190,12 +254,10 @@ export default class SayLessMenu {
 
       template.push(sessionMenu, peopleMenu);
     }
-    // if (process.env.NODE_ENV === "development") {
-    template.push(devMenu);
-    //  }
-    //if (process.env.NODE_ENV === "test") {
-    template.push(testMenu);
-    //}
+    if (process.env.NODE_ENV === "development") {
+      template.push(devMenu);
+      template.push(testMenu);
+    }
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );
@@ -223,66 +285,4 @@ export default class SayLessMenu {
       });
     }
   }
-
-  //     {
-  //       label: "Edit",
-  //       submenu: [
-  //         {
-  //           label: "Undo",
-  //           accelerator: "Command+Z",
-  //           selector: "undo:"
-  //         },
-  //         {
-  //           label: "Redo",
-  //           accelerator: "Shift+Command+Z",
-  //           selector: "redo:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Cut",
-  //           accelerator: "Command+X",
-  //           selector: "cut:"
-  //         },
-  //         {
-  //           label: "Copy",
-  //           accelerator: "Command+C",
-  //           selector: "copy:"
-  //         },
-  //         {
-  //           label: "Paste",
-  //           accelerator: "Command+V",
-  //           selector: "paste:"
-  //         },
-  //         {
-  //           label: "Select All",
-  //           accelerator: "Command+A",
-  //           selector: "selectAll:"
-  //         }
-  //       ]
-  //     },
-
-  //     {
-  //       label: "Window",
-  //       submenu: [
-  //         {
-  //           label: "Minimize",
-  //           accelerator: "Command+M",
-  //           selector: "performMiniaturize:"
-  //         },
-  //         {
-  //           label: "Close",
-  //           accelerator: "Command+W",
-  //           selector: "performClose:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Bring All to Front",
-  //           selector: "arrangeInFront:"
-  //         }
-  //       ]
-  //     },
 }

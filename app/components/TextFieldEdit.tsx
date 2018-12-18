@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-const titleCase = require("title-case");
 
 export interface IProps {
   field: Field;
@@ -22,7 +21,6 @@ export default class TextFieldEdit extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    this.getLabel = this.getLabel.bind(this);
     this.state = { invalid: false };
   }
 
@@ -35,13 +33,6 @@ export default class TextFieldEdit extends React.Component<
     this.setState({ invalid: false });
   }
 
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return this.props.field.englishLabel;
-  }
-
   private static getValue(text: Field): string {
     if (text === undefined) {
       return "Null Text";
@@ -51,13 +42,14 @@ export default class TextFieldEdit extends React.Component<
 
   public render() {
     const classname = this.state.invalid ? "invalid" : "";
+    const label: string = this.props.field.labelInUILanguage;
     return (
       <div
         className={
           "field " + (this.props.className ? this.props.className : "")
         }
       >
-        {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
+        {this.props.hideLabel ? "" : <label>{label}</label>}
         <textarea
           autoFocus={this.props.autoFocus}
           className={classname}

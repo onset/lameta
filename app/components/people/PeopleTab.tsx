@@ -9,6 +9,9 @@ import {
   FileListButtons
 } from "../componentTab/ComponentTab";
 import "./PeopleTab.scss";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../../l10nUtils";
 interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -20,12 +23,12 @@ export class PeopleTab extends React.Component<IProps> {
     const folderListButtons = new Array<JSX.Element>();
     folderListButtons.push(
       <button key="newPerson" onClick={e => this.props.project.addPerson()}>
-        New Person
+        <Trans>New Person</Trans>
       </button>
     );
     const fileListButtons = [
       {
-        label: "Rename for Consent",
+        label: i18n._(t`Rename for Consent`),
         enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
         onClick: f => {
           (f as File).renameForConsent();

@@ -8,6 +8,9 @@ import { remote } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
 import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
+import { i18n, translateFileType } from "../l10nUtils";
+import { t } from "@lingui/macro";
+import { Trans } from "@lingui/react";
 
 const electron = require("electron");
 export interface IProps {
@@ -85,7 +88,7 @@ export default class FileList extends React.Component<IProps, IState> {
       },
       {
         id: "name",
-        Header: "Name",
+        Header: i18n._(t`Name`),
         accessor: (d: any) => {
           const f: File = d;
           return f.getTextProperty("filename");
@@ -93,16 +96,16 @@ export default class FileList extends React.Component<IProps, IState> {
       },
       {
         id: "type",
-        Header: "Type",
+        Header: i18n._(t`Type`),
         width: 72,
         accessor: (d: any) => {
           const f: File = d;
-          return f.getTextProperty("type");
+          return translateFileType(f.getTextProperty("type"));
         }
       },
       {
         id: "modifiedDate",
-        Header: "Modified",
+        Header: i18n._(t`Modified`),
         accessor: (d: any) => {
           //const f: File = d;
           // const date = f.getTextProperty("modifiedDate");
@@ -116,7 +119,7 @@ export default class FileList extends React.Component<IProps, IState> {
       },
       {
         id: "size",
-        Header: "Size",
+        Header: i18n._(t`Size`),
         width: 75,
         style: { textAlign: "right" },
         accessor: (d: any) => {
@@ -138,7 +141,7 @@ export default class FileList extends React.Component<IProps, IState> {
         <div className={"mask"}>Drop files here</div>
         <div className={"fileBar"}>
           <button className={"menu-open not-implemented"} disabled={true}>
-            Open
+            <Trans>Open</Trans>
             {/* <ul className={"menu"}>
               <li className={"cmd-show-in-explorer"}>
                 Show in File Explorer...
@@ -155,7 +158,7 @@ export default class FileList extends React.Component<IProps, IState> {
               )
             }
           >
-            Rename...
+            <Trans>Rename...</Trans>
           </button>
           {this.props.extraButtons
             ? this.props.extraButtons.map(c => (
@@ -171,7 +174,7 @@ export default class FileList extends React.Component<IProps, IState> {
               ))
             : null}
           <button className={"cmd-add-files"} onClick={() => this.addFiles()}>
-            Add Files
+            <Trans> Add Files</Trans>
           </button>
         </div>
         <ReactTable
@@ -197,7 +200,7 @@ export default class FileList extends React.Component<IProps, IState> {
                   0
                 );
               },
-              onClick: (e: any, t: any) => {
+              onClick: (e: any, x: any) => {
                 if (this.props.folder.selectedFile != null) {
                   // will only save if it thinks it is dirty
                   this.props.folder.selectedFile.save();
@@ -241,28 +244,28 @@ export default class FileList extends React.Component<IProps, IState> {
       {
         label:
           process.platform === "darwin"
-            ? "Show in Finder"
-            : "Show in File Explorer",
+            ? i18n._(t`Show in Finder`)
+            : i18n._(t`Show in File Explorer`),
         click: () => {
           showInExplorer(file.describedFilePath);
         }
       },
       {
-        label: "Open in program associated with this file type",
+        label: i18n._(t`Open in program associated with this file type`),
         click: () => {
           // the "file://" prefix is required on mac, works fine on windows
           electron.shell.openExternal("file://" + file.describedFilePath);
         }
       },
       {
-        label: "Rename...",
+        label: i18n._(t`Rename...`),
         click: () => {
           RenameFileDialog.show(file, this.props.folder);
         }
       },
       { type: "separator" },
       {
-        label: "Delete File...",
+        label: i18n._(t`Delete File...`),
         enabled: file.canDelete,
         click: () => {
           this.props.folder.moveFileToTrash(file);

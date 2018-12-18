@@ -5,8 +5,14 @@ import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDelete
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
+import { I18nProvider } from "@lingui/react";
+import { catalogs, currentUILanguage, setUILanguage } from "../l10nUtils";
 
 export class App extends React.Component {
+  constructor() {
+    super({});
+  }
+
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
     ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";
@@ -15,10 +21,12 @@ export class App extends React.Component {
   public render() {
     return (
       <div id="app">
-        <HomePage />
-        <ConfirmDeleteDialog />
-        <LanguagePickerDialog />
-        <RenameFileDialog />
+        <I18nProvider language={currentUILanguage} catalogs={catalogs}>
+          <HomePage />
+          <ConfirmDeleteDialog />
+          <LanguagePickerDialog />
+          <RenameFileDialog />
+        </I18nProvider>
       </div>
     );
   }

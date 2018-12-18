@@ -15,6 +15,9 @@ import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
+import { Trans } from "@lingui/react";
+import { i18n } from "../l10nUtils";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   project: Project;
@@ -52,10 +55,10 @@ export default class Home extends React.Component<IProps> {
   private UpdateMenus(currentTabIndex: number) {
     let enable = currentTabIndex === 1;
     const sessionMenu = {
-      label: "&Session",
+      label: "&" + i18n._(t`Session`),
       submenu: [
         {
-          label: "New Session",
+          label: i18n._(t`New Session`),
           enabled: enable,
           click: () => {
             if (this.props.project) {
@@ -65,7 +68,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: "Delete Session...",
+          label: i18n._(t`Delete Session...`),
           enabled: enable && this.props.project.canDeleteCurrentSession(),
           click: () => {
             if (this.props.project) {
@@ -77,10 +80,10 @@ export default class Home extends React.Component<IProps> {
     };
     enable = currentTabIndex === 2;
     const peopleMenu = {
-      label: "&People",
+      label: "&" + i18n._(t`People`),
       submenu: [
         {
-          label: "New Person",
+          label: i18n._(t`New Person`),
           enabled: enable,
           click: () => {
             if (this.props.project) {
@@ -90,7 +93,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: "Delete Person...",
+          label: i18n._(t`Delete Person...`),
           enabled: enable && this.props.project.canDeleteCurrentPerson(),
           click: () => {
             if (this.props.project) {
@@ -129,23 +132,19 @@ export default class Home extends React.Component<IProps> {
               <Tab className={"react-tabs__tab tab-project"}>
                 <div className={"icon-and-label"}>
                   <ProjectIcon />
-                  <span>Project</span>
+                  <Trans>Project</Trans>
                 </div>
               </Tab>
               <Tab className={"react-tabs__tab tab-sessions"}>
                 <div className={"icon-and-label"}>
-                  {/* <div dangerouslySetInnerHTML={{ __html: sessionIcon }} />
-              <div dangerouslySetInnerHTML={{ __html: sessionIcon.data }} /> */}
-                  {/* <img src={sessionIcon} /> */}
                   <SessionIcon />
-                  {/* <SessionIcon /> */}
-                  <span>Sessions</span>
+                  <Trans>Sessions</Trans>
                 </div>
               </Tab>
               <Tab className={"react-tabs__tab tab-people"}>
                 <div className={"icon-and-label"}>
                   <PeopleIcon />
-                  <span>People</span>
+                  <Trans>People</Trans>
                 </div>
               </Tab>
             </TabList>

@@ -22,6 +22,7 @@ const electron = require("electron");
 import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
+import { Trans } from "@lingui/react";
 
 const SplitPane = require("react-split-pane");
 
@@ -129,10 +130,18 @@ export class FolderPane extends React.Component<IProps> {
     );
     const standardMetaTabs = this.props.showStandardMetaTabs ? (
       <>
-        <Tab>Properties</Tab>
-        <Tab>Contributors</Tab>
-        <Tab>Notes</Tab>
-        <Tab>IMDI</Tab>
+        <Tab>
+          <Trans>Properties</Trans>
+        </Tab>
+        <Tab>
+          <Trans>Contributors</Trans>
+        </Tab>
+        <Tab>
+          <Trans>Notes</Trans>
+        </Tab>
+        <Tab>
+          <Trans>IMDI</Trans>
+        </Tab>
       </>
     ) : null;
 
@@ -151,10 +160,18 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs defaultIndex={kFirstTabToOpen}>
             <TabList>
-              <Tab>Session</Tab>
-              <Tab>Status</Tab>
-              <Tab>Notes</Tab>
-              <Tab>IMDI</Tab>
+              <Tab>
+                <Trans>Session</Trans>
+              </Tab>
+              <Tab>
+                <Trans>Status</Trans>
+              </Tab>
+              <Tab>
+                <Trans>Notes</Trans>
+              </Tab>
+              <Tab>
+                <Trans>IMDI</Trans>
+              </Tab>
             </TabList>
             <TabPanel>
               {" "}
@@ -209,10 +226,18 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs defaultIndex={kFirstPersonTabToOpen}>
             <TabList>
-              <Tab>Person</Tab>
-              <Tab>Contributions</Tab>
-              <Tab>Notes</Tab>
-              <Tab>IMDI</Tab>
+              <Tab>
+                <Trans>Person</Trans>
+              </Tab>
+              <Tab>
+                <Trans>Contributions</Trans>
+              </Tab>
+              <Tab>
+                <Trans>Notes</Trans>
+              </Tab>
+              <Tab>
+                <Trans>IMDI</Trans>
+              </Tab>
             </TabList>
             <TabPanel>
               <SMErrorBoundary
@@ -246,7 +271,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>Audio</Tab>
+              <Tab>
+                <Trans>Audio</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel>
@@ -261,7 +288,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>Video</Tab>
+              <Tab>
+                <Trans>Video</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel>
@@ -280,7 +309,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>Image</Tab>
+              <Tab>
+                <Trans>Image</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel>
@@ -293,7 +324,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>Text</Tab>
+              <Tab>
+                <Trans>Text</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel>
@@ -306,7 +339,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>ELAN</Tab>
+              <Tab>
+                <Trans>ELAN</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel className="unhandledFileType">
@@ -318,7 +353,7 @@ export class FolderPane extends React.Component<IProps> {
                   );
                 }}
               >
-                Open in ELAN
+                <Trans>Open in ELAN</Trans>
               </a>
             </TabPanel>
             {standardMetaPanels}
@@ -328,7 +363,9 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs>
             <TabList>
-              <Tab>File</Tab>
+              <Tab>
+                <Trans>File</Trans>
+              </Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel className="unhandledFileType">

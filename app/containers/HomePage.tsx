@@ -9,12 +9,16 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import Store = require("electron-store");
+import { userSettings } from "./settings";
+
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
 import ExportDialog from "../components/export/ExportDialog";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../l10nUtils";
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -29,7 +33,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
   @mobx.observable
   public projectHolder: ProjectHolder;
-  private userSettings: Store;
+
   private menu: SayLessMenu;
   public static homePageForTests: HomePage;
 
@@ -41,8 +45,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
 
-    this.userSettings = new Store({ name: "saymore-user-settings" });
-    let previousDirectory = this.userSettings.get("previousProjectDirectory");
+    let previousDirectory = userSettings.get("previousProjectDirectory");
     console.log(
       "************** process.env.startInStartScreen=" +
         process.env.startInStartScreen
@@ -142,7 +145,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       } else {
         this.projectHolder.setProject(Project.fromDirectory(directory));
       }
-      this.userSettings.set("previousProjectDirectory", directory);
+      userSettings.set("previousProjectDirectory", directory);
     }
   }
   // private listDir(dir: string) {
@@ -176,6 +179,7 @@ export default class HomePage extends React.Component<IProps, IState> {
               <div className={"top"}>
                 <img src={locate("assets/start-screen/icon.png")} />
                 <h1>
+                  {/* we don't localize this */}
                   SayMore<span>x</span>
                 </h1>
               </div>
@@ -186,11 +190,13 @@ export default class HomePage extends React.Component<IProps, IState> {
                   id="creatNewProjectLink"
                   onClick={() => this.createProject(false)}
                 >
-                  Create New Project
+                  <Trans>Create New Project</Trans>
                 </a>
                 <br />
                 <img src={locate("assets/start-screen/open.png")} />
-                <a onClick={() => this.openProject()}>Open SayMore Project</a>
+                <a onClick={() => this.openProject()}>
+                  <Trans>Open SayMore Project</Trans>
+                </a>
                 <br />
                 <img src={locate("assets/start-screen/sample.png")} />
                 <a
@@ -199,7 +205,7 @@ export default class HomePage extends React.Component<IProps, IState> {
                     this.createProject(true);
                   }}
                 >
-                  Create New Project with Sample Data
+                  <Trans>Create New Project with Sample Data</Trans>
                 </a>
               </div>
               {/* <p className="description">
@@ -229,16 +235,18 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "SayMore"
+      "SayMore" // we don't translate this
     );
 
     const options: OpenDialogOptions = {
-      title: "Open Project...",
+      title: i18n._(t`Open Project...`),
       defaultPath: defaultProjectParentDirectory,
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects
       properties: ["openFile"],
-      filters: [{ name: "SayMore/SayMore Project Files", extensions: ["sprj"] }]
+      filters: [
+        { name: i18n._(t`SayMore/SayMore Project Files`), extensions: ["sprj"] }
+      ]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
       if (paths) {
@@ -246,7 +254,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(
           Project.fromDirectory(fs.realpathSync(directory))
         );
-        this.userSettings.set("previousProjectDirectory", directory);
+        userSettings.set("previousProjectDirectory", directory);
       }
     });
   }

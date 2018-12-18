@@ -115,7 +115,7 @@ export default class AutoForm extends React.Component<IProps> {
           <DateFieldEdit
             className={field.cssClass}
             key={field.key}
-            date={field as Field}
+            field={field as Field}
           />
         );
       case FieldType.Language:
@@ -123,7 +123,7 @@ export default class AutoForm extends React.Component<IProps> {
           <IsoLanguageEdit
             key={field.key}
             className={field.cssClass}
-            language={field}
+            field={field}
           />
         );
       default:

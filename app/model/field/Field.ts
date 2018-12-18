@@ -3,6 +3,7 @@ import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
+import { translateFieldLabel, currentUILanguage } from "../../l10nUtils";
 const titleCase = require("title-case");
 //import * as assert from "assert";
 
@@ -277,6 +278,11 @@ export class Field {
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }
+  }
+
+  // returns the label translated or if unavailable, English
+  public get labelInUILanguage(): string {
+    return translateFieldLabel(this);
   }
 
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript

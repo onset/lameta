@@ -1,6 +1,4 @@
 import * as xml2js from "xml2js";
-import * as fs from "fs";
-import { Person } from "../Person/Person";
 
 const accessProtocols = require("./AccessProtocols/AccessProtocols.json");
 
@@ -63,5 +61,44 @@ export class AuthorityLists {
     );
 
     //xmlAsObject[Object.keys(xmlAsObject)[0]];
+  }
+
+  // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
+  private convertRolesToCSVForLocalization() {
+    this.roleChoices.forEach(p => {
+      console.log(`"role.label.${p.id}", "Contributor Role", "${p.label}"`);
+      console.log(
+        `"role.description.${p.id}", "Description of contributor role '${
+          p.label
+        }'", "${p.description}"`
+      );
+    });
+  }
+
+  public static convertGenresToCSVForLocalization(genres: any[]) {
+    genres.forEach(g => {
+      console.log(`"Genre which is: ${g.definition}", "${g.label}"`);
+      console.log(`"Definition of genre '${g.label}'", "${g.definition}"`);
+      g.examples.forEach(e =>
+        console.log(`"Example of genre '${g.label}'", "${e}"`)
+      );
+    });
+  }
+
+  // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
+  private convertAccessProtocolsToCSVForLocalization() {
+    (accessProtocols as IAccessProtocolChoice[]).forEach(p => {
+      console.log(`"${p.protocol}", "Access Protocol Name", "${p.protocol}"`);
+      p.choices.forEach(c => {
+        console.log(
+          `"${p.protocol}.${c.label}", "${p.protocol} choice", "${c.label}"`
+        );
+        console.log(
+          `"${p.protocol}.${c.label}", "Description of ${p.protocol} choice '${
+            c.label
+          }'", "${c.description}"`
+        );
+      });
+    });
   }
 }

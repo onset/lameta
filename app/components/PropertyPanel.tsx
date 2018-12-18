@@ -4,6 +4,8 @@ import { File } from "../model/file/File";
 import MediaStats from "./MediaStats";
 import "./PropertyPanel.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
+import { i18n } from "../l10nUtils";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   file: File;
@@ -23,7 +25,7 @@ export default class PropertyPanel extends React.Component<IProps> {
         </div>
         <div className="propertiesColumn customPropertiesColumn">
           <CustomFieldsTable
-            firstColumnHeaderText="Custom Field"
+            firstColumnHeaderText={i18n._(t`Custom Field`)}
             file={this.props.file}
           />
         </div>

@@ -1,12 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
-import { Creatable, Option, OptionValues } from "react-select";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
-import { observable } from "mobx";
-
-const titleCase = require("title-case");
+import { translateFieldLabel, translateGenre } from "../../l10nUtils";
 
 export interface IProps {
   field: Field;
@@ -19,20 +16,8 @@ export interface IProps {
 export default class GenreChooser extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
-  constructor(props: IProps) {
-    super(props);
-    this.getLabel = this.getLabel.bind(this);
-  }
-
-  // The label for the field, e.g. "Genre"
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return titleCase(this.props.field.englishLabel);
-  }
-
   public render() {
+    const label = translateFieldLabel(this.props.field);
     const choices = this.props.field.definition.complexChoices
       ? this.props.field.definition.complexChoices
       : [];
@@ -44,16 +29,16 @@ export default class GenreChooser extends React.Component<
       }
       return new Object({
         value: c.id,
-        label: c.label,
+        label: translateGenre(c.label),
         title: tip
       });
     });
 
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.getLabel()}</label>
+        <label>{label}</label>
         <ReactSelect
-          name={this.props.field.englishLabel}
+          name={"fred"}
           value={this.props.field.text}
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;

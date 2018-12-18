@@ -14,6 +14,8 @@ import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDel
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { IChoice, FieldDefinition } from "../field/Field";
+import { i18n } from "../../l10nUtils";
+import { t } from "@lingui/macro";
 
 const genres = require("./Session/genres.json");
 
@@ -166,8 +168,8 @@ export class Project extends Folder {
 
   public addSession() {
     const dir = this.getUniqueFolder(
-      Path.join(this.directory, "Sessions"),
-      "New Session"
+      Path.join(this.directory, "Sessions"), // we don't localize the directory name.
+      i18n._(t`New Session`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customFieldRegistry);
@@ -178,8 +180,8 @@ export class Project extends Folder {
 
   public addPerson() {
     const dir = this.getUniqueFolder(
-      Path.join(this.directory, "People"),
-      "New Person"
+      Path.join(this.directory, "People"), // we don't localize the directory name.
+      i18n._(t`New Person`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = Person.fromDirectory(dir, this.customFieldRegistry);
@@ -229,7 +231,7 @@ export class Project extends Folder {
     const genreFieldDefinition = knownFieldDefinitions.session.find(
       (o: any) => o.key === "genre"
     ) as FieldDefinition;
-
+    //AuthorityLists.convertGenresToCSVForLocalization(genreChoices);
     genreFieldDefinition.complexChoices = genreChoices;
   }
 
@@ -237,14 +239,14 @@ export class Project extends Folder {
     folderArray: Folder[],
     folder: Folder,
     value: string,
-    fieldName: string,
+    fieldNameInUiLanguage: string,
     folderKind: string
   ) {
     let msg = "";
     const wouldBeFolderName = sanitize(value);
 
     if (value.trim().length === 0) {
-      msg = `The ${fieldName} cannot be empty`;
+      msg = i18n._(t`The ${fieldNameInUiLanguage} cannot be empty`);
     } else if (wouldBeFolderName.trim().length === 0) {
       msg = `That would lead to an empty filename`;
     } else if (
@@ -255,7 +257,9 @@ export class Project extends Folder {
           f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase()
       )
     ) {
-      msg = `There is already a ${folderKind} with the name '${value}'`;
+      msg = i18n._(
+        t`There is already a ${folderKind} with the name '${value}'`
+      );
     }
     if (msg.length > 0) {
       remote.dialog.showMessageBox(
@@ -275,7 +279,7 @@ export class Project extends Folder {
       this.sessions,
       session,
       id,
-      "ID",
+      i18n._(t`ID`),
       "Session"
     );
   }
@@ -284,7 +288,7 @@ export class Project extends Folder {
       this.persons,
       person,
       name,
-      "Full Name",
+      i18n._(t`Full Name`),
       "Person"
     );
   }

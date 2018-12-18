@@ -5,6 +5,7 @@ import ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../crossPlatformUtilities";
+import { Trans } from "@lingui/react";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -54,26 +55,29 @@ export default class ConfirmDeleteDialog extends React.Component<
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
-          <div className={"dialogTitle"}>Confirm Delete</div>
+          <div className={"dialogTitle"}>
+            <Trans>Confirm Delete</Trans>
+          </div>
           <div className="dialogContent">
             <div className="row">
               <img src={locate("assets/trash.png")} />
-              <h1>{`${this.state.path} will be moved to the Trash`}</h1>
-            </div>{" "}
+              <h1>
+                <Trans>{this.state.path} will be moved to the Trash</Trans>
+              </h1>
+            </div>
           </div>
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>
-              {/* List as default last (in the corner). */}
-              {/* The actual order of these will be platform-specific, controlled by
-          a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
+              {}
+              {}
               <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
+                <Trans>Cancel</Trans>
               </button>
               <button
                 id="deleteButton"
                 onClick={() => this.handleCloseModal(true)}
               >
-                Delete
+                <Trans>Delete</Trans>
               </button>
             </div>
           </div>

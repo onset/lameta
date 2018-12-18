@@ -34,7 +34,10 @@
     display: inline-flex;
     align-items: baseline;
     label {
-      width: 100px;
+      margin-right: 5px;
+    }
+    textarea {
+      width: auto;
     }
   }
   .left-side {
@@ -47,10 +50,12 @@
   .birth {
     grid-row: 1;
     grid-column: 4;
+    textarea {
+      width: 4em;
+    }
   }
   .birth,
   .gender {
-    width: 100px;
     select {
       width: 100%;
       height: 2em;

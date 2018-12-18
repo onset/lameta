@@ -3,11 +3,14 @@ import ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import CsvExporter from "../../export/CsvExporter";
-import { Project, ProjectHolder } from "../../model/Project/Project";
+import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../crossPlatformUtilities";
 import ImdiGenerator from "../../export/ImdiGenerator";
 import { remote } from "electron";
 import * as Path from "path";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../../l10nUtils";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {
@@ -30,7 +33,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
     if (doSave) {
       remote.dialog.showSaveDialog(
         {
-          title: "Save As",
+          title: i18n._(t`Save As`),
           //${Path.basename(this.projectHolder.project.directory)}
           defaultPath: `${Path.basename(
             this.props.projectHolder.project!.directory
@@ -38,7 +41,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
           filters: [
             {
               extensions: ["zip"],
-              name: "ZIP Archive"
+              name: i18n._(t`ZIP Archive`)
             }
           ]
         },
@@ -92,10 +95,14 @@ export default class ExportDialog extends React.Component<IProps, IState> {
           onRequestClose={() => this.handleCloseModal(false)}
           ariaHideApp={false}
         >
-          <div className={"dialogTitle "}>Export Project</div>
+          <div className={"dialogTitle "}>
+            <Trans>Export Project</Trans>
+          </div>
           <div className="dialogContent">
             <fieldset>
-              <legend>Choose an export format:</legend>
+              <legend>
+                <Trans>Choose an export format:</Trans>
+              </legend>
               <label>
                 <input
                   type="radio"
@@ -104,12 +111,14 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                   checked={selectedOption === "csv"}
                   onChange={e => this.handleOptionChange(e)}
                 />
-                Zip of CSVs
+                <Trans>Zip of CSVs</Trans>
               </label>
 
               <p>
-                A single zip archive that contains one comma-separated file for
-                each of Project, Session, and People.
+                <Trans>
+                  A single zip archive that contains one comma-separated file
+                  for each of Project, Session, and People.
+                </Trans>
               </p>
 
               {/* <label>
@@ -138,11 +147,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 IMDI
               </label>
               <p>
-                A single&nbsp;
-                <a target="_blank" href="https://tla.mpi.nl/imdi-metadata/">
-                  ISLE Meta Data Initiative
-                </a>
-                &nbsp;XML file.
+                <Trans>A single ISLE Meta Data Initiative XML file.</Trans>
               </p>
             </fieldset>
           </div>
@@ -150,10 +155,10 @@ export default class ExportDialog extends React.Component<IProps, IState> {
             {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
             <div className={"okCancelGroup"}>
               <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
+                <Trans>Cancel</Trans>
               </button>
               <button id="okButton" onClick={() => this.handleCloseModal(true)}>
-                Export
+                <Trans>Export</Trans>
               </button>
             </div>
           </div>

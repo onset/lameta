@@ -7,6 +7,9 @@ import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../l10nUtils";
 
 export interface IProps {
   file: File;
@@ -147,7 +150,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
         id: "name",
         Header: this.props.firstColumnHeaderText
           ? this.props.firstColumnHeaderText
-          : "Field",
+          : i18n._(t`Field`),
         maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
@@ -164,7 +167,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       },
       {
         id: "value",
-        Header: "Value",
+        Header: i18n._(t`Value`),
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return (
@@ -187,7 +190,9 @@ export default class CustomFieldsTable extends React.Component<IProps> {
 
     return (
       <div className="customFieldsBlock">
-        <label>Custom Fields</label>
+        <label>
+          <Trans>Custom Fields</Trans>
+        </label>
         <ReactTable
           className="customFieldsTable"
           noDataText=""

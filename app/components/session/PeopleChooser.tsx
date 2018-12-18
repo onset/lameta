@@ -1,10 +1,8 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
-import { Creatable, Option, OptionValues } from "react-select";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
-import { observable } from "mobx";
 
 const titleCase = require("title-case");
 
@@ -19,20 +17,13 @@ export default class PeopleChooser extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    this.getLabel = this.getLabel.bind(this);
   }
 
-  // The label for the field, e.g. "Genre"
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return titleCase(this.props.field.englishLabel);
-  }
   private handleSelectChange(value) {
     this.props.field.setValueFromString(value);
   }
   public render() {
+    const label: string = this.props.field.labelInUILanguage;
     const choices = this.props.getPeopleNames().map(c => {
       return new Object({
         value: c,
@@ -48,7 +39,7 @@ export default class PeopleChooser extends React.Component<
     //console.log("participants=" + this.props.field.text);
     return (
       <div className={"field " + this.props.className}>
-        <label>{this.getLabel()}</label>
+        <label>{label}</label>
         <ReactSelect
           name={this.props.field.englishLabel}
           value={fixedListOfNames}

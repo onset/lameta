@@ -4,6 +4,7 @@ import "./LanguagePickerDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import Autosuggest from "react-autosuggest";
 import { Field } from "../../model/field/Field";
+import { Trans } from "@lingui/react";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -139,16 +140,22 @@ export default class LanguagePickerDialog extends React.Component<
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
-          <div className={"dialogTitle"}>Choose Language</div>
+          <div className={"dialogTitle"}>
+            <Trans>Choose Language</Trans>
+          </div>
           <div className="dialogContent">
-            <label>Language Code</label>
+            <label>
+              <Trans>Language Code</Trans>
+            </label>
             <input
               className="codeEntry"
               type="text"
               value={this.state.langCode}
               onChange={e => this.change({ langCode: e.target.value })}
             />
-            <label>Name</label>
+            <label>
+              <Trans>Name</Trans>
+            </label>
             <input
               className="name"
               type="text"
@@ -186,14 +193,14 @@ export default class LanguagePickerDialog extends React.Component<
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>
               <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
+                <Trans>Cancel</Trans>
               </button>
               <button
                 id="okButton"
                 disabled={!haveValidFields}
                 onClick={() => this.handleCloseModal(true)}
               >
-                OK
+                <Trans>OK</Trans>
               </button>
             </div>
           </div>
