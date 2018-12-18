@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { RadioGroup, Radio } from "react-radio-group";
 import "./StatusControl.scss";
+import { translateChoice } from "../l10nUtils";
 
 export interface IProps {
   statusField: Field;
@@ -23,13 +24,14 @@ export default class StatusControl extends React.Component<IProps> {
           }}
         >
           {this.props.statusField.choices.map(s => {
+            const translated = translateChoice(s);
             return (
               <div key={s}>
                 <img src={require(`../img/status-${s}.png`)} />
                 <label>
                   <Radio value={s} />
                   {/* saymore windows classic used "In_Progress" as the key */}
-                  {s.replace("_", " ")}
+                  {translated.replace("_", " ")}
                 </label>
               </div>
             );

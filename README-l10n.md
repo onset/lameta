@@ -34,9 +34,9 @@ At runtime, lingui uses javascript file, which you get by running
 
 `yarn lingui-compile`
 
-# Field Lookup CSV
+# Non-code Lookups in CSV
 
-We don't have a way to make lingui scan the fields.json file that is used for field names. Maybe that could be done... in the meantime we just have a CSV file at `locale/fields.csv` with all the field names. This is currently manually uploaded to https://crowdin.com/project/saymorex and then downloaded with the columns filled in from translations.
+Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/saymorex and then downloaded with the columns filled in from translations.
 
 # Getting translations from Crowdin
 

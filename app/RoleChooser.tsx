@@ -1,11 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Creatable, Option, OptionValues } from "react-select";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
-import { observable } from "mobx";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
 import { Contribution } from "./model/file/File";
+import { translateRole } from "./l10nUtils";
 
 const titleCase = require("title-case");
 
@@ -24,9 +23,10 @@ export default class RoleChooser extends React.Component<IProps> {
     const choices = this.props.choices ? this.props.choices : [];
 
     const options = choices.map(c => {
+      const label = translateRole(c.label);
       return new Object({
         value: c.id,
-        label: c.label,
+        label,
         title: c.description
       });
     });

@@ -157,9 +157,7 @@ export default class SayLessMenu {
               }
             }
           ]
-        },
-        { type: "separator" },
-        { role: "quit" }
+        }
       ]
     };
     if (process.platform !== "darwin") {

@@ -8,6 +8,7 @@ import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import MugShot from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
+import { Trans } from "@lingui/react";
 
 export interface IProps {
   person: Person;
@@ -60,7 +61,9 @@ export default class PersonForm extends React.Component<IProps> {
         />
 
         <div className="other-languages">
-          <label className="languageGroup">Other Languages</label>
+          <label className="languageGroup">
+            <Trans>Other Languages</Trans>
+          </label>
           <LanguageEdit
             language={this.props.fields.getTextField("otherLanguage0")}
             fatherLanguage={father}

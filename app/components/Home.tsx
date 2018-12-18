@@ -16,7 +16,7 @@ import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
-import { i18n } from "@lingui/core";
+import { i18n } from "../l10nUtils";
 import { t } from "@lingui/macro";
 
 export interface IProps {

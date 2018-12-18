@@ -1,6 +1,8 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
+import { translateChoice, i18n } from "../l10nUtils";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   includeLabel: boolean;
@@ -45,7 +47,7 @@ export default class ClosedChoiceEdit extends React.Component<
           {//NB: an error about keys here means that the choices were not unique
           this.props.field.choices.map(s => (
             <option key={s} value={s}>
-              {s === "unspecified" ? "" : s}
+              {s === "unspecified" ? "" : translateChoice(s)}
             </option>
           ))}
         </select>

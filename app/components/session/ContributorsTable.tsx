@@ -9,7 +9,8 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
-
+import { i18n } from "../../l10nUtils";
+import { t } from "@lingui/macro";
 const moment = require("moment");
 
 export interface IProps {
@@ -77,7 +78,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
   private renderRole(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     const key: keyof Contribution = cellInfo.column.id;
-    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
     return (
       <RoleChooser
         contribution={contribution}
@@ -108,22 +108,22 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     const contributors = this.props.file.contributions;
     const columns = [
       {
-        Header: "Name",
+        Header: i18n._(t`Name`),
         accessor: "name",
         Cell: (cellInfo: any) => this.renderPerson(cellInfo)
       },
       {
-        Header: "Role",
+        Header: i18n._(t`Role`),
         accessor: "role",
         Cell: (cellInfo: any) => this.renderRole(cellInfo)
       },
       {
-        Header: "Date",
+        Header: i18n._(t`Date`),
         accessor: "date",
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
       },
       {
-        Header: "Comments",
+        Header: i18n._(t`Comments`),
         accessor: "comments",
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
       }

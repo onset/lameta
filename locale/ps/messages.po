@@ -17,11 +17,11 @@ msgstr ""
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:101
+#: app/components/export/ExportDialog.tsx:103
 msgid "A single ISLE Meta Data Initiative XML file."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:88
+#: app/components/export/ExportDialog.tsx:90
 msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
 msgstr ""
 
@@ -59,9 +59,13 @@ msgid "Audio"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:59
-#: app/components/export/ExportDialog.tsx:109
+#: app/components/export/ExportDialog.tsx:111
 #: app/components/project/CreateProjectDialog.tsx:59
 msgid "Cancel"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:82
+msgid "Choose an export format:"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:44
@@ -100,6 +104,10 @@ msgstr ""
 msgid "Create Project..."
 msgstr ""
 
+#: app/components/PropertyPanel.tsx:21
+msgid "Custom Field"
+msgstr ""
+
 #: app/components/CustomFieldsTable.tsx:158
 msgid "Custom Fields"
 msgstr ""
@@ -136,7 +144,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:112
+#: app/components/export/ExportDialog.tsx:114
 msgid "Export"
 msgstr ""
 
@@ -149,6 +157,7 @@ msgid "Export Project..."
 msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:132
+#: app/components/MoreFieldsTable.tsx:39
 msgid "Field"
 msgstr ""
 
@@ -196,7 +205,7 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
-#: app/components/MoreFieldsTable.tsx:61
+#: app/components/MoreFieldsTable.tsx:63
 msgid "More Fields"
 msgstr ""
 
@@ -205,6 +214,7 @@ msgid "Name"
 msgstr ""
 
 #: app/components/Home.tsx:75
+#: app/components/people/PeopleTab.tsx:18
 #: app/model/Project/Project.ts:127
 msgid "New Person"
 msgstr ""
@@ -229,7 +239,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: app/containers/HomePage.tsx:171
+#: app/containers/HomePage.tsx:172
 #: app/menu.ts:104
 msgid "Open Project..."
 msgstr ""
@@ -248,6 +258,10 @@ msgstr ""
 
 #: app/components/project/ProjectTab.tsx:32
 msgid "Other Documents"
+msgstr ""
+
+#: app/components/people/person/PersonForm.tsx:42
+msgid "Other Languages"
 msgstr ""
 
 #: app/menu.ts:89
@@ -282,6 +296,10 @@ msgstr ""
 msgid "Redo"
 msgstr ""
 
+#: app/components/people/PeopleTab.tsx:22
+msgid "Rename for Consent"
+msgstr ""
+
 #: app/components/FileList.tsx:124
 #: app/components/FileList.tsx:204
 msgid "Rename..."
@@ -293,6 +311,10 @@ msgstr ""
 
 #: app/menu.ts:26
 msgid "SayMore X"
+msgstr ""
+
+#: app/containers/HomePage.tsx:178
+msgid "SayMore/SayMore Project Files"
 msgstr ""
 
 #: app/menu.ts:94
@@ -358,6 +380,7 @@ msgid "Undo"
 msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:143
+#: app/components/MoreFieldsTable.tsx:47
 msgid "Value"
 msgstr ""
 
@@ -374,7 +397,7 @@ msgstr ""
 msgid "ZIP Archive"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:84
+#: app/components/export/ExportDialog.tsx:86
 msgid "Zip of CSVs"
 msgstr ""
 

@@ -11,6 +11,8 @@ import { locate } from "../crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
+import { i18n } from "../l10nUtils";
+import { t } from "@lingui/macro";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -90,14 +92,16 @@ export class FolderList extends React.Component<IProps> {
               return (
                 <img
                   src={this.hasConsentPath}
-                  title="Found file with a name containing 'Consent'"
+                  title={i18n._(t`Found file with a name containing 'Consent'`)}
                 />
               );
             } else {
               return (
                 <img
                   src={this.noConsentPath}
-                  title="Found no file with a name containing 'Consent'"
+                  title={i18n._(
+                    t`Found no file with a name containing 'Consent'`
+                  )}
                 />
               );
             }
@@ -121,7 +125,7 @@ export class FolderList extends React.Component<IProps> {
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
-              onClick: (e: any, t: any) => {
+              onClick: (e: any, x: any) => {
                 // console.log(
                 //   "row " + JSON.stringify(rowInfo.original.directory)
                 // );

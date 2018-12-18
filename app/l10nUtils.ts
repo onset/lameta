@@ -38,13 +38,17 @@ export let i18n = setupI18n({
 }).use(currentUILanguage);
 
 /* --------------------------------------------------------------------
-  Handle the l10n handled by our fields.csv
+  Handle the l10n of various data files while we wait for lingui to 
+  be able to handle non-code input.
   ---------------------------------------------------------------------*/
 // I don't have a way of making the lingui-extract scanner scan our fields.json, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
 import fields from "../locale/fields.csv";
 import { Field } from "./model/field/Field";
-
+import choices from "../locale/choices.csv";
+import roles from "../locale/roles.csv";
+import genres from "../locale/genres.csv";
+import accessProtocols from "../locale/accessProtocols.csv";
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
     case "Project":
@@ -68,21 +72,35 @@ export function translateFieldLabel(field: Field): string {
   if (field === undefined) {
     return "LABEL ERROR";
   }
+  return getMatch(fields, field.englishLabel);
+}
+export function translateAccessProtocol(choice: string): string {
+  return getMatch(accessProtocols, choice);
+}
+export function translateChoice(choice: string): string {
+  return getMatch(choices, choice);
+}
 
+export function translateRole(role: string) {
+  return getMatch(roles, role);
+}
+
+export function translateGenre(genre: string) {
+  return getMatch(genres, genre);
+}
+function getMatch(lines: any[], s: string): string {
   if (currentUILanguage === "ps") {
-    return "Pseudo" + field.englishLabel;
+    return "Pseudo" + s;
   }
-  // in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
-  const key =
-    currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);
-  const match = fields.find(f => f.En === field.englishLabel);
+  const key = toCsvLanguageKey();
+  const match = lines.find(f => f.En === s);
   if (match && match[key]) {
     return match[key];
   }
-  console.log(
-    `No ${currentUILanguage} translation for ${field.key}, "${
-      field.englishLabel
-    }"`
-  );
-  return field.englishLabel;
+  console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
+  return s;
+}
+// in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
+function toCsvLanguageKey() {
+  return currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);
 }
