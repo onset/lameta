@@ -1,4 +1,4 @@
-import { remote } from "electron";
+import { remote, shell } from "electron";
 import HomePage from "./containers/HomePage";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
@@ -142,7 +142,7 @@ export default class SayLessMenu {
               checked: currentUILanguage === "en"
             },
             {
-              label: "Español",
+              label: "Español (27%)",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -150,20 +150,28 @@ export default class SayLessMenu {
               checked: currentUILanguage === "es"
             },
             {
-              label: "français",
+              label: "Français  (24%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
               },
               checked: currentUILanguage === "fr"
             },
+            process.env.NODE_ENV === "development"
+              ? {
+                  label: "Pseudo",
+                  type: "radio",
+                  click: () => {
+                    setUILanguage("ps");
+                  },
+                  checked: currentUILanguage === "ps"
+                }
+              : { type: "separator" },
             {
-              label: "Pseudo",
-              type: "radio",
+              label: "Help translate",
               click: () => {
-                setUILanguage("ps");
-              },
-              checked: currentUILanguage === "ps"
+                shell.openExternal("https://crowdin.com/project/saymorex");
+              }
             }
           ]
         }
@@ -246,12 +254,10 @@ export default class SayLessMenu {
 
       template.push(sessionMenu, peopleMenu);
     }
-    // if (process.env.NODE_ENV === "development") {
-    template.push(devMenu);
-    //  }
-    //if (process.env.NODE_ENV === "test") {
-    template.push(testMenu);
-    //}
+    if (process.env.NODE_ENV === "development") {
+      template.push(devMenu);
+      template.push(testMenu);
+    }
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );

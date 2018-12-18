@@ -33,7 +33,7 @@ msgstr ""
 msgid "About This Project"
 msgstr ""
 
-#: app/components/session/AccessChooser.tsx:26
+#: app/components/session/AccessChooser.tsx:29
 msgid "Access"
 msgstr ""
 
@@ -54,18 +54,27 @@ msgid "Add documents here that don't seem to fit anywhere else. An example would
 msgstr ""
 
 #: app/components/FolderPane.tsx:168
-#: app/l10nUtils.ts:53
+#: app/l10nUtils.ts:60
 msgid "Audio"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:59
 #: app/components/export/ExportDialog.tsx:111
+#: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:136
 #: app/components/project/CreateProjectDialog.tsx:59
 msgid "Cancel"
 msgstr ""
 
+#: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:120
+msgid "Choose Language"
+msgstr ""
+
 #: app/components/export/ExportDialog.tsx:82
 msgid "Choose an export format:"
+msgstr ""
+
+#: app/components/session/ContributorsTable.tsx:96
+msgid "Comments"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:44
@@ -114,6 +123,10 @@ msgstr ""
 
 #: app/menu.ts:82
 msgid "Cut"
+msgstr ""
+
+#: app/components/session/ContributorsTable.tsx:91
+msgid "Date"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:62
@@ -165,11 +178,19 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: app/model/Project/Project.ts:192
+#: app/components/FolderList.tsx:76
+msgid "Found file with a name containing 'Consent'"
+msgstr ""
+
+#: app/components/FolderList.tsx:79
+msgid "Found no file with a name containing 'Consent'"
+msgstr ""
+
+#: app/model/Project/Project.ts:193
 msgid "Full Name"
 msgstr ""
 
-#: app/menu.ts:212
+#: app/menu.ts:226
 msgid "Help"
 msgstr ""
 
@@ -181,7 +202,7 @@ msgstr ""
 msgid "Hide SayMore X"
 msgstr ""
 
-#: app/model/Project/Project.ts:189
+#: app/model/Project/Project.ts:190
 msgid "ID"
 msgstr ""
 
@@ -193,12 +214,16 @@ msgid "IMDI"
 msgstr ""
 
 #: app/components/FolderPane.tsx:198
-#: app/l10nUtils.ts:51
+#: app/l10nUtils.ts:58
 msgid "Image"
 msgstr ""
 
 #: app/menu.ts:127
 msgid "Interface Language"
+msgstr ""
+
+#: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:124
+msgid "Language Code"
 msgstr ""
 
 #: app/components/FileList.tsx:92
@@ -210,6 +235,8 @@ msgid "More Fields"
 msgstr ""
 
 #: app/components/FileList.tsx:75
+#: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:128
+#: app/components/session/ContributorsTable.tsx:81
 msgid "Name"
 msgstr ""
 
@@ -231,6 +258,7 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
+#: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:139
 #: app/components/project/CreateProjectDialog.tsx:62
 msgid "OK"
 msgstr ""
@@ -274,12 +302,12 @@ msgid "People"
 msgstr ""
 
 #: app/components/FolderPane.tsx:139
-#: app/l10nUtils.ts:47
+#: app/l10nUtils.ts:54
 msgid "Person"
 msgstr ""
 
 #: app/components/Home.tsx:114
-#: app/l10nUtils.ts:43
+#: app/l10nUtils.ts:50
 #: app/menu.ts:101
 msgid "Project"
 msgstr ""
@@ -305,6 +333,10 @@ msgstr ""
 msgid "Rename..."
 msgstr ""
 
+#: app/components/session/ContributorsTable.tsx:86
+msgid "Role"
+msgstr ""
+
 #: app/components/export/ExportDialog.tsx:30
 msgid "Save As"
 msgstr ""
@@ -327,7 +359,7 @@ msgstr ""
 
 #: app/components/FolderPane.tsx:108
 #: app/components/Home.tsx:47
-#: app/l10nUtils.ts:45
+#: app/l10nUtils.ts:52
 msgid "Session"
 msgstr ""
 
@@ -363,11 +395,11 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: app/model/Project/Project.ts:165
+#: app/model/Project/Project.ts:166
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
-#: app/model/Project/Project.ts:174
+#: app/model/Project/Project.ts:175
 msgid "There is already a {folderKind} with the name '{value}'"
 msgstr ""
 
@@ -385,7 +417,7 @@ msgid "Value"
 msgstr ""
 
 #: app/components/FolderPane.tsx:183
-#: app/l10nUtils.ts:49
+#: app/l10nUtils.ts:56
 msgid "Video"
 msgstr ""
 
