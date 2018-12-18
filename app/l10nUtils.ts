@@ -5,6 +5,7 @@ import { setupI18n, I18n } from "@lingui/core";
 import { userSettings } from "./containers/settings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
+import moment from "moment";
 
 const languages = ["en", "es", "fr", "ps"];
 export const catalogs = {};
@@ -24,6 +25,7 @@ if (languages.indexOf(currentUILanguage) < 0) {
     currentUILanguage = "en";
   }
 }
+moment.locale(currentUILanguage); // this is a global change
 export function setUILanguage(code: string): void {
   currentUILanguage = code;
   i18n.use(code);
@@ -49,6 +51,7 @@ import choices from "../locale/choices.csv";
 import roles from "../locale/roles.csv";
 import genres from "../locale/genres.csv";
 import accessProtocols from "../locale/accessProtocols.csv";
+
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
     case "Project":
@@ -97,7 +100,7 @@ function getMatch(lines: any[], s: string): string {
   if (match && match[key]) {
     return match[key];
   }
-  console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
+  //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
 }
 // in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use

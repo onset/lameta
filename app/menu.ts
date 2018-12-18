@@ -3,7 +3,7 @@ import HomePage from "./containers/HomePage";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
-import { i18n, setUILanguage } from "./l10nUtils";
+import { i18n, setUILanguage, currentUILanguage } from "./l10nUtils";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -131,30 +131,39 @@ export default class SayLessMenu {
         { type: "separator" },
         {
           label: i18n._(t`Interface Language`),
+
           submenu: [
             {
               label: "English",
+              type: "radio",
               click: () => {
                 setUILanguage("en");
-              }
+              },
+              checked: currentUILanguage === "en"
             },
             {
               label: "Español",
+              type: "radio",
               click: () => {
                 setUILanguage("es");
-              }
+              },
+              checked: currentUILanguage === "es"
             },
             {
               label: "français",
+              type: "radio",
               click: () => {
                 setUILanguage("fr");
-              }
+              },
+              checked: currentUILanguage === "fr"
             },
             {
               label: "Pseudo",
+              type: "radio",
               click: () => {
                 setUILanguage("ps");
-              }
+              },
+              checked: currentUILanguage === "ps"
             }
           ]
         }
