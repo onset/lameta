@@ -1,9 +1,9 @@
-"Context", "En", "Es", "Fr"
-"Session Status", "Incoming"
-"Session Status", "In Progress"
-"Session Status", "Finished"
-"Session Status. Here skipped means that the user has decided not to continue working with this session", "Skipped"
-"Male", "Male"
-"Female", "Female"
+"Context","En","Es","Fr"
+"Session Status","Incoming","Nuevamente añadido","Entrant"
+"Session Status","In Progress","En curso","En cours"
+"Session Status","Finished","Completado","Terminé"
+"Session Status. Here skipped means that the user has decided not to continue working with this session","Skipped","Omitido","Sauté"
+"Male","Male","Macho","Mâle"
+"Female","Female","Hembra","Femelle"
 
 

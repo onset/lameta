@@ -231,7 +231,7 @@ export class Project extends Folder {
     const genreFieldDefinition = knownFieldDefinitions.session.find(
       (o: any) => o.key === "genre"
     ) as FieldDefinition;
-    AuthorityLists.convertGenresToCSVForLocalization(genreChoices);
+    //AuthorityLists.convertGenresToCSVForLocalization(genreChoices);
     genreFieldDefinition.complexChoices = genreChoices;
   }
 
