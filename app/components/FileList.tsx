@@ -8,7 +8,7 @@ import { remote } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
 import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
-import { i18n, translateFileType } from "../l10nUtils";
+import { i18n, translateFileType } from "../localization";
 import { t } from "@lingui/macro";
 import { Trans } from "@lingui/react";
 

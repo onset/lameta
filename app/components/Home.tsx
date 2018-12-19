@@ -16,7 +16,7 @@ import SayLessMenu from "../menu";
 import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
-import { i18n } from "../l10nUtils";
+import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import { analyticsLocation } from "../analytics";
 

@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
-import { translateFieldLabel, translateGenre } from "../../l10nUtils";
+import { translateFieldLabel, translateGenre } from "../../localization";
 
 export interface IProps {
   field: Field;

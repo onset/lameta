@@ -6,7 +6,7 @@ const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
 import { t } from "@lingui/macro";
-import { i18n } from "../../l10nUtils";
+import { i18n } from "../../localization";
 import { Trans } from "@lingui/react";
 import { analyticsLocation } from "../../analytics";
 

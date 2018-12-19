@@ -6,13 +6,9 @@ import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePic
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
-import { catalogs, currentUILanguage, setUILanguage } from "../l10nUtils";
+import { catalogs, currentUILanguage, setUILanguage } from "../localization";
 
 export class App extends React.Component {
-  constructor() {
-    super({});
-  }
-
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
     ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";

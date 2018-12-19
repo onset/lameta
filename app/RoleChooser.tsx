@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import ReactSelectClass from "react-select";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
 import { Contribution } from "./model/file/File";
-import { translateRole } from "./l10nUtils";
+import { translateRole } from "./localization";
 
 const titleCase = require("title-case");
 

@@ -1,7 +1,7 @@
 // NB: started by using @sentry/electron, but it was buggy and unsupported in Fall 2018.
 // Switched to the Browser SDK
 
-import Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/browser";
 
 export function initializeSentry() {
   Sentry.init({
@@ -10,6 +10,6 @@ export function initializeSentry() {
   });
 }
 
-export function breadcrumb(msg: string) {
+export function sentryBreadCrumb(msg: string) {
   Sentry.addBreadcrumb({ message: msg });
 }

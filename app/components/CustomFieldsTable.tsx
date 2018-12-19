@@ -9,7 +9,7 @@ import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
-import { i18n } from "../l10nUtils";
+import { i18n } from "../localization";
 
 export interface IProps {
   file: File;

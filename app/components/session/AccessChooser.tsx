@@ -5,7 +5,7 @@ import { Field } from "../../model/field/Field";
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Trans } from "@lingui/react";
-import { translateAccessProtocol } from "../../l10nUtils";
+import { translateAccessProtocol } from "../../localization";
 
 export interface IProps {
   field: Field;

@@ -9,7 +9,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
-import { i18n } from "../../l10nUtils";
+import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
 const moment = require("moment");
 

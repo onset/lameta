@@ -14,7 +14,7 @@ import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDel
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { IChoice, FieldDefinition } from "../field/Field";
-import { i18n } from "../../l10nUtils";
+import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../analytics";
 

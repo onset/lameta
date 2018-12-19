@@ -11,7 +11,7 @@ import { locate } from "../crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { i18n } from "../l10nUtils";
+import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 const titleCase = require("title-case");
 

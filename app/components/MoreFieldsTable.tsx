@@ -8,7 +8,7 @@ import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Trans } from "@lingui/react";
-import { i18n } from "../l10nUtils";
+import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 
 export interface IProps {

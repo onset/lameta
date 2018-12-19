@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import * as Sentry from "@sentry/electron";
+import * as Sentry from "@sentry/browser";
 
 interface IProps {
   context?: string;

@@ -3,7 +3,7 @@ import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
-import { translateFieldLabel, currentUILanguage } from "../../l10nUtils";
+import { translateFieldLabel, currentUILanguage } from "../../localization";
 const titleCase = require("title-case");
 //import * as assert from "assert";
 

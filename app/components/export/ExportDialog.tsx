@@ -10,7 +10,7 @@ import { remote } from "electron";
 import * as Path from "path";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
-import { i18n } from "../../l10nUtils";
+import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
 
 // tslint:disable-next-line:no-empty-interface

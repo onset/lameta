@@ -3,7 +3,7 @@ import HomePage from "./containers/HomePage";
 import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
-import { i18n, setUILanguage, currentUILanguage } from "./l10nUtils";
+import { i18n, setUILanguage, currentUILanguage } from "./localization";
 
 export default class SayLessMenu {
   private homePage: HomePage;
