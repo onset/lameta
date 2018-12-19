@@ -254,7 +254,7 @@ export default class SayLessMenu {
 
       template.push(sessionMenu, peopleMenu);
     }
-    console.error("node_env:" + process.env.NODE_ENV);
+
     if (
       process.env.NODE_ENV === "development" ||
       process.env.NODE_ENV === "test"

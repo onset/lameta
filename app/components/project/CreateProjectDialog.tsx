@@ -8,6 +8,7 @@ const { app } = require("electron").remote;
 import { t } from "@lingui/macro";
 import { i18n } from "../../l10nUtils";
 import { Trans } from "@lingui/react";
+import { analyticsLocation } from "../../analytics";
 
 interface IProps {
   isOpen: boolean;
@@ -70,6 +71,7 @@ export default class CreateProjectDialog extends React.Component<
         isOpen={this.props.isOpen}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => this.handleCloseModal(false)}
+        onAfterOpen={() => analyticsLocation("Create Project Dialog")}
       >
         <div className={"dialogTitle"}>{title}</div>
         <div className={"dialogContent"}>

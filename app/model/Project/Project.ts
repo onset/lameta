@@ -16,6 +16,7 @@ import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { IChoice, FieldDefinition } from "../field/Field";
 import { i18n } from "../../l10nUtils";
 import { t } from "@lingui/macro";
+import { analyticsEvent } from "../../analytics";
 
 const genres = require("./Session/genres.json");
 
@@ -176,6 +177,7 @@ export class Project extends Folder {
     session.properties.setText("id", Path.basename(dir));
     this.sessions.push(session);
     this.selectedSession.index = this.sessions.length - 1;
+    analyticsEvent("Create", "Create Session");
   }
 
   public addPerson() {
@@ -188,6 +190,7 @@ export class Project extends Folder {
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
+    analyticsEvent("Create", "Create Person");
   }
 
   private setupProtocolChoices() {

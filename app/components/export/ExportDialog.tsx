@@ -11,6 +11,7 @@ import * as Path from "path";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../../l10nUtils";
+import { analyticsLocation, analyticsEvent } from "../../analytics";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {
@@ -47,6 +48,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
         },
         path => {
           if (path) {
+            analyticsEvent("Export", "Export CSV");
             if (this.state.selectedOption === "csv") {
               const exporter = new CsvExporter(
                 this.props.projectHolder.project!
@@ -54,6 +56,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
               exporter.makeZipFile(path);
               showInExplorer(path);
             } else {
+              analyticsEvent("Export", "Export IMDI");
               ImdiGenerator.saveImdiZip(
                 this.props.projectHolder.project!,
                 path
@@ -94,6 +97,7 @@ export default class ExportDialog extends React.Component<IProps, IState> {
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
           ariaHideApp={false}
+          onAfterOpen={() => analyticsLocation("Export Dialog")}
         >
           <div className={"dialogTitle "}>
             <Trans>Export Project</Trans>

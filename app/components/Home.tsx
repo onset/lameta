@@ -18,6 +18,7 @@ import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
 import { i18n } from "../l10nUtils";
 import { t } from "@lingui/macro";
+import { analyticsLocation } from "../analytics";
 
 export interface IProps {
   project: Project;
@@ -126,6 +127,7 @@ export default class Home extends React.Component<IProps> {
             onSelect={(index: number) => {
               this.props.project.saveAllFilesInFolder();
               this.UpdateMenus(index);
+              analyticsLocation(["Project", "Sessions", "People"][index]);
             }}
           >
             <TabList>

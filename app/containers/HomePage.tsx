@@ -9,7 +9,7 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import { userSettings } from "./settings";
+import { userSettings } from "../settings";
 
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
@@ -19,6 +19,7 @@ import ExportDialog from "../components/export/ExportDialog";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../l10nUtils";
+import { analyticsEvent } from "../analytics";
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -142,8 +143,10 @@ export default class HomePage extends React.Component<IProps, IState> {
           );
           this.projectHolder.setProject(Project.fromDirectory(directory));
         });
+        analyticsEvent("Create Project", "Create Sample Project");
       } else {
         this.projectHolder.setProject(Project.fromDirectory(directory));
+        analyticsEvent("Create Project", "Create Custom Project");
       }
       userSettings.set("previousProjectDirectory", directory);
     }
