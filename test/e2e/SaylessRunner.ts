@@ -1,4 +1,4 @@
-import { default as electronPath } from "electron";
+import { default as electronPath, app } from "electron";
 import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -22,7 +22,7 @@ export default class SayLessRunner {
   public constructor() {
     process.env.startInStartScreen = "true";
     process.env.log = "e2e sayless.log";
-    process.env.NODE_ENV = "development"; //show debug
+    process.env.NODE_ENV = "test";
   }
 
   public async start(doClear: boolean = true): Promise<any> {
@@ -55,8 +55,9 @@ export default class SayLessRunner {
 
     this.app = menuAddon.createApplication({
       path: electronPath.toString(),
-      args: [Path.join(__dirname, "..", "..", "app")]
-      //didn't seem to work.. maybe something else overrides  env: { NODE_ENV: "test" }
+      args: [Path.join(__dirname, "..", "..", "app")],
+      //doesn't seem to work.. maybe something else overrides
+      env: { NODE_ENV: "test" }
     });
 
     // "Unable to find Electron app at ____\sayles\app" here can be caused

@@ -177,7 +177,7 @@ export default class SayLessMenu {
         }
       ]
     };
-    if (process.platform !== "darwin") {
+    if (projectMenu && process.platform !== "darwin") {
       projectMenu.submenu.push({ type: "separator" });
       projectMenu.submenu.push({ role: "quit" } as any);
     }
@@ -254,7 +254,11 @@ export default class SayLessMenu {
 
       template.push(sessionMenu, peopleMenu);
     }
-    if (process.env.NODE_ENV === "development") {
+    console.error("node_env:" + process.env.NODE_ENV);
+    if (
+      process.env.NODE_ENV === "development" ||
+      process.env.NODE_ENV === "test"
+    ) {
       template.push(devMenu);
       template.push(testMenu);
     }

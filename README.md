@@ -43,7 +43,9 @@ More information available in the upstream project:
 
 ### e2e
 
-When running e2e tests, if you get an error about something of the app being undefined and it used to work, try restarting the computer. If that's not enough, make sure everything is committed, then do `git clean -dxf && yarn && yarn build-production && yarn test-e2e`.
+When running e2e tests, there is occasionally a mystery error (that I haven't recorded) that won't go away, even if you got back to previous commits. It goes away with a restart, `git clean -dxf && yarn && yarn build-production && yarn test-e2e`.
+
+Make sure everything is committed first!
 
 ### l10n
 
