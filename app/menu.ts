@@ -201,14 +201,10 @@ export default class SayLessMenu {
           }
         },
         {
-          label: "Test throw",
+          label: "Test throw (for testing Sentry)",
           click() {
             throw new Error("Test throw from menu");
           }
-        },
-        {
-          label: "Test bugsnag",
-          click() {}
         }
       ]
     };
