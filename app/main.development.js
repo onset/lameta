@@ -10,6 +10,10 @@ const { initializeSentry } = require("./init-sentry");
 
 const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 
+// Note: when actually running the program, stuff will be stored where you expect them,
+// using the name of the app. But running in development, you get everything in just
+// appdata/roaming/electron. Don't worry about that. app.setPath("userData", somewhere...);
+
 // Put this on global so that the renderer process can get at it.
 // When running from code, the path is something like <somewhere>saymore-js\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
 // When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json

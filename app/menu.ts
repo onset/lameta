@@ -4,6 +4,7 @@ import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
+import { showIMDIPanels, setShowIMDIPanels } from "./settings";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -103,8 +104,8 @@ export default class SayLessMenu {
       ]
     };
 
-    const projectMenu = {
-      label: "&" + i18n._(t`Project`),
+    const fileMenu = {
+      label: "&" + i18n._(t`File`),
       submenu: [
         {
           label: "&" + i18n._(t`Open Project...`),
@@ -127,8 +128,23 @@ export default class SayLessMenu {
           click: () => {
             ExportDialog.show();
           }
+        }
+      ]
+    };
+    if (fileMenu && process.platform !== "darwin") {
+      fileMenu.submenu.push({ type: "separator" });
+      fileMenu.submenu.push({ role: "quit" } as any);
+    }
+
+    const viewMenu = {
+      label: "&" + i18n._(t`View`),
+      submenu: [
+        {
+          label: "Show IMDI panels",
+          type: "checkbox",
+          checked: showIMDIPanels,
+          click: () => setShowIMDIPanels(!showIMDIPanels)
         },
-        { type: "separator" },
         {
           label: i18n._(t`Interface Language`),
 
@@ -177,10 +193,6 @@ export default class SayLessMenu {
         }
       ]
     };
-    if (projectMenu && process.platform !== "darwin") {
-      projectMenu.submenu.push({ type: "separator" });
-      projectMenu.submenu.push({ role: "quit" } as any);
-    }
     // sessionMenu,
     // peopleMenu,
     const devMenu = {
@@ -237,16 +249,18 @@ export default class SayLessMenu {
 
     // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
     if (sessionMenu) {
-      template.push(projectMenu);
+      template.push(fileMenu);
 
-      if (process.platform === "darwin") {
-        // in order to get normal editing keys to work (e.g. cmd-v for paste), I had
-        // to add an edit menu on mac. If there is a way to get this without the menu,
-        // that would be great.
-        // Meanwhile, it's not clear where this should go in the order. If it's to the left
-        // of the Project menu, that looks weird, because the Project menu acts like a "File" menu.
-        template.push(editMenu);
-      }
+      //if (process.platform === "darwin") {
+      // in order to get normal editing keys to work (e.g. cmd-v for paste), I had
+      // to add an edit menu on mac. If there is a way to get this without the menu,
+      // that would be great.
+      // Meanwhile, it's not clear where this should go in the order. If it's to the left
+      // of the Project menu, that looks weird, because the Project menu acts like a "File" menu.
+      template.push(editMenu);
+      //}
+
+      template.push(viewMenu);
 
       template.push(sessionMenu, peopleMenu);
     }

@@ -23,6 +23,7 @@ import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
+import { showIMDIOutputs } from "../settings";
 
 const SplitPane = require("react-split-pane");
 
@@ -116,7 +117,15 @@ export class FolderPane extends React.Component<IProps> {
         />
       </TabPanel>
     );
-    const imdiPanel = (
+    const imdiTab = showIMDIOutputs ? (
+      <Tab>
+        <Trans>IMDI</Trans>
+      </Tab>
+    ) : (
+      <></>
+    );
+
+    const imdiPanel = showIMDIOutputs ? (
       <TabPanel>
         <ImdiView
           target={
@@ -127,7 +136,10 @@ export class FolderPane extends React.Component<IProps> {
           project={this.props.project}
         />
       </TabPanel>
+    ) : (
+      <></>
     );
+
     const standardMetaTabs = this.props.showStandardMetaTabs ? (
       <>
         <Tab>
@@ -139,9 +151,7 @@ export class FolderPane extends React.Component<IProps> {
         <Tab>
           <Trans>Notes</Trans>
         </Tab>
-        <Tab>
-          <Trans>IMDI</Trans>
-        </Tab>
+        {imdiTab}
       </>
     ) : null;
 
@@ -169,9 +179,7 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>
                 <Trans>Notes</Trans>
               </Tab>
-              <Tab>
-                <Trans>IMDI</Trans>
-              </Tab>
+              {imdiTab}
             </TabList>
             <TabPanel>
               {" "}
@@ -235,9 +243,7 @@ export class FolderPane extends React.Component<IProps> {
               <Tab>
                 <Trans>Notes</Trans>
               </Tab>
-              <Tab>
-                <Trans>IMDI</Trans>
-              </Tab>
+              {imdiTab}
             </TabList>
             <TabPanel>
               <SMErrorBoundary
