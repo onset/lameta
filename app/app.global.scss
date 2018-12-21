@@ -68,6 +68,7 @@ a {
   //height: 40px;
 }
 label {
+  user-select: none;
   display: block;
   font-size: $default-font-size;
   font-weight: bold;

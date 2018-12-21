@@ -5,12 +5,15 @@ import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
 import * as isEmail from "isemail";
 import userSettingsSingleton from "../../settings";
+import "./RegistrationDialog.scss";
+import { SMRadioGroup, SMRadio } from "../SMRadio";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
   isOpen: boolean;
   email: string;
+  howUsing: string;
   validEmail: boolean;
   acceptable: boolean;
 }
@@ -27,6 +30,7 @@ export default class RegistrationDialog extends React.Component<
       isOpen: false,
       email: "foo",
       validEmail: false,
+      howUsing: "",
       acceptable: false
     };
     RegistrationDialog.singleton = this;
@@ -34,6 +38,7 @@ export default class RegistrationDialog extends React.Component<
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
       userSettingsSingleton.setString("email", this.state.email);
+      userSettingsSingleton.setString("howUsing", this.state.howUsing);
     }
     this.setState({ isOpen: false });
   }
@@ -41,9 +46,11 @@ export default class RegistrationDialog extends React.Component<
   public static async show() {
     RegistrationDialog.singleton.setState({
       isOpen: true,
-      email: userSettingsSingleton.get("email", "")
+      email: userSettingsSingleton.get("email", ""),
+      howUsing: userSettingsSingleton.get("howUsing", "")
     });
   }
+
   public render() {
     return (
       <CloseOnEscape
@@ -58,50 +65,81 @@ export default class RegistrationDialog extends React.Component<
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
-          <div className={"dialogTitle"}>
+          <label className={"dialogTitle"}>
             <Trans>Registration</Trans>
-          </div>
+          </label>
           <div className="dialogContent">
             <div className="row">
-              <Trans>Email</Trans>
-              <input
-                autoFocus
-                // onKeyDown={e => {
-                //   this.setState({
-                //     validEmail: isEmail.validate(this.state.email)
-                //   });
-                // }}
-                value={this.state.email}
-                onChange={e =>
-                  this.setState({
-                    email: e.target.value,
-                    validEmail: isEmail.validate(e.target.value),
-                    acceptable: this.getAcceptable()
-                  })
+              <label>
+                <Trans>Email Address</Trans>
+              </label>
+              <textarea
+                className={
+                  this.state.validEmail ? "" : "markInvalidIfNotFocussed"
                 }
+                autoFocus
+                value={this.state.email}
+                onChange={e => {
+                  this.check({ email: e.target.value });
+                }}
               />
-              {this.state.validEmail ? "Valid" : "Invalid"}
             </div>
-          </div>
-          <div className={"bottomButtonRow"}>
-            <div className={"okCancelGroup"}>
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
-              <button
-                id="okButton"
-                disabled={!this.state.acceptable}
-                onClick={() => this.handleCloseModal(true)}
+            <div className="row">
+              <label>
+                <Trans>How are you using SayMoreX?</Trans>
+              </label>
+              <SMRadioGroup
+                id="howUsingRadioGroup"
+                name="howUsingRadioGroup"
+                className="howUsingRadioGroup"
+                selectedValue={this.state.howUsing}
+                onChange={value => {
+                  this.check({ howUsing: value });
+                }}
               >
-                <Trans>OK</Trans>
-              </button>
+                <SMRadio value="own-language">
+                  For documenting my own language
+                </SMRadio>
+                <SMRadio value="another-language">
+                  For documenting another language
+                </SMRadio>
+                <SMRadio value="learner">For a course or workshop</SMRadio>
+                <SMRadio value="trainer">As a trainer</SMRadio>
+                <SMRadio value="curator">As a curator</SMRadio>
+                <SMRadio value="developer">As a developer</SMRadio>
+              </SMRadioGroup>
+            </div>
+            <div className={"bottomButtonRow"}>
+              <div className={"okCancelGroup"}>
+                <button onClick={() => this.handleCloseModal(false)}>
+                  <Trans>Cancel</Trans>
+                </button>
+                <button
+                  id="okButton"
+                  disabled={!this.state.acceptable}
+                  onClick={() => this.handleCloseModal(true)}
+                >
+                  <Trans>OK</Trans>
+                </button>
+              </div>
             </div>
           </div>
         </ReactModal>
       </CloseOnEscape>
     );
   }
-  getAcceptable(): boolean {
-    return isEmail.validate(this.state.email);
+
+  private check(stateChanges: any) {
+    const email = stateChanges.email || this.state.email;
+    const howUsing = stateChanges.howUsing || this.state.howUsing;
+    const validEmail = isEmail.validate(email, {
+      minDomainAtoms: 2
+    });
+    this.setState({
+      email,
+      howUsing,
+      validEmail,
+      acceptable: howUsing !== "" && validEmail
+    });
   }
 }
