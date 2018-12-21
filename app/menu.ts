@@ -5,6 +5,7 @@ import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import userSettings from "./settings";
+import RegistrationDialog from "./components/registration/RegistrationDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -241,6 +242,12 @@ export default class SayLessMenu {
     const helpMenu = {
       label: i18n._(t`Help`),
       submenu: [
+        {
+          label: i18n._(t`Registration...`),
+          click: () => {
+            RegistrationDialog.show();
+          }
+        },
         {
           label: i18n._(t`Report a problem`),
           click: () => {

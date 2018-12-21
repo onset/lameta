@@ -7,6 +7,7 @@ import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
 import { catalogs, currentUILanguage, setUILanguage } from "../localization";
+import RegistrationDialog from "../components/registration/RegistrationDialog";
 
 export class App extends React.Component {
   public componentDidMount() {
@@ -22,6 +23,7 @@ export class App extends React.Component {
           <ConfirmDeleteDialog />
           <LanguagePickerDialog />
           <RenameFileDialog />
+          <RegistrationDialog />
         </I18nProvider>
       </div>
     );
