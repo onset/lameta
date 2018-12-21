@@ -9,7 +9,7 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import { userSettings } from "../settings";
+import userSettings from "../settings";
 
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
@@ -47,14 +47,14 @@ export default class HomePage extends React.Component<IProps, IState> {
     };
 
     let previousDirectory = userSettings.get("previousProjectDirectory");
-    console.log(
-      "************** process.env.startInStartScreen=" +
-        process.env.startInStartScreen
-    );
-    log.info(
-      "**************log process.env.startInStartScreen=" +
-        process.env.startInStartScreen
-    );
+    // console.log(
+    //   "************** process.env.startInStartScreen=" +
+    //     process.env.startInStartScreen
+    // );
+    // log.info(
+    //   "**************log process.env.startInStartScreen=" +
+    //     process.env.startInStartScreen
+    // );
     if (process.env.startInStartScreen === "true") {
       previousDirectory = null;
     }
@@ -148,7 +148,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(Project.fromDirectory(directory));
         analyticsEvent("Create Project", "Create Custom Project");
       }
-      userSettings.set("previousProjectDirectory", directory);
+      userSettings.setString("previousProjectDirectory", directory);
     }
   }
   // private listDir(dir: string) {
@@ -257,7 +257,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(
           Project.fromDirectory(fs.realpathSync(directory))
         );
-        userSettings.set("previousProjectDirectory", directory);
+        userSettings.setString("previousProjectDirectory", directory);
       }
     });
   }

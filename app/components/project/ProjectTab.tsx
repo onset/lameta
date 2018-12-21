@@ -10,7 +10,7 @@ import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
 import { Trans } from "@lingui/react";
-import { showIMDIOutputs } from "../../settings";
+import userSettings from "../../settings";
 
 interface IProps {
   project: Project;
@@ -40,7 +40,7 @@ export class ProjectTab extends React.Component<IProps> {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {showIMDIOutputs ? (
+          {userSettings.showIMDIPanels ? (
             <Tab className={"tab-project-imdi"}>
               <Trans>IMDI</Trans>
             </Tab>
@@ -102,7 +102,7 @@ export class ProjectTab extends React.Component<IProps> {
             <br />
           </FolderPane>
         </TabPanel>
-        {showIMDIOutputs ? (
+        {userSettings.showIMDIPanels ? (
           <TabPanel>
             <ImdiView
               target={this.props.project}

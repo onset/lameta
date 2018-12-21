@@ -4,7 +4,7 @@
 */
 import Analytics from "electron-ga";
 import uuid from "uuid";
-import { userSettings } from "./settings";
+import userSettings from "./settings";
 import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 
@@ -13,8 +13,8 @@ let analytics: Analytics;
 export function initializeAnalytics() {
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person
-  const clientId = userSettings.get("clientId") || uuid();
-  userSettings.set("clientId", clientId);
+  const clientId = userSettings.get("clientId", uuid());
+  userSettings.setString("clientId", clientId);
   analytics = new Analytics("UA-131224630-1", {
     appName: "saymorex",
     appVersion: require("package.json").version,

@@ -2,7 +2,7 @@
   Set up the stuff handled by lingui
   ---------------------------------------------------------------------*/
 import { setupI18n, I18n } from "@lingui/core";
-import { userSettings } from "./settings";
+import userSettings from "./settings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
 import moment from "moment";
@@ -41,7 +41,7 @@ export function initializeLocalization() {
 export function setUILanguage(code: string): void {
   currentUILanguage = code;
   i18n.use(code);
-  userSettings.set("uiLanguage", code);
+  userSettings.setString("uiLanguage", code);
   remote.getCurrentWindow().reload();
 }
 

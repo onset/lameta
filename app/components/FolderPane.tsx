@@ -23,7 +23,7 @@ import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
-import { showIMDIOutputs } from "../settings";
+import userSettings from "../settings";
 
 const SplitPane = require("react-split-pane");
 
@@ -117,7 +117,7 @@ export class FolderPane extends React.Component<IProps> {
         />
       </TabPanel>
     );
-    const imdiTab = showIMDIOutputs ? (
+    const imdiTab = userSettings.showIMDIPanels ? (
       <Tab>
         <Trans>IMDI</Trans>
       </Tab>
@@ -125,7 +125,7 @@ export class FolderPane extends React.Component<IProps> {
       <></>
     );
 
-    const imdiPanel = showIMDIOutputs ? (
+    const imdiPanel = userSettings.showIMDIPanels ? (
       <TabPanel>
         <ImdiView
           target={
@@ -204,19 +204,6 @@ export class FolderPane extends React.Component<IProps> {
                       value
                     )
                   }
-                  // session={directoryObject as Session}
-                  // authorityLists={this.props.authorityLists}
-                  // fields={directoryObject.properties}
-                  // // fieldThatControlsFileNames={"id"}
-                  // // fieldThatControlsFileNamesMightHaveChanged={key =>
-                  // //   (this.props.folder as Session).nameMightHaveChanged()
-                  // // }
-                  // validateId={value =>
-                  //   this.props.project.validateSessionId(
-                  //     directoryObject as Session,
-                  //     value
-                  //   )
-                  // }
                 />
               </SMErrorBoundary>
             </TabPanel>

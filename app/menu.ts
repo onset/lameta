@@ -4,7 +4,7 @@ import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
-import { showIMDIPanels, setShowIMDIPanels } from "./settings";
+import userSettings from "./settings";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -142,8 +142,9 @@ export default class SayLessMenu {
         {
           label: "Show IMDI panels",
           type: "checkbox",
-          checked: showIMDIPanels,
-          click: () => setShowIMDIPanels(!showIMDIPanels)
+          checked: userSettings.showIMDIPanels,
+          click: () =>
+            userSettings.setShowIMDIPanels(!userSettings.showIMDIPanels)
         },
         {
           label: i18n._(t`Interface Language`),
@@ -239,7 +240,28 @@ export default class SayLessMenu {
     };
     const helpMenu = {
       label: i18n._(t`Help`),
-      submenu: []
+      submenu: [
+        {
+          label: i18n._(t`Report a problem`),
+          click: () => {
+            shell.openExternal("https://saymorex.page.link/problem");
+          }
+        },
+        {
+          type: "separator"
+        },
+
+        {
+          label: i18n._(t`Check for new version`),
+          click: () => {
+            shell.openExternal("https://saymorex.page.link/releases");
+          }
+        },
+        {
+          label: "SayMore-x " + require("./package.json").version,
+          enabled: false
+        }
+      ]
     };
 
     const template = Array<any>();
@@ -264,6 +286,8 @@ export default class SayLessMenu {
 
       template.push(sessionMenu, peopleMenu);
     }
+
+    template.push(helpMenu);
 
     if (
       process.env.NODE_ENV === "development" ||
