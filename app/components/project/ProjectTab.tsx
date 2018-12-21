@@ -10,7 +10,7 @@ import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
 import { Trans } from "@lingui/react";
-import userSettings from "../../settings";
+import userSettings from "../../UserSettings";
 
 interface IProps {
   project: Project;

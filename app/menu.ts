@@ -4,7 +4,7 @@ import log from "./log";
 import ExportDialog from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
-import userSettings from "./settings";
+import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
 
 export default class SayLessMenu {

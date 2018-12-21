@@ -4,7 +4,7 @@
 */
 import Analytics from "electron-ga";
 import uuid from "uuid";
-import userSettings from "./settings";
+import userSettings from "./UserSettings";
 import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 

@@ -2,7 +2,7 @@
   Set up the stuff handled by lingui
   ---------------------------------------------------------------------*/
 import { setupI18n, I18n } from "@lingui/core";
-import userSettings from "./settings";
+import userSettings from "./UserSettings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
 import moment from "moment";

@@ -19,6 +19,7 @@ import { Trans } from "@lingui/react";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import { analyticsLocation } from "../analytics";
+import { UserSettings, SettingsContext } from "../UserSettings";
 
 export interface IProps {
   project: Project;

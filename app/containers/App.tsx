@@ -6,25 +6,33 @@ import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePic
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
-import { catalogs, currentUILanguage, setUILanguage } from "../localization";
+import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
+import { SettingsContext, UserSettings } from "../UserSettings";
+import * as mobx from "mobx-react";
 
+@mobx.observer
 export class App extends React.Component {
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
     ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";
   }
 
+  private userSettings = new UserSettings();
   public render() {
     return (
       <div id="app">
-        <I18nProvider language={currentUILanguage} catalogs={catalogs}>
-          <HomePage />
-          <ConfirmDeleteDialog />
-          <LanguagePickerDialog />
-          <RenameFileDialog />
-          <RegistrationDialog />
-        </I18nProvider>
+        <SettingsContext.Provider value={this.userSettings}>
+          <I18nProvider language={currentUILanguage} catalogs={catalogs}>
+            <div id="registrationType">{this.userSettings.HowUsing}</div>
+
+            <HomePage />
+            <ConfirmDeleteDialog />
+            <LanguagePickerDialog />
+            <RenameFileDialog />
+            <RegistrationDialog />
+          </I18nProvider>
+        </SettingsContext.Provider>
       </div>
     );
   }

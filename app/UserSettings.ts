@@ -1,7 +1,8 @@
+import React from "react";
 import Store from "electron-store";
 import * as mobx from "mobx";
 
-class UserSettings {
+export class UserSettings {
   private store: Store;
 
   @mobx.observable
@@ -21,6 +22,19 @@ class UserSettings {
   public setString(key: string, value: string): void {
     this.store.set(key, value);
   }
+
+  private howUsing: string;
+  @mobx.computed public get HowUsing() {
+    this.howUsing = this.store.get("howUsing", "");
+    return this.howUsing;
+  }
+  public set HowUsing(v: string) {
+    this.howUsing = v;
+    this.store.set("howUsing", v);
+  }
 }
 const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
+
+//nb: the parameter here is just to make the type system work. Weird.
+export const SettingsContext = React.createContext(new UserSettings());

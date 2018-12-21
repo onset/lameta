@@ -4,7 +4,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
 import * as isEmail from "isemail";
-import userSettingsSingleton from "../../settings";
+import userSettingsSingleton from "../../UserSettings";
 import "./RegistrationDialog.scss";
 import { SMRadioGroup, SMRadio } from "../SMRadio";
 
@@ -38,7 +38,7 @@ export default class RegistrationDialog extends React.Component<
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
       userSettingsSingleton.setString("email", this.state.email);
-      userSettingsSingleton.setString("howUsing", this.state.howUsing);
+      userSettingsSingleton.HowUsing = this.state.howUsing;
     }
     this.setState({ isOpen: false });
   }
@@ -47,7 +47,7 @@ export default class RegistrationDialog extends React.Component<
     RegistrationDialog.singleton.setState({
       isOpen: true,
       email: userSettingsSingleton.get("email", ""),
-      howUsing: userSettingsSingleton.get("howUsing", "")
+      howUsing: userSettingsSingleton.HowUsing
     });
   }
 

@@ -23,7 +23,7 @@ import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
-import userSettings from "../settings";
+import userSettings from "../UserSettings";
 
 const SplitPane = require("react-split-pane");
 
