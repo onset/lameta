@@ -1,4 +1,4 @@
-import Home from "../components/Home";
+import Workspace from "../components/Workspace";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
@@ -171,7 +171,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     return (
       <div style={{ height: "100%" }}>
         {this.projectHolder.project ? (
-          <Home
+          <Workspace
             project={this.projectHolder.project}
             authorityLists={this.projectHolder.project.authorityLists}
             menu={this.menu}

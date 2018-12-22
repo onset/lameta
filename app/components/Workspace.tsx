@@ -6,7 +6,7 @@ import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-const styles = require("./Home.scss");
+const styles = require("./Workspace.scss");
 import { SessionIcon } from "./session/SessionIcon";
 import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
@@ -19,7 +19,7 @@ import { Trans } from "@lingui/react";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import { analyticsLocation } from "../analytics";
-import { UserSettings, SettingsContext } from "../UserSettings";
+import RegistrationReminder from "./RegistrationReminder";
 
 export interface IProps {
   project: Project;
@@ -121,6 +121,7 @@ export default class Home extends React.Component<IProps> {
         className={styles.container}
         data-tid="container"
       >
+        <RegistrationReminder />
         <div id="tabContainer">
           <Tabs
             className={"tabComponent"}

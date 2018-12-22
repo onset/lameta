@@ -10,6 +10,7 @@ import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { SettingsContext, UserSettings } from "../UserSettings";
 import * as mobx from "mobx-react";
+import NoticeArea from "../components/RegistrationReminder";
 
 @mobx.observer
 export class App extends React.Component {
@@ -24,8 +25,6 @@ export class App extends React.Component {
       <div id="app">
         <SettingsContext.Provider value={this.userSettings}>
           <I18nProvider language={currentUILanguage} catalogs={catalogs}>
-            <div id="registrationType">{this.userSettings.HowUsing}</div>
-
             <HomePage />
             <ConfirmDeleteDialog />
             <LanguagePickerDialog />
