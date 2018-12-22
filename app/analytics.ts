@@ -34,6 +34,7 @@ export function analyticsEvent(category: string, action: string) {
     .send("event", {
       ec: category,
       ea: action,
+      // at the moment, I'm not clear where it is best to stick how-using
       ci: userSettings.HowUsing // put the "how using" into GA's Campaign ID
     })
     //.then(() => console.log(`Sent event ${category}/${action}`))

@@ -90,7 +90,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
     return x ? x.text : "???";
   }
 
-  public get /*babel doesn't like this: abstract*/ displayName(): string;
+  public get /*babel doesn't like this: abstract*/ displayName(): string {
+    return "";
+  }
   public knownFields: FieldDefinition[];
 
   ///Load the files constituting a session, person, or project

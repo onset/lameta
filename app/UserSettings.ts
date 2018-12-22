@@ -9,6 +9,7 @@ export class UserSettings {
 
   @mobx.observable
   private showIMDIPanels: boolean;
+  @mobx.observable
   private howUsing: string;
   private email: string;
   private clientId: string;
@@ -38,6 +39,9 @@ export class UserSettings {
     return this.clientId;
   }
 
+  public get SendErrorsAndAnalytics(): boolean {
+    return this.howUsing !== "developer";
+  }
   public get PreviousProjectDirectory(): string | null {
     return this.store.get("previousDirectory", null);
   }
@@ -50,7 +54,9 @@ export class UserSettings {
   public set UILanguage(code: string) {
     this.store.set("uiLanguage", code);
   }
-
+  public get DeveloperMode() {
+    return this.howUsing === "developer";
+  }
   public get Email() {
     return this.email;
   }

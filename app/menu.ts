@@ -143,13 +143,6 @@ export default class SayLessMenu {
       label: "&" + i18n._(t`View`),
       submenu: [
         {
-          label: "Show IMDI panels",
-          type: "checkbox",
-          checked: userSettings.ShowIMDIPanels,
-          click: () =>
-            (userSettings.ShowIMDIPanels = !userSettings.ShowIMDIPanels)
-        },
-        {
           label: i18n._(t`Interface Language`),
 
           submenu: [
@@ -177,7 +170,7 @@ export default class SayLessMenu {
               },
               checked: currentUILanguage === "fr"
             },
-            process.env.NODE_ENV === "development"
+            userSettings.DeveloperMode
               ? {
                   label: "Pseudo",
                   type: "radio",
@@ -194,6 +187,13 @@ export default class SayLessMenu {
               }
             }
           ]
+        },
+        {
+          label: "Show IMDI panels",
+          type: "checkbox",
+          checked: userSettings.ShowIMDIPanels,
+          click: () =>
+            (userSettings.ShowIMDIPanels = !userSettings.ShowIMDIPanels)
         }
       ]
     };
@@ -296,11 +296,12 @@ export default class SayLessMenu {
     template.push(helpMenu);
 
     if (
-      process.env.NODE_ENV === "development" ||
-      process.env.NODE_ENV === "test"
+      // process.env.NODE_ENV === "development" ||
+      // process.env.NODE_ENV === "test" ||
+      userSettings.DeveloperMode
     ) {
       template.push(devMenu);
-      template.push(testMenu);
+      //template.push(testMenu);
     }
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]

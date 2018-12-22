@@ -37,7 +37,7 @@ export default class RegistrationDialog extends React.Component<
   }
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
-      userSettings.setString("email", this.state.email);
+      userSettings.Email = this.state.email;
       userSettings.HowUsing = this.state.howUsing;
     }
     this.setState({ isOpen: false });
@@ -46,7 +46,7 @@ export default class RegistrationDialog extends React.Component<
   public static async show() {
     RegistrationDialog.singleton.update({
       isOpen: true,
-      email: userSettings.get("email", ""),
+      email: userSettings.Email,
       howUsing: userSettings.HowUsing
     });
   }
