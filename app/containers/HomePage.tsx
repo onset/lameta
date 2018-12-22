@@ -20,6 +20,7 @@ import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { analyticsEvent } from "../analytics";
+import RegistrationDialog from "../components/registration/RegistrationDialog";
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -82,6 +83,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     // do this in case we're just opening to the start screen. Otherwise, we get some confusing default Electron menu
     this.menu.updateMainMenu(undefined, undefined);
   }
+
   private isRunningFromSource(): boolean {
     return /node_modules[\\/]electron[\\/]/.test(process.execPath);
   }
@@ -97,6 +99,10 @@ export default class HomePage extends React.Component<IProps, IState> {
           ),
         2000
       );
+    }
+
+    if (userSettings.HowUsing === "") {
+      RegistrationDialog.show();
     }
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", e => {

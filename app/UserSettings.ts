@@ -15,7 +15,7 @@ export class UserSettings {
   private clientId: string;
 
   constructor() {
-    this.store = new Store({ name: "saymore-user-settings" });
+    this.store = new Store({ name: "saymorex-user-settings" });
     this.showIMDIPanels = this.store.get("showIMDIPanels") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
