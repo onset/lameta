@@ -6,6 +6,8 @@ import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
+import { initializeSentry } from "./errorHandling";
+import { date } from "@lingui/core";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -217,7 +219,10 @@ export default class SayLessMenu {
         {
           label: "Test throw (for testing Sentry)",
           click() {
-            throw new Error("Test throw from menu");
+            initializeSentry(true);
+            throw new Error(
+              "Test throw from menu " + Date.now().toLocaleString()
+            );
           }
         }
       ]
@@ -229,12 +234,6 @@ export default class SayLessMenu {
           label: "Menu Test",
           click() {
             mainWindow.setTitle("Menu Test Invoked");
-          }
-        },
-        {
-          label: "Send Error Report Test",
-          click() {
-            throw new Error("Test error from menu " + new Date().getTime()); // add timestamp so that sentry doesn't swallow duplicates
           }
         }
       ]

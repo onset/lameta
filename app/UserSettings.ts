@@ -1,6 +1,7 @@
 import React from "react";
 import Store from "electron-store";
 import * as mobx from "mobx";
+import { setUserInfoForErrorReporting } from "./errorHandling";
 
 export class UserSettings {
   private store: Store;
@@ -11,6 +12,7 @@ export class UserSettings {
   constructor() {
     this.store = new Store({ name: "saymore-user-settings" });
     this.showIMDIPanels = this.store.get("showIMDIPanels") || false;
+    setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
   public setShowIMDIPanels(show: boolean) {
     this.showIMDIPanels = show;
@@ -22,7 +24,13 @@ export class UserSettings {
   public setString(key: string, value: string): void {
     this.store.set(key, value);
   }
-
+  public get Email() {
+    return this.store.get("email", "");
+  }
+  public set Email(v: string) {
+    this.store.set("email", v);
+    setUserInfoForErrorReporting(this.Email, this.HowUsing);
+  }
   private howUsing: string;
   @mobx.computed
   public get HowUsing() {
@@ -32,6 +40,7 @@ export class UserSettings {
   public set HowUsing(v: string) {
     this.howUsing = v;
     this.store.set("howUsing", v);
+    setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
 }
 

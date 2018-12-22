@@ -28,7 +28,7 @@ export function initializeAnalytics() {
 export function analyticsLocation(name: string) {
   analytics
     .send("screenview", { cd: name })
-    .then(() => console.log("Sent screen view" + name))
+    //.then(() => console.log("Sent screen view" + name))
     .catch(error => console.error(error));
   // in case of an error later, also list this in the error log
   sentryBreadCrumb(name);
@@ -36,6 +36,6 @@ export function analyticsLocation(name: string) {
 export function analyticsEvent(category: string, action: string) {
   analytics
     .send("event", { ec: category, ea: action })
-    .then(() => console.log(`Sent event ${category}/${action}`))
+    //.then(() => console.log(`Sent event ${category}/${action}`))
     .catch(error => console.error(error));
 }

@@ -13,7 +13,7 @@ import { initializeLocalization } from "./localization";
 // possibly it's trying to report some RHL error... you do see them if you turn on
 // "Pause on caught exceptions" in the chrome debug tools
 // (note: it is possible to work around this by going away from the screen being modified)
-initializeErrorReporting();
+initializeErrorReporting(false);
 //}
 
 initializeLocalization();
