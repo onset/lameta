@@ -1,5 +1,5 @@
 import * as React from "react";
-import userSettingsSingleton from "../UserSettings";
+import userSettings from "../UserSettings";
 import "./RegistrationReminder.scss";
 import RegistrationDialog from "./registration/RegistrationDialog";
 import * as mobx from "mobx-react";
@@ -7,9 +7,9 @@ import * as mobx from "mobx-react";
 @mobx.observer
 export default class RegistrationReminder extends React.Component {
   public render() {
-    let buttonText: string | undefined = undefined;
+    let buttonText: string | undefined;
     let passiveText = "";
-    switch (userSettingsSingleton.HowUsing) {
+    switch (userSettings.HowUsing) {
       case "":
         buttonText = "Please Register";
         break;

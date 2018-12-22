@@ -4,7 +4,7 @@ import { remote } from "electron";
 import "./app.global.scss";
 import App from "./containers/App";
 import { setConfig } from "react-hot-loader";
-import { initializeAnalytics } from "./analytics";
+import { initializeAnalytics, analyticsEvent } from "./analytics";
 import { initializeSentry as initializeErrorReporting } from "./errorHandling";
 import { initializeLocalization } from "./localization";
 
@@ -18,6 +18,7 @@ initializeErrorReporting(false);
 
 initializeLocalization();
 initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
+analyticsEvent("Launch", "Launch");
 
 setConfig({ logLevel: "debug" });
 

@@ -46,7 +46,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
 
-    let previousDirectory = userSettings.get("previousProjectDirectory");
+    let previousDirectory = userSettings.PreviousProjectDirectory;
     // console.log(
     //   "************** process.env.startInStartScreen=" +
     //     process.env.startInStartScreen
@@ -148,7 +148,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(Project.fromDirectory(directory));
         analyticsEvent("Create Project", "Create Custom Project");
       }
-      userSettings.setString("previousProjectDirectory", directory);
+      userSettings.PreviousProjectDirectory = directory;
     }
   }
   // private listDir(dir: string) {
@@ -257,7 +257,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         this.projectHolder.setProject(
           Project.fromDirectory(fs.realpathSync(directory))
         );
-        userSettings.setString("previousProjectDirectory", directory);
+        userSettings.PreviousProjectDirectory = directory;
       }
     });
   }

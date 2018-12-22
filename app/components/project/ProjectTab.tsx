@@ -40,7 +40,7 @@ export class ProjectTab extends React.Component<IProps> {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {userSettings.showIMDIPanels ? (
+          {userSettings.ShowIMDIPanels ? (
             <Tab className={"tab-project-imdi"}>
               <Trans>IMDI</Trans>
             </Tab>
@@ -102,7 +102,7 @@ export class ProjectTab extends React.Component<IProps> {
             <br />
           </FolderPane>
         </TabPanel>
-        {userSettings.showIMDIPanels ? (
+        {userSettings.ShowIMDIPanels ? (
           <TabPanel>
             <ImdiView
               target={this.props.project}

@@ -145,9 +145,9 @@ export default class SayLessMenu {
         {
           label: "Show IMDI panels",
           type: "checkbox",
-          checked: userSettings.showIMDIPanels,
+          checked: userSettings.ShowIMDIPanels,
           click: () =>
-            userSettings.setShowIMDIPanels(!userSettings.showIMDIPanels)
+            (userSettings.ShowIMDIPanels = !userSettings.ShowIMDIPanels)
         },
         {
           label: i18n._(t`Interface Language`),

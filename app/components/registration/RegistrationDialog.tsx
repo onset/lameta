@@ -4,7 +4,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
 import * as isEmail from "isemail";
-import userSettingsSingleton from "../../UserSettings";
+import userSettings from "../../UserSettings";
 import "./RegistrationDialog.scss";
 import { SMRadioGroup, SMRadio } from "../SMRadio";
 
@@ -37,8 +37,8 @@ export default class RegistrationDialog extends React.Component<
   }
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
-      userSettingsSingleton.setString("email", this.state.email);
-      userSettingsSingleton.HowUsing = this.state.howUsing;
+      userSettings.setString("email", this.state.email);
+      userSettings.HowUsing = this.state.howUsing;
     }
     this.setState({ isOpen: false });
   }
@@ -46,8 +46,8 @@ export default class RegistrationDialog extends React.Component<
   public static async show() {
     RegistrationDialog.singleton.update({
       isOpen: true,
-      email: userSettingsSingleton.get("email", ""),
-      howUsing: userSettingsSingleton.HowUsing
+      email: userSettings.get("email", ""),
+      howUsing: userSettings.HowUsing
     });
   }
 
@@ -73,7 +73,7 @@ export default class RegistrationDialog extends React.Component<
               <label>
                 <Trans>Email Address</Trans>
               </label>
-              <textarea
+              <input
                 className={
                   this.state.validEmail ? "" : "markInvalidIfNotFocussed"
                 }

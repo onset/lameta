@@ -117,7 +117,7 @@ export class FolderPane extends React.Component<IProps> {
         />
       </TabPanel>
     );
-    const imdiTab = userSettings.showIMDIPanels ? (
+    const imdiTab = userSettings.ShowIMDIPanels ? (
       <Tab>
         <Trans>IMDI</Trans>
       </Tab>
@@ -125,7 +125,7 @@ export class FolderPane extends React.Component<IProps> {
       <></>
     );
 
-    const imdiPanel = userSettings.showIMDIPanels ? (
+    const imdiPanel = userSettings.ShowIMDIPanels ? (
       <TabPanel>
         <ImdiView
           target={

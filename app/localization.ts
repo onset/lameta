@@ -18,7 +18,7 @@ export function initializeLocalization() {
     code => (catalogs[code] = require(`../locale/${code}/messages.js`))
   );
 
-  currentUILanguage = userSettings.get("uiLanguage", "");
+  currentUILanguage = userSettings.UILanguage;
   // if the language in the settings isn't one this version supports,
   // or if there was no setting for this and we have the default (empty string)
   if (languages.indexOf(currentUILanguage) < 0) {
@@ -41,7 +41,7 @@ export function initializeLocalization() {
 export function setUILanguage(code: string): void {
   currentUILanguage = code;
   i18n.use(code);
-  userSettings.setString("uiLanguage", code);
+  userSettings.UILanguage = code;
   remote.getCurrentWindow().reload();
 }
 
