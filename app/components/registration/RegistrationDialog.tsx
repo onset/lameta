@@ -103,10 +103,18 @@ export default class RegistrationDialog extends React.Component<
                 <SMRadio value="another-language">
                   For documenting another language
                 </SMRadio>
-                <SMRadio value="learner">For a course or workshop</SMRadio>
-                <SMRadio value="trainer">As a trainer</SMRadio>
-                <SMRadio value="curator">As a curator</SMRadio>
-                <SMRadio value="developer">As a developer</SMRadio>
+                <SMRadio value="learner">
+                  <Trans>For a course or workshop</Trans>
+                </SMRadio>
+                <SMRadio value="trainer">
+                  <Trans>As a trainer</Trans>
+                </SMRadio>
+                <SMRadio value="curator">
+                  <Trans>As a curator</Trans>
+                </SMRadio>
+                <SMRadio value="developer">
+                  <Trans>As a developer</Trans>
+                </SMRadio>
               </SMRadioGroup>
             </div>
             <div className={"bottomButtonRow"}>

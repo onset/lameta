@@ -1,11 +1,11 @@
 {
   "name": "saymore-x",
   "productName": "SayMore X",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
-    "name": "MEaCoM"
+    "name": "SayMoreX"
   },
   "license": "MIT",
   "dependencies": {}

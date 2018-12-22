@@ -13,9 +13,7 @@ export class SMRadio extends React.Component<IProps> {
       <div style={{ marginLeft: "2px", marginTop: "3px", marginBottom: "3px" }}>
         <label>
           <Radio style={{ height: "1em" }} value={this.props.value} />
-          <span style={{ height: "1em" }}>
-            <Trans>{this.props.children}</Trans>
-          </span>
+          <span style={{ height: "1em" }}>{this.props.children}</span>
         </label>
       </div>
     );

@@ -17,19 +17,19 @@ msgstr ""
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:103
+#: app/components/export/ExportDialog.tsx:106
 msgid "A single ISLE Meta Data Initiative XML file."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:90
+#: app/components/export/ExportDialog.tsx:93
 msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
 msgstr ""
 
-#: app/menu.ts:29
+#: app/menu.ts:32
 msgid "About SayMore X"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:23
+#: app/components/project/ProjectTab.tsx:24
 msgid "About This Project"
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:26
+#: app/components/project/ProjectTab.tsx:27
 msgid "Access Protocol"
 msgstr ""
 
@@ -45,31 +45,48 @@ msgstr ""
 msgid "Add Files"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:47
+#: app/components/project/ProjectTab.tsx:48
 msgid "Add documents here that describe the projects and corpus."
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:57
+#: app/components/project/ProjectTab.tsx:58
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
-#: app/components/FolderPane.tsx:168
-#: app/l10nUtils.ts:60
+#: app/components/registration/RegistrationDialog.tsx:83
+msgid "As a curator"
+msgstr ""
+
+#: app/components/registration/RegistrationDialog.tsx:86
+msgid "As a developer"
+msgstr ""
+
+#: app/components/registration/RegistrationDialog.tsx:80
+msgid "As a trainer"
+msgstr ""
+
+#: app/components/FolderPane.tsx:166
+#: app/localization.ts:64
 msgid "Audio"
 msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:59
-#: app/components/export/ExportDialog.tsx:111
+#: app/components/export/ExportDialog.tsx:114
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:136
-#: app/components/project/CreateProjectDialog.tsx:59
+#: app/components/project/CreateProjectDialog.tsx:60
+#: app/components/registration/RegistrationDialog.tsx:93
 msgid "Cancel"
+msgstr ""
+
+#: app/menu.ts:248
+msgid "Check for new version"
 msgstr ""
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:120
 msgid "Choose Language"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:82
+#: app/components/export/ExportDialog.tsx:85
 msgid "Choose an export format:"
 msgstr ""
 
@@ -85,31 +102,31 @@ msgstr ""
 msgid "Contributions"
 msgstr ""
 
-#: app/components/FolderPane.tsx:87
+#: app/components/FolderPane.tsx:91
 msgid "Contributors"
 msgstr ""
 
-#: app/menu.ts:84
+#: app/menu.ts:87
 msgid "Copy"
 msgstr ""
 
-#: app/containers/HomePage.tsx:146
+#: app/containers/HomePage.tsx:157
 msgid "Create New Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:158
+#: app/containers/HomePage.tsx:169
 msgid "Create New Project with Sample Data"
 msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:44
+#: app/components/project/CreateProjectDialog.tsx:45
 msgid "Create New Saymore Project"
 msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:43
+#: app/components/project/CreateProjectDialog.tsx:44
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: app/menu.ts:109
+#: app/menu.ts:112
 msgid "Create Project..."
 msgstr ""
 
@@ -121,7 +138,7 @@ msgstr ""
 msgid "Custom Fields"
 msgstr ""
 
-#: app/menu.ts:82
+#: app/menu.ts:85
 msgid "Cut"
 msgstr ""
 
@@ -137,35 +154,39 @@ msgstr ""
 msgid "Delete File..."
 msgstr ""
 
-#: app/components/Home.tsx:85
+#: app/components/Workspace.tsx:87
 msgid "Delete Person..."
 msgstr ""
 
-#: app/components/Home.tsx:60
+#: app/components/Workspace.tsx:62
 msgid "Delete Session..."
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:29
+#: app/components/project/ProjectTab.tsx:30
 msgid "Description Documents"
 msgstr ""
 
-#: app/components/FolderPane.tsx:224
+#: app/components/FolderPane.tsx:222
 msgid "ELAN"
 msgstr ""
 
-#: app/menu.ts:69
+#: app/menu.ts:72
 msgid "Edit"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:114
+#: app/components/registration/RegistrationDialog.tsx:57
+msgid "Email Address"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:117
 msgid "Export"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:77
+#: app/components/export/ExportDialog.tsx:80
 msgid "Export Project"
 msgstr ""
 
-#: app/menu.ts:118
+#: app/menu.ts:121
 msgid "Export Project..."
 msgstr ""
 
@@ -174,8 +195,13 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: app/components/FolderPane.tsx:242
+#: app/components/FolderPane.tsx:240
+#: app/menu.ts:104
 msgid "File"
+msgstr ""
+
+#: app/components/registration/RegistrationDialog.tsx:77
+msgid "For a course or workshop"
 msgstr ""
 
 #: app/components/FolderList.tsx:76
@@ -186,44 +212,50 @@ msgstr ""
 msgid "Found no file with a name containing 'Consent'"
 msgstr ""
 
-#: app/model/Project/Project.ts:193
+#: app/model/Project/Project.ts:196
 msgid "Full Name"
 msgstr ""
 
-#: app/menu.ts:226
+#: app/menu.ts:230
 msgid "Help"
 msgstr ""
 
-#: app/menu.ts:48
+#: app/menu.ts:51
 msgid "Hide Others"
 msgstr ""
 
-#: app/menu.ts:43
+#: app/menu.ts:46
 msgid "Hide SayMore X"
 msgstr ""
 
-#: app/model/Project/Project.ts:190
+#: app/components/registration/RegistrationDialog.tsx:65
+msgid "How are you using SayMoreX?"
+msgstr ""
+
+#: app/model/Project/Project.ts:193
 msgid "ID"
 msgstr ""
 
-#: app/components/FolderPane.tsx:93
-#: app/components/FolderPane.tsx:117
-#: app/components/FolderPane.tsx:148
-#: app/components/project/ProjectTab.tsx:35
+#: app/components/FolderPane.tsx:79
+#: app/components/project/ProjectTab.tsx:36
 msgid "IMDI"
 msgstr ""
 
-#: app/components/FolderPane.tsx:198
-#: app/l10nUtils.ts:58
+#: app/components/FolderPane.tsx:196
+#: app/localization.ts:62
 msgid "Image"
 msgstr ""
 
-#: app/menu.ts:127
+#: app/menu.ts:138
 msgid "Interface Language"
 msgstr ""
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:124
 msgid "Language Code"
+msgstr ""
+
+#: app/components/RegistrationReminder.tsx:32
+msgid "Learner"
 msgstr ""
 
 #: app/components/FileList.tsx:92
@@ -240,26 +272,27 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: app/components/Home.tsx:75
 #: app/components/people/PeopleTab.tsx:18
-#: app/model/Project/Project.ts:127
+#: app/components/Workspace.tsx:77
+#: app/model/Project/Project.ts:129
 msgid "New Person"
 msgstr ""
 
-#: app/components/Home.tsx:50
 #: app/components/session/SessionsTab.tsx:16
-#: app/model/Project/Project.ts:118
+#: app/components/Workspace.tsx:52
+#: app/model/Project/Project.ts:119
 msgid "New Session"
 msgstr ""
 
-#: app/components/FolderPane.tsx:90
-#: app/components/FolderPane.tsx:114
+#: app/components/FolderPane.tsx:94
+#: app/components/FolderPane.tsx:116
 #: app/components/FolderPane.tsx:145
 msgid "Notes"
 msgstr ""
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:139
-#: app/components/project/CreateProjectDialog.tsx:62
+#: app/components/project/CreateProjectDialog.tsx:63
+#: app/components/registration/RegistrationDialog.tsx:96
 msgid "OK"
 msgstr ""
 
@@ -267,16 +300,16 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: app/containers/HomePage.tsx:172
-#: app/menu.ts:104
+#: app/containers/HomePage.tsx:183
+#: app/menu.ts:107
 msgid "Open Project..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:151
+#: app/containers/HomePage.tsx:162
 msgid "Open SayMore Project"
 msgstr ""
 
-#: app/components/FolderPane.tsx:233
+#: app/components/FolderPane.tsx:231
 msgid "Open in ELAN"
 msgstr ""
 
@@ -284,7 +317,7 @@ msgstr ""
 msgid "Open in program associated with this file type"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:32
+#: app/components/project/ProjectTab.tsx:33
 msgid "Other Documents"
 msgstr ""
 
@@ -292,36 +325,47 @@ msgstr ""
 msgid "Other Languages"
 msgstr ""
 
-#: app/menu.ts:89
+#: app/menu.ts:92
 msgid "Paste"
 msgstr ""
 
-#: app/components/Home.tsx:72
-#: app/components/Home.tsx:126
+#: app/components/Workspace.tsx:74
+#: app/components/Workspace.tsx:130
 msgid "People"
 msgstr ""
 
 #: app/components/FolderPane.tsx:139
-#: app/l10nUtils.ts:54
+#: app/localization.ts:58
 msgid "Person"
 msgstr ""
 
-#: app/components/Home.tsx:114
-#: app/l10nUtils.ts:50
-#: app/menu.ts:101
+#: app/components/RegistrationReminder.tsx:25
+msgid "Please Register"
+msgstr ""
+
+#: app/components/Workspace.tsx:118
+#: app/localization.ts:54
 msgid "Project"
 msgstr ""
 
-#: app/components/FolderPane.tsx:84
+#: app/components/FolderPane.tsx:88
 msgid "Properties"
 msgstr ""
 
-#: app/menu.ts:60
+#: app/menu.ts:63
 msgid "Quit"
 msgstr ""
 
-#: app/menu.ts:77
+#: app/menu.ts:80
 msgid "Redo"
+msgstr ""
+
+#: app/components/registration/RegistrationDialog.tsx:52
+msgid "Registration"
+msgstr ""
+
+#: app/menu.ts:233
+msgid "Registration..."
 msgstr ""
 
 #: app/components/people/PeopleTab.tsx:22
@@ -333,41 +377,45 @@ msgstr ""
 msgid "Rename..."
 msgstr ""
 
+#: app/menu.ts:239
+msgid "Report a problem"
+msgstr ""
+
 #: app/components/session/ContributorsTable.tsx:86
 msgid "Role"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:30
+#: app/components/export/ExportDialog.tsx:31
 msgid "Save As"
 msgstr ""
 
-#: app/menu.ts:26
+#: app/menu.ts:29
 msgid "SayMore X"
 msgstr ""
 
-#: app/containers/HomePage.tsx:178
+#: app/containers/HomePage.tsx:189
 msgid "SayMore/SayMore Project Files"
 msgstr ""
 
-#: app/menu.ts:94
+#: app/menu.ts:97
 msgid "Select All"
 msgstr ""
 
-#: app/menu.ts:36
+#: app/menu.ts:39
 msgid "Services"
 msgstr ""
 
-#: app/components/FolderPane.tsx:108
-#: app/components/Home.tsx:47
-#: app/l10nUtils.ts:52
+#: app/components/FolderPane.tsx:110
+#: app/components/Workspace.tsx:49
+#: app/localization.ts:56
 msgid "Session"
 msgstr ""
 
-#: app/components/Home.tsx:120
+#: app/components/Workspace.tsx:124
 msgid "Sessions"
 msgstr ""
 
-#: app/menu.ts:53
+#: app/menu.ts:56
 msgid "Show All"
 msgstr ""
 
@@ -383,23 +431,23 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: app/menu.ts:113
+#: app/menu.ts:116
 msgid "Start Screen"
 msgstr ""
 
-#: app/components/FolderPane.tsx:111
+#: app/components/FolderPane.tsx:113
 msgid "Status"
 msgstr ""
 
-#: app/components/FolderPane.tsx:211
+#: app/components/FolderPane.tsx:209
 msgid "Text"
 msgstr ""
 
-#: app/model/Project/Project.ts:166
+#: app/model/Project/Project.ts:169
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
-#: app/model/Project/Project.ts:175
+#: app/model/Project/Project.ts:178
 msgid "There is already a {folderKind} with the name '{value}'"
 msgstr ""
 
@@ -407,7 +455,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: app/menu.ts:72
+#: app/menu.ts:75
 msgid "Undo"
 msgstr ""
 
@@ -416,22 +464,30 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: app/components/FolderPane.tsx:183
-#: app/l10nUtils.ts:56
+#: app/components/FolderPane.tsx:181
+#: app/localization.ts:60
 msgid "Video"
 msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:49
+#: app/menu.ts:135
+msgid "View"
+msgstr ""
+
+#: app/components/project/CreateProjectDialog.tsx:50
 msgid "What would you like to call this project?"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:36
+#: app/components/export/ExportDialog.tsx:37
 msgid "ZIP Archive"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:86
+#: app/components/export/ExportDialog.tsx:89
 msgid "Zip of CSVs"
 msgstr ""
+
+#: app/components/SMRadio.tsx:11
+#~ msgid "{0}"
+#~ msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:50
 msgid "{0} will be moved to the Trash"
