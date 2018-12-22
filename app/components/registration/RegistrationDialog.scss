@@ -1,6 +1,6 @@
 @import "../../colors";
 
-.registrationDialog {
+.ReactModal__Content.registrationDialog {
   background-color: $session--color;
   .dialogTitle {
     background-color: hsla(84, 73%, 67%, 1);

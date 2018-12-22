@@ -24,7 +24,8 @@ export class UserSettings {
   }
 
   private howUsing: string;
-  @mobx.computed public get HowUsing() {
+  @mobx.computed
+  public get HowUsing() {
     this.howUsing = this.store.get("howUsing", "");
     return this.howUsing;
   }
@@ -33,6 +34,7 @@ export class UserSettings {
     this.store.set("howUsing", v);
   }
 }
+
 const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 

@@ -2,34 +2,39 @@ import * as React from "react";
 import userSettingsSingleton from "../UserSettings";
 import "./RegistrationReminder.scss";
 import RegistrationDialog from "./registration/RegistrationDialog";
+import * as mobx from "mobx-react";
 
+@mobx.observer
 export default class RegistrationReminder extends React.Component {
   public render() {
-    let msg = "";
+    let buttonText: string | undefined = undefined;
+    let passiveText = "";
     switch (userSettingsSingleton.HowUsing) {
       case "":
-        msg = "Please Register";
+        buttonText = "Please Register";
         break;
       // the student/workskhop participant may start using it for research, so we want to show
       // the student status so-as to provide an incentive for them to change their registration
       // if that happens.
       case "student":
-        msg = "Student";
+        passiveText = "Student";
         break;
       case "developer":
-        msg = "Developer";
+        passiveText = "Developer";
         break;
       default:
         break;
     }
 
+    const core = buttonText ? (
+      <button onClick={() => RegistrationDialog.show()}>{buttonText}</button>
+    ) : (
+      <label>{passiveText}</label>
+    );
     return (
-      <button
-        id="registrationReminder"
-        onClick={() => RegistrationDialog.show()}
-      >
-        {msg}
-      </button>
+      <div id="registrationReminder" onClick={() => RegistrationDialog.show()}>
+        {core}
+      </div>
     );
   }
 }

@@ -13,7 +13,6 @@ import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../menu";
-import NotificationIndicator from "./NotificationsBar/NotificationIndicator";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
 import { i18n } from "../localization";

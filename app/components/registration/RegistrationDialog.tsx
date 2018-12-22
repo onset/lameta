@@ -28,7 +28,7 @@ export default class RegistrationDialog extends React.Component<
     super(props);
     this.state = {
       isOpen: false,
-      email: "foo",
+      email: "",
       validEmail: false,
       howUsing: "",
       acceptable: false
@@ -44,7 +44,7 @@ export default class RegistrationDialog extends React.Component<
   }
 
   public static async show() {
-    RegistrationDialog.singleton.setState({
+    RegistrationDialog.singleton.update({
       isOpen: true,
       email: userSettingsSingleton.get("email", ""),
       howUsing: userSettingsSingleton.HowUsing
@@ -80,7 +80,7 @@ export default class RegistrationDialog extends React.Component<
                 autoFocus
                 value={this.state.email}
                 onChange={e => {
-                  this.check({ email: e.target.value });
+                  this.update({ email: e.target.value });
                 }}
               />
             </div>
@@ -94,7 +94,7 @@ export default class RegistrationDialog extends React.Component<
                 className="howUsingRadioGroup"
                 selectedValue={this.state.howUsing}
                 onChange={value => {
-                  this.check({ howUsing: value });
+                  this.update({ howUsing: value });
                 }}
               >
                 <SMRadio value="own-language">
@@ -129,15 +129,14 @@ export default class RegistrationDialog extends React.Component<
     );
   }
 
-  private check(stateChanges: any) {
+  private update(stateChanges: any) {
     const email = stateChanges.email || this.state.email;
     const howUsing = stateChanges.howUsing || this.state.howUsing;
     const validEmail = isEmail.validate(email, {
       minDomainAtoms: 2
     });
     this.setState({
-      email,
-      howUsing,
+      ...stateChanges,
       validEmail,
       acceptable: howUsing !== "" && validEmail
     });

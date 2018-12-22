@@ -9,10 +9,7 @@ import { I18nProvider } from "@lingui/react";
 import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { SettingsContext, UserSettings } from "../UserSettings";
-import * as mobx from "mobx-react";
-import NoticeArea from "../components/RegistrationReminder";
 
-@mobx.observer
 export class App extends React.Component {
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
