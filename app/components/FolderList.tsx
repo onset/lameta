@@ -13,6 +13,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
+import scrollSelectedIntoView from "./FixReactTableScroll";
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -121,6 +122,7 @@ export class FolderList extends React.Component<IProps> {
           onResizedChange={(resizedState: Resize[]) =>
             this.columnWidthManager.handleResizedChange(resizedState)
           }
+          onFetchData={() => scrollSelectedIntoView("folderList")}
           pageSize={this.props.folders.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.

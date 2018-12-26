@@ -11,6 +11,7 @@ import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../localization";
 import { t } from "@lingui/macro";
 import { Trans } from "@lingui/react";
+import scrollSelectedIntoView from "./FixReactTableScroll";
 
 const electron = require("electron");
 export interface IProps {
@@ -54,17 +55,6 @@ export default class FileList extends React.Component<IProps, IState> {
         this.props.folder.addFiles(paths.map(p => ({ path: p })));
       }
     });
-  }
-
-  // The selected item is preserved because we have a "key" attribute on the table.
-  // Here we need to scroll the selected item into view when we've come back from
-  // looking at something else, otherwise it can be selected but not visible.
-  // Doesn't appear to be a more elegant way: https://github.com/react-tools/react-table/issues/420
-  private scrollSelectedIntoView() {
-    const table = document.getElementsByClassName("fileList")[0];
-    table
-      .getElementsByClassName("rt-tr selected")[0]
-      .scrollIntoView({ block: "nearest" });
   }
 
   public render() {
@@ -185,7 +175,7 @@ export default class FileList extends React.Component<IProps, IState> {
           showPagination={false}
           data={this.props.folder.files}
           columns={columns}
-          onFetchData={() => this.scrollSelectedIntoView()}
+          onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
