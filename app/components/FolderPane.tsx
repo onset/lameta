@@ -164,11 +164,14 @@ export class FolderPane extends React.Component<IProps> {
       </>
     ) : null;
 
+    // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
+    const tabsKey = this.props.folder.selectedFile!.getTextProperty("filename");
+
     switch (file.type) {
       case "Session":
         const kFirstTabToOpen = 0;
         return (
-          <Tabs defaultIndex={kFirstTabToOpen}>
+          <Tabs key={tabsKey} defaultIndex={kFirstTabToOpen}>
             <TabList>
               <Tab>
                 <Trans>Session</Trans>
@@ -182,7 +185,6 @@ export class FolderPane extends React.Component<IProps> {
               {imdiTab}
             </TabList>
             <TabPanel>
-              {" "}
               <SMErrorBoundary
                 context={`${directoryObject.displayName} ${
                   directoryObject.metadataFile!.describedFilePath
@@ -219,7 +221,7 @@ export class FolderPane extends React.Component<IProps> {
       case "Person":
         const kFirstPersonTabToOpen = 0;
         return (
-          <Tabs defaultIndex={kFirstPersonTabToOpen}>
+          <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
             <TabList>
               <Tab>
                 <Trans>Person</Trans>
@@ -262,7 +264,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       case "Audio":
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>Audio</Trans>
@@ -279,7 +281,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       case "Video":
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>Video</Trans>
@@ -300,7 +302,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       case "Image":
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>Image</Trans>
@@ -315,7 +317,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       case "Text":
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>Text</Trans>
@@ -330,7 +332,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       case "ELAN":
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>ELAN</Trans>
@@ -354,7 +356,7 @@ export class FolderPane extends React.Component<IProps> {
         );
       default:
         return (
-          <Tabs>
+          <Tabs key={tabsKey}>
             <TabList>
               <Tab>
                 <Trans>File</Trans>
