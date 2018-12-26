@@ -114,6 +114,9 @@ export default class Home extends React.Component<IProps> {
     this.UpdateMenus(this.kFirstTabToOpen);
   }
   public render() {
+    // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the project changes
+    const tabsKey = this.props.project.directory;
+
     return (
       <div
         id="topLevelOfOpenProjectScreen"
@@ -123,6 +126,7 @@ export default class Home extends React.Component<IProps> {
         <RegistrationReminder />
         <div id="tabContainer">
           <Tabs
+            key={tabsKey}
             className={"tabComponent"}
             defaultIndex={this.kFirstTabToOpen}
             onSelect={(index: number) => {
