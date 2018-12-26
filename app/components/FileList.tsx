@@ -55,12 +55,18 @@ export default class FileList extends React.Component<IProps, IState> {
       }
     });
   }
-  public componentDidUpdate() {
-    // scroll to top whenever we change to a new folder
-    document
-      .getElementsByClassName("fileList")[0]
-      .getElementsByClassName("rt-tbody")[0].scrollTop = 0;
+
+  // The selected item is preserved because we have a "key" attribute on the table.
+  // Here we need to scroll the selected item into view when we've come back from
+  // looking at something else, otherwise it can be selected but not visible.
+  // Doesn't appear to be a more elegant way: https://github.com/react-tools/react-table/issues/420
+  private scrollSelectedIntoView() {
+    const table = document.getElementsByClassName("fileList")[0];
+    table
+      .getElementsByClassName("rt-tr selected")[0]
+      .scrollIntoView({ block: "nearest" });
   }
+
   public render() {
     // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
     // What this mobxDummy is about:
@@ -107,11 +113,6 @@ export default class FileList extends React.Component<IProps, IState> {
         id: "modifiedDate",
         Header: i18n._(t`Modified`),
         accessor: (d: any) => {
-          //const f: File = d;
-          // const date = f.getTextProperty("modifiedDate");
-          // const locale = window.navigator.language;
-          // moment.locale(locale);
-          // return moment(date).format("L LT");
           return d.properties
             .getValueOrThrow("modifiedDate")
             .asDateTimeDisplayString();
@@ -178,11 +179,13 @@ export default class FileList extends React.Component<IProps, IState> {
           </button>
         </div>
         <ReactTable
-          //key={this.props.folder.directory}
+          //cause us to reset scroll to top when we change folders
+          key={this.props.folder.directory}
           className="fileList"
           showPagination={false}
           data={this.props.folder.files}
           columns={columns}
+          onFetchData={() => this.scrollSelectedIntoView()}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
@@ -218,22 +221,6 @@ export default class FileList extends React.Component<IProps, IState> {
       </Dropzone>
     );
   }
-  // This is from an old implementation of the table... so far with react-table
-  // it seems to work to just do the setTimeout in the click handler, but i'm
-  // leaving this code for a bit in case I find a need for it after all.
-  // public componentDidUpdate(prevProps: IProps): void {
-  //   if (globalPropertiesForPendingContextMenu) {
-  //     // row wasn't selected first
-  //     // window.requestAnimationFrame(() => {
-  //     //        this.showPendingContextMenu();
-  //     //    });
-  //     window.setTimeout(() => {
-  //       const eventProperties = globalPropertiesForPendingContextMenu;
-  //       globalPropertiesForPendingContextMenu = null; // this is now handled
-  //       this.showContextMenu(eventProperties);
-  //     }, 100);
-  //   }
-  // }
 
   private showContextMenu(x: number, y: number, file: File) {
     const mainWindow = remote.getCurrentWindow(); // as any;
