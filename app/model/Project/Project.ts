@@ -17,6 +17,7 @@ import { IChoice, FieldDefinition } from "../field/Field";
 import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../analytics";
+import userSettings from "../../UserSettings";
 
 const genres = require("./Session/genres.json");
 
@@ -33,6 +34,7 @@ export class ProjectHolder {
     }
     if (p == null) {
       console.log("setting project to null");
+      userSettings.PreviousProjectDirectory = null;
     } else {
       console.log("setting project to " + p.directory);
     }

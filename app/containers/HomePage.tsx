@@ -66,6 +66,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.projectHolder.setProject(null);
     }
 
+    this.updateMenu();
     HomePage.homePageForTests = this;
   }
   public createProject(useSample: boolean) {
@@ -77,13 +78,15 @@ export default class HomePage extends React.Component<IProps, IState> {
     //this.projectHolder.setProject(null);
   }
 
-  public componentWillMount() {
+  public componentDidUpdate() {
+    this.updateMenu();
+  }
+  private updateMenu() {
     this.menu = new SayLessMenu(this);
     this.menu.setupContentMenu();
     // do this in case we're just opening to the start screen. Otherwise, we get some confusing default Electron menu
     this.menu.updateMainMenu(undefined, undefined);
   }
-
   private isRunningFromSource(): boolean {
     return /node_modules[\\/]electron[\\/]/.test(process.execPath);
   }
@@ -95,7 +98,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       window.setTimeout(
         () =>
           window.alert(
-            `Thanks for helping to test SayMore X! Warning: this is not even a "beta", so you could easily lose your work.`
+            `Thanks for helping to test SayMore X! Warning: this is not even a "beta", so make sure you have a backup of your work.`
           ),
         2000
       );

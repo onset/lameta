@@ -29,7 +29,11 @@ export default class SayLessMenu {
 
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
     log.info("updateMainMenu");
-    const haveProject = true; //this.homePage.projectHolder.project;
+
+    const haveProject = this.homePage.projectHolder.project !== null;
+    console.log(
+      `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
+    );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
       label: i18n._(t`SayMore X`),
@@ -275,21 +279,12 @@ export default class SayLessMenu {
       template.push(macMenu);
     }
 
+    template.push(fileMenu);
+    template.push(editMenu);
+    template.push(viewMenu);
+
     // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
     if (sessionMenu) {
-      template.push(fileMenu);
-
-      //if (process.platform === "darwin") {
-      // in order to get normal editing keys to work (e.g. cmd-v for paste), I had
-      // to add an edit menu on mac. If there is a way to get this without the menu,
-      // that would be great.
-      // Meanwhile, it's not clear where this should go in the order. If it's to the left
-      // of the Project menu, that looks weird, because the Project menu acts like a "File" menu.
-      template.push(editMenu);
-      //}
-
-      template.push(viewMenu);
-
       template.push(sessionMenu, peopleMenu);
     }
 
