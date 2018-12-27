@@ -1,13 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Project } from "../../model/Project/Project";
-//import { DocumentsPane } from "./DocumentsPane";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Field } from "../../model/field/Field";
 import { Dictionary } from "typescript-collections";
 import TextFieldEdit from "../TextFieldEdit";
+import { Trans } from "@lingui/react";
 import "./AccessProtocolForm.scss";
 
 // enhance: this is kinda lame... we could do this dynamically after we
@@ -42,8 +39,12 @@ export class AccessProtocolForm extends React.Component<IProps> {
     const customStuff =
       protocol === "custom" ? (
         <div>
-          <h4>Custom Access Choices</h4>
-          <p>Enter each choice, separated by commas</p>
+          <h4>
+            <Trans>Custom Access Choices</Trans>
+          </h4>
+          <p>
+            <Trans>Enter each choice, separated by commas</Trans>
+          </p>
           <TextFieldEdit field={this.props.customChoicesField} />
         </div>
       ) : (
@@ -52,10 +53,10 @@ export class AccessProtocolForm extends React.Component<IProps> {
 
     return (
       <div className={"field access-protocol"}>
-        <label>{this.props.protocolField.englishLabel} </label>
+        <label>{this.props.protocolField.labelInUILanguage} </label>
         <div className={"controls"}>
           <select
-            name={this.props.protocolField.englishLabel} //what does this do? Maybe accessibility?
+            name={this.props.protocolField.labelInUILanguage} //what does this do? Maybe accessibility?
             value={this.props.protocolField.text}
             onChange={event => {
               this.props.protocolField.text = event.currentTarget.value;

@@ -15,18 +15,6 @@
       height: 100%;
     }
   }
-  //:global(react-tabs__tab-panel--selected).peopleTab{
-  // .peopleTab {
-  //   &:global(.react-tabs__tab-panel--selected) {
-  //     // background-color: $people-color;
-  //     height: 100%;
-
-  //     border: solid pink;
-  //     display: flex;
-  //     // flex-grow: 1;
-  //     flex-direction: column;
-  //   }
-  // }
 }
 
 .icon-and-label {
@@ -54,16 +42,11 @@
   }
   & > .react-tabs__tab-panel--selected {
     padding: 8px;
-    // background-color: $people-color;
     height: 100%;
-
-    //border: solid pink;
     display: flex;
-    // flex-grow: 1;
     flex-direction: column;
   }
 
-  //border: solid green;
   display: flex;
   flex-direction: column;
 }

@@ -4,6 +4,8 @@ import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
 import ReactTable from "react-table";
+import { i18n } from "../localization";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   person: Person;
@@ -20,20 +22,20 @@ export class PersonContributions extends React.Component<IProps> {
     const columns = [
       {
         id: "name",
-        Header: "Name",
+        Header: i18n._(t`Name`),
         width: 300,
         accessor: (row: Contribution) => row.sessionName
       },
       {
         id: "role",
-        Header: "Role",
+        Header: i18n._(t`Role`),
         width: 100,
         accessor: (row: Contribution) =>
           row ? row.role.toLocaleUpperCase() : ""
       },
       {
         id: "comments",
-        Header: "Comments",
+        Header: i18n._(t`Comments`),
         //width: 200,
         accessor: (row: Contribution) => row.comments
       }

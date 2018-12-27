@@ -50,15 +50,17 @@ export default class CreateProjectDialog extends React.Component<
     let projectNameIsViable: boolean;
     let message = "";
     let messageClass = "black";
+    const path = this.getChosenPath();
     if (!haveProjectName) {
       projectNameIsViable = false;
     } else if (projectNameIsDuplicate) {
       projectNameIsViable = false;
-      message = "There is already a project at: " + this.getChosenPath();
+
+      message = i18n._(t`There is already a project at: ${path}`);
       messageClass = "error";
     } else {
       projectNameIsViable = true;
-      message = "Project will be created in: " + this.getChosenPath();
+      message = i18n._(t`Project will be created in: ${path}`);
     }
 
     const title = this.props.useSampleProject

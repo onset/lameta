@@ -36,7 +36,7 @@ export default class AccessChooser extends React.Component<IProps> {
           <Trans>Access</Trans>
         </label>
         <ReactSelectClass
-          name={this.props.field.englishLabel}
+          name={this.props.field.labelInUILanguage}
           value={this.props.field.text}
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;

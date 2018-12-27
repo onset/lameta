@@ -3,6 +3,9 @@ import ReactTable from "react-table";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
 import { Dictionary } from "typescript-collections";
+import { i18n } from "../localization";
+import { t } from "@lingui/macro";
+
 const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
 
@@ -52,8 +55,11 @@ export default class MediaStats extends React.Component<IProps, IState> {
         switch (file.type) {
           case "Image":
             const dimensions = imagesize(file.describedFilePath);
-            this.stats.setValue("width", dimensions.width.toString());
-            this.stats.setValue("height", dimensions.height.toString());
+            this.stats.setValue(i18n._(t`Width`), dimensions.width.toString());
+            this.stats.setValue(
+              i18n._(t`height`),
+              dimensions.height.toString()
+            );
             resolve();
             break;
           case "Audio":
@@ -66,12 +72,12 @@ export default class MediaStats extends React.Component<IProps, IState> {
                 reject(err);
               } else {
                 this.addStat(
-                  "Length",
+                  i18n._(t`Length`),
                   humanizeDuration(1000 * result.format.duration, {
                     round: true
                   })
                 );
-                this.addStat("Format", result.format.format_long_name);
+                this.addStat(i18n._(t`Format`), result.format.format_long_name);
                 result.streams.forEach(stream => {
                   this.processStreamStats(stream);
                 });
@@ -88,37 +94,40 @@ export default class MediaStats extends React.Component<IProps, IState> {
   private processStreamStats(stream: any) {
     switch (stream.codec_type) {
       case "audio":
-        this.addStat("Audio Codec", stream.codec_name);
-        this.addStat("Audio Channels", stream.channels);
+        this.addStat(i18n._(t`Audio Codec`), stream.codec_name);
+        this.addStat(i18n._(t`Audio Channels`), stream.channels);
         if (stream.bit_rate) {
           this.addStat(
-            "Audio Bit Rate",
+            i18n._(t`Audio Bit Rate`),
             Math.round(stream.bit_rate / 1000).toString() + " Kbps"
           );
         }
         if (stream.sample_rate) {
           this.addStat(
-            "Audio Sample Rate",
+            i18n._(t`Audio Sample Rate`),
             this.roundToOneDecimalPlace(stream.sample_rate / 1000).toString() +
               " KHz"
           );
         }
         this.addStat(
-          "Audio Bit Depth",
+          i18n._(t`Audio Bit Depth`),
           stream.bits_per_sample
             ? stream.bits_per_sample.toString() + "-bit"
             : "N/A"
         );
         break;
       case "video":
-        this.addStat("Video Codec", stream.codec_name);
+        this.addStat(i18n._(t`Video Codec`), stream.codec_name);
         if (stream.width && stream.height) {
-          this.addStat("Resolution", `${stream.width} x ${stream.height}`);
+          this.addStat(
+            i18n._(t`Resolution`),
+            `${stream.width} x ${stream.height}`
+          );
         }
 
         if (stream.avg_frame_rate) {
           this.addStat(
-            "Frame rate",
+            i18n._(t`Frame rate`),
             // tslint:disable-next-line:no-eval
             Math.round(eval(stream.avg_frame_rate)) + " fps"
           ); //"avg_frame_rate":"26910000/896999",

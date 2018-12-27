@@ -98,10 +98,10 @@ export default class RegistrationDialog extends React.Component<
                 }}
               >
                 <SMRadio value="own-language">
-                  For documenting my own language
+                  <Trans>For documenting my own language</Trans>
                 </SMRadio>
                 <SMRadio value="another-language">
-                  For documenting another language
+                  <Trans>For documenting another language</Trans>
                 </SMRadio>
                 <SMRadio value="learner">
                   <Trans>For a course or workshop</Trans>

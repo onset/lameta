@@ -24,7 +24,6 @@ import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
 import userSettings from "../UserSettings";
-
 const SplitPane = require("react-split-pane");
 
 export interface IProps {
@@ -334,9 +333,7 @@ export class FolderPane extends React.Component<IProps> {
         return (
           <Tabs key={tabsKey}>
             <TabList>
-              <Tab>
-                <Trans>ELAN</Trans>
-              </Tab>
+              <Tab>ELAN {/* should not be translated */}</Tab>
               {standardMetaTabs}
             </TabList>
             <TabPanel className="unhandledFileType">
