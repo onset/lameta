@@ -31,7 +31,7 @@ export class PersonContributions extends React.Component<IProps> {
         Header: i18n._(t`Role`),
         width: 100,
         accessor: (row: Contribution) =>
-          row ? row.role.toLocaleUpperCase() : ""
+          row && row.role ? row.role.toLocaleUpperCase() : ""
       },
       {
         id: "comments",
@@ -47,7 +47,6 @@ export class PersonContributions extends React.Component<IProps> {
     return (
       <ReactTable
         className={"personContributions"}
-        style={{ flexGrow: 1 }}
         showPagination={false}
         data={rows}
         columns={columns}
