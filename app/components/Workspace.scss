@@ -53,6 +53,7 @@
 
 #tabContainer {
   flex: 1; //grow to fill as much as is can (up to edge of notification bar)
+  overflow-x: hidden; // don't scroll it
 }
 #topLevelOfOpenProjectScreen {
   display: flex;
