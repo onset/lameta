@@ -38,7 +38,12 @@ export default function getSayMoreXml(
     doOutputEmptyCustomFields
   );
   //writeElementsWeDontUnderstand();
-  return root.end({ pretty: true, indent: "  " });
+  return root.end({
+    pretty: true,
+    indent: "  ",
+    /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
+    allowEmpty: true
+  });
 }
 //function writeElementsWeDontUnderstand() {}
 function writeSimplePropertyElements(

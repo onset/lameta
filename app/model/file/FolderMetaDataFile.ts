@@ -19,7 +19,7 @@ export class FolderMetadataFile extends File {
     //if the metadata file doesn't yet exist, just make an empty one.
     const metadataPath = Path.join(directory, name + fileExtensionForMetadata);
     if (!fs.existsSync(metadataPath)) {
-      fs.writeFileSync(metadataPath, `<${xmlRootName}/>`);
+      fs.writeFileSync(metadataPath, `<${xmlRootName}></${xmlRootName}>`); // NO: break SayMore Classic <${xmlRootName}/>
     }
     super(
       metadataPath,

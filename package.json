@@ -302,7 +302,7 @@
     "winston": "^3.0.0",
     "xml-name-validator": "^3.0.0",
     "xml2js": "^0.4.19",
-    "xmlbuilder": "^9.0.4"
+    "xmlbuilder": "^10.1.1"
   },
   "devEngines": {
     "node": ">=8.x",
