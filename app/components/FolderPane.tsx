@@ -117,9 +117,7 @@ export class FolderPane extends React.Component<IProps> {
       </TabPanel>
     );
     const imdiTab = userSettings.ShowIMDIPanels ? (
-      <Tab>
-        <Trans>IMDI</Trans>
-      </Tab>
+      <Tab>IMDI {/* don't translate  */}</Tab>
     ) : (
       <></>
     );

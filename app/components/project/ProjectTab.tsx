@@ -42,7 +42,7 @@ export class ProjectTab extends React.Component<IProps> {
           </Tab>
           {userSettings.ShowIMDIPanels ? (
             <Tab className={"tab-project-imdi"}>
-              <Trans>IMDI</Trans>
+              IMDI {/* don't translate  */}
             </Tab>
           ) : (
             <></>
