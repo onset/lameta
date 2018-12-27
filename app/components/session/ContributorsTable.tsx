@@ -117,11 +117,12 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         accessor: "role",
         Cell: (cellInfo: any) => this.renderRole(cellInfo)
       },
+      /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
         Header: i18n._(t`Date`),
         accessor: "date",
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
-      },
+      },*/
       {
         Header: i18n._(t`Comments`),
         accessor: "comments",

@@ -64,45 +64,10 @@ export class FieldSet extends Dictionary<string, Field> {
   public addHasConsentProperty(person: Person) {
     this.setValue("hasConsent", new HasConsentField(person));
   }
-  // public manditoryTextProperty(key: string, value: string) {
-  //   if (!this.containsKey(key)) {
-  //     this.setValue(key, new Field(key, FieldType.Text, value));
-  //   }
-  // }
-  // public manditoryField(field: Field) {
-  //   if (this.containsKey(field.key)) {
-  //     const existing = this.getValue(field.key);
-  //     // a fuller version of this could be made to migrate the old data into what we expect now
-  //     field.setValueFromString(existing)
-  //   }
-  //   else {
-  //     this.setValue(field.key, field);
-  //   }
-  // }
+
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
-  // public addCustomProperty(key: string, value: string) {
-  //   const definition: IFieldDefinition = {
-  //     key,
-  //     englishLabel: key, // key is the englishLabel
-  //     //default?: string;
-  //     persist: true,
-  //     type: "Text",
-  //     //form,
-  //     //cssClass,
-  //     //choices,
-  //     //complexChoices: [],
-  //     order: 0,
-  //     //order: number;
-  //     //imdiRange?: string;
-  //     //imdiIsClosedVocabulary?: boolean;
-  //     isCustom: true
-  //   };
-  //   const f = Field.fromFieldDefinition(definition);
-  //   f.setValueFromString(value);
-  //   this.setValue(key, f);
-  // }
 
   public addCustomProperty(f: Field) {
     this.setValue(f.key, f);

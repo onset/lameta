@@ -107,10 +107,27 @@ function writeContributions(
       if (contribution.name) {
         tail = tail.element("name", contribution.name).up();
       }
-      if (contribution.role) {
-        tail = tail.element("role", contribution.role).up();
+      // SayMore classic will crash if there is no role. It is limited to the
+      // roels in olac, so it does not accept
+      // something like "unspecified". To allow smx to have unspecified,
+      // we give it "participant" which something approaching a generic role. But then if we do this,
+      // we emit an "smxrole" for what we really want, so as long as you stay in smx, you
+      // can have unspecified roles. However if this file gets rewritten
+      // by SM Classic, we'll probably lose that when it comes  back to SMx.
+      const role = contribution.role ? contribution.role : "participant"; // TODO: change to "unspecified" or just empty if/when SM classic released that can handle it.
+      tail = tail.element("role", role).up();
+      if (!contribution.role) {
+        tail = tail.element("smxrole", "unspecified").up();
       }
-      writeDate(tail, "date", contribution.date);
+
+      if (contribution.date) {
+        writeDate(tail, "date", contribution.date);
+      } else {
+        // SayMore classic will crash if there is no date.
+        // It also uses 0001-01-01 in this situation
+        writeDate(tail, "date", "0001-01-01");
+      }
+
       if (contribution.comments && contribution.comments.trim().length > 0) {
         tail = tail.element("comments", contribution.comments).up();
       }

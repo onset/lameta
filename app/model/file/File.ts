@@ -104,6 +104,13 @@ export /*babel doesn't like this: abstract*/ class File {
     if (!dateString || dateString.trim().length === 0) {
       return "";
     }
+    console.log("normalizeIncomingDateString " + dateString);
+    if (dateString === "0001-01-01") {
+      // this is used to pacify SM Classic when it requires a date but we don't know it
+      console.log("SKIPPING 0001-01-01");
+      return "";
+    }
+
     let date: moment.Moment;
 
     date = moment(dateString, "YYYY-MM-DD", true /*strict*/);
@@ -448,10 +455,18 @@ export /*babel doesn't like this: abstract*/ class File {
   }
   private loadOneContribution(contributionFromXml: any) {
     //console.log("loadOneContribution() " + this.metadataFilePath);
+
+    // SayMore Classic doesn't allow "unspecified" as a role, so if we need that, we
+    // emit an <smxrole>unspecified</smxrole>, which it won't see, but here we do
+    // see it if it's there and use it instead of the one in <role>.
+    // prettier-ignore
+    const role = contributionFromXml.smxrole
+      ? (contributionFromXml.smxrole === "unspecified" ? "" : contributionFromXml.smxrole)
+      : contributionFromXml.role;
     const n = new Contribution(
       contributionFromXml.name,
-      contributionFromXml.role,
-      contributionFromXml.date,
+      role,
+      this.normalizeIncomingDateString(contributionFromXml.date),
       contributionFromXml.comments
     );
     this.contributions.push(n);
@@ -491,9 +506,6 @@ export /*babel doesn't like this: abstract*/ class File {
         //   Review: This happen if it finds, e.g. <Session/>.
         properties = {};
       }
-      // else {
-      //   properties = properties.$$; // this is needed if xml2js.parstring() has explicitChildren:true
-      // }
 
       //copies from this object (which is just the xml as an object) into this File object
       this.loadPropertiesFromXml(properties);
