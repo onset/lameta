@@ -179,10 +179,10 @@ export class Field {
     }
   }
 
-  get text(): string {
+  public get text(): string {
     return this.textHolder.textInDefaultLanguage;
   }
-  set text(value: string) {
+  public set text(value: string) {
     this.textHolder.textInDefaultLanguage = value;
   }
   public toString(): string {
@@ -314,5 +314,29 @@ export class HasConsentField extends Field {
   }
   public hasConsent(): boolean {
     return !!this.person.files.find(f => f.isLabeledAsConsent());
+  }
+}
+export class DisplayNameField extends Field {
+  private person: Person;
+  constructor(person: Person) {
+    super(
+      "displayName",
+      FieldType.Function,
+      undefined,
+      "DisplayName",
+      undefined,
+      undefined,
+      false
+    );
+    this.person = person;
+  }
+  public get text(): string {
+    return this.person.displayName;
+  }
+  public set text(value: string) {
+    // has no effect
+  }
+  public displayName(): string {
+    return this.person.displayName;
   }
 }

@@ -64,15 +64,22 @@ export class Session extends Folder {
     return true;
   }
 
-  public updateSessionReferencesToPersonWhenNameChanges(
-    oldName: string,
-    newName: string
+  // A note about name vs. ID. Here "ID" may be the name or the code, since
+  // the rule we inherited from SM Classic is that if a Person has something
+  // in the "code" field, then that acts as the display name and id around
+  // the whole system.
+  public updateSessionReferencesToPersonWhenIdChanges(
+    oldId: string,
+    newId: string
   ): void {
-    const oldNameNormalized = this.normalizeNameReference(oldName);
+    const oldNameNormalized = this.normalizeNameReference(oldId);
     this.files.forEach(f =>
       f.contributions
-        .filter(c => this.normalizeNameReference(c.name) === oldNameNormalized)
-        .forEach(c => (c.name = newName))
+        .filter(
+          c =>
+            this.normalizeNameReference(c.personReference) === oldNameNormalized
+        )
+        .forEach(c => (c.personReference = newId))
     );
 
     //In addition to being listed in the contributors list for one of the constituent files,
@@ -80,7 +87,7 @@ export class Session extends Folder {
     // model that we inherited from SayMore classic.
 
     const updatedArrayOfNames = this.getParticipantNames().map(p =>
-      this.normalizeNameReference(p) === oldNameNormalized ? newName : p
+      this.normalizeNameReference(p) === oldNameNormalized ? newId : p
     );
     this.setParticipantNames(updatedArrayOfNames);
   }
@@ -96,16 +103,17 @@ export class Session extends Folder {
     this.files.forEach(f =>
       f.contributions.forEach(c => {
         if (
-          c.name &&
-          c.name.trim().length > 0 /*&& c.role && c.role.length > 0*/
+          c.personReference &&
+          c.personReference.trim().length > 0 /*&& c.role && c.role.length > 0*/
         ) {
           // If a person has multiple roles, we list them once for each role. But if
           // the roles are the same, then we don't list them again.
           if (
             !contributionsToList.some(
               existingContribution =>
-                existingContribution.name.toLowerCase() ===
-                  c.name.toLowerCase() && existingContribution.role === c.role
+                existingContribution.personReference.toLowerCase() ===
+                  c.personReference.toLowerCase() &&
+                existingContribution.role === c.role
             )
           ) {
             contributionsToList.push(c);
@@ -123,7 +131,7 @@ export class Session extends Folder {
         // possibly they are already listed in the contributions
         !contributionsToList.some(
           x =>
-            x.name.toLowerCase() === name.toLocaleLowerCase() &&
+            x.personReference.toLowerCase() === name.toLocaleLowerCase() &&
             x.role === "speaker"
         )
       ) {

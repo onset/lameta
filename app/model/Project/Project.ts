@@ -140,7 +140,7 @@ export class Project extends Folder {
           dir,
           project.customFieldRegistry,
           // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
-          (o, n) => project.updateSessionReferencesToPersonWhenNameChanges(o, n)
+          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n)
         );
         project.persons.push(person);
       }
@@ -196,7 +196,8 @@ export class Project extends Folder {
     const person = Person.fromDirectory(
       dir,
       this.customFieldRegistry,
-      this.updateSessionReferencesToPersonWhenNameChanges
+      // note: we have to use a fat arrow thing here in order to bind the project to the callback
+      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n)
     );
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
@@ -347,24 +348,24 @@ export class Project extends Folder {
     });
   }
 
-  // called by Person when name changes
-  // To see where this is used, search for updateExternalReferencesToThisProjectComponent
-  public updateSessionReferencesToPersonWhenNameChanges(
-    oldName: string,
-    newName: string
+  // called by Person when name or code changes
+  // To see where this is used, search for updateExternalReferencesToThisPerson
+  public updateSessionReferencesToPersonWhenIdChanges(
+    oldId: string,
+    newId: string
   ): void {
     this.sessions.forEach(session =>
-      session.updateSessionReferencesToPersonWhenNameChanges(oldName, newName)
+      session.updateSessionReferencesToPersonWhenIdChanges(oldId, newId)
     );
   }
 
-  public getContributionsMatchingPersonName(name: string): Contribution[] {
-    const lowerCaseName = name.toLocaleLowerCase();
+  public getContributionsMatchingPerson(id: string): Contribution[] {
+    const lowerCaseName = id.toLocaleLowerCase();
     const arraysOfMatchingContributions = this.sessions.map(session => {
       return session
         .getAllContributionsToAllFiles()
         .map(contribution => {
-          if (contribution.name.toLowerCase() === lowerCaseName) {
+          if (contribution.personReference.toLowerCase() === lowerCaseName) {
             // the session name isn't normally part of the contribution because it is owned
             // by the session. But we stick it in here for display purposes. Alternatively,
             // we could stick in the session itself; might be useful for linking back to it.
@@ -380,14 +381,14 @@ export class Project extends Folder {
     return [].concat.apply([], arraysOfMatchingContributions);
   }
 
-  public getSessionPeopleMatchingPersonName(personName: string): Session[] {
-    const lowerCaseName = personName.toLocaleLowerCase();
-    return this.sessions.filter(session =>
-      session
-        .getParticipantNames()
-        .some(name => name.toLowerCase() === lowerCaseName)
-    );
-  }
+  // public getSessionPeopleMatchingPersonName(personName: string): Session[] {
+  //   const lowerCaseName = personName.toLocaleLowerCase();
+  //   return this.sessions.filter(session =>
+  //     session
+  //       .getParticipantNames()
+  //       .some(name => name.toLowerCase() === lowerCaseName)
+  //   );
+  // }
 }
 
 export class ProjectMetadataFile extends FolderMetadataFile {

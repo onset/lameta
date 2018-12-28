@@ -22,8 +22,6 @@ export class IFolderSelection {
   public index: number;
 }
 
-export type nameChangeHandlerType = (oldName: string, newName: string) => void;
-
 // Project, Session, or Person
 export /*babel doesn't like this: abstract*/ class Folder {
   public directory: string = "";
@@ -34,10 +32,6 @@ export /*babel doesn't like this: abstract*/ class Folder {
   public metadataFile: File | null;
   protected safeFileNameBase: string;
   protected customFieldRegistry: CustomFieldRegistry;
-  protected previousId: string;
-
-  // a callback on the Project that takes care of renaming any references to this person
-  protected updateExternalReferencesToThisProjectComponent: nameChangeHandlerType;
 
   public constructor(
     directory: string,
@@ -198,17 +192,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     const newFileName = sanitize(this.textValueThatControlsFolderName());
 
     if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
-      // currently this is only used for Person. A Person ID is used as a reference from contributions in Sessions.
-      if (this.updateExternalReferencesToThisProjectComponent) {
-        this.updateExternalReferencesToThisProjectComponent(
-          this.previousId,
-          this.textValueThatControlsFolderName()
-        );
-      }
-
       this.safeFileNameBase = newFileName;
-      console.log(`Renaming files ${this.previousId} --> ${newFileName}`);
-      this.previousId = this.textValueThatControlsFolderName();
       this.renameFilesAndFolders(newFileName);
     }
   }

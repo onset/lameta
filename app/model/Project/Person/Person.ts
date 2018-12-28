@@ -1,4 +1,4 @@
-import { Folder, nameChangeHandlerType } from "../../Folder";
+import { Folder, idChangeHandler } from "../../Folder";
 import { File } from "../../file/File";
 import * as Path from "path";
 const knownFieldDefinitions = require("../../field/fields.json");
@@ -7,7 +7,13 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
 
+export type idChangeHandler = (oldId: string, newId: string) => void;
+
 export class Person extends Folder {
+  // a callback on the Project that takes care of renaming any references to this person
+  protected updateExternalReferencesToThisPerson: idChangeHandler;
+  protected previousId: string;
+
   public ageOn(referenceDate: Date): string {
     return this.properties.getDateField("birthYear").ageOn(referenceDate);
   }
@@ -16,9 +22,6 @@ export class Person extends Folder {
       name.toLowerCase() ===
       this.properties.getTextStringOrEmpty("name").toLowerCase()
     );
-  }
-  public get nameForMatchingContribution(): string {
-    return this.properties.getTextStringOrEmpty("name");
   }
 
   public get metadataFileExtensionWithDot(): string {
@@ -38,7 +41,7 @@ export class Person extends Folder {
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
   public set mugshotPath(path: string) {
-    console.log("photopath " + path);
+    //console.log("photopath " + path);
 
     const f = this.mugshotFile;
     if (f) {
@@ -52,6 +55,9 @@ export class Person extends Folder {
   }
 
   public get displayName(): string {
+    return this.getIdToUseForReferences();
+  }
+  public getIdToUseForReferences(): string {
     const code = this.properties.getTextStringOrEmpty("code").trim();
     return code && code.length > 0
       ? code
@@ -63,11 +69,12 @@ export class Person extends Folder {
     metadataFile: File,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
-    updateExternalReferencesToThisProjectComponent: nameChangeHandlerType
+    updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
     this.properties.setText("name", Path.basename(directory));
     this.properties.addHasConsentProperty(this);
+    this.properties.addDisplayNameProperty(this);
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("name");
     this.properties.getValueOrThrow("name").textHolder.map.intercept(change => {
       // a problem with this is that it's going going get called for every keystroke
@@ -75,13 +82,13 @@ export class Person extends Folder {
       return change;
     });
     this.knownFields = knownFieldDefinitions.person; // for csv export
-    this.updateExternalReferencesToThisProjectComponent = updateExternalReferencesToThisProjectComponent;
-    this.previousId = this.properties.getTextStringOrEmpty("name");
+    this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
+    this.previousId = this.getIdToUseForReferences();
   }
   public static fromDirectory(
     directory: string,
     customFieldRegistry: CustomFieldRegistry,
-    updateExternalReferencesToThisProjectComponent: nameChangeHandlerType
+    updateExternalReferencesToThisProjectComponent: idChangeHandler
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(
@@ -106,7 +113,32 @@ export class Person extends Folder {
   protected textValueThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("name").trim();
   }
+
+  // A note about name vs. ID. Here "ID" may be the name or the code, since
+  // the rule we inherited from SM Classic is that if a Person has something
+  // in the "code" field, then that acts as the display name and id around
+  // the whole system.
+  public IdMightHaveChanged() {
+    if (this.previousId !== this.getIdToUseForReferences()) {
+      console.log(
+        `Updating References ${
+          this.previousId
+        } --> ${this.getIdToUseForReferences()}`
+      );
+
+      // Let the project inform any sessions pointing at us to update their references
+      if (this.updateExternalReferencesToThisPerson) {
+        this.updateExternalReferencesToThisPerson(
+          this.previousId,
+          this.getIdToUseForReferences()
+        );
+      }
+    }
+    // save this for next time
+    this.previousId = this.getIdToUseForReferences();
+  }
 }
+
 export class PersonMetadataFile extends FolderMetadataFile {
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(

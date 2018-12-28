@@ -38,7 +38,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     let i = propToUse.file.contributions.length;
     while (i--) {
       const c = propToUse.file.contributions[i];
-      if (!c.name || c.name.length === 0) {
+      if (!c.personReference || c.personReference.length === 0) {
         //console.log("removing blank contribution at " + i);
         propToUse.file.contributions.splice(i, 1);
       }
@@ -52,10 +52,10 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     return (
       <PersonChooser
         getPeopleNames={this.props.authorityLists.getPeopleNames}
-        name={contribution.name}
+        name={contribution.personReference}
         onChange={name => {
           console.log("name:" + name);
-          contribution.name = name;
+          contribution.personReference = name;
           this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}

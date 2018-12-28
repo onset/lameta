@@ -40,8 +40,8 @@ export class PersonContributions extends React.Component<IProps> {
         accessor: (row: Contribution) => row.comments
       }
     ];
-    const rows = this.props.project.getContributionsMatchingPersonName(
-      this.props.person.nameForMatchingContribution
+    const rows = this.props.project.getContributionsMatchingPerson(
+      this.props.person.getIdToUseForReferences()
     );
 
     return (

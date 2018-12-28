@@ -106,7 +106,7 @@ export default class ImdiGenerator {
     this.startGroup("Actors");
     const session = this.folderInFocus as Session;
     session.getAllContributionsToAllFiles().forEach(contribution => {
-      const trimmedName = contribution.name.trim();
+      const trimmedName = contribution.personReference.trim();
       console.assert(trimmedName.length > 0);
       const person = this.project.findPerson(trimmedName);
       if (person) {

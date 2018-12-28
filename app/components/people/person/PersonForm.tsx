@@ -33,7 +33,9 @@ export default class PersonForm extends React.Component<IProps> {
           validate={(value: string) => this.props.validateFullName(value)}
           field={this.props.fields.getTextField("name")}
           onBlur={() => {
-            this.props.person.nameMightHaveChanged(oldName);
+            this.props.person.nameMightHaveChanged();
+            // ID is s function of the name and the code
+            this.props.person.IdMightHaveChanged();
           }}
           className="full-name left-side"
         />
@@ -45,6 +47,10 @@ export default class PersonForm extends React.Component<IProps> {
         <TextFieldEdit
           className="code"
           field={this.props.fields.getTextField("code")}
+          onBlur={() => {
+            // ID is s function of the name and the code
+            this.props.person.IdMightHaveChanged();
+          }}
         />
 
         <div className="primary-language">

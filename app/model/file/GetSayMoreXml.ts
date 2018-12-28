@@ -102,10 +102,13 @@ function writeContributions(
     type: "xml"
   });
   contributions.forEach(contribution => {
-    if (contribution.name && contribution.name.trim().length > 0) {
+    if (
+      contribution.personReference &&
+      contribution.personReference.trim().length > 0
+    ) {
       let tail = contributionsElement.element("contributor");
-      if (contribution.name) {
-        tail = tail.element("name", contribution.name).up();
+      if (contribution.personReference) {
+        tail = tail.element("name", contribution.personReference).up();
       }
       // SayMore classic will crash if there is no role. It is limited to the
       // roels in olac, so it does not accept
