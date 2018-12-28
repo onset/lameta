@@ -263,9 +263,8 @@ export class Project extends Folder {
     if (value.trim().length === 0) {
       msg = i18n._(t`The ${fieldNameInUiLanguage} cannot be empty`);
     } else if (wouldBeFolderName.trim().length === 0) {
-      msg = `That would lead to an empty filename`;
+      msg = i18n._(t`That would lead to an empty filename`);
     } else if (
-      //TODO: this is bogus
       folderArray.some(
         f =>
           f !== folder &&
@@ -273,7 +272,7 @@ export class Project extends Folder {
       )
     ) {
       msg = i18n._(
-        t`There is already a ${folderKind} with the name '${value}'`
+        t`There is already a ${folderKind} with the name or code '${value}'`
       );
     }
     if (msg.length > 0) {
@@ -295,7 +294,7 @@ export class Project extends Folder {
       session,
       id,
       i18n._(t`ID`),
-      "Session"
+      i18n._(t`Session`)
     );
   }
   public validatePersonFullName(person: Person, name: string): boolean {
@@ -304,10 +303,31 @@ export class Project extends Folder {
       person,
       name,
       i18n._(t`Full Name`),
-      "Person"
+      i18n._(t`Person`)
     );
   }
-
+  public validatePersonCode(person: Person, code: string): boolean {
+    if (
+      code.trim().length > 0 &&
+      this.persons.some(
+        p =>
+          p.properties.getTextStringOrEmpty("code").toLowerCase() ===
+          code.toLowerCase()
+      )
+    ) {
+      remote.dialog.showMessageBox(
+        {
+          title: "SayMore",
+          message: i18n._(
+            t`There is already a Person either with that same name or code`
+          )
+        },
+        () => {} //without this, I was hanging on windows
+      );
+      return false;
+    }
+    return true;
+  }
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
     for (const f of this.sessions) {

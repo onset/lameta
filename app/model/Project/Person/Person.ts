@@ -1,4 +1,4 @@
-import { Folder, idChangeHandler } from "../../Folder";
+import { Folder } from "../../Folder";
 import { File } from "../../file/File";
 import * as Path from "path";
 const knownFieldDefinitions = require("../../field/fields.json");

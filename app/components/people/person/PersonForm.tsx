@@ -14,6 +14,7 @@ export interface IProps {
   person: Person;
   fields: FieldSet;
   validateFullName: (value: string) => boolean;
+  validateCode: (value: string) => boolean;
 }
 
 @observer
@@ -45,6 +46,7 @@ export default class PersonForm extends React.Component<IProps> {
           field={this.props.fields.getTextField("nickname")}
         />
         <TextFieldEdit
+          validate={(value: string) => this.props.validateCode(value)}
           className="code"
           field={this.props.fields.getTextField("code")}
           onBlur={() => {

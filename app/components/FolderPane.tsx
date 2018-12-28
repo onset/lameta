@@ -244,9 +244,15 @@ export class FolderPane extends React.Component<IProps> {
                       value
                     );
                   }}
+                  validateCode={value => {
+                    return this.props.project.validatePersonCode(
+                      directoryObject as Person,
+                      value
+                    );
+                  }}
                   person={directoryObject as Person}
                   fields={directoryObject.properties}
-                />{" "}
+                />
               </SMErrorBoundary>
             </TabPanel>
             <TabPanel>
