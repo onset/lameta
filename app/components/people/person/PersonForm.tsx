@@ -15,6 +15,7 @@ export interface IProps {
   fields: FieldSet;
   validateFullName: (value: string) => boolean;
 }
+
 @observer
 export default class PersonForm extends React.Component<IProps> {
   constructor(props: IProps) {
@@ -24,6 +25,7 @@ export default class PersonForm extends React.Component<IProps> {
   public render() {
     const father = this.props.fields.getTextField("fathersLanguage");
     const mother = this.props.fields.getTextField("mothersLanguage");
+    const oldName = this.props.fields.getTextField("name").text;
     return (
       <form className={"personForm"}>
         {/* <div className={"first-column"}> */}
@@ -31,7 +33,7 @@ export default class PersonForm extends React.Component<IProps> {
           validate={(value: string) => this.props.validateFullName(value)}
           field={this.props.fields.getTextField("name")}
           onBlur={() => {
-            this.props.person.nameMightHaveChanged();
+            this.props.person.nameMightHaveChanged(oldName);
           }}
           className="full-name left-side"
         />

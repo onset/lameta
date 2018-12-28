@@ -32,6 +32,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
   public metadataFile: File | null;
   protected safeFileNameBase: string;
   protected customFieldRegistry: CustomFieldRegistry;
+  protected previousId: string;
+
+  // a callback on the Project that takes care of renaming any references to this person
+  protected updateExternalReferencesToThisProjectComponent: (
+    oldName: string,
+    newName: string
+  ) => boolean;
 
   public constructor(
     directory: string,
@@ -179,16 +186,31 @@ export /*babel doesn't like this: abstract*/ class Folder {
     this.directory = newDirPath;
   }
 
-  protected fieldContentThatControlsFolderName(): string {
+  protected textValueThatControlsFolderName(): string {
     return "UNUSED-IN-THIS-CLASS";
   }
 
   public nameMightHaveChanged() {
-    const s = sanitize(this.fieldContentThatControlsFolderName());
-    if (s.length > 0 && s !== this.safeFileNameBase) {
-      this.safeFileNameBase = s;
-      console.log("Renaming " + s);
-      this.renameFilesAndFolders(s);
+    // Enhance: If something goes wrong here, we're going to have things out of sync. Is there some
+    // way to do this atomically (that is, as a transaction), or at least do the most dangerous
+    // part first (i.e. the file renaming)?
+    // Then if that failed, we would need to rename the files that had already been changed, and then
+    // change the id/name field back to what it was previously.
+    const newFileName = sanitize(this.textValueThatControlsFolderName());
+
+    if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
+      // currently this is only used for Person. A Person ID is used as a reference from contributions in Sessions.
+      if (this.updateExternalReferencesToThisProjectComponent) {
+        this.updateExternalReferencesToThisProjectComponent(
+          this.previousId,
+          this.textValueThatControlsFolderName()
+        );
+      }
+
+      this.safeFileNameBase = newFileName;
+      console.log(`Renaming files ${this.previousId} --> ${newFileName}`);
+      this.previousId = this.textValueThatControlsFolderName();
+      this.renameFilesAndFolders(newFileName);
     }
   }
 

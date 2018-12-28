@@ -17,7 +17,8 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
-    new CustomFieldRegistry()
+    new CustomFieldRegistry(),
+    (oldName, newName) => true
   );
   const subsetLanguageFinder = new LanguageFinder([
     {

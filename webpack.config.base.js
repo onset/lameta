@@ -76,10 +76,10 @@ module.exports = {
                 ["@babel/plugin-proposal-class-properties", { loose: true }]
               ]
             }
-          },
-          {
-            loader: "ts-loader" // for type checking. You can remove this line and everything compiles, but (as of Babel 7) you won't get errors until runtime.
           }
+          // {
+          //   loader: "ts-loader" // for type checking. You can remove this line and everything compiles, but (as of Babel 7) you won't get errors until runtime.
+          // }
         ]
       },
       {

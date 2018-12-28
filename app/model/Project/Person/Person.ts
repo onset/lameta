@@ -5,8 +5,7 @@ const knownFieldDefinitions = require("../../field/fields.json");
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-
-const moment = require("moment");
+import { assertAttribute } from "../../../xmlUnitTestUtils";
 
 export class Person extends Folder {
   public ageOn(referenceDate: Date): string {
@@ -63,7 +62,11 @@ export class Person extends Folder {
     directory: string,
     metadataFile: File,
     files: File[],
-    customFieldRegistry: CustomFieldRegistry
+    customFieldRegistry: CustomFieldRegistry,
+    handleExternEffectsOfPersonIdChange: (
+      oldName: string,
+      newName: string
+    ) => boolean
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
     this.properties.setText("name", Path.basename(directory));
@@ -75,10 +78,16 @@ export class Person extends Folder {
       return change;
     });
     this.knownFields = knownFieldDefinitions.person; // for csv export
+    this.updateExternalReferencesToThisProjectComponent = handleExternEffectsOfPersonIdChange;
+    this.previousId = this.properties.getTextStringOrEmpty("name");
   }
   public static fromDirectory(
     directory: string,
-    customFieldRegistry: CustomFieldRegistry
+    customFieldRegistry: CustomFieldRegistry,
+    handleExternEffectsOfPersonIdChange: (
+      oldName: string,
+      newName: string
+    ) => boolean
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(
@@ -86,7 +95,13 @@ export class Person extends Folder {
       metadataFile,
       customFieldRegistry
     );
-    return new Person(directory, metadataFile, files, customFieldRegistry);
+    return new Person(
+      directory,
+      metadataFile,
+      files,
+      customFieldRegistry,
+      handleExternEffectsOfPersonIdChange
+    );
   }
   public static saveFolderMetaData() {
     //console.log("saving " + person.getString("title"));
@@ -94,7 +109,7 @@ export class Person extends Folder {
   }
 
   // override
-  protected fieldContentThatControlsFolderName(): string {
+  protected textValueThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("name").trim();
   }
 }

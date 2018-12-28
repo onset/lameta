@@ -136,7 +136,11 @@ export class Project extends Folder {
       const dir = Path.join(peopleDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         //console.log(dir);
-        const person = Person.fromDirectory(dir, project.customFieldRegistry);
+        const person = Person.fromDirectory(
+          dir,
+          project.customFieldRegistry,
+          project.updateSessionReferencesToPersonWhenNameChanges
+        );
         project.persons.push(person);
       }
       // else ignore it
@@ -188,7 +192,11 @@ export class Project extends Folder {
       i18n._(t`New Person`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
-    const person = Person.fromDirectory(dir, this.customFieldRegistry);
+    const person = Person.fromDirectory(
+      dir,
+      this.customFieldRegistry,
+      this.updateSessionReferencesToPersonWhenNameChanges
+    );
     person.properties.setText("name", Path.basename(dir));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
@@ -337,6 +345,18 @@ export class Project extends Folder {
       return p.nameMatches(name);
     });
   }
+
+  // called by Person when name changes
+  public updateSessionReferencesToPersonWhenNameChanges(
+    oldName: string,
+    newName: string
+  ): boolean {
+    console.log(
+      `updateSessionReferencesToPersonWhenNameChanges(${oldName} --> ${newName})`
+    );
+    return true;
+  }
+
   public getContributionsMatchingPersonName(person: Person): Contribution[] {
     const name = person.nameForMatchingContribution.toLocaleLowerCase();
     const arraysOfMatchingContributions = this.sessions.map(session => {
