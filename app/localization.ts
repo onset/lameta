@@ -6,6 +6,7 @@ import userSettings from "./UserSettings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
 import moment from "moment";
+import { Field } from "./model/field/Field";
 
 const languages = ["en", "es", "fr", "ps"];
 export const catalogs = {};
@@ -53,12 +54,11 @@ export function setUILanguage(code: string): void {
   ---------------------------------------------------------------------*/
 // I don't have a way of making the lingui-extract scanner scan our fields.json, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
-import fields from "../locale/fields.csv";
-import { Field } from "./model/field/Field";
-import choices from "../locale/choices.csv";
-import roles from "../locale/roles.csv";
-import genres from "../locale/genres.csv";
-import accessProtocols from "../locale/accessProtocols.csv";
+const fields = require("../locale/fields.csv");
+const choices = require("../locale/choices.csv");
+const roles = require("../locale/roles.csv");
+const genres = require("../locale/genres.csv");
+const accessProtocols = require("../locale/accessProtocols.csv");
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {

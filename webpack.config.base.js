@@ -50,32 +50,37 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              //"@babel/preset-env",
-              "@babel/preset-typescript",
-              "@babel/preset-react",
-              "@lingui/babel-preset-react",
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                //"@babel/preset-env",
+                "@babel/preset-typescript",
+                "@babel/preset-react",
+                "@lingui/babel-preset-react",
 
-              [
-                "@babel/preset-env",
-                {
-                  targets: {
-                    // else we get regeneratorRuntime is not defined
-                    browsers: ["chrome 61"] // should be set to match whatever chromium electron is using
+                [
+                  "@babel/preset-env",
+                  {
+                    targets: {
+                      // else we get regeneratorRuntime is not defined
+                      browsers: ["chrome 61"] // should be set to match whatever chromium electron is using
+                    }
                   }
-                }
+                ]
+              ],
+              plugins: [
+                "babel-plugin-macros",
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                ["@babel/plugin-proposal-class-properties", { loose: true }]
               ]
-            ],
-            plugins: [
-              "babel-plugin-macros",
-              ["@babel/plugin-proposal-decorators", { legacy: true }],
-              ["@babel/plugin-proposal-class-properties", { loose: true }]
-            ]
+            }
+          },
+          {
+            loader: "ts-loader" // for type checking. You can remove this line and everything compiles, but (as of Babel 7) you won't get errors until runtime.
           }
-        }
+        ]
       },
       {
         test: /\.csv$/,
