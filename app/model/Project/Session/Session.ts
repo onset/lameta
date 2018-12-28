@@ -64,6 +64,32 @@ export class Session extends Folder {
     return true;
   }
 
+  public updateSessionReferencesToPersonWhenNameChanges(
+    oldName: string,
+    newName: string
+  ): void {
+    const oldNameNormalized = this.normalizeNameReference(oldName);
+    this.files.forEach(f =>
+      f.contributions
+        .filter(c => this.normalizeNameReference(c.name) === oldNameNormalized)
+        .forEach(c => (c.name = newName))
+    );
+
+    //In addition to being listed in the contributors list for one of the constituent files,
+    // people can also be listed as a "participant" of the session. THis is messy part of the
+    // model that we inherited from SayMore classic.
+
+    const updatedArrayOfNames = this.getParticipantNames().map(p =>
+      this.normalizeNameReference(p) === oldNameNormalized ? newName : p
+    );
+    this.setParticipantNames(updatedArrayOfNames);
+  }
+
+  private normalizeNameReference(name: string) {
+    return name.toLowerCase();
+  }
+  // Note: some of these contributions are currently created on the fly,
+  // so this is not the right way to make changes to them (e.g. name updates)
   public getAllContributionsToAllFiles(): Contribution[] {
     const contributionsToList = new Array<Contribution>();
 
@@ -79,8 +105,7 @@ export class Session extends Folder {
             !contributionsToList.some(
               existingContribution =>
                 existingContribution.name.toLowerCase() ===
-                  c.name.toLocaleLowerCase() &&
-                existingContribution.role === c.role
+                  c.name.toLowerCase() && existingContribution.role === c.role
             )
           ) {
             contributionsToList.push(c);
@@ -119,6 +144,9 @@ export class Session extends Folder {
       .getTextStringOrEmpty("participants")
       .split(";")
       .map(s => s.trim());
+  }
+  private setParticipantNames(names: string[]) {
+    this.properties.setText("participants", names.join(";"));
   }
 }
 

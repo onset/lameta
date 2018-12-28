@@ -104,10 +104,9 @@ export /*babel doesn't like this: abstract*/ class File {
     if (!dateString || dateString.trim().length === 0) {
       return "";
     }
-    console.log("normalizeIncomingDateString " + dateString);
     if (dateString === "0001-01-01") {
       // this is used to pacify SM Classic when it requires a date but we don't know it
-      console.log("SKIPPING 0001-01-01");
+      //celnoos.log("SKIPPING 0001-01-01");
       return "";
     }
 

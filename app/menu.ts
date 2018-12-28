@@ -31,9 +31,9 @@ export default class SayLessMenu {
     log.info("updateMainMenu");
 
     const haveProject = this.homePage.projectHolder.project !== null;
-    console.log(
-      `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
-    );
+    // console.log(
+    //   `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
+    // );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
       label: i18n._(t`SayMore X`),

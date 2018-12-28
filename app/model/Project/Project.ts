@@ -139,7 +139,8 @@ export class Project extends Folder {
         const person = Person.fromDirectory(
           dir,
           project.customFieldRegistry,
-          project.updateSessionReferencesToPersonWhenNameChanges
+          // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
+          (o, n) => project.updateSessionReferencesToPersonWhenNameChanges(o, n)
         );
         project.persons.push(person);
       }
@@ -347,24 +348,24 @@ export class Project extends Folder {
   }
 
   // called by Person when name changes
+  // To see where this is used, search for updateExternalReferencesToThisProjectComponent
   public updateSessionReferencesToPersonWhenNameChanges(
     oldName: string,
     newName: string
-  ): boolean {
-    console.log(
-      `updateSessionReferencesToPersonWhenNameChanges(${oldName} --> ${newName})`
+  ): void {
+    this.sessions.forEach(session =>
+      session.updateSessionReferencesToPersonWhenNameChanges(oldName, newName)
     );
-    return true;
   }
 
-  public getContributionsMatchingPersonName(person: Person): Contribution[] {
-    const name = person.nameForMatchingContribution.toLocaleLowerCase();
+  public getContributionsMatchingPersonName(name: string): Contribution[] {
+    const lowerCaseName = name.toLocaleLowerCase();
     const arraysOfMatchingContributions = this.sessions.map(session => {
       return session
         .getAllContributionsToAllFiles()
         .map(contribution => {
-          if (contribution.name.toLowerCase() === name) {
-            // the session name isn't normall part of the contribution because it is owned
+          if (contribution.name.toLowerCase() === lowerCaseName) {
+            // the session name isn't normally part of the contribution because it is owned
             // by the session. But we stick it in here for display purposes. Alternatively,
             // we could stick in the session itself; might be useful for linking back to it.
             contribution.sessionName = session.displayName;
@@ -378,7 +379,17 @@ export class Project extends Folder {
     //flatten
     return [].concat.apply([], arraysOfMatchingContributions);
   }
+
+  public getSessionPeopleMatchingPersonName(personName: string): Session[] {
+    const lowerCaseName = personName.toLocaleLowerCase();
+    return this.sessions.filter(session =>
+      session
+        .getParticipantNames()
+        .some(name => name.toLowerCase() === lowerCaseName)
+    );
+  }
 }
+
 export class ProjectMetadataFile extends FolderMetadataFile {
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(

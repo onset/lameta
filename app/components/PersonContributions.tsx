@@ -41,7 +41,7 @@ export class PersonContributions extends React.Component<IProps> {
       }
     ];
     const rows = this.props.project.getContributionsMatchingPersonName(
-      this.props.person
+      this.props.person.nameForMatchingContribution
     );
 
     return (

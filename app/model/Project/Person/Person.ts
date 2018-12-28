@@ -1,4 +1,4 @@
-import { Folder } from "../../Folder";
+import { Folder, nameChangeHandlerType } from "../../Folder";
 import { File } from "../../file/File";
 import * as Path from "path";
 const knownFieldDefinitions = require("../../field/fields.json");
@@ -63,10 +63,7 @@ export class Person extends Folder {
     metadataFile: File,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
-    handleExternEffectsOfPersonIdChange: (
-      oldName: string,
-      newName: string
-    ) => boolean
+    updateExternalReferencesToThisProjectComponent: nameChangeHandlerType
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
     this.properties.setText("name", Path.basename(directory));
@@ -78,16 +75,13 @@ export class Person extends Folder {
       return change;
     });
     this.knownFields = knownFieldDefinitions.person; // for csv export
-    this.updateExternalReferencesToThisProjectComponent = handleExternEffectsOfPersonIdChange;
+    this.updateExternalReferencesToThisProjectComponent = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.properties.getTextStringOrEmpty("name");
   }
   public static fromDirectory(
     directory: string,
     customFieldRegistry: CustomFieldRegistry,
-    handleExternEffectsOfPersonIdChange: (
-      oldName: string,
-      newName: string
-    ) => boolean
+    updateExternalReferencesToThisProjectComponent: nameChangeHandlerType
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(
@@ -100,7 +94,7 @@ export class Person extends Folder {
       metadataFile,
       files,
       customFieldRegistry,
-      handleExternEffectsOfPersonIdChange
+      updateExternalReferencesToThisProjectComponent
     );
   }
   public static saveFolderMetaData() {

@@ -22,6 +22,8 @@ export class IFolderSelection {
   public index: number;
 }
 
+export type nameChangeHandlerType = (oldName: string, newName: string) => void;
+
 // Project, Session, or Person
 export /*babel doesn't like this: abstract*/ class Folder {
   public directory: string = "";
@@ -35,10 +37,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
   protected previousId: string;
 
   // a callback on the Project that takes care of renaming any references to this person
-  protected updateExternalReferencesToThisProjectComponent: (
-    oldName: string,
-    newName: string
-  ) => boolean;
+  protected updateExternalReferencesToThisProjectComponent: nameChangeHandlerType;
 
   public constructor(
     directory: string,
