@@ -4,6 +4,7 @@
 
 const path = require("path");
 var webpack = require("webpack");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
 
@@ -242,7 +243,9 @@ module.exports = {
     // see https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/573
     new webpack.DefinePlugin({
       "process.env.FLUENTFFMPEG_COV": false
-    })
+    }),
+
+    new ForkTsCheckerWebpackPlugin()
   ],
 
   optimization: {
