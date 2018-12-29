@@ -4,7 +4,7 @@ import { Field } from "../model/field/Field";
 import TextFieldEdit from "./TextFieldEdit";
 
 export interface IProps {
-  text: Field;
+  field: Field;
 }
 
 @observer
@@ -14,7 +14,7 @@ export default class Notes extends React.Component<IProps> {
       <form className={"notesForm"}>
         <TextFieldEdit
           hideLabel={true}
-          field={this.props.text}
+          field={this.props.field}
           className={"fill-form"}
         />
       </form>

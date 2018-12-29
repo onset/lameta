@@ -117,7 +117,6 @@ export /*babel doesn't like this: abstract*/ class File {
       //console.error(`Could not parse ${dateString} strictly.`);
       date = moment(dateString, moment.ISO_8601); // e.g. "2010-01-01T05:06:07"
       if (!date.isValid()) {
-        const notes = this.getTextProperty("notes", "");
         this.setTextProperty(
           "notes",
           `Parsing Error: SayMore could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
@@ -147,6 +146,22 @@ export /*babel doesn't like this: abstract*/ class File {
     f.setValueFromString(date.toISOString());
     this.properties.setValue(key, f);
   }
+  protected addNotesProperty() {
+    const definition: FieldDefinition = {
+      key: "notes",
+      englishLabel: "notes",
+      persist: true,
+      type: "Text",
+      isCustom: false,
+      showOnAutoForm: false,
+      multipleLines: true
+    };
+
+    const f = Field.fromFieldDefinition(definition);
+    //f.setValueFromString("");
+    this.properties.setValue("notes", f);
+  }
+
   //this would be used for round-tripping nested xml that we don't understand
   // public addObjectProperty(key: string, value: object) {
   //   this.addTextProperty(key, JSON.stringify(value));
@@ -264,6 +279,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
   // call this after loading in your definitions
   protected finishLoading() {
+    this.addNotesProperty();
     this.addFieldsUsedInternally();
     this.readMetadataFile();
   }
@@ -272,7 +288,6 @@ export /*babel doesn't like this: abstract*/ class File {
   private addFieldsUsedInternally() {
     this.addTextProperty("filename", "", false);
     this.setFileNameProperty();
-    this.addTextProperty("notes", "");
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
