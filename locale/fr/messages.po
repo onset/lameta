@@ -28,7 +28,7 @@ msgstr ""
 msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
 msgstr ""
 
-#: app/menu.ts:32
+#: app/menu.ts:35
 msgid "About SayMore X"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app/menu.ts:248
+#: app/menu.ts:251
 msgid "Check for new version"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgid "Choose an export format:"
 msgstr ""
 
 #: app/components/PersonContributions.tsx:32
-#: app/components/session/ContributorsTable.tsx:96
+#: app/components/session/ContributorsTable.tsx:97
 msgid "Comments"
 msgstr "Commentaires"
 
@@ -122,23 +122,23 @@ msgstr "Commentaires"
 msgid "Confirm Delete"
 msgstr "Confirmer la suppression"
 
-#: app/components/FolderPane.tsx:143
+#: app/components/FolderPane.tsx:141
 msgid "Contributions"
 msgstr "Contributions"
 
-#: app/components/FolderPane.tsx:91
+#: app/components/FolderPane.tsx:89
 msgid "Contributors"
 msgstr "Contributeurs"
 
-#: app/menu.ts:87
+#: app/menu.ts:90
 msgid "Copy"
 msgstr "Copier"
 
-#: app/containers/HomePage.tsx:157
+#: app/containers/HomePage.tsx:160
 msgid "Create New Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:169
+#: app/containers/HomePage.tsx:172
 msgid "Create New Project with Sample Data"
 msgstr ""
 
@@ -150,7 +150,7 @@ msgstr ""
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: app/menu.ts:112
+#: app/menu.ts:115
 msgid "Create Project..."
 msgstr ""
 
@@ -166,13 +166,13 @@ msgstr ""
 msgid "Custom Fields"
 msgstr "Champs personnalisés"
 
-#: app/menu.ts:85
+#: app/menu.ts:88
 msgid "Cut"
 msgstr ""
 
 #: app/components/session/ContributorsTable.tsx:91
-msgid "Date"
-msgstr "Date"
+#~ msgid "Date"
+#~ msgstr "Date"
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:62
 msgid "Delete"
@@ -198,7 +198,7 @@ msgstr "Documents de description"
 #~ msgid "ELAN"
 #~ msgstr ""
 
-#: app/menu.ts:72
+#: app/menu.ts:75
 msgid "Edit"
 msgstr ""
 
@@ -218,7 +218,7 @@ msgstr "Exporter"
 msgid "Export Project"
 msgstr ""
 
-#: app/menu.ts:121
+#: app/menu.ts:124
 msgid "Export Project..."
 msgstr ""
 
@@ -228,7 +228,7 @@ msgid "Field"
 msgstr "Champ"
 
 #: app/components/FolderPane.tsx:239
-#: app/menu.ts:104
+#: app/menu.ts:107
 msgid "File"
 msgstr ""
 
@@ -261,19 +261,19 @@ msgstr ""
 msgid "Frame rate"
 msgstr ""
 
-#: app/model/Project/Project.ts:196
+#: app/model/Project/Project.ts:201
 msgid "Full Name"
 msgstr "Nom complet"
 
-#: app/menu.ts:230
+#: app/menu.ts:233
 msgid "Help"
 msgstr "Aide"
 
-#: app/menu.ts:51
+#: app/menu.ts:54
 msgid "Hide Others"
 msgstr ""
 
-#: app/menu.ts:46
+#: app/menu.ts:49
 msgid "Hide SayMore X"
 msgstr ""
 
@@ -281,21 +281,21 @@ msgstr ""
 msgid "How are you using SayMoreX?"
 msgstr ""
 
-#: app/model/Project/Project.ts:193
+#: app/model/Project/Project.ts:198
 msgid "ID"
 msgstr "ID"
 
 #: app/components/FolderPane.tsx:79
 #: app/components/project/ProjectTab.tsx:36
-msgid "IMDI"
-msgstr "IMDI"
+#~ msgid "IMDI"
+#~ msgstr "IMDI"
 
 #: app/components/FolderPane.tsx:197
 #: app/localization.ts:62
 msgid "Image"
 msgstr "Image"
 
-#: app/menu.ts:138
+#: app/menu.ts:141
 msgid "Interface Language"
 msgstr ""
 
@@ -329,19 +329,19 @@ msgstr "Nom"
 
 #: app/components/people/PeopleTab.tsx:18
 #: app/components/Workspace.tsx:77
-#: app/model/Project/Project.ts:129
+#: app/model/Project/Project.ts:133
 msgid "New Person"
 msgstr "Nouvelle personne"
 
 #: app/components/session/SessionsTab.tsx:16
 #: app/components/Workspace.tsx:52
-#: app/model/Project/Project.ts:119
+#: app/model/Project/Project.ts:123
 msgid "New Session"
 msgstr "Nouvelle session"
 
-#: app/components/FolderPane.tsx:94
-#: app/components/FolderPane.tsx:118
-#: app/components/FolderPane.tsx:146
+#: app/components/FolderPane.tsx:92
+#: app/components/FolderPane.tsx:116
+#: app/components/FolderPane.tsx:144
 msgid "Notes"
 msgstr "Notes"
 
@@ -355,12 +355,12 @@ msgstr "Bien"
 msgid "Open"
 msgstr "Ouvrir"
 
-#: app/containers/HomePage.tsx:183
-#: app/menu.ts:107
+#: app/containers/HomePage.tsx:186
+#: app/menu.ts:110
 msgid "Open Project..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:162
+#: app/containers/HomePage.tsx:165
 msgid "Open SayMore Project"
 msgstr "Ouvrir un projet SayMore"
 
@@ -376,11 +376,11 @@ msgstr ""
 msgid "Other Documents"
 msgstr "Autres documents"
 
-#: app/components/people/person/PersonForm.tsx:42
+#: app/components/people/person/PersonForm.tsx:48
 msgid "Other Languages"
 msgstr "Autres langues"
 
-#: app/menu.ts:92
+#: app/menu.ts:95
 msgid "Paste"
 msgstr ""
 
@@ -389,8 +389,9 @@ msgstr ""
 msgid "People"
 msgstr "Personnes"
 
-#: app/components/FolderPane.tsx:140
+#: app/components/FolderPane.tsx:138
 #: app/localization.ts:58
+#: app/model/Project/Project.ts:201
 msgid "Person"
 msgstr "Personne"
 
@@ -408,18 +409,22 @@ msgstr "Projet"
 #~ msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:42
-msgid "Project will be created in: {path}"
+#~ msgid "Project will be created in: {path}"
+#~ msgstr ""
+
+#: app/components/project/CreateProjectDialog.tsx:42
+msgid "Project will be created in: {path}."
 msgstr ""
 
-#: app/components/FolderPane.tsx:88
+#: app/components/FolderPane.tsx:86
 msgid "Properties"
 msgstr "Propriétés"
 
-#: app/menu.ts:63
+#: app/menu.ts:66
 msgid "Quit"
 msgstr ""
 
-#: app/menu.ts:80
+#: app/menu.ts:83
 msgid "Redo"
 msgstr ""
 
@@ -427,7 +432,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/menu.ts:233
+#: app/menu.ts:236
 msgid "Registration..."
 msgstr ""
 
@@ -440,7 +445,7 @@ msgstr ""
 msgid "Rename..."
 msgstr "Renommer..."
 
-#: app/menu.ts:239
+#: app/menu.ts:242
 msgid "Report a problem"
 msgstr ""
 
@@ -457,25 +462,26 @@ msgstr "Rôle"
 msgid "Save As"
 msgstr ""
 
-#: app/menu.ts:29
+#: app/menu.ts:32
 msgid "SayMore X"
 msgstr ""
 
-#: app/containers/HomePage.tsx:189
+#: app/containers/HomePage.tsx:192
 msgid "SayMore/SayMore Project Files"
 msgstr ""
 
-#: app/menu.ts:97
+#: app/menu.ts:100
 msgid "Select All"
 msgstr ""
 
-#: app/menu.ts:39
+#: app/menu.ts:42
 msgid "Services"
 msgstr ""
 
-#: app/components/FolderPane.tsx:112
+#: app/components/FolderPane.tsx:110
 #: app/components/Workspace.tsx:49
 #: app/localization.ts:56
+#: app/model/Project/Project.ts:198
 msgid "Session"
 msgstr "Session"
 
@@ -483,7 +489,7 @@ msgstr "Session"
 msgid "Sessions"
 msgstr "Sessions"
 
-#: app/menu.ts:56
+#: app/menu.ts:59
 msgid "Show All"
 msgstr ""
 
@@ -499,11 +505,11 @@ msgstr ""
 msgid "Size"
 msgstr "Taille"
 
-#: app/menu.ts:116
+#: app/menu.ts:119
 msgid "Start Screen"
 msgstr ""
 
-#: app/components/FolderPane.tsx:115
+#: app/components/FolderPane.tsx:113
 msgid "Status"
 msgstr "État"
 
@@ -511,23 +517,51 @@ msgstr "État"
 msgid "Text"
 msgstr ""
 
-#: app/model/Project/Project.ts:169
-msgid "The {fieldNameInUiLanguage} cannot be empty"
-msgstr ""
-
-#: app/components/project/CreateProjectDialog.tsx:37
-msgid "There is already a project at: {path}"
+#: app/model/Project/Project.ts:178
+msgid "That name would lead to an empty filename."
 msgstr ""
 
 #: app/model/Project/Project.ts:178
-msgid "There is already a {folderKind} with the name '{value}'"
+#~ msgid "That would lead to an empty filename"
+#~ msgstr ""
+
+#: app/model/Project/Project.ts:175
+msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
+
+#: app/model/Project/Project.ts:208
+#~ msgid "There is already a Person with that name or code"
+#~ msgstr ""
+
+#: app/model/Project/Project.ts:208
+msgid "There is already a Person with that name or code."
+msgstr ""
+
+#: app/components/project/CreateProjectDialog.tsx:37
+#~ msgid "There is already a project at: {path}"
+#~ msgstr ""
+
+#: app/components/project/CreateProjectDialog.tsx:37
+msgid "There is already a project at: {path}."
+msgstr ""
+
+#: app/model/Project/Project.ts:183
+#~ msgid "There is already a {folderKind} with that name or code '{value}'"
+#~ msgstr ""
+
+#: app/model/Project/Project.ts:183
+msgid "There is already a {folderKind} with that name or code '{value}.'"
+msgstr ""
+
+#: app/model/Project/Project.ts:178
+#~ msgid "There is already a {folderKind} with the name '{value}'"
+#~ msgstr ""
 
 #: app/components/FileList.tsx:78
 msgid "Type"
 msgstr "Type"
 
-#: app/menu.ts:75
+#: app/menu.ts:78
 msgid "Undo"
 msgstr "Annuler l'action"
 
@@ -545,7 +579,7 @@ msgstr "Vidéo"
 msgid "Video Codec"
 msgstr ""
 
-#: app/menu.ts:135
+#: app/menu.ts:138
 msgid "View"
 msgstr ""
 

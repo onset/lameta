@@ -263,7 +263,7 @@ export class Project extends Folder {
     if (value.trim().length === 0) {
       msg = i18n._(t`The ${fieldNameInUiLanguage} cannot be empty`);
     } else if (wouldBeFolderName.trim().length === 0) {
-      msg = i18n._(t`That would lead to an empty filename`);
+      msg = i18n._(t`That name would lead to an empty filename.`);
     } else if (
       folderArray.some(
         f =>
@@ -273,7 +273,7 @@ export class Project extends Folder {
       )
     ) {
       msg = i18n._(
-        t`There is already a ${folderKind} with that name or code '${value}'`
+        t`There is already a ${folderKind} with that name or code '${value}.'`
       );
     }
     if (msg.length > 0) {
@@ -315,7 +315,7 @@ export class Project extends Folder {
       remote.dialog.showMessageBox(
         {
           title: "SayMore",
-          message: i18n._(t`There is already a Person with that name or code`)
+          message: i18n._(t`There is already a Person with that name or code.`)
         },
         () => {} //without this, I was hanging on windows
       );

@@ -4,7 +4,7 @@ import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
 import ReactTable from "react-table";
-import { i18n } from "../localization";
+import { i18n, translateRole } from "../localization";
 import { t } from "@lingui/macro";
 
 export interface IProps {
@@ -31,7 +31,7 @@ export class PersonContributions extends React.Component<IProps> {
         Header: i18n._(t`Role`),
         width: 100,
         accessor: (row: Contribution) =>
-          row && row.role ? row.role.toLocaleUpperCase() : ""
+          row && row.role ? translateRole(row.role) : ""
       },
       {
         id: "comments",
