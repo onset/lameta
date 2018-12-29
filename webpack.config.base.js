@@ -79,7 +79,9 @@ module.exports = {
             }
           }
           // {
-          //   loader: "ts-loader" // for type checking. You can remove this line and everything compiles, but (as of Babel 7) you won't get errors until runtime.
+          //   // I tried to run this first, for type checking. But it messes up lingui ("macro_1 is not defined").
+          //   // So now I'm using ForkTsCheckerWebpackPlugin for type checking, see below.
+          //   //loader: "ts-loader"
           // }
         ]
       },
@@ -245,6 +247,10 @@ module.exports = {
       "process.env.FLUENTFFMPEG_COV": false
     }),
 
+    // when we added lingui, it needed macros, and those needed babel. So we switched
+    // to compiling with babel. But Surprise!, babel 7 just throws away the typescript
+    // stuff and does not type checking; you're supposed to be happy with tslint.
+    // So we added this plugin, which brings back the checking.
     new ForkTsCheckerWebpackPlugin()
   ],
 

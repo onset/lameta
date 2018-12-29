@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true, //need to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "react",
@@ -29,5 +30,5 @@
     "test/**/*.tsx"
     // "node_modules/@types/**/*.d.ts"
   ],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }
