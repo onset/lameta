@@ -1,12 +1,9 @@
 import { Folder } from "../../Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
-import { IChoice, FieldDefinition } from "../../field/Field";
-import * as mobx from "mobx";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 const knownFieldDefinitions = require("../../field/fields.json");
-const genres = require("./genres.json");
 
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {

@@ -209,6 +209,11 @@ button {
 }
 .ReactTable {
   background-color: white;
+
+  // prevent horizontal table scrolling (which can happen automatically and hide left columns)
+  .rt-table {
+    overflow-x: hidden;
+  }
 }
 .ReactTable .rt-thead.-header {
   box-shadow: none;
