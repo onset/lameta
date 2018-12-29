@@ -50,6 +50,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
     return Path.basename(Path.basename(this.directory));
   }
 
+  // Person overrides this to look at both the name and the code field
+  public wouldCollideWithIdFields(value: string): boolean {
+    return (
+      value.trim().toLowerCase() ===
+      this.textValueThatControlsFolderName().toLowerCase()
+    );
+  }
   public get hasMoreFieldsTable(): boolean {
     return false;
   }

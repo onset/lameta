@@ -114,6 +114,15 @@ export class Person extends Folder {
     return this.properties.getTextStringOrEmpty("name").trim();
   }
 
+  // override
+  public wouldCollideWithIdFields(value: string): boolean {
+    const normalized = value.trim().toLowerCase();
+    return (
+      normalized === this.textValueThatControlsFolderName() ||
+      normalized === this.properties.getTextStringOrEmpty("code").toLowerCase()
+    );
+  }
+
   // A note about name vs. ID. Here "ID" may be the name or the code, since
   // the rule we inherited from SM Classic is that if a Person has something
   // in the "code" field, then that acts as the display name and id around

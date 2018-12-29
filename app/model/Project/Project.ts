@@ -268,11 +268,12 @@ export class Project extends Folder {
       folderArray.some(
         f =>
           f !== folder &&
-          f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase()
+          (f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase() ||
+            f.wouldCollideWithIdFields(value))
       )
     ) {
       msg = i18n._(
-        t`There is already a ${folderKind} with the name or code '${value}'`
+        t`There is already a ${folderKind} with that name or code '${value}'`
       );
     }
     if (msg.length > 0) {
@@ -309,18 +310,12 @@ export class Project extends Folder {
   public validatePersonCode(person: Person, code: string): boolean {
     if (
       code.trim().length > 0 &&
-      this.persons.some(
-        p =>
-          p.properties.getTextStringOrEmpty("code").toLowerCase() ===
-          code.toLowerCase()
-      )
+      this.persons.some(p => p !== person && p.wouldCollideWithIdFields(code))
     ) {
       remote.dialog.showMessageBox(
         {
           title: "SayMore",
-          message: i18n._(
-            t`There is already a Person either with that same name or code`
-          )
+          message: i18n._(t`There is already a Person with that name or code`)
         },
         () => {} //without this, I was hanging on windows
       );
