@@ -125,7 +125,6 @@ export default class HomePage extends React.Component<IProps, IState> {
             this.projectHolder.project.saveAllFilesInFolder();
           }
         });
-        console.log("Successfully set window blur event callback");
       } catch (error) {
         log.error(
           "Error trying to set the window blur event callback: " + error

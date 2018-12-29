@@ -25,6 +25,7 @@ export class FieldDefinition {
   public cssClass?: string;
   public choices?: string[];
   public complexChoices?: IChoice[];
+  public multipleLines?: boolean;
   public order?: number = 0;
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;

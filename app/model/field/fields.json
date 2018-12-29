@@ -9,7 +9,8 @@
       "key": "projectDescription",
       "tagInSayMoreClassic": "ProjectDescription",
       "englishLabel": "Description",
-      "cssClass": "text-block"
+      "cssClass": "text-block",
+      "multipleLines": true
     },
     {
       "key": "vernacularIso3CodeAndName",
@@ -27,7 +28,8 @@
       "key": "location",
       "englishLabel": "Location/Address",
       "tagInSayMoreClassic": "Location",
-      "cssClass": "field__newSection"
+      "cssClass": "field__newSection",
+      "multipleLines": true
     },
     {
       "key": "region",
@@ -362,10 +364,12 @@
       "key": "genre"
     },
     {
-      "key": "situation"
+      "key": "situation",
+      "multipleLines": true
     },
     {
-      "key": "setting"
+      "key": "setting",
+      "multipleLines": true
     },
     {
       "key": "location"
@@ -375,7 +379,8 @@
     },
     {
       "key": "description",
-      "tagInSayMoreClassic": "synopsis"
+      "tagInSayMoreClassic": "synopsis",
+      "multipleLines": true
     },
     {
       "key": "status",
@@ -517,7 +522,8 @@
       "imdiIsClosedVocabulary": true
     },
     {
-      "key": "howToContact"
+      "key": "howToContact",
+      "multipleLines": true
     },
 
     {

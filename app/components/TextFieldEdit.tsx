@@ -56,6 +56,14 @@ export default class TextFieldEdit extends React.Component<
           name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
           onChange={event => this.onChange(event, this.props.field)}
+          onKeyDown={event => {
+            if (
+              !this.props.field.definition.multipleLines &&
+              event.keyCode === 13
+            ) {
+              event.preventDefault();
+            }
+          }}
           onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
             if (
               this.props.validate &&
