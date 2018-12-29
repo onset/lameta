@@ -546,12 +546,16 @@ msgid "There is already a project at: {path}."
 msgstr ""
 
 #: app/model/Project/Project.ts:183
+msgid "There is already a {folderKind} with that name or code \"{value}\"."
+msgstr ""
+
+#: app/model/Project/Project.ts:183
 #~ msgid "There is already a {folderKind} with that name or code '{value}'"
 #~ msgstr ""
 
 #: app/model/Project/Project.ts:183
-msgid "There is already a {folderKind} with that name or code '{value}.'"
-msgstr ""
+#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
+#~ msgstr ""
 
 #: app/model/Project/Project.ts:178
 #~ msgid "There is already a {folderKind} with the name '{value}'"

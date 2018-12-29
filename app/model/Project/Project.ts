@@ -273,7 +273,7 @@ export class Project extends Folder {
       )
     ) {
       msg = i18n._(
-        t`There is already a ${folderKind} with that name or code '${value}.'`
+        t`There is already a ${folderKind} with that name or code "${value}".`
       );
     }
     if (msg.length > 0) {
