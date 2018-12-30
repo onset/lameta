@@ -1,6 +1,6 @@
 import { SessionMetadataFile } from "./Session";
 import * as temp from "temp";
-import fs from "fs";
+const { describe, it, beforeEach, afterEach } = require("jest");
 import Path from "path";
 import {
   setResultXml,

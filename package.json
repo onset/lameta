@@ -70,7 +70,8 @@
     },
     "testMatch": [
       "**/?(*.)(spec|test).ts?(x)"
-    ]
+    ],
+    "testURL": "http://localhost/"
   },
   "//This 'build' section is for electron-builder": "",
   "build": {

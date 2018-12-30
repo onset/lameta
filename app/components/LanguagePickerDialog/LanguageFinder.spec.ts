@@ -1,4 +1,5 @@
 import LanguageFinder from "./LanguageFinder";
+const { describe, it, expect, beforeAll } = require("jest");
 var languageFinder: LanguageFinder;
 
 describe("Session Write", () => {

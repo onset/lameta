@@ -11,8 +11,7 @@ import {
   count,
   value
 } from "../../xmlUnitTestUtils";
-const describe = require("jest").describe;
-const it = require("jest").it;
+const { describe, it, beforeEach, afterEach } = require("jest");
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

@@ -11,7 +11,7 @@ const baseConfig = require("./webpack.config.base");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
 
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+//const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 const port = process.env.PORT || 3000;
 // -----------------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+const { describe, it, expect, beforeEach, afterEach } = require("jest");
 import SayLessRunner from "./SaylessRunner";
 
 // NOTE: if using JEST vscode extension, it doesn't seem to run in the background

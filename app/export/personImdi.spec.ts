@@ -1,3 +1,4 @@
+const { describe, it, beforeEach, beforeAll } = require("jest");
 import ImdiGenerator from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";

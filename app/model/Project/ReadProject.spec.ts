@@ -3,6 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
+const { describe, it, expect, beforeEach, afterEach } = require("jest");
 
 let projectDirectory;
 let projectName;

@@ -3,7 +3,7 @@ import { Application, SpectronClient } from "spectron";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as assert from "assert";
-const expect = require("jest").expect;
+const { expect } = require("jest");
 import Winston from "winston";
 import os from "os";
 import menuAddon from "spectron-menu-addon";

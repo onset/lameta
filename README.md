@@ -41,9 +41,13 @@ More information available in the upstream project:
 
 ## Troubleshooting
 
-### e2e
+### unit tests
 
-When running e2e tests, there is occasionally a mystery error (that I haven't recorded) that won't go away, even if you got back to previous commits. It goes away with a restart, `git clean -dxf && yarn && yarn build-production && yarn test-e2e`.
+When running e2e tests, there is occasionally a mystery error like
+
+`TypeError: Cannot read property 'app' of undefined`
+
+that won't go away, even if you got back to previous commits. It goes away with a restart, `git clean -dxf && yarn && yarn test`.
 
 Make sure everything is committed first!
 

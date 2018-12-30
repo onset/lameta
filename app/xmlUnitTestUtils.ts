@@ -1,6 +1,6 @@
 const XPATH = require("xpath");
 const dom = require("xmldom").DOMParser;
-const expect = require("jest").expect;
+const { expect } = require("jest");
 
 let resultXml: string;
 let resultDom: any;
