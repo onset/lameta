@@ -7,17 +7,26 @@ import Analytics from "electron-ga";
 import userSettings from "./UserSettings";
 import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
+import { node } from "prop-types";
 
 let analytics: Analytics;
 
 export function initializeAnalytics() {
-  analytics = new Analytics("UA-131224630-1", {
-    appName: "saymorex",
-    appVersion: require("package.json").version,
-    language: currentUILanguage || "",
-    clientId: userSettings.ClientId
-  });
-
+  if (process.env.NODE_ENV === "test") {
+    analytics = new Analytics("bogus", {
+      appName: "bogus",
+      appVersion: require("package.json").version,
+      language: currentUILanguage || "",
+      clientId: "bogus"
+    });
+  } else {
+    analytics = new Analytics("UA-131224630-1", {
+      appName: "saymorex",
+      appVersion: require("package.json").version,
+      language: currentUILanguage || "",
+      clientId: userSettings.ClientId
+    });
+  }
   //analytics.send("event", { ec: "launch", ea: "launch", an: "saymorex" });
 }
 

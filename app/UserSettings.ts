@@ -4,8 +4,14 @@ import * as mobx from "mobx";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
 
+class FakeStore {
+  public get(s: string, def: any = ""): any {
+    return def;
+  }
+  public set(key: string, value: any): void {}
+}
 export class UserSettings {
-  private store: Store;
+  private store: Store | FakeStore;
 
   @mobx.observable
   private showIMDIPanels: boolean;
@@ -15,7 +21,11 @@ export class UserSettings {
   private clientId: string;
 
   constructor() {
-    this.store = new Store({ name: "saymorex-user-settings" });
+    this.store =
+      process.env.NODE_ENV === "test"
+        ? (this.store = new FakeStore())
+        : new Store({ name: "saymorex-user-settings" });
+
     this.showIMDIPanels = this.store.get("showIMDIPanels") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
@@ -74,17 +84,7 @@ export class UserSettings {
     this.store.set("howUsing", howUsing);
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
-
-  // private get(key: string, defaultIfMissing: string) {
-  //   return this.store.get(key, defaultIfMissing);
-  // }
-  // private setString(key: string, value: string): void {
-  //   this.store.set(key, value);
-  // }
 }
 
 const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
-
-//nb: the parameter here is just to make the type system work. Weird.
-export const SettingsContext = React.createContext(new UserSettings());

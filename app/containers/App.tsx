@@ -8,7 +8,7 @@ import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
 import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import { SettingsContext, UserSettings } from "../UserSettings";
+import { UserSettings } from "../UserSettings";
 
 export class App extends React.Component {
   public componentDidMount() {
@@ -16,19 +16,16 @@ export class App extends React.Component {
     ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";
   }
 
-  private userSettings = new UserSettings();
   public render() {
     return (
       <div id="app">
-        <SettingsContext.Provider value={this.userSettings}>
-          <I18nProvider language={currentUILanguage} catalogs={catalogs}>
-            <HomePage />
-            <ConfirmDeleteDialog />
-            <LanguagePickerDialog />
-            <RenameFileDialog />
-            <RegistrationDialog />
-          </I18nProvider>
-        </SettingsContext.Provider>
+        <I18nProvider language={currentUILanguage} catalogs={catalogs}>
+          <HomePage />
+          <ConfirmDeleteDialog />
+          <LanguagePickerDialog />
+          <RenameFileDialog />
+          <RegistrationDialog />
+        </I18nProvider>
       </div>
     );
   }
