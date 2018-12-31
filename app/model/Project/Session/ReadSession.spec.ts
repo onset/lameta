@@ -4,7 +4,6 @@ import fs from "fs";
 import Path from "path";
 import { Field } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-const { describe, it, expect, beforeEach, afterEach } = require("jest");
 let sessionDirectory;
 let sessionName;
 

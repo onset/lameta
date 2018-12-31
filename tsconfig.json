@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true, //need to get fork-ts-checker-webpack-plugin to work
+    "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "react",
@@ -23,12 +23,6 @@
     "outDir": "dist"
   },
   "files": ["app/index.tsx"],
-  "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "test/**/*.ts",
-    "test/**/*.tsx"
-    // "node_modules/@types/**/*.d.ts"
-  ],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"],
   "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }

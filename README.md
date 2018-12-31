@@ -43,9 +43,9 @@ More information available in the upstream project:
 
 ### unit tests
 
-When running e2e tests, there is occasionally a mystery error that won't go away, even if you got back to previous commits were unit tests were running. It goes away with a restart, `git clean -dxf && yarn && yarn test`.
+When running e2e tests, there is occasionally a mystery error that won't go away, even if you got back to previous commits were unit tests were running. It goes away with a restart, `git clean -dxf && yarn && yarn test`. Make sure everything is committed first!
 
-Make sure everything is committed first!
+If you see something like `TypeError: beforeAll is not a function`, that is caused by explicitly defining of the jest functions, as in `const { describe, it, beforeEach, afterEach } = require("jest");` Just remove that.
 
 ### l10n
 

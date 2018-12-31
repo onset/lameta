@@ -383,9 +383,9 @@ export /*babel doesn't like this: abstract*/ class File {
       //   return;
       // }
       else {
-        console.log(
-          "Skipping " + xmlTag + " which was " + JSON.stringify(value)
-        );
+        // console.log(
+        //   "Skipping " + xmlTag + " which was " + JSON.stringify(value)
+        // );
         return;
       }
     }

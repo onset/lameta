@@ -1,4 +1,3 @@
-const { describe, it, expect, beforeAll } = require("jest");
 import CsvExporter from "./CsvExporter";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";

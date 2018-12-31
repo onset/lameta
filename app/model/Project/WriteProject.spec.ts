@@ -1,4 +1,3 @@
-const { describe, it, expect, beforeEach, afterEach } = require("jest");
 import { ProjectMetadataFile } from "./Project";
 import * as temp from "temp";
 import fs from "fs";

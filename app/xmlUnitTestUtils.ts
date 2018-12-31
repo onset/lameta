@@ -1,6 +1,5 @@
 const XPATH = require("xpath");
 const dom = require("xmldom").DOMParser;
-const { expect } = require("jest");
 
 let resultXml: string;
 let resultDom: any;
@@ -65,15 +64,6 @@ export function select(xpath: string) {
     throw new Error(`error in xpath: ${xpath} ${ex}`);
   }
 }
-
-/* I was trying to not have to include a ns prefix in the tests,
-  but this isn't called unless I give it some namespace, so what's the point?
-
-  const resolver = {
-  lookupNamespaceURI: (prefix: string) => {
-    return "http://www.mpi.nl/IMDI/Schema/IMDI";
-  }
-};*/
 
 // I haven't figured out to extend
 // to novel names properly.
