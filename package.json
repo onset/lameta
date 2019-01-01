@@ -291,7 +291,7 @@
     "react-player": "^1.6.4",
     "react-radio-group": "^3.0.3",
     "react-select": "^1.1.0",
-    "react-split-pane": "^0.1.74",
+    "react-split-pane": "^0.1.85",
     "react-syntax-highlighter": "^8.0.1",
     "react-table": "^6.7.6",
     "react-tabs": "^2.1.0",

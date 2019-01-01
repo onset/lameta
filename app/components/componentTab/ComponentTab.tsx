@@ -7,8 +7,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { Project } from "../../model/Project/Project";
 import "./ComponentTab.scss";
 
-//import SplitPane from "react-split-pane";
-const SplitPane = require("react-split-pane");
+import SplitPane from "react-split-pane";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -40,8 +39,6 @@ export class ComponentTab extends React.Component<IProps> {
         <SplitPane
           split="vertical"
           defaultSize={sp}
-          minHeight="auto"
-          height="auto"
           onChange={(size: any) => localStorage.setItem(splitterKey, size)}
         >
           <div className={"firstColumn"}>
@@ -76,6 +73,7 @@ export class ComponentTab extends React.Component<IProps> {
               </FolderPane>
             )}
         </SplitPane>
+        }
       </div>
     );
   }
