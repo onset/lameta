@@ -232,14 +232,14 @@ export default class SayLessRunner {
     try {
       await this.app.client.waitForExist(".startScreen", 1000);
     } catch (error) {
-      await this.clickMenu("&Project", "&Start Screen");
+      await this.clickMenu("&File", "&Start Screen");
       await this.shouldExist(".startScreen");
     }
   }
 
   // goToStartScreen() is working strangely...
   public async goToStartScreenHack() {
-    await this.clickMenu("&Project", "&Start Screen");
+    await this.clickMenu("&File", "&Start Screen");
     await delay(1000);
     await this.shouldExist(".startScreen");
   }
