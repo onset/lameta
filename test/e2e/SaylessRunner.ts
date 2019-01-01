@@ -130,7 +130,15 @@ export default class SayLessRunner {
   }
 
   public async expectCustomFieldWithText(name: string, text: string) {
-    return this.shouldExist(`//textarea[@name='${name}' and text()='${text}']`);
+    //    return this.shouldExist(`//textarea[@name='${name}' and text()='${text}']`);
+    if (text.length > 0) {
+      return this.shouldExist(
+        `//textarea[@name='${name}' and text()='${text}']`
+      );
+    } else {
+      // starting in late Dec 2018, checking for text()='' stopped working, so now we do this:
+      return this.shouldExist(`//textarea[@name='${name}' and not(text())]`);
+    }
   }
   public async expectCustomField(name: string) {
     return this.shouldExist(`//textarea[text()='${name}']`);
