@@ -62,13 +62,13 @@ In Crowdin:settings:translations:Target Languages, add the language.
 
 `yarn lingui-extract` (note: this will fail if the program is running)
 
-Upload the locale/xyz/messages.po file to crowdin
+Next, you have to, by hand, add a column to locale/\*.csv. Then in Crowdin select each of these and choose "Change Scheme", upload it, and set the column header. For some reason, for genres.csv, I also had to use libre office to add a comma to the end of each line. This was not necessary for the the other files. Beware Excel, which doesn't notice the utf-8 marker.
 
-[TODO: how to add it to the fields.csv... I think you might have to add the column to the file, then upload it to crowdin. ]
-
-In `l10nUtils.ts`, add "xyz", e.g.
+When the language has enough translated to add to the program, download the files from crowdin, and in `l10nUtils.ts`, add "xyz", e.g.
 
     `const languages = ["en", "es", "fr", "xyz"];`
+
+And in the menu.ts, add the language options.
 
 # How to get translations
 
