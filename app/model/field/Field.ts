@@ -324,7 +324,7 @@ export class DisplayNameField extends Field {
       "displayName",
       FieldType.Function,
       undefined,
-      "DisplayName",
+      "Person",
       undefined,
       undefined,
       false

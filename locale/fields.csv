@@ -52,5 +52,5 @@
 "person.howToContact","person","How To Contact","Información de contacto","Comment contacter"
 "person.ethnicGroup","person","Ethnic Group","Grupo étnico","Groupe ethnique"
 "person.primaryOccupation","person","Primary Occupation","Ocupación principal","Occupation principale"
-"person.displayName","person","Person", "testperson-es",""
-"person.hasConsent","person","consent", "testconsent-es",""
+"person.displayName","person","Person","Persona",""
+"person.hasConsent","person","Consent","Consentimiento",""
