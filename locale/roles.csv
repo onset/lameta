@@ -1,4 +1,4 @@
-"ID","Context","En","Es","Fr"
+"ID","Context","En","Es","Fr", "Ru", "zh-CN"
 "role.label.annotator","Contributor Role","Annotator","",""
 "role.description.annotator","Description of contributor role 'Annotator'","The participant produced an annotation of this or a related resource.","",""
 "role.label.author","Contributor Role","Author","",""
