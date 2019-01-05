@@ -6,6 +6,7 @@ import "./RenameFileDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder";
+import { Trans } from "@lingui/react";
 const isValidPath = require("is-valid-path");
 
 // tslint:disable-next-line:no-empty-interface
@@ -79,10 +80,14 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
-          <div className={"dialogTitle"}>Rename File</div>
+          <div className={"dialogTitle"}>
+            <Trans>Rename File</Trans>
+          </div>
           <div className="dialogContent">
             <div className="row">
-              <h1>Change Name To:</h1>
+              <h1>
+                <Trans>Change Name To:</Trans>
+              </h1>
             </div>
             <div className="row">
               <span className="affix">
@@ -125,14 +130,14 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
               {/* The actual order of these will be platform-specific, controlled by
           a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
               <button onClick={() => this.handleCloseModal(false)}>
-                Cancel
+                <Trans>Cancel</Trans>
               </button>
               <button
                 id="okButton"
                 disabled={!canRenameNow}
                 onClick={() => this.handleCloseModal(true)}
               >
-                Rename
+                <Trans>Rename</Trans>
               </button>
             </div>
           </div>

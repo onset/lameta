@@ -98,8 +98,13 @@ msgstr ""
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:136
 #: app/components/project/CreateProjectDialog.tsx:61
 #: app/components/registration/RegistrationDialog.tsx:93
+#: app/components/RenameFileDialog/RenameFileDialog.tsx:95
 msgid "Cancel"
 msgstr "Annuler"
+
+#: app/components/RenameFileDialog/RenameFileDialog.tsx:67
+msgid "Change Name To:"
+msgstr ""
 
 #: app/menu.ts:251
 msgid "Check for new version"
@@ -295,6 +300,10 @@ msgstr "ID"
 msgid "Image"
 msgstr "Image"
 
+#: app/components/people/person/ParentButton.tsx:20
+msgid "Indicates that this is the father or mother's primary language."
+msgstr ""
+
 #: app/menu.ts:141
 msgid "Interface Language"
 msgstr ""
@@ -434,6 +443,14 @@ msgstr ""
 
 #: app/menu.ts:236
 msgid "Registration..."
+msgstr ""
+
+#: app/components/RenameFileDialog/RenameFileDialog.tsx:98
+msgid "Rename"
+msgstr ""
+
+#: app/components/RenameFileDialog/RenameFileDialog.tsx:62
+msgid "Rename File"
 msgstr ""
 
 #: app/components/people/PeopleTab.tsx:22
