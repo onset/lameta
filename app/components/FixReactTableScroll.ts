@@ -13,6 +13,6 @@ export default function scrollSelectedIntoView(reactTableSelector: string) {
   const table = document.getElementsByClassName(reactTableSelector)[0];
   const selectedRow = table.getElementsByClassName("rt-tr selected")[0];
   if (selectedRow) {
-    selectedRow.scrollIntoView({ block: "nearest" });
+    selectedRow.scrollIntoView({ block: "nearest", inline: "start" });
   }
 }
