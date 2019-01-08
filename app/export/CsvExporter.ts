@@ -4,10 +4,31 @@ const moment = require("moment");
 //import nodeArchiver = require("archiver");
 import * as nodeArchiver from "archiver";
 import * as fs from "fs";
-import { FieldDefinition } from "../model/field/Field";
+import { FieldDefinition, FieldType, Field } from "../model/field/Field";
 const kEol: string = require("os").EOL;
 
 let currentKnownFields: FieldDefinition[];
+
+/* Paradisec' sample spreadsheet has these columns:
+
+"Item Identifier (e.g. 1995Elders)"	
+"Item Title (e.g. Introductory Materials)"	
+"Item Description (e.g. Four text stories for interviews)"	
+"Content Language (Language as spoken in file)"	
+"Subject Language (Language discussed) "	
+"Country/Countries (separate countries with | )"	
+"Origination Date (when the item finished being created  "	
+"Region (e.g. Oceania, Indian Ocean, Polynesia)"	
+"Original media (e.g. Text)"	
+"Data Categories"	
+"Data Type"	
+"Discourse Type"
+"Dialect (e.g. Viennese)"	
+"Language as given (e.g. German)"	
+Role	
+First name	
+Last name
+*/
 
 export default class CsvExporter {
   private project: Project;
@@ -77,7 +98,12 @@ export default class CsvExporter {
       .map(folder => {
         const line = foundFields
           .map(key => {
-            const value = folder.properties.getTextStringOrEmpty(key);
+            const field = folder.properties.getValue(key);
+            if (!field) {
+              return "";
+            }
+
+            const value = this.fieldToCsv(field);
             return CsvExporter.csvEncode(value);
           })
           .join(",");
@@ -86,6 +112,21 @@ export default class CsvExporter {
       .join(kEol);
 
     return header + kEol + lines;
+  }
+
+  private fieldToCsv(field: Field) {
+    switch (field.type) {
+      case FieldType.Text:
+        return field.text;
+      case FieldType.Date:
+        return field.asISODateString();
+      case FieldType.Contributions:
+        return field.contributorsArray
+          .map(c => [c.role, c.personReference].join(":"))
+          .join("|");
+      default:
+        return field.text;
+    }
   }
 
   private sortFields(a: string, b: string): number {
