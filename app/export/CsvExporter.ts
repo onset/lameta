@@ -5,6 +5,8 @@ const moment = require("moment");
 import * as nodeArchiver from "archiver";
 import * as fs from "fs";
 import { FieldDefinition, FieldType, Field } from "../model/field/Field";
+import { Session } from "../model/Project/Session/Session";
+
 const kEol: string = require("os").EOL;
 
 let currentKnownFields: FieldDefinition[];
@@ -93,7 +95,13 @@ export default class CsvExporter {
     const foundFields = this.getKeys(folders)
       .filter(k => blacklist.indexOf(k) === -1)
       .sort(this.sortFields);
-    const header = foundFields.join(",");
+    let header = foundFields.join(",");
+    // we have a bit of hassle in that contributions are currently
+    // implemented outside of normal Fields. That would be a good enhancement,
+    // then this and the addContributionsIfSession() below could be removed.
+    if (folders[0] instanceof Session) {
+      header += ",contributions";
+    }
     const lines = folders
       .map(folder => {
         const line = foundFields
@@ -106,12 +114,27 @@ export default class CsvExporter {
             const value = this.fieldToCsv(field);
             return CsvExporter.csvEncode(value);
           })
+
+          .concat(this.addContributionsIfSession(folder))
           .join(",");
         return line;
       })
       .join(kEol);
 
     return header + kEol + lines;
+  }
+
+  private addContributionsIfSession(folder: Folder): string[] {
+    if (!(folder instanceof Session)) {
+      return [];
+    }
+    const session = folder as Session;
+    return [
+      session
+        .getAllContributionsToAllFiles()
+        .map(c => [c.role, c.personReference].join(":"))
+        .join("|")
+    ];
   }
 
   private fieldToCsv(field: Field) {

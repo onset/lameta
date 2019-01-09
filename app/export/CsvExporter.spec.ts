@@ -111,7 +111,7 @@ describe("sessions csv export", () => {
   });
   it("should have good contributor list", () => {
     expect(session(1, "contributions")).toBe(
-      "speaker:Awi Heole|speaker:Ilawi Amosa"
+      "recorder:Hatton|speaker:Awi Heole|speaker:Ilawi Amosa"
     );
   });
 });
