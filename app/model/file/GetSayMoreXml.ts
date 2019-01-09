@@ -57,7 +57,7 @@ function writeSimplePropertyElements(
         !field.definition ||
         (!field.definition.isCustom && !field.definition.isAdditional)
     )
-    .filter(field => field.type !== FieldType.Contributions)
+    //.filter(field => field.type !== FieldType.Contributions)
     .forEach(field => {
       writeField(root, field, doOutputTypeInXmlTags);
     });

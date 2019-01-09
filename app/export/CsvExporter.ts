@@ -120,10 +120,10 @@ export default class CsvExporter {
         return field.text;
       case FieldType.Date:
         return field.asISODateString();
-      case FieldType.Contributions:
-        return field.contributorsArray
-          .map(c => [c.role, c.personReference].join(":"))
-          .join("|");
+      // case FieldType.Contributions:
+      //   return field.contributorsArray
+      //     .map(c => [c.role, c.personReference].join(":"))
+      //     .join("|");
       default:
         return field.text;
     }

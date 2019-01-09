@@ -50,7 +50,7 @@ export enum FieldType {
   Text,
   Date,
   Image,
-  Contributions,
+  // Contributions,
   Language,
   Function
 }
@@ -89,9 +89,9 @@ export class Field {
       case "image":
         type = FieldType.Image;
         break;
-      case "contributions":
-        type = FieldType.Contributions;
-        break;
+      // case "contributions":
+      //   type = FieldType.Contributions;
+      //   break;
       case "language":
         type = FieldType.Language;
         break;
