@@ -8,7 +8,6 @@ import {
   HasConsentField,
   DisplayNameField
 } from "./Field";
-import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 
 export class FieldSet extends Dictionary<string, Field> {
@@ -81,11 +80,7 @@ export class FieldSet extends Dictionary<string, Field> {
   public addCustomProperty(f: Field) {
     this.setValue(f.key, f);
   }
-  public addContributionArrayProperty(key: string, value: Contribution[]): any {
-    const f = new Field(key, FieldType.Contributions, "unused");
-    f.contributorsArray = value;
-    this.setValue(key, f);
-  }
+
   private checkType(key: string, value: any) {
     if (this.containsKey(key)) {
       const a = typeof this.getValueOrThrow(key);

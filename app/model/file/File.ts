@@ -523,12 +523,6 @@ export /*babel doesn't like this: abstract*/ class File {
 
       //copies from this object (which is just the xml as an object) into this File object
       this.loadPropertiesFromXml(properties);
-      //review: this is looking kinda ugly... not sure what I want to do
-      // because contributions is only one array at the moment
-      this.properties.addContributionArrayProperty(
-        "contributions",
-        this.contributions
-      );
     }
     this.recomputedChangeWatcher();
   }

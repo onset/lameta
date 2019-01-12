@@ -109,6 +109,11 @@ describe("sessions csv export", () => {
   it("should contain customFields", () => {
     expect(session(1, "topic")).toBe("fishing");
   });
+  it("should have good contributor list", () => {
+    expect(session(1, "contributions")).toBe(
+      "recorder:Hatton|speaker:Awi Heole|speaker:Ilawi Amosa"
+    );
+  });
 });
 
 describe("project csv export", () => {

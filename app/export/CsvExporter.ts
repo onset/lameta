@@ -4,10 +4,33 @@ const moment = require("moment");
 //import nodeArchiver = require("archiver");
 import * as nodeArchiver from "archiver";
 import * as fs from "fs";
-import { FieldDefinition } from "../model/field/Field";
+import { FieldDefinition, FieldType, Field } from "../model/field/Field";
+import { Session } from "../model/Project/Session/Session";
+
 const kEol: string = require("os").EOL;
 
 let currentKnownFields: FieldDefinition[];
+
+/* Paradisec' sample spreadsheet has these columns:
+
+"Item Identifier (e.g. 1995Elders)"	
+"Item Title (e.g. Introductory Materials)"	
+"Item Description (e.g. Four text stories for interviews)"	
+"Content Language (Language as spoken in file)"	
+"Subject Language (Language discussed) "	
+"Country/Countries (separate countries with | )"	
+"Origination Date (when the item finished being created  "	
+"Region (e.g. Oceania, Indian Ocean, Polynesia)"	
+"Original media (e.g. Text)"	
+"Data Categories"	
+"Data Type"	
+"Discourse Type"
+"Dialect (e.g. Viennese)"	
+"Language as given (e.g. German)"	
+Role	
+First name	
+Last name
+*/
 
 export default class CsvExporter {
   private project: Project;
@@ -72,20 +95,61 @@ export default class CsvExporter {
     const foundFields = this.getKeys(folders)
       .filter(k => blacklist.indexOf(k) === -1)
       .sort(this.sortFields);
-    const header = foundFields.join(",");
+    let header = foundFields.join(",");
+    // we have a bit of hassle in that contributions are currently
+    // implemented outside of normal Fields. That would be a good enhancement,
+    // then this and the addContributionsIfSession() below could be removed.
+    if (folders[0] instanceof Session) {
+      header += ",contributions";
+    }
     const lines = folders
       .map(folder => {
         const line = foundFields
           .map(key => {
-            const value = folder.properties.getTextStringOrEmpty(key);
+            const field = folder.properties.getValue(key);
+            if (!field) {
+              return "";
+            }
+
+            const value = this.fieldToCsv(field);
             return CsvExporter.csvEncode(value);
           })
+
+          .concat(this.addContributionsIfSession(folder))
           .join(",");
         return line;
       })
       .join(kEol);
 
     return header + kEol + lines;
+  }
+
+  private addContributionsIfSession(folder: Folder): string[] {
+    if (!(folder instanceof Session)) {
+      return [];
+    }
+    const session = folder as Session;
+    return [
+      session
+        .getAllContributionsToAllFiles()
+        .map(c => [c.role, c.personReference].join(":"))
+        .join("|")
+    ];
+  }
+
+  private fieldToCsv(field: Field) {
+    switch (field.type) {
+      case FieldType.Text:
+        return field.text;
+      case FieldType.Date:
+        return field.asISODateString();
+      // case FieldType.Contributions:
+      //   return field.contributorsArray
+      //     .map(c => [c.role, c.personReference].join(":"))
+      //     .join("|");
+      default:
+        return field.text;
+    }
   }
 
   private sortFields(a: string, b: string): number {
