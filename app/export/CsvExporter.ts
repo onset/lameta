@@ -91,7 +91,7 @@ export default class CsvExporter {
       return "";
     }
     currentKnownFields = folders[0].knownFields;
-    const blacklist = ["modifiedDate", "size", "type"];
+    const blacklist = ["modifiedDate", "size", "type", "hasConsent"];
     const foundFields = this.getKeys(folders)
       .filter(k => blacklist.indexOf(k) === -1)
       .sort(this.sortFields);

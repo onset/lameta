@@ -120,6 +120,9 @@ describe("project csv export", () => {
   it("should contain 1 line for header and 1 line for properties", () => {
     expect(projectMatrix.length).toBe(2);
   });
+  it("should NOT contain hasConsent", () => {
+    expect(peopleMatrix.join(" ").indexOf("hasConsent")).toBe(-1);
+  });
 });
 
 function location(key: string) {
