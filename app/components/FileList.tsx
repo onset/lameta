@@ -12,6 +12,8 @@ import { i18n, translateFileType } from "../localization";
 import { t } from "@lingui/macro";
 import { Trans } from "@lingui/react";
 import scrollSelectedIntoView from "./FixReactTableScroll";
+import { isNullOrUndefined } from "util";
+import userSettings from "../UserSettings";
 
 const electron = require("electron");
 export interface IProps {
@@ -119,19 +121,31 @@ export default class FileList extends React.Component<IProps, IState> {
         }
       }
     ];
-    const canRenameCurrentFile =
-      this.props.folder.selectedFile !== this.props.folder.metadataFile;
+    const isSpecialSayMoreFile =
+      this.props.folder.selectedFile === this.props.folder.metadataFile;
 
     return (
       <Dropzone
         activeClassName={"drop-active"}
         className={"fileList"}
-        onDrop={(acepted, rejected) => this.onDrop(acepted, rejected)}
+        onDrop={(accepted, rejected) => this.onDrop(accepted, rejected)}
         disableClick
       >
         <div className={"mask"}>Drop files here</div>
         <div className={"fileBar"}>
-          <button className={"menu-open not-implemented"} disabled={true}>
+          <button
+            disabled={
+              isNullOrUndefined(this.props.folder.selectedFile) ||
+              isSpecialSayMoreFile
+            }
+            onClick={() => {
+              this.showFileMenu(
+                this.props.folder.selectedFile!,
+                false,
+                isSpecialSayMoreFile
+              );
+            }}
+          >
             <Trans>Open</Trans>
             {/* <ul className={"menu"}>
               <li className={"cmd-show-in-explorer"}>
@@ -141,7 +155,7 @@ export default class FileList extends React.Component<IProps, IState> {
           </button>
           <button
             className={"cmd-rename"}
-            disabled={!canRenameCurrentFile}
+            disabled={isSpecialSayMoreFile}
             onClick={() =>
               RenameFileDialog.show(
                 this.props.folder.selectedFile!,
@@ -189,7 +203,14 @@ export default class FileList extends React.Component<IProps, IState> {
                 const y = e.clientY;
                 // then after it is selected, show the context menu
                 window.setTimeout(
-                  () => tableObject.showContextMenu(x, y, rowInfo.original),
+                  () =>
+                    tableObject.showFileMenu(
+                      rowInfo.original,
+                      true,
+                      isSpecialSayMoreFile,
+                      x,
+                      y
+                    ),
                   0
                 );
               },
@@ -212,11 +233,19 @@ export default class FileList extends React.Component<IProps, IState> {
     );
   }
 
-  private showContextMenu(x: number, y: number, file: File) {
+  private showFileMenu(
+    file: File,
+    contextMenu: boolean,
+    isSpecialSayMoreFile: boolean,
+    x: number = 0,
+    y: number = 0
+  ) {
     const mainWindow = remote.getCurrentWindow(); // as any;
     if (!file) {
       return;
     }
+    const showDevOnlyItems = userSettings.DeveloperMode;
+
     let items = [
       {
         label:
@@ -232,35 +261,40 @@ export default class FileList extends React.Component<IProps, IState> {
         click: () => {
           // the "file://" prefix is required on mac, works fine on windows
           electron.shell.openExternal("file://" + file.describedFilePath);
-        }
+        },
+        visible: !isSpecialSayMoreFile || showDevOnlyItems
       },
       {
         label: i18n._(t`Rename...`),
         click: () => {
           RenameFileDialog.show(file, this.props.folder);
-        }
+        },
+        visible: contextMenu && !isSpecialSayMoreFile
       },
-      { type: "separator" },
+      { type: "separator", visible: !contextMenu },
       {
         label: i18n._(t`Delete File...`),
         enabled: file.canDelete,
         click: () => {
           this.props.folder.moveFileToTrash(file);
-        }
+        },
+        visible: contextMenu
+      },
+      {
+        type: "separator",
+        visible: contextMenu && showDevOnlyItems
+      },
+      {
+        label: "Inspect element",
+        click() {
+          (mainWindow as any).inspectElement(x, y);
+        },
+        visible: contextMenu && showDevOnlyItems
       }
     ];
 
-    if (process.env.NODE_ENV === "development") {
-      items = items.concat([
-        { type: "separator" },
-        {
-          label: "Inspect element",
-          click() {
-            (mainWindow as any).inspectElement(x, y);
-          }
-        }
-      ]);
-    }
+    items = items.filter(item => item.visible !== false);
+
     remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
   }
 }
