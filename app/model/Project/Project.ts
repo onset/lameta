@@ -359,7 +359,7 @@ export class Project extends Folder {
   }
   public findPerson(name: string): Person | undefined {
     return this.persons.find(p => {
-      return p.nameMatches(name);
+      return p.referenceIdMatches(name);
     });
   }
 

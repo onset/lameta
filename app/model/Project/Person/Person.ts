@@ -17,11 +17,10 @@ export class Person extends Folder {
   public ageOn(referenceDate: Date): string {
     return this.properties.getDateField("birthYear").ageOn(referenceDate);
   }
-  public nameMatches(name: string): boolean {
-    return (
-      name.toLowerCase() ===
-      this.properties.getTextStringOrEmpty("name").toLowerCase()
-    );
+
+  // checks either the name or the code
+  public referenceIdMatches(name: string): boolean {
+    return name.toLowerCase() === this.getIdToUseForReferences();
   }
 
   public get metadataFileExtensionWithDot(): string {
