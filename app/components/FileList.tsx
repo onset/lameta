@@ -52,7 +52,9 @@ export default class FileList extends React.Component<IProps, IState> {
     }
   }
   private addFiles() {
-    remote.dialog.showOpenDialog({}, paths => {
+    const options: any = { properties: ["openFile", "multiSelections"] };
+
+    remote.dialog.showOpenDialog(options, paths => {
       if (paths) {
         this.props.folder.addFiles(paths.map(p => ({ path: p })));
       }
