@@ -10,6 +10,7 @@ import Archiver from "archiver";
 import * as fs from "fs";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
 import { Set } from "typescript-collections";
+import * as mime from "mime";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -332,15 +333,24 @@ export default class ImdiGenerator {
 
   public resourceFile(f: File): string | null {
     const isMediaFile =
-      [".mp3", ".mp4", ".jpg", ".png", ".tiff"].indexOf(
-        Path.extname(f.describedFilePath).toLowerCase()
-      ) > -1;
+      [
+        ".mp3",
+        ".mp4",
+        ".mpeg",
+        ".wav",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".svg",
+        ".tiff"
+      ].indexOf(Path.extname(f.describedFilePath).toLowerCase()) > -1;
     if (isMediaFile) {
       return this.mediaFile(f);
     } else {
       return this.writtenResource(f);
     }
   }
+
   private getImdiMediaFileType(saymoreType: string) {
     // build in ones are audio, video, image, document, drawing,text
     // this is an "open vocabulary", so we can have others
@@ -369,9 +379,14 @@ export default class ImdiGenerator {
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
+
+      //  One document says this is Open vocabulary { AIFF, WAV, MPEG, JPEG, … }. (https://www.mpi.nl/ISLE/documents/draft/ISLE_MetaData_2.5.pdf)
+      // Another says this is a mime type (https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml)
       this.element(
         "Format",
-        "TODO",
+        // if it were just open: Path.extname(f.describedFilePath),
+        mime.getType(Path.extname(f.describedFilePath)) ||
+          Path.extname(f.describedFilePath),
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
