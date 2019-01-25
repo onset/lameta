@@ -296,7 +296,7 @@ export default class ImdiGenerator {
       /* project fallback */ "country"
     );
     this.field("Region", "locationRegion");
-    this.field("Address", "locationAddress");
+    this.field("Address", "locationAddress"); // note, saymore also has a "location"
     this.exitGroup();
   }
 

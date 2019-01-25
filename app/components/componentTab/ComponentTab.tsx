@@ -73,7 +73,6 @@ export class ComponentTab extends React.Component<IProps> {
               </FolderPane>
             )}
         </SplitPane>
-        }
       </div>
     );
   }
