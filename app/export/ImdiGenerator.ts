@@ -246,7 +246,8 @@ export default class ImdiGenerator {
       "type",
       "filename",
       "size",
-      "contributions"
+      "contributions",
+      "access" // output by addAccess()
     ];
     this.group("Keys", () => {
       target.properties.keys().forEach(key => {
@@ -391,6 +392,7 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
       this.field("Size", "size", f);
+      this.addAccess(f);
       this.addCustomKeys(f);
     });
   }
@@ -410,8 +412,36 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
       );
       this.field("Size", "size", f);
+      this.addAccess(f);
       this.addCustomKeys(f);
     });
+  }
+  private addAccess(f: File) {
+    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
+      "access"
+    );
+    if (accessCode.length > 0) {
+      this.group("Access", () => {
+        this.element("Description", "Conditions of Access");
+        this.attributeLiteral("ISO639-3", "eng");
+        const x = this.project.authorityLists.accessChoices.find(
+          c => c.label === accessCode
+        );
+        if (x && x.description && x.description.length > 0) {
+          const accessProtocol = this.project.properties.getTextStringOrEmpty(
+            "accessProtocol"
+          );
+          if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
+            this.element("Description", "Access Protocol:" + accessProtocol);
+            this.attributeLiteral("ISO639-3", "eng");
+          }
+          this.element("Description", x.description);
+          this.attributeLiteral("ISO639-3", "eng");
+        }
+
+        this.field("Availability", "access");
+      });
+    }
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(
