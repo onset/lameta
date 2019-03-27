@@ -372,11 +372,10 @@ export default class ImdiGenerator {
   }
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
-     // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
+      // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
       this.element("ResourceLink", Path.basename(f.describedFilePath));
       // whereas this one just had this file name
       this.element("MediaResourceLink", Path.basename(f.describedFilePath));
-
 
       this.element(
         "Type",
@@ -605,30 +604,27 @@ export default class ImdiGenerator {
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
       .a("Originator", "SayMoreX")
-      .a("FormatId", "IMDI 3.0")
+      .a("FormatId", "IMDI 3.0");
     return this.tail;
   }
   private makeString(): string {
     return this.tail.end({ pretty: true });
   }
 
-
-// TODO why make a zip if we just need one file?
-// We want a way to make a zip of the whole project, and a different
-// way to just output the one IMDI file.
-  public static saveImdiZip(project: Project, path: string) {
+  // We want a way to make a zip of the whole project, and a different
+  // way to just output the one IMDI file.
+  public static saveImdiZip(
+    project: Project,
+    path: string,
+    includeFiles: boolean
+  ) {
     // create a file to stream archive data to.
     const output = fs.createWriteStream(path);
     const archive = Archiver("zip");
 
     // listen for all archive data to be written
     // 'close' event is fired only when a file descriptor is involved
-    output.on("close", () => {
-      // console.log("saveImdiZip " + archive.pointer() + " total bytes");
-      // console.log(
-      //   "saveImdiZip archiver has been finalized and the output file descriptor has closed."
-      // );
-    });
+    output.on("close", () => {});
 
     // good practice to catch warnings (ie stat failures and other non-blocking errors)
     archive.on("warning", err => {
@@ -642,7 +638,6 @@ export default class ImdiGenerator {
 
     // good practice to catch this error explicitly
     archive.on("error", err => {
-      console.log("saveImdiZip error: " + err);
       alert("saveImdiZip error: " + err);
     });
 
@@ -652,18 +647,34 @@ export default class ImdiGenerator {
     archive.append(ImdiGenerator.generateCorpus(project, false), {
       name: `${project.displayName}.imdi`
     });
+    if (includeFiles) {
+      project.files.forEach((f: File) => {
+        //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
+        // so we just read it in manually.
+        archive.append(fs.readFileSync(f.describedFilePath), {
+          name: Path.basename(f.describedFilePath)
+        });
+      });
+    }
     project.sessions.forEach((session: Session) => {
       const imdi = ImdiGenerator.generateSession(session, project);
+      const pathToSessionDirectoryInArchive = Path.basename(session.directory);
       archive.append(imdi, {
-        name: `${session.filePrefix}.imdi`
+        name: `${session.filePrefix}.imdi`,
+        prefix: includeFiles ? pathToSessionDirectoryInArchive : ""
       });
+      if (includeFiles) {
+        session.files.forEach((f: File) => {
+          //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
+          // so we just read it in manually.
+          archive.append(fs.readFileSync(f.describedFilePath), {
+            name: Path.basename(f.describedFilePath),
+            // here we want the file to go into a subdirectory
+            prefix: pathToSessionDirectoryInArchive
+          });
+        });
+      }
     });
-    // project.persons.forEach((person: Person) => {
-    //   const imdi = this.actor(person, project);
-    //   archive.append(imdi, {
-    //     name: `${person.filePrefix}.imdi`
-    //   });
-    // });
 
     archive.finalize();
   }

@@ -49,18 +49,29 @@ export default class ExportDialog extends React.Component<IProps, IState> {
         path => {
           if (path) {
             analyticsEvent("Export", "Export CSV");
-            if (this.state.selectedOption === "csv") {
+            switch (this.state.selectedOption){
+            case "csv":
               const exporter = new CsvExporter(
                 this.props.projectHolder.project!
               );
               exporter.makeZipFile(path);
               showInExplorer(path);
-            } else {
-              analyticsEvent("Export", "Export IMDI");
+            break;
+            case "imdi":
+              analyticsEvent("Export", "Export IMDI Xml");
               ImdiGenerator.saveImdiZip(
                 this.props.projectHolder.project!,
-                path
+                path, false
               );
+              break;
+            case "imdi-plus-files":
+              analyticsEvent("Export", "Export IMDI Bundle");
+              ImdiGenerator.saveImdiZip(
+                this.props.projectHolder.project!,
+                path, true
+              );
+break;
+        
             }
             showInExplorer(path);
             this.setState({ isOpen: false });
@@ -148,10 +159,23 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                   checked={selectedOption === "imdi"}
                   onChange={e => this.handleOptionChange(e)}
                 />
-                IMDI
+                IMDI Only
               </label>
               <p>
-                <Trans>A single ISLE Meta Data Initiative XML file.</Trans>
+                <Trans>A zip file with an IMDI file for the project and each session.</Trans>
+              </p>
+              <label>
+                <input
+                  type="radio"
+                  name="format"
+                  value="imdi-plus-files"
+                  checked={selectedOption === "imdi-plus-files"}
+                  onChange={e => this.handleOptionChange(e)}
+                />
+                IMDI + Files
+              </label>
+              <p>
+                <Trans>A zip file containing both the IMDI files and all the project's archivable files.</Trans>
               </p>
             </fieldset>
           </div>
