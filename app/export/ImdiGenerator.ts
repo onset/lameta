@@ -372,7 +372,11 @@ export default class ImdiGenerator {
   }
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
+     // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
       this.element("ResourceLink", Path.basename(f.describedFilePath));
+      // whereas this one just had this file name
+      this.element("MediaResourceLink", Path.basename(f.describedFilePath));
+
 
       this.element(
         "Type",
@@ -398,7 +402,12 @@ export default class ImdiGenerator {
   }
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
+      // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
       this.element("ResourceLink", Path.basename(f.describedFilePath));
+      // whereas this one just had this file name. NOte, you might expect that
+      // "MediaResourceLink" doesn't belong under <WrittenResource/> but ELAR says it fails validation
+      // without it.
+      this.element("MediaResourceLink", Path.basename(f.describedFilePath));
 
       // WrittenResource types
       // (each of these has subcategories)
@@ -595,13 +604,18 @@ export default class ImdiGenerator {
     }
     this.tail
       .a("Date", moment(new Date()).format("YYYY-MM-DD"))
-      .a("Originator", "SayMore X");
+      .a("Originator", "SayMoreX")
+      .a("FormatId", "IMDI 3.0")
     return this.tail;
   }
   private makeString(): string {
     return this.tail.end({ pretty: true });
   }
 
+
+// TODO why make a zip if we just need one file?
+// We want a way to make a zip of the whole project, and a different
+// way to just output the one IMDI file.
   public static saveImdiZip(project: Project, path: string) {
     // create a file to stream archive data to.
     const output = fs.createWriteStream(path);
