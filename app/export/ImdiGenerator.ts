@@ -304,7 +304,9 @@ export default class ImdiGenerator {
   private sessionResourcesGroup() {
     this.startGroup("Resources");
     this.folderInFocus.files.forEach((f: File) => {
-      this.resourceFile(f);
+      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+        this.resourceFile(f);
+      }
     });
     this.exitGroup(); // Resources
   }
@@ -370,10 +372,18 @@ export default class ImdiGenerator {
         return "document";
     }
   }
+  private pathRelativeToProjectRoot(path: string): string {
+    // Intentionally not using the OS's path separator here, because it's going to XML
+    // that could then be read on any OS. (That could be wrong, and we
+    // can fix it, but it's intentional to not use Path.join())
+    return [Path.basename(Path.dirname(path)), Path.basename(path)].join("/");
+  }
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
-      // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
-      this.element("ResourceLink", Path.basename(f.describedFilePath));
+      this.element(
+        "ResourceLink",
+        this.pathRelativeToProjectRoot(f.describedFilePath)
+      );
       // whereas this one just had this file name
       this.element("MediaResourceLink", Path.basename(f.describedFilePath));
 
@@ -384,20 +394,26 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
 
-      //  One document says this is Open vocabulary { AIFF, WAV, MPEG, JPEG, … }. (https://www.mpi.nl/ISLE/documents/draft/ISLE_MetaData_2.5.pdf)
-      // Another says this is a mime type (https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml)
-      this.element(
-        "Format",
-        // if it were just open: Path.extname(f.describedFilePath),
-        mime.getType(Path.extname(f.describedFilePath)) ||
-          Path.extname(f.describedFilePath),
-        false,
-        "http://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
+      this.formatElement(
+        f.describedFilePath,
+        "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
       this.field("Size", "size", f);
       this.addAccess(f);
       this.addCustomKeys(f);
     });
+  }
+  private formatElement(path: string, link: string): void {
+    //  One document says this is Open vocabulary { AIFF, WAV, MPEG, JPEG, … }. (https://www.mpi.nl/ISLE/documents/draft/ISLE_MetaData_2.5.pdf)
+    // Another says this is a mime type (https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml)
+    // What we're doing here is emitting a mime type if we can determine it, otherwise the extension.
+    // Review: should we instead be emitting, e.g. application/elan+xml for .eaf?
+    this.element(
+      "Format",
+      mime.getType(Path.extname(path)) || Path.extname(path),
+      false,
+      link
+    );
   }
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
@@ -418,6 +434,10 @@ export default class ImdiGenerator {
         f.type === "ELAN" ? "Annotation" : "Unspecified",
         false,
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
+      );
+      this.formatElement(
+        f.describedFilePath,
+        "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml"
       );
       this.field("Size", "size", f);
       this.addAccess(f);
@@ -610,6 +630,11 @@ export default class ImdiGenerator {
   private makeString(): string {
     return this.tail.end({ pretty: true });
   }
+  private static shouldIncludeFile(path: string): boolean {
+    const x = Path.extname(path);
+    // skip these, on advice of ELAR
+    return [".sprj", ".session", ".person"].indexOf(Path.extname(path)) === -1;
+  }
 
   // We want a way to make a zip of the whole project, and a different
   // way to just output the one IMDI file.
@@ -649,11 +674,13 @@ export default class ImdiGenerator {
     });
     if (includeFiles) {
       project.files.forEach((f: File) => {
-        //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
-        // so we just read it in manually.
-        archive.append(fs.readFileSync(f.describedFilePath), {
-          name: Path.basename(f.describedFilePath)
-        });
+        if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+          //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
+          // so we just read it in manually.
+          archive.append(fs.readFileSync(f.describedFilePath), {
+            name: Path.basename(f.describedFilePath)
+          });
+        }
       });
     }
     project.sessions.forEach((session: Session) => {
@@ -665,13 +692,15 @@ export default class ImdiGenerator {
       });
       if (includeFiles) {
         session.files.forEach((f: File) => {
-          //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
-          // so we just read it in manually.
-          archive.append(fs.readFileSync(f.describedFilePath), {
-            name: Path.basename(f.describedFilePath),
-            // here we want the file to go into a subdirectory
-            prefix: pathToSessionDirectoryInArchive
-          });
+          if (this.shouldIncludeFile(f.describedFilePath)) {
+            //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
+            // so we just read it in manually.
+            archive.append(fs.readFileSync(f.describedFilePath), {
+              name: Path.basename(f.describedFilePath),
+              // here we want the file to go into a subdirectory
+              prefix: pathToSessionDirectoryInArchive
+            });
+          }
         });
       }
     });
