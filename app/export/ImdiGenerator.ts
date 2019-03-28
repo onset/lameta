@@ -735,7 +735,8 @@ export default class ImdiGenerator {
       "Other_Project_Documents.imdi",
       secondLevel,
       project.otherDocsFolder,
-      childrenSubpaths
+      childrenSubpaths,
+      includeFiles
     );
 
     this.outputDocumentFolder(
@@ -745,7 +746,8 @@ export default class ImdiGenerator {
       "Project_Description_Documents.imdi",
       secondLevel,
       project.descriptionFolder,
-      childrenSubpaths
+      childrenSubpaths,
+      includeFiles
     );
 
     //---- Sessions ----
@@ -806,7 +808,8 @@ export default class ImdiGenerator {
     imdiFileName: string,
     secondLevel: string,
     folder: Folder,
-    subpaths: string[]
+    subpaths: string[],
+    includeFiles: boolean
   ): void {
     if (folder.files.length > 0) {
       const projectDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
@@ -819,6 +822,14 @@ export default class ImdiGenerator {
         prefix: secondLevel
       });
       subpaths.push(secondLevel + "/" + imdiFileName);
+
+      if (includeFiles) {
+        ImdiGenerator.archiveFolderOfFiles(
+          archive,
+          Path.join(secondLevel, Path.basename(imdiFileName, ".imdi")),
+          folder.files
+        );
+      }
     }
   }
 }
