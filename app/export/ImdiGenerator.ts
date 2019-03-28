@@ -700,7 +700,7 @@ export default class ImdiGenerator {
     // pipe archive data to the file
     archive.pipe(output);
 
-    const childrenSubpaths: string[] = new Array<string>();
+    let childrenSubpaths: string[] = new Array<string>();
 
     /* we want (from saymore classic)
      myproject.imdi
@@ -726,34 +726,27 @@ export default class ImdiGenerator {
         }
       });
     }
-
     //---- Project Documents -----
-    if (project.otherDocsFolder.files.length > 0) {
-      const projectDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
-        project.otherDocsFolder,
-        project,
-        "Project Documents"
-      );
-      archive.append(projectDocumentsImdi, {
-        name: "Other_Project_Documents.imdi",
-        prefix: secondLevel
-      });
-      childrenSubpaths.push(secondLevel + "/Other_Project_Documents.imdi");
-    }
-    if (project.descriptionFolder.files.length > 0) {
-      const descriptionDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
-        project.descriptionFolder,
-        project,
-        "Project Description Documents"
-      );
-      archive.append(descriptionDocumentsImdi, {
-        name: "Project_Description_Documents.imdi",
-        prefix: secondLevel
-      });
-      childrenSubpaths.push(
-        secondLevel + "/Project_Description_Documents.imdi"
-      );
-    }
+
+    this.outputDocumentFolder(
+      project,
+      archive,
+      "Project Documents",
+      "Other_Project_Documents.imdi",
+      secondLevel,
+      project.otherDocsFolder,
+      childrenSubpaths
+    );
+
+    this.outputDocumentFolder(
+      project,
+      archive,
+      "Project Description Documents",
+      "Project_Description_Documents.imdi",
+      secondLevel,
+      project.descriptionFolder,
+      childrenSubpaths
+    );
 
     //---- Sessions ----
 
@@ -804,5 +797,28 @@ export default class ImdiGenerator {
         });
       }
     });
+  }
+
+  private static outputDocumentFolder(
+    project: Project,
+    archive: Archiver.Archiver,
+    name: string,
+    imdiFileName: string,
+    secondLevel: string,
+    folder: Folder,
+    subpaths: string[]
+  ): void {
+    if (folder.files.length > 0) {
+      const projectDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
+        folder,
+        project,
+        name
+      );
+      archive.append(projectDocumentsImdi, {
+        name: imdiFileName,
+        prefix: secondLevel
+      });
+      subpaths.push(secondLevel + "/" + imdiFileName);
+    }
   }
 }
