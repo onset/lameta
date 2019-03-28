@@ -45,13 +45,14 @@ export default class ImdiGenerator {
 
   public static generateCorpus(
     project: Project,
+    childrenSubpaths: string[],
     omitNamespaces?: boolean
   ): string {
     const generator = new ImdiGenerator(project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
-    return generator.corpus();
+    return generator.corpus(childrenSubpaths);
   }
   public static generateSession(
     session: Session,
@@ -65,8 +66,22 @@ export default class ImdiGenerator {
     return generator.session();
   }
 
+  // for project-level documents, all we have in IMDI is sessions, so we make one to hold them
+  public static generatePseudoSessionForFolder(
+    folder: Folder,
+    project: Project,
+    name: string,
+    omitNamespaces?: boolean
+  ): string {
+    const generator = new ImdiGenerator(folder, project);
+    if (omitNamespaces) {
+      generator.omitNamespaces = omitNamespaces;
+    }
+    return generator.otherFolder(name, folder);
+  }
+
   // see https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_Catalogue_3.0.0.pdf for details
-  private corpus(): string {
+  private corpus(childrenSubpaths: string[]): string {
     const project = this.folderInFocus as Project;
     this.startXmlRoot().a("Type", "CORPUS");
 
@@ -77,12 +92,10 @@ export default class ImdiGenerator {
     this.element("Title", project.displayName);
 
     this.field("Description", "projectDescription");
-
-    for (const session of project.sessions) {
-      this.element("CorpusLink", session.filePrefix + ".imdi");
-      this.attribute("Name", "id", session);
+    for (const subpath of childrenSubpaths) {
+      this.element("CorpusLink", subpath);
+      this.attributeLiteral("Name", Path.basename(subpath, ".imdi"));
     }
-
     return this.makeString();
   }
 
@@ -233,11 +246,29 @@ export default class ImdiGenerator {
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
 
-    this.sessionResourcesGroup();
+    this.resourcesGroup();
 
     this.exitGroup(); //Session
     return this.makeString();
   }
+  private otherFolder(name: string, folder: Folder) {
+    this.startXmlRoot();
+    this.startGroup("Session");
+    this.element("Name", name);
+    this.element("Title", name);
+
+    this.startGroup("Resources");
+    folder.files.forEach((f: File) => {
+      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+        this.resourceFile(f);
+      }
+    });
+    this.exitGroup(); // Resources
+
+    this.exitGroup(); //Session
+    return this.makeString();
+  }
+
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
   // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
   private addCustomKeys(target: File | Folder, moreKeys?: any[]) {
@@ -301,7 +332,7 @@ export default class ImdiGenerator {
     this.exitGroup();
   }
 
-  private sessionResourcesGroup() {
+  private resourcesGroup() {
     this.startGroup("Resources");
     this.folderInFocus.files.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
@@ -669,9 +700,21 @@ export default class ImdiGenerator {
     // pipe archive data to the file
     archive.pipe(output);
 
-    archive.append(ImdiGenerator.generateCorpus(project, false), {
-      name: `${project.displayName}.imdi`
-    });
+    const childrenSubpaths: string[] = new Array<string>();
+
+    /* we want (from saymore classic)
+     myproject.imdi
+     myproject/     <--- "secondLevel"
+         session1.imdi
+         session2.imdi
+         session1/
+            ...files...
+         session2/
+            ...files...
+    */
+
+    const secondLevel = project.displayName;
+
     if (includeFiles) {
       project.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
@@ -683,28 +726,83 @@ export default class ImdiGenerator {
         }
       });
     }
+
+    //---- Project Documents -----
+    if (project.otherDocsFolder.files.length > 0) {
+      const projectDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
+        project.otherDocsFolder,
+        project,
+        "Project Documents"
+      );
+      archive.append(projectDocumentsImdi, {
+        name: "Other_Project_Documents.imdi",
+        prefix: secondLevel
+      });
+      childrenSubpaths.push(secondLevel + "/Other_Project_Documents.imdi");
+    }
+    if (project.descriptionFolder.files.length > 0) {
+      const descriptionDocumentsImdi = ImdiGenerator.generatePseudoSessionForFolder(
+        project.descriptionFolder,
+        project,
+        "Project Description Documents"
+      );
+      archive.append(descriptionDocumentsImdi, {
+        name: "Project_Description_Documents.imdi",
+        prefix: secondLevel
+      });
+      childrenSubpaths.push(
+        secondLevel + "/Project_Description_Documents.imdi"
+      );
+    }
+
+    //---- Sessions ----
+
     project.sessions.forEach((session: Session) => {
       const imdi = ImdiGenerator.generateSession(session, project);
-      const pathToSessionDirectoryInArchive = Path.basename(session.directory);
+
+      const imdiFileName = `${session.filePrefix}.imdi`;
       archive.append(imdi, {
-        name: `${session.filePrefix}.imdi`,
-        prefix: includeFiles ? pathToSessionDirectoryInArchive : ""
+        name: imdiFileName,
+        prefix: secondLevel
+        // saymore classic just put all the imdi's on the root. prefix: includeFiles ? pathToSessionDirectoryInArchive : ""
       });
+
       if (includeFiles) {
-        session.files.forEach((f: File) => {
-          if (this.shouldIncludeFile(f.describedFilePath)) {
-            //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
-            // so we just read it in manually.
-            archive.append(fs.readFileSync(f.describedFilePath), {
-              name: Path.basename(f.describedFilePath),
-              // here we want the file to go into a subdirectory
-              prefix: pathToSessionDirectoryInArchive
-            });
-          }
+        ImdiGenerator.archiveFolderOfFiles(
+          archive,
+          Path.join(secondLevel, Path.basename(session.directory)),
+          session.files
+        );
+      }
+      childrenSubpaths.push(secondLevel + "/" + imdiFileName);
+    });
+
+    // ---  Now that we know what all the child imdi's are, we can output the root  ---
+    archive.append(
+      ImdiGenerator.generateCorpus(project, childrenSubpaths, false),
+      {
+        name: `${project.displayName}.imdi`
+      }
+    );
+
+    archive.finalize();
+  }
+
+  private static archiveFolderOfFiles(
+    archive: Archiver.Archiver,
+    pathToDirectoryInArchive,
+    files: File[]
+  ) {
+    files.forEach((f: File) => {
+      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+        //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
+        // so we just read it in manually.
+        archive.append(fs.readFileSync(f.describedFilePath), {
+          name: Path.basename(f.describedFilePath),
+          // here we want the file to go into a subdirectory
+          prefix: pathToDirectoryInArchive
         });
       }
     });
-
-    archive.finalize();
   }
 }
