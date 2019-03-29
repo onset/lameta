@@ -5,13 +5,13 @@ import CloseOnEscape from "react-close-on-escape";
 import CsvExporter from "../../export/CsvExporter";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../crossPlatformUtilities";
-import ImdiGenerator from "../../export/ImdiGenerator";
 import { remote } from "electron";
 import * as Path from "path";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
+import ImdiBundler from "../../export/ImdiBundler";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {
@@ -49,29 +49,30 @@ export default class ExportDialog extends React.Component<IProps, IState> {
         path => {
           if (path) {
             analyticsEvent("Export", "Export CSV");
-            switch (this.state.selectedOption){
-            case "csv":
-              const exporter = new CsvExporter(
-                this.props.projectHolder.project!
-              );
-              exporter.makeZipFile(path);
-              showInExplorer(path);
-            break;
-            case "imdi":
-              analyticsEvent("Export", "Export IMDI Xml");
-              ImdiGenerator.saveImdiZip(
-                this.props.projectHolder.project!,
-                path, false
-              );
-              break;
-            case "imdi-plus-files":
-              analyticsEvent("Export", "Export IMDI Bundle");
-              ImdiGenerator.saveImdiZip(
-                this.props.projectHolder.project!,
-                path, true
-              );
-break;
-        
+            switch (this.state.selectedOption) {
+              case "csv":
+                const exporter = new CsvExporter(
+                  this.props.projectHolder.project!
+                );
+                exporter.makeZipFile(path);
+                showInExplorer(path);
+                break;
+              case "imdi":
+                analyticsEvent("Export", "Export IMDI Xml");
+                ImdiBundler.saveImdiZip(
+                  this.props.projectHolder.project!,
+                  path,
+                  false
+                );
+                break;
+              case "imdi-plus-files":
+                analyticsEvent("Export", "Export IMDI Bundle");
+                ImdiBundler.saveImdiZip(
+                  this.props.projectHolder.project!,
+                  path,
+                  true
+                );
+                break;
             }
             showInExplorer(path);
             this.setState({ isOpen: false });
@@ -162,7 +163,9 @@ break;
                 IMDI Only
               </label>
               <p>
-                <Trans>A zip file with an IMDI file for the project and each session.</Trans>
+                <Trans>
+                  A zip file with an IMDI file for the project and each session.
+                </Trans>
               </p>
               <label>
                 <input
@@ -175,7 +178,10 @@ break;
                 IMDI + Files
               </label>
               <p>
-                <Trans>A zip file containing both the IMDI files and all the project's archivable files.</Trans>
+                <Trans>
+                  A zip file containing both the IMDI files and all the
+                  project's archivable files.
+                </Trans>
               </p>
             </fieldset>
           </div>
