@@ -12,6 +12,10 @@ import { t } from "@lingui/macro";
 import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
+import moment from "moment";
+import * as fs from "fs";
+const { app } = require("electron").remote;
+const sanitize = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {
@@ -32,58 +36,74 @@ export default class ExportDialog extends React.Component<IProps, IState> {
 
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
-      remote.dialog.showSaveDialog(
-        {
-          title: i18n._(t`Save As`),
-          //${Path.basename(this.projectHolder.project.directory)}
-          defaultPath: `${Path.basename(
-            this.props.projectHolder.project!.directory
-          )}-${this.state.selectedOption}.zip`,
-          filters: [
-            {
-              extensions: ["zip"],
-              name: i18n._(t`ZIP Archive`)
-            }
-          ]
-        },
-        path => {
-          if (path) {
-            analyticsEvent("Export", "Export CSV");
-            switch (this.state.selectedOption) {
-              case "csv":
-                const exporter = new CsvExporter(
-                  this.props.projectHolder.project!
-                );
-                exporter.makeZipFile(path);
-                showInExplorer(path);
-                break;
-              case "imdi":
-                analyticsEvent("Export", "Export IMDI Xml");
-                ImdiBundler.saveImdiZip(
-                  this.props.projectHolder.project!,
-                  path,
-                  false
-                );
-                break;
-              case "imdi-plus-files":
-                analyticsEvent("Export", "Export IMDI Bundle");
-                ImdiBundler.saveImdiZip(
-                  this.props.projectHolder.project!,
-                  path,
-                  true
-                );
-                break;
-            }
-            showInExplorer(path);
-            this.setState({ isOpen: false });
-          }
-        }
-      );
+      if (this.state.selectedOption === "csv") {
+        remote.dialog.showSaveDialog(
+          {
+            title: i18n._(t`Save As`),
+            //${Path.basename(this.projectHolder.project.directory)}
+            defaultPath: `${Path.basename(
+              this.props.projectHolder.project!.directory
+            )}-${this.state.selectedOption}.zip`,
+            filters: [
+              {
+                extensions: ["zip"],
+                name: i18n._(t`ZIP Archive`)
+              }
+            ]
+          },
+          path => this.saveFiles(path)
+        );
+      } else {
+        this.saveFiles(this.getPathForIMDISaving());
+      }
     } else {
       this.setState({ isOpen: false });
     }
   }
+  private getPathForIMDISaving(): string {
+    const rootDirectoryForAllExports = Path.join(
+      app.getPath("documents"),
+      "SayMore",
+      "IMDI Packages"
+    );
+    return Path.join(
+      rootDirectoryForAllExports,
+      sanitize(this.props.projectHolder.project!.displayName) +
+        "_" +
+        moment(new Date()).format("YYYY-MM-DD")
+    );
+  }
 
+  private saveFiles(path: string) {
+    if (path) {
+      switch (this.state.selectedOption) {
+        case "csv":
+          analyticsEvent("Export", "Export CSV");
+          const exporter = new CsvExporter(this.props.projectHolder.project!);
+          exporter.makeZipFile(path);
+          showInExplorer(path);
+          break;
+        case "imdi":
+          analyticsEvent("Export", "Export IMDI Xml");
+          ImdiBundler.saveImdiBundleToFolder(
+            this.props.projectHolder.project!,
+            path,
+            false
+          );
+          break;
+        case "imdi-plus-files":
+          analyticsEvent("Export", "Export IMDI Plus Files");
+          ImdiBundler.saveImdiBundleToFolder(
+            this.props.projectHolder.project!,
+            path,
+            true
+          );
+          break;
+      }
+      showInExplorer(path);
+      this.setState({ isOpen: false });
+    }
+  }
   private handleOptionChange(changeEvent) {
     this.setState({
       selectedOption: changeEvent.target.value

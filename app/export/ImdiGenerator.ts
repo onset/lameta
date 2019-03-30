@@ -9,6 +9,7 @@ import { Person } from "../model/Project/Person/Person";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
+import { TabList } from "react-tabs";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -43,14 +44,14 @@ export default class ImdiGenerator {
 
   public static generateCorpus(
     project: Project,
-    childrenSubpaths: string[],
+    childrenSubPaths: string[],
     omitNamespaces?: boolean
   ): string {
     const generator = new ImdiGenerator(project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
-    return generator.corpus(childrenSubpaths);
+    return generator.corpus(childrenSubPaths);
   }
   public static generateSession(
     session: Session,
@@ -67,15 +68,14 @@ export default class ImdiGenerator {
   // see https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_Catalogue_3.0.0.pdf for details
   private corpus(childrenSubpaths: string[]): string {
     const project = this.folderInFocus as Project;
-    this.startXmlRoot().a("Type", "CORPUS");
+    this.startXmlRoot("CORPUS");
 
     this.startGroup("Corpus");
-    this.field("Name", "id");
     // we don't have a separate title vs. name field
     this.element("Name", project.displayName);
     this.element("Title", project.displayName);
 
-    this.field("Description", "projectDescription");
+    this.requiredField("Description", "projectDescription");
     for (const subpath of childrenSubpaths) {
       this.element("CorpusLink", subpath);
       this.attributeLiteral("Name", Path.basename(subpath, ".imdi"));
@@ -86,19 +86,18 @@ export default class ImdiGenerator {
   private addProjectInfo() {
     this.startGroup("Project");
     //// we don't currently have a different name vs. title
-    this.field("Name", "title", this.project); //A short name or abbreviation of the project.
-    this.field("Title", "title", this.project); // The full title of the project.
-
-    // <ID/>   We don't currently have an ID field for projects.
-    this.startGroup("Contact");
-    this.field("Name", "contactPerson", this.project);
-    //<Address> We don't currently have this field.
-    //<Email> We don't currently have this field.
-    //<Organization> We don't currently have this field.
-    this.exitGroup(); // Contact
-    //"An elaborate description of the scope and goals of the project."
-    this.field("Description", "projectDescription", this.project);
-    this.exitGroup(); // Project
+    this.requiredField("Name", "title", this.project); //A short name or abbreviation of the project.
+    this.requiredField("Title", "title", this.project); // The full title of the project.
+    this.element("Id", ""); // we don't have an id, but imdi doesn't validate without this, even if empty
+    this.group("Contact", () => {
+      this.optionalField("Name", "contactPerson", this.project);
+      //<Address> We don't currently have this field.
+      //<Email> We don't currently have this field.
+      //<Organization> We don't currently have this field.
+      this.exitGroup(); // Contact
+      //"An elaborate description of the scope and goals of the project."
+      this.optionalField("Description", "projectDescription", this.project);
+    });
   }
   private addActorsOfSession() {
     this.startGroup("Actors");
@@ -121,6 +120,18 @@ export default class ImdiGenerator {
         this.tail.comment(`Could not find a person with name "${trimmedName}"`);
         this.element("Role", contribution.role);
         this.element("Name", trimmedName);
+        this.element("FullName", trimmedName);
+        this.element("Code", "");
+        this.element("FamilySocialRole", "");
+        this.element("Languages", "");
+        this.element("EthnicGroup", "");
+        this.element("Age", "0"); //required, and it won't take empty
+        this.element("BirthDate", "");
+        this.element("Sex", "");
+        this.element("Education", "");
+        this.element("Anonymized", "false");
+        this.element("Contact", "");
+        this.element("Keys", "");
         this.exitGroup(); //</Actor>
       }
     });
@@ -128,12 +139,13 @@ export default class ImdiGenerator {
   }
   private addContentElement() {
     this.group("Content", () => {
-      this.field("Genre", "genre");
-      this.field("SubGenre", "subgenre");
+      this.requiredField("Genre", "genre");
+      this.requiredField("SubGenre", "subgenre");
       this.group("CommunicationContext", () => {
-        this.field("Involvement", "involvement");
-        this.field("PlanningType", "planningType");
-        this.field("SocialContext", "socialContext");
+        this.requiredField("PlanningType", "planningType");
+        this.requiredField("Involvement", "involvement");
+        this.requiredField("SocialContext", "socialContext");
+
         // SayMore currently doesn't have Interactivity, EventStructure, Channel
       });
       this.group("Languages", () => {
@@ -144,7 +156,7 @@ export default class ImdiGenerator {
         this.addSessionLanguage("analysisISO3CodeAndName", "Working Language");
       });
       this.addCustomKeys(this.folderInFocus);
-      this.field("Description", "description");
+      this.optionalField("Description", "description");
     });
   }
   private addSessionLanguage(key: string, description: string) {
@@ -216,21 +228,22 @@ export default class ImdiGenerator {
 
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private session() {
-    this.startXmlRoot();
+    this.startXmlRoot("SESSION");
     this.startGroup("Session");
-    this.field("Name", "id");
-    this.field("Date", "date");
-    this.field("Title", "title");
-    this.field("Description", "description");
+    this.requiredField("Name", "id");
+    this.requiredField("Title", "title");
+    this.requiredField("Date", "date");
+    this.optionalField("Description", "description");
 
     this.startGroup("MDGroup");
     /**/ this.sessionLocation();
     /**/ this.addProjectInfo();
+    this.element("Keys", ""); // required for validation. there is also a Keys under Content, which is where stuff is going at the moment.
     /**/ this.addContentElement();
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
 
-    this.resourcesGroup();
+    this.resourcesGroup(this.folderInFocus);
 
     this.exitGroup(); //Session
     return this.makeString();
@@ -282,33 +295,55 @@ export default class ImdiGenerator {
   }
   private sessionLocation() {
     this.startGroup("Location");
-    this.field(
+    this.requiredField(
       "Continent",
       "locationContinent",
       this.folderInFocus,
       /* project fallback */ "continent"
     );
-    this.field(
+    this.requiredField(
       "Country",
       "locationCountry",
       this.folderInFocus,
       /* project fallback */ "country"
     );
-    this.field("Region", "locationRegion");
-    this.field("Address", "locationAddress"); // note, saymore also has a "location"
+    this.optionalField("Region", "locationRegion");
+    this.optionalField("Address", "locationAddress"); // note, saymore also has a "location"
     this.exitGroup();
   }
 
-  private resourcesGroup() {
+  private resourcesGroup(folder: Folder) {
     this.startGroup("Resources");
-    this.folderInFocus.files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
-        this.resourceFile(f);
+
+    // schema requires that we group all the media files first, not intersperse them with written resources
+    folder.files.forEach((f: File) => {
+      if (
+        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
+        this.isMediaFile(f)
+      ) {
+        this.mediaFile(f);
       }
     });
+    folder.files.forEach((f: File) => {
+      if (
+        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
+        !this.isMediaFile(f)
+      ) {
+        this.writtenResource(f);
+      }
+    });
+
     this.exitGroup(); // Resources
   }
 
+  // used by the ui imdi tabs, not actual imdi generator
+  public resourceFile(f: File) {
+    if (this.isMediaFile(f)) {
+      return this.mediaFile(f);
+    } else {
+      return this.writtenResource(f);
+    }
+  }
   public static shouldIncludeFile(path: string): boolean {
     const x = Path.extname(path);
     // skip these, on advice of ELAR
@@ -338,24 +373,21 @@ export default class ImdiGenerator {
     }
   }
 
-  public resourceFile(f: File): string | null {
-    const isMediaFile =
-      [
-        ".mp3",
-        ".mp4",
-        ".mpeg",
-        ".wav",
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".svg",
-        ".tiff"
-      ].indexOf(Path.extname(f.describedFilePath).toLowerCase()) > -1;
-    if (isMediaFile) {
-      return this.mediaFile(f);
-    } else {
-      return this.writtenResource(f);
-    }
+  private isMediaFile(f: File): boolean {
+    const mediaFormats = [
+      ".mp3",
+      ".mp4",
+      ".mpeg",
+      ".wav",
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".svg",
+      ".tiff"
+    ];
+    return (
+      mediaFormats.indexOf(Path.extname(f.describedFilePath).toLowerCase()) > -1
+    );
   }
 
   private getImdiMediaFileType(saymoreType: string) {
@@ -388,8 +420,6 @@ export default class ImdiGenerator {
         "ResourceLink",
         this.pathRelativeToProjectRoot(f.describedFilePath)
       );
-      // whereas this one just had this file name
-      this.element("MediaResourceLink", Path.basename(f.describedFilePath));
 
       this.element(
         "Type",
@@ -402,7 +432,14 @@ export default class ImdiGenerator {
         f.describedFilePath,
         "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
-      this.field("Size", "size", f);
+      this.requiredField("Size", "size", f);
+      this.element("Quality", "Unspecified");
+      this.element("RecordingConditions", "");
+      this.group("TimePosition", () => {
+        this.element("Start", "Unspecified");
+        this.element("End", "Unspecified");
+      });
+
       this.addAccess(f);
       this.addCustomKeys(f);
     });
@@ -422,16 +459,23 @@ export default class ImdiGenerator {
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
       // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
-      this.element("ResourceLink", Path.basename(f.describedFilePath));
+      this.element(
+        "ResourceLink",
+        this.pathRelativeToProjectRoot(f.describedFilePath)
+      );
       // whereas this one just had this file name. NOte, you might expect that
       // "MediaResourceLink" doesn't belong under <WrittenResource/> but ELAR says it fails validation
       // without it.
-      this.element("MediaResourceLink", Path.basename(f.describedFilePath));
+      //this.element("ResourceLink", Path.basename(f.describedFilePath));
 
       // WrittenResource types
       // (each of these has subcategories)
       // Unknown, Unspecified, Primary Text, Annotation (sub category has things like gesture, phonetic, phonology, morphology, syntax, etc)
       // Lexical Analysis, Ethnography, Study
+
+      this.group("MediaResourceLink", () => {});
+
+      this.element("Date", "");
       this.element(
         "Type",
         // the only type we can deduce is that ELAN is for annotation
@@ -439,11 +483,23 @@ export default class ImdiGenerator {
         false,
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
       );
+      this.element("SubType", "");
       this.formatElement(
         f.describedFilePath,
         "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml"
       );
-      this.field("Size", "size", f);
+      this.requiredField("Size", "size", f);
+      this.group("Validation", () => {
+        this.element("Type", "");
+        this.element("Methodology", "");
+        this.element("Level", "Unspecified");
+      });
+      this.element("Derivation", "");
+      this.element("CharacterEncoding", "");
+      this.element("ContentEncoding", "");
+      this.element("LanguageId", "");
+      this.element("Anonymized", "Unspecified");
+
       this.addAccess(f);
       this.addCustomKeys(f);
     });
@@ -452,28 +508,35 @@ export default class ImdiGenerator {
     const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
       "access"
     );
-    if (accessCode.length > 0) {
-      this.group("Access", () => {
-        this.element("Description", "Conditions of Access");
-        this.attributeLiteral("ISO639-3", "eng");
-        const x = this.project.authorityLists.accessChoices.find(
-          c => c.label === accessCode
-        );
-        if (x && x.description && x.description.length > 0) {
-          const accessProtocol = this.project.properties.getTextStringOrEmpty(
-            "accessProtocol"
-          );
-          if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
-            this.element("Description", "Access Protocol:" + accessProtocol);
-            this.attributeLiteral("ISO639-3", "eng");
-          }
-          this.element("Description", x.description);
-          this.attributeLiteral("ISO639-3", "eng");
-        }
 
-        this.field("Availability", "access");
-      });
-    }
+    this.group("Access", () => {
+      if (accessCode.length > 0) {
+        this.requiredField("Availability", "access");
+      } else {
+        this.element("Availability", "");
+      }
+
+      //this.attributeLiteral("ISO639-3", "eng");
+      const x = this.project.authorityLists.accessChoices.find(
+        c => c.label === accessCode
+      );
+      this.element("Date", "");
+      this.element("Owner", "");
+      this.element("Publisher", "");
+      this.element("Contact", "");
+      if (x && x.description && x.description.length > 0) {
+        const accessProtocol = this.project.properties.getTextStringOrEmpty(
+          "accessProtocol"
+        );
+        if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
+          this.element("Description", "Access Protocol:" + accessProtocol);
+          //this.attributeLiteral("ISO639-3", "eng");
+        }
+        this.element("Description", x.description);
+        //this.attributeLiteral("ISO639-3", "eng");
+      }
+    });
+    //}
   }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(
@@ -484,10 +547,31 @@ export default class ImdiGenerator {
   ): string | null {
     return this.group("Actor", () => {
       this.element("Role", role && role.length > 0 ? role : "unspecified");
-      this.field("Name", "name", person);
-      this.field("FullName", "name", person);
-      this.field("Code", "code", person);
-      this.field("EthnicGroup", "ethnicGroup", person);
+      this.requiredField("Name", "name", person);
+      this.requiredField("FullName", "name", person);
+
+      this.requiredField("Code", "code", person);
+      this.element("FamilySocialRole", "");
+
+      this.startGroup("Languages");
+      this.addActorLanguage(
+        person.properties.getTextStringOrEmpty("primaryLanguage"),
+        true
+      );
+      this.addActorLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage0")
+      );
+      this.addActorLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage1")
+      );
+      this.addActorLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage2")
+      );
+      this.addActorLanguage(
+        person.properties.getTextStringOrEmpty("otherLanguage3")
+      );
+      this.exitGroup(); // </Languages>
+      this.requiredField("EthnicGroup", "ethnicGroup", person);
       // Note: age is relative to this session's date.
       // Note: for children in particular, IMDI need more than year. It wants years;months.days,
       // but SayMore currently only has a "birth year".
@@ -514,32 +598,18 @@ export default class ImdiGenerator {
         if (age && age.length > 0) {
           this.element("Age", age);
         } else {
+          this.element("Age", "0"); // required element, can't be empty
           this.tail.comment("Could not compute age");
         }
       } else {
         this.tail.comment("Age calculation requires session reference date.");
       }
-      this.field("BirthDate", "birthYear", person);
-      this.field("Sex", "gender", person);
-      this.field("Education", "education", person);
-      this.startGroup("Languages");
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("primaryLanguage"),
-        true
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage0")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage1")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage2")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage3")
-      );
-      this.exitGroup(); // </Languages>
+
+      this.requiredField("BirthDate", "birthYear", person);
+      this.requiredField("Sex", "gender", person);
+      this.requiredField("Education", "education", person);
+      this.element("Anonymized", "false"); // review: is this related to SayMore's "code" field?
+      this.element("Contact", "");
       this.addCustomKeys(person, moreKeys);
     });
   }
@@ -548,9 +618,26 @@ export default class ImdiGenerator {
   // Utility methods to add various things to the xml
   //-----------------------------------------------------
 
+  private requiredField(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File,
+    projectFallbackFieldName?: string
+  ) {
+    this.field(elementName, fieldName, true, target, projectFallbackFieldName);
+  }
+  private optionalField(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File,
+    projectFallbackFieldName?: string
+  ) {
+    this.field(elementName, fieldName, false, target, projectFallbackFieldName);
+  }
   private field(
     elementName: string,
     fieldName: string,
+    xmlElementIsRequired: boolean,
     target?: Folder | File,
     projectFallbackFieldName?: string
   ) {
@@ -565,8 +652,9 @@ export default class ImdiGenerator {
       this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
     }
 
-    if (v && v.length > 0) {
-      this.tail = this.tail.element(elementName, v);
+    const text = v && v.length > 0 ? v : "";
+    if (xmlElementIsRequired || (v && v.length > 0)) {
+      this.tail = this.tail.element(elementName, text);
       const definition = f.properties.getFieldDefinition(fieldName);
       if (definition.imdiRange) {
         this.tail.attribute("Link", definition.imdiRange);
@@ -604,7 +692,6 @@ export default class ImdiGenerator {
     isClosedVocabulary?,
     vocabularyUrl?
   ) {
-    console.assert(value);
     const newElement = this.tail.element(elementName, value);
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
@@ -615,7 +702,7 @@ export default class ImdiGenerator {
     this.mostRecentElement = newElement;
     this.tail = newElement.up();
   }
-  private startXmlRoot(): XmlBuilder.XMLElementOrXMLNode {
+  private startXmlRoot(typeAttribute: string): XmlBuilder.XMLElementOrXMLNode {
     this.tail = XmlBuilder.create("METATRANSCRIPT");
     if (!this.omitNamespaces) {
       this.tail.a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI");
@@ -624,9 +711,11 @@ export default class ImdiGenerator {
         "xsi:schemaLocation",
         "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd"
       );
+      this.tail.a("Type", typeAttribute);
+      this.tail.a("Version", "0");
     }
     this.tail
-      .a("Date", moment(new Date()).format("YYYY-MM-DD"))
+      .a("Date", this.nowDate())
       .a("Originator", "SayMoreX")
       .a("FormatId", "IMDI 3.0");
     return this.tail;
@@ -634,23 +723,52 @@ export default class ImdiGenerator {
   private makeString(): string {
     return this.tail.end({ pretty: true });
   }
+  private nowDate(): string {
+    return moment(new Date()).format("YYYY-MM-DD");
+  }
 
   // IMDI doesn't have a place for project-level documents, so we have to create IMDI
   // Sessions even though they are not related to actual sessions
   public makePseudoSessionImdiForOtherFolder(name: string, folder: Folder) {
-    this.startXmlRoot();
+    this.startXmlRoot("SESSION");
     this.startGroup("Session");
     this.element("Name", name);
-    this.element("Title", name);
+    this.element("Title", "HELELO!");
+    this.element("Date", this.nowDate());
+    this.tail.element("MDGroup").raw(
+      `<Location>
+      <Continent Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Continents.xml" />
+      <Country Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Countries.xml" />
+    </Location>
+    <Project>
+      <Name />
+      <Title />
+      <Id />
+      <Contact />
+    </Project>
+    <Keys />
+    <Content>
+      <Genre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" />
+      <SubGenre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml" />
+      <Task Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Task.xml" />
+      <Modalities Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Modalities.xml" />
+      <Subject Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Subject.xml" />
+      <CommunicationContext>
+        <Interactivity Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml" />
+        <PlanningType Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml" />
+        <Involvement Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml" />
+        <SocialContext Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml" />
+        <EventStructure Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-EventStructure.xml" />
+        <Channel Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Channel.xml" />
+      </CommunicationContext>
+      <Languages />
+      <Keys />
+    </Content>
+    <Actors />
+  `
+    );
 
-    this.startGroup("Resources");
-    folder.files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
-        this.resourceFile(f);
-      }
-    });
-    this.exitGroup(); // Resources
-
+    this.resourcesGroup(folder);
     this.exitGroup(); //Session
     return this.makeString();
   }

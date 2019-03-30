@@ -3,177 +3,158 @@ import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder";
 import { File } from "../model/file/File";
 import * as Path from "path";
-import Archiver from "archiver";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
 
+// This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
-  // We want a way to make a zip of the whole project, and a different
-  // way to just output the one IMDI file.
-  public static saveImdiZip(
+  public static saveImdiBundleToFolder(
     project: Project,
-    path: string,
-    includeFiles: boolean
+    rootDirectory: string,
+    // If this is false, we're just making the IMDI files.
+    // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
+    copyInProjectFiles: boolean
   ) {
-    // create a file to stream archive data to.
-    const output = fs.createWriteStream(path);
-    const archive = Archiver("zip");
-
-    // listen for all archive data to be written
-    // 'close' event is fired only when a file descriptor is involved
-    output.on("close", () => {});
-
-    // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on("warning", err => {
-      if (err.code === "ENOENT") {
-        console.log("saveImdiZip Warning: " + err);
-      } else {
-        // throw error
-        throw err;
+    try {
+      if (fs.existsSync(rootDirectory)) {
+        fs.removeSync(rootDirectory);
       }
-    });
-
-    // good practice to catch this error explicitly
-    archive.on("error", err => {
-      alert("saveImdiZip error: " + err);
-    });
-
-    // pipe archive data to the file
-    archive.pipe(output);
-
-    const childrenSubpaths: string[] = new Array<string>();
-
+      // make all parts of the directory as needed
+      fs.ensureDirSync(rootDirectory);
+    } catch (error) {
+      console.log(error);
+      alert(
+        `There was a problem getting the directory ${rootDirectory} ready. Maybe close any open Finder/Explorer windows or other programs that might be showing file from that directory,  and try again. \r\n\r\n${error}`
+      );
+      return;
+    }
     /* we want (from saymore classic)
-     myproject.imdi
-     myproject/     <--- "secondLevel"
-         session1.imdi
-         session2.imdi
-         session1/
-            ...files...
-         session2/
-            ...files...
+     myproject_3-6-2019/  <--- rootDirectory
+        myproject.imdi
+        myproject/     <--- "secondLevel"
+          session1.imdi
+          session2.imdi
+          session1/
+             ...files...
+          session2/
+             ...files...
     */
 
-    const secondLevel = project.displayName;
-
-    if (includeFiles) {
-      project.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
-          //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
-          // so we just read it in manually.
-          archive.append(fs.readFileSync(f.describedFilePath), {
-            name: Path.basename(f.describedFilePath)
-          });
-        }
-      });
+    const childrenSubpaths: string[] = new Array<string>();
+    const secondLevel = Path.basename(project.directory);
+    try {
+      fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
+    } catch (error) {
+      alert(
+        `There was a problem getting the directory ${Path.join(
+          rootDirectory,
+          secondLevel
+        )} ready. Maybe close any open Finder/Explorer windows and try again`
+      );
+      return;
     }
     //---- Project Documents -----
 
     this.outputDocumentFolder(
       project,
-      archive,
-      "Project Documents",
+      "Other Project Documents",
       "Other_Project_Documents.imdi",
+      rootDirectory,
       secondLevel,
       project.otherDocsFolder,
       childrenSubpaths,
-      includeFiles
+      copyInProjectFiles
     );
 
     this.outputDocumentFolder(
       project,
-      archive,
       "Project Description Documents",
       "Project_Description_Documents.imdi",
+      rootDirectory,
       secondLevel,
       project.descriptionFolder,
       childrenSubpaths,
-      includeFiles
+      copyInProjectFiles
     );
 
     //---- Sessions ----
 
     project.sessions.forEach((session: Session) => {
       const imdi = ImdiGenerator.generateSession(session, project);
-
       const imdiFileName = `${session.filePrefix}.imdi`;
-      archive.append(imdi, {
-        name: imdiFileName,
-        prefix: secondLevel
-        // saymore classic just put all the imdi's on the root. prefix: includeFiles ? pathToSessionDirectoryInArchive : ""
-      });
+      fs.writeFileSync(
+        Path.join(rootDirectory, secondLevel, imdiFileName),
+        imdi
+      );
+      childrenSubpaths.push(secondLevel + "/" + imdiFileName);
 
-      if (includeFiles) {
-        this.archiveFolderOfFiles(
-          archive,
-          Path.join(secondLevel, Path.basename(session.directory)),
-          session.files
+      if (copyInProjectFiles) {
+        this.copyFolderOfFiles(
+          session.files,
+          Path.join(
+            rootDirectory,
+            secondLevel,
+            Path.basename(session.directory)
+          )
         );
       }
-      childrenSubpaths.push(secondLevel + "/" + imdiFileName);
     });
 
     // ---  Now that we know what all the child imdi's are, we can output the root  ---
-    archive.append(
-      ImdiGenerator.generateCorpus(project, childrenSubpaths, false),
-      {
-        name: `${project.displayName}.imdi`
-      }
+    fs.writeFileSync(
+      Path.join(rootDirectory, `${project.displayName}.imdi`),
+      ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
     );
-
-    archive.finalize();
   }
 
-  private static archiveFolderOfFiles(
-    archive: Archiver.Archiver,
-    pathToDirectoryInArchive,
-    files: File[]
-  ) {
-    files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
-        //NB: archive.file(f.describedFilePath... gives an error I couldn't figure out,
-        // so we just read it in manually.
-        archive.append(fs.readFileSync(f.describedFilePath), {
-          name: Path.basename(f.describedFilePath),
-          // here we want the file to go into a subdirectory
-          prefix: pathToDirectoryInArchive
-        });
-      }
-    });
-  }
-
+  // IMDI doesn't have a place for project-level documents, so we have to create IMDI
+  // Sessions even though they are not related to actual sessions
   private static outputDocumentFolder(
     project: Project,
-    archive: Archiver.Archiver,
     name: string,
     imdiFileName: string,
+    rootDirectory: string,
     secondLevel: string,
     folder: Folder,
     subpaths: string[],
-    includeFiles: boolean
+    copyInProjectFiles: boolean
   ): void {
     if (folder.files.length > 0) {
-      // IMDI doesn't have a place for project-level documents, so we have to create IMDI
-      // Sessions even though they are not related to actual sessions
       const generator = new ImdiGenerator(folder, project);
       const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
         name,
         folder
       );
 
-      archive.append(projectDocumentsImdi, {
-        name: imdiFileName,
-        prefix: secondLevel
-      });
+      fs.writeFileSync(
+        Path.join(rootDirectory, secondLevel, imdiFileName),
+        projectDocumentsImdi
+      );
       subpaths.push(secondLevel + "/" + imdiFileName);
 
-      if (includeFiles) {
-        this.archiveFolderOfFiles(
-          archive,
-          Path.join(secondLevel, Path.basename(imdiFileName, ".imdi")),
-          folder.files
+      if (copyInProjectFiles) {
+        this.copyFolderOfFiles(
+          folder.files,
+          Path.join(
+            rootDirectory,
+            secondLevel,
+            Path.basename(imdiFileName, ".imdi")
+          )
         );
       }
     }
+  }
+
+  private static copyFolderOfFiles(files: File[], targetDirectory: string) {
+    fs.ensureDirSync(Path.join(targetDirectory));
+
+    files.forEach((f: File) => {
+      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+        fs.copyFileSync(
+          f.describedFilePath,
+          Path.join(targetDirectory, Path.basename(f.describedFilePath))
+        );
+      }
+    });
   }
 }
