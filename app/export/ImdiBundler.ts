@@ -57,8 +57,8 @@ export default class ImdiBundler {
 
     this.outputDocumentFolder(
       project,
-      "Other Project Documents",
-      "Other_Project_Documents.imdi",
+      "OtherDocuments",
+      "OtherDocuments.imdi",
       rootDirectory,
       secondLevel,
       project.otherDocsFolder,
@@ -68,8 +68,8 @@ export default class ImdiBundler {
 
     this.outputDocumentFolder(
       project,
-      "Project Description Documents",
-      "Project_Description_Documents.imdi",
+      "DescriptionDocuments",
+      "DescriptionDocuments.imdi",
       rootDirectory,
       secondLevel,
       project.descriptionFolder,

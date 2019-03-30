@@ -232,7 +232,7 @@ export default class ImdiGenerator {
     this.startGroup("Session");
     this.requiredField("Name", "id");
     this.requiredField("Title", "title");
-    this.requiredField("Date", "date");
+    this.field("Date", "date", true, "Unspecified");
     this.optionalField("Description", "description");
 
     this.startGroup("MDGroup");
@@ -624,7 +624,14 @@ export default class ImdiGenerator {
     target?: Folder | File,
     projectFallbackFieldName?: string
   ) {
-    this.field(elementName, fieldName, true, target, projectFallbackFieldName);
+    this.field(
+      elementName,
+      fieldName,
+      true,
+      "",
+      target,
+      projectFallbackFieldName
+    );
   }
   private optionalField(
     elementName: string,
@@ -632,12 +639,20 @@ export default class ImdiGenerator {
     target?: Folder | File,
     projectFallbackFieldName?: string
   ) {
-    this.field(elementName, fieldName, false, target, projectFallbackFieldName);
+    this.field(
+      elementName,
+      fieldName,
+      false,
+      "",
+      target,
+      projectFallbackFieldName
+    );
   }
   private field(
     elementName: string,
     fieldName: string,
     xmlElementIsRequired: boolean,
+    defaultValue: string,
     target?: Folder | File,
     projectFallbackFieldName?: string
   ) {
@@ -652,7 +667,7 @@ export default class ImdiGenerator {
       this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
     }
 
-    const text = v && v.length > 0 ? v : "";
+    const text = v && v.length > 0 ? v : defaultValue;
     if (xmlElementIsRequired || (v && v.length > 0)) {
       this.tail = this.tail.element(elementName, text);
       const definition = f.properties.getFieldDefinition(fieldName);
@@ -733,7 +748,7 @@ export default class ImdiGenerator {
     this.startXmlRoot("SESSION");
     this.startGroup("Session");
     this.element("Name", name);
-    this.element("Title", "HELELO!");
+    this.element("Title", name);
     this.element("Date", this.nowDate());
     this.tail.element("MDGroup").raw(
       `<Location>
