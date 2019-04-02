@@ -12,7 +12,7 @@ import { node } from "prop-types";
 let analytics: Analytics;
 
 export function initializeAnalytics() {
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "test" || userSettings.DeveloperMode) {
     analytics = new Analytics("bogus", {
       appName: "bogus",
       appVersion: require("package.json").version,
