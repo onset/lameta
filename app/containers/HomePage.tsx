@@ -98,7 +98,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       window.setTimeout(
         () =>
           window.alert(
-            `Thanks for helping to test SayMore X! Warning: this is not even a "beta", so make sure you have a backup of your work.`
+            `Thanks for helping to test SayMore X! Warning: this is a "beta", so make sure you have a backup of your work.`
           ),
         2000
       );
@@ -173,7 +173,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           this.projectHolder.project.displayName
         }  - SayMore X`
       : "SayMore X";
-    title += " " + require("../package.json").version;
+    title += " " + require("../package.json").version + " Beta";
 
     remote.getCurrentWindow().setTitle(title);
     return (
