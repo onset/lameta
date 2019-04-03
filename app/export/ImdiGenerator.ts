@@ -307,7 +307,13 @@ export default class ImdiGenerator {
       this.folderInFocus,
       /* project fallback */ "country"
     );
-    this.optionalField("Region", "locationRegion");
+    this.requiredField(
+      "Region",
+      "locationRegion",
+      this.folderInFocus,
+      "region"
+    ); // default to the region of the project
+
     this.optionalField("Address", "locationAddress"); // note, saymore also has a "location"
     this.exitGroup();
   }
@@ -632,6 +638,13 @@ export default class ImdiGenerator {
       target,
       projectFallbackFieldName
     );
+  }
+  private optionalFieldWithDefault(
+    elementName: string,
+    fieldName: string,
+    fallback: string
+  ) {
+    this.field(elementName, fieldName, false, fallback);
   }
   private optionalField(
     elementName: string,

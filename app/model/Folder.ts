@@ -121,6 +121,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         if (
           !path.endsWith(".meta") &&
           !path.endsWith(".test") &&
+          !fs.lstatSync(path).isDirectory() && // there's a problem with saymore classic oral annotation folders sneaking in
           Path.normalize(path) !==
             Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {

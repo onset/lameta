@@ -5,6 +5,7 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
+import { log } from "util";
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -147,14 +148,27 @@ export default class ImdiBundler {
 
   private static copyFolderOfFiles(files: File[], targetDirectory: string) {
     fs.ensureDirSync(Path.join(targetDirectory));
-
+    let errors = "";
+    let count = 0;
+    let failed = 0;
     files.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
-        fs.copyFileSync(
-          f.describedFilePath,
-          Path.join(targetDirectory, Path.basename(f.describedFilePath))
-        );
+        count++;
+        try {
+          fs.copyFileSync(
+            f.describedFilePath,
+            Path.join(targetDirectory, Path.basename(f.describedFilePath))
+          );
+        } catch (error) {
+          errors = errors + `Problem copying ${f.describedFilePath}+\r\n`;
+          log(error);
+          failed++;
+        }
       }
     });
+
+    if (errors.length > 0) {
+      alert(`Failed to copy ${failed} of ${count} files\r\n${errors}`);
+    }
   }
 }
