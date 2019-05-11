@@ -20,7 +20,7 @@ export class Person extends Folder {
 
   // checks either the name or the code
   public referenceIdMatches(name: string): boolean {
-    return name.toLowerCase() === this.getIdToUseForReferences();
+    return name.toLowerCase() === this.getIdToUseForReferences().toLowerCase();
   }
 
   public get metadataFileExtensionWithDot(): string {
