@@ -252,7 +252,7 @@ export class Field {
   */
 
   public ageOn(referenceDate: Date): string {
-    if (this.text.trim.length === 0) {
+    if (this.text.trim().length === 0) {
       return "";
     }
     const referenceMoment = moment(referenceDate);

@@ -599,16 +599,17 @@ export default class ImdiGenerator {
       If the exact age is not known, it is nevertheless useful to enter an approximate age. This will allow you later to 
       conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
       */
-      if (referenceDate) {
-        const age = person.ageOn(referenceDate);
-        if (age && age.length > 0) {
-          this.element("Age", age);
-        } else {
-          this.element("Age", "0"); // required element, can't be empty
-          this.tail.comment("Could not compute age");
-        }
+      const dateToCompareWith = referenceDate ? referenceDate : moment.today;
+      if (!referenceDate) {
+        this.tail.comment("The following is based on today's date.");
+      }
+
+      const age = person.ageOn(dateToCompareWith);
+      if (age && age.length > 0) {
+        this.element("Age", age);
       } else {
-        this.tail.comment("Age calculation requires session reference date.");
+        this.element("Age", "0"); // required element, can't be empty
+        this.tail.comment("Could not compute age");
       }
 
       this.requiredField("BirthDate", "birthYear", person);
