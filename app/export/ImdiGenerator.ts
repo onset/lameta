@@ -186,12 +186,8 @@ export default class ImdiGenerator {
       // Enhance: this matching algorithm is far from ideal.
       // It won't match on alternate names
       const matches = this.languageFinder.find(lang);
-      const code =
-        matches.length > 0 &&
-        // matches one of the names of the first choice exactly except for case and diacritics
-        matches[0].someNameMatches(lang)
-          ? matches[0].iso639_3
-          : "???";
+      const x = matches.filter(l => l.someNameMatches(lang)); // tolerant of case and diacritics
+      const code = x.length === 0 ? "und" : x[0].iso639_3;
 
       // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
       // a variety of codes to be used. However ELAR in particular apparently can only

@@ -15,7 +15,7 @@ class Language {
   public someNameMatches(name: string): boolean {
     return this.allNames().some(
       n =>
-        this.name.localeCompare(name, undefined, {
+        name.localeCompare(n, undefined, {
           sensitivity: "base"
         }) === 0
     );
