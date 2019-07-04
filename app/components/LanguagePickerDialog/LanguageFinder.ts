@@ -51,7 +51,7 @@ export default class LanguageFinder {
         language.iso639_2.toLowerCase() === prefix.toLowerCase())
     );
   }
-  public find(prefix: string): Language[] {
+  public findCodeFromName(prefix: string): Language[] {
     // gives us hits on name & codes that start with the prefix
     const matches = this.trie.get(prefix);
     return matches

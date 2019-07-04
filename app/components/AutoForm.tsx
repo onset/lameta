@@ -14,6 +14,7 @@ import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
 import AdditionalFieldsTable from "./MoreFieldsTable";
 import IsoLanguageEdit from "./IsoLanguageEdit";
+import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 
 export interface IProps {
   folder: Folder;
@@ -56,6 +57,14 @@ export default class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
+            />
+          );
+        } else if (f.definition.key === "languages") {
+          return (
+            <MultiLanguageFieldEdit
+              className={field.cssClass}
+              key={field.key}
+              field={field as Field}
             />
           );
         } else if (f.definition.key === "participants") {

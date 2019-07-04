@@ -52,6 +52,7 @@ export enum FieldType {
   Image,
   // Contributions,
   Language,
+  MultiLanguage,
   Function
 }
 export enum FieldVisibility {
@@ -94,6 +95,9 @@ export class Field {
       //   break;
       case "language":
         type = FieldType.Language;
+        break;
+      case "multiLanguage":
+        type = FieldType.MultiLanguage;
         break;
       case "function":
         type = FieldType.Function;
@@ -275,7 +279,8 @@ export class Field {
         return { type: "date", value: this.asISODateString() };
       case FieldType.Language:
         return { type: "language", value: this.text };
-
+      case FieldType.MultiLanguage:
+        return { type: "multiLanguage", value: this.text };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }

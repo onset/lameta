@@ -137,7 +137,8 @@ export default class ImdiGenerator {
     });
     this.exitGroup(); //</Actors>
   }
-  private addContentElement() {
+  private addSessionContentElement() {
+    const session = this.folderInFocus as Session;
     this.group("Content", () => {
       this.requiredField("Genre", "genre");
       this.requiredField("SubGenre", "subgenre");
@@ -149,17 +150,28 @@ export default class ImdiGenerator {
         // SayMore currently doesn't have Interactivity, EventStructure, Channel
       });
       this.group("Languages", () => {
-        this.addSessionLanguage(
-          "vernacularIso3CodeAndName",
-          "Content Language"
+        const languages = session.getLanguageCodes();
+        if (languages.length > 0) {
+          languages.forEach(code => {
+            const langName = "todo";
+            this.addSessionLanguage(code, langName, "Content Language");
+          });
+        } else {
+          this.addMissingSessionLanguage(
+            "vernacularIso3CodeAndName",
+            "Content Language"
+          );
+        }
+        this.addMissingSessionLanguage(
+          "analysisISO3CodeAndName",
+          "Working Language"
         );
-        this.addSessionLanguage("analysisISO3CodeAndName", "Working Language");
       });
       this.addCustomKeys(this.folderInFocus);
       this.optionalField("Description", "description");
     });
   }
-  private addSessionLanguage(key: string, description: string) {
+  private addMissingSessionLanguage(key: string, description: string) {
     // Note, SayMore Sessions don't currently have their own language...
     // so we have to get these languages from the project
     const parts = this.project.properties
@@ -167,17 +179,20 @@ export default class ImdiGenerator {
       .split(":")
       .map(s => s.trim());
     if (parts.length === 2) {
-      this.group("Language", () => {
-        this.element("Id", "ISO639-3:" + parts[0]);
-        this.element(
-          "Name",
-          parts[1],
-          false,
-          "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
-        );
-        this.element("Description", description);
-      });
+      this.addSessionLanguage(parts[0], parts[2], description);
     }
+  }
+  private addSessionLanguage(code: string, name: string, description: string) {
+    this.group("Language", () => {
+      this.element("Id", "ISO639-3:" + code);
+      this.element(
+        "Name",
+        name,
+        false,
+        "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
+      );
+      this.element("Description", description);
+    });
   }
   private addActorLanguage(lang: string, isPrimaryTongue?: boolean) {
     if (lang && lang.length > 0) {
@@ -185,7 +200,7 @@ export default class ImdiGenerator {
 
       // Enhance: this matching algorithm is far from ideal.
       // It won't match on alternate names
-      const matches = this.languageFinder.find(lang);
+      const matches = this.languageFinder.findCodeFromName(lang);
       const x = matches.filter(l => l.someNameMatches(lang)); // tolerant of case and diacritics
       const code = x.length === 0 ? "und" : x[0].iso639_3;
 
@@ -235,7 +250,7 @@ export default class ImdiGenerator {
     /**/ this.sessionLocation();
     /**/ this.addProjectInfo();
     this.element("Keys", ""); // required for validation. there is also a Keys under Content, which is where stuff is going at the moment.
-    /**/ this.addContentElement();
+    /**/ this.addSessionContentElement();
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
 
@@ -347,7 +362,6 @@ export default class ImdiGenerator {
     }
   }
   public static shouldIncludeFile(path: string): boolean {
-    const x = Path.extname(path);
     // skip these, on advice of ELAR
     return [".sprj", ".session", ".person"].indexOf(Path.extname(path)) === -1;
   }

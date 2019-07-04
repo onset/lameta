@@ -357,6 +357,10 @@
       "key": "title"
     },
     {
+      "key": "languages",
+      "type": "multiLanguage"
+    },
+    {
       "key": "participants",
       "englishLabel": "People"
     },

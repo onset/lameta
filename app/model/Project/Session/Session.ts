@@ -150,6 +150,13 @@ export class Session extends Folder {
       .split(";")
       .map(s => s.trim());
   }
+  public getLanguageCodes(): string[] {
+    return this.properties
+      .getTextStringOrEmpty("languages")
+      .split(";")
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+  }
   private setParticipantNames(names: string[]) {
     this.properties.setText("participants", names.join(";"));
   }
