@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-import { Creatable } from "react-select";
+// tslint:disable-next-line: no-submodule-imports
+import CreatableSelect from "react-select/creatable";
 import { useState, useEffect } from "react";
 import { reaction } from "mobx";
 
@@ -50,29 +51,48 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   //   });
   // });
 
+  const sessionColor = "#cff09f";
+
+  const customStyles = {
+    control: styles => ({ ...styles, backgroundColor: "white" }),
+    multiValue: (styles, { data }) => {
+      return {
+        ...styles,
+        backgroundColor: sessionColor,
+        fontSize: "12pt"
+      };
+    }
+  };
+
   const choices = [{ value: "en", label: "English" }];
 
   const [val, setVal] = useState(props.field.text);
+  const x = val.split(";").map(l => ({ value: l, label: l + "-name" }));
 
   //return useObservable(() => (
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
-      <Creatable
+      <CreatableSelect
         name={props.field.labelInUILanguage}
-        value={val}
-        onChange={v => {
-          const s: string = v as any;
+        def
+        //value={val}
+        defaultValue={x}
+        styles={customStyles}
+        delimiter=";"
+        onChange={(v: any[]) => {
+          const s: string = v.map(o => o.value).join(";");
           // NB: haven't worked out how to use mbox with functional components yet, so we
           // set the value
           props.field.setValueFromString(s);
           // and explicitly change the state so that we redraw
           setVal(s);
         }}
-        options={choices}
-        simpleValue
+        //options={choices}
+        //simpleValue
+        isMulti
       />
-      <div>{"-->" + props.field.text + "<--"}</div>
+      {/* <div>{"-->" + props.field.text + "<--"}</div> */}
     </div>
   );
 };

@@ -30,6 +30,20 @@ export default class AccessChooser extends React.Component<IProps> {
       });
     });
 
+    let currentOption: object | null = null;
+    if (this.props.field.text.trim().length > 0) {
+      const matchingOption = options.find(
+        (o: any) => o.value === this.props.field.text
+      );
+      currentOption = matchingOption
+        ? matchingOption
+        : {
+            value: this.props.field.text,
+            label: this.props.field.text + " <-- Invalid Access",
+            title: "This value is not in the current access protocol."
+          };
+    }
+
     return (
       <div className={"field access-chooser"}>
         <label>
@@ -37,7 +51,7 @@ export default class AccessChooser extends React.Component<IProps> {
         </label>
         <ReactSelectClass
           name={this.props.field.labelInUILanguage}
-          value={this.props.field.text}
+          value={currentOption}
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;
           }}

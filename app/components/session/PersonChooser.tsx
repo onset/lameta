@@ -1,6 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Creatable, Option, OptionValues } from "react-select";
+// tslint:disable-next-line: no-submodule-imports
+import CreatableSelect from "react-select/creatable";
 
 export interface IProps {
   name: string;
@@ -37,7 +38,7 @@ export default class PersonChooser extends React.Component<IProps> {
     }
     return (
       //<ReactSelect <-- if we didn't want to allow new
-      <Creatable
+      <CreatableSelect
         name={this.props.name}
         value={this.props.name}
         onChange={v => {

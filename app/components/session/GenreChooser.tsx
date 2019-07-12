@@ -34,12 +34,24 @@ export default class GenreChooser extends React.Component<
       });
     });
 
+    let currentOption: object | null = null;
+    if (this.props.field.text.trim().length > 0) {
+      const matchingOption = options.find(
+        (o: any) => o.value === this.props.field.text
+      );
+      currentOption = matchingOption
+        ? matchingOption
+        : {
+            value: this.props.field.text,
+            label: this.props.field.text + " <-- Not in List",
+            title: "This value is not in the genre list."
+          };
+    }
     return (
       <div className={"field " + this.props.className}>
         <label>{label}</label>
         <ReactSelect
-          name={"fred"}
-          value={this.props.field.text}
+          value={currentOption}
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;
           }}
