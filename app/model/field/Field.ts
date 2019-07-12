@@ -272,6 +272,7 @@ export class Field {
   }
 
   public typeAndValueEscapedForXml(): { type: string; value: string } {
+    console.assert(this.text !== null && this.text !== undefined);
     switch (this.type) {
       case FieldType.Text:
         return { type: "string", value: Field.escapeSpecialChars(this.text) };
@@ -293,6 +294,8 @@ export class Field {
 
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
   protected static escapeSpecialChars(s: string): string {
+    console.assert(s !== null && s !== undefined);
+    console.log(s);
     return s
       .replace(/\\n/g, "\\n")
       .replace(/\\'/g, "\\'")

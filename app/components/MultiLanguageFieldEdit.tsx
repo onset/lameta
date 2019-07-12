@@ -1,98 +1,98 @@
-import * as React from "react";
-import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
-import { useState, useEffect } from "react";
-import { reaction } from "mobx";
+// tslint:disable-next-line: no-submodule-imports
+import AsyncSelect from "react-select/async";
+import { default as React, useState, useEffect } from "react";
+import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+let languageFinder: LanguageFinder | undefined;
 
 export interface IProps {
   field: Field;
 }
-function useObservable(cb, deps = []) {
-  const [val, setState] = useState(cb);
-  useEffect(() => {
-    setState(cb());
-    return reaction(cb, v => setState(v));
-  }, deps);
-  return val;
-}
-// automatically update when the value changes
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export const MultiLanguageFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = props => {
-  //this.state = { invalid: false };
-
-  // private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
-  //   // NB: Don't trim here. It is tempting, because at the end of the day we'd
-  //   // like it trimmed, but if you do it here, it's not possible to even
-  //   // type a space.
-  //   // NO: text.text = event.currentTarget.value.trim();
-  //   text.text = event.currentTarget.value;
-  //   this.setState({ invalid: false });
-  // }
-
-  // private static getValue(text: Field): string {
-  //   if (text === undefined) {
-  //     return "Null Text";
-  //   }
-  //   return text.text;
-  // }
-
-  // public render() {
-  //    const label: string = this.props.field.labelInUILanguage;
-
-  // const choices = this.props.getPeopleNames().map(c => {
-  //   return new Object({
-  //     value: c,
-  //     label: c
-  //   });
-  // });
-
-  const sessionColor = "#cff09f";
+  if (!languageFinder) {
+    languageFinder = new LanguageFinder();
+  }
+  const languageColor = "#e69664";
 
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
     multiValue: (styles, { data }) => {
       return {
         ...styles,
-        backgroundColor: sessionColor,
-        fontSize: "12pt"
+        backgroundColor: "white",
+        fontSize: "12pt",
+        fontWeight: 600,
+        border: "solid thin " + languageColor,
+        color: "lightgray" // for the "x"
       };
     }
   };
 
-  const choices = [{ value: "en", label: "English" }];
+  const [languageCodeString, setLanguageCodeString] = useState(
+    props.field.text
+  );
+  const currentValueArray = languageCodeString
+    .split(";")
+    .filter(c => c.length > 0)
+    .map(code => ({
+      value: code,
+      label: languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
+    }));
 
-  const [val, setVal] = useState(props.field.text);
-  const x = val.split(";").map(l => ({ value: l, label: l + "-name" }));
-
-  //return useObservable(() => (
+  // const currentOptionObjects = currentValueArray.map(v => ({
+  //   value: v,
+  //   label: v + "-name"
+  // }));
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
-      <CreatableSelect
+      {/* <CreatableSelect
         name={props.field.labelInUILanguage}
-        def
-        //value={val}
-        defaultValue={x}
+        isClearable={false} // don't need the extra "x"
+        //defaultValue={currentValueArray}
+        value={currentValueArray}
         styles={customStyles}
         delimiter=";"
         onChange={(v: any[]) => {
-          const s: string = v.map(o => o.value).join(";");
+          // if you delete the last member, you get null instead of []
+          const newChoices = v ? v : [];
+          const s: string = newChoices.map(o => o.value).join(";");
           // NB: haven't worked out how to use mbox with functional components yet, so we
           // set the value
           props.field.setValueFromString(s);
           // and explicitly change the state so that we redraw
-          setVal(s);
+          setLanguageCodeString(s);
         }}
-        //options={choices}
-        //simpleValue
+        isMulti
+      /> */}
+
+      <AsyncSelect
+        name={props.field.labelInUILanguage}
+        isClearable={false} // don't need the extra "x"
+        loadOptions={(inputValue, callback) => {
+          const matches = languageFinder!.findMatchesForSelect(inputValue);
+          callback(matches);
+        }}
+        value={currentValueArray}
+        styles={customStyles}
+        onChange={(v: any[]) => {
+          // if you delete the last member, you get null instead of []
+          const newChoices = v ? v : [];
+          const s: string = newChoices.map(o => o.value).join(";");
+          // NB: haven't worked out how to use mbox with functional components yet, so we
+          // set the value
+          props.field.setValueFromString(s);
+          // and explicitly change the state so that we redraw
+          setLanguageCodeString(s);
+        }}
         isMulti
       />
-      {/* <div>{"-->" + props.field.text + "<--"}</div> */}
     </div>
   );
 };

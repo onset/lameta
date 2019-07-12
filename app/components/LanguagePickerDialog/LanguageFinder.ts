@@ -26,8 +26,9 @@ class Language {
 }
 
 export default class LanguageFinder {
-  private langs = new Array<Language>();
-  private trie: TrieSearch;
+  //private langs = new Array<Language>();
+  private langToCodeLookup: TrieSearch;
+  //private codeToLangLookup: TrieSearch;
 
   constructor(indexForTesting?) {
     // currently this uses a trie, which is overkill for this number of items,
@@ -36,11 +37,27 @@ export default class LanguageFinder {
     // Enhance this TrieSearch doesn't provide a way to include our alternative language name arrays
     // Enhance allow for matching even if close (e.g. levenshtein distance)
     // Configure the trie to match what is in the index json
-    this.trie = new TrieSearch("name", ["code", "two"], ["code", "three"]);
+    this.langToCodeLookup = new TrieSearch([
+      "name",
+      ["code", "two"],
+      ["code", "three"]
+    ]);
 
-    this.trie.addAll(
+    this.langToCodeLookup.addAll(
       indexForTesting ? indexForTesting : require("./SilLanguageDataIndex.json")
     );
+    // //this.langToCodeLookup.Array
+    // const x = require("./SilLanguageDataIndex.json");
+
+    // //    this.codeToLangLookup = new TrieSearch(["code", "three"]);
+    // this.codeToLangLookup = new TrieSearch([
+    //   "name", // Searches `object.name`
+    //   ["code", "three"] // `Search object.details.age`
+    // ]);
+    // //this.codeToLangLookup.add(x[2]);
+    // this.codeToLangLookup.addAll(x);
+    // console.log(">>>> " + this.codeToLangLookup.get("aaa"));
+    // console.log(">>>> " + JSON.stringify(this.codeToLangLookup.get("aab")));
   }
   private matchesPrefix(language, prefix: string): boolean {
     return (
@@ -53,7 +70,7 @@ export default class LanguageFinder {
   }
   public findCodeFromName(prefix: string): Language[] {
     // gives us hits on name & codes that start with the prefix
-    const matches = this.trie.get(prefix);
+    const matches = this.langToCodeLookup.get(prefix);
     return matches
       .map(m => new Language(m))
       .sort((a: Language, b: Language) => {
@@ -67,5 +84,42 @@ export default class LanguageFinder {
         // nothing matches exactly, so sort based on base character (disregarding diacritics)
         return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
       });
+  }
+  public findMatchesForSelect(prefix: string): any[] {
+    // gives us hits on name & codes that start with the prefix
+    const matches = this.langToCodeLookup.get(prefix);
+    return matches
+      .map(m => new Language(m))
+      .sort((a: Language, b: Language) => {
+        // if the user types "en", we want to suggest "english" above "en" of vietnam
+        if (prefix === "en" && a.iso639_2 === "en") {
+          return -1;
+        }
+        if (prefix === "en" && b.iso639_2 === "en") {
+          return 1;
+        }
+        //we want exact matches to sort before just prefix matches
+        if (this.matchesPrefix(a, prefix)) {
+          return -1;
+        }
+        if (this.matchesPrefix(b, prefix)) {
+          return 1;
+        }
+        // nothing matches exactly, so sort based on base character (disregarding diacritics)
+        return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+      })
+      .map(l => ({ value: l.iso639_3, label: l.name }));
+  }
+
+  public findOneLanguageNameFromCode_Or_ReturnCode(code: string) {
+    // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
+    const matches = this.langToCodeLookup.get(code);
+    const x = matches.filter(m => {
+      return m.code.two === code || m.code.three === code;
+    });
+    if (x.length === 1) {
+      return x[0].name;
+    }
+    return code;
   }
 }

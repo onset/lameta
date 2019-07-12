@@ -41,8 +41,8 @@ export default class PersonChooser extends React.Component<IProps> {
       <CreatableSelect
         name={this.props.name}
         value={this.props.name}
-        onChange={v => {
-          const s: string = v as any;
+        onChange={(v: any) => {
+          const s: string = v.value;
           this.props.onChange(s ? s : "");
         }}
         options={choices}

@@ -153,7 +153,9 @@ export default class ImdiGenerator {
         const languages = session.getLanguageCodes();
         if (languages.length > 0) {
           languages.forEach(code => {
-            const langName = "todo";
+            const langName = this.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Content Language");
           });
         } else {
@@ -162,10 +164,15 @@ export default class ImdiGenerator {
             "Content Language"
           );
         }
-        this.addMissingSessionLanguage(
-          "analysisISO3CodeAndName",
+        this.addSessionLanguage(
+          this.project.getWorkingLanguageCode(),
+          this.project.getWorkingLanguageName(),
           "Working Language"
         );
+        // this.addMissingSessionLanguage(
+        //   "analysisISO3CodeAndName",
+        //   "Working Language"
+        // );
       });
       this.addCustomKeys(this.folderInFocus);
       this.optionalField("Description", "description");

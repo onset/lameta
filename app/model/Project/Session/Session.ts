@@ -4,6 +4,7 @@ import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 const knownFieldDefinitions = require("../../field/fields.json");
+import { Project } from "../Project";
 
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -28,6 +29,11 @@ export class Session extends Folder {
     this.properties.setText("id", Path.basename(directory));
     this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
     this.knownFields = knownFieldDefinitions.session; // for csv export
+
+    // default to the project's content language
+    if (this.properties.getTextStringOrEmpty("languages") === "") {
+      this.properties.setText("languages", Project.getDefaultLanguage());
+    }
   }
   public static fromDirectory(
     directory: string,

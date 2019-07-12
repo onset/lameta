@@ -22,6 +22,9 @@ import userSettings from "../../UserSettings";
 const genres = require("./Session/genres.json");
 
 const knownFieldDefinitions = require("../field/fields.json");
+
+let sCurrentProject: Project | null = null;
+
 export class ProjectHolder {
   @mobx.observable
   private projectInternal: Project | null;
@@ -39,6 +42,7 @@ export class ProjectHolder {
       console.log("setting project to " + p.directory);
     }
     this.projectInternal = p;
+    sCurrentProject = p;
   }
 }
 
@@ -55,6 +59,14 @@ export class Project extends Folder {
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
+
+  public static getDefaultLanguage() {
+    return sCurrentProject === null
+      ? ""
+      : sCurrentProject.properties.getTextStringOrEmpty(
+          "vernacularIso3CodeAndName"
+        );
+  }
 
   private constructor(
     directory: string,
@@ -404,6 +416,25 @@ export class Project extends Folder {
   //       .some(name => name.toLowerCase() === lowerCaseName)
   //   );
   // }
+
+  /*  public getContentLanguageName(): string {
+    return this.getContentLanguageCode()
+      .split(":")
+      .slice(-1)[0]
+      .trim(); // last element (will be the name , if there is a ':')
+  }
+  public getContentLanguageCode(): string {
+    return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
+  }*/
+  public getWorkingLanguageName(): string {
+    return this.getWorkingLanguageCode()
+      .split(":")
+      .slice(-1)[0]
+      .trim(); // last element (will be the name , if there is a ':')
+  }
+  public getWorkingLanguageCode(): string {
+    return this.properties.getTextStringOrEmpty("analysisISO3CodeAndName");
+  }
 }
 
 export class ProjectMetadataFile extends FolderMetadataFile {

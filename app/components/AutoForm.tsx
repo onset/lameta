@@ -8,7 +8,7 @@ import { Folder } from "../model/Folder";
 import GenreChooser from "./session/GenreChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
-import PeopleChooser from "./session/PeopleChooser";
+import { PeopleChooser } from "./session/PeopleChooser";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
