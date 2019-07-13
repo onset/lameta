@@ -85,21 +85,20 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       />
     );
   }
-
-  private renderDate(cellInfo: any) {
-    const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
-    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
+  private renderDeleteButton(cellInfo: any) {
+    // don't provide a delete on the intentionally blank row
+    if (cellInfo.index === this.props.file.contributions.length - 1) {
+      return null;
+    }
     return (
-      <DatePicker
-        selected={m}
-        onChange={newDate => {
-          if (newDate != null) {
-            contribution[key] = newDate.toISOString();
-            this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
-          }
+      <button
+        onClick={() => {
+          this.props.file.removeContribution(cellInfo.index);
+          this.setState({}); // update to show the change
         }}
-      />
+      >
+        X
+      </button>
     );
   }
 
@@ -127,6 +126,11 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         Header: i18n._(t`Comments`),
         accessor: "comments",
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+      },
+      {
+        //Header: i18n._(t`Comments`),
+        accessor: "delete",
+        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)
       }
     ];
 

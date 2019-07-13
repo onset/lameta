@@ -37,7 +37,7 @@ export default class AutoForm extends React.Component<IProps> {
     super(props);
   }
 
-  private makeEdit(field: Field): JSX.Element {
+  private makeEdit(field: Field, folder: Folder): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
@@ -71,7 +71,7 @@ export default class AutoForm extends React.Component<IProps> {
           return (
             <PeopleChooser
               key={f.key} // for some reason we get a key error without this
-              field={field as Field}
+              folder={folder}
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
             />
@@ -171,7 +171,7 @@ export default class AutoForm extends React.Component<IProps> {
           .map(k => this.props.folder.properties.getValueOrThrow(k))
 
           .filter(field => field.form === this.props.form)
-          .map(field => this.makeEdit(field))}
+          .map(field => this.makeEdit(field, this.props.folder))}
         {this.props.folder.hasMoreFieldsTable ? (
           <AdditionalFieldsTable folder={this.props.folder} />
         ) : (

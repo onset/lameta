@@ -4,16 +4,19 @@ import { Field } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
 import { useState } from "react";
+import { Folder } from "../../model/Folder";
+import { Contribution } from "../../model/file/File";
+import { Trans } from "@lingui/react";
 
 export interface IProps {
-  field: Field;
+  folder: Folder;
   getPeopleNames: () => string[];
 }
 
 export const PeopleChooser: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = props => {
-  const [val, setVal] = useState(props.field.text);
+  const [toggle, setToggle] = useState(false);
   const peopleColor = "#becde4";
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
@@ -29,27 +32,30 @@ export const PeopleChooser: React.FunctionComponent<
     }
   };
 
-  const label: string = props.field.labelInUILanguage;
+  //const label: string = props.field.labelInUILanguage;
   const choices = props.getPeopleNames().map(c => {
     return new Object({
-      value: c,
+      value: { name: c, role: "participant", comments: "" },
       label: c
     });
   });
 
-  const currentValueArray = val
-    .split(";")
-    .filter(c => c.length > 0)
-    .map(l => ({ value: l, label: l }));
+  const currentValueArray = props.folder
+    .metadataFile!.contributions.filter(c => c.personReference)
+    .map(c => ({
+      value: { name: c.personReference, role: c.role, comments: c.comments }, // the role in the value is to avoid the react error where the keys are the same
+      label: c.personReference + ":" + (c.role || "")
+    }));
 
   return (
     <div className={"field " + props.className}>
-      <label>{label}</label>
+      <label>
+        <Trans>People</Trans>
+      </label>
       <ReactSelect
         styles={customStyles}
-        name={props.field.englishLabel}
-        defaultValue={currentValueArray}
-        delimiter=";"
+        name={"People"}
+        value={currentValueArray}
         noOptionsMessage={() =>
           "Person not found. To add people, go to the People tab."
         }
@@ -57,16 +63,21 @@ export const PeopleChooser: React.FunctionComponent<
         onChange={(v: any[]) => {
           // if you delete the last member, you get null instead of []
           const newChoices = v ? v : [];
-          const s: string = newChoices.map(o => o.value).join(";");
           // NB: haven't worked out how to use mbox with functional components yet, so we
           // set the value
-          props.field.setValueFromString(s);
+          //props.field.setValueFromString(s);
+          props.folder.metadataFile!.contributions = [];
+          newChoices.forEach(c => {
+            props.folder.metadataFile!.contributions.push(
+              new Contribution(c.value.name, c.value.role, "", c.value.comments)
+            );
+          });
+
           // and explicitly change the state so that we redraw
-          setVal(s);
+          setToggle(!toggle);
         }}
         options={choices}
         isMulti
-        simpleValue // causes it to be split up by our delimeter
         removeSelected={false}
       />
     </div>

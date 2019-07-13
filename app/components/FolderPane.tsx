@@ -174,6 +174,9 @@ export class FolderPane extends React.Component<IProps> {
                 <Trans>Session</Trans>
               </Tab>
               <Tab>
+                <Trans>Contributors</Trans>
+              </Tab>
+              <Tab>
                 <Trans>Status</Trans>
               </Tab>
               <Tab>
@@ -206,11 +209,13 @@ export class FolderPane extends React.Component<IProps> {
                 />
               </SMErrorBoundary>
             </TabPanel>
+            {contributorsPanel}
             <TabPanel>
               <StatusControl
                 statusField={directoryObject.properties.getTextField("status")}
               />
             </TabPanel>
+
             {notesPanel}
             {imdiPanel}
           </Tabs>

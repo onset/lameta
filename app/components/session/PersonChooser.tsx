@@ -40,13 +40,12 @@ export default class PersonChooser extends React.Component<IProps> {
       //<ReactSelect <-- if we didn't want to allow new
       <CreatableSelect
         name={this.props.name}
-        value={this.props.name}
+        value={{ value: this.props.name, label: this.props.name }}
         onChange={(v: any) => {
           const s: string = v.value;
           this.props.onChange(s ? s : "");
         }}
         options={choices}
-        simpleValue
       />
     );
   }

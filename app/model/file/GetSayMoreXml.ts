@@ -21,6 +21,16 @@ export default function getSayMoreXml(
     .values()
     .filter(field => field.persist);
   writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
+  if (properties.getValue("participants")) {
+    // In older versions of SayMore & SayMoreX, there were "participants", people without roles.
+    // Now we just use the Contributors, which have roles and comments. But we still write out
+    // this list in case the file is opened by an old version of SayMore
+    const legacyParticipantsList = contributions
+      .map(c => c.personReference)
+      .join(";");
+    root.element("participants", {}, legacyParticipantsList);
+  }
+
   writeContributions(root, contributions);
 
   // "Additional Fields are labeled "More Fields" in the UI.
@@ -111,7 +121,7 @@ function writeContributions(
         tail = tail.element("name", contribution.personReference).up();
       }
       // SayMore classic will crash if there is no role. It is limited to the
-      // roels in olac, so it does not accept
+      // roles in olac, so it does not accept
       // something like "unspecified". To allow smx to have unspecified,
       // we give it "participant" which something approaching a generic role. But then if we do this,
       // we emit an "smxrole" for what we really want, so as long as you stay in smx, you

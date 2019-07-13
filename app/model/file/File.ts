@@ -485,6 +485,10 @@ export /*babel doesn't like this: abstract*/ class File {
     );
     this.contributions.push(n);
   }
+  public removeContribution(index: number) {
+    console.assert(index >= 0 && index < this.contributions.length);
+    this.contributions.splice(index, 1);
+  }
 
   private haveReadMetadataFile: boolean = false;
   public readMetadataFile() {

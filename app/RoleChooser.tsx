@@ -5,7 +5,6 @@ import ReactSelectClass from "react-select";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
 import { Contribution } from "./model/file/File";
 import { translateRole } from "./localization";
-
 const titleCase = require("title-case");
 
 export interface IProps {
@@ -30,11 +29,14 @@ export default class RoleChooser extends React.Component<IProps> {
         title: c.description
       });
     });
-
+    const currentValueWrappedForSelect = {
+      value: this.props.contribution.role,
+      label: titleCase(translateRole(this.props.contribution.role))
+    };
     return (
       <ReactSelectClass
-        // name={this.props.field.englishLabel}
-        value={this.props.contribution.role}
+        name={"select role"}
+        value={currentValueWrappedForSelect}
         onChange={(s: any) => {
           this.props.contribution.role = (s && s.value
             ? s.value
