@@ -1,23 +1,22 @@
-import * as React from "react";
-import { observer } from "mobx-react";
-import { Field } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
-import { useState } from "react";
+import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder";
 import { Contribution } from "../../model/file/File";
 import { Trans } from "@lingui/react";
+import { translateRole } from "../../localization";
+const titleCase = require("title-case");
 
 export interface IProps {
   folder: Folder;
   getPeopleNames: () => string[];
+  onShowContributorsTab: (contributions: Contribution) => void;
 }
 
 export const PeopleChooser: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = props => {
   const [toggle, setToggle] = useState(false);
-  const peopleColor = "#becde4";
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
     multiValue: styles => {
@@ -25,7 +24,7 @@ export const PeopleChooser: React.FunctionComponent<
         ...styles,
         fontSize: "12pt",
         fontWeight: 600,
-        border: "solid thin " + peopleColor,
+        border: "solid 2px #cff09f ",
         backgroundColor: "white",
         color: "lightgray" // for the "x"
       };
@@ -33,19 +32,39 @@ export const PeopleChooser: React.FunctionComponent<
   };
 
   //const label: string = props.field.labelInUILanguage;
-  const choices = props.getPeopleNames().map(c => {
+  const choices = props.getPeopleNames().map((name, index) => {
     return new Object({
-      value: { name: c, role: "participant", comments: "" },
-      label: c
+      value: "choice" + index, // only function of this is as a unique key
+      contribution: new Contribution(name, "participant", "", ""),
+      label: name
     });
   });
 
   const currentValueArray = props.folder
     .metadataFile!.contributions.filter(c => c.personReference)
-    .map(c => ({
-      value: { name: c.personReference, role: c.role, comments: c.comments }, // the role in the value is to avoid the react error where the keys are the same
-      label: c.personReference + ":" + (c.role || "")
+    .map((c, index) => ({
+      value: "existing" + index, // only function of this is as a unique key
+      label: c.personReference + ":" + (c.role || ""),
+      contribution: c
     }));
+
+  const CustomLabel = ({ children, data, innerProps, isDisabled }) => {
+    return !isDisabled ? (
+      <div
+        onClick={e => {
+          e.preventDefault(); // doesn't work. Trying to prevent the list from react-select list from dropping down
+          e.stopPropagation(); // doesn't work
+          props.onShowContributorsTab(data.contribution);
+        }}
+        {...innerProps}
+      >
+        <div>{data.contribution.personReference}</div>
+        <div className="select-contributorRole">
+          {titleCase(translateRole(data.contribution.role))}
+        </div>
+      </div>
+    ) : null;
+  };
 
   return (
     <div className={"field " + props.className}>
@@ -53,6 +72,7 @@ export const PeopleChooser: React.FunctionComponent<
         <Trans>People</Trans>
       </label>
       <ReactSelect
+        components={{ MultiValueLabel: CustomLabel }}
         styles={customStyles}
         name={"People"}
         value={currentValueArray}
@@ -68,9 +88,7 @@ export const PeopleChooser: React.FunctionComponent<
           //props.field.setValueFromString(s);
           props.folder.metadataFile!.contributions = [];
           newChoices.forEach(c => {
-            props.folder.metadataFile!.contributions.push(
-              new Contribution(c.value.name, c.value.role, "", c.value.comments)
-            );
+            props.folder.metadataFile!.contributions.push(c.contribution);
           });
 
           // and explicitly change the state so that we redraw

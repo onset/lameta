@@ -157,9 +157,6 @@ export class Session extends Folder {
       })
     );
 
-    // Add contributions listed at the Session level
-    contributionsToList.push(...this.metadataFile!.contributions);
-
     //In addition to being listed in the contributors list for one of the constituent files,
     // people can also be listed as a "participant", which until we tighten up the semantics,
     // we will take to mean a "speaker".

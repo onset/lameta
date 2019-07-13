@@ -104,7 +104,9 @@ export default class ImdiGenerator {
     const session = this.folderInFocus as Session;
     session.getAllContributionsToAllFiles().forEach(contribution => {
       const trimmedName = contribution.personReference.trim();
-      console.assert(trimmedName.length > 0);
+      if (trimmedName.length === 0) {
+        return;
+      }
       const person = this.project.findPerson(trimmedName);
       if (person) {
         const referenceDate = session.properties.getDateField("date").asDate();

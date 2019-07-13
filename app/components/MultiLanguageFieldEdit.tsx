@@ -18,7 +18,6 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   if (!languageFinder) {
     languageFinder = new LanguageFinder();
   }
-  const languageColor = "#e69664";
 
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
@@ -28,7 +27,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         backgroundColor: "white",
         fontSize: "12pt",
         fontWeight: 600,
-        border: "solid thin " + languageColor,
+        border: "solid 2px #cff09f",
         color: "lightgray" // for the "x"
       };
     }

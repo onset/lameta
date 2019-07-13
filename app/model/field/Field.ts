@@ -295,7 +295,6 @@ export class Field {
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
   protected static escapeSpecialChars(s: string): string {
     console.assert(s !== null && s !== undefined);
-    console.log(s);
     return s
       .replace(/\\n/g, "\\n")
       .replace(/\\'/g, "\\'")

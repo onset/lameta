@@ -15,6 +15,7 @@ import CustomFieldsTable from "./CustomFieldsTable";
 import AdditionalFieldsTable from "./MoreFieldsTable";
 import IsoLanguageEdit from "./IsoLanguageEdit";
 import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
+import { Contribution } from "../model/file/File";
 
 export interface IProps {
   folder: Folder;
@@ -26,6 +27,7 @@ export interface IProps {
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
   validateFieldThatControlsFileNames?: (value: string) => boolean;
+  onShowContributorsTab?: (contributions: Contribution) => void;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -74,6 +76,7 @@ export default class AutoForm extends React.Component<IProps> {
               folder={folder}
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
+              onShowContributorsTab={this.props.onShowContributorsTab!}
             />
           );
         } else if (f.definition && f.definition.key === "genre") {

@@ -1,22 +1,19 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldType } from "../../model/field/Field";
 import { File, Contribution } from "../../model/file/File";
 import ReactTable from "react-table";
-import DatePicker from "react-datepicker";
-import { Moment } from "moment";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
 import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
-const moment = require("moment");
 
 export interface IProps {
   // contributions: Contribution[];
   file: File;
   authorityLists: AuthorityLists;
+  selectContribution?: Contribution;
 }
 interface IState {
   unused: number;
@@ -77,7 +74,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
   }
   private renderRole(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
     return (
       <RoleChooser
         contribution={contribution}
@@ -92,12 +88,13 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     }
     return (
       <button
+        className="deleteButton"
         onClick={() => {
           this.props.file.removeContribution(cellInfo.index);
           this.setState({}); // update to show the change
         }}
       >
-        X
+        <img alt="delete" src={require(`../../img/trash.png`)} />
       </button>
     );
   }
@@ -129,6 +126,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       },
       {
         //Header: i18n._(t`Comments`),
+        maxWidth: 40,
         accessor: "delete",
         Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)
       }
@@ -141,6 +139,23 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         data={contributors}
         columns={columns}
         minRows={0} // don't show empty rows
+        // If we got here because the user clicked on a person in the Session tab,
+        // highlight the row corresponding to the contribution they clicked on.
+        getTrProps={(state, rowInfo, instance) => {
+          if (
+            rowInfo &&
+            this.props.selectContribution &&
+            rowInfo.original.personReference ===
+              this.props.selectContribution.personReference
+          ) {
+            return {
+              style: {
+                backgroundColor: "#cff09f"
+              }
+            };
+          }
+          return {};
+        }}
       />
     );
   }
