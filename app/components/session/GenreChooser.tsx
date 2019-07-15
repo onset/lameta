@@ -37,7 +37,8 @@ export default class GenreChooser extends React.Component<
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {
       const matchingOption = options.find(
-        (o: any) => o.value === this.props.field.text
+        (o: any) =>
+          o.value.toLowerCase() === this.props.field.text.toLowerCase()
       );
       currentOption = matchingOption
         ? matchingOption

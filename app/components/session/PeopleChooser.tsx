@@ -6,6 +6,8 @@ import { Contribution } from "../../model/file/File";
 import { Trans } from "@lingui/react";
 import { translateRole } from "../../localization";
 const titleCase = require("title-case");
+//import colors from "../../colors.scss"; // this will fail if you've touched the scss since last full webpack build
+const saymore_orange = "#e69664";
 
 export interface IProps {
   folder: Folder;
@@ -26,9 +28,22 @@ export const PeopleChooser: React.FunctionComponent<
         fontWeight: 600,
         border: "solid 2px #cff09f ",
         backgroundColor: "white",
-        color: "lightgray" // for the "x"
+        color: "lightgray", // for the "x"
+        ":hover": {
+          borderColor: saymore_orange,
+          cursor: "pointer"
+        }
       };
-    }
+    },
+
+    multiValueRemove: (styles, { data }) => ({
+      ...styles,
+      //color: "white",
+      ":hover": {
+        backgroundColor: saymore_orange,
+        color: "white"
+      }
+    })
   };
 
   //const label: string = props.field.labelInUILanguage;

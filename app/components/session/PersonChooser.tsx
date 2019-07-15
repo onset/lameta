@@ -2,11 +2,15 @@ import * as React from "react";
 import { observer } from "mobx-react";
 // tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
+//import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
+
+const saymore_orange = "#e69664";
 
 export interface IProps {
   name: string;
   getPeopleNames: () => string[];
   onChange: (name: string) => void;
+  highlight: boolean;
 }
 
 @observer
@@ -16,6 +20,15 @@ export default class PersonChooser extends React.Component<IProps> {
   }
 
   public render() {
+    const customStyles = {
+      container: (styles, { data }) => {
+        return {
+          ...styles,
+          border: this.props.highlight ? "solid 2px " + saymore_orange : "none"
+        };
+      }
+    };
+
     //console.log("person name: " + JSON.stringify(this.props.name));
     const choices = this.props.getPeopleNames().map(c => {
       return new Object({
@@ -40,6 +53,7 @@ export default class PersonChooser extends React.Component<IProps> {
       //<ReactSelect <-- if we didn't want to allow new
       <CreatableSelect
         name={this.props.name}
+        styles={customStyles}
         value={{ value: this.props.name, label: this.props.name }}
         onChange={(v: any) => {
           const s: string = v.value;

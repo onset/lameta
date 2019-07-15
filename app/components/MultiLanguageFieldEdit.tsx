@@ -5,6 +5,10 @@ import CreatableSelect from "react-select/creatable";
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
 import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+//import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
+
+const saymore_orange = "#e69664";
+
 let languageFinder: LanguageFinder | undefined;
 
 export interface IProps {
@@ -30,7 +34,15 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         border: "solid 2px #cff09f",
         color: "lightgray" // for the "x"
       };
-    }
+    },
+    multiValueRemove: (styles, { data }) => ({
+      ...styles,
+      //color: "white",
+      ":hover": {
+        backgroundColor: saymore_orange,
+        color: "white"
+      }
+    })
   };
 
   const [languageCodeString, setLanguageCodeString] = useState(
@@ -39,37 +51,15 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   const currentValueArray = languageCodeString
     .split(";")
     .filter(c => c.length > 0)
+    .map(c => c.trim())
     .map(code => ({
       value: code,
       label: languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
     }));
 
-  // const currentOptionObjects = currentValueArray.map(v => ({
-  //   value: v,
-  //   label: v + "-name"
-  // }));
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
-      {/* <CreatableSelect
-        name={props.field.labelInUILanguage}
-        isClearable={false} // don't need the extra "x"
-        //defaultValue={currentValueArray}
-        value={currentValueArray}
-        styles={customStyles}
-        delimiter=";"
-        onChange={(v: any[]) => {
-          // if you delete the last member, you get null instead of []
-          const newChoices = v ? v : [];
-          const s: string = newChoices.map(o => o.value).join(";");
-          // NB: haven't worked out how to use mbox with functional components yet, so we
-          // set the value
-          props.field.setValueFromString(s);
-          // and explicitly change the state so that we redraw
-          setLanguageCodeString(s);
-        }}
-        isMulti
-      /> */}
 
       <AsyncSelect
         name={props.field.labelInUILanguage}

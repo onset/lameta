@@ -10,7 +10,6 @@ import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
 
 export interface IProps {
-  // contributions: Contribution[];
   file: File;
   authorityLists: AuthorityLists;
   selectContribution?: Contribution;
@@ -46,16 +45,22 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     const key: keyof Contribution = cellInfo.column.id;
+
+    const highlight: boolean =
+      this.props.selectContribution !== undefined &&
+      contribution.personReference ===
+        this.props.selectContribution.personReference;
+
     return (
       <PersonChooser
         getPeopleNames={this.props.authorityLists.getPeopleNames}
         name={contribution.personReference}
         onChange={name => {
-          console.log("name:" + name);
           contribution.personReference = name;
           this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}
+        highlight={highlight}
       />
     );
   }
@@ -139,23 +144,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         data={contributors}
         columns={columns}
         minRows={0} // don't show empty rows
-        // If we got here because the user clicked on a person in the Session tab,
-        // highlight the row corresponding to the contribution they clicked on.
-        getTrProps={(state, rowInfo, instance) => {
-          if (
-            rowInfo &&
-            this.props.selectContribution &&
-            rowInfo.original.personReference ===
-              this.props.selectContribution.personReference
-          ) {
-            return {
-              style: {
-                backgroundColor: "#cff09f"
-              }
-            };
-          }
-          return {};
-        }}
       />
     );
   }
