@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import FileList from "./FileList";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";
 import { Folder } from "../model/Folder";
@@ -35,22 +35,14 @@ export interface IProps {
   fileListButtons?: object[];
 }
 
-//@observer
-export const FolderPane: React.FunctionComponent<
+export const FolderPane = observer<
   IProps & React.HTMLAttributes<HTMLDivElement>
-> = props => {
+>((props: any) => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [selectedContribution, setSelectedContribution] = React.useState<
     Contribution | undefined
   >(undefined);
-  const [processingContribution, setProcessingContribution] = React.useState(
-    false
-  );
-  // React.useEffect(() => {
-  //   if (!processingContribution && selectedContribution) {
-  //     setProcessingContribution(false);
-  //   }
-  // });
+
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
   }
@@ -81,7 +73,7 @@ export const FolderPane: React.FunctionComponent<
       </SplitPane>
     </div>
   );
-};
+});
 
 function getTabs(
   props: React.PropsWithChildren<IProps & React.HTMLAttributes<HTMLDivElement>>,
