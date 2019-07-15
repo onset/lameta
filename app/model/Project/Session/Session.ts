@@ -32,7 +32,7 @@ export class Session extends Folder {
 
     // default to the project's content language
     if (this.properties.getTextStringOrEmpty("languages") === "") {
-      this.properties.setText("languages", Project.getDefaultLanguage());
+      this.properties.setText("languages", Project.getDefaultLanguageCode());
     }
   }
   public static fromDirectory(

@@ -112,14 +112,15 @@ export default class LanguageFinder {
   }
 
   public findOneLanguageNameFromCode_Or_ReturnCode(code: string) {
+    const trimmedCode = code.trim();
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
-    const matches = this.langToCodeLookup.get(code);
+    const matches = this.langToCodeLookup.get(trimmedCode);
     const x = matches.filter(m => {
-      return m.code.two === code || m.code.three === code;
+      return m.code.two === trimmedCode || m.code.three === trimmedCode;
     });
     if (x.length === 1) {
       return x[0].name;
     }
-    return code;
+    return trimmedCode;
   }
 }

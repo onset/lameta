@@ -60,12 +60,15 @@ export class Project extends Folder {
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
 
-  public static getDefaultLanguage() {
-    return sCurrentProject === null
-      ? ""
-      : sCurrentProject.properties.getTextStringOrEmpty(
-          "vernacularIso3CodeAndName"
-        );
+  public static getDefaultLanguageCode() {
+    const codeAndName =
+      sCurrentProject === null
+        ? ""
+        : sCurrentProject.properties.getTextStringOrEmpty(
+            "vernacularIso3CodeAndName"
+          );
+
+    return codeAndName.split(":")[0].trim();
   }
 
   private constructor(
