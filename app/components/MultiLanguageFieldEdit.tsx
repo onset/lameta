@@ -65,7 +65,10 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         name={props.field.labelInUILanguage}
         isClearable={false} // don't need the extra "x"
         loadOptions={(inputValue, callback) => {
-          const matches = languageFinder!.findMatchesForSelect(inputValue);
+          const matches =
+            inputValue.length > 1
+              ? languageFinder!.findMatchesForSelect(inputValue)
+              : [];
           callback(matches);
         }}
         value={currentValueArray}

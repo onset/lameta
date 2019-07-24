@@ -358,7 +358,13 @@
     },
     {
       "key": "languages",
-      "type": "multiLanguage"
+      "type": "multiLanguage",
+      "englishLabel": "Content Languages"
+    },
+    {
+      "key": "workingLanguages",
+      "type": "multiLanguage",
+      "englishLabel": "Working Languages"
     },
     {
       "key": "participants",

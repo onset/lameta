@@ -2,12 +2,14 @@ import TrieSearch from "trie-search";
 
 class Language {
   public name: string;
+  public altNames: string[];
   // tslint:disable-next-line:variable-name
   public iso639_3: string;
   // tslint:disable-next-line:variable-name
   public iso639_2: string | undefined;
   constructor(jsonFromIndex: any) {
     this.name = jsonFromIndex.name;
+    this.altNames = jsonFromIndex.altNames;
     this.iso639_3 = jsonFromIndex.code.three;
     //most languages do not have a 2 letter code
     this.iso639_2 = jsonFromIndex.code.two;
@@ -21,7 +23,7 @@ class Language {
     );
   }
   public allNames(): string[] {
-    return [this.name]; // don't have altnames yet
+    return [this.name, ...this.altNames];
   }
 }
 
@@ -39,33 +41,41 @@ export default class LanguageFinder {
     // Configure the trie to match what is in the index json
     this.langToCodeLookup = new TrieSearch([
       "name",
+      //"altNames", TrieSearch can't handle array values
       ["code", "two"],
       ["code", "three"]
     ]);
 
-    this.langToCodeLookup.addAll(
-      indexForTesting ? indexForTesting : require("./SilLanguageDataIndex.json")
-    );
-    // //this.langToCodeLookup.Array
-    // const x = require("./SilLanguageDataIndex.json");
+    const index = indexForTesting
+      ? indexForTesting
+      : require("./SilLanguageDataIndex.json");
+    this.langToCodeLookup.addAll(index);
 
-    // //    this.codeToLangLookup = new TrieSearch(["code", "three"]);
-    // this.codeToLangLookup = new TrieSearch([
-    //   "name", // Searches `object.name`
-    //   ["code", "three"] // `Search object.details.age`
-    // ]);
-    // //this.codeToLangLookup.add(x[2]);
-    // this.codeToLangLookup.addAll(x);
-    // console.log(">>>> " + this.codeToLangLookup.get("aaa"));
-    // console.log(">>>> " + JSON.stringify(this.codeToLangLookup.get("aab")));
+    index.forEach(languageEntry => {
+      if (languageEntry.altNames && languageEntry.altNames.length > 0) {
+        languageEntry.altNames.forEach(alternativeName => {
+          this.langToCodeLookup.map(alternativeName, languageEntry);
+        });
+        // REVIEW: is it really that much slower to include them all?
+        // NOte, Deutsch is like, 3rd for German
+        //this.langToCodeLookup.map(languageEntry.altNames[0], languageEntry);
+      }
+    });
   }
-  private matchesPrefix(language, prefix: string): boolean {
+  private matchesPrefix(
+    language,
+    prefix: string,
+    includeAlternativeNames: boolean
+  ): boolean {
+    const name = language.name.toLowerCase();
+    const pfx = prefix.toLocaleLowerCase();
     return (
-      language.name.toLowerCase() === prefix.toLowerCase() ||
-      language.name.toLowerCase().startsWith(prefix.toLowerCase()) ||
-      language.iso639_3.toLowerCase() === prefix.toLowerCase() ||
-      (language.iso639_2 &&
-        language.iso639_2.toLowerCase() === prefix.toLowerCase())
+      name === pfx ||
+      name.startsWith(pfx) ||
+      language.iso639_3 === pfx ||
+      (language.iso639_2 && language.iso639_2 === pfx) ||
+      (includeAlternativeNames &&
+        language.altNames.some(n => n.toLowerCase().startsWith(pfx)))
     );
   }
   public findCodeFromName(prefix: string): Language[] {
@@ -75,10 +85,10 @@ export default class LanguageFinder {
       .map(m => new Language(m))
       .sort((a: Language, b: Language) => {
         //we want exact matches to sort before just prefix matches
-        if (this.matchesPrefix(a, prefix)) {
+        if (this.matchesPrefix(a, prefix, true)) {
           return -1;
         }
-        if (this.matchesPrefix(b, prefix)) {
+        if (this.matchesPrefix(b, prefix, true)) {
           return 1;
         }
         // nothing matches exactly, so sort based on base character (disregarding diacritics)
@@ -88,27 +98,60 @@ export default class LanguageFinder {
   public findMatchesForSelect(prefix: string): any[] {
     // gives us hits on name & codes that start with the prefix
     const matches = this.langToCodeLookup.get(prefix);
-    return matches
-      .map(m => new Language(m))
-      .sort((a: Language, b: Language) => {
-        // if the user types "en", we want to suggest "english" above "en" of vietnam
-        if (prefix === "en" && a.iso639_2 === "en") {
-          return -1;
-        }
-        if (prefix === "en" && b.iso639_2 === "en") {
-          return 1;
-        }
+    const pfx = prefix.toLocaleLowerCase();
+
+    const langs = matches.map(m => new Language(m));
+    let sorted: Language[];
+    const kMaxMatchesToSpendTimeOne = 1000;
+    const spendTimeThinking = langs.length <= kMaxMatchesToSpendTimeOne;
+
+    sorted = langs.sort((a: Language, b: Language) => {
+      // if the user types "en", we want to suggest "english" above "en" of vietnam
+      if (pfx === "en" && a.iso639_2 === "en") {
+        return -1;
+      }
+      if (pfx === "en" && b.iso639_2 === "en") {
+        return 1;
+      }
+
+      // These sorts take a long time, and it makes it hard to type. So we only do it
+      // when there are a small number of languages to order.
+      if (spendTimeThinking) {
         //we want exact matches to sort before just prefix matches
-        if (this.matchesPrefix(a, prefix)) {
+        // if (a.someNameMatches(pfx)) {
+        //   return -1;
+        // }
+        // if (b.someNameMatches(pfx)) {
+        //   return 1;
+        // }
+
+        if (this.matchesPrefix(a, pfx, false)) {
           return -1;
         }
-        if (this.matchesPrefix(b, prefix)) {
+        if (this.matchesPrefix(b, pfx, false)) {
           return 1;
         }
-        // nothing matches exactly, so sort based on base character (disregarding diacritics)
-        return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
-      })
-      .map(l => ({ value: l.iso639_3, label: l.name }));
+      }
+      // nothing matches exactly, so sort based on base character (disregarding diacritics)
+      return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+    });
+
+    return sorted.map(l => {
+      let nameMatchingWhatTheyTyped: string | undefined = "";
+      let label = l.name;
+      if (l.name.toLocaleLowerCase().startsWith(pfx) && l.altNames) {
+        nameMatchingWhatTheyTyped = l.altNames.find(n =>
+          n.toLowerCase().startsWith(pfx)
+        );
+        if (nameMatchingWhatTheyTyped) {
+          label = nameMatchingWhatTheyTyped + " (" + l.name + ")";
+        }
+      }
+      return {
+        value: l.iso639_3,
+        label
+      };
+    });
   }
 
   public findOneLanguageNameFromCode_Or_ReturnCode(code: string) {

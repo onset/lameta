@@ -61,7 +61,10 @@ export default class AutoForm extends React.Component<IProps> {
               authorityLists={this.props.authorityLists}
             />
           );
-        } else if (f.definition.key === "languages") {
+        } else if (
+          f.definition.key === "languages" ||
+          f.definition.key === "workingLanguages"
+        ) {
           return (
             <MultiLanguageFieldEdit
               className={field.cssClass}
