@@ -53,6 +53,9 @@ a {
     color: blue; //don't change after they've clicked it once
   }
 }
+.field textarea {
+  padding-left: 10px;
+}
 // .field {
 //   // display: flex;
 //   // flex-direction: column;
@@ -265,4 +268,10 @@ form .ReactTable {
 
 form {
   padding-right: 10px;
+}
+
+.isoCode {
+  font-size: 7pt;
+  margin-left: 5px;
+  color: gray;
 }

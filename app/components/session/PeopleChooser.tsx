@@ -63,8 +63,8 @@ export const PeopleChooser: React.FunctionComponent<
       contribution: c
     }));
 
-  const CustomLabel = ({ children, data, innerProps, isDisabled }) => {
-    return !isDisabled ? (
+  const PersonAndRolePill = ({ children, data, innerProps, isDisabled }) => {
+    return (
       <div
         onClick={e => {
           e.preventDefault(); // doesn't work. Trying to prevent the list from react-select list from dropping down
@@ -78,7 +78,7 @@ export const PeopleChooser: React.FunctionComponent<
           {titleCase(translateRole(data.contribution.role))}
         </div>
       </div>
-    ) : null;
+    );
   };
 
   return (
@@ -87,7 +87,7 @@ export const PeopleChooser: React.FunctionComponent<
         <Trans>People</Trans>
       </label>
       <ReactSelect
-        components={{ MultiValueLabel: CustomLabel }}
+        components={{ MultiValueLabel: PersonAndRolePill }}
         styles={customStyles}
         name={"People"}
         value={currentValueArray}

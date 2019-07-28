@@ -1,47 +1,69 @@
-import LanguageFinder from "./LanguageFinder";
-var languageFinder: LanguageFinder;
+import { LanguageFinder } from "./LanguageFinder";
+let languageFinder: LanguageFinder;
 
-describe("Session Write", () => {
-  languageFinder = new LanguageFinder([
-    {
-      name: "Language Not Listed",
-      code: { three: "qaa" },
-      macro: false,
-      countries: [],
-      altNames: ["Unlisted Language"],
-      country: null
-    },
-    {
-      name: "Ankpretend",
-      code: { three: "aae", two: "ax" }, //doesn't actually have a 639-2 code
-      altNames: ["Albanian, Arbëreshë", "Calabrian Albanian"],
-      country: "Italy"
-    },
-    {
-      name: "Ankave",
-      code: { three: "aak", two: "ak" }, //doesn't actually have a 639-2 code
-      macro: false,
-      countries: ["Papua New Guinea"],
-      altNames: ["Ankai", "Bu’u"],
-      country: "Papua New Guinea"
-    }
-  ]);
+describe("LanguageFinder", () => {
+  languageFinder = new LanguageFinder();
+
   beforeAll(async () => {});
+  it(".findOne639_3CodeFromName should find common names of major languages first", () => {
+    expect(languageFinder.findOne639_3CodeFromName("English")).toBe("eng");
+    expect(languageFinder.findOne639_3CodeFromName("french")).toBe("fra");
+    expect(languageFinder.findOne639_3CodeFromName("Spanish")).toBe("spa");
+    //expect(languageFinder.findOne639_3CodeFromName("espanol")).toBe("spa");
+    expect(languageFinder.findOne639_3CodeFromName("español")).toBe("spa");
+    expect(languageFinder.findOne639_3CodeFromName("indonesian")).toBe("ind");
+    expect(languageFinder.findOne639_3CodeFromName("russian")).toBe("rus");
+    expect(languageFinder.findOne639_3CodeFromName("bahasa indonesia")).toBe(
+      "ind"
+    );
+    expect(languageFinder.findOne639_3CodeFromName("tok pisin")).toBe("tpi");
+  });
 
-  it("should list exact match first", () => {
-    expect(languageFinder.find("Ankave")[0].iso639_3).toBe("aak");
-    expect(languageFinder.find("ankave")[0].iso639_2).toBe("ak");
-  });
-  /* TODO it("should match on codes", () => {
-    expect(languageFinder.find("ax")[0].iso639_2).toBe("ax"); 
-    expect(languageFinder.find("aae")[0].iso639_3).toBe("aae"); 
-  });*/
-  it("should find prefix match", () => {
-    expect(languageFinder.find("an")[0].iso639_3).toBe("aae");
-    expect(languageFinder.find("an")[1].iso639_3).toBe("aak");
-  });
   it("should handle no match", () => {
-    expect(languageFinder.find("").length).toBe(0);
-    expect(languageFinder.find("blah").length).toBe(0);
+    expect(languageFinder.findOne639_3CodeFromName("", "sorry")).toBe("sorry");
+    expect(languageFinder.findOne639_3CodeFromName("")).toBe("und");
+    expect(languageFinder.findOne639_3CodeFromName("blah")).toBe("und");
+  });
+  it("findMatchesForSelect should match on 3 letter code", () => {
+    expect(languageFinder.findMatchesForSelect("etr")[0].iso639_3).toBe("etr");
+  });
+  it("findMatchesForSelect should handle Indonesian well", () => {
+    expect(languageFinder.findMatchesForSelect("indonesian")[0].iso639_3).toBe(
+      "ind"
+    );
+  });
+  it("findMatchesForSelect should handle a non-roman language name well", () => {
+    expect(languageFinder.findMatchesForSelect("thai")[0].iso639_3).toBe("tha");
+  });
+  it("findMatchesForSelect should handle French well", () => {
+    expect(languageFinder.findMatchesForSelect("french")[0].iso639_3).toBe(
+      "fra"
+    );
+  });
+  it("findMatchesForSelect should handle English well", () => {
+    expect(languageFinder.findMatchesForSelect("en")[0].iso639_3).toBe("eng");
+    expect(languageFinder.findMatchesForSelect("eng")[0].iso639_3).toBe("eng");
+    expect(languageFinder.findMatchesForSelect("english")[0].iso639_3).toBe(
+      "eng"
+    );
+  });
+  it("findMatchesForSelect should handle Spanish well", () => {
+    expect(languageFinder.findMatchesForSelect("es")[0].iso639_3).toBe("spa");
+    expect(languageFinder.findMatchesForSelect("espa")[0].iso639_3).toBe("spa");
+    expect(languageFinder.findMatchesForSelect("español")[0].iso639_3).toBe(
+      "spa"
+    );
+    // can't do this yet, would need drop accents from the index somehow
+    // expect(languageFinder.findMatchesForSelect("espanol")[0].value).toBe("spa");
+    expect(languageFinder.findMatchesForSelect("spanish")[0].iso639_3).toBe(
+      "spa"
+    );
+  });
+
+  it("makeMatchesAndLabelsForSelect should handle English well", () => {
+    expect(
+      languageFinder.makeMatchesAndLabelsForSelect("en")[0].languageInfo
+        .iso639_3
+    ).toBe("eng");
   });
 });

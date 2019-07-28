@@ -4,9 +4,12 @@ import CreatableSelect from "react-select/creatable";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
-import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+import {
+  Language,
+  LanguageFinder
+} from "../components/LanguagePickerDialog/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
-
+import _ from "lodash";
 const saymore_orange = "#e69664";
 
 let languageFinder: LanguageFinder | undefined;
@@ -63,14 +66,9 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
 
       <AsyncSelect
         name={props.field.labelInUILanguage}
+        components={{ MultiValueLabel: CustomLabel, Option: CustomOption }}
         isClearable={false} // don't need the extra "x"
-        loadOptions={(inputValue, callback) => {
-          const matches =
-            inputValue.length > 1
-              ? languageFinder!.findMatchesForSelect(inputValue)
-              : [];
-          callback(matches);
-        }}
+        loadOptions={_.debounce(loadMatchingOptions, 100)}
         value={currentValueArray}
         styles={customStyles}
         onChange={(v: any[]) => {
@@ -85,6 +83,45 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         }}
         isMulti
       />
+    </div>
+  );
+};
+
+const loadMatchingOptions = (inputValue, callback) => {
+  const matches =
+    inputValue.length > 1
+      ? languageFinder!.makeMatchesAndLabelsForSelect(inputValue)
+      : [];
+  callback(
+    matches.map(
+      (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
+        value: m.languageInfo.iso639_3,
+        label: m.nameMatchingWhatTheyTyped,
+        language: m.languageInfo
+      })
+    )
+  );
+};
+// render an item in the list of choices
+const CustomOption = props => {
+  return (
+    <div {...props.innerProps}>
+      <div>
+        {props.data.label}
+        <span className="isoCode">{props.data.value}</span>
+      </div>
+    </div>
+  );
+};
+
+// render what has been previously chosen
+const CustomLabel = ({ children, data, innerProps, isDisabled }) => {
+  return (
+    <div {...innerProps}>
+      <div>
+        {data.label}
+        <span className="isoCode">{data.value}</span>
+      </div>
     </div>
   );
 };
