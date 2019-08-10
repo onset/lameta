@@ -6,7 +6,7 @@ const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
-import { LanguageFinder } from "../components/LanguagePickerDialog/LanguageFinder";
+import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
 import { TabList } from "react-tabs";

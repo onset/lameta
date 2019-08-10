@@ -4,10 +4,7 @@ import CreatableSelect from "react-select/creatable";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
-import {
-  Language,
-  LanguageFinder
-} from "../components/LanguagePickerDialog/LanguageFinder";
+import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
 const saymore_orange = "#e69664";
@@ -66,7 +63,10 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
 
       <AsyncSelect
         name={props.field.labelInUILanguage}
-        components={{ MultiValueLabel: CustomLabel, Option: CustomOption }}
+        components={{
+          MultiValueLabel: CustomLanguagePill,
+          Option: CustomOption
+        }}
         isClearable={false} // don't need the extra "x"
         loadOptions={_.debounce(loadMatchingOptions, 100)}
         value={currentValueArray}
@@ -105,7 +105,15 @@ const loadMatchingOptions = (inputValue, callback) => {
 // render an item in the list of choices
 const CustomOption = props => {
   return (
-    <div {...props.innerProps}>
+    <div
+      {...props.innerProps}
+      style={{
+        paddingLeft: "5px",
+        backgroundColor: props.isFocused
+          ? /*"#cff09f"*/ saymore_orange
+          : "white"
+      }}
+    >
       <div>
         {props.data.label}
         <span className="isoCode">{props.data.value}</span>
@@ -115,7 +123,7 @@ const CustomOption = props => {
 };
 
 // render what has been previously chosen
-const CustomLabel = ({ children, data, innerProps, isDisabled }) => {
+const CustomLanguagePill = ({ children, data, innerProps, isDisabled }) => {
   return (
     <div {...innerProps}>
       <div>

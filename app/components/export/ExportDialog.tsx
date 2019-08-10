@@ -13,7 +13,6 @@ import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
-import * as fs from "fs";
 const { app } = require("electron").remote;
 const sanitize = require("sanitize-filename");
 

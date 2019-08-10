@@ -1,20 +1,21 @@
 import TrieSearch from "trie-search";
-import { debug } from "util";
-import { stripDiacritics } from "react-select/src/diacritics";
 
 export class Language {
-  public name: string;
+  public englishName: string;
+  public localName: string;
   public altNames: string[];
   // tslint:disable-next-line:variable-name
   public iso639_3: string;
   // tslint:disable-next-line:variable-name
-  public iso639_2: string | undefined;
+  public iso639_1: string | undefined;
+
   constructor(jsonFromIndex: any) {
-    this.name = jsonFromIndex.name;
-    this.altNames = jsonFromIndex.altNames;
-    this.iso639_3 = jsonFromIndex.code.three;
-    //most languages do not have a 2 letter code
-    this.iso639_2 = jsonFromIndex.code.two;
+    this.englishName = jsonFromIndex.englishName;
+    this.localName = jsonFromIndex.localName;
+    this.altNames = jsonFromIndex.altNames || [];
+    this.iso639_3 = jsonFromIndex.iso639_3;
+    //note, most languages do not have this code, which is the 2 letter code for major languages
+    this.iso639_1 = jsonFromIndex.iso639_1;
   }
   public someNameMatches(name: string): boolean {
     const foundAtLeastOne = this.allNames().some(n => {
@@ -27,7 +28,7 @@ export class Language {
     return foundAtLeastOne;
   }
   public allNames(): string[] {
-    return [this.name, ...this.altNames];
+    return [this.englishName, this.localName, ...this.altNames];
   }
 }
 
@@ -42,16 +43,17 @@ export class LanguageFinder {
     // Enhance allow for matching even if close (e.g. levenshtein distance)
     // Configure the trie to match what is in the index json
     this.index = new TrieSearch([
-      "name",
+      "englishName",
+      "localName",
       //"altNames", TrieSearch can't handle array values, so we'll add them by hand below
-      ["code", "two"],
-      ["code", "three"]
+      "iso639_1",
+      "iso639_3"
     ]);
 
     // add the primary name and two codes
     const index = indexForTesting
       ? indexForTesting
-      : require("./SilLanguageDataIndex.json");
+      : require("./langindex.json");
     this.index.addAll(index);
 
     // now add the alternative names
@@ -60,6 +62,9 @@ export class LanguageFinder {
         indexEntry.altNames.forEach(alternativeName => {
           this.index.map(alternativeName, indexEntry);
         });
+      }
+      if (indexEntry.localName && indexEntry.localName.length > 0) {
+        this.index.map(indexEntry.localName, indexEntry);
       }
     });
   }
@@ -70,12 +75,12 @@ export class LanguageFinder {
   ): boolean {
     // NB: this accent dropping is probably useless here because the TrieSearch won't return as
     // candidates anything that didn't match, and it doesn't know about matching without accents.
-    const name = language.name.toLocaleLowerCase("en-US"); // english because that will drop accents
+    const englishName = language.englishName.toLocaleLowerCase("en-US"); // english because that will drop accents
     // 'any' because typescript doesn't know about the locale parameter yet
     const pfx = (prefix as any).toLocaleLowerCase("en-US");
     return (
-      name === pfx ||
-      name.startsWith(pfx) ||
+      englishName === pfx ||
+      englishName.startsWith(pfx) ||
       language.iso639_3 === pfx ||
       (language.iso639_2 && language.iso639_2 === pfx) ||
       (includeAlternativeNames &&
@@ -104,18 +109,18 @@ export class LanguageFinder {
 
     return sortedListOfMatches.map(l => ({
       languageInfo: l,
-      nameMatchingWhatTheyTyped: l.name
+      nameMatchingWhatTheyTyped: l.englishName
     }));
     // const listWithLabelsTunedToWhatTheyAreTyping = sortedListOfMatches.map(l => {
     //   let nameMatchingWhatTheyTyped: string | undefined = "";
-    //   let label = l.name + " " + l.iso639_3;
-    //   // if (l.name.toLocaleLowerCase().startsWith(pfx) && l.altNames) {
+    //   let label = l.englishName + " " + l.iso639_3;
+    //   // if (l.englishName.toLocaleLowerCase().startsWith(pfx) && l.altNames) {
     //   //   nameMatchingWhatTheyTyped = l.altNames.find(n =>
     //   //     n.toLowerCase().startsWith(pfx)
     //   //   );
     //   //   if (nameMatchingWhatTheyTyped) {
     //   //     label =
-    //   //       nameMatchingWhatTheyTyped + " name=" + l.name + " " + l.iso639_3;
+    //   //       nameMatchingWhatTheyTyped + " name=" + l.englishName + " " + l.iso639_3;
     //   //   }
     //   // }
     //   return {
@@ -189,7 +194,7 @@ export class LanguageFinder {
         return 1;
       }
       // nothing matches exactly, so just sort
-      return a.name.localeCompare(b.name);
+      return a.englishName.localeCompare(b.englishName);
     });
 
     return sorted;
@@ -200,10 +205,11 @@ export class LanguageFinder {
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.index.get(trimmedCode);
     const x = matches.filter(m => {
-      return m.code.two === trimmedCode || m.code.three === trimmedCode;
+      return /*m.code.two === trimmedCode ||*/ m.iso639_3 === trimmedCode;
     });
-    if (x.length === 1) {
-      return x[0].name;
+    // TODO unfortunately lang tags gives multiple hits for a given code if (x.length === 1) {
+    if (x.length >= 1) {
+      return x[0].englishName;
     }
     return trimmedCode;
   }
