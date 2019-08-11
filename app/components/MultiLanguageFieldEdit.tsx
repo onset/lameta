@@ -1,12 +1,11 @@
 import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
-import CreatableSelect from "react-select/creatable";
-// tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
+
 const saymore_orange = "#e69664";
 
 let languageFinder: LanguageFinder | undefined;
@@ -25,19 +24,32 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
 
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
+    valueContainer: styles => ({ ...styles }),
+    //    clearIndicator:styles => ({ ...styles }),
     multiValue: (styles, { data }) => {
       return {
         ...styles,
         backgroundColor: "white",
         fontSize: "12pt",
         fontWeight: 600,
-        border: "solid 2px #cff09f",
-        color: "lightgray" // for the "x"
+        border: "none",
+        color: "transparent", // hide the "x" unless the mouse is in us
+        // don't show the language code unless we're pointing at it, it's just visual noise
+        span: {
+          color: "transparent"
+        },
+        ":hover": {
+          color: "lightgray", // show the "x"
+          border: "solid 2px #cff09f",
+          span: {
+            color: "lightgray" //go ahead and show it
+          }
+        }
       };
     },
     multiValueRemove: (styles, { data }) => ({
       ...styles,
-      //color: "white",
+      color: "inherit", //""transparent",
       ":hover": {
         backgroundColor: saymore_orange,
         color: "white"
@@ -48,13 +60,16 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   const [languageCodeString, setLanguageCodeString] = useState(
     props.field.text
   );
+
   const currentValueArray = languageCodeString
     .split(";")
     .filter(c => c.length > 0)
     .map(c => c.trim())
     .map(code => ({
       value: code,
-      label: languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
+      label: fixNamesWithComma(
+        languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
+      )
     }));
 
   return (
@@ -67,6 +82,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
           MultiValueLabel: CustomLanguagePill,
           Option: CustomOption
         }}
+        placeholder=""
         isClearable={false} // don't need the extra "x"
         loadOptions={_.debounce(loadMatchingOptions, 100)}
         value={currentValueArray}
@@ -102,7 +118,8 @@ const loadMatchingOptions = (inputValue, callback) => {
     )
   );
 };
-// render an item in the list of choices
+
+// how to render the choice in the drop
 const CustomOption = props => {
   return (
     <div
@@ -133,3 +150,13 @@ const CustomLanguagePill = ({ children, data, innerProps, isDisabled }) => {
     </div>
   );
 };
+
+// things like German are currently in our index as "German, Standard". This looks weird when it is in a list of other language names.
+// So just make it, e.g., "Standard German"
+function fixNamesWithComma(name: string): string {
+  const parts = name.split(",");
+  if (parts.length === 1) {
+    return name;
+  }
+  return parts[1] + " " + parts[0];
+}

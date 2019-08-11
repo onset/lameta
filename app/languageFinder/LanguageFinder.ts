@@ -111,23 +111,6 @@ export class LanguageFinder {
       languageInfo: l,
       nameMatchingWhatTheyTyped: l.englishName
     }));
-    // const listWithLabelsTunedToWhatTheyAreTyping = sortedListOfMatches.map(l => {
-    //   let nameMatchingWhatTheyTyped: string | undefined = "";
-    //   let label = l.englishName + " " + l.iso639_3;
-    //   // if (l.englishName.toLocaleLowerCase().startsWith(pfx) && l.altNames) {
-    //   //   nameMatchingWhatTheyTyped = l.altNames.find(n =>
-    //   //     n.toLowerCase().startsWith(pfx)
-    //   //   );
-    //   //   if (nameMatchingWhatTheyTyped) {
-    //   //     label =
-    //   //       nameMatchingWhatTheyTyped + " name=" + l.englishName + " " + l.iso639_3;
-    //   //   }
-    //   // }
-    //   return {
-    //     languageInfo: l,
-    //     nameMatchingWhatTheyTyped
-    //   };
-    // });
   }
 
   public findMatchesForSelect(prefix: string): Language[] {
@@ -147,7 +130,8 @@ export class LanguageFinder {
       { match: "eng", code3: "eng" },
       { match: "es", code3: "spa" },
       { match: "ind", code3: "ind" },
-      { match: "fre", code3: "fra" }
+      { match: "fre", code3: "fra" },
+      { match: "deu", code3: "de" }
     ];
     const sorted = langs.sort((a: Language, b: Language) => {
       // if the user types "en", we want to suggest "english" above "en" of vietnam
@@ -205,7 +189,7 @@ export class LanguageFinder {
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.index.get(trimmedCode);
     const x = matches.filter(m => {
-      return /*m.code.two === trimmedCode ||*/ m.iso639_3 === trimmedCode;
+      return m.iso639_3 === trimmedCode;
     });
     // TODO unfortunately lang tags gives multiple hits for a given code if (x.length === 1) {
     if (x.length >= 1) {

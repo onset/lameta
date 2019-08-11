@@ -90,6 +90,7 @@ export const PeopleChooser: React.FunctionComponent<
         components={{ MultiValueLabel: PersonAndRolePill }}
         styles={customStyles}
         name={"People"}
+        placeholder=""
         value={currentValueArray}
         noOptionsMessage={() =>
           "Person not found. To add people, go to the People tab."

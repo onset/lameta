@@ -19,7 +19,7 @@
       "type": "language"
     },
     {
-      "key": "analysisISO3CodeAndName",
+      "key": "analysisIso3CodeAndName",
       "englishLabel": "Working Language",
       "tagInSayMoreClassic": "AnalysisISO3CodeAndName",
       "type": "language"

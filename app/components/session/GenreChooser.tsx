@@ -53,6 +53,7 @@ export default class GenreChooser extends React.Component<
         <label>{label}</label>
         <ReactSelect
           value={currentOption}
+          placeholder=""
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;
           }}

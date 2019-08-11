@@ -32,7 +32,18 @@ export class Session extends Folder {
 
     // default to the project's content language
     if (this.properties.getTextStringOrEmpty("languages") === "") {
-      this.properties.setText("languages", Project.getDefaultLanguageCode());
+      this.properties.setText(
+        "languages",
+        Project.getDefaultContentLanguageCode()
+      );
+    }
+
+    // default to the project's working language
+    if (this.properties.getTextStringOrEmpty("workingLanguages") === "") {
+      this.properties.setText(
+        "workingLanguages",
+        Project.getDefaultWorkingLanguageCode()
+      );
     }
   }
   public static fromDirectory(
@@ -191,13 +202,21 @@ export class Session extends Folder {
 
   // we no longer use "participants" except when serializing for legacy versions of SayMore(x) out there
 
-  public getLanguageCodes(): string[] {
+  public getContentLanguageCodes(): string[] {
     return this.properties
       .getTextStringOrEmpty("languages")
       .split(";")
       .map(s => s.trim())
       .filter(s => s.length > 0);
   }
+  public getWorkingLanguageCodes(): string[] {
+    return this.properties
+      .getTextStringOrEmpty("workingLanguages")
+      .split(";")
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+  }
+
   // private setParticipantNames(names: string[]) {
   //   this.properties.setText("participants", names.join(";"));
   // }

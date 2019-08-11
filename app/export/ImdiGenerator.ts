@@ -152,7 +152,7 @@ export default class ImdiGenerator {
         // SayMore currently doesn't have Interactivity, EventStructure, Channel
       });
       this.group("Languages", () => {
-        const languages = session.getLanguageCodes();
+        const languages = session.getContentLanguageCodes();
         if (languages.length > 0) {
           languages.forEach(code => {
             const langName = this.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
@@ -166,11 +166,28 @@ export default class ImdiGenerator {
             "Content Language"
           );
         }
-        this.addSessionLanguage(
-          this.project.getWorkingLanguageCode(),
-          this.project.getWorkingLanguageName(),
-          "Working Language"
-        );
+        this.keysThatHaveBeenOutput.add("Session.languages");
+        const workingLanguages = session.getWorkingLanguageCodes();
+        if (workingLanguages.length > 0) {
+          workingLanguages.forEach(code => {
+            const langName = this.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
+            this.addSessionLanguage(code, langName, "Working Language");
+          });
+        } else {
+          this.addMissingSessionLanguage(
+            "analysisISO3CodeAndName",
+            "Working Language"
+          );
+        }
+        this.keysThatHaveBeenOutput.add("Session.workingLanguages");
+
+        // this.addSessionLanguage(
+        //   this.project.getWorkingLanguageCode(),
+        //   this.project.getWorkingLanguageName(),
+        //   "Working Language"
+        // );
         // this.addMissingSessionLanguage(
         //   "analysisISO3CodeAndName",
         //   "Working Language"
@@ -188,7 +205,7 @@ export default class ImdiGenerator {
       .split(":")
       .map(s => s.trim());
     if (parts.length === 2) {
-      this.addSessionLanguage(parts[0], parts[2], description);
+      this.addSessionLanguage(parts[0], parts[1], description);
     }
   }
   private addSessionLanguage(code: string, name: string, description: string) {

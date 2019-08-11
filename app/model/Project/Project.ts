@@ -60,12 +60,22 @@ export class Project extends Folder {
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
 
-  public static getDefaultLanguageCode() {
+  public static getDefaultContentLanguageCode() {
     const codeAndName =
       sCurrentProject === null
         ? ""
         : sCurrentProject.properties.getTextStringOrEmpty(
             "vernacularIso3CodeAndName"
+          );
+
+    return codeAndName.split(":")[0].trim();
+  }
+  public static getDefaultWorkingLanguageCode() {
+    const codeAndName =
+      sCurrentProject === null
+        ? ""
+        : sCurrentProject.properties.getTextStringOrEmpty(
+            "analysisIso3CodeAndName"
           );
 
     return codeAndName.split(":")[0].trim();
@@ -134,6 +144,7 @@ export class Project extends Folder {
       otherDocsFolder,
       customFieldRegistry
     );
+    sCurrentProject = project;
     const sesssionsDir = Path.join(directory, "Sessions");
     fs.ensureDirSync(sesssionsDir);
     fs.readdirSync(sesssionsDir, "utf8").forEach(childName => {
