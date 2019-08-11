@@ -75,7 +75,15 @@ export class LanguageFinder {
         this.index.map(indexEntry.localName, indexEntry);
       }
     });
+    // if the custom language is a custom one, that is, without a real iso639_3 code,
+    // we want to be able to find it. Enhance: only add this if it is in the qaa-qtz range?
     this.index.map(defaultContentLanguage.iso639_3, defaultContentLanguage);
+    if (defaultContentLanguage.englishName) {
+      this.index.map(
+        defaultContentLanguage.englishName,
+        defaultContentLanguage
+      );
+    }
   }
   private matchesPrefix(
     language,
