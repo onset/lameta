@@ -6,6 +6,7 @@ import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Trans } from "@lingui/react";
 import { translateAccessProtocol } from "../../localization";
+const saymore_orange = "#e69664";
 
 export interface IProps {
   field: Field;
@@ -57,6 +58,19 @@ export default class AccessChooser extends React.Component<IProps> {
             this.props.field.text = (s && s.value ? s.value : "") as string;
           }}
           options={options}
+          styles={{
+            control: (styles, state) => ({
+              ...styles,
+              borderStyle: "inset",
+              borderRadius: 0,
+              borderColor: "rgb(169, 169, 169)",
+              //borderColor: "none",
+              boxShadow: state.isFocused
+                ? "0 0 0 1px " + saymore_orange
+                : "unset",
+              "&:hover": { borderColor: saymore_orange }
+            })
+          }}
         />
       </div>
     );

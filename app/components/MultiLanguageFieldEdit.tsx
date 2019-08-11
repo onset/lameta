@@ -18,17 +18,31 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = props => {
   const customStyles = {
-    control: styles => ({ ...styles, backgroundColor: "white" }),
+    control: (styles, state) => ({
+      ...styles,
+      borderStyle: "inset",
+      borderRadius: 0,
+      borderColor: "rgb(169, 169, 169)",
+      boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
+      "&:hover": { borderColor: saymore_orange }
+    }),
     valueContainer: styles => ({ ...styles }),
+    container: styles => ({
+      ...styles,
+      borderColor: "red"
+    }),
     //    clearIndicator:styles => ({ ...styles }),
     multiValue: (styles, { data }) => {
       return {
         ...styles,
         backgroundColor: "white",
-        fontSize: "12pt",
-        fontWeight: 600,
+
         border: "none",
         color: "transparent", // hide the "x" unless the mouse is in us
+        div: {
+          paddingLeft: 0,
+          fontSize: "13px" //should match $default-font-size: 13px;
+        },
         // don't show the language code unless we're pointing at it, it's just visual noise
         span: {
           color: "transparent"
@@ -45,6 +59,8 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
     multiValueRemove: (styles, { data }) => ({
       ...styles,
       color: "inherit", //""transparent",
+      // counteract the paddingLeft:0 above
+      paddingLeft: "4px !important",
       ":hover": {
         backgroundColor: saymore_orange,
         color: "white"
@@ -92,6 +108,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
           MultiValueLabel: CustomLanguagePill,
           Option: CustomOption
         }}
+        className="select"
         placeholder=""
         isClearable={false} // don't need the extra "x"
         loadOptions={_.debounce(loadMatchingOptions, 100)}

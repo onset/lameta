@@ -14,7 +14,7 @@ $select-input-height: 28px;
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
 $default-font-size: 13px;
 
-$default-fonts: -apple-system, /* mac*/ "BlinkMacSystemFont",
+$default-fonts: "-apple-system", /* mac*/ "BlinkMacSystemFont",
   /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
 
 .tab-project.react-tabs__tab--selected {
@@ -274,4 +274,9 @@ form {
   font-size: 7pt;
   margin-left: 5px;
   color: lightgray;
+}
+input {
+  border-style: inset;
+  border-color: rgb(169, 169, 169);
+  border-width: 1px;
 }

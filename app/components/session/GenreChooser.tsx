@@ -4,6 +4,7 @@ import { Field } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
 import { translateFieldLabel, translateGenre } from "../../localization";
+const saymore_orange = "#e69664";
 
 export interface IProps {
   field: Field;
@@ -54,6 +55,18 @@ export default class GenreChooser extends React.Component<
         <ReactSelect
           value={currentOption}
           placeholder=""
+          styles={{
+            control: (styles, state) => ({
+              ...styles,
+              borderStyle: "inset",
+              borderRadius: 0,
+              borderColor: "rgb(169, 169, 169)",
+              boxShadow: state.isFocused
+                ? "0 0 0 1px " + saymore_orange
+                : "unset",
+              "&:hover": { borderColor: saymore_orange }
+            })
+          }}
           onChange={(s: any) => {
             this.props.field.text = (s && s.value ? s.value : "") as string;
           }}

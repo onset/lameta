@@ -20,7 +20,14 @@ export const PeopleChooser: React.FunctionComponent<
 > = props => {
   const [toggle, setToggle] = useState(false);
   const customStyles = {
-    control: styles => ({ ...styles, backgroundColor: "white" }),
+    control: (styles, state) => ({
+      ...styles,
+      borderStyle: "inset",
+      borderRadius: 0,
+      borderColor: "rgb(169, 169, 169)",
+      boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
+      "&:hover": { borderColor: saymore_orange }
+    }),
     multiValue: styles => {
       return {
         ...styles,
