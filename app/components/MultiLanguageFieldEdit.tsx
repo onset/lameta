@@ -8,20 +8,15 @@ import _ from "lodash";
 
 const saymore_orange = "#e69664";
 
-let languageFinder: LanguageFinder | undefined;
-
 export interface IProps {
   field: Field;
+  languageFinder: LanguageFinder;
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export const MultiLanguageFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = props => {
-  if (!languageFinder) {
-    languageFinder = new LanguageFinder();
-  }
-
   const customStyles = {
     control: styles => ({ ...styles, backgroundColor: "white" }),
     valueContainer: styles => ({ ...styles }),
@@ -68,10 +63,25 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
     .map(code => ({
       value: code,
       label: fixNamesWithComma(
-        languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
+        props.languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
       )
     }));
 
+  const loadMatchingOptions = (inputValue, callback) => {
+    const matches =
+      inputValue.length > 1
+        ? props.languageFinder!.makeMatchesAndLabelsForSelect(inputValue)
+        : [];
+    callback(
+      matches.map(
+        (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
+          value: m.languageInfo.iso639_3,
+          label: m.nameMatchingWhatTheyTyped,
+          language: m.languageInfo
+        })
+      )
+    );
+  };
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
@@ -100,22 +110,6 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         isMulti
       />
     </div>
-  );
-};
-
-const loadMatchingOptions = (inputValue, callback) => {
-  const matches =
-    inputValue.length > 1
-      ? languageFinder!.makeMatchesAndLabelsForSelect(inputValue)
-      : [];
-  callback(
-    matches.map(
-      (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
-        value: m.languageInfo.iso639_3,
-        label: m.nameMatchingWhatTheyTyped,
-        language: m.languageInfo
-      })
-    )
   );
 };
 

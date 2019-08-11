@@ -16,6 +16,7 @@ import AdditionalFieldsTable from "./MoreFieldsTable";
 import IsoLanguageEdit from "./IsoLanguageEdit";
 import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 import { Contribution } from "../model/file/File";
+import { LanguageFinder } from "../languageFinder/LanguageFinder";
 
 export interface IProps {
   folder: Folder;
@@ -28,6 +29,7 @@ export interface IProps {
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
   validateFieldThatControlsFileNames?: (value: string) => boolean;
   onShowContributorsTab?: (contributions: Contribution) => void;
+  languageFinder: LanguageFinder;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -39,7 +41,7 @@ export default class AutoForm extends React.Component<IProps> {
     super(props);
   }
 
-  private makeEdit(field: Field, folder: Folder): JSX.Element {
+  private makeEdit(field: Field, props: IProps): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
@@ -70,13 +72,14 @@ export default class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               key={field.key}
               field={field as Field}
+              languageFinder={props.languageFinder}
             />
           );
         } else if (f.definition.key === "participants") {
           return (
             <PeopleChooser
               key={f.key} // for some reason we get a key error without this
-              folder={folder}
+              folder={props.folder}
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
               onShowContributorsTab={this.props.onShowContributorsTab!}
@@ -177,7 +180,7 @@ export default class AutoForm extends React.Component<IProps> {
           .map(k => this.props.folder.properties.getValueOrThrow(k))
 
           .filter(field => field.form === this.props.form)
-          .map(field => this.makeEdit(field, this.props.folder))}
+          .map(field => this.makeEdit(field, this.props))}
         {this.props.folder.hasMoreFieldsTable ? (
           <AdditionalFieldsTable folder={this.props.folder} />
         ) : (

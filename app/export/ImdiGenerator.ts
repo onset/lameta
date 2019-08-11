@@ -24,22 +24,14 @@ export default class ImdiGenerator {
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
-  private languageFinder: LanguageFinder;
 
   private keysThatHaveBeenOutput = new Set<string>();
 
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
-  public constructor(
-    folder: Folder,
-    project: Project,
-    languageFinder?: LanguageFinder
-  ) {
+  public constructor(folder: Folder, project: Project) {
     this.folderInFocus = folder;
     this.project = project;
-    this.languageFinder = languageFinder
-      ? languageFinder
-      : new LanguageFinder();
   }
 
   public static generateCorpus(
@@ -155,7 +147,7 @@ export default class ImdiGenerator {
         const languages = session.getContentLanguageCodes();
         if (languages.length > 0) {
           languages.forEach(code => {
-            const langName = this.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
               code
             );
             this.addSessionLanguage(code, langName, "Content Language");
@@ -170,7 +162,7 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach(code => {
-            const langName = this.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
               code
             );
             this.addSessionLanguage(code, langName, "Working Language");
@@ -226,7 +218,10 @@ export default class ImdiGenerator {
 
       // Enhance: this matching algorithm is far from ideal.
       // It won't match on alternate names
-      const code = this.languageFinder.findOne639_3CodeFromName(lang, "und");
+      const code = this.project.languageFinder.findOne639_3CodeFromName(
+        lang,
+        "und"
+      );
 
       // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
       // a variety of codes to be used. However ELAR in particular apparently can only

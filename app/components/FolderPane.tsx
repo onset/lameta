@@ -206,6 +206,7 @@ function getTabs(
                 form="primary"
                 formClass="sessionForm"
                 authorityLists={props.authorityLists}
+                languageFinder={props.project.languageFinder}
                 //customFieldNames={props.customFieldNames}
                 fieldThatControlsFileNames={"id"}
                 fieldThatControlsFileNamesMightHaveChanged={key =>

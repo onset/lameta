@@ -54,6 +54,7 @@ export class ProjectTab extends React.Component<IProps> {
             formClass="project"
             folder={this.props.project}
             authorityLists={this.props.authorityLists}
+            languageFinder={this.props.project.languageFinder}
           />
         </TabPanel>
         <TabPanel>

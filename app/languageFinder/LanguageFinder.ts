@@ -31,11 +31,21 @@ export class Language {
     return [this.englishName, this.localName, ...this.altNames];
   }
 }
+interface IIndexEntry {
+  iso639_1?: string;
+  iso639_3: string;
+  englishName: string;
+  localName?: string;
+  altNames?: string[];
+}
 
 export class LanguageFinder {
   private index: TrieSearch;
+  private defaultContentLanguage: IIndexEntry;
 
-  constructor(indexForTesting?) {
+  constructor(defaultContentLanguage: IIndexEntry) {
+    this.defaultContentLanguage = defaultContentLanguage;
+
     // currently this uses a trie, which is overkill for this number of items,
     // but I'm using it because I do need prefix matching and this library does that.
 
@@ -51,9 +61,7 @@ export class LanguageFinder {
     ]);
 
     // add the primary name and two codes
-    const index = indexForTesting
-      ? indexForTesting
-      : require("./langindex.json");
+    const index = require("./langindex.json");
     this.index.addAll(index);
 
     // now add the alternative names
@@ -67,6 +75,7 @@ export class LanguageFinder {
         this.index.map(indexEntry.localName, indexEntry);
       }
     });
+    this.index.map(defaultContentLanguage.iso639_3, defaultContentLanguage);
   }
   private matchesPrefix(
     language,

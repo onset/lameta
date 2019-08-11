@@ -18,6 +18,7 @@ import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../analytics";
 import userSettings from "../../UserSettings";
+import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 
 const genres = require("./Session/genres.json");
 
@@ -59,6 +60,7 @@ export class Project extends Folder {
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
+  public languageFinder: LanguageFinder;
 
   public static getDefaultContentLanguageCode() {
     const codeAndName =
@@ -106,6 +108,13 @@ export class Project extends Folder {
     this.setupGenreDefinition();
 
     this.knownFields = knownFieldDefinitions.project; // for csv export
+
+    // todo: how to get this in after it changes?
+    const { code, name } = this.getContentLanguageCodeAndName();
+    this.languageFinder = new LanguageFinder({
+      iso639_3: code,
+      englishName: name
+    });
   }
 
   public static fromDirectory(directory: string): Project {
@@ -440,6 +449,15 @@ export class Project extends Folder {
   public getContentLanguageCode(): string {
     return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
   }*/
+
+  public getContentLanguageCodeAndName(): { code: string; name: string } {
+    const x: string = this.properties.getTextStringOrEmpty(
+      "vernacularIso3CodeAndName"
+    );
+    const parts = x.split(":").map(p => p.trim());
+    return { code: parts[0].toLowerCase(), name: parts[1] };
+  }
+
   public getWorkingLanguageName(): string {
     return this.getWorkingLanguageCode()
       .split(":")
@@ -447,7 +465,7 @@ export class Project extends Folder {
       .trim(); // last element (will be the name , if there is a ':')
   }
   public getWorkingLanguageCode(): string {
-    return this.properties.getTextStringOrEmpty("analysisISO3CodeAndName");
+    return this.properties.getTextStringOrEmpty("analysisIso3CodeAndName");
   }
 }
 
