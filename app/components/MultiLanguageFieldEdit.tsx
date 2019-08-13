@@ -20,6 +20,8 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
+      height: "2em",
+      "min-height": "2em",
       borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
@@ -28,8 +30,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
     }),
     valueContainer: styles => ({ ...styles }),
     container: styles => ({
-      ...styles,
-      borderColor: "red"
+      ...styles
     }),
     //    clearIndicator:styles => ({ ...styles }),
     multiValue: (styles, { data }) => {
@@ -49,7 +50,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         },
         ":hover": {
           color: "lightgray", // show the "x"
-          border: "solid 2px #cff09f",
+          //border: "solid 2px #cff09f",
           span: {
             color: "lightgray" //go ahead and show it
           }

@@ -58,6 +58,9 @@ export default class GenreChooser extends React.Component<
           styles={{
             control: (styles, state) => ({
               ...styles,
+
+              height: "2em",
+              "min-height": "2em",
               borderStyle: "inset",
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",

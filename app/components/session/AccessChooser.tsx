@@ -61,10 +61,11 @@ export default class AccessChooser extends React.Component<IProps> {
           styles={{
             control: (styles, state) => ({
               ...styles,
+              height: "2em",
+              "min-height": "2em",
               borderStyle: "inset",
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",
-              //borderColor: "none",
               boxShadow: state.isFocused
                 ? "0 0 0 1px " + saymore_orange
                 : "unset",

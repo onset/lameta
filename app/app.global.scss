@@ -4,9 +4,6 @@
 
 @import "~react-tabs/style/react-tabs.css";
 
-$select-input-height: 28px;
-//@import "~react-select/scss/default";
-
 @import "./colors";
 
 @import "~react-datepicker/dist/react-datepicker.css";
@@ -76,7 +73,8 @@ label {
   font-size: $default-font-size;
   font-weight: bold;
 }
-label + textarea {
+label + textarea,
+label + .select {
   margin-top: $label-to-field-sep;
 }
 li {
