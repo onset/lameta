@@ -7,6 +7,7 @@ import CloseOnEscape from "react-close-on-escape";
 import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder";
 import { Trans } from "@lingui/react";
+import _ from "lodash";
 const isValidPath = require("is-valid-path");
 
 // tslint:disable-next-line:no-empty-interface
@@ -182,8 +183,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     );
 
     return (
-      pfx +
-      this.state.core +
+      _.trimEnd(pfx + this.state.core, "_") +
       (includeExtension
         ? RenameFileDialog.getUneditableSuffix(
             this.state.file!.describedFilePath

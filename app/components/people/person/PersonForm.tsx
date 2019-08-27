@@ -99,7 +99,7 @@ export default class PersonForm extends React.Component<IProps> {
           <TextFieldEdit className={"language-name"} field={mother} />
           <TextFieldEdit className={"language-name"} field={father} /> */}
         <TextFieldEdit
-          className="left-side"
+          className="education"
           field={this.props.fields.getTextField("education")}
         />
         {/* </div> */}
@@ -130,6 +130,10 @@ export default class PersonForm extends React.Component<IProps> {
         <TextFieldEdit
           field={this.props.fields.getTextField("primaryOccupation")}
           className="full-right-side"
+        />
+        <TextFieldEdit
+          field={this.props.fields.getTextField("description")}
+          className="description"
         />
         <CustomFieldsTable file={this.props.person.metadataFile!} />
       </form>

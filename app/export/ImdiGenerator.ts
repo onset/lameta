@@ -45,6 +45,10 @@ export default class ImdiGenerator {
     }
     return generator.corpus(childrenSubPaths);
   }
+  public static generateProject(project: Project): string {
+    const generator = new ImdiGenerator(project, project);
+    return generator.projectXmlForPreview();
+  }
   public static generateSession(
     session: Session,
     project: Project,
@@ -65,7 +69,12 @@ export default class ImdiGenerator {
     this.startGroup("Corpus");
     // we don't have a separate title vs. name field
     this.element("Name", project.displayName);
-    this.element("Title", project.displayName);
+
+    // this mapping, funding--> title, is per Vera at ELAR 23/8/2019
+    this.element(
+      "Title",
+      project.properties.getTextStringOrEmpty("fundingProjectTitle")
+    );
 
     this.requiredField("Description", "projectDescription");
     for (const subpath of childrenSubpaths) {
@@ -74,13 +83,18 @@ export default class ImdiGenerator {
     }
     return this.makeString();
   }
+  private projectXmlForPreview(): string {
+    this.tail = XmlBuilder.create("Project");
+    this.addProjectInfo();
+    return this.makeString();
+  }
 
   private addProjectInfo() {
     this.startGroup("Project");
-    //// we don't currently have a different name vs. title
-    this.requiredField("Name", "title", this.project); //A short name or abbreviation of the project.
-    this.requiredField("Title", "title", this.project); // The full title of the project.
-    this.element("Id", ""); // we don't have an id, but imdi doesn't validate without this, even if empty
+
+    this.requiredField("Name", "title", this.project);
+    this.requiredField("Title", "fundingProjectTitle", this.project);
+    this.requiredField("Id", "grantId", this.project);
     this.group("Contact", () => {
       this.optionalField("Name", "contactPerson", this.project);
       //<Address> We don't currently have this field.
@@ -136,12 +150,47 @@ export default class ImdiGenerator {
     this.group("Content", () => {
       this.requiredField("Genre", "genre");
       this.requiredField("SubGenre", "subgenre");
+      this.element(
+        "Task",
+        "",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/Content-Task.xml"
+      ); // required but we don't have something to map to it
+      this.element(
+        "Modalities",
+        "",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/Content-Modalities.xml"
+      ); // required but we don't have something to map to it
+      this.element(
+        "Subject",
+        "",
+        false,
+        "http://www.mpi.nl/IMDI/Schema/Content-Subject.xml"
+      ); // required but we don't have something to map to it
+
       this.group("CommunicationContext", () => {
+        this.element(
+          "Interactivity",
+          "",
+          true,
+          "http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml"
+        ); // required but we don't have something to map to it
         this.requiredField("PlanningType", "planningType");
         this.requiredField("Involvement", "involvement");
         this.requiredField("SocialContext", "socialContext");
-
-        // SayMore currently doesn't have Interactivity, EventStructure, Channel
+        this.element(
+          "EventStructure",
+          "",
+          true,
+          "http://www.mpi.nl/IMDI/Schema/Content-EventStructure.xml"
+        ); // required but we don't have something to map to it
+        this.element(
+          "Channel",
+          "",
+          true,
+          "http://www.mpi.nl/IMDI/Schema/Content-Channel.xml"
+        ); // required but we don't have something to map to it
       });
       this.group("Languages", () => {
         const languages = session.getContentLanguageCodes();
@@ -288,7 +337,8 @@ export default class ImdiGenerator {
       "filename",
       "size",
       "contributions",
-      "access" // output by addAccess()
+      "access",
+      "accessDescription" // output by addAccess()
     ];
     this.group("Keys", () => {
       target.properties.keys().forEach(key => {
@@ -343,6 +393,7 @@ export default class ImdiGenerator {
       this.folderInFocus,
       "region"
     ); // default to the region of the project
+    this.optionalField("Address", "location", this.folderInFocus, "region"); // default to the region of the project
 
     this.optionalField("Address", "locationAddress"); // note, saymore also has a "location"
     this.exitGroup();
@@ -568,6 +619,7 @@ export default class ImdiGenerator {
           //this.attributeLiteral("ISO639-3", "eng");
         }
         this.element("Description", x.description);
+        this.optionalField("Description", "accessDescription");
         //this.attributeLiteral("ISO639-3", "eng");
       }
     });
@@ -644,6 +696,7 @@ export default class ImdiGenerator {
       this.requiredField("BirthDate", "birthYear", person);
       this.requiredField("Sex", "gender", person);
       this.requiredField("Education", "education", person);
+      this.requiredField("Description", "description", person);
       this.element("Anonymized", "false"); // review: is this related to SayMore's "code" field?
       this.element("Contact", "");
       this.addCustomKeys(person, moreKeys);

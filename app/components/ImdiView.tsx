@@ -45,12 +45,15 @@ export default class ImdiView extends React.Component<IProps, IState> {
         this.props.project
       );
     } else if (this.props.target instanceof Project) {
-      xml = ImdiGenerator.generateCorpus(
-        this.props.target as Project,
-        new Array<
-          string
-        >() /* we don't bother to compute the children IMDI's for this view */
-      );
+      xml =
+        ImdiGenerator.generateCorpus(
+          this.props.target as Project,
+          new Array<
+            string
+          >() /* we don't bother to compute the children IMDI's for this view */
+        ) + // I want to see how some of this project info is going to show up inside of sessions
+        "\r\n\r\n-- This project-related info will show up in the IMDI of sessions -- \r\n" +
+        ImdiGenerator.generateProject(this.props.target as Project);
     } else if (this.props.target instanceof Person) {
       const generator = new ImdiGenerator(
         this.props.target,

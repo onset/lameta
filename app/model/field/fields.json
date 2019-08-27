@@ -308,7 +308,10 @@
         "South-America"
       ]
     },
-
+    {
+      "key": "grantId",
+      "englishLabel": "Grant ID"
+    },
     {
       "key": "fundingProjectTitle",
       "tagInSayMoreClassic": "FundingProjectTitle",
@@ -371,7 +374,8 @@
       "englishLabel": "People"
     },
     {
-      "key": "genre"
+      "key": "genre",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml"
     },
     {
       "key": "situation",
@@ -386,6 +390,10 @@
     },
     {
       "key": "access"
+    },
+    {
+      "key": "accessDescription",
+      "additional": "true"
     },
     {
       "key": "description",
@@ -408,6 +416,8 @@
       "englishLabel": "Researcher Involvement",
       "tagInSayMoreClassic": "Involvement",
       "additional": true,
+      "imdiIsClosedVocabulary": true,
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml",
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -446,6 +456,8 @@
       "key": "planningType",
       "tagInSayMoreClassic": "Planning_Type",
       "additional": true,
+      "imdiIsClosedVocabulary": true,
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml",
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -460,12 +472,14 @@
       "key": "subgenre",
       "tagInSayMoreClassic": "Sub-Genre",
       "englishLabel": "Subgenre",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       "additional": true
     },
     {
       "key": "socialContext",
       "tagInSayMoreClassic": "Social_Context",
       "additional": true,
+      "imdiIsClosedVocabulary": true,
       "choices": [
         "unspecified",
         "//leaving out until Windows SayMore can handle it: unknown",
@@ -475,6 +489,7 @@
         "public",
         "controlled environment"
       ],
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml",
       "default": "unspecified"
     }
   ],
@@ -541,6 +556,9 @@
     },
     {
       "key": "primaryOccupation"
+    },
+    {
+      "key": "description"
     }
   ]
 }
