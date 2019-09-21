@@ -140,6 +140,7 @@ export default class ImdiGenerator {
         this.element("Anonymized", "false");
         this.element("Contact", "");
         this.element("Keys", "");
+        this.element("Description", "");
         this.exitGroup(); //</Actor>
       }
     });
@@ -696,10 +697,10 @@ export default class ImdiGenerator {
       this.requiredField("BirthDate", "birthYear", person);
       this.requiredField("Sex", "gender", person);
       this.requiredField("Education", "education", person);
-      this.requiredField("Description", "description", person);
       this.element("Anonymized", "false"); // review: is this related to SayMore's "code" field?
-      this.element("Contact", "");
+      this.requiredField("Contact", "howToContact", person);
       this.addCustomKeys(person, moreKeys);
+      this.requiredField("Description", "description", person);
     });
   }
 
