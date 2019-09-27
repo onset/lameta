@@ -77,7 +77,7 @@
   "//This 'build' section is for electron-builder": "",
   "build": {
     "productName": "SayMore X",
-    "appId": "io.github.saymore.saymore-x",
+    "appId": "com.github.saymore.saymore-x",
     "asarUnpack": [
       "node_modules/ffprobe-static/*"
     ],
