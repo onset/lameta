@@ -1,9 +1,10 @@
-// notarize the mac version
+// notarize the mac version and attach the ticket
+// This expects to find an environment variable APPLEID, and a keychain entry "altoolpw" with a app-specific password you made for altool from appid.apple.com.
 
 // to test notarization by hand, do something like:
-xcrun altool --verbose --notarize-app -f "SayMore X-0.7.5-mac.zip" --primary-bundle-id "io.github.saymore.saymore-x" -u "<your apple id>" -p "@keychain:altool.pw"
-// Review: what's the actual best version of this to be notarizing? The Zip? The raw app?
+// xcrun altool --verbose --notarize-app -f "SayMore X-0.7.5-mac.zip" --primary-bundle-id "io.github.saymore.saymore-x" -u "<your apple id>" -p "@keychain:altoolpw"
 
+const keychain = require("keychain");
 const { notarize } = require("electron-notarize");
 
 exports.default = async function notarizing(context) {
@@ -11,17 +12,32 @@ exports.default = async function notarizing(context) {
   if (electronPlatformName !== "darwin") {
     return;
   }
-
   const appName = context.packager.appInfo.productFilename;
+
+  //return; // DON'T notarize
+
+  const pass = await new Promise(function(resolve, reject) {
+    keychain.getPassword(
+      { account: process.env.APPLEID, service: "altoolpw" },
+      function(err, password) {
+        if (err) {
+          console.log("err=" + err);
+          return reject(err);
+        }
+        resolve(password);
+      }
+    );
+  });
 
   const params = {
     appBundleId: "io.github.saymore.saymore-x",
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLEID,
-    // this is an app-specific password you get from appid.apple.com, then put that value in "altool.pw" 
-    // in the keychain. I named mine "altoo.pw" because if you do this by hand, that's the tool you're talking to.
-    appleIdPassword: "@keychain:altool.pw"
+    appleIdPassword: pass
   };
-  console.log(`notarize(${JSON.stringify(params)})`);
+  console.log(`calling notarize(${JSON.stringify(params)})`);
+  console.log(
+    "This takes a long time (like 10 minutes or so), becuase it waits for the notarization to finish at Apple before proceding."
+  );
   return await notarize(params);
 };
