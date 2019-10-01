@@ -125,7 +125,6 @@
     "mac": {
       "icon": "build/mac.icns",
       "hardenedRuntime": true,
-      "entitlements": "build/entitlements.mac.inherit.plist",
       "extraResources": [
         "node_modules/ffprobe-static/bin/darwin/x64"
       ]
