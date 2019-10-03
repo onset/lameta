@@ -199,6 +199,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
     // change the id/name field back to what it was previously.
     const newFileName = sanitize(this.textValueThatControlsFolderName());
 
+    // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
+    // Windows is always case-insensitive, and macos usually (but not always!) is. This method
+    // so far gets by with being case sensitive.
     if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
       this.safeFileNameBase = newFileName;
       this.renameFilesAndFolders(newFileName);

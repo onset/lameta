@@ -610,13 +610,24 @@ export /*babel doesn't like this: abstract*/ class File {
     if (oldFilename.startsWith(oldbase)) {
       const newFilename = oldFilename.replace(oldbase, newbase);
       let newPath = Path.join(Path.dirname(currentFilePath), newFilename);
-      // can't think of a strong scenario for this at the moment,
-      // but it makes sure the rename will not fail due to a collision
-      newPath = this.getUniqueFilePath(newPath);
+
+      // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
+      // Windows is always case-insensitive, and macos usually (but not always!) is. Here we
+      // currently only support case-insensitive.
+      if (!this.areEqualCaseInsensitive(newPath, currentFilePath)) {
+        newPath = this.getUniqueFilePath(newPath);
+      }
       fs.renameSync(currentFilePath, newPath);
       return newPath;
     }
     return currentFilePath;
+  }
+  private areEqualCaseInsensitive(a: string, b: string) {
+    return (
+      a.localeCompare(b, undefined, {
+        sensitivity: "accent"
+      }) === 0
+    );
   }
   private updateFolderOnly(path: string, newFolderName: string): string {
     const filePortion = Path.basename(path);
