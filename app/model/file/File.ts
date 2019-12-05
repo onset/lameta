@@ -580,19 +580,28 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   private getUniqueFilePath(intendedPath: string): string {
-    let i = 0;
-    let path = intendedPath;
-    const extension = Path.extname(intendedPath);
-    // enhance: there are pathological file names like "foo.mp3.mp3" where this would mess up.
-    const pathWithoutExtension = Path.join(
-      Path.dirname(intendedPath),
-      Path.basename(intendedPath).replace(extension, "")
-    );
-    while (fs.existsSync(path)) {
-      i++;
-      path = pathWithoutExtension + " " + i + extension;
+    if (fs.existsSync(intendedPath)) {
+      // Dec 2019, I don't think this ever gets used
+      throw Error(
+        `Please report error: getUniqueFilePath("${intendedPath}") did not expect that it was actually possible to have to come up with a unique name.`
+      );
     }
-    return path;
+    return intendedPath;
+    // this was in-progress when I decided I don't need it
+    // let path = intendedPath;
+    // const extension = Path.extname(intendedPath);
+    // // enhance: there are pathological file names like "foo.mp3.mp3" where this would mess up.
+    // const pathWithoutExtension = Path.join(
+    //   Path.dirname(intendedPath),
+    //   Path.basename(intendedPath).replace(extension, "")
+    // );
+    // let lastNumber = 0;
+    // let pathBeforeNumber = pathWithoutExtension;
+    // while (fs.existsSync(path)) {
+    //   const match = pathWithoutExtension.match("(S+)s(d+)$");
+    //   if (match && match.length > 1) {
+    //     lastNumber = parseInt(match[match.length - 1], undefined);
+    //   }
   }
 
   // Rename one file on disk and return the new full path.
@@ -614,7 +623,7 @@ export /*babel doesn't like this: abstract*/ class File {
       // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
       // Windows is always case-insensitive, and macos usually (but not always!) is. Here we
       // currently only support case-insensitive.
-      if (!this.areEqualCaseInsensitive(newPath, currentFilePath)) {
+      if (!this.areSamePath(newPath, currentFilePath)) {
         newPath = this.getUniqueFilePath(newPath);
       }
       fs.renameSync(currentFilePath, newPath);
@@ -622,9 +631,13 @@ export /*babel doesn't like this: abstract*/ class File {
     }
     return currentFilePath;
   }
-  private areEqualCaseInsensitive(a: string, b: string) {
+  private areSamePath(a: string, b: string) {
+    //fix slashes and such
+    const aNormalized = Path.normalize(a);
+    const bNormalized = Path.normalize(b);
+    // enhance, on Linux this might need to be different?
     return (
-      a.localeCompare(b, undefined, {
+      aNormalized.localeCompare(bNormalized, undefined, {
         sensitivity: "accent"
       }) === 0
     );
