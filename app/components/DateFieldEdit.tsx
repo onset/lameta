@@ -31,6 +31,7 @@ export default class DateFieldEdit extends React.Component<
         <DatePicker
           className="date-picker"
           dateFormat="ll"
+          locale={navigator.language}
           selected={m}
           //onChange={d => console.log("change " + d)}
           onChange={newDate => {

@@ -229,14 +229,20 @@ export class Field {
   public asDateDisplayString(): string {
     const m = moment(this.text);
     if (m.isValid()) {
-      return m.format("ll"); // Aug 11 2017
+      moment.locale(navigator.language);
+      const localeData = moment.localeData();
+      const dateFormat = localeData.longDateFormat("ll");
+      return m.format(dateFormat);
     }
     return this.text;
   }
   public asDateTimeDisplayString(): string {
     const m = moment(this.text);
     if (m.isValid()) {
-      return m.format("lll"); // Aug 11 2017
+      moment.locale(navigator.language);
+      const localeData = moment.localeData();
+      const dateFormat = localeData.longDateFormat("lll");
+      return m.format(dateFormat);
     }
     return this.text;
   }
