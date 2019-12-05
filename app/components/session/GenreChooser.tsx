@@ -23,17 +23,19 @@ export default class GenreChooser extends React.Component<
       ? this.props.field.definition.complexChoices
       : [];
 
-    const options = choices.map(c => {
-      let tip = c.definition;
-      if (c.examples && c.examples.length > 0) {
-        tip += "\nExamples: " + c.examples;
-      }
-      return new Object({
-        value: c.id,
-        label: translateGenre(c.label),
-        title: tip
-      });
-    });
+    const options = choices
+      .map(c => {
+        let tip = c.definition;
+        if (c.examples && c.examples.length > 0) {
+          tip += "\nExamples: " + c.examples;
+        }
+        return new Object({
+          value: c.id,
+          label: translateGenre(c.label),
+          title: tip
+        });
+      })
+      .sort((a: any, b: any) => (a.label as string).localeCompare(b.label));
 
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {
