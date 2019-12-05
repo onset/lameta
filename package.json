@@ -225,7 +225,7 @@
     "@lingui/core": "^2.7.2",
     "@lingui/macro": "^2.7.2",
     "@lingui/react": "^2.7.2",
-    "@sentry/browser": "^4.4.2",
+    "@sentry/browser": "^5.7.0",
     "@types/archiver": "^2.1.1",
     "@types/camelcase": "^4.1.0",
     "@types/commonmark": "^0.27.0",
