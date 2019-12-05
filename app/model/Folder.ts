@@ -170,6 +170,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     return childFile.tryToRenameBothFiles(newCoreName);
   }
 
+  // TODO see https://sentry.io/organizations/meacom/issues/1268125527/events/3243884b36944f418d975dc6f7ebd80c/
   protected renameFilesAndFolders(newFolderName: string) {
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);

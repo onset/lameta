@@ -307,9 +307,7 @@ export class Project extends Folder {
             f.wouldCollideWithIdFields(value))
       )
     ) {
-      msg = i18n._(
-        t`There is already a ${folderKind} with that name or code "${value}".`
-      );
+      msg = i18n._(t`There is already a ${folderKind} "${value}".`);
     }
     if (msg.length > 0) {
       remote.dialog.showMessageBox(

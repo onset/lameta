@@ -204,9 +204,7 @@ export class Field {
       } else {
         //TODO Log a problem where users can see it
         console.log(
-          `Warning: the field ${
-            this.englishLabel
-          } is a choice list but the value, ${s}, is not one of the choices in this version.`
+          `Warning: the field ${this.englishLabel} is a choice list but the value, ${s}, is not one of the choices in this version.`
         );
         this.text = s;
       }

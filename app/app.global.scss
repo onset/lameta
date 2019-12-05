@@ -50,8 +50,9 @@ a {
     color: blue; //don't change after they've clicked it once
   }
 }
-.field textarea {
-  padding-left: 10px;
+.field textarea,
+input {
+  padding-left: 5px;
 }
 // .field {
 //   // display: flex;
