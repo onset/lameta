@@ -39,6 +39,12 @@ module.exports = {
       //   include: /@lingui/
       // },
       {
+        // make all files ending in .json use the `json5-loader`, so we can have comments
+        test: /\.json$/,
+        use: "json5-loader",
+        type: "javascript/auto"
+      },
+      {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
         use: {

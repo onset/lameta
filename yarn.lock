@@ -7611,6 +7611,15 @@ json-stringify-safe@~5.0.1:
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
+json5-loader@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/json5-loader/-/json5-loader-3.0.0.tgz#def00e8cabe23160006d589df647a7a5ef266446"
+  integrity sha512-U89cCwdjQKhWaAgurRXObwVf+Q9dCdZZCNgyfU2VXoGJu3rxjzcvBiSoVMD7lU1Z54XnJOrkfUMfMy+gleOPYQ==
+  dependencies:
+    json5 "^2.1.0"
+    loader-utils "^1.2.3"
+    schema-utils "^1.0.0"
+
 json5@2.x, json5@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
@@ -7882,7 +7891,7 @@ loader-utils@^0.2.16:
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
-loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.0:
+loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.0, loader-utils@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.2.3.tgz#1ff5dc6911c9f0a062531a4c04b609406108c2c7"
   integrity sha512-fkpz8ejdnEMG3s37wGL07iSBDg99O9D5yflE9RGNH3hRdx9SOwYfnGYdZOUIZitN8E+E2vkq3MUMYMvPYl5ZZA==
