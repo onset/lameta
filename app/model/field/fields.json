@@ -2,7 +2,7 @@
   "project": [
     {
       "key": "title",
-      "englishLabel": "Project Title",
+      "englishLabel": "Project ID", // changed to ID at ELAR request Dec 2019
       "tagInSayMoreClassic": "Title"
     },
     {
@@ -330,7 +330,9 @@
       "tagInSayMoreClassic": "CustomAccessProtocol",
       "englishLabel": "Custom access choices"
     },
-    {
+    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
+      is a drag.
+     {
       "key": "depositor",
       "tagInSayMoreClassic": "Depositor",
       "cssClass": "field__newSection"
@@ -339,7 +341,7 @@
       "key": "rightsHolder",
       "tagInSayMoreClassic": "RightsHolder"
     },
-
+    */
     {
       "key": "contactPerson",
       "tagInSayMoreClassic": "ContactPerson"
@@ -386,7 +388,8 @@
       "multipleLines": true
     },
     {
-      "key": "location"
+      "key": "location",
+      "englishLabel": "Neighborhood/Town/Village"
     },
     {
       "key": "access"
@@ -472,8 +475,8 @@
       "key": "subgenre",
       "tagInSayMoreClassic": "Sub-Genre",
       "englishLabel": "Subgenre",
-      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-      "additional": true
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml"
+      // moved from additional/more Dec 2019 at ELAR request
     },
     {
       "key": "socialContext",
@@ -491,6 +494,16 @@
       ],
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml",
       "default": "unspecified"
+    },
+    {
+      // added at ELAR request Dec 2019
+      "key": "keyword",
+      "additional": true
+    },
+    {
+      // added at ELAR request Dec 2019
+      "key": "topic",
+      "additional": true
     }
   ],
   "person": [
@@ -542,7 +555,8 @@
     },
     {
       "key": "gender",
-      "choices": ["Unknown", "Male", "Female"],
+      // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
+      "choices": ["Unknown", "Male", "Female", "Other"],
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
       "imdiIsClosedVocabulary": true
     },
