@@ -38,6 +38,7 @@ export class FieldDefinition {
   public showOnAutoForm: boolean = true;
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization
   public tagInSayMoreClassic?: string = "";
+  public personallyIdentifiableInformation?: boolean;
 
   // this constructor lets us take something read in from json and
   // get a definition with any default values set above

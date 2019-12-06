@@ -16,6 +16,7 @@ export const FieldLabel: React.FunctionComponent<{ field: Field }> = props => {
     tooltip && tooltip.length > 0 ? (
       <Tooltip
         tagName={"span"}
+        className={"tooltipWrapper"} // would have no wrapper, but at least reminds us why it is there
         styles={{ display: "inline" }}
         background={"#ffe980"}
         content={tooltip}
@@ -29,6 +30,13 @@ export const FieldLabel: React.FunctionComponent<{ field: Field }> = props => {
   return (
     <>
       {labelMaybeWithTooltip}
+      {props.field.definition.personallyIdentifiableInformation ? (
+        <InfoAffordance>
+          {
+            "As Personally Identifiable Information, this will not be exported to other formats."
+          }
+        </InfoAffordance>
+      ) : null}
       {specialInfo ? <InfoAffordance>{specialInfo}</InfoAffordance> : null}
     </>
   );

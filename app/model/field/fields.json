@@ -565,7 +565,7 @@
       "key": "howToContact",
       "multipleLines": true,
       "tooltip": "This is only for the use of the researcher.",
-      "specialInfo": "As Personally Identifiable Information, this will not be exported to IMDI."
+      "personallyIdentifiableInformation": true
     },
 
     {

@@ -697,8 +697,21 @@ export default class ImdiGenerator {
       this.requiredField("BirthDate", "birthYear", person);
       this.requiredField("Sex", "gender", person);
       this.requiredField("Education", "education", person);
+
       this.element("Anonymized", "false"); // review: is this related to SayMore's "code" field?
-      this.requiredField("Contact", "howToContact", person);
+      // Nov 2019 ELAR decided this is Personally identifiable information that they don't want in their archive
+      // so we just pretend we output it so it won't come out in the keys
+      this.keysThatHaveBeenOutput.add("Person.howToContact");
+
+      if (
+        this.folderInFocus.properties.getTextStringOrEmpty("howToContact")
+          .length > 0
+      ) {
+        this.tail.comment(
+          "Omitting howToContact, which is personally identifiable information."
+        );
+      }
+
       this.addCustomKeys(person, moreKeys);
       this.requiredField("Description", "description", person);
     });

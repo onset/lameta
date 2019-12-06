@@ -83,9 +83,10 @@
     grid-column: 4;
   }
   .howToContact {
-    grid-row: 3/5;
+    grid-row: 3/4;
     textarea {
       overflow-y: scroll;
+      height: 100%;
     }
   }
   .languageGroup {
