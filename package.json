@@ -303,6 +303,7 @@
     "react-syntax-highlighter": "^8.0.1",
     "react-table": "^6.7.6",
     "react-tabs": "^2.1.0",
+    "react-tooltip-lite": "^1.10.0",
     "sanitize-filename": "^1.6.1",
     "source-map-support": "^0.5.0",
     "spectron-menu-addon": "^0.3.3",

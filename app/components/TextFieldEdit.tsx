@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
+import { InfoAffordance } from "./InfoAffordance";
+import { FieldLabel } from "./FieldLabel";
 
 export interface IProps {
   field: Field;
@@ -42,14 +44,14 @@ export default class TextFieldEdit extends React.Component<
 
   public render() {
     const classname = this.state.invalid ? "invalid" : "";
-    const label: string = this.props.field.labelInUILanguage;
     return (
       <div
         className={
           "field " + (this.props.className ? this.props.className : "")
         }
       >
-        {this.props.hideLabel ? "" : <label>{label}</label>}
+        <FieldLabel field={this.props.field} />
+
         <textarea
           autoFocus={this.props.autoFocus}
           className={classname}

@@ -344,7 +344,8 @@
     */
     {
       "key": "contactPerson",
-      "tagInSayMoreClassic": "ContactPerson"
+      "tagInSayMoreClassic": "ContactPerson",
+      "tooltip": "Contact information about the person or institution responsible for the project."
     },
     {
       "key": "dateAvailable",
@@ -562,7 +563,9 @@
     },
     {
       "key": "howToContact",
-      "multipleLines": true
+      "multipleLines": true,
+      "tooltip": "This is only for the use of the researcher.",
+      "specialInfo": "As Personally Identifiable Information, this will not be exported to IMDI."
     },
 
     {

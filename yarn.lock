@@ -10439,6 +10439,13 @@ react-themeable@^1.1.0:
   dependencies:
     object-assign "^3.0.0"
 
+react-tooltip-lite@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/react-tooltip-lite/-/react-tooltip-lite-1.10.0.tgz#03c367c590339848a083942c3b0bee2a98254819"
+  integrity sha512-M4n6lGUWTrK2ngv2yDfVGnhO0EYoj5n3GNgKuZLYAK8q3jBbFK7Cj4tJNB6AtLgGlifL+y2TJ9LWWT2E3YKzhg==
+  dependencies:
+    prop-types "^15.5.8"
+
 react-transition-group@^2.2.1:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"

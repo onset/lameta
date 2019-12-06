@@ -17,6 +17,8 @@ export interface IChoice {
 export class FieldDefinition {
   public key: string;
   public englishLabel?: string;
+  public tooltip?: string;
+  public specialInfo?: string;
   public default?: string;
   public persist: boolean;
   public type: string = "Text";
