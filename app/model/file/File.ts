@@ -12,7 +12,8 @@ import { locate } from "../../crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-const knownFieldDefinitions = require("../field/fields.json");
+import knownFieldDefinitions from "../field/KnownFieldDefinitions";
+
 const titleCase = require("title-case");
 
 export class Contribution {

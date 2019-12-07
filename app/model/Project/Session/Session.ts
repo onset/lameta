@@ -3,7 +3,7 @@ import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-const knownFieldDefinitions = require("../../field/fields.json");
+import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
 
 export class Session extends Folder {

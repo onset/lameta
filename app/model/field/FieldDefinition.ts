@@ -3,7 +3,7 @@ const titleCase = require("title-case");
 
 export class FieldDefinition {
   public key: string;
-  public englishLabel: string = "default";
+  public englishLabel: string = "";
   public tooltip?: string;
   public specialInfo?: string;
   public default?: string;
@@ -33,7 +33,8 @@ export class FieldDefinition {
     Object.assign(this, rawObject);
     this.isAdditional =
       rawObject.additional === true || rawObject.additional === "true";
-    if (!!this.englishLabel) {
+    /// if englishLabel wasn't specified, derive it from the key
+    if (!!!this.englishLabel) {
       this.englishLabel = titleCase(this.key);
     }
   }

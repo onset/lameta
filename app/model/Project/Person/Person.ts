@@ -1,7 +1,7 @@
 import { Folder } from "../../Folder";
 import { File } from "../../file/File";
 import * as Path from "path";
-const knownFieldDefinitions = require("../../field/fields.json");
+import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";

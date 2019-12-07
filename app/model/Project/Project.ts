@@ -23,7 +23,7 @@ import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 
 const genres = require("./Session/genres.json");
 
-const knownFieldDefinitions = require("../field/fields.json");
+import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 
 let sCurrentProject: Project | null = null;
 
