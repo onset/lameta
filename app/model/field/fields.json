@@ -184,6 +184,13 @@
       ],
       "default": "unspecified"
     },
+
+    {
+      "key": "locationRegion",
+      "englishLabel": "Region",
+      "tagInSayMoreClassic": "Location_Region",
+      "additional": true
+    },
     {
       "key": "locationCountry",
       "englishLabel": "Country",
@@ -192,12 +199,6 @@
       "imdiIsClosedVocabulary": false,
       "additional": true
       //choices are filled in by KnownFieldDefinitions.ts
-    },
-    {
-      "key": "locationRegion",
-      "englishLabel": "Region",
-      "tagInSayMoreClassic": "Location_Region",
-      "additional": true
     },
     {
       "key": "locationContinent",
@@ -219,11 +220,12 @@
 
       "additional": true
     },
-    {
-      "key": "locationAddress",
-      "tagInSayMoreClassic": "Location_Address",
-      "additional": true
-    },
+    // Removed Dec 2019 at ELAR request
+    //{
+    //   "key": "locationAddress",
+    //   "tagInSayMoreClassic": "Location_Address",
+    //   "additional": true
+    // },
     {
       "key": "planningType",
       "tagInSayMoreClassic": "Planning_Type",
