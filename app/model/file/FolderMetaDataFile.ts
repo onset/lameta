@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as Path from "path";
-import { Field, FieldDefinition } from "../field/Field";
+import { Field } from "../field/Field";
+import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 

@@ -29,7 +29,9 @@ export default class FieldNameEdit extends React.Component<
   }
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, field: Field) {
     // note, we don't want to change the key, we leave that up to the parent component
-    field.englishLabel = this.processLabel(event.currentTarget.value);
+    field.definition.englishLabel = this.processLabel(
+      event.currentTarget.value
+    );
     this.setState({ invalid: false });
   }
   private processLabel(label: string): string {
@@ -47,7 +49,7 @@ export default class FieldNameEdit extends React.Component<
       <textarea
         className={classname}
         name={this.props.field.key} //what does this do? Maybe accessibility?
-        value={this.props.field.englishLabel}
+        value={this.props.field.definition.englishLabel}
         onChange={event => this.onChange(event, this.props.field)}
         onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
           const newLabel = this.processLabel(event.currentTarget.value);

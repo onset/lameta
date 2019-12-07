@@ -1,15 +1,30 @@
 import React from "react";
 import Tooltip from "react-tooltip-lite";
 import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
 import { InfoAffordance } from "./InfoAffordance";
+import userSettingsSingleton from "../UserSettings";
+import { translateFieldLabel } from "../localization";
 
-export const FieldLabel: React.FunctionComponent<{ field: Field }> = props => {
-  const tooltip = props.field.definition.tooltip;
-  const specialInfo = props.field.definition.specialInfo;
+export const FieldLabel: React.FunctionComponent<{
+  fieldDef: FieldDefinition;
+}> = props => {
+  let tooltip = props.fieldDef.tooltip;
+  if (userSettingsSingleton.ShowIMDIPanels && props.fieldDef.markAsNotImdi) {
+    tooltip = ("" && tooltip) + " Not important for IMDI.";
+  }
+  const specialInfo = props.fieldDef.specialInfo;
 
   const labelElement = (
-    <label style={{ display: "inline-block" }}>
-      {props.field.labelInUILanguage}
+    <label
+      style={{ display: "inline-block" }}
+      className={
+        userSettingsSingleton.ShowIMDIPanels && props.fieldDef.markAsNotImdi
+          ? "markAsNotImdi"
+          : ""
+      }
+    >
+      {translateFieldLabel(props.fieldDef)}
     </label>
   );
   const labelMaybeWithTooltip =
@@ -18,10 +33,10 @@ export const FieldLabel: React.FunctionComponent<{ field: Field }> = props => {
         tagName={"span"}
         className={"tooltipWrapper"} // would have no wrapper, but at least reminds us why it is there
         styles={{ display: "inline" }}
-        background={"#ffe980"}
+        background={"#FDFFB1"}
         content={tooltip}
       >
-        {labelElement}
+        <span style={{ maxWidth: "100px" }}>{labelElement}</span>
       </Tooltip>
     ) : (
       labelElement
@@ -30,7 +45,7 @@ export const FieldLabel: React.FunctionComponent<{ field: Field }> = props => {
   return (
     <>
       {labelMaybeWithTooltip}
-      {props.field.definition.personallyIdentifiableInformation ? (
+      {props.fieldDef.personallyIdentifiableInformation ? (
         <InfoAffordance>
           {
             "As Personally Identifiable Information, this will not be exported to other formats."

@@ -2,7 +2,7 @@
   "project": [
     {
       "key": "title",
-      "englishLabel": "Project ID", // changed to ID at ELAR request Dec 2019
+      "englishLabel": "Project ID", // changed to Project ID at ELAR request Dec 2019
       "tagInSayMoreClassic": "Title"
     },
     {
@@ -390,7 +390,8 @@
     },
     {
       "key": "location",
-      "englishLabel": "Neighborhood/Town/Village"
+      "englishLabel": "Neighborhood/Town/Village",
+      "tooltip": "Location that is relevant within the group you are studying"
     },
     {
       "key": "access"
@@ -499,12 +500,14 @@
     {
       // added at ELAR request Dec 2019
       "key": "keyword",
-      "additional": true
+      "additional": false,
+      "tooltip": "Separate with commas. Note that individual keywords cannot contain a comma."
     },
     {
       // added at ELAR request Dec 2019
       "key": "topic",
-      "additional": true
+      "additional": false,
+      "tooltip": "Separate with commas. Note that individual topics cannot contain a comma."
     }
   ],
   "person": [
@@ -552,7 +555,9 @@
       "key": "education"
     },
     {
-      "key": "birthYear"
+      "key": "birthYear",
+      "specialInfo": "If you are estimating, talk about that in the description",
+      "tooltip": "Enter '?' if you don't know"
     },
     {
       "key": "gender",
@@ -572,7 +577,8 @@
       "key": "ethnicGroup"
     },
     {
-      "key": "primaryOccupation"
+      "key": "primaryOccupation",
+      "markAsNotImdi": true
     },
     {
       "key": "description"

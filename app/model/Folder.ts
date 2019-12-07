@@ -1,11 +1,7 @@
 import { File, OtherFile } from "./file/File";
 import { observable } from "mobx";
-import {
-  FieldDefinition,
-  Field,
-  FieldType,
-  FieldVisibility
-} from "./field/Field";
+import { Field, FieldType, FieldVisibility } from "./field/Field";
+import { FieldDefinition } from "./field/FieldDefinition";
 
 import * as fs from "fs-extra";
 import * as Path from "path";

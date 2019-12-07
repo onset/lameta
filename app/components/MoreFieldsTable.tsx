@@ -1,6 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldDefinition } from "../model/field/Field";
+import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Folder } from "../model/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";

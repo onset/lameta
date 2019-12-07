@@ -57,7 +57,10 @@ export default class PersonForm extends React.Component<IProps> {
 
         <div className="primary-language">
           <label className="languageGroup">
-            {this.props.fields.getTextField("primaryLanguage").englishLabel}
+            {
+              this.props.fields.getTextField("primaryLanguage").definition
+                .englishLabel
+            }
           </label>
           <LanguageEdit
             language={this.props.fields.getTextField("primaryLanguage")}

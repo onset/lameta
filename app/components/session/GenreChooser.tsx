@@ -18,7 +18,7 @@ export default class GenreChooser extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   public render() {
-    const label = translateFieldLabel(this.props.field);
+    const label = this.props.field.labelInUILanguage;
     const choices = this.props.field.definition.complexChoices
       ? this.props.field.definition.complexChoices
       : [];

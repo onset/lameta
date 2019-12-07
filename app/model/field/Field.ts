@@ -4,7 +4,8 @@ import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
 import { translateFieldLabel, currentUILanguage } from "../../localization";
-const titleCase = require("title-case");
+import { FieldDefinition } from "./FieldDefinition";
+
 //import * as assert from "assert";
 
 export interface IChoice {
@@ -12,41 +13,6 @@ export interface IChoice {
   label: string;
   definition: string;
   examples: string[];
-}
-
-export class FieldDefinition {
-  public key: string;
-  public englishLabel?: string;
-  public tooltip?: string;
-  public specialInfo?: string;
-  public default?: string;
-  public persist: boolean;
-  public type: string = "Text";
-  public form?: string; // what form this shows on, if not the main one
-  //visibility?: string;
-  public cssClass?: string;
-  public choices?: string[];
-  public complexChoices?: IChoice[];
-  public multipleLines?: boolean;
-  public order?: number = 0;
-  public imdiRange?: string;
-  public imdiIsClosedVocabulary?: boolean;
-  public isCustom: boolean = false;
-  // this is for the fields in session that appear under "More Fields".
-  public isAdditional?: boolean = false;
-  //awkward... this is not use for people, where we don't use the autoform
-  public showOnAutoForm: boolean = true;
-  // SayMore Windows, at least through version 3.3, has inconsistent capitalization
-  public tagInSayMoreClassic?: string = "";
-  public personallyIdentifiableInformation?: boolean;
-
-  // this constructor lets us take something read in from json and
-  // get a definition with any default values set above
-  public constructor(rawObject) {
-    Object.assign(this, rawObject);
-    this.isAdditional =
-      rawObject.additional === true || rawObject.additional === "true";
-  }
 }
 
 export enum FieldType {
@@ -68,7 +34,6 @@ export enum FieldVisibility {
 export class Field {
   //TODO: remove things that just repeat field definition
   public key: string;
-  public englishLabel: string;
   public readonly type: FieldType;
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
@@ -118,7 +83,6 @@ export class Field {
       definition.key,
       type,
       definition.default,
-      definition.englishLabel,
       definition.form,
       FieldVisibility.Always, //todo
       definition.persist,
@@ -136,7 +100,6 @@ export class Field {
     key: string,
     type: FieldType = FieldType.Text,
     englishValue: string = "",
-    englishLabel: string = titleCase(key),
     form: string = "",
     visibility: FieldVisibility = FieldVisibility.Always,
     persist: boolean = true,
@@ -146,7 +109,6 @@ export class Field {
     // imdiIsClosedVocabulary?: boolean
   ) {
     this.key = key;
-    this.englishLabel = englishLabel;
     this.form = form;
     this.type = type;
     this.visibility = visibility;
@@ -154,7 +116,7 @@ export class Field {
     this.cssClass = cssClass ? cssClass : key;
     this.text = englishValue;
     this.choices = choices.filter(c => {
-      return c.indexOf("//") !== 0; // we dont yet have webpack allowing comments in json, so we strip out elements that start with //
+      return c.indexOf("//") !== 0; // we don't yet have webpack allowing comments in json, so we strip out elements that start with //
     });
 
     // Review: maybe it's lame to have some fields have a format definition, and some don't.
@@ -186,7 +148,10 @@ export class Field {
       console.log("***" + key + " should be a date? ");
     }
   }
-
+  // returns the label translated or if unavailable, English
+  public get labelInUILanguage(): string {
+    return translateFieldLabel(this.definition);
+  }
   public get text(): string {
     return this.textHolder.textInDefaultLanguage;
   }
@@ -207,7 +172,7 @@ export class Field {
       } else {
         //TODO Log a problem where users can see it
         console.log(
-          `Warning: the field ${this.englishLabel} is a choice list but the value, ${s}, is not one of the choices in this version.`
+          `Warning: the field ${this.definition.englishLabel} is a choice list but the value, ${s}, is not one of the choices in this version.`
         );
         this.text = s;
       }
@@ -294,11 +259,6 @@ export class Field {
     }
   }
 
-  // returns the label translated or if unavailable, English
-  public get labelInUILanguage(): string {
-    return translateFieldLabel(this);
-  }
-
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
   protected static escapeSpecialChars(s: string): string {
     console.assert(s !== null && s !== undefined);
@@ -319,7 +279,6 @@ export class HasConsentField extends Field {
     super(
       "hasConsent",
       FieldType.Function,
-      undefined,
       "Consent",
       undefined,
       undefined,
@@ -337,7 +296,6 @@ export class DisplayNameField extends Field {
     super(
       "displayName",
       FieldType.Function,
-      undefined,
       "Person",
       undefined,
       undefined,

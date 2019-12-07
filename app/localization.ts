@@ -6,7 +6,7 @@ import userSettings from "./UserSettings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
 import moment from "moment";
-import { Field } from "./model/field/Field";
+import { FieldDefinition } from "./model/field/FieldDefinition";
 
 const languages = ["en", "es", "fr", "ps"];
 export const catalogs = {};
@@ -79,11 +79,11 @@ export function translateFileType(englishTypeName: string): string {
   }
 }
 
-export function translateFieldLabel(field: Field): string {
-  if (field === undefined) {
+export function translateFieldLabel(fieldDef: FieldDefinition): string {
+  if (fieldDef === undefined) {
     return "LABEL ERROR";
   }
-  return getMatch(fields, field.englishLabel);
+  return getMatch(fields, fieldDef.englishLabel);
 }
 export function translateAccessProtocol(choice: string): string {
   return getMatch(accessProtocols, choice);

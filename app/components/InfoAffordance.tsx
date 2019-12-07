@@ -6,7 +6,8 @@ export const InfoAffordance: React.FunctionComponent<{}> = props => {
   return (
     <Tooltip
       styles={{ display: "inline" }}
-      background={"salmon"}
+      background={"darkblue"}
+      color={"white"}
       content={props.children}
     >
       <img src={infoIcon} style={{ width: "12px", marginLeft: "5px" }} />

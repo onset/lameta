@@ -1,6 +1,7 @@
 import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
-import { Field, FieldType, FieldDefinition } from "../field/Field";
+import { Field, FieldType } from "../field/Field";
+import { FieldDefinition } from "../field/FieldDefinition";
 import { Contribution } from "./File";
 import assert from "assert";
 

@@ -50,12 +50,16 @@ export default class TextFieldEdit extends React.Component<
           "field " + (this.props.className ? this.props.className : "")
         }
       >
-        <FieldLabel field={this.props.field} />
+        {this.props.hideLabel ? (
+          ""
+        ) : (
+          <FieldLabel fieldDef={this.props.field.definition} />
+        )}
 
         <textarea
           autoFocus={this.props.autoFocus}
           className={classname}
-          name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
+          name={this.props.field.definition.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
           onChange={event => this.onChange(event, this.props.field)}
           onKeyDown={event => {

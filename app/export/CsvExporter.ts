@@ -4,7 +4,8 @@ const moment = require("moment");
 //import nodeArchiver = require("archiver");
 import * as nodeArchiver from "archiver";
 import * as fs from "fs";
-import { FieldDefinition, FieldType, Field } from "../model/field/Field";
+import { FieldType, Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
 
 const kEol: string = require("os").EOL;

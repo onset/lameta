@@ -1,13 +1,8 @@
 import { Dictionary } from "typescript-collections";
 import assert from "assert";
 const camelcase = require("camelcase");
-import {
-  Field,
-  FieldType,
-  FieldDefinition,
-  HasConsentField,
-  DisplayNameField
-} from "./Field";
+import { Field, FieldType, HasConsentField, DisplayNameField } from "./Field";
+import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
 
 export class FieldSet extends Dictionary<string, Field> {
