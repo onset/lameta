@@ -1,6 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldDefinition } from "../model/field/Field";
+import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
 import { File } from "../model/file/File";
 import "./session/SessionForm.scss";
 import "./Form.scss";
@@ -10,6 +11,7 @@ import FieldNameEdit from "./FieldNameEdit";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../localization";
+import { FieldLabel } from "./FieldLabel";
 
 export interface IProps {
   file: File;
@@ -68,7 +70,9 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     this.fieldsForRows = file.properties
       .values()
       .filter(f => (f.definition ? f.definition.isCustom : false))
-      .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
+      .sort((a, b) =>
+        a.definition.englishLabel.localeCompare(b.definition.englishLabel)
+      ); // enhance: really we don't care about your locale, we care aobut the language of the label
 
     // add one blank row
     const placeHolder = this.makePlaceholderForCustomField();
@@ -81,22 +85,25 @@ export default class CustomFieldsTable extends React.Component<IProps> {
 
     if (f.definition.persist) {
       // we're updating
-      if (f.englishLabel.trim().length === 0) {
+      if (f.definition.englishLabel.trim().length === 0) {
         this.props.file.properties.remove(f.key);
         this.computeRows(this.props.file);
         this.forceUpdate();
       } else {
-        this.props.file.properties.changeKeyOfCustomField(f, f.englishLabel);
+        this.props.file.properties.changeKeyOfCustomField(
+          f,
+          f.definition.englishLabel
+        );
       }
     } else {
-      if (f.englishLabel.trim().length === 0) {
+      if (f.definition.englishLabel.trim().length === 0) {
         // ignore empty placehholders
         return;
       }
       // we're adding a new field because the user typed in a field name
-      console.log(`adding custom field ${f.englishLabel}=${f.text}`);
+      console.log(`adding custom field ${f.definition.englishLabel}=${f.text}`);
 
-      f.key = f.englishLabel;
+      f.key = f.definition.englishLabel;
 
       // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
       //review do this here?
@@ -187,12 +194,16 @@ export default class CustomFieldsTable extends React.Component<IProps> {
         }
       }
     ];
+    const def: FieldDefinition = new FieldDefinition({
+      key: "Custom Fields",
+      markAsNotImdi: true,
+      specialInfo:
+        "To remove a custom field, clear out the value everywhere you have used it, then restart SayMoreX"
+    });
 
     return (
       <div className="customFieldsBlock">
-        <label>
-          <Trans>Custom Fields</Trans>
-        </label>
+        <FieldLabel fieldDef={def} />
         <ReactTable
           className="customFieldsTable"
           noDataText=""
