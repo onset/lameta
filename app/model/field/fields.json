@@ -133,11 +133,13 @@
     },
     {
       "key": "situation",
-      "multipleLines": true
+      "multipleLines": true,
+      "markAsNotImdi": true
     },
     {
       "key": "setting",
-      "multipleLines": true
+      "multipleLines": true,
+      "markAsNotImdi": true
     },
     {
       "key": "location",
