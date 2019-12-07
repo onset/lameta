@@ -6,7 +6,6 @@ const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
-import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
 import { TabList } from "react-tabs";
@@ -133,7 +132,7 @@ export default class ImdiGenerator {
         this.element("FamilySocialRole", "");
         this.element("Languages", "");
         this.element("EthnicGroup", "");
-        this.element("Age", "0"); //required, and it won't take empty
+        this.element("Age", "unspecified");
         this.element("BirthDate", "");
         this.element("Sex", "");
         this.element("Education", "");
@@ -686,14 +685,18 @@ export default class ImdiGenerator {
         this.tail.comment("The following is based on today's date.");
       }
 
-      const age = person.ageOn(dateToCompareWith);
-      if (age && age.length > 0) {
-        this.element("Age", age);
-      } else {
-        this.element("Age", "0"); // required element, can't be empty
+      const birthYear = person.properties.getTextStringOrEmpty("birthYear");
+      if (birthYear === "?") {
+        this.element("Age", "unknown"); // ELAR request Oct-Dec 2019
+      } else if (birthYear.trim() === "") {
+        this.element("Age", "unspecified"); // CMDI maker outputs 'unspecified' if you leave it empty
         this.tail.comment("Could not compute age");
+      } else {
+        const age = person.ageOn(dateToCompareWith);
+        if (age && age.length > 0) {
+          this.element("Age", age);
+        }
       }
-
       this.requiredField("BirthDate", "birthYear", person);
       this.requiredField("Sex", "gender", person);
       this.requiredField("Education", "education", person);
