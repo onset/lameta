@@ -50,6 +50,10 @@ $dateWidth: 148px; // enhance: why is it 148px?
     order: 10;
     grid-column: span 1;
   }
+  .accessDescription {
+    order: 11;
+    grid-column: span 1;
+  }
 
   .description {
     order: 11;

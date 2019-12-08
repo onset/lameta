@@ -144,14 +144,15 @@
     {
       "key": "location",
       "englishLabel": "Neighborhood/Town/Village",
-      "tooltip": "Location that is relevant within the group you are studying"
+      "tooltip": "A location that is relevant within the group you are studying"
     },
     {
       "key": "access"
     },
     {
-      "key": "accessDescription",
-      "additional": "true"
+      "key": "accessDescription", // this was the inherited key... but really it's an explanation
+      "englishLabel": "Access Explanation",
+      "tooltip": "If the access is not open/free, use this to explain why."
     },
     {
       "key": "description",
