@@ -22,10 +22,10 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
   }
-  public componentWillMount() {
+  public UNSAFE_componentWillMount() {
     this.ensureOneBlankRow(this.props);
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     //if <different className=""></different>
     this.ensureOneBlankRow(nextProps);
   }

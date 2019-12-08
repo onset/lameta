@@ -27,10 +27,10 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     this.state = { fieldsForRows: [] };
   }
 
-  public componentWillMount() {
+  public UNSAFE_componentWillMount() {
     this.computeRows(this.props.file);
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
     this.computeRows(nextProps.file);
   }

@@ -29,14 +29,14 @@ export default class MediaStats extends React.Component<IProps, IState> {
     this.state = { error: undefined };
   }
 
-  public componentWillMount() {
+  public UNSAFE_componentWillMount() {
     this.updateStats(this.props.file)
       .then(() => this.setState({}))
       .catch(error => {
         this.setState({ error });
       });
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
     this.updateStats(nextProps.file)
       .then(() => this.setState({}))
