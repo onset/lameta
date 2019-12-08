@@ -5,7 +5,7 @@ import { Folder } from "../model/Folder";
 const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
-import { Person } from "../model/Project/Person/Person";
+import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
 import { TabList } from "react-tabs";
@@ -645,18 +645,11 @@ export default class ImdiGenerator {
         person.properties.getTextStringOrEmpty("primaryLanguage"),
         true
       );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage0")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage1")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage2")
-      );
-      this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("otherLanguage3")
-      );
+      for (let i = 0; i < maxOtherLanguages; i++) {
+        this.addActorLanguage(
+          person.properties.getTextStringOrEmpty("otherLanguage" + i)
+        );
+      }
       this.exitGroup(); // </Languages>
       this.requiredField("EthnicGroup", "ethnicGroup", person);
       // Note: age is relative to this session's date.

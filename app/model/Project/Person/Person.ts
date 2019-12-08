@@ -8,7 +8,7 @@ import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
-
+export const maxOtherLanguages = 10;
 export class Person extends Folder {
   // a callback on the Project that takes care of renaming any references to this person
   protected updateExternalReferencesToThisPerson: idChangeHandler;

@@ -9,6 +9,7 @@ import MugShot from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
 import { Trans } from "@lingui/react";
+import { OtherLanguageEdit } from "./OtherLanguageEdit";
 
 export interface IProps {
   person: Person;
@@ -24,8 +25,6 @@ export default class PersonForm extends React.Component<IProps> {
   }
 
   public render() {
-    const father = this.props.fields.getTextField("fathersLanguage");
-    const mother = this.props.fields.getTextField("mothersLanguage");
     const oldName = this.props.fields.getTextField("name").text;
     return (
       <form className={"personForm"}>
@@ -77,26 +76,7 @@ export default class PersonForm extends React.Component<IProps> {
           <label className="languageGroup">
             <Trans>Other Languages</Trans>
           </label>
-          <LanguageEdit
-            language={this.props.fields.getTextField("otherLanguage0")}
-            fatherLanguage={father}
-            motherLanguage={mother}
-          />
-          <LanguageEdit
-            language={this.props.fields.getTextField("otherLanguage1")}
-            fatherLanguage={father}
-            motherLanguage={mother}
-          />
-          <LanguageEdit
-            language={this.props.fields.getTextField("otherLanguage2")}
-            fatherLanguage={father}
-            motherLanguage={mother}
-          />
-          <LanguageEdit
-            language={this.props.fields.getTextField("otherLanguage3")}
-            fatherLanguage={father}
-            motherLanguage={mother}
-          />
+          <OtherLanguageEdit person={this.props.person} />
         </div>
         {/* uncomment for testing that the parent buttons are working
           <TextFieldEdit className={"language-name"} field={mother} />
