@@ -39,7 +39,6 @@ export default class PersonForm extends React.Component<IProps> {
           }}
           className="full-name left-side"
         />
-
         <TextFieldEdit
           className="nickname"
           field={this.props.fields.getTextField("nickname")}
@@ -53,7 +52,6 @@ export default class PersonForm extends React.Component<IProps> {
             this.props.person.IdMightHaveChanged();
           }}
         />
-
         <div className="primary-language">
           <label className="languageGroup">
             {

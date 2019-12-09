@@ -10,6 +10,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
   person: Person;
 }> = props => {
   const [iteration, setIteration] = useState(0);
+  const [showAdd, setShowAdd] = useState(false);
   const [langElements, setLangElements] = useState<JSX.Element[]>([]);
   const father = props.person.properties.getTextField("fathersLanguage");
   const mother = props.person.properties.getTextField("mothersLanguage");
@@ -34,11 +35,15 @@ export const OtherLanguageEdit: React.FunctionComponent<{
       }
     }
     // make a blank one to fill out
-    languages.push("");
+    if (languages.length < maxOtherLanguages) {
+      languages.push("");
+    }
+    setShowAdd(languages.length < maxOtherLanguages);
 
     setLangElements(
       languages.map((l, index) => (
         <LanguageEdit
+          key={index}
           language={props.person.properties.getTextField(
             "otherLanguage" + index
           )}
@@ -48,14 +53,15 @@ export const OtherLanguageEdit: React.FunctionComponent<{
       ))
     );
   }, [iteration]);
-  // TODO: EITHER just add a new language each time there isn't a blank anymore, OR
-  // Add a "new language" button.
+
   return (
     <>
       {langElements}
-      <button key="newLanguage">
-        <Trans>Add Language</Trans>
-      </button>
+      {showAdd ? (
+        <a onClick={x => setIteration(iteration + 1)}>
+          <Trans>Add Language</Trans>
+        </a>
+      ) : null}
     </>
   );
 };
