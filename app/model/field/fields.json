@@ -302,8 +302,9 @@
       "key": "primaryLanguage"
     },
     {
-      "key": "primaryLanguageLearnedIn",
-      "englishLabel": "Learned in:"
+      "key": "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
+      // we're retaining that key to allow migration, but
+      "englishLabel": "Details" // in saymorex we extend this to be more general
     },
     {
       "key": "otherLanguage0"

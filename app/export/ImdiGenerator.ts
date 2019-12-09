@@ -261,7 +261,11 @@ export default class ImdiGenerator {
       this.element("Description", description);
     });
   }
-  private addActorLanguage(lang: string, isPrimaryTongue?: boolean) {
+  private addActorLanguage(
+    lang: string,
+    details?: string,
+    isPrimaryTongue?: boolean
+  ) {
     if (lang && lang.length > 0) {
       this.startGroup("Language");
 
@@ -290,6 +294,9 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/Boolean.xml"
       );
 
+      if (details && details.length > 0) {
+        this.element("Description", details);
+      }
       // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
       // so I'm leaving it out entirely for now.
       /*const motherTongue = (this
@@ -643,6 +650,7 @@ export default class ImdiGenerator {
       this.startGroup("Languages");
       this.addActorLanguage(
         person.properties.getTextStringOrEmpty("primaryLanguage"),
+        person.properties.getTextStringOrEmpty("primaryLanguageLearnedIn"),
         true
       );
       for (let i = 0; i < maxOtherLanguages; i++) {
