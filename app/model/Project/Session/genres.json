@@ -2,10 +2,8 @@
   {
     "id": "drama",
     "label": "Drama",
-    "definition":
-      "A planned, creative, rendition of discourse involving two or more participants.",
-    "comments":
-      "Usually a drama involves mimesis of events, either real or imagined.",
+    "definition": "A planned, creative, rendition of discourse involving two or more participants.",
+    "comments": "Usually a drama involves mimesis of events, either real or imagined.",
     "examples": ["Play", "Skit", "Enacted Scene"]
   },
   {
@@ -36,24 +34,27 @@
     ]
   },
   {
+    "id": "elicitation",
+    "label": "Elicitation",
+    "definition": "The performer/consultant is given a framework but does not necessary plan his/her answer.",
+    "examples": []
+  },
+  {
     "id": "language_play",
     "label": "Language Play",
-    "definition":
-      "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+    "definition": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
     "examples": ["Verbal Art", "Joke", "Secret Language", "Speech Disguise"]
   },
   {
     "id": "oratory",
     "label": "Oratory",
-    "definition":
-      "Public speaking, or speaking eloquently according to rules or conventions.",
+    "definition": "Public speaking, or speaking eloquently according to rules or conventions.",
     "examples": ["Sermon", "Lecture", "Political Speech", "Invocation"]
   },
   {
     "id": "narrative",
     "label": "Narrative",
-    "definition":
-      "A monologic discourse which represents temporally organized events.",
+    "definition": "A monologic discourse which represents temporally organized events.",
     "examples": [
       "Historical",
       "Traditional",
@@ -67,8 +68,7 @@
   {
     "id": "procedural_discourse",
     "label": "Procedural Discourse",
-    "definition":
-      "An explanation or description of a method, process, or situation having ordered steps.",
+    "definition": "An explanation or description of a method, process, or situation having ordered steps.",
     "examples": ["Recipe", "Instructions", "Plan"]
   },
   {
@@ -80,22 +80,25 @@
   {
     "id": "singing",
     "label": "Singing",
-    "definition":
-      "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
+    "definition": "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
     "examples": ["Chant", "Song", "Chorus"]
+  },
+  {
+    "id": "translation",
+    "label": "Translation",
+    "definition": "",
+    "examples": []
   },
   {
     "id": "instrumental_music",
     "label": "Instrumental Music",
-    "definition":
-      "Music intended to be performed by a musical instrument or group of instruments.",
+    "definition": "Music intended to be performed by a musical instrument or group of instruments.",
     "examples": []
   },
   {
     "id": "unintelligible_speech",
     "label": "Unintelligible Speech",
-    "definition":
-      "Utterances that are not intended to be interpretable as ordinary language.",
+    "definition": "Utterances that are not intended to be interpretable as ordinary language.",
     "examples": [
       "Sacred Language",
       "Glossolalia",
