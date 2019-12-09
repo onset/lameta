@@ -1,8 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
-// tslint:disable-next-line:no-duplicate-imports
-import ReactSelect from "react-select";
+
+// tslint:disable-next-line: no-submodule-imports
+import CreateableSelect from "react-select/creatable";
 import { translateFieldLabel, translateGenre } from "../../localization";
 const saymore_orange = "#e69664";
 
@@ -47,14 +48,13 @@ export default class GenreChooser extends React.Component<
         ? matchingOption
         : {
             value: this.props.field.text,
-            label: this.props.field.text + " <-- Not in List",
-            title: "This value is not in the genre list."
+            label: this.props.field.text
           };
     }
     return (
       <div className={"field " + this.props.className}>
         <label>{label}</label>
-        <ReactSelect
+        <CreateableSelect
           value={currentOption}
           placeholder=""
           styles={{
