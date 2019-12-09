@@ -3,12 +3,15 @@ import {
   Person,
   maxOtherLanguages
 } from "../../../model/Project/Person/Person";
-import LanguageEdit from "./LanguageEdit";
+import { LanguageEdit } from "./LanguageEdit";
 import { Trans } from "@lingui/react";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
 export const OtherLanguageEdit: React.FunctionComponent<{
   person: Person;
+  languageFinder: LanguageFinder;
 }> = props => {
+  // we use `iteration` just to cause this to update when you click "Add Language"
   const [iteration, setIteration] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
   const [langElements, setLangElements] = useState<JSX.Element[]>([]);
@@ -16,6 +19,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
   const mother = props.person.properties.getTextField("mothersLanguage");
 
   useEffect(() => {
+    // gather up the existing "other languages"
     const languages: string[] = new Array(maxOtherLanguages)
       .fill(0)
       .map((ignore, index) => {
@@ -34,12 +38,13 @@ export const OtherLanguageEdit: React.FunctionComponent<{
         props.person.properties.setText("otherLanguage" + i, "");
       }
     }
-    // make a blank one to fill out
+    // make a blank one to fill out, if we aren't already at the max
     if (languages.length < maxOtherLanguages) {
       languages.push("");
     }
     setShowAdd(languages.length < maxOtherLanguages);
 
+    // create elements for each of those slots
     setLangElements(
       languages.map((l, index) => (
         <LanguageEdit
@@ -49,6 +54,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
           )}
           fatherLanguage={father}
           motherLanguage={mother}
+          languageFinder={props.languageFinder}
         />
       ))
     );

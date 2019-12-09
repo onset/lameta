@@ -273,6 +273,7 @@ function getTabs(
                 }}
                 person={directoryObject as Person}
                 fields={directoryObject.properties}
+                languageFinder={props.project.languageFinder}
               />
             </SMErrorBoundary>
           </TabPanel>

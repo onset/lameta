@@ -3,16 +3,18 @@ import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
 import TextFieldEdit from "../../TextFieldEdit";
 import { FieldSet } from "../../../model/field/FieldSet";
-import LanguageEdit from "./LanguageEdit";
+import { LanguageEdit } from "./LanguageEdit";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import MugShot from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
 import { Trans } from "@lingui/react";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
 export interface IProps {
   person: Person;
+  languageFinder: LanguageFinder;
   fields: FieldSet;
   validateFullName: (value: string) => boolean;
   validateCode: (value: string) => boolean;
@@ -63,6 +65,7 @@ export default class PersonForm extends React.Component<IProps> {
             language={this.props.fields.getTextField("primaryLanguage")}
             fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
             motherLanguage={this.props.fields.getTextField("mothersLanguage")}
+            languageFinder={this.props.languageFinder}
           />
         </div>
         <TextFieldEdit
@@ -74,7 +77,10 @@ export default class PersonForm extends React.Component<IProps> {
           <label className="languageGroup">
             <Trans>Other Languages</Trans>
           </label>
-          <OtherLanguageEdit person={this.props.person} />
+          <OtherLanguageEdit
+            person={this.props.person}
+            languageFinder={this.props.languageFinder}
+          />
         </div>
         {/* uncomment for testing that the parent buttons are working
           <TextFieldEdit className={"language-name"} field={mother} />
