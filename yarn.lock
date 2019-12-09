@@ -1529,17 +1529,17 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-table@^6.7.0":
-  version "6.7.21"
-  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-6.7.21.tgz#c07bc5680a2c6c85beaff7a7e671b6814b270a76"
-  integrity sha512-XiYCcn/CBajrj18vLA3kO79AHr5yZTCJe2kl87ZNTRxLO14y9D0IGeGZ3xLsqhfYrJSkkVzAJV8v+bQ4nuKCRQ==
+"@types/react-table@6.7.6":
+  version "6.7.6"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-6.7.6.tgz#7c25f076cb7dce2509f0593308fc4c21ef326517"
+  integrity sha512-9KKQIkcrxMD7S5iunr9c6vao0P1dgKlXwM+0y+zpSGQkzDRwiIexqaVSgdPFazNBzTm4Pmlj4AfbmExvUlbuNA==
   dependencies:
     "@types/react" "*"
 
-"@types/react-tabs@^1.0.3":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@types/react-tabs/-/react-tabs-1.0.5.tgz#4af76e27c5356d72e0cad73559938158cd9d0911"
-  integrity sha512-m4gfbUifa2Q4yTfIpYFgwyqCv3w0XrS/YadbExLeOZuFu+2FCMfyirFf1y4t7gw/TVDNx19RKQYp7kEp530CQg==
+"@types/react-tabs@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/react-tabs/-/react-tabs-2.3.1.tgz#62d3322667ac228c4d0f9f36ac9f86988c0b3971"
+  integrity sha512-4SZXSF8ibQAtHUqqfoYLO+8Rn4F7Hj/IX3CJf1712dWeFvRxYY1HjjwSoN4MgUB0SB0dY4GrdlZwNhhIKuRoNQ==
   dependencies:
     "@types/react" "*"
 
@@ -10407,17 +10407,17 @@ react-syntax-highlighter@^8.0.1:
     prismjs "^1.8.4"
     refractor "^2.4.1"
 
-react-table@^6.7.6:
-  version "6.8.6"
-  resolved "https://registry.yarnpkg.com/react-table/-/react-table-6.8.6.tgz#a0ad8b4839319052d5befc012603fb161e52ede3"
-  integrity sha1-oK2LSDkxkFLVvvwBJgP7Fh5S7eM=
+react-table@6.10.0:
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-6.10.0.tgz#20444b19d8ca3c1a08e7544e5c3a93e4ba56690e"
+  integrity sha512-s/mQLI1+mNvlae45MfAZyZ04YIT3jUzWJqx34s0tfwpDdgJkpeK6vyzwMUkKFCpGODBxpjBOekYZzcEmk+2FiQ==
   dependencies:
     classnames "^2.2.5"
 
-react-tabs@^2.1.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-tabs/-/react-tabs-2.3.0.tgz#0c37e786f288d369824acd06a96bd1818ab8b0dc"
-  integrity sha512-pYaefgVy76/36AMEP+B8YuVVzDHa3C5UFZ3REU78zolk0qMxEhKvUFofvDCXyLZwf0RZjxIfiwok1BEb18nHyA==
+react-tabs@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-tabs/-/react-tabs-3.0.0.tgz#60311a17c755eb6aa9b3310123e67db421605127"
+  integrity sha512-z90cDIb+5V7MzjXFHq1VLxYiMH7dDQWan7mXSw6BWQtw+9pYAnq/fEDvsPaXNyevYitvLetdW87C61uu27JVMA==
   dependencies:
     classnames "^2.2.0"
     prop-types "^15.5.0"
