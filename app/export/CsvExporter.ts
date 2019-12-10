@@ -108,7 +108,12 @@ export default class CsvExporter {
         const line = foundFields
           .map(key => {
             const field = folder.properties.getValue(key);
-            if (!field || field.definition.personallyIdentifiableInformation) {
+            if (
+              !field ||
+              (field &&
+                field.definition &&
+                field.definition.personallyIdentifiableInformation)
+            ) {
               return "";
             }
 

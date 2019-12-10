@@ -35,30 +35,33 @@ export default class ExportDialog extends React.Component<IProps, IState> {
 
   private handleCloseModal(doSave: boolean) {
     if (doSave) {
-      if (this.state.selectedOption === "csv") {
-        remote.dialog.showSaveDialog(
-          {
-            title: i18n._(t`Save As`),
-            //${Path.basename(this.projectHolder.project.directory)}
-            defaultPath: `${Path.basename(
-              this.props.projectHolder.project!.directory
-            )}-${this.state.selectedOption}.zip`,
-            filters: [
-              {
-                extensions: ["zip"],
-                name: i18n._(t`ZIP Archive`)
-              }
-            ]
-          },
-          path => this.saveFiles(path)
-        );
-      } else {
-        this.saveFiles(this.getPathForIMDISaving());
-      }
+      const defaultPath =
+        this.state.selectedOption === "csv"
+          ? this.getPathForCsvSaving()
+          : this.getPathForIMDISaving();
+      remote.dialog.showSaveDialog(
+        {
+          title: i18n._(t`Save As`),
+          defaultPath: defaultPath,
+          filters: [
+            {
+              extensions: ["zip"],
+              name: i18n._(t`ZIP Archive`)
+            }
+          ]
+        },
+        path => this.saveFiles(path)
+      );
     } else {
       this.setState({ isOpen: false });
     }
   }
+  private getPathForCsvSaving() {
+    return `${Path.basename(this.props.projectHolder.project!.directory)}-${
+      this.state.selectedOption
+    }.zip`;
+  }
+
   private getPathForIMDISaving(): string {
     const rootDirectoryForAllExports = Path.join(
       app.getPath("documents"),
