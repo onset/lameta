@@ -13,6 +13,7 @@ import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
+import { ShowSavingNotifier } from "../../components/SaveNotifier";
 
 const titleCase = require("title-case");
 
@@ -573,6 +574,7 @@ export /*babel doesn't like this: abstract*/ class File {
     } else {
       //console.log("writing:" + xml);
       try {
+        ShowSavingNotifier();
         fs.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {
