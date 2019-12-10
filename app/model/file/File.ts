@@ -575,7 +575,7 @@ export /*babel doesn't like this: abstract*/ class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {
-        ShowSavingNotifier();
+        ShowSavingNotifier(Path.basename(this.metadataFilePath));
         fs.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {

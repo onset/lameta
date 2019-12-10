@@ -16,10 +16,10 @@
   opacity: 0;
   &.hide {
     opacity: 0;
-    transition: opacity 1s ease-out;
+    transition: opacity 1s ease-in;
   }
   &.show {
     opacity: 1;
-    transition: opacity 1s ease-in;
+    transition: opacity 1s ease-out; // no, this isn't backwards. The names are just not intuitive: https://css-tricks.com/ease-out-in-ease-in-out/
   }
 }

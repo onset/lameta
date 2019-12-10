@@ -15,7 +15,7 @@ export function NotifyError(message: string) {
     timeout: 60 * 1000
   });
 }
-export function NotifyWarning(message: string, onClick: () => void) {
+export function NotifyWarning(message: string, onClick?: () => void) {
   ButterToast.raise({
     onClick,
     content: (
