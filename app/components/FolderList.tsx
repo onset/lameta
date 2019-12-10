@@ -136,6 +136,14 @@ export class FolderList extends React.Component<IProps> {
                 // console.log(
                 //   "row " + JSON.stringify(rowInfo.original.directory)
                 // );
+                if (
+                  this.props.selectedFolder &&
+                  this.props.selectedFolder.index > -1
+                ) {
+                  this.props.folders[
+                    this.props.selectedFolder.index
+                  ].saveAllFilesInFolder();
+                }
                 this.props.selectedFolder.index = rowInfo.index;
                 this.setState({}); // trigger re-render so that the following style: takes effect
               },
