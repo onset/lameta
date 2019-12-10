@@ -14,6 +14,8 @@ import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
+import { notifyListeners } from "mobx/lib/internal";
+import { NotifyError, NotifyWarning } from "../../components/Notify";
 
 const titleCase = require("title-case");
 
@@ -561,24 +563,30 @@ export /*babel doesn't like this: abstract*/ class File {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
+
     //    console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 
     if (this.describedFilePath.indexOf("sample data") > -1) {
-      // console.log(
-      //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
-      // );
+      NotifyWarning(
+        "Not saving because directory contains the words 'sample data'"
+      );
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
-      // console.log(xml);
     } else {
-      //console.log("writing:" + xml);
       try {
         ShowSavingNotifier();
         fs.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {
-        console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
+        if (error.code === "EPERM") {
+          NotifyError(
+            `Cannot save because file is locked:\r\n${this.metadataFilePath}. Is it open in another program?`
+          );
+        } else {
+          NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);
+        }
+        //console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
       }
     }
   }

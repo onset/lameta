@@ -11,9 +11,8 @@
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
 $default-font-size: 13px;
 
-$default-fonts: "-apple-system", /* mac*/ "BlinkMacSystemFont",
-  /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
-
+$default-fonts: "-apple-system" /* mac*/, "BlinkMacSystemFont" /* mac*/,
+  "Segoe UI" /* windows*/, "Ubuntu", "Open Sans", sans-serif;
 .tab-project.react-tabs__tab--selected {
   background-color: $project--color;
 }
@@ -285,4 +284,8 @@ input {
 
 .react-tooltip-lite {
   max-width: 300px !important;
+}
+
+.notificationTray ul li div div {
+  width: 500px !important;
 }

@@ -23,7 +23,7 @@ export class Person extends Folder {
     return name.toLowerCase() === this.getIdToUseForReferences().toLowerCase();
   }
 
-  public get metadataFileExtensionWithDot(): string {
+  public get /*override*/ metadataFileExtensionWithDot(): string {
     return ".person";
   }
 

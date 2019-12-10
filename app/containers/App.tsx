@@ -8,8 +8,7 @@ import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
 import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import { UserSettings } from "../UserSettings";
-
+import ButterToast from "butter-toast";
 export class App extends React.Component {
   public componentDidMount() {
     //ReactModal.setAppElement("#app");
@@ -21,6 +20,7 @@ export class App extends React.Component {
       <div id="app">
         <I18nProvider language={currentUILanguage} catalogs={catalogs}>
           <HomePage />
+          <ButterToast className={"notificationTray"} />
           <ConfirmDeleteDialog />
           <LanguagePickerDialog />
           <RenameFileDialog />

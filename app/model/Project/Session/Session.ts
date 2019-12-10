@@ -8,7 +8,7 @@ import { Project } from "../Project";
 const titleCase = require("title-case");
 
 export class Session extends Folder {
-  public get metadataFileExtensionWithDot(): string {
+  public get /*override*/ metadataFileExtensionWithDot(): string {
     return ".session";
   }
 

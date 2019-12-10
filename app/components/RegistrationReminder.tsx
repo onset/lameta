@@ -7,7 +7,7 @@ import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { Trans } from "@lingui/react";
 
-// This is in the upper left corner of the screen. It shows either
+// This is in the upper right corner of the screen. It shows either
 // * A button asking you to register, or
 // * The name of a role that is unusual (developer) or temporary (learner)
 // * Nothing, if you're registered with a normal, permanent role

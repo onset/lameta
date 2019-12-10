@@ -19,6 +19,7 @@ import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import { analyticsLocation } from "../analytics";
 import RegistrationReminder from "./RegistrationReminder";
+import { SaveNotifier } from "./SaveNotifier";
 
 export interface IProps {
   project: Project;
@@ -123,6 +124,7 @@ export default class Home extends React.Component<IProps> {
         className={styles.container}
         data-tid="container"
       >
+        <SaveNotifier />
         <RegistrationReminder />
         <div id="tabContainer">
           <Tabs

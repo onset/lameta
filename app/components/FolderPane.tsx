@@ -37,7 +37,7 @@ export interface IProps {
 
 export const FolderPane = observer<
   IProps & React.HTMLAttributes<HTMLDivElement>
->((props: any) => {
+>((props: IProps) => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [selectedContribution, setSelectedContribution] = React.useState<
     Contribution | undefined
@@ -58,9 +58,11 @@ export const FolderPane = observer<
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
 
+  props.folder.runSanityCheck();
+
   return (
     <div className={"filePane " + props.folderTypeStyleClass}>
-      {props.children}
+      {(props as any).children}
       {/* <h3 className={"paneTitle"}>{props.folder.displayName}</h3> */}
       <SplitPane
         split="horizontal"
