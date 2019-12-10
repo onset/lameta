@@ -5,6 +5,7 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
+const titleCase = require("title-case");
 
 export class Session extends Folder {
   public get metadataFileExtensionWithDot(): string {
@@ -44,6 +45,33 @@ export class Session extends Folder {
         "workingLanguages",
         Project.getDefaultWorkingLanguageCode()
       );
+    }
+    this.migrateDeprecatedFields();
+  }
+
+  // There are 2 fields that ELAR wanted removed. These work as part of the description,
+  // so we just append them to the description.
+  private migrateDeprecatedFields() {
+    this.migrateOneField("situation", "description");
+    this.migrateOneField("setting", "description");
+    console.log(
+      `After migration '${this.properties.getTextStringOrEmpty("description")}'`
+    );
+  }
+  private migrateOneField(migrationSource, migrationTarget) {
+    const valueToMove = this.properties
+      .getTextStringOrEmpty(migrationSource)
+      .trim();
+    if (valueToMove.length > 0) {
+      const currentTargetValue = this.properties
+        .getTextStringOrEmpty(migrationTarget)
+        .trim();
+      const newTargetValue = `${currentTargetValue} ${titleCase(
+        migrationSource
+      )}: ${valueToMove}`.trim();
+      console.log(`After migration '${migrationTarget}' = '${newTargetValue}'`);
+      this.properties.setText(migrationTarget, newTargetValue);
+      this.properties.remove(migrationSource);
     }
   }
   public static fromDirectory(

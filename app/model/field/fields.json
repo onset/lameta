@@ -131,6 +131,7 @@
       "key": "genre",
       "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml"
     },
+    /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
     {
       "key": "situation",
       "multipleLines": true,
@@ -140,7 +141,8 @@
       "key": "setting",
       "multipleLines": true,
       "markAsNotImdi": true
-    },
+    },*/
+
     {
       "key": "location",
       "englishLabel": "Neighborhood/Town/Village",
