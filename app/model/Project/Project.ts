@@ -311,13 +311,12 @@ export class Project extends Folder {
       msg = i18n._(t`There is already a ${folderKind} "${value}".`);
     }
     if (msg.length > 0) {
-      remote.dialog.showMessageBox(
-        {
+      remote.dialog
+        .showMessageBox({
           title: "SayMore",
           message: msg
-        },
-        () => {} //without this, I was hanging on windows
-      );
+        })
+        .then(() => {});
       return false;
     } else {
       return true;
@@ -346,13 +345,12 @@ export class Project extends Folder {
       code.trim().length > 0 &&
       this.persons.some(p => p !== person && p.wouldCollideWithIdFields(code))
     ) {
-      remote.dialog.showMessageBox(
-        {
+      remote.dialog
+        .showMessageBox({
           title: "SayMore",
           message: i18n._(t`There is already a Person with that name or code.`)
-        },
-        () => {} //without this, I was hanging on windows
-      );
+        })
+        .then(() => {});
       return false;
     }
     return true;

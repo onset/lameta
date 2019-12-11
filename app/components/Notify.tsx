@@ -37,21 +37,19 @@ export function NotifyMultipleProjectFiles(
   NotifyWarning(
     `There is a problem with ${displayName}. Click for more information.`,
     () => {
-      electron.remote.dialog.showMessageBox(
-        null as any,
-        {
+      electron.remote.dialog
+        .showMessageBox(null as any, {
           buttons: ["Cancel", "Let me fix this"],
           title: "Something is wrong here...",
           message: `There are more than one files of type ${projectType} in this folder.`,
           detail: `SayMoreX will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
-        },
-        response => {
-          if (response > 0) {
+        })
+        .then(response => {
+          if (response.response > 0) {
             showInExplorer(folder);
             electron.remote.app.quit();
           }
-        }
-      );
+        });
     }
   );
 }

@@ -42,8 +42,8 @@ export const ExportDialog: React.FunctionComponent<{
     if (doSave) {
       const defaultPath =
         exportFormat === "csv" ? getPathForCsvSaving() : getPathForIMDISaving();
-      remote.dialog.showSaveDialog(
-        {
+      remote.dialog
+        .showSaveDialog({
           title: i18n._(t`Save As`),
           defaultPath,
           filters: [
@@ -52,9 +52,8 @@ export const ExportDialog: React.FunctionComponent<{
               name: i18n._(t`ZIP Archive`)
             }
           ]
-        },
-        path => saveFiles(path)
-      );
+        })
+        .then(result => saveFiles(result.filePath!));
     } else {
       setIsOpen(false);
     }
