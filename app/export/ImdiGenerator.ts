@@ -699,7 +699,7 @@ export default class ImdiGenerator {
         }
       }
       this.requiredField("BirthDate", "birthYear", person);
-      this.requiredField("Sex", "gender", person);
+      this.addGender(person);
       this.requiredField("Education", "education", person);
 
       this.element("Anonymized", "false"); // review: is this related to SayMore's "code" field?
@@ -719,6 +719,20 @@ export default class ImdiGenerator {
       this.addCustomKeys(person, moreKeys);
       this.requiredField("Description", "description", person);
     });
+  }
+  private addGender(person: Person) {
+    const gender = person.properties.getTextStringOrEmpty("gender");
+    if (gender === "Other") {
+      this.tail.comment(
+        "Gender was actually 'Other'. The IMDI Schema does not have an 'other' option, so we are using 'unspecified'."
+      );
+    }
+    this.element(
+      "Sex",
+      gender === "Other" ? "unspecified" : gender,
+      true,
+      "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml"
+    );
   }
 
   //-----------------------------------------------------
