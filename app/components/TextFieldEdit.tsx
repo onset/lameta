@@ -61,6 +61,7 @@ export default class TextFieldEdit extends React.Component<
         )}
 
         <textarea
+          tabIndex={this.props.tabIndex}
           autoFocus={this.props.autoFocus}
           className={classname} // + " " + this.state.validationClass}
           name={this.props.field.definition.englishLabel} //what does this do? Maybe accessibility?

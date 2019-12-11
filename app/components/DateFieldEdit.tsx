@@ -29,6 +29,7 @@ export default class DateFieldEdit extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{label}</label>
         <DatePicker
+          tabIndex={this.props.tabIndex}
           className="date-picker"
           dateFormat="ll"
           locale={navigator.language}

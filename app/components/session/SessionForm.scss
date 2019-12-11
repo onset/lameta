@@ -19,47 +19,62 @@ $dateWidth: 148px; // enhance: why is it 148px?
     order: 2;
     grid-column: 2;
   }
-  .title {
-    grid-column: span 2;
-    order: 3;
-  }
-
-  .location {
-    order: 6;
-    grid-column: span 2;
-  }
-
   .participants {
-    order: 7;
-    grid-column: span 2;
+    order: 3;
+    grid-column: 3 / 5;
+  }
+
+  .title {
+    grid-column: 1 / 3;
+    order: 4;
+  }
+
+  .description {
+    order: 5;
+    grid-row: span 2;
+    grid-column: 3 / 5;
+    height: 120px;
   }
 
   .genre {
     order: 8;
-    grid-column: span 1;
+    grid-column: 1 / 2;
   }
   .subgenre {
     order: 9;
-    grid-column: span 1;
+    grid-column: 2 / 3;
   }
   .access-chooser {
     order: 10;
-    grid-column: span 1;
+    grid-column: 1 / 2;
   }
   .accessDescription {
     order: 11;
-    grid-column: span 1;
+    grid-column: 2 / 3;
   }
-
-  .description {
-    order: 11;
-    grid-row: span 2;
+  .keyword {
+    order: 12;
+    grid-column: 3 / 4;
+  }
+  .topic {
+    order: 13;
+    grid-column: 4 / 5;
+  }
+  .languages {
+    order: 14;
     grid-column: 1 / 3;
-    height: 120px;
+  }
+  .location {
+    order: 15;
+    grid-column: 3 / 5;
+  }
+  .workingLanguages {
+    order: 16;
+    grid-column: 1 / 3;
   }
 
   .moreFieldsBlock {
-    order: 13;
+    order: 17;
     grid-column: span 2;
     grid-row: span 5;
     .moreFieldsTable {
@@ -67,20 +82,12 @@ $dateWidth: 148px; // enhance: why is it 148px?
     }
   }
   .customFieldsBlock {
-    order: 14;
+    order: 18;
     grid-column: span 2;
 
     .customFieldsTable {
       background-color: white;
     }
-  }
-  .languages {
-    order: 15;
-    grid-column: span 2;
-  }
-  .workingLanguages {
-    order: 16;
-    grid-column: span 2;
   }
 
   .description {

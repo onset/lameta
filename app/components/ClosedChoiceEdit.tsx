@@ -37,6 +37,7 @@ export default class ClosedChoiceEdit extends React.Component<
       <div className={"field " + this.props.className}>
         {this.props.includeLabel ? <label>{label}</label> : ""}
         <select
+          tabIndex={this.props.tabIndex}
           name={this.props.field.definition.englishLabel} //what does name do? Maybe accessibility?
           value={v}
           onChange={event => {

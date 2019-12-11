@@ -55,6 +55,7 @@ export default class GenreChooser extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{label}</label>
         <CreateableSelect
+          tabIndex={this.props.tabIndex ? this.props.tabIndex.toString() : ""}
           classNamePrefix="rs" // causes react-select to show you the parts of the control for styling, e.g. "rs-input"
           value={currentOption}
           placeholder=""

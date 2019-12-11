@@ -128,7 +128,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       englishLabel,
       persist: true,
       type: "Text",
-      order: 0,
+      tabIndex: 0,
       isCustom: true,
       showOnAutoForm: false // we do show it, but in the custom table
     };
@@ -141,7 +141,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       englishLabel: "",
       persist: false, // we'll change this if they make it real
       type: "Text",
-      order: 0,
+      tabIndex: 0,
       isCustom: true,
       showOnAutoForm: false // we do show it, but in the custom table
     };

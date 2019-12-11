@@ -14,7 +14,9 @@ export interface IProps {
 }
 
 @observer
-export default class AccessChooser extends React.Component<IProps> {
+export default class AccessChooser extends React.Component<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> {
   constructor(props: IProps) {
     super(props);
   }
@@ -52,6 +54,7 @@ export default class AccessChooser extends React.Component<IProps> {
         </label>
         <ReactSelectClass
           name={this.props.field.labelInUILanguage}
+          tabIndex={this.props.tabIndex ? this.props.tabIndex.toString() : ""}
           value={currentOption}
           placeholder=""
           onChange={(s: any) => {

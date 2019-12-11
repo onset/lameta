@@ -53,6 +53,7 @@ export default class AutoForm extends React.Component<IProps> {
               field={f}
               key={field.key}
               className={field.cssClass}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition && f.definition.key === "access") {
@@ -61,6 +62,7 @@ export default class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (
@@ -73,6 +75,7 @@ export default class AutoForm extends React.Component<IProps> {
               key={field.key}
               field={field as Field}
               languageFinder={props.languageFinder}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition.key === "participants") {
@@ -83,6 +86,7 @@ export default class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
               onShowContributorsTab={this.props.onShowContributorsTab!}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition && f.definition.key === "genre") {
@@ -95,6 +99,7 @@ export default class AutoForm extends React.Component<IProps> {
               field={f}
               key={field.key}
               className={field.cssClass}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (
@@ -107,6 +112,7 @@ export default class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               key={field.key}
               field={field as Field}
+              tabIndex={field.definition.tabIndex}
               onBlur={() =>
                 // for some reason typescript isn't noticing that I have already checked that this isn't null,
                 // so the || console.log is just to pacify it
@@ -124,6 +130,7 @@ export default class AutoForm extends React.Component<IProps> {
         } else {
           return (
             <TextFieldEdit
+              tabIndex={field.definition.tabIndex}
               className={field.cssClass}
               key={field.key}
               field={field as Field}
@@ -133,6 +140,7 @@ export default class AutoForm extends React.Component<IProps> {
       case FieldType.Date:
         return (
           <DateFieldEdit
+            tabIndex={field.definition.tabIndex}
             className={field.cssClass}
             key={field.key}
             field={field as Field}
@@ -163,11 +171,11 @@ export default class AutoForm extends React.Component<IProps> {
       )
       .sort((a, b) => {
         const x =
-          (a.definition && a.definition.order !== undefined
-            ? a.definition.order
+          (a.definition && a.definition.tabIndex !== undefined
+            ? a.definition.tabIndex
             : 1000) -
-          (b.definition && b.definition.order !== undefined
-            ? b.definition.order
+          (b.definition && b.definition.tabIndex !== undefined
+            ? b.definition.tabIndex
             : 1000);
 
         return x;

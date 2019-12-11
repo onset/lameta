@@ -44,7 +44,7 @@ export class FolderMetadataFile extends File {
     // load the file containing metadata about this folder with
     // empty fields from the fields.json file
     knownFields.forEach((f: FieldDefinition, i: number) => {
-      f.order = i;
+      //f.tabIndex = i;
       const field = Field.fromFieldDefinition(f);
       this.properties.setValue(field.key, field);
       //console.log("Setting prop from fields.json: " + field.key);
