@@ -285,12 +285,17 @@ export class HasConsentField extends Field {
       false
     );
     this.person = person;
+    this.definition = new FieldDefinition({
+      key: "hasConsent",
+      englishLabel: "Consent",
+      persist: false
+    });
   }
   public hasConsent(): boolean {
     return !!this.person.files.find(f => f.isLabeledAsConsent());
   }
 }
-export class DisplayNameField extends Field {
+export class PersonDisplayNameField extends Field {
   private person: Person;
   constructor(person: Person) {
     super(
@@ -302,6 +307,11 @@ export class DisplayNameField extends Field {
       false
     );
     this.person = person;
+    this.definition = new FieldDefinition({
+      key: "displayName",
+      englishLabel: "Person",
+      persist: false
+    });
   }
   public get text(): string {
     return this.person.displayName;

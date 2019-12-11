@@ -1,7 +1,12 @@
 import { Dictionary } from "typescript-collections";
 import assert from "assert";
 const camelcase = require("camelcase");
-import { Field, FieldType, HasConsentField, DisplayNameField } from "./Field";
+import {
+  Field,
+  FieldType,
+  HasConsentField,
+  PersonDisplayNameField
+} from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
 
@@ -65,7 +70,7 @@ export class FieldSet extends Dictionary<string, Field> {
     this.setValue("hasConsent", new HasConsentField(person));
   }
   public addDisplayNameProperty(person: Person) {
-    this.setValue("displayName", new DisplayNameField(person));
+    this.setValue("displayName", new PersonDisplayNameField(person));
   }
 
   public addTextProperty(key: string, value: string) {
