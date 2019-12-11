@@ -668,7 +668,10 @@ export /*babel doesn't like this: abstract*/ class File {
   public updateNameBasedOnNewFolderName(newFolderName: string) {
     const hasSeparateMetaDataFile =
       this.metadataFilePath !== this.describedFilePath;
-    if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)) {
+    //was: if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)),
+    // but the file might not have been saved yet... we still need to change the
+    // path so that it points to somewhere in the newly renamed folder.
+    if (hasSeparateMetaDataFile) {
       this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
         this.metadataFilePath,
         newFolderName
