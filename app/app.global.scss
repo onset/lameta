@@ -73,6 +73,10 @@ label {
   font-size: $default-font-size;
   font-weight: bold;
 }
+
+.moreFieldsBlock label + div, // More Fields
+.field label + div, // e.g People chooser
+span + textarea,
 label + textarea,
 label + .select {
   margin-top: $label-to-field-sep;
@@ -247,8 +251,6 @@ form .ReactTable {
 }
 
 .date-picker {
-  margin-top: $label-to-field-sep;
-
   height: $field-height;
 }
 

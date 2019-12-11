@@ -110,8 +110,10 @@ export default class AutoForm extends React.Component<IProps> {
               onBlur={() =>
                 // for some reason typescript isn't noticing that I have already checked that this isn't null,
                 // so the || console.log is just to pacify it
-                (this.props.fieldThatControlsFileNamesMightHaveChanged ||
-                  console.log)(this.props.fieldThatControlsFileNames || "")
+                (
+                  this.props.fieldThatControlsFileNamesMightHaveChanged ||
+                  console.log
+                )(this.props.fieldThatControlsFileNames || "")
               }
               validate={value =>
                 !this.props.validateFieldThatControlsFileNames ||

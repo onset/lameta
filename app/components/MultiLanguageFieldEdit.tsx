@@ -14,14 +14,13 @@ export interface IProps {
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export const MultiLanguageFieldEdit: React.FunctionComponent<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> = props => {
+export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
+  React.HTMLAttributes<HTMLDivElement>> = props => {
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
       height: "2em",
-      "min-height": "2em",
+      //"min-height": "2em",
       borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",

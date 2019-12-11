@@ -55,14 +55,15 @@ export default class GenreChooser extends React.Component<
       <div className={"field " + this.props.className}>
         <label>{label}</label>
         <CreateableSelect
+          classNamePrefix="rs" // causes react-select to show you the parts of the control for styling, e.g. "rs-input"
           value={currentOption}
           placeholder=""
+          /* This is a complete mystery, why I have to go in and do so much hand-styling to get a non-gargantuan react-select*/
           styles={{
-            control: (styles, state) => ({
-              ...styles,
-
-              height: "2em",
-              "min-height": "2em",
+            control: (provided, state) => ({
+              ...provided,
+              minHeight: "26px",
+              height: "26px",
               borderStyle: "inset",
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",
@@ -70,6 +71,33 @@ export default class GenreChooser extends React.Component<
                 ? "0 0 0 1px " + saymore_orange
                 : "unset",
               "&:hover": { borderColor: saymore_orange }
+            }),
+            menu: provided => ({
+              ...provided,
+              marginTop: "0",
+              marginBottom: "0"
+            }),
+            container: provided => ({
+              ...provided,
+              marginTop: "2px"
+            }),
+            valueContainer: provided => ({
+              ...provided,
+              paddingLeft: "2px",
+              paddingTop: "0"
+            }),
+            input: provided => ({
+              ...provided,
+              height: "20px"
+            }),
+            indicatorsContainer: provided => ({
+              ...provided,
+              height: "26px"
+            }),
+            dropdownIndicator: provided => ({
+              ...provided,
+              height: "26px",
+              padding: "1px"
             })
           }}
           onChange={(s: any) => {

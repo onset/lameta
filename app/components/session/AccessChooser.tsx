@@ -61,8 +61,8 @@ export default class AccessChooser extends React.Component<IProps> {
           styles={{
             control: (styles, state) => ({
               ...styles,
-              height: "2em",
-              "min-height": "2em",
+              minHeight: "26px",
+              height: "26px",
               borderStyle: "inset",
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",
@@ -70,6 +70,33 @@ export default class AccessChooser extends React.Component<IProps> {
                 ? "0 0 0 1px " + saymore_orange
                 : "unset",
               "&:hover": { borderColor: saymore_orange }
+            }),
+            menu: provided => ({
+              ...provided,
+              marginTop: "0",
+              marginBottom: "0"
+            }),
+            container: provided => ({
+              ...provided,
+              marginTop: "2px"
+            }),
+            valueContainer: provided => ({
+              ...provided,
+              paddingLeft: "2px",
+              paddingTop: "0"
+            }),
+            input: provided => ({
+              ...provided,
+              height: "20px"
+            }),
+            indicatorsContainer: provided => ({
+              ...provided,
+              height: "26px"
+            }),
+            dropdownIndicator: provided => ({
+              ...provided,
+              height: "26px",
+              padding: "1px"
             })
           }}
         />
