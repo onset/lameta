@@ -9,6 +9,7 @@ import {
 } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
+import { Folder } from "../Folder";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
@@ -72,7 +73,6 @@ export class FieldSet extends Dictionary<string, Field> {
   public addDisplayNameProperty(person: Person) {
     this.setValue("displayName", new PersonDisplayNameField(person));
   }
-
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new Field(key, FieldType.Text, value));
   }

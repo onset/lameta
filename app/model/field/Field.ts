@@ -5,6 +5,7 @@ import { Person } from "../Project/Person/Person";
 import moment from "moment";
 import { translateFieldLabel, currentUILanguage } from "../../localization";
 import { FieldDefinition } from "./FieldDefinition";
+import { Folder } from "../Folder";
 
 //import * as assert from "assert";
 
@@ -22,7 +23,8 @@ export enum FieldType {
   // Contributions,
   Language,
   MultiLanguage,
-  Function
+  Function,
+  Boolean
 }
 export enum FieldVisibility {
   Always,
@@ -323,3 +325,20 @@ export class PersonDisplayNameField extends Field {
     return this.person.displayName;
   }
 }
+// used to temporarily select folders for some action, e.g. exporting
+// export class CheckedField extends Field {
+//   private folder: Folder;
+//   private checked: boolean = false;
+//   constructor(folder: Folder) {
+//     super("checked", FieldType.Boolean, "Checked", undefined, undefined, false);
+//     this.folder = folder;
+//     this.definition = new FieldDefinition({
+//       key: "checked",
+//       englishLabel: "Checked",
+//       persist: false
+//     });
+//   }
+//   public toggle() {
+//     this.checked = !this.checked;
+//   }
+// }

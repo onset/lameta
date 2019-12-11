@@ -1,4 +1,6 @@
 import * as React from "react";
+// tslint:disable-next-line: no-duplicate-imports
+import { useState } from "react";
 import ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
@@ -13,36 +15,37 @@ import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
+import { Folder } from "../../model/Folder";
+
 const { app } = require("electron").remote;
 const sanitize = require("sanitize-filename");
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps {
+let staticShowExportDialog: () => void = () => {};
+export { staticShowExportDialog as ShowExportDialog };
+
+export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
-}
-interface IState {
-  isOpen: boolean;
-  selectedOption: string;
-}
-export default class ExportDialog extends React.Component<IProps, IState> {
-  private static singleton: ExportDialog;
+}> = props => {
+  const [isOpen, setIsOpen] = useState(false);
+  staticShowExportDialog = () => setIsOpen(true);
+  const [exportFormat, setExportFormat] = useState("csv");
+  const [whichSessionsOption, setWhichSessionsOption] = useState("all");
+  const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
+  React.useEffect(() => {
+    const count = props.projectHolder!.project!.countOfMarkedSessions();
+    setCountOfMarkedSessions(count);
+    // guess what they will want based on if they have checked anything
+    setWhichSessionsOption(count === 0 ? "all" : "marked");
+  }, [isOpen]);
 
-  constructor(props: IProps) {
-    super(props);
-    ExportDialog.singleton = this;
-    this.state = { isOpen: false, selectedOption: "csv" };
-  }
-
-  private handleCloseModal(doSave: boolean) {
+  const handleCloseModal = (doSave: boolean) => {
     if (doSave) {
       const defaultPath =
-        this.state.selectedOption === "csv"
-          ? this.getPathForCsvSaving()
-          : this.getPathForIMDISaving();
+        exportFormat === "csv" ? getPathForCsvSaving() : getPathForIMDISaving();
       remote.dialog.showSaveDialog(
         {
           title: i18n._(t`Save As`),
-          defaultPath: defaultPath,
+          defaultPath,
           filters: [
             {
               extensions: ["zip"],
@@ -50,19 +53,19 @@ export default class ExportDialog extends React.Component<IProps, IState> {
             }
           ]
         },
-        path => this.saveFiles(path)
+        path => saveFiles(path)
       );
     } else {
-      this.setState({ isOpen: false });
+      setIsOpen(false);
     }
-  }
-  private getPathForCsvSaving() {
-    return `${Path.basename(this.props.projectHolder.project!.directory)}-${
-      this.state.selectedOption
-    }.zip`;
-  }
+  };
+  const getPathForCsvSaving = () => {
+    return `${Path.basename(
+      props.projectHolder.project!.directory
+    )}-${exportFormat}.zip`;
+  };
 
-  private getPathForIMDISaving(): string {
+  const getPathForIMDISaving = () => {
     const rootDirectoryForAllExports = Path.join(
       app.getPath("documents"),
       "SayMore",
@@ -70,96 +73,91 @@ export default class ExportDialog extends React.Component<IProps, IState> {
     );
     return Path.join(
       rootDirectoryForAllExports,
-      sanitize(this.props.projectHolder.project!.displayName) +
+      sanitize(props.projectHolder.project!.displayName) +
         "_" +
         moment(new Date()).format("YYYY-MM-DD")
     );
-  }
+  };
 
-  private saveFiles(path: string) {
+  const saveFiles = (path: string) => {
+    const folderFilter =
+      whichSessionsOption === "all"
+        ? (f: Folder) => true
+        : (f: Folder) => f.checked;
+
     if (path) {
-      switch (this.state.selectedOption) {
+      switch (exportFormat) {
         case "csv":
           analyticsEvent("Export", "Export CSV");
-          const exporter = new CsvExporter(this.props.projectHolder.project!);
-          exporter.makeZipFile(path);
+          const exporter = new CsvExporter(props.projectHolder.project!);
+          exporter.makeZipFile(path, folderFilter);
           showInExplorer(path);
           break;
         case "imdi":
           analyticsEvent("Export", "Export IMDI Xml");
           ImdiBundler.saveImdiBundleToFolder(
-            this.props.projectHolder.project!,
+            props.projectHolder.project!,
             path,
-            false
+            false,
+            folderFilter
           );
           break;
         case "imdi-plus-files":
           analyticsEvent("Export", "Export IMDI Plus Files");
           ImdiBundler.saveImdiBundleToFolder(
-            this.props.projectHolder.project!,
+            props.projectHolder.project!,
             path,
-            true
+            true,
+            folderFilter
           );
           break;
       }
       showInExplorer(path);
-      this.setState({ isOpen: false });
+      setIsOpen(false);
     }
-  }
-  private handleOptionChange(changeEvent) {
-    this.setState({
-      selectedOption: changeEvent.target.value
-    });
-  }
+  };
 
-  public static async show() {
-    ExportDialog.singleton.setState({
-      isOpen: true
-    });
-  }
-  public render() {
-    const selectedOption = this.state.selectedOption;
-    return (
-      <CloseOnEscape
-        onEscape={() => {
-          this.handleCloseModal(false);
-        }}
+  return (
+    <CloseOnEscape
+      onEscape={() => {
+        handleCloseModal(false);
+      }}
+    >
+      <ReactModal
+        className="exportDialog"
+        isOpen={isOpen}
+        shouldCloseOnOverlayClick={true}
+        onRequestClose={() => handleCloseModal(false)}
+        ariaHideApp={false}
+        onAfterOpen={() => analyticsLocation("Export Dialog")}
       >
-        <ReactModal
-          className="exportDialog"
-          isOpen={this.state.isOpen}
-          shouldCloseOnOverlayClick={true}
-          onRequestClose={() => this.handleCloseModal(false)}
-          ariaHideApp={false}
-          onAfterOpen={() => analyticsLocation("Export Dialog")}
-        >
-          <div className={"dialogTitle "}>
-            <Trans>Export Project</Trans>
-          </div>
-          <div className="dialogContent">
-            <fieldset>
-              <legend>
-                <Trans>Choose an export format:</Trans>
-              </legend>
-              <label>
-                <input
-                  type="radio"
-                  name="format"
-                  value="csv"
-                  checked={selectedOption === "csv"}
-                  onChange={e => this.handleOptionChange(e)}
-                />
-                <Trans>Zip of CSVs</Trans>
-              </label>
+        <div className={"dialogTitle "}>
+          <Trans>Export Project</Trans>
+        </div>
+        <div className="dialogContent">
+          <fieldset>
+            <legend>
+              <Trans>Choose an export format:</Trans>
+            </legend>
+            <label>
+              <input
+                type="radio"
+                name="format"
+                value="csv"
+                checked={exportFormat === "csv"}
+                onChange={e => setExportFormat(e.target.value)}
+              />
+              <Trans>Zip of CSVs</Trans>
+            </label>
 
-              <p>
-                <Trans>
-                  A single zip archive that contains one comma-separated file
-                  for each of Project, Session, and People.
-                </Trans>
-              </p>
+            <p>
+              <Trans>
+                A single zip archive that contains one comma-separated file for
+                each of Project, Session, and People.
+              </Trans>
+            </p>
 
-              {/* <label>
+            {/* <label>
                 <input
                   type="radio"
                   name="format"
@@ -174,52 +172,73 @@ export default class ExportDialog extends React.Component<IProps, IState> {
                 People
               </p> */}
 
-              <label>
-                <input
-                  type="radio"
-                  name="format"
-                  value="imdi"
-                  checked={selectedOption === "imdi"}
-                  onChange={e => this.handleOptionChange(e)}
-                />
-                IMDI Only
-              </label>
-              <p>
-                <Trans>
-                  A zip file with an IMDI file for the project and each session.
-                </Trans>
-              </p>
-              <label>
-                <input
-                  type="radio"
-                  name="format"
-                  value="imdi-plus-files"
-                  checked={selectedOption === "imdi-plus-files"}
-                  onChange={e => this.handleOptionChange(e)}
-                />
-                IMDI + Files
-              </label>
-              <p>
-                <Trans>
-                  A zip file containing both the IMDI files and all the
-                  project's archivable files.
-                </Trans>
-              </p>
-            </fieldset>
+            <label>
+              <input
+                type="radio"
+                name="format"
+                value="imdi"
+                checked={exportFormat === "imdi"}
+                onChange={e => setExportFormat(e.target.value)}
+              />
+              IMDI Only
+            </label>
+            <p>
+              <Trans>
+                A zip file with an IMDI file for the project and each session.
+              </Trans>
+            </p>
+            <label>
+              <input
+                type="radio"
+                name="format"
+                value="imdi-plus-files"
+                checked={exportFormat === "imdi-plus-files"}
+                onChange={e => setExportFormat(e.target.value)}
+              />
+              IMDI + Files
+            </label>
+            <p>
+              <Trans>
+                A zip file containing both the IMDI files and all the project's
+                archivable files.
+              </Trans>
+            </p>
+          </fieldset>
+          <div id="whichSessions">
+            <label>Choose which Sessions to export:</label>
+            <select
+              name={"Which sessions to export"}
+              value={whichSessionsOption}
+              onChange={event => {
+                setWhichSessionsOption(event.target.value);
+              }}
+            >
+              <option key={"all"} value={"all"}>
+                All Sessions
+              </option>
+              <option
+                key={"marked"}
+                value={"marked"}
+                disabled={countOfMarkedSessions === 0}
+              >
+                {countOfMarkedSessions} Marked Sessions
+              </option>
+              }
+            </select>
           </div>
-          <div className={"bottomButtonRow"}>
-            {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
-            <div className={"okCancelGroup"}>
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
-              <button id="okButton" onClick={() => this.handleCloseModal(true)}>
-                <Trans>Export</Trans>
-              </button>
-            </div>
+        </div>
+        <div className={"bottomButtonRow"}>
+          {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
+          <div className={"okCancelGroup"}>
+            <button onClick={() => handleCloseModal(false)}>
+              <Trans>Cancel</Trans>
+            </button>
+            <button id="okButton" onClick={() => handleCloseModal(true)}>
+              <Trans>Export</Trans>
+            </button>
           </div>
-        </ReactModal>
-      </CloseOnEscape>
-    );
-  }
-}
+        </div>
+      </ReactModal>
+    </CloseOnEscape>
+  );
+};

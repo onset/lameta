@@ -366,7 +366,9 @@ export class Project extends Folder {
       f.saveAllFilesInFolder();
     }
   }
-
+  public countOfMarkedSessions(): number {
+    return this.sessions.filter(s => s.checked).length;
+  }
   public canDeleteCurrentSession(): boolean {
     return this.selectedSession.index >= 0;
   }

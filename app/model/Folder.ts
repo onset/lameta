@@ -21,11 +21,18 @@ export class IFolderSelection {
 
 // Project, Session, or Person
 export /*babel doesn't like this: abstract*/ class Folder {
+  // Is the folder's checkbox ticked?
+  @observable
+  public checked: boolean = false;
+
   public directory: string = "";
   @observable
   public files: File[] = [];
+
+  // file from this folder that is currently selected in the UI
   @observable
   public selectedFile: File | null;
+
   public metadataFile: File | null;
   protected safeFileNameBase: string;
   protected customFieldRegistry: CustomFieldRegistry;

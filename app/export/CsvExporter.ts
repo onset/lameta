@@ -40,7 +40,7 @@ export default class CsvExporter {
     this.project = project;
   }
 
-  public makeZipFile(path: string) {
+  public makeZipFile(path: string, folderFilter: (f: Folder) => boolean) {
     const output = fs.createWriteStream(path);
     const archive = nodeArchiver.create("zip");
     // listen for all archive data to be written
@@ -67,7 +67,9 @@ export default class CsvExporter {
     archive.pipe(output);
 
     archive.append(this.makeCsvForProject(), { name: "project.csv" });
-    archive.append(this.makeCsvForSessions(), { name: "sessions.csv" });
+    archive.append(this.makeCsvForSessions(folderFilter), {
+      name: "sessions.csv"
+    });
     archive.append(this.makeCsvForPeople(), { name: "people.csv" });
 
     archive.finalize();
@@ -200,7 +202,7 @@ export default class CsvExporter {
     return this.getCsv(this.project.persons);
   }
 
-  public makeCsvForSessions(): string {
-    return this.getCsv(this.project.sessions);
+  public makeCsvForSessions(folderFilter: (f: Folder) => boolean): string {
+    return this.getCsv(this.project.sessions.filter(folderFilter));
   }
 }

@@ -14,7 +14,8 @@ export default class ImdiBundler {
     rootDirectory: string,
     // If this is false, we're just making the IMDI files.
     // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
-    copyInProjectFiles: boolean
+    copyInProjectFiles: boolean,
+    folderFilter: (f: Folder) => boolean
   ) {
     try {
       if (fs.existsSync(rootDirectory)) {
@@ -80,7 +81,7 @@ export default class ImdiBundler {
 
     //---- Sessions ----
 
-    project.sessions.forEach((session: Session) => {
+    project.sessions.filter(folderFilter).forEach((session: Session) => {
       const imdi = ImdiGenerator.generateSession(session, project);
       const imdiFileName = `${session.filePrefix}.imdi`;
       fs.writeFileSync(

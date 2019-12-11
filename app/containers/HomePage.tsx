@@ -15,7 +15,7 @@ import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
-import ExportDialog from "../components/export/ExportDialog";
+import { ExportDialog } from "../components/export/ExportDialog";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../localization";

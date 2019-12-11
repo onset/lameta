@@ -1,7 +1,7 @@
 import { remote, shell } from "electron";
 import HomePage from "./containers/HomePage";
 import log from "./log";
-import ExportDialog from "./components/export/ExportDialog";
+import { ShowExportDialog } from "./components/export/ExportDialog";
 import { t } from "@lingui/macro";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import userSettings from "./UserSettings";
@@ -133,7 +133,7 @@ export default class SayLessMenu {
           accelerator: "Ctrl+E",
           enabled: haveProject,
           click: () => {
-            ExportDialog.show();
+            ShowExportDialog();
           }
         }
       ]

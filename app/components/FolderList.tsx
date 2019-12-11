@@ -5,7 +5,7 @@ import { Folder, IFolderSelection } from "../model/Folder";
 import * as mobxReact from "mobx-react";
 import * as mobx from "mobx";
 // tslint:disable-next-line:no-submodule-imports
-import { Field, FieldType, HasConsentField } from "../model/field/Field";
+import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
 import { locate } from "../crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
@@ -49,6 +49,7 @@ export class FolderList extends React.Component<IProps> {
       const dummy = folder.displayName;
       if (folder instanceof Session) {
         const dummyId = folder.properties.getTextStringOrEmpty("id");
+        const dummyChecked = folder.checked;
       }
 
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
@@ -64,16 +65,49 @@ export class FolderList extends React.Component<IProps> {
     });
 
     const columns = this.props.columns.map((key, index) => {
+      const header =
+        key === "checked" ? (
+          <input
+            title="Mark for Export"
+            type="checkbox"
+            onChange={e => {
+              e.stopPropagation(); // don't select the folder of row
+              this.props.folders.forEach(f => {
+                f.checked = e.target.checked;
+              });
+            }}
+          /> // Don't give a header for the checkbox column
+        ) : this.props.folders.length > 0 ? (
+          this.props.folders[0].properties.getValueOrThrow(key)
+            .labelInUILanguage
+        ) : (
+          titleCase(key)
+        );
+
       const c: object = {
         id: key,
-        width: this.columnWidthManager.columnWidths[key],
+        width:
+          key === "checked"
+            ? 30 /*checkbox... has to be wide enough that the column resize things don't interfere */
+            : this.columnWidthManager.columnWidths[key],
         className: key,
-        Header:
-          this.props.folders.length > 0
-            ? this.props.folders[0].properties.getValueOrThrow(key)
-                .labelInUILanguage
-            : titleCase(key),
+        Header: header,
         accessor: (f: Folder) => {
+          // checked is a special case because it isn't actually a field on some file, just a property on the folder.
+          if (key === "checked") {
+            return (
+              <input
+                type="checkbox"
+                title="Mark for Export"
+                checked={f.checked}
+                onChange={e => {
+                  e.stopPropagation(); // don't select the folder of row
+                  //(field as SelectionField).toggle();
+                  f.checked = !f.checked;
+                }}
+              />
+            );
+          }
           const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
             if (field.key === "status") {
