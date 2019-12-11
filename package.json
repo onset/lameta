@@ -258,7 +258,7 @@
     "butter-toast": "^3.3.3",
     "camelcase": "^5.0.0",
     "commonmark": "^0.28.1",
-    "csv-parse": "^2.5.0",
+    "csv-parse": "^4.4.6",
     "electron-context-menu": "^0.9.1",
     "electron-debug": "^1.1.0",
     "electron-ga": "^1.0.6",
