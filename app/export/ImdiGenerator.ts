@@ -262,10 +262,13 @@ export default class ImdiGenerator {
     });
   }
   private addActorLanguage(
-    lang: string,
+    person: Person,
+    key: string,
     details?: string,
     isPrimaryTongue?: boolean
   ) {
+    const lang = person.properties.getTextStringOrEmpty(key);
+    this.keysThatHaveBeenOutput.add("Person." + key);
     if (lang && lang.length > 0) {
       this.startGroup("Language");
 
@@ -340,6 +343,7 @@ export default class ImdiGenerator {
   private addCustomKeys(target: File | Folder, moreKeys?: any[]) {
     const blacklist = [
       "modifiedDate",
+      "displayName",
       "type",
       "filename",
       "size",
@@ -649,14 +653,15 @@ export default class ImdiGenerator {
 
       this.startGroup("Languages");
       this.addActorLanguage(
-        person.properties.getTextStringOrEmpty("primaryLanguage"),
+        person,
+        "primaryLanguage",
         person.properties.getTextStringOrEmpty("primaryLanguageLearnedIn"),
         true
       );
+      this.keysThatHaveBeenOutput.add("Person." + "primaryLanguageLearnedIn");
+
       for (let i = 0; i < maxOtherLanguages; i++) {
-        this.addActorLanguage(
-          person.properties.getTextStringOrEmpty("otherLanguage" + i)
-        );
+        this.addActorLanguage(person, "otherLanguage" + i);
       }
       this.exitGroup(); // </Languages>
       this.requiredField("EthnicGroup", "ethnicGroup", person);
@@ -721,6 +726,7 @@ export default class ImdiGenerator {
     });
   }
   private addGender(person: Person) {
+    this.keysThatHaveBeenOutput.add("Person.gender");
     const gender = person.properties.getTextStringOrEmpty("gender");
     if (gender === "Other") {
       this.tail.comment(

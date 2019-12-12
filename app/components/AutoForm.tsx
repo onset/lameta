@@ -5,7 +5,6 @@ import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Folder } from "../model/Folder";
-import GenreChooser from "./session/GenreChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
 import { PeopleChooser } from "./session/PeopleChooser";
