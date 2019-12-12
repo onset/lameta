@@ -59,6 +59,7 @@ const choices = require("../locale/choices.csv");
 const roles = require("../locale/roles.csv");
 const genres = require("../locale/genres.csv");
 const accessProtocols = require("../locale/accessProtocols.csv");
+const tips = require("../locale/tips.csv"); // tooltips and specialinfo
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
@@ -84,6 +85,18 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
     return "LABEL ERROR";
   }
   return getMatch(fields, fieldDef.englishLabel);
+}
+export function translateTooltip(fieldDef: FieldDefinition): string {
+  if (!fieldDef.tooltip) {
+    return "";
+  }
+  return fieldDef.tooltip ? getMatch(tips, fieldDef.tooltip) : "";
+}
+export function translateSpecialInfo(fieldDef: FieldDefinition): string {
+  if (!fieldDef.specialInfo) {
+    return "";
+  }
+  return fieldDef.specialInfo ? getMatch(tips, fieldDef.specialInfo) : "";
 }
 export function translateAccessProtocol(choice: string): string {
   return getMatch(accessProtocols, choice);

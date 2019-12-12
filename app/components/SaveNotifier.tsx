@@ -25,7 +25,6 @@ export const SaveNotifier: React.FunctionComponent<{}> = props => {
   useEffect(() => {
     if (showSaving) {
       window.setTimeout(() => {
-        console.log("hiding");
         setShowSaving(false);
       }, 2000);
     }

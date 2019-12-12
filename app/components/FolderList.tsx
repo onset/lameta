@@ -68,7 +68,7 @@ export class FolderList extends React.Component<IProps> {
       const header =
         key === "checked" ? (
           <input
-            title="Mark for Export"
+            title={i18n._(t`Mark for Export`)}
             type="checkbox"
             onChange={e => {
               e.stopPropagation(); // don't select the folder of row
@@ -98,7 +98,7 @@ export class FolderList extends React.Component<IProps> {
             return (
               <input
                 type="checkbox"
-                title="Mark for Export"
+                title={i18n._(t`Mark for Export`)}
                 checked={f.checked}
                 onChange={e => {
                   e.stopPropagation(); // don't select the folder of row

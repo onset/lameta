@@ -4,16 +4,22 @@ import { Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { InfoAffordance } from "./InfoAffordance";
 import userSettingsSingleton from "../UserSettings";
-import { translateFieldLabel } from "../localization";
+import {
+  translateFieldLabel,
+  translateSpecialInfo,
+  i18n,
+  translateTooltip
+} from "../localization";
+import { Trans } from "@lingui/react";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
 }> = props => {
-  let tooltip = props.fieldDef.tooltip;
+  let tooltip = translateTooltip(props.fieldDef);
   if (userSettingsSingleton.ShowIMDIPanels && props.fieldDef.markAsNotImdi) {
     tooltip = ("" && tooltip) + " Not important for IMDI.";
   }
-  const specialInfo = props.fieldDef.specialInfo;
+  const specialInfo = translateSpecialInfo(props.fieldDef);
 
   const labelElement = (
     <label
@@ -47,9 +53,10 @@ export const FieldLabel: React.FunctionComponent<{
       {labelMaybeWithTooltip}
       {props.fieldDef.personallyIdentifiableInformation ? (
         <InfoAffordance>
-          {
-            "As Personally Identifiable Information, this will not be exported to other formats."
-          }
+          <Trans>
+            As Personally Identifiable Information, this will not be exported to
+            other formats.
+          </Trans>
         </InfoAffordance>
       ) : null}
       {specialInfo ? <InfoAffordance>{specialInfo}</InfoAffordance> : null}

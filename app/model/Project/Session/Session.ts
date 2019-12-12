@@ -54,9 +54,6 @@ export class Session extends Folder {
   private migrateDeprecatedFields() {
     this.migrateOneField("situation", "description");
     this.migrateOneField("setting", "description");
-    console.log(
-      `After migration '${this.properties.getTextStringOrEmpty("description")}'`
-    );
   }
   private migrateOneField(migrationSource, migrationTarget) {
     const valueToMove = this.properties

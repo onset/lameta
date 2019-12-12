@@ -204,7 +204,9 @@ export const ExportDialog: React.FunctionComponent<{
             </p>
           </fieldset>
           <div id="whichSessions">
-            <label>Choose which Sessions to export:</label>
+            <label>
+              <Trans>Choose which Sessions to export:</Trans>
+            </label>
             <select
               name={"Which sessions to export"}
               value={whichSessionsOption}
@@ -213,14 +215,14 @@ export const ExportDialog: React.FunctionComponent<{
               }}
             >
               <option key={"all"} value={"all"}>
-                All Sessions
+                <Trans>All Sessions</Trans>
               </option>
               <option
                 key={"marked"}
                 value={"marked"}
                 disabled={countOfMarkedSessions === 0}
               >
-                {countOfMarkedSessions} Marked Sessions
+                <Trans>{countOfMarkedSessions} Marked Sessions</Trans>
               </option>
               }
             </select>
