@@ -1,18 +1,13 @@
 .imdiView {
-  height: 100%; // in project
-  flex-grow: 1; // everywhere else
+  // Enhance: the size and scrolling of this got all messed up with the switch to electron 6
+  // (though it could have been anything). It's currently a hack.
+  height: 500px;
+  width: 800px;
   display: flex;
   flex-direction: column;
-  input: {
-    width: 50px;
-  }
   code,
   code * {
     font-family: sans-serif;
-  }
-  textarea {
-    height: 100%; // in project
-    flex-grow: 1; // everywhere else
   }
   pre {
     flex: 1; // fill space

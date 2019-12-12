@@ -73,16 +73,10 @@ export default class ImdiView extends React.Component<IProps, IState> {
 
     return (
       <div className={"imdiView"}>
-        <div className={"imdiButtonRow"}>
-          {/* <input
-            type="button"
-            value="Refresh"
-            onClick={() => {
-              this.setState({ manualRefresh: this.state.manualRefresh + 1 });
-            }}
-          /> */}
-        </div>
-        <SyntaxHighlighter language="xml" style={syntaxStyle}>
+        <SyntaxHighlighter
+          language="xml"
+          style={{ ...syntaxStyle, marginTop: 0, paddingTop: 0 }}
+        >
           {xml}
         </SyntaxHighlighter>
       </div>

@@ -106,4 +106,8 @@
   //border: solid thin $project__outline--color;
   padding: 10px;
   height: 100%; // unlike other tabs, this has tabs on left so can be taller
+
+  .imdiView {
+    margin-top: -22px;
+  }
 }

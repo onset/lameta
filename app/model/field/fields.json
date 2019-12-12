@@ -393,7 +393,8 @@
       "key": "howToContact",
       "multipleLines": true,
       "tooltip": "This is only for the use of the researcher.",
-      "personallyIdentifiableInformation": true
+      "personallyIdentifiableInformation": true,
+      "markAsNotImdi": true
     },
 
     {

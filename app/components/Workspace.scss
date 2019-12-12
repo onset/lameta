@@ -45,6 +45,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: auto; // keeps it from growing beyond its parent
   }
 
   display: flex;
@@ -53,6 +54,7 @@
 
 #tabContainer {
   flex: 1; //grow to fill as much as is can (up to edge of notification bar)
+  width: 100%; // else it goes beyond its parent
 }
 #topLevelOfOpenProjectScreen {
   display: flex;

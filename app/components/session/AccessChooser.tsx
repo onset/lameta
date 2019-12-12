@@ -100,6 +100,12 @@ export default class AccessChooser extends React.Component<
               ...provided,
               height: "26px",
               padding: "1px"
+            }),
+            option: (provided, state) => ({
+              ...provided,
+              color: "black",
+              backgroundColor: state.isFocused ? saymore_orange : "white",
+              fontWeight: state.isSelected ? "bold" : "normal"
             })
           }}
         />

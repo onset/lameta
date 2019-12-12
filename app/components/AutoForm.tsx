@@ -17,6 +17,8 @@ import IsoLanguageEdit from "./IsoLanguageEdit";
 import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 import { Contribution } from "../model/file/File";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
+import { FieldOpenChoiceChooser } from "./session/FieldChoiceChooser";
+import { translateGenre } from "../localization";
 
 export interface IProps {
   folder: Folder;
@@ -95,11 +97,12 @@ export default class AutoForm extends React.Component<IProps> {
               f.definition!.complexChoices!.length > 0
           );
           return (
-            <GenreChooser
+            <FieldOpenChoiceChooser
               field={f}
               key={field.key}
               className={field.cssClass}
               tabIndex={field.definition.tabIndex}
+              translateChoice={translateGenre}
             />
           );
         } else if (
