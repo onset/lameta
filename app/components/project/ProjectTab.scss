@@ -51,10 +51,8 @@
   .primary,
   .accessProtocol {
     .field {
-      display: flex; // enables the following rule...
-      align-items: center; // which aligns labels and inputs
+      display: flex;
       height: initial;
-      //      min-height: 36px;
       margin-bottom: 20px;
 
       &.field__newSection {
@@ -64,6 +62,7 @@
         text-align: right;
         width: 150px;
         margin-right: 1em;
+        margin-top: 7px; // line up the label with the first line of text in the input field
       }
 
       textarea {

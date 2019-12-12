@@ -241,17 +241,20 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
 
   public runSanityCheck() {
-    const dir = fs.readdirSync(this.directory);
-    const x = dir.filter(elm =>
-      elm.match(new RegExp(`.*(${this.metadataFileExtensionWithDot})$`, "ig"))
-    );
-    if (x.length > 1) {
-      NotifyMultipleProjectFiles(
-        this.filePrefix,
-        this.metadataFileExtensionWithDot,
-        Path.basename(this.directory) + this.metadataFileExtensionWithDot,
-        this.directory
+    if (fs.existsSync(this.directory)) {
+      // will sometimes be false for things like DescriptionDocuments
+      const dir = fs.readdirSync(this.directory);
+      const x = dir.filter(elm =>
+        elm.match(new RegExp(`.*(${this.metadataFileExtensionWithDot})$`, "ig"))
       );
+      if (x.length > 1) {
+        NotifyMultipleProjectFiles(
+          this.filePrefix,
+          this.metadataFileExtensionWithDot,
+          Path.basename(this.directory) + this.metadataFileExtensionWithDot,
+          this.directory
+        );
+      }
     }
   }
 }

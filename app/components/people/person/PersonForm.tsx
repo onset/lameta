@@ -67,11 +67,11 @@ export default class PersonForm extends React.Component<IProps> {
             motherLanguage={this.props.fields.getTextField("mothersLanguage")}
             languageFinder={this.props.languageFinder}
           />
+          <TextFieldEdit
+            className="primaryLanguageLearnedIn left-side"
+            field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
+          />
         </div>
-        <TextFieldEdit
-          className="primaryLanguageLearnedIn left-side"
-          field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
-        />
 
         <div className="other-languages">
           <label className="languageGroup">
@@ -112,11 +112,11 @@ export default class PersonForm extends React.Component<IProps> {
         />
         <TextFieldEdit
           field={this.props.fields.getTextField("ethnicGroup")}
-          className="full-right-side"
+          className="ethnicGroup"
         />
         <TextFieldEdit
           field={this.props.fields.getTextField("primaryOccupation")}
-          className="full-right-side"
+          className="primaryOccupation"
         />
         <TextFieldEdit
           field={this.props.fields.getTextField("description")}
