@@ -208,7 +208,7 @@
     "ts-loader": "^5.3.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.1.1",
+    "typescript": "^3.7.3",
     "url-loader": "1.1.2",
     "webdriverio": "^4.14.0",
     "webpack": "^4.23.1",
