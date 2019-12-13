@@ -8,7 +8,6 @@ import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
-import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { FieldLabel } from "./FieldLabel";

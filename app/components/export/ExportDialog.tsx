@@ -152,7 +152,7 @@ export const ExportDialog: React.FunctionComponent<{
             <p>
               <Trans>
                 A single zip archive that contains one comma-separated file for
-                each of Project, Session, and People.
+                each of Project, Sessions, and People.
               </Trans>
             </p>
 
@@ -183,7 +183,7 @@ export const ExportDialog: React.FunctionComponent<{
             </label>
             <p>
               <Trans>
-                A zip file with an IMDI file for the project and each session.
+                A folder with an IMDI file for the project and each session.
               </Trans>
             </p>
             <label>
@@ -198,7 +198,7 @@ export const ExportDialog: React.FunctionComponent<{
             </label>
             <p>
               <Trans>
-                A zip file containing both the IMDI files and all the project's
+                A folder containing both the IMDI files and all the project's
                 archivable files.
               </Trans>
             </p>
@@ -215,14 +215,14 @@ export const ExportDialog: React.FunctionComponent<{
               }}
             >
               <option key={"all"} value={"all"}>
-                <Trans>All Sessions</Trans>
+                {i18n._(t`All Sessions`)}
               </option>
               <option
                 key={"marked"}
                 value={"marked"}
                 disabled={countOfMarkedSessions === 0}
               >
-                <Trans>{countOfMarkedSessions} Marked Sessions</Trans>
+                {i18n._(t`${countOfMarkedSessions} Marked Sessions`)}
               </option>
               }
             </select>
