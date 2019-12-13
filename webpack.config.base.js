@@ -7,6 +7,7 @@ var webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { dependencies: externals } = require("./app/package.json"); // must be package.json when building, but hatton changed because tslint once in awhile would look in ther for dependencies and break down in confusion
+//const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 //test or development
 const wantDevelopmentOptimizations = process.env.NODE_ENV !== "production";
@@ -256,6 +257,17 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env.FLUENTFFMPEG_COV": false
     }),
+    /*    new SentryCliPlugin({
+      include: ".",
+      ignoreFile: ".sentrycliignore",
+      ignore: [
+        "node_modules",
+        "webpack.config.base.js",
+        "webpack.config.main.js",
+        "webpack.config.production.js"
+      ],
+      configFile: "sentry.properties"
+    }),*/
 
     // when we added lingui, it needed macros, and those needed babel. So we switched
     // to compiling with babel. But Surprise!, babel 7 just throws away the typescript
