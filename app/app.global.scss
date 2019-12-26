@@ -73,7 +73,12 @@ label {
   font-size: $default-font-size;
   font-weight: bold;
 }
-
+.hint {
+  font-size: 7pt;
+  float: right;
+  color: grey;
+  font-weight: normal;
+}
 .moreFieldsBlock label + div, // More Fields
 .field label + div, // e.g People chooser
 span + textarea,
