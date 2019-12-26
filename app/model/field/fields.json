@@ -91,13 +91,13 @@
       "tagInSayMoreClassic": "CustomAccessProtocol",
       "englishLabel": "Custom access choices"
     },
-    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
-      is a drag.
-     {
+    {
       "key": "depositor",
       "tagInSayMoreClassic": "Depositor",
-      "cssClass": "field__newSection"
+      "tabIndex": 9
     },
+    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
+      is a drag.
     {
       "key": "rightsHolder",
       "tagInSayMoreClassic": "RightsHolder"
@@ -107,13 +107,13 @@
       "key": "contactPerson",
       "tagInSayMoreClassic": "ContactPerson",
       "tooltip": "Contact information about the person or institution responsible for the project.",
-      "tabIndex": 9
+      "tabIndex": 10
     },
     {
       "key": "dateAvailable",
       "tagInSayMoreClassic": "DateAvailable",
       "type": "Date",
-      "tabIndex": 10
+      "tabIndex": 11
     }
   ],
   "session": [
