@@ -32,10 +32,12 @@ export const ExportDialog: React.FunctionComponent<{
   const [whichSessionsOption, setWhichSessionsOption] = useState("all");
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
-    const count = props.projectHolder!.project!.countOfMarkedSessions();
-    setCountOfMarkedSessions(count);
-    // guess what they will want based on if they have checked anything
-    setWhichSessionsOption(count === 0 ? "all" : "marked");
+    if (props.projectHolder && props.projectHolder.project) {
+      const count = props.projectHolder!.project!.countOfMarkedSessions();
+      setCountOfMarkedSessions(count);
+      // guess what they will want based on if they have checked anything
+      setWhichSessionsOption(count === 0 ? "all" : "marked");
+    }
   }, [isOpen]);
 
   const handleCloseModal = (doSave: boolean) => {
