@@ -51,11 +51,12 @@ $dateWidth: 148px; // enhance: why is it 148px?
     order: 11;
     grid-column: 2 / 3;
   }
-  .keyword {
+
+  .topic {
     order: 12;
     grid-column: 3 / 4;
   }
-  .topic {
+  .keyword {
     order: 13;
     grid-column: 4 / 5;
   }
