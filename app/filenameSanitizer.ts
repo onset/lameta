@@ -8,9 +8,10 @@ export function sanitize(name: string): string {
     // first, get to ascii only
     n = ASCIIFolder.foldReplacing(n, "X");
     n = n.trim().replace(" ", "_");
-    // next, limit to a-z,A-Z,0-9, _ , -
+    // next, limit to a-z,A-Z,0-9, _ , -.
+    // I added a period.
     const validChars =
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.-";
     const regex = new RegExp("[^" + validChars + "]", "g");
     n = n.replace(regex, "");
   }

@@ -8,6 +8,7 @@ import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
+import { sanitize } from "../../filenameSanitizer";
 const isValidPath = require("is-valid-path");
 
 // tslint:disable-next-line:no-empty-interface
@@ -200,12 +201,15 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private getValidationProblemsMessage(): string {
+    if (this.getNewFileName() !== sanitize(this.getNewFileName())) {
+      return "There are invalid characters.";
+    }
     if (
       this.getNewFileName().indexOf("/") > -1 ||
       this.getNewFileName().indexOf("\\") > -1 ||
       !isValidPath(this.getNewPath())
     ) {
-      return "There is a problem with that file path";
+      return "There is a problem with that file path.";
     }
     if (fs.existsSync(this.getNewPath())) {
       return "A file with the same name already exists at that location.";

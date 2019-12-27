@@ -84,11 +84,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
   public addOneFile(path: string, newFileName?: string): File {
     console.log("copy in " + path);
-
-    const dest = Path.join(
-      this.directory,
-      newFileName ? newFileName : Path.basename(path)
-    );
+    const n = sanitize(newFileName ? newFileName : Path.basename(path));
+    const dest = Path.join(this.directory, n);
     fs.copySync(path, dest);
     const f = new OtherFile(dest, this.customFieldRegistry);
     this.files.push(f);
