@@ -3,7 +3,7 @@ import { observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "./field/Field";
 import { FieldDefinition } from "./field/FieldDefinition";
 
-import { NotifyMultipleProjectFiles } from "../components/Notify";
+import { NotifyMultipleProjectFiles, NotifyError } from "../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as glob from "glob";
@@ -82,7 +82,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string, newFileName?: string) {
+  public addOneFile(path: string, newFileName?: string): File {
     console.log("copy in " + path);
 
     const dest = Path.join(
@@ -90,14 +90,18 @@ export /*babel doesn't like this: abstract*/ class Folder {
       newFileName ? newFileName : Path.basename(path)
     );
     fs.copySync(path, dest);
-    this.files.push(new OtherFile(dest, this.customFieldRegistry));
+    const f = new OtherFile(dest, this.customFieldRegistry);
+    this.files.push(f);
+    return f;
   }
-  public addFiles(files: object[]) {
+  public addFiles(files: object[]): File | null {
     assert.ok(files.length > 0);
 
+    let lastFile: File | null = null;
     files.forEach((f: any) => {
-      this.addOneFile(f.path);
+      lastFile = this.addOneFile(f.path);
     });
+    return lastFile;
   }
   get type(): string {
     const x = this.properties.getValueOrThrow("type") as Field;
@@ -157,13 +161,21 @@ export /*babel doesn't like this: abstract*/ class Folder {
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          const didTrashMetadataFile = trash(file.metadataFilePath);
-          assert(
-            didTrashMetadataFile,
-            "Failed to trash metadatafile:" + file.metadataFilePath
-          );
+          console.log(`attempting trash of meta: ${file.metadataFilePath}`);
+          if (!trash(file.metadataFilePath)) {
+            NotifyError(
+              "Failed to trash metadatafile:" + file.metadataFilePath
+            );
+          }
         }
       }
+      if (this.selectedFile === file) {
+        this.selectedFile = this.files.length > 0 ? this.files[0] : null;
+      }
+      // there was a bug at one time with something still holding a reference to this.
+      file.metadataFilePath = "error: this file was previously put in trash";
+      file.describedFilePath = "";
+      file.properties = new FieldSet();
 
       if (continueTrashing) {
         this.forgetFile(file);

@@ -763,8 +763,9 @@ export /*babel doesn't like this: abstract*/ class File {
    * @param roleName e.g. "consent"
    */
   private getCoreNameWithRole(roleName: string): string {
-    // TODO: this needs to become a lot more sophisticated
-    return this.getCoreName() + "_" + roleName;
+    const directoryPortion = Path.dirname(this.metadataFilePath);
+    const directoryName = Path.basename(directoryPortion);
+    return directoryName + "_" + roleName;
   }
   private tryToRenameToFunction(roleName: string): boolean {
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
@@ -787,15 +788,15 @@ export /*babel doesn't like this: abstract*/ class File {
 
     const newMetadataFilePath = newDescribedFilePath + ".meta";
 
-    if (
-      fs.existsSync(newDescribedFilePath) ||
-      fs.existsSync(newMetadataFilePath)
-    ) {
-      console.error(
-        "Cannot rename: one of the files that would result from the rename already exists."
-      );
+    if (fs.existsSync(newDescribedFilePath)) {
+      NotifyWarning(`Cannot rename: ${newDescribedFilePath} already exists.`);
       return false;
     }
+    if (fs.existsSync(newMetadataFilePath)) {
+      NotifyWarning(`Cannot rename: ${newMetadataFilePath} already exists.`);
+      return false;
+    }
+
     try {
       fs.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
@@ -827,8 +828,9 @@ export /*babel doesn't like this: abstract*/ class File {
   public renameForConsent() {
     assert(!this.isOnlyMetadata());
     assert(!this.isLabeledAsConsent());
+
     if (!this.tryToRenameToFunction("Consent")) {
-      window.alert("Sorry, something prevented the rename");
+      NotifyWarning("Sorry, something prevented the rename");
     } else {
       console.log("renameForConsent " + this.describedFilePath);
     }

@@ -45,7 +45,9 @@ export default class FileList extends React.Component<IProps, IState> {
       // so we catch the error
       try {
         //console.log(JSON.stringify(acceptedFiles));
-        this.props.folder.addFiles(acceptedFiles);
+        this.props.folder.selectedFile = this.props.folder.addFiles(
+          acceptedFiles
+        );
       } catch (error) {
         console.log(error);
       }
