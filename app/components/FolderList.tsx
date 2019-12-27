@@ -119,7 +119,7 @@ export class FolderList extends React.Component<IProps> {
             }
           }
           if (field.type === FieldType.Date) {
-            return field.asDateDisplayString();
+            return field.asISODateString();
           }
 
           if (field instanceof HasConsentField) {

@@ -5594,6 +5594,11 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.1"
     readable-stream "^2.0.4"
 
+fold-to-ascii@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/fold-to-ascii/-/fold-to-ascii-5.0.0.tgz#12986e02004abd0984a99f701e0707aa1c2ae0d0"
+  integrity sha512-HjtRWXC9aVit47DOEqvorgaQDiIyeX+frV3tM22RlllposIxnPXRM/vYoE6y6pwW57RdgahSe32Cu0vf4/UX1Q==
+
 font-awesome@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"

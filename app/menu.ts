@@ -196,11 +196,10 @@ export default class SayLessMenu {
           label: "IMDI Mode",
           // tooltip only works in macos
           tooltip:
-            "Show IMDI output preview panels and indicate which fields don't have direct IMDI mappings",
+            "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
           type: "checkbox",
-          checked: userSettings.ShowIMDIPanels,
-          click: () =>
-            (userSettings.ShowIMDIPanels = !userSettings.ShowIMDIPanels)
+          checked: userSettings.IMDIMode,
+          click: () => (userSettings.IMDIMode = !userSettings.IMDIMode)
         }
       ]
     };

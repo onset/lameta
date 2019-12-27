@@ -6,6 +6,7 @@ import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
+import { sanitize } from "../../../filenameSanitizer";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -71,10 +72,17 @@ export class Person extends Folder {
     updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
-    this.properties.setText("name", Path.basename(directory));
+    // we used to not store the name, relying instead on the folder name.
+    // However that made it impossible to record someone's actual name if it
+    // required, for example, unicode characters.
+    if (this.properties.getTextStringOrEmpty("name") === "") {
+      this.properties.setText("name", Path.basename(directory));
+    }
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
-    this.safeFileNameBase = this.properties.getTextStringOrEmpty("name");
+    this.safeFileNameBase = sanitize(
+      this.properties.getTextStringOrEmpty("name")
+    );
     this.properties.getValueOrThrow("name").textHolder.map.intercept(change => {
       // a problem with this is that it's going going get called for every keystroke
 

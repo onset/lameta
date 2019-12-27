@@ -16,7 +16,7 @@ export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
 }> = props => {
   let tooltip = translateTooltip(props.fieldDef);
-  if (userSettingsSingleton.ShowIMDIPanels && props.fieldDef.markAsNotImdi) {
+  if (userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi) {
     tooltip = ("" && tooltip) + " Not important for IMDI.";
   }
   const specialInfo = translateSpecialInfo(props.fieldDef);
@@ -25,7 +25,7 @@ export const FieldLabel: React.FunctionComponent<{
     <label
       style={{ display: "inline-block" }}
       className={
-        userSettingsSingleton.ShowIMDIPanels && props.fieldDef.markAsNotImdi
+        userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi
           ? "markAsNotImdi"
           : ""
       }

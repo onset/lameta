@@ -10,9 +10,9 @@ import * as glob from "glob";
 import { FieldSet } from "./field/FieldSet";
 import assert from "assert";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-const sanitize = require("sanitize-filename");
 import { trash } from "../crossPlatformUtilities";
 import { CustomFieldRegistry } from "./Project/CustomFieldRegistry";
+import { sanitize } from "../filenameSanitizer";
 
 export class IFolderSelection {
   @observable

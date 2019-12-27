@@ -27,7 +27,6 @@ export default class PersonForm extends React.Component<IProps> {
   }
 
   public render() {
-    const oldName = this.props.fields.getTextField("name").text;
     return (
       <form className={"personForm"}>
         {/* <div className={"first-column"}> */}

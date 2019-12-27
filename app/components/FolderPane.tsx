@@ -119,13 +119,13 @@ function getTabs(
       />
     </TabPanel>
   );
-  const imdiTab = userSettings.ShowIMDIPanels ? (
+  const imdiTab = userSettings.IMDIMode ? (
     <Tab>IMDI {/* don't translate  */}</Tab>
   ) : (
     <></>
   );
 
-  const imdiPanel = userSettings.ShowIMDIPanels ? (
+  const imdiPanel = userSettings.IMDIMode ? (
     <TabPanel>
       <ImdiView
         target={

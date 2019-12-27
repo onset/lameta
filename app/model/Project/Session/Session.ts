@@ -5,6 +5,7 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
+import { sanitize } from "../../../filenameSanitizer";
 const titleCase = require("title-case");
 
 export class Session extends Folder {
@@ -27,8 +28,15 @@ export class Session extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
-    this.properties.setText("id", Path.basename(directory));
-    this.safeFileNameBase = this.properties.getTextStringOrEmpty("id");
+    // we used to not store the name, relying instead on the folder name.
+    // However that made it impossible to record someone's actual name if it
+    // required, for example, unicode characters.
+    if (this.properties.getTextStringOrEmpty("id") === "") {
+      this.properties.setText("id", Path.basename(directory));
+    }
+    this.safeFileNameBase = sanitize(
+      this.properties.getTextStringOrEmpty("id")
+    );
     this.knownFields = knownFieldDefinitions.session; // for csv export
 
     // default to the project's content language

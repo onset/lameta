@@ -164,6 +164,9 @@ export class Field {
     return this.text;
   }
   public setValueFromString(s: string): any {
+    if (this.key === "name") {
+      console.log(`setValueFromString(${s})`);
+    }
     // if this field has choices, set it to
     if (this.choices && this.choices.length > 0) {
       const match = this.choices.find(
@@ -194,26 +197,26 @@ export class Field {
     // our rule is that we always keep strings in "YYYY-MM-DD" format, and it's always UTC
     return this.text;
   }
-  public asDateDisplayString(): string {
-    const m = moment(this.text);
-    if (m.isValid()) {
-      moment.locale(navigator.language);
-      const localeData = moment.localeData();
-      const dateFormat = localeData.longDateFormat("ll");
-      return m.format(dateFormat);
-    }
-    return this.text;
-  }
-  public asDateTimeDisplayString(): string {
-    const m = moment(this.text);
-    if (m.isValid()) {
-      moment.locale(navigator.language);
-      const localeData = moment.localeData();
-      const dateFormat = localeData.longDateFormat("lll");
-      return m.format(dateFormat);
-    }
-    return this.text;
-  }
+  // public asDateDisplayString(): string {
+  //   const m = moment(this.text);
+  //   if (m.isValid()) {
+  //     moment.locale(navigator.language);
+  //     const localeData = moment.localeData();
+  //     const dateFormat = localeData.longDateFormat("ll");
+  //     return m.format(dateFormat);
+  //   }
+  //   return this.text;
+  // }
+  // public asDateTimeDisplayString(): string {
+  //   const m = moment(this.text);
+  //   if (m.isValid()) {
+  //     moment.locale(navigator.language);
+  //     const localeData = moment.localeData();
+  //     const dateFormat = localeData.longDateFormat("YYYY-MM-DD");
+  //     return m.format(dateFormat);
+  //   }
+  //   return this.text;
+  // }
   public asDate(): Date | undefined {
     const m = moment(this.text);
     if (m.isValid()) {

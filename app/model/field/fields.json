@@ -120,7 +120,10 @@
     {
       "key": "id",
       "englishLabel": "ID",
-      "persist": false,
+      /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
+         However, we can't santize names to archive expectations while preserving the actual unicode name unless
+         we do persist it 
+      "persist": false, */
       "tabIndex": 0
     },
     {
@@ -313,9 +316,11 @@
   "person": [
     {
       "key": "name",
-      "englishLabel": "Full Name",
-      "//": "SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.",
-      "persist": false
+      "englishLabel": "Full Name"
+      /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
+         However, we can't santize names to archive expectations while preserving the actual unicode name unless
+         we do persist it */
+      //"persist": false
     },
     {
       "key": "nickname",

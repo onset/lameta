@@ -109,9 +109,7 @@ export default class FileList extends React.Component<IProps, IState> {
         id: "modifiedDate",
         Header: i18n._(t`Modified`),
         accessor: (d: any) => {
-          return d.properties
-            .getValueOrThrow("modifiedDate")
-            .asDateTimeDisplayString();
+          return d.properties.getValueOrThrow("modifiedDate").asISODateString();
         }
       },
       {

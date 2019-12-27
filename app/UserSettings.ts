@@ -14,7 +14,7 @@ export class UserSettings {
   private store: Store | FakeStore;
 
   @mobx.observable
-  private showIMDIPanels: boolean;
+  private imdiMode: boolean;
   @mobx.observable
   private howUsing: string;
   private email: string;
@@ -26,18 +26,18 @@ export class UserSettings {
         ? (this.store = new FakeStore())
         : new Store({ name: "saymorex-user-settings" });
 
-    this.showIMDIPanels = this.store.get("showIMDIPanels") || false;
+    this.imdiMode = this.store.get("imdiMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
-  public get ShowIMDIPanels() {
-    return this.showIMDIPanels;
+  public get IMDIMode() {
+    return this.imdiMode;
   }
 
-  public set ShowIMDIPanels(show: boolean) {
-    this.showIMDIPanels = show;
-    this.store.set("showIMDIPanels", this.showIMDIPanels);
+  public set IMDIMode(show: boolean) {
+    this.imdiMode = show;
+    this.store.set("imdiMode", this.imdiMode);
   }
 
   // clientId  identifies the machine (or account, I suppose), not the actual person

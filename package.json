@@ -269,6 +269,7 @@
     "ffprobe-static": "^3.0.0",
     "filesize": "^3.5.11",
     "fluent-ffmpeg": "^2.1.2",
+    "fold-to-ascii": "^5.0.0",
     "font-awesome": "^4.7.0",
     "fs": "^0.0.1-security",
     "fs-extra": "^7.0.1",

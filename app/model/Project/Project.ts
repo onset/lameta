@@ -235,7 +235,7 @@ export class Project extends Folder {
       // note: we have to use a fat arrow thing here in order to bind the project to the callback
       (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n)
     );
-    person.properties.setText("name", Path.basename(dir));
+    person.properties.setText("name", i18n._(t`New Person`));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
     analyticsEvent("Create", "Create Person");
