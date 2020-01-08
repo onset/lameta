@@ -10,6 +10,10 @@
   display: flex;
   flex-direction: column;
 
+  // this fixes (hides?) a weird problem where the table
+  // just keeps growing, but without a vscroll bar.
+  min-height: 0;
+
   img {
     height: 16px;
     width: auto;

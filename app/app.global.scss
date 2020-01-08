@@ -140,6 +140,7 @@ textarea {
 }
 button {
   font-family: $default-fonts;
+  user-select: none;
 }
 
 .react-tabs {
