@@ -92,8 +92,8 @@
     //grid-row: span 2;
     order: 7;
     textarea {
-      overflow-y: scroll;
-      height: 100%;
+      overflow-y: auto;
+      height: auto;
     }
   }
   .languageGroup {
