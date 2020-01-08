@@ -1,7 +1,7 @@
 {
   "name": "saymore-x",
   "productName": "SayMore X",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
