@@ -48,12 +48,15 @@ export const ExportDialog: React.FunctionComponent<{
         .showSaveDialog({
           title: i18n._(t`Save As`),
           defaultPath,
-          filters: [
-            {
-              extensions: ["zip"],
-              name: i18n._(t`ZIP Archive`)
-            }
-          ]
+          filters:
+            exportFormat === "csv"
+              ? [
+                  {
+                    extensions: ["zip"],
+                    name: i18n._(t`ZIP Archive`)
+                  }
+                ]
+              : []
         })
         .then(result => saveFiles(result.filePath!));
     } else {
