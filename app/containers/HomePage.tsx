@@ -21,6 +21,8 @@ import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { analyticsEvent } from "../analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
+import AlertDialog from "../components/AlertDialog/AlertDialog";
+
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -93,15 +95,10 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
-      // NB: From code (at least on windows), it is safe to just show windows.alert. But on macos, when run from DMG,
-      // a blank window comes up, and the alert is hidden behind it. So the timeout here is just to get it in front.
-      window.setTimeout(
-        () =>
-          window.alert(
-            `Thanks for helping to test SayMore X! Warning: this is a "beta", so make sure you have a backup of your work.`
-          ),
-        2000
-      );
+      AlertDialog.show({
+        message: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
+        buttonText: "I understand"
+      });
     }
 
     if (userSettings.HowUsing === "") {
@@ -239,6 +236,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
+        <AlertDialog />
       </div>
     );
   }
