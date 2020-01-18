@@ -164,9 +164,6 @@ function writeField(
       ? field.definition.tagInSayMoreClassic
       : field.key;
 
-  if (tag === "id") {
-    console.log("Strange that we're outputting id");
-  }
   if (type === "date") {
     // console.log(
     //   "date " + f.key + " is a " + type + " of value " + value

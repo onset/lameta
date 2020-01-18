@@ -12,9 +12,10 @@ import { locate } from "../../crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import knownFieldDefinitions from "../field/KnownFieldDefinitions";
+import knownFieldDefinitions, {
+  isKnownFieldKey
+} from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
-import { notifyListeners } from "mobx/lib/internal";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
 
 const titleCase = require("title-case");
@@ -326,13 +327,24 @@ export /*babel doesn't like this: abstract*/ class File {
       else if (tag.toLowerCase() === "customfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[tag]);
-        for (const customKey of customKeys) {
+        for (const key of customKeys) {
           // first one is just $":{"type":"xml"}
-          if (customKey !== "$") {
+          if (key !== "$") {
+            // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
+            // understand. It will move them to the set of "custom" fields. Notably, in Dec 2019
+            // this happened when we introduced "id" as a field (instead of just relying on the folder
+            // name).
+            // Here we can pull such fields back out of the custom list and up to the top level.
+            const isCustom = !isKnownFieldKey(key);
+            if (!isCustom) {
+              console.log(
+                `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
+              );
+            }
             this.loadOnePersistentProperty(
-              customKey,
-              propertiesFromXml[tag][customKey],
-              true // isCustom
+              key,
+              propertiesFromXml[tag][key],
+              isCustom
             );
           }
         }
@@ -412,7 +424,7 @@ export /*babel doesn't like this: abstract*/ class File {
       // already.
       // Note the following would give a false positive if the key was
       // known in, say, session, but we are currently loading a person.
-      // Since we do not expect and new versions of SayMore Classic,
+      // Since we do not expect any new versions of SayMore Classic,
       // (which could theoretically introduce such a situation),
       // I'm living with that risk.
       Object.keys(knownFieldDefinitions).some((

@@ -8,9 +8,9 @@ let staticSetShowSaving: (b: boolean) => void;
 let staticSetFilename: (name: string) => void;
 
 export function ShowSavingNotifier(filename: string) {
-  console.log("Called ShowSavingNotifier()");
+  //console.log("Called ShowSavingNotifier()");
   if (staticSetShowSaving) {
-    console.log("Showing SavingNotifier()");
+    // console.log("Showing SavingNotifier()");
     staticSetFilename(filename);
     staticSetShowSaving!(true);
   }

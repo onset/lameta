@@ -1,5 +1,15 @@
 const knownFieldDefinitions = require("./fields.json");
-
+export function isKnownFieldKey(key: string): boolean {
+  return Object.keys(knownFieldDefinitions).some((
+    area // e.g. project, session, person
+  ) =>
+    knownFieldDefinitions[area].find(
+      (d: any) =>
+        d.key.toLowerCase() === key.toLowerCase() ||
+        d.tagInSayMoreClassic === key
+    )
+  );
+}
 const countries = [
   "unspecified",
   "Afghanistan",

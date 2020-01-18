@@ -165,7 +165,7 @@ export class Field {
   }
   public setValueFromString(s: string): any {
     if (this.key === "name") {
-      console.log(`setValueFromString(${s})`);
+      //console.log(`setValueFromString(${s})`);
     }
     // if this field has choices, set it to
     if (this.choices && this.choices.length > 0) {
