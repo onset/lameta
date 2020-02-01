@@ -235,7 +235,6 @@ export default class ImdiGenerator {
         // );
       });
       this.addCustomKeys(this.folderInFocus);
-      this.optionalField("Description", "description");
     });
   }
   private addMissingSessionLanguage(key: string, description: string) {
