@@ -78,9 +78,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
     .map(c => c.trim())
     .map(code => ({
       value: code,
-      label: fixNamesWithComma(
-        props.languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code)
-      )
+      label: getName(props.languageFinder, code)
     }));
 
   const loadMatchingOptions = (inputValue, callback) => {
@@ -165,7 +163,15 @@ const CustomLanguagePill = ({ children, data, innerProps, isDisabled }) => {
 
 // things like German are currently in our index as "German, Standard". This looks weird when it is in a list of other language names.
 // So just make it, e.g., "Standard German"
-function fixNamesWithComma(name: string): string {
+function getName(languageFinder: LanguageFinder, code: string): string {
+  const name = languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code);
+
+  // first, languages with custom codes need special name handling
+  if (name === code || code.substr(0, 2).toLowerCase() === "qa") {
+    return code;
+  }
+
+  // now remove any commas
   const parts = name.split(",");
   if (parts.length === 1) {
     return name;

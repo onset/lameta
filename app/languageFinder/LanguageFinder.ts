@@ -123,7 +123,13 @@ export class LanguageFinder {
   ): Array<{ languageInfo: Language; nameMatchingWhatTheyTyped: string }> {
     const pfx = prefix.toLocaleLowerCase();
     const sortedListOfMatches = this.findMatchesForSelect(prefix);
-
+    if (prefix.startsWith("qa")) {
+      const l = new Language({
+        iso639_3: prefix,
+        englishName: `${prefix} [Unlisted]`
+      });
+      sortedListOfMatches.push(l);
+    }
     return sortedListOfMatches.map(l => ({
       languageInfo: l,
       nameMatchingWhatTheyTyped: l.englishName
