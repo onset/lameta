@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-const titleCase = require("title-case");
+
 const XmlNameValidator = require("xml-name-validator");
 
 export interface IProps {

@@ -8,7 +8,7 @@ import * as Path from "path";
 import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
-import { TabList } from "react-tabs";
+const titleCase = require("title-case");
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -365,8 +365,12 @@ export default class ImdiGenerator {
           !this.keysThatHaveBeenOutput.contains(target.type + "." + key) &&
           blacklist.indexOf(key) < 0
         ) {
-          const v = target.properties.getTextStringOrEmpty(key);
+          let v = target.properties.getTextStringOrEmpty(key);
           if (v && v.length > 0) {
+            //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+            if (["keyword", "topic"].indexOf(key) > -1) {
+              v = titleCase(v);
+            }
             this.tail = this.tail.element("Key", v);
             this.mostRecentElement = this.tail;
             this.attributeLiteral("Name", key);
@@ -795,6 +799,14 @@ export default class ImdiGenerator {
     //if they specified a folder, use that, otherwise use the current default
     const f = target ? target : this.folderInFocus;
     let v = f.properties.getTextStringOrEmpty(fieldName);
+    if (["genre"].indexOf(fieldName) > -1) {
+      // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
+      // they want "Formulaic Discourse"
+      //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
+      // Theoretically we could fish out the original English label, but this is quite safe and easy
+      // and gives the same result since the keys are directly mappable to the English label via TitleCase.
+      v = titleCase(v);
+    }
     if (projectFallbackFieldName && (!v || v.length === 0)) {
       v = this.project.properties.getTextStringOrEmpty(
         projectFallbackFieldName
