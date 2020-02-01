@@ -620,14 +620,17 @@ export default class ImdiGenerator {
       }
 
       //this.attributeLiteral("ISO639-3", "eng");
-      const x = this.project.authorityLists.accessChoices.find(
-        c => c.label === accessCode
-      );
+
       this.element("Date", "");
       this.element("Owner", "");
       this.element("Publisher", "");
       this.element("Contact", "");
-      if (x && x.description && x.description.length > 0) {
+      const accessDef = this.project.authorityLists.accessChoices.find(
+        c => c.label === accessCode
+      );
+      /* ELAR DOESN'T WANT THIS IN IMDI
+      https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
+      if (accessDef && accessDef.description && accessDef.description.length > 0) {
         const accessProtocol = this.project.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
@@ -635,10 +638,11 @@ export default class ImdiGenerator {
           this.element("Description", "Access Protocol:" + accessProtocol);
           //this.attributeLiteral("ISO639-3", "eng");
         }
-        this.element("Description", x.description);
+        this.element("Description", accessDef.description);
         this.optionalField("Description", "accessDescription");
         //this.attributeLiteral("ISO639-3", "eng");
-      }
+      }*/
+      this.optionalField("Description", "accessDescription");
     });
     //}
   }
