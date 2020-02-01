@@ -132,7 +132,7 @@ export default class ImdiGenerator {
         this.element("FamilySocialRole", "");
         this.element("Languages", "");
         this.element("EthnicGroup", "");
-        this.element("Age", "unspecified");
+        this.element("Age", "Unspecified");
         this.element("BirthDate", "");
         this.element("Sex", "");
         this.element("Education", "");
@@ -740,12 +740,12 @@ export default class ImdiGenerator {
     const gender = person.properties.getTextStringOrEmpty("gender");
     if (gender === "Other") {
       this.tail.comment(
-        "Gender was actually 'Other'. The IMDI Schema does not have an 'other' option, so we are using 'unspecified'."
+        "Gender was actually 'Other'. The IMDI Schema does not have an 'other' option, so we are using 'Unspecified'."
       );
     }
     this.element(
       "Sex",
-      gender === "Other" ? "unspecified" : gender,
+      gender === "Other" ? "Unspecified" : gender,
       true,
       "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml"
     );
@@ -818,6 +818,9 @@ export default class ImdiGenerator {
     } else {
       this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
     }
+
+    //ELAR wants these capitalized
+    v = v === "unspecified" ? "Unspecified" : v;
 
     const text = v && v.length > 0 ? v : defaultValue;
     if (xmlElementIsRequired || (v && v.length > 0)) {
