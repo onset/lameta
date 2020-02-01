@@ -406,7 +406,9 @@ export default class ImdiGenerator {
     ); // default to the region of the project
     this.optionalField("Address", "location", this.folderInFocus, "region"); // default to the region of the project
 
-    this.optionalField("Address", "locationAddress"); // note, saymore also has a "location"
+    // we removed this field in Dec 2019, so send it to custom
+    // instead of making a second <Address>, which is not allowed
+    //  this.optionalField("Address", "locationAddress"); // note, saymore also has a "location"
     this.exitGroup();
   }
 
@@ -644,7 +646,7 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
-      this.element("Role", role && role.length > 0 ? role : "unspecified");
+      this.element("Role", role && role.length > 0 ? role : "Unspecified");
       this.requiredField("Name", "name", person);
       this.requiredField("FullName", "name", person);
 
@@ -695,7 +697,7 @@ export default class ImdiGenerator {
       if (birthYear === "?") {
         this.element("Age", "unknown"); // ELAR request Oct-Dec 2019
       } else if (birthYear.trim() === "") {
-        this.element("Age", "unspecified"); // CMDI maker outputs 'unspecified' if you leave it empty
+        this.element("Age", "Unspecified"); // CMDI maker outputs 'unspecified' if you leave it empty
         this.tail.comment("Could not compute age");
       } else {
         const age = person.ageOn(dateToCompareWith);
@@ -841,7 +843,11 @@ export default class ImdiGenerator {
     isClosedVocabulary?,
     vocabularyUrl?
   ) {
-    const newElement = this.tail.element(elementName, value);
+    const newElement = this.tail.element(
+      elementName,
+      //https://trello.com/c/jRC5wpKp/67-imdi-unspecified-should-always-be-unspecified-with-upper-case-not-unspecified-with-lower-case
+      value === "unspecified" ? "Unspecified" : value
+    );
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
       const type = isClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
