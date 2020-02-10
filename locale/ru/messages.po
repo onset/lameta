@@ -6,13 +6,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: crowdin.com\n"
 "Language: ru\n"
-"Project-Id-Version: saymorex\n"
+"Project-Id-Version: Digame\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2019-01-05 21:04\n"
-"Last-Translator: saymorex <hattonjohn+saymorex@gmail.com>\n"
+"Last-Translator: Digame <hattonjohn+Digame@gmail.com>\n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
-"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project: Digame\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: messages.po\n"
 
@@ -37,7 +37,7 @@ msgid "A zip file with an IMDI file for the project and each session."
 msgstr ""
 
 #: app/menu.ts:35
-msgid "About SayMore X"
+msgid "About Digame"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:24
@@ -173,7 +173,7 @@ msgid "Create New Project with Sample Data"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:46
-msgid "Create New Saymore Project"
+msgid "Create New Digame Project"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:45
@@ -304,11 +304,11 @@ msgid "Hide Others"
 msgstr ""
 
 #: app/menu.ts:49
-msgid "Hide SayMore X"
+msgid "Hide Digame"
 msgstr ""
 
 #: app/components/registration/RegistrationDialog.tsx:65
-msgid "How are you using SayMoreX?"
+msgid "How are you using Digame?"
 msgstr ""
 
 #: app/model/Project/Project.ts:221
@@ -515,7 +515,7 @@ msgid "Saving"
 msgstr ""
 
 #: app/menu.ts:32
-msgid "SayMore X"
+msgid "Digame"
 msgstr ""
 
 #: app/containers/HomePage.tsx:192

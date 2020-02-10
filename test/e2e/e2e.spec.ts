@@ -27,7 +27,7 @@ describe("main window", function spec() {
 
   it("should open window", async () => {
     const title = await runner.browser.getTitle();
-    expect(title).toBe("SayMore X");
+    expect(title).toBe("Digame");
   });
 
   it("should start in start screen", async () => {

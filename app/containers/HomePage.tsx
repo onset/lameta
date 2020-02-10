@@ -168,8 +168,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     let title = this.projectHolder.project
       ? `${Path.basename(this.projectHolder.project.directory)}/ ${
           this.projectHolder.project.displayName
-        }  - SayMore X`
-      : "SayMore X";
+        }  - Digame`
+      : "Digame";
     title += " " + require("../package.json").version + " Beta";
 
     remote.getCurrentWindow().setTitle(title);
@@ -188,7 +188,7 @@ export default class HomePage extends React.Component<IProps, IState> {
                 <img src={locate("assets/start-screen/icon.png")} />
                 <h1>
                   {/* we don't localize this */}
-                  SayMore<span>x</span>
+                  Digame
                 </h1>
               </div>
               <div className={"choices"}>
@@ -203,7 +203,7 @@ export default class HomePage extends React.Component<IProps, IState> {
                 <br />
                 <img src={locate("assets/start-screen/open.png")} />
                 <a onClick={() => this.openProject()}>
-                  <Trans>Open SayMore Project</Trans>
+                  <Trans>Open Digame Project</Trans>
                 </a>
                 <br />
                 <img src={locate("assets/start-screen/sample.png")} />
@@ -244,7 +244,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "SayMore" // we don't translate this
+      "Digame" // we don't translate this
     );
 
     const options: OpenDialogOptions = {
@@ -254,7 +254,10 @@ export default class HomePage extends React.Component<IProps, IState> {
       // look like saymore projects
       properties: ["openFile"],
       filters: [
-        { name: i18n._(t`SayMore/SayMore Project Files`), extensions: ["sprj"] }
+        {
+          name: i18n._(t`Digame and SayMore Project Files`),
+          extensions: ["sprj"]
+        }
       ]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {

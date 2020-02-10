@@ -313,7 +313,7 @@ export class Project extends Folder {
     if (msg.length > 0) {
       remote.dialog
         .showMessageBox({
-          title: "SayMore",
+          title: "Digame",
           message: msg
         })
         .then(() => {});
@@ -347,7 +347,7 @@ export class Project extends Folder {
     ) {
       remote.dialog
         .showMessageBox({
-          title: "SayMore",
+          title: "Digame",
           message: i18n._(t`There is already a Person with that name or code.`)
         })
         .then(() => {});

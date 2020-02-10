@@ -15,7 +15,7 @@ const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
 // appdata/roaming/electron. Don't worry about that. app.setPath("userData", somewhere...);
 
 // Put this on global so that the renderer process can get at it.
-// When running from code, the path is something like <somewhere>saymore-js\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
+// When running from code, the path is something like <somewhere>digame\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
 // When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json
 // see https://stackoverflow.com/a/43389268/723299
 global.ffprobepath = require("ffprobe-static").path.replace(

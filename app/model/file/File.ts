@@ -125,7 +125,7 @@ export /*babel doesn't like this: abstract*/ class File {
       if (!date.isValid()) {
         this.setTextProperty(
           "notes",
-          `Parsing Error: SayMore could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+          `Parsing Error: Digame could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
             moment.now()
           ).toString()}`
         );

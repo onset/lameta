@@ -86,7 +86,7 @@ export default class RegistrationDialog extends React.Component<
             </div>
             <div className="row">
               <label>
-                <Trans>How are you using SayMoreX?</Trans>
+                <Trans>How are you using Digame?</Trans>
               </label>
               <SMRadioGroup
                 id="howUsingRadioGroup"

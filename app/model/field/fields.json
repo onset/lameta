@@ -337,7 +337,7 @@
     {
       "key": "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
       // we're retaining that key to allow migration, but
-      "englishLabel": "Details", // in saymorex we extend this to be more general
+      "englishLabel": "Details", // in Digame we extend this to be more general
       "tooltip": "Relevant details such as where they learned it"
     },
     {

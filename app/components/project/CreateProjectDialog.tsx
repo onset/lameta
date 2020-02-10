@@ -36,7 +36,7 @@ export default class CreateProjectDialog extends React.Component<
   private getChosenPath(): string {
     return Path.join(
       app.getPath("documents"),
-      "SayMore",
+      "Digame",
       sanitize(this.state.projectName)
     );
   }
@@ -65,7 +65,7 @@ export default class CreateProjectDialog extends React.Component<
 
     const title = this.props.useSampleProject
       ? i18n._(t`Create Project Using Sample Data`)
-      : i18n._(t`Create New Saymore Project`);
+      : i18n._(t`Create New Digame Project`);
     return (
       <ReactModal
         ariaHideApp={false}

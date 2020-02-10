@@ -23,7 +23,7 @@ export default function getSayMoreXml(
     .filter(field => field.persist);
   writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
   if (properties.getValue("participants")) {
-    // In older versions of SayMore & SayMoreX, there were "participants", people without roles.
+    // In older versions of SayMore & Digame, there were "participants", people without roles.
     // Now we just use the Contributors, which have roles and comments. But we still write out
     // this list in case the file is opened by an old version of SayMore
     const legacyParticipantsList = contributions

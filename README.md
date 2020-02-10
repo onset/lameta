@@ -1,4 +1,4 @@
-SayMore X is a reboot of SayMore (c# winforms) as a web app wrapped in electron, so that it can be used on Macs (and Windows, and Linux). The stack is Typescript, react, and mobx, ,built with webpack.
+Digame is a reboot of SayMore (c# winforms) as a web app wrapped in electron, so that it can be used on Macs (and Windows, and Linux). The stack is Typescript, react, and mobx, ,built with webpack.
 
 ## Get Started
 
@@ -49,7 +49,7 @@ If you see something like `TypeError: beforeAll is not a function`, that is caus
 
 ### l10n
 
-When running Saymore, if you see this in the Chrome debug console:
+When running Digame, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 

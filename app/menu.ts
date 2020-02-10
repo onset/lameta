@@ -36,10 +36,10 @@ export default class SayLessMenu {
     // );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: i18n._(t`SayMore X`),
+      label: i18n._(t`Digame`),
       submenu: [
         {
-          label: i18n._(t`About SayMore X`),
+          label: i18n._(t`About Digame`),
           selector: "orderFrontStandardAboutPanel:"
         },
         {
@@ -53,7 +53,7 @@ export default class SayLessMenu {
           type: "separator"
         },
         {
-          label: i18n._(t`Hide SayMore X`),
+          label: i18n._(t`Hide Digame`),
           accelerator: "Command+H",
           selector: "hide:"
         },
@@ -187,7 +187,7 @@ export default class SayLessMenu {
             {
               label: "Help translate",
               click: () => {
-                shell.openExternal("https://crowdin.com/project/saymorex");
+                shell.openExternal("https://crowdin.com/project/Digame");
               }
             }
           ]
@@ -270,7 +270,7 @@ export default class SayLessMenu {
           }
         },
         {
-          label: "SayMore-x " + require("./package.json").version,
+          label: "Digame " + require("./package.json").version,
           enabled: false
         }
       ]
