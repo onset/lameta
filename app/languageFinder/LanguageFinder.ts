@@ -123,10 +123,15 @@ export class LanguageFinder {
   ): Array<{ languageInfo: Language; nameMatchingWhatTheyTyped: string }> {
     const pfx = prefix.toLocaleLowerCase();
     const sortedListOfMatches = this.findMatchesForSelect(prefix);
-    if (prefix.startsWith("qa")) {
+    // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
+    if (pfx >= "qaa" && pfx <= "qtz") {
       const l = new Language({
         iso639_3: prefix,
-        englishName: `${prefix} [Unlisted]`
+        englishName:
+          // if they have given us the name for this custom language in the Project settings, use it
+          this.defaultContentLanguage.iso639_3 === prefix
+            ? this.defaultContentLanguage.englishName
+            : `${prefix} [Unlisted]`
       });
       sortedListOfMatches.push(l);
     }
@@ -207,7 +212,7 @@ export class LanguageFinder {
     return sorted;
   }
 
-  public findOneLanguageNameFromCode_Or_ReturnCode(code: string) {
+  public findOneLanguageNameFromCode_Or_ReturnCode(code: string): string {
     const trimmedCode = code.trim();
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.index.get(trimmedCode);
