@@ -92,7 +92,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     return f;
   }
   public addFiles(files: object[]): File | null {
-    assert.ok(files.length > 0);
+    assert.ok(files.length > 0, "addFiles given an empty array of files");
 
     let lastFile: File | null = null;
     files.forEach((f: any) => {
