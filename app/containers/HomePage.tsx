@@ -96,8 +96,15 @@ export default class HomePage extends React.Component<IProps, IState> {
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
       AlertDialog.show({
-        message: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
+        title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
         buttonText: "I understand"
+      });
+    }
+    if (userSettings.showNoticeAboutConversionFromSayMoreX) {
+      AlertDialog.show({
+        title: `'SayMoreX' is now 'Digame'.`,
+        text: `We've noticed that you previously had run SayMoreX, so we opened the same project you were using previously. However, note that Digame will not be moving your project to a different folder. It still lives at ${userSettings.PreviousProjectDirectory}. You are welcome to move that folder anywhere you like, but you will need to quit Digame first.`,
+        buttonText: "OK"
       });
     }
 

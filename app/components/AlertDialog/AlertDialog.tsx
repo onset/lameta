@@ -10,7 +10,8 @@ interface IState {
   config: IConfig;
 }
 interface IConfig {
-  message: string;
+  title?: string;
+  text?: string;
   buttonText?: string;
 }
 export default class AlertDialog extends React.Component<{}, IState> {
@@ -20,7 +21,7 @@ export default class AlertDialog extends React.Component<{}, IState> {
     super({});
     this.state = {
       isOpen: false,
-      config: { message: "message is not set yet" }
+      config: { title: "message is not set yet" }
     };
     AlertDialog.singleton = this;
   }
@@ -51,8 +52,11 @@ export default class AlertDialog extends React.Component<{}, IState> {
           <div className="dialogContent">
             <div className="row">
               <img src={locate("assets/warning.png")} />
-              <h1>{this.state.config.message}</h1>
+              <h1>{this.state.config.title}</h1>
             </div>
+            <div className="row">
+              <div>{this.state.config.text}</div>
+            </div>{" "}
           </div>
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>

@@ -1,14 +1,17 @@
-import React from "react";
 import Store from "electron-store";
 import * as mobx from "mobx";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
+import * as Path from "path";
+import * as fs from "fs-extra";
+import * as Sentry from "@sentry/browser";
 
 class FakeStore {
   public get(s: string, def: any = ""): any {
     return def;
   }
   public set(key: string, value: any): void {}
+  public path: string = "fake path";
 }
 export class UserSettings {
   private store: Store | FakeStore;
@@ -19,16 +22,44 @@ export class UserSettings {
   private howUsing: string;
   private email: string;
   private clientId: string;
+  public showNoticeAboutConversionFromSayMoreX: boolean;
 
   constructor() {
-    this.store =
-      process.env.NODE_ENV === "test"
-        ? (this.store = new FakeStore())
-        : new Store({ name: "saymorex-user-settings" });
-
+    if (process.env.NODE_ENV === "test") {
+      this.store = new FakeStore();
+    } else {
+      this.store = new Store({ name: "digame-user-settings" });
+      try {
+        const oldSettings =
+          process.env.NODE_ENV === "production"
+            ? this.store.path.replace("Digame\\digame", "Saymore X\\saymorex")
+            : this.store.path.replace("Electron\\digame", "Electron\\saymorex");
+        if (!this.store.get("lastVersion") && fs.existsSync(oldSettings)) {
+          try {
+            fs.removeSync(this.store.path);
+          } catch (e) {
+            // probably isn't there
+          }
+          fs.copyFileSync(oldSettings, this.store.path);
+          // now reload, this time with the old settings
+          this.store = new Store({ name: "digame-user-settings" });
+          if (
+            this.PreviousProjectDirectory &&
+            fs.pathExistsSync(this.PreviousProjectDirectory) &&
+            this.PreviousProjectDirectory.toLowerCase().indexOf("saymore") > 0
+          ) {
+            this.showNoticeAboutConversionFromSayMoreX = true;
+          }
+        }
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    }
     this.imdiMode = this.store.get("imdiMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
+    // lastVersion is new in 0.83 (first "Digame" release after name change from saymorex)
+    this.store.set("lastVersion", require("package.json").version);
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
   public get IMDIMode() {
