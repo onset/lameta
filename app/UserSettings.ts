@@ -28,12 +28,17 @@ export class UserSettings {
     if (process.env.NODE_ENV === "test") {
       this.store = new FakeStore();
     } else {
-      this.store = new Store({ name: "digame-user-settings" });
+      this.store = new Store({ name: "Digame-user-settings" });
       try {
         const oldSettings =
           process.env.NODE_ENV === "production"
-            ? this.store.path.replace("Digame\\digame", "Saymore X\\saymorex")
-            : this.store.path.replace("Electron\\digame", "Electron\\saymorex");
+            ? // in production, we had "Saymore X/saymorex" and now have
+              // "Digame/digame". We are avoiding slashes here because they are different direction on mac and Windows
+              this.store.path
+                .replace("Digame", "Saymore X")
+                .replace("Digame", "saymorex")
+            : // but in dev, we have "Electron/saymorex" and "Electron/Digame-user-settings"
+              this.store.path.replace("Digame", "saymorex");
         if (!this.store.get("lastVersion") && fs.existsSync(oldSettings)) {
           try {
             fs.removeSync(this.store.path);
