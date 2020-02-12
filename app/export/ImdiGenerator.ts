@@ -815,7 +815,9 @@ export default class ImdiGenerator {
         projectFallbackFieldName
       );
     } else {
-      this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
+      if (target) {
+        this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
+      }
     }
 
     //ELAR wants these capitalized
