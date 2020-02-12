@@ -4,7 +4,7 @@
 */
 import Analytics from "electron-ga";
 
-import userSettings from "./UserSettings";
+import userSettingsSingleton from "./UserSettings";
 import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 import { node } from "prop-types";
@@ -12,7 +12,7 @@ import { node } from "prop-types";
 let analytics: Analytics;
 
 export function initializeAnalytics() {
-  if (process.env.NODE_ENV === "test" || userSettings.DeveloperMode) {
+  if (process.env.NODE_ENV === "test" || userSettingsSingleton.DeveloperMode) {
     analytics = new Analytics("bogus", {
       appName: "bogus",
       appVersion: require("package.json").version,
@@ -24,7 +24,7 @@ export function initializeAnalytics() {
       appName: "saymorex",
       appVersion: require("package.json").version,
       language: currentUILanguage || "",
-      clientId: userSettings.ClientId
+      clientId: userSettingsSingleton.ClientId
     });
   }
   //analytics.send("event", { ec: "launch", ea: "launch", an: "saymorex" });
@@ -44,7 +44,7 @@ export function analyticsEvent(category: string, action: string) {
       ec: category,
       ea: action,
       // at the moment, I'm not clear where it is best to stick how-using
-      ci: userSettings.HowUsing // put the "how using" into GA's Campaign ID
+      ci: userSettingsSingleton.HowUsing // put the "how using" into GA's Campaign ID
     })
     //.then(() => console.log(`Sent event ${category}/${action}`))
     .catch(error => console.error(error));

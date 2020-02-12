@@ -1,7 +1,7 @@
 {
   "name": "Digame",
   "productName": "Digame",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
