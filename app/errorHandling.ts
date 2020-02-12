@@ -3,6 +3,7 @@
 
 import * as Sentry from "@sentry/browser";
 import { showReportDialog } from "@sentry/browser";
+import userSettingsSingleton from "./UserSettings";
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
@@ -17,7 +18,8 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
             title: "We're sorry, Digame had a problem.",
             subtitle:
               "If you'd like to help us get rid of this bug, tell us what happened below.",
-            subtitle2: ""
+            subtitle2: "",
+            user: { email: userSettingsSingleton?.Email || "", name: "" }
           });
         }
         return event;

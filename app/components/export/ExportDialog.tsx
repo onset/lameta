@@ -16,6 +16,9 @@ import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder";
+import AlertDialog from "../AlertDialog/AlertDialog";
+import { showReportDialog } from "@sentry/browser";
+import { NotifyError } from "../Notify";
 
 const { app } = require("electron").remote;
 const sanitize = require("sanitize-filename");
@@ -58,7 +61,15 @@ export const ExportDialog: React.FunctionComponent<{
                 ]
               : []
         })
-        .then(result => saveFiles(result.filePath!));
+        .then(result => {
+          try {
+            saveFiles(result.filePath!);
+          } catch (err) {
+            NotifyError("There was a problem exporting.");
+            setIsOpen(false);
+            throw err; // send it on to sentry
+          }
+        });
     } else {
       setIsOpen(false);
     }
