@@ -61,7 +61,7 @@ export default class AlertDialog extends React.Component<{}, IState> {
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>
               <button id="confirm" onClick={() => this.handleCloseModal(true)}>
-                {this.state.config.buttonText || <Trans>"Cancel"</Trans>}
+                {this.state.config.buttonText || <Trans>OK</Trans>}
               </button>
             </div>
           </div>

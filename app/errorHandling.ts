@@ -2,12 +2,26 @@
 // Switched to the Browser SDK
 
 import * as Sentry from "@sentry/browser";
+import { showReportDialog } from "@sentry/browser";
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
       dsn: "https://14749f18cf3c4d828e341593bc1b568e@sentry.io/1300542",
-      release: require("./package.json").version
+      release: require("./package.json").version,
+      beforeSend(event) {
+        // Check if it is an exception, if so, show the report dialog
+        // Note that this only will work in the renderer process, it's a noop on the main process
+        if (event.exception) {
+          showReportDialog({
+            title: "We're sorry, Digame had a problem.",
+            subtitle:
+              "If you'd like to help us get rid of this bug, tell us what happened below.",
+            subtitle2: ""
+          });
+        }
+        return event;
+      }
     });
   }
 }

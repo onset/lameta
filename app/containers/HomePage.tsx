@@ -22,6 +22,7 @@ import { i18n } from "../localization";
 import { analyticsEvent } from "../analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import AlertDialog from "../components/AlertDialog/AlertDialog";
+import { sentryBreadCrumb } from "../errorHandling";
 
 const isDev = require("electron-is-dev");
 
@@ -253,7 +254,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       app.getPath("documents"),
       "Digame" // we don't translate this
     );
-
+    sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
       title: i18n._(t`Open Project...`),
       defaultPath: defaultProjectParentDirectory,
@@ -268,7 +269,8 @@ export default class HomePage extends React.Component<IProps, IState> {
       ]
     };
     remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
-      if (paths) {
+      sentryBreadCrumb("processing callback of open project dialog");
+      if (paths && paths.length > 0 && paths[0].length > 0) {
         const directory = Path.dirname(paths[0]);
         this.projectHolder.setProject(
           Project.fromDirectory(fs.realpathSync(directory))

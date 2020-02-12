@@ -30,14 +30,14 @@ exports.default = async function notarizing(context) {
   });
 
   const params = {
-    appBundleId: "io.github.saymore.saymore-x",
+    appBundleId: "io.github.onset.digame",
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLEID,
     appleIdPassword: pass
   };
   console.log(`calling notarize(${JSON.stringify(params)})`);
   console.log(
-    "This takes a long time (like 10 minutes or so), becuase it waits for the notarization to finish at Apple before proceding."
+    "This takes a long time (like 10 minutes or so), because it waits for the notarization to finish at Apple before proceeding."
   );
   return await notarize(params);
 };

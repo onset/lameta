@@ -6,6 +6,7 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
 import { log } from "util";
+import { sentryBreadCrumb } from "../errorHandling";
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -17,6 +18,7 @@ export default class ImdiBundler {
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean
   ) {
+    sentryBreadCrumb("Starting saveImdiBundleToFolder");
     try {
       if (fs.existsSync(rootDirectory)) {
         fs.removeSync(rootDirectory);
@@ -107,6 +109,8 @@ export default class ImdiBundler {
       Path.join(rootDirectory, `${project.displayName}.imdi`),
       ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
     );
+
+    sentryBreadCrumb("Done with saveImdiBundleToFolder");
   }
 
   // IMDI doesn't have a place for project-level documents, so we have to create IMDI
