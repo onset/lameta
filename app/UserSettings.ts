@@ -25,45 +25,16 @@ export class UserSettings {
   public showNoticeAboutConversionFromSayMoreX: boolean;
 
   constructor() {
-    if (process.env.NODE_ENV === "test") {
-      this.store = new FakeStore();
-    } else {
-      this.store = new Store({ name: "Digame-user-settings" });
-      try {
-        const oldSettings =
-          process.env.NODE_ENV === "production"
-            ? // in production, we had "Saymore X/saymorex" and now have
-              // "Digame/digame". We are avoiding slashes here because they are different direction on mac and Windows
-              this.store.path
-                .replace("Digame", "Saymore X")
-                .replace("Digame", "saymorex")
-            : // but in dev, we have "Electron/saymorex" and "Electron/Digame-user-settings"
-              this.store.path.replace("Digame", "saymorex");
-        if (!this.store.get("lastVersion") && fs.existsSync(oldSettings)) {
-          try {
-            fs.removeSync(this.store.path);
-          } catch (e) {
-            // probably isn't there
-          }
-          fs.copyFileSync(oldSettings, this.store.path);
-          // now reload, this time with the old settings
-          this.store = new Store({ name: "digame-user-settings" });
-          if (
-            this.PreviousProjectDirectory &&
-            fs.pathExistsSync(this.PreviousProjectDirectory) &&
-            this.PreviousProjectDirectory.toLowerCase().indexOf("saymore") > 0
-          ) {
-            this.showNoticeAboutConversionFromSayMoreX = true;
-          }
-        }
-      } catch (error) {
-        Sentry.captureException(error);
-      }
-    }
+    this.store =
+      process.env.NODE_ENV === "test"
+        ? new FakeStore()
+        : new Store({ name: "laMeta-user-settings" });
+
     this.imdiMode = this.store.get("imdiMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
-    // lastVersion is new in 0.83 (first "Digame" release after name change from saymorex)
+    // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
+    // before changing to "lameta" for version 0.84)
     this.store.set("lastVersion", require("package.json").version);
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
