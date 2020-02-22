@@ -1,3 +1,4 @@
+import assert from "assert";
 import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
@@ -322,6 +323,7 @@ export default class ImdiGenerator {
     this.requiredField("Title", "title");
     this.field("Date", "date", true, "Unspecified");
     this.optionalField("Description", "description");
+    this.keysThatHaveBeenOutput.add("Session.description");
 
     this.startGroup("MDGroup");
     /**/ this.sessionLocation();
@@ -825,9 +827,10 @@ export default class ImdiGenerator {
         projectFallbackFieldName
       );
     } else {
-      if (target) {
-        this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
-      }
+      assert.ok(f.type, "IMDI field f.type was null");
+      //if (target) {  <-- I don't know what precipitated this; target is null when we are outputing folder fields, .e.g. session.description
+      this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
+      //}
     }
 
     //ELAR wants these capitalized
