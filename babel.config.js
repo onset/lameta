@@ -16,7 +16,7 @@ module.exports = function(api) {
         {
           targets: {
             // else we get regeneratorRuntime is not defined
-            browsers: ["chrome 61"] // should be set to match whatever chromium electron is using
+            browsers: ["chrome 76"] // should be set to match whatever chromium electron is using
           }
         }
       ]
