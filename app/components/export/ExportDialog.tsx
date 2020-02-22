@@ -17,6 +17,7 @@ import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder";
 import { NotifyError } from "../Notify";
+import { mkdirpSync, ensureDirSync, pathExistsSync } from "fs-extra";
 
 const { app } = require("electron").remote;
 const sanitize = require("sanitize-filename");
@@ -73,23 +74,45 @@ export const ExportDialog: React.FunctionComponent<{
     }
   };
   const getPathForCsvSaving = () => {
-    return `${Path.basename(
-      props.projectHolder.project!.directory
-    )}-${exportFormat}.zip`;
+    const parent = Path.join(app.getPath("documents"), "laMeta", "CSV Export");
+    ensureDirSync(parent);
+    return Path.join(
+      parent,
+      `${sanitize(
+        props.projectHolder.project!.displayName
+      )} - laMeta CSV Export - ${moment(new Date()).format("YYYY-MM-DD")}.zip`
+    );
+
+    // return `${Path.basename(
+    //   props.projectHolder.project!.directory
+    // )}-${exportFormat}.zip`;
   };
 
   const getPathForIMDISaving = () => {
-    const rootDirectoryForAllExports = Path.join(
+    const parent = Path.join(
       app.getPath("documents"),
       "laMeta",
       "IMDI Packages"
     );
-    return Path.join(
-      rootDirectoryForAllExports,
-      sanitize(props.projectHolder.project!.displayName) +
-        "_" +
-        moment(new Date()).format("YYYY-MM-DD")
+    ensureDirSync(parent);
+
+    let folder = Path.join(
+      parent,
+      `${sanitize(
+        props.projectHolder.project!.displayName
+      )} - laMeta ${exportFormat} Export - ${moment(new Date()).format(
+        "YYYY-MM-DD"
+      )}`
     );
+    // Just that is what we would *like* to have, the problem is that since we are saving
+    // a folder, and not a file, on subsequent saves the File Dialog will show *inside*
+    // this folder, because it already exists. There does not appear to be a way to say
+    // "Show this folder, then use this default name" as separate parameters. Very annoying.
+    // So now we add the exact time if there is a already a folder from today.
+    if (pathExistsSync(folder)) {
+      folder = folder + " " + moment(new Date()).format("HH_mm_ss");
+    }
+    return folder;
   };
 
   const saveFiles = (path: string) => {
