@@ -369,12 +369,12 @@ export default class ImdiGenerator {
           let v = target.properties.getTextStringOrEmpty(key);
           if (v && v.length > 0) {
             //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
-            if (["keyword", "topic"].indexOf(key) > -1) {
+            if (["keyword", "topic", "status"].indexOf(key) > -1) {
               v = titleCase(v);
             }
             this.tail = this.tail.element("Key", v);
             this.mostRecentElement = this.tail;
-            this.attributeLiteral("Name", key);
+            this.attributeLiteral("Name", titleCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
             this.tail = this.tail.up();
           }
         }
