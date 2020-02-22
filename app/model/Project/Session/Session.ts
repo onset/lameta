@@ -107,8 +107,8 @@ export class Session extends Folder {
     return session;
   }
 
-  // Old versions of both SayMore and Digame had a "participants" field that didn't give a way to say what
-  // the roles of the participants are. All current versions still can read this in, ans Digame (at least)
+  // Old versions of both SayMore and laMeta had a "participants" field that didn't give a way to say what
+  // the roles of the participants are. All current versions still can read this in, ans laMeta (at least)
   // still emits it to the xml. But it has been superseded by a normal <contributions> element, just like
   // we had previously for individual files. This method checks the <participants> for any contributions that
   // we might be missing in <contributions>.

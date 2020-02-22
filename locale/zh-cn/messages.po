@@ -6,13 +6,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: crowdin.com\n"
 "Language: zh\n"
-"Project-Id-Version: Digame\n"
+"Project-Id-Version: laMeta\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2019-01-05 21:04\n"
-"Last-Translator: Digame <hattonjohn+Digame@gmail.com>\n"
+"Last-Translator: laMeta <hattonjohn+laMeta@gmail.com>\n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: Digame\n"
+"X-Crowdin-Project: laMeta\n"
 "X-Crowdin-Language: zh-CN\n"
 "X-Crowdin-File: messages.po\n"
 
@@ -37,7 +37,7 @@ msgid "A zip file with an IMDI file for the project and each session."
 msgstr ""
 
 #: app/menu.ts:35
-msgid "About Digame"
+msgid "About laMeta"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:24
@@ -173,7 +173,7 @@ msgid "Create New Project with Sample Data"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:46
-msgid "Create New Digame Project"
+msgid "Create New laMeta Project"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:45
@@ -304,11 +304,11 @@ msgid "Hide Others"
 msgstr ""
 
 #: app/menu.ts:49
-msgid "Hide Digame"
+msgid "Hide laMeta"
 msgstr ""
 
 #: app/components/registration/RegistrationDialog.tsx:65
-msgid "How are you using Digame?"
+msgid "How are you using laMeta?"
 msgstr ""
 
 #: app/model/Project/Project.ts:221
@@ -515,7 +515,7 @@ msgid "Saving"
 msgstr ""
 
 #: app/menu.ts:32
-msgid "Digame"
+msgid "laMeta"
 msgstr ""
 
 #: app/containers/HomePage.tsx:192

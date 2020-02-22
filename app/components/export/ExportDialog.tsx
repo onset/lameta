@@ -83,7 +83,7 @@ export const ExportDialog: React.FunctionComponent<{
   const getPathForIMDISaving = () => {
     const rootDirectoryForAllExports = Path.join(
       app.getPath("documents"),
-      "Digame",
+      "laMeta",
       "IMDI Packages"
     );
     return Path.join(

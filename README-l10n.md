@@ -28,7 +28,7 @@ To build the string catalog, do
 
 `yarn lingui-extract`
 
-That reads .linguirc to know what files to include. That puts json files in ./locale/ that can then be put on https://crowdin.com/project/Digame. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+That reads .linguirc to know what files to include. That puts json files in ./locale/ that can then be put on https://crowdin.com/project/laMeta. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 At runtime, lingui uses javascript file, which you get by running
 
@@ -36,13 +36,13 @@ At runtime, lingui uses javascript file, which you get by running
 
 # Non-code Lookups in CSV
 
-Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/Digame and then downloaded with the columns filled in from translations.
+Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/laMeta and then downloaded with the columns filled in from translations.
 
 # Getting translations from Crowdin
 
 (until we automate this with git PRs)
 
-Under Digame Settings, there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
+Under laMeta Settings, there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
 
 I have not found a way to get the default string out to the extracted files. I would expect
 

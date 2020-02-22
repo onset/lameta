@@ -1,11 +1,11 @@
 {
-  "name": "Digame",
-  "productName": "Digame",
+  "name": "laMeta",
+  "productName": "laMeta",
   "version": "0.8.4",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
-    "name": "Digame"
+    "name": "laMeta"
   },
   "license": "MIT",
   "dependencies": {}

@@ -30,7 +30,7 @@ export const LanguageEdit: React.FunctionComponent<IProps> = props => {
       setValidationClass("");
       setTooltip("");
     } else {
-      setTooltip(`Digame does not recognize the Language name '${lang}'`);
+      setTooltip(`laMeta does not recognize the Language name '${lang}'`);
       setValidationClass("languageNotRecognized");
     }
   };
