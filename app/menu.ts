@@ -8,6 +8,7 @@ import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
 import { date } from "@lingui/core";
+import { ShowAlertDialog } from "./components/AlertDialog/AlertDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -229,6 +230,16 @@ export default class SayLessMenu {
             throw new Error(
               "Test throw from menu " + Date.now().toLocaleString()
             );
+          }
+        },
+        {
+          label: "Test alert dialog",
+          click() {
+            ShowAlertDialog({
+              title: `The title`,
+              text: "the text",
+              buttonText: "ok"
+            });
           }
         }
       ]

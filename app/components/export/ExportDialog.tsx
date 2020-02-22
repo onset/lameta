@@ -16,8 +16,6 @@ import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder";
-import AlertDialog from "../AlertDialog/AlertDialog";
-import { showReportDialog } from "@sentry/browser";
 import { NotifyError } from "../Notify";
 
 const { app } = require("electron").remote;

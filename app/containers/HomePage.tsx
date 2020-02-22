@@ -21,7 +21,10 @@ import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { analyticsEvent } from "../analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import AlertDialog from "../components/AlertDialog/AlertDialog";
+import {
+  AlertDialog,
+  ShowAlertDialog
+} from "../components/AlertDialog/AlertDialog";
 import { sentryBreadCrumb } from "../errorHandling";
 
 const isDev = require("electron-is-dev");
@@ -96,16 +99,10 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
-      AlertDialog.show({
+      ShowAlertDialog({
         title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
+        text: "",
         buttonText: "I understand"
-      });
-    }
-    if (userSettings.showNoticeAboutConversionFromSayMoreX) {
-      AlertDialog.show({
-        title: `'SayMoreX' is now 'laMeta'.`,
-        text: `We've noticed that you previously had run SayMoreX, so we opened the same project you were using previously. However, note that laMeta will not be moving your project to a different folder. It still lives at ${userSettings.PreviousProjectDirectory}. You are welcome to move that folder anywhere you like, but you will need to quit laMeta first.`,
-        buttonText: "OK"
       });
     }
 

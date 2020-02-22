@@ -22,7 +22,6 @@ export class UserSettings {
   private howUsing: string;
   private email: string;
   private clientId: string;
-  public showNoticeAboutConversionFromSayMoreX: boolean;
 
   constructor() {
     this.store =
