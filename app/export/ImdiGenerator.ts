@@ -578,10 +578,20 @@ export default class ImdiGenerator {
       this.group("MediaResourceLink", () => {});
 
       this.element("Date", "");
+      // handle types that our mime library doesn't know about:
+      const x = [["ELAN", "Annotation"]].find(pair => pair[0] === f.type);
+      let resourceType = x && x.length > 0 ? x[1] : "Unspecified";
+      if (resourceType === "Unspecified") {
+        const m = mime.getType(Path.extname(f.describedFilePath));
+        if (m && ["application"].indexOf(m.split("/")[0]) > -1) {
+          resourceType = "Document";
+        } else if (m && ["text"].indexOf(m.split("/")[0]) > -1) {
+          resourceType = "Text";
+        }
+      }
       this.element(
         "Type",
-        // the only type we can deduce is that ELAN is for annotation
-        f.type === "ELAN" ? "Annotation" : "Unspecified",
+        resourceType,
         false,
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
       );
