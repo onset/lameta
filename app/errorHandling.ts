@@ -29,10 +29,15 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
       }
         */
     });
+    setUserInfoForErrorReporting(
+      userSettingsSingleton.Email,
+      userSettingsSingleton.HowUsing
+    );
   }
 }
 export function setUserInfoForErrorReporting(email: string, howUsing: string) {
   Sentry.configureScope(scope => {
+    console.log("setUserInfoForErrorReporting");
     scope.setUser({ email });
     scope.setExtra("how_using", howUsing);
   });
