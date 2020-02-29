@@ -1,4 +1,12 @@
-laMeta is a reboot of SayMore (c# winforms) as a web app wrapped in electron, so that it can be used on Macs (and Windows, and Linux). The stack is Typescript, react, and mobx, ,built with webpack.
+laMeta (the Metadata Editor for Transparent Archiving) is a tool for Language Documentation. 
+
+# Mac & Windows Installers
+
+Download [Installers](https://github.com/onset/laMETA/releases)
+
+# For Developers
+
+Stack: Typescript, React, mobx, webpack, electron.
 
 ## Get Started
 
