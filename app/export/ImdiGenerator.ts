@@ -9,6 +9,7 @@ import * as Path from "path";
 import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
+import { GetFileFormatInfo } from "../model/file/FileTypeInfo";
 const titleCase = require("title-case");
 
 export default class ImdiGenerator {
@@ -478,40 +479,10 @@ export default class ImdiGenerator {
   }
 
   private isMediaFile(f: File): boolean {
-    const mediaFormats = [
-      ".mp3",
-      ".mp4",
-      ".mpeg",
-      ".wav",
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".svg",
-      ".tiff"
-    ];
-    return (
-      mediaFormats.indexOf(Path.extname(f.describedFilePath).toLowerCase()) > -1
-    );
+    const g = GetFileFormatInfo(f.describedFilePath);
+    return !!g?.isMediaType;
   }
 
-  private getImdiMediaFileType(saymoreType: string) {
-    // build in ones are audio, video, image, document, drawing,text
-    // this is an "open vocabulary", so we can have others
-    switch (saymoreType) {
-      case "Audio":
-        return "audio";
-      case "Video":
-        return "video";
-      case "ELAN":
-        return "elan"; // not in predefined list
-      case "Image":
-        return "image";
-      case "Text":
-        return "text";
-      default:
-        return "document";
-    }
-  }
   private pathRelativeToProjectRoot(path: string): string {
     // Intentionally not using the OS's path separator here, because it's going to XML
     // that could then be read on any OS. (That could be wrong, and we
@@ -527,7 +498,7 @@ export default class ImdiGenerator {
 
       this.element(
         "Type",
-        this.getImdiMediaFileType(f.type),
+        f.type.toLowerCase(),
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
@@ -580,15 +551,12 @@ export default class ImdiGenerator {
       this.group("MediaResourceLink", () => {});
 
       this.element("Date", "");
-      // handle types that our mime library doesn't know about:
-      const x = [["ELAN", "Annotation"]].find(pair => pair[0] === f.type);
-      let resourceType = x && x.length > 0 ? x[1] : "Unspecified";
+      const y = GetFileFormatInfo(f.describedFilePath);
+      let resourceType = y?.imdiType ?? "Unspecified";
       if (resourceType === "Unspecified") {
         const m = mime.getType(Path.extname(f.describedFilePath));
         if (m && ["application"].indexOf(m.split("/")[0]) > -1) {
           resourceType = "Document";
-        } else if (m && ["text"].indexOf(m.split("/")[0]) > -1) {
-          resourceType = "Text";
         }
       }
       this.element(

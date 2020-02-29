@@ -17,6 +17,7 @@ import knownFieldDefinitions, {
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
+import { GetFileFormatInfo } from "./FileTypeInfo";
 
 const titleCase = require("title-case");
 
@@ -297,21 +298,9 @@ export /*babel doesn't like this: abstract*/ class File {
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
-    const typePatterns = [
-      ["Session", /\.session$/i],
-      ["Person", /\.person$/i],
-      ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
-      ["Video", /\.((mp4))$/i],
-      ["ELAN", /\.((eaf))$/i],
-      ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i],
-      ["Text", /\.(txt)/i]
-    ];
-    const match = typePatterns.find(t => {
-      return !!this.describedFilePath.match(t[1]);
-    });
-    const typeName = match
-      ? (match[0] as string)
-      : Path.extname(this.describedFilePath);
+    const typeName =
+      GetFileFormatInfo(this.describedFilePath)?.type ??
+      Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }
 
