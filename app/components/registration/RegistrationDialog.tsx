@@ -7,6 +7,7 @@ import * as isEmail from "isemail";
 import userSettings from "../../UserSettings";
 import "./RegistrationDialog.scss";
 import { SMRadioGroup, SMRadio } from "../SMRadio";
+import { analyticsLocation } from "../../analytics";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -49,6 +50,7 @@ export default class RegistrationDialog extends React.Component<
       email: userSettings.Email,
       howUsing: userSettings.HowUsing
     });
+    analyticsLocation("Registration Dialog");
   }
 
   public render() {

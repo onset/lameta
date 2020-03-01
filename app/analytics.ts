@@ -21,7 +21,7 @@ export function initializeAnalytics() {
     });
   } else {
     analytics = new Analytics("UA-131224630-1", {
-      appName: "saymorex",
+      appName: "lameta",
       appVersion: require("package.json").version,
       language: currentUILanguage || "",
       clientId: userSettingsSingleton.ClientId
@@ -44,7 +44,9 @@ export function analyticsEvent(category: string, action: string) {
       ec: category,
       ea: action,
       // at the moment, I'm not clear where it is best to stick how-using
-      ci: userSettingsSingleton.HowUsing // put the "how using" into GA's Campaign ID
+      cn: userSettingsSingleton.HowUsing, // Campaign Name not clear to me what part of Campaign I should put this in
+      ci: userSettingsSingleton.HowUsing, // Campaign ID
+      ck: userSettingsSingleton.HowUsing // Campaign Keyword
     })
     //.then(() => console.log(`Sent event ${category}/${action}`))
     .catch(error => console.error(error));
