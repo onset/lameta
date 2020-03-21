@@ -872,7 +872,7 @@ export default class ImdiGenerator {
     }
     this.tail
       .a("Date", this.nowDate())
-      .a("Originator", "laMeta")
+      .a("Originator", "lameta")
       .a("FormatId", "IMDI 3.0");
     return this.tail;
   }

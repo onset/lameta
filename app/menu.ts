@@ -37,10 +37,10 @@ export default class SayLessMenu {
     // );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: i18n._(t`laMeta`),
+      label: i18n._(t`lameta`),
       submenu: [
         {
-          label: i18n._(t`About laMeta`),
+          label: i18n._(t`About lameta`),
           selector: "orderFrontStandardAboutPanel:"
         },
         {
@@ -54,7 +54,7 @@ export default class SayLessMenu {
           type: "separator"
         },
         {
-          label: i18n._(t`Hide laMeta`),
+          label: i18n._(t`Hide lameta`),
           accelerator: "Command+H",
           selector: "hide:"
         },
@@ -188,7 +188,7 @@ export default class SayLessMenu {
             {
               label: "Help translate",
               click: () => {
-                shell.openExternal("https://crowdin.com/project/laMeta");
+                shell.openExternal("https://crowdin.com/project/lameta");
               }
             }
           ]
@@ -281,7 +281,7 @@ export default class SayLessMenu {
           }
         },
         {
-          label: "laMeta " + require("./package.json").version,
+          label: "lameta " + require("./package.json").version,
           enabled: false
         }
       ]

@@ -74,13 +74,13 @@ export const ExportDialog: React.FunctionComponent<{
     }
   };
   const getPathForCsvSaving = () => {
-    const parent = Path.join(app.getPath("documents"), "laMeta", "CSV Export");
+    const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
     ensureDirSync(parent);
     return Path.join(
       parent,
       `${sanitize(
         props.projectHolder.project!.displayName
-      )} - laMeta CSV Export - ${moment(new Date()).format("YYYY-MM-DD")}.zip`
+      )} - lameta CSV Export - ${moment(new Date()).format("YYYY-MM-DD")}.zip`
     );
 
     // return `${Path.basename(
@@ -91,16 +91,20 @@ export const ExportDialog: React.FunctionComponent<{
   const getPathForIMDISaving = () => {
     const parent = Path.join(
       app.getPath("documents"),
-      "laMeta",
+      "lameta",
       "IMDI Packages"
     );
     ensureDirSync(parent);
+
+    // throw new Error(
+    //   "Test throw from getPathForIMDISaving " + Date.now().toLocaleString()
+    // );
 
     let folder = Path.join(
       parent,
       `${sanitize(
         props.projectHolder.project!.displayName
-      )} - laMeta ${exportFormat} Export - ${moment(new Date()).format(
+      )} - lameta ${exportFormat} Export - ${moment(new Date()).format(
         "YYYY-MM-DD"
       )}`
     );

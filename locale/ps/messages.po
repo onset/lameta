@@ -34,7 +34,7 @@ msgid "A zip file with an IMDI file for the project and each session."
 msgstr ""
 
 #: app/menu.ts:35
-msgid "About laMeta"
+msgid "About lameta"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:24
@@ -170,7 +170,7 @@ msgid "Create New Project with Sample Data"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:46
-msgid "Create New laMeta Project"
+msgid "Create New lameta Project"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:45
@@ -301,11 +301,11 @@ msgid "Hide Others"
 msgstr ""
 
 #: app/menu.ts:49
-msgid "Hide laMeta"
+msgid "Hide lameta"
 msgstr ""
 
 #: app/components/registration/RegistrationDialog.tsx:65
-msgid "How are you using laMeta?"
+msgid "How are you using lameta?"
 msgstr ""
 
 #: app/model/Project/Project.ts:221
@@ -512,7 +512,7 @@ msgid "Saving"
 msgstr ""
 
 #: app/menu.ts:32
-msgid "laMeta"
+msgid "lameta"
 msgstr ""
 
 #: app/containers/HomePage.tsx:192

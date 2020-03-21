@@ -173,8 +173,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     let title = this.projectHolder.project
       ? `${Path.basename(this.projectHolder.project.directory)}/ ${
           this.projectHolder.project.displayName
-        }  - laMeta`
-      : "laMeta";
+        }  - lameta`
+      : "lameta";
     title += " " + require("../package.json").version + " Beta";
 
     remote.getCurrentWindow().setTitle(title);
@@ -245,7 +245,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "laMeta" // we don't translate this
+      "lameta" // we don't translate this
     );
     sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
@@ -256,7 +256,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       properties: ["openFile"],
       filters: [
         {
-          name: i18n._(t`laMeta and SayMore Project Files`),
+          name: i18n._(t`lameta and SayMore Project Files`),
           extensions: ["sprj"]
         }
       ]

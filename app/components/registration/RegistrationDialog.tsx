@@ -88,7 +88,7 @@ export default class RegistrationDialog extends React.Component<
             </div>
             <div className="row">
               <label>
-                <Trans>How are you using laMeta?</Trans>
+                <Trans>How are you using lameta?</Trans>
               </label>
               <SMRadioGroup
                 id="howUsingRadioGroup"

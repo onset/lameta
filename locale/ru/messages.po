@@ -6,13 +6,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: crowdin.com\n"
 "Language: ru\n"
-"Project-Id-Version: laMeta\n"
+"Project-Id-Version: lameta\n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: 2019-01-05 21:04\n"
-"Last-Translator: laMeta <hattonjohn+laMeta@gmail.com>\n"
+"Last-Translator: lameta <hattonjohn+lameta@gmail.com>\n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
-"X-Crowdin-Project: laMeta\n"
+"X-Crowdin-Project: lameta\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: messages.po\n"
 
@@ -37,7 +37,7 @@ msgid "A zip file with an IMDI file for the project and each session."
 msgstr ""
 
 #: app/menu.ts:35
-msgid "About laMeta"
+msgid "About lameta"
 msgstr ""
 
 #: app/components/project/ProjectTab.tsx:24
@@ -173,7 +173,7 @@ msgid "Create New Project with Sample Data"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:46
-msgid "Create New laMeta Project"
+msgid "Create New lameta Project"
 msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:45
@@ -304,11 +304,11 @@ msgid "Hide Others"
 msgstr ""
 
 #: app/menu.ts:49
-msgid "Hide laMeta"
+msgid "Hide lameta"
 msgstr ""
 
 #: app/components/registration/RegistrationDialog.tsx:65
-msgid "How are you using laMeta?"
+msgid "How are you using lameta?"
 msgstr ""
 
 #: app/model/Project/Project.ts:221
@@ -515,7 +515,7 @@ msgid "Saving"
 msgstr ""
 
 #: app/menu.ts:32
-msgid "laMeta"
+msgid "lameta"
 msgstr ""
 
 #: app/containers/HomePage.tsx:192

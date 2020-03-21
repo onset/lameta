@@ -2,7 +2,7 @@
 // This expects to find an environment variable APPLEID, and a keychain entry "altoolpw" with a app-specific password you made for altool from appid.apple.com.
 
 // to test notarization by hand, do something like:
-// xcrun altool --verbose --notarize-app -f "laMeta-0.7.5-mac.zip" --primary-bundle-id "io.github.saymore.laMeta" -u "<your apple id>" -p "@keychain:altoolpw"
+// xcrun altool --verbose --notarize-app -f "lameta-0.7.5-mac.zip" --primary-bundle-id "io.github.saymore.lameta" -u "<your apple id>" -p "@keychain:altoolpw"
 
 const keychain = require("keychain");
 const { notarize } = require("electron-notarize");
@@ -30,7 +30,7 @@ exports.default = async function notarizing(context) {
   });
 
   const params = {
-    appBundleId: "io.github.onset.laMeta",
+    appBundleId: "io.github.onset.lameta",
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLEID,
     appleIdPassword: pass

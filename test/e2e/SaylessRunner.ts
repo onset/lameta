@@ -227,10 +227,10 @@ export default class SayLessRunner {
     // note: at the point that this is called, the app hasn't started,
     // so we can't use this.app.electron
     // TODO: will this work on mac?
-    const p = Path.join(os.homedir(), "documents", "laMeta", projectName);
+    const p = Path.join(os.homedir(), "documents", "lameta", projectName);
     // const p = Path.join(
     //   this.app.electron.remote.app.getPath("documents"),
-    //   "laMeta",
+    //   "lameta",
     //   projectName
     // );
     fs.removeSync(p);

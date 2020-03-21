@@ -1,4 +1,4 @@
-laMeta (the Metadata Editor for Transparent Archiving) is a tool for Language Documentation. 
+lameta (the Metadata Editor for Transparent Archiving) is a tool for Language Documentation.
 
 # Mac & Windows Installers
 
@@ -57,7 +57,7 @@ If you see something like `TypeError: beforeAll is not a function`, that is caus
 
 ### l10n
 
-When running laMeta, if you see this in the Chrome debug console:
+When running lameta, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 

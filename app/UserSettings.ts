@@ -27,7 +27,7 @@ export class UserSettings {
     this.store =
       process.env.NODE_ENV === "test"
         ? new FakeStore()
-        : new Store({ name: "laMeta-user-settings" });
+        : new Store({ name: "lameta-user-settings" });
 
     this.imdiMode = this.store.get("imdiMode") || false;
     this.howUsing = this.store.get("howUsing", "");

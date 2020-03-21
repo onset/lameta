@@ -76,8 +76,8 @@
   },
   "//This 'build' section is for electron-builder": "",
   "build": {
-    "productName": "laMeta",
-    "appId": "com.github.laMeta.laMeta",
+    "productName": "lameta",
+    "appId": "com.github.lameta.lameta",
     "asarUnpack": [
       "node_modules/ffprobe-static/*"
     ],

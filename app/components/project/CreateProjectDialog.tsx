@@ -36,7 +36,7 @@ export default class CreateProjectDialog extends React.Component<
   private getChosenPath(): string {
     return Path.join(
       app.getPath("documents"),
-      "laMeta",
+      "lameta",
       sanitize(this.state.projectName)
     );
   }
@@ -65,7 +65,7 @@ export default class CreateProjectDialog extends React.Component<
 
     const title = this.props.useSampleProject
       ? i18n._(t`Create Project Using Sample Data`)
-      : i18n._(t`Create New laMeta Project`);
+      : i18n._(t`Create New lameta Project`);
     return (
       <ReactModal
         ariaHideApp={false}
