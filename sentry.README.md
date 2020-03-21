@@ -1,3 +1,19 @@
+Currently using "@sentry/browser" instead of '@sentry/electron' because of bugs long ago, which could be fixed by now.
+
+Note that "onset" was taken as an org, so our actual org id is "onset-org"
+
+From Bash:
+export SENTRY_ORG=onset-org
+export SENTRY_PROJECT=lameta
+export SENTRY_AUTH_TOKEN= (you can use the release only one, but then you can't do `sentry-cli info`, `sentry-cli projects list`, etc)
+VERSION=0.8.5
+sentry-cli releases new -p lameta $VERSION
+sentry-cli releases set-commits $VERSION --commit "onset/lameta@<the commit tag>" --log-level=info
+sentry-cli releases files $VERSION upload-sourcemaps ./app/ --rewrite
+sentry-cli releases finalize $VERSION
+
+# older notes
+
 Problem: sentry-cli seems to read AUTH from sentry.properties (which is committed and thus low permissions), rather than the key I give it in
 `sentry-cli login`.
 

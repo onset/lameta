@@ -2,14 +2,20 @@
 // Switched to the Browser SDK
 
 import * as Sentry from "@sentry/browser";
-import { showReportDialog } from "@sentry/browser";
 import userSettingsSingleton from "./UserSettings";
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
-      dsn: "https://14749f18cf3c4d828e341593bc1b568e@sentry.io/1300542",
-      release: require("./package.json").version
+      dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@sentry.io/3369701",
+      release: `${require("./package.json").version}`,
+
+      beforeSend(event) {
+        try {
+          console.log("Sending " + JSON.stringify(event));
+        } catch (err) {}
+        return event;
+      }
       /* This works, but I have it turned off for now because we don't really have a support
             plan in place.
             
@@ -18,7 +24,7 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
         // Note that this only will work in the renderer process, it's a noop on the main process
             if (event.exception) {
           showReportDialog({
-            title: "We're sorry, laMeta had a problem.",
+            title: "We're sorry, lameta had a problem.",
             subtitle:
               "If you'd like to help us get rid of this bug, tell us what happened below.",
             subtitle2: "",
