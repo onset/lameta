@@ -1,5 +1,5 @@
 import { IChoice } from "./Field";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 
 export class FieldDefinition {
   public key: string;

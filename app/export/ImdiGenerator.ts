@@ -10,7 +10,9 @@ import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
 import { GetFileFormatInfo } from "../model/file/FileTypeInfo";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
+import { sentenceCase } from "sentence-case";
+import { capitalCase } from "capital-case";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -334,6 +336,8 @@ export default class ImdiGenerator {
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
 
+    //throw new Error("Test throw from imdi " + Date.now().toLocaleString());
+
     this.resourcesGroup(this.folderInFocus);
 
     this.exitGroup(); //Session
@@ -369,13 +373,16 @@ export default class ImdiGenerator {
         ) {
           let v = target.properties.getTextStringOrEmpty(key);
           if (v && v.length > 0) {
-            //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
-            if (["keyword", "topic", "status"].indexOf(key) > -1) {
-              v = titleCase(v);
+            //https://trello.com/c/GdRJamgi/83-export-of-topic-field
+            if (["topic", "status", "keyword"].indexOf(key) > -1) {
+              v = sentenceCase(
+                v,
+                /* don't strip anything */ { stripRegexp: /^[]/ }
+              );
             }
             this.tail = this.tail.element("Key", v);
             this.mostRecentElement = this.tail;
-            this.attributeLiteral("Name", titleCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+            this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
             this.tail = this.tail.up();
           }
         }

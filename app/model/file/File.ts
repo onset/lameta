@@ -19,7 +19,7 @@ import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
 import { GetFileFormatInfo } from "./FileTypeInfo";
 
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 
 export class Contribution {
   //review this @mobx.observable

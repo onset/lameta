@@ -5,7 +5,7 @@ import ReactSelectClass from "react-select";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
 import { Contribution } from "./model/file/File";
 import { translateRole } from "./localization";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 
 export interface IProps {
   contribution: Contribution;

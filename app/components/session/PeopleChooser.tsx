@@ -5,7 +5,7 @@ import { Folder } from "../../model/Folder";
 import { Contribution } from "../../model/file/File";
 import { Trans } from "@lingui/react";
 import { translateRole } from "../../localization";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 //import colors from "../../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 const saymore_orange = "#e69664";
 
@@ -15,9 +15,8 @@ export interface IProps {
   onShowContributorsTab: (contributions: Contribution) => void;
 }
 
-export const PeopleChooser: React.FunctionComponent<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> = props => {
+export const PeopleChooser: React.FunctionComponent<IProps &
+  React.HTMLAttributes<HTMLDivElement>> = props => {
   const [toggle, setToggle] = useState(false);
   const customStyles = {
     control: (styles, state) => ({

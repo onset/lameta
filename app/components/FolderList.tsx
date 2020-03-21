@@ -14,7 +14,7 @@ import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;

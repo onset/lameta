@@ -6,7 +6,7 @@ import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
 import { sanitize } from "../../../filenameSanitizer";
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
