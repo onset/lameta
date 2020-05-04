@@ -111,7 +111,7 @@ export default class ImdiGenerator {
   private addActorsOfSession() {
     this.startGroup("Actors");
     const session = this.folderInFocus as Session;
-    session.getAllContributionsToAllFiles().forEach(contribution => {
+    session.getAllContributionsToAllFiles().forEach((contribution) => {
       const trimmedName = contribution.personReference.trim();
       if (trimmedName.length === 0) {
         return;
@@ -199,7 +199,7 @@ export default class ImdiGenerator {
       this.group("Languages", () => {
         const languages = session.getContentLanguageCodes();
         if (languages.length > 0) {
-          languages.forEach(code => {
+          languages.forEach((code) => {
             const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
               code
             );
@@ -214,7 +214,7 @@ export default class ImdiGenerator {
         this.keysThatHaveBeenOutput.add("Session.languages");
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
-          workingLanguages.forEach(code => {
+          workingLanguages.forEach((code) => {
             const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
               code
             );
@@ -247,7 +247,7 @@ export default class ImdiGenerator {
     const parts = this.project.properties
       .getTextStringOrEmpty(key)
       .split(":")
-      .map(s => s.trim());
+      .map((s) => s.trim());
     if (parts.length === 2) {
       this.addSessionLanguage(parts[0], parts[1], description);
     }
@@ -321,6 +321,8 @@ export default class ImdiGenerator {
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   private session() {
     this.startXmlRoot("SESSION");
+    this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
+
     this.startGroup("Session");
     this.requiredField("Name", "id");
     this.requiredField("Title", "title");
@@ -355,10 +357,10 @@ export default class ImdiGenerator {
       "size",
       "contributions",
       "access",
-      "accessDescription" // output by addAccess()
+      "accessDescription", // output by addAccess()
     ];
     this.group("Keys", () => {
-      target.properties.keys().forEach(key => {
+      target.properties.keys().forEach((key) => {
         // only output things that don't have an explicit home in IMDI.
         // TODO: this is a good step, but it does output a large number of things that
         // we might not want to output. E.g. for  session: filename, size, modifiedDate, type("Session"), contributions
@@ -388,7 +390,7 @@ export default class ImdiGenerator {
         }
       });
       if (moreKeys) {
-        moreKeys.forEach(m => {
+        moreKeys.forEach((m) => {
           this.tail = this.tail.element("Key", m.text);
           this.mostRecentElement = this.tail;
           this.attributeLiteral("Name", m.name);
@@ -502,6 +504,7 @@ export default class ImdiGenerator {
         "ResourceLink",
         this.pathRelativeToProjectRoot(f.describedFilePath)
       );
+      this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
       this.element(
         "Type",
@@ -612,7 +615,7 @@ export default class ImdiGenerator {
       this.element("Publisher", "");
       this.element("Contact", "");
       const accessDef = this.project.authorityLists.accessChoices.find(
-        c => c.label === accessCode
+        (c) => c.label === accessCode
       );
       /* ELAR DOESN'T WANT THIS IN IMDI
       https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
@@ -878,9 +881,11 @@ export default class ImdiGenerator {
       this.tail.a("Version", "0");
     }
     this.tail
+      //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())
       .a("Originator", "lameta")
       .a("FormatId", "IMDI 3.0");
+    this.mostRecentElement = this.tail;
     return this.tail;
   }
   private makeString(): string {
@@ -894,6 +899,8 @@ export default class ImdiGenerator {
   // Sessions even though they are not related to actual sessions
   public makePseudoSessionImdiForOtherFolder(name: string, folder: Folder) {
     this.startXmlRoot("SESSION");
+    this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
+
     this.startGroup("Session");
     this.element("Name", name);
     this.element("Title", name);
