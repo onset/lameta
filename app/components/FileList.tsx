@@ -56,9 +56,9 @@ export default class FileList extends React.Component<IProps, IState> {
   private addFiles() {
     const options: any = { properties: ["openFile", "multiSelections"] };
 
-    remote.dialog.showOpenDialog(options, paths => {
+    remote.dialog.showOpenDialog(options, (paths) => {
       if (paths && paths.length > 0) {
-        this.props.folder.addFiles(paths.map(p => ({ path: p })));
+        this.props.folder.addFiles(paths.map((p) => ({ path: p })));
       }
     });
   }
@@ -72,7 +72,7 @@ export default class FileList extends React.Component<IProps, IState> {
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
-    const mobxDummy = this.props.folder.files.map(f =>
+    const mobxDummy = this.props.folder.files.map((f) =>
       f.getTextProperty("filename")
     );
     // tslint:disable-next-line:no-this-assignment
@@ -86,7 +86,7 @@ export default class FileList extends React.Component<IProps, IState> {
           const f: File = d;
           return f.getIconName();
         },
-        Cell: props => <img src={props.value} />
+        Cell: (props) => <img src={props.value} />,
       },
       {
         id: "name",
@@ -94,7 +94,7 @@ export default class FileList extends React.Component<IProps, IState> {
         accessor: (d: any) => {
           const f: File = d;
           return f.getTextProperty("filename");
-        }
+        },
       },
       {
         id: "type",
@@ -103,14 +103,14 @@ export default class FileList extends React.Component<IProps, IState> {
         accessor: (d: any) => {
           const f: File = d;
           return translateFileType(f.getTextProperty("type"));
-        }
+        },
       },
       {
         id: "modifiedDate",
         Header: i18n._(t`Modified`),
         accessor: (d: any) => {
           return d.properties.getValueOrThrow("modifiedDate").asISODateString();
-        }
+        },
       },
       {
         id: "size",
@@ -120,12 +120,12 @@ export default class FileList extends React.Component<IProps, IState> {
         accessor: (d: any) => {
           const f: File = d;
           return f.getTextProperty("size");
-        }
-      }
+        },
+      },
     ];
     const isSpecialSayMoreFile =
       this.props.folder.selectedFile === this.props.folder.metadataFile;
-
+    const filesPerPage = Math.min(300, this.props.folder.files.length);
     return (
       <Dropzone
         activeClassName={"drop-active"}
@@ -168,7 +168,7 @@ export default class FileList extends React.Component<IProps, IState> {
             <Trans>Rename...</Trans>
           </button>
           {this.props.extraButtons
-            ? this.props.extraButtons.map(c => (
+            ? this.props.extraButtons.map((c) => (
                 <button
                   key={(c as any).label}
                   disabled={!(c as any).enabled(this.props.folder.selectedFile)}
@@ -188,7 +188,9 @@ export default class FileList extends React.Component<IProps, IState> {
           //cause us to reset scroll to top when we change folders
           key={this.props.folder.directory}
           className="fileList"
-          showPagination={false}
+          showPagination={this.props.folder.files.length > filesPerPage}
+          pageSize={filesPerPage}
+          showPageSizeOptions={false}
           data={this.props.folder.files}
           columns={columns}
           onFetchData={() => scrollSelectedIntoView("fileList")}
@@ -227,7 +229,7 @@ export default class FileList extends React.Component<IProps, IState> {
               className:
                 rowInfo && rowInfo.original === this.props.folder.selectedFile
                   ? "selected"
-                  : ""
+                  : "",
             };
           }}
         />
@@ -256,7 +258,7 @@ export default class FileList extends React.Component<IProps, IState> {
             : i18n._(t`Show in File Explorer`),
         click: () => {
           showInExplorer(file.describedFilePath);
-        }
+        },
       },
       {
         label: i18n._(t`Open in program associated with this file type`),
@@ -264,14 +266,14 @@ export default class FileList extends React.Component<IProps, IState> {
           // the "file://" prefix is required on mac, works fine on windows
           electron.shell.openExternal("file://" + file.describedFilePath);
         },
-        visible: !isSpecialSayMoreFile || showDevOnlyItems
+        visible: !isSpecialSayMoreFile || showDevOnlyItems,
       },
       {
         label: i18n._(t`Rename...`),
         click: () => {
           RenameFileDialog.show(file, this.props.folder);
         },
-        visible: contextMenu && !isSpecialSayMoreFile
+        visible: contextMenu && !isSpecialSayMoreFile,
       },
       { type: "separator", visible: !contextMenu },
       {
@@ -280,22 +282,22 @@ export default class FileList extends React.Component<IProps, IState> {
         click: () => {
           this.props.folder.moveFileToTrash(file);
         },
-        visible: contextMenu
+        visible: contextMenu,
       },
       {
         type: "separator",
-        visible: contextMenu && showDevOnlyItems
+        visible: contextMenu && showDevOnlyItems,
       },
       {
         label: "Inspect element",
         click() {
           (mainWindow as any).inspectElement(x, y);
         },
-        visible: contextMenu && showDevOnlyItems
-      }
+        visible: contextMenu && showDevOnlyItems,
+      },
     ];
 
-    items = items.filter(item => item.visible !== false);
+    items = items.filter((item) => item.visible !== false);
 
     remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
   }
