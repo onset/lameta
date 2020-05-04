@@ -133,6 +133,7 @@ function getTabs(
             ? directoryObject
             : file
         }
+        folder={props.folder}
         project={props.project}
       />
     </TabPanel>
@@ -173,7 +174,7 @@ function getTabs(
         <Tabs
           key={tabsKey}
           selectedIndex={tabIndex}
-          onSelect={i => {
+          onSelect={(i) => {
             setTabIndex(i);
             // when we leave the Contributors tab, forget about any selected row
             if (i !== 1) {
@@ -211,16 +212,16 @@ function getTabs(
                 languageFinder={props.project.languageFinder}
                 //customFieldNames={props.customFieldNames}
                 fieldThatControlsFileNames={"id"}
-                fieldThatControlsFileNamesMightHaveChanged={key =>
+                fieldThatControlsFileNamesMightHaveChanged={(key) =>
                   (props.folder as Session).nameMightHaveChanged()
                 }
-                validateFieldThatControlsFileNames={value =>
+                validateFieldThatControlsFileNames={(value) =>
                   props.project.validateSessionId(
                     directoryObject as Session,
                     value
                   )
                 }
-                onShowContributorsTab={c => {
+                onShowContributorsTab={(c) => {
                   setSelectedContribution(c);
                   setTabIndex(1);
                 }}
@@ -261,13 +262,13 @@ function getTabs(
               } PersonForm`}
             >
               <PersonForm
-                validateFullName={value => {
+                validateFullName={(value) => {
                   return props.project.validatePersonFullName(
                     directoryObject as Person,
                     value
                   );
                 }}
-                validateCode={value => {
+                validateCode={(value) => {
                   return props.project.validatePersonCode(
                     directoryObject as Person,
                     value
@@ -319,7 +320,7 @@ function getTabs(
             <ReactPlayer
               url={path}
               controls
-              onError={e => {
+              onError={(e) => {
                 console.error("video error:" + e);
               }}
             />
@@ -389,7 +390,7 @@ function getTabs(
           <TabPanel className="unhandledFileType">
             <a
               href=""
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault(); // don't try to follow the link
                 // the "file://" prefix is required on mac, works fine on windows
                 electron.shell.openExternal("file://" + file.describedFilePath);

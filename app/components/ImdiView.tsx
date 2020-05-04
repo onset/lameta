@@ -9,7 +9,7 @@ import { File } from "../model/file/File";
 import "./ImdiView.scss";
 
 import SyntaxHighlighter, {
-  registerLanguage
+  registerLanguage,
 } from "react-syntax-highlighter/light";
 import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
@@ -26,6 +26,8 @@ export interface IProps {
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
   project: Project;
+
+  folder: Folder;
 }
 interface IState {
   manualRefresh: number;
@@ -65,7 +67,7 @@ export default class ImdiView extends React.Component<IProps, IState> {
       ) as string;
     } else if (this.props.target instanceof File) {
       const generator = new ImdiGenerator(
-        this.props.project,
+        this.props.folder,
         this.props.project
       );
       xml = generator.resourceFile(this.props.target as File) as string;
