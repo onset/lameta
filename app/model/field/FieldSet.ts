@@ -5,7 +5,7 @@ import {
   Field,
   FieldType,
   HasConsentField,
-  PersonDisplayNameField
+  PersonDisplayNameField,
 } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
@@ -37,14 +37,18 @@ export class FieldSet extends Dictionary<string, Field> {
     // In fields.json, all tags in SayMore Classic which are not camelCase have a "tagInSayMoreClassic".
 
     const match = this.values().find(
-      field => field.definition && field.definition.tagInSayMoreClassic === tag
+      (field) =>
+        field.definition && field.definition.tagInSayMoreClassic === tag
     );
     if (match) {
       return match.key;
     }
     return camelcase(tag);
   }
-
+  public checkForFieldDefinition(key: string): boolean {
+    const f = this.getValue(key) as Field;
+    return !!f;
+  }
   public getFieldDefinition(key: string): FieldDefinition {
     const f = this.getValueOrThrow(key) as Field;
     return f.definition;

@@ -617,21 +617,29 @@ export default class ImdiGenerator {
       const accessDef = this.project.authorityLists.accessChoices.find(
         (c) => c.label === accessCode
       );
-      /* ELAR DOESN'T WANT THIS IN IMDI
-      https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
-      if (accessDef && accessDef.description && accessDef.description.length > 0) {
+
+      if (
+        accessDef &&
+        accessDef.description &&
+        accessDef.description.length > 0
+      ) {
         const accessProtocol = this.project.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
+        /* ELAR DOESN'T WANT THIS IN IMDI
+        https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
         if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
           this.element("Description", "Access Protocol:" + accessProtocol);
           //this.attributeLiteral("ISO639-3", "eng");
         }
-        this.element("Description", accessDef.description);
+        this.element("Description", accessDef.description);*/
+
         this.optionalField("Description", "accessDescription");
         //this.attributeLiteral("ISO639-3", "eng");
-      }*/
-      this.optionalField("Description", "accessDescription");
+      } else {
+        //      https://trello.com/c/GcNAmcOb/107-imdi-category-for-accessdescription-missing-from-imdi-export
+        this.element("Description", "");
+      }
     });
     //}
   }
@@ -759,13 +767,7 @@ export default class ImdiGenerator {
       projectFallbackFieldName
     );
   }
-  private optionalFieldWithDefault(
-    elementName: string,
-    fieldName: string,
-    fallback: string
-  ) {
-    this.field(elementName, fieldName, false, fallback);
-  }
+
   private optionalField(
     elementName: string,
     fieldName: string,
