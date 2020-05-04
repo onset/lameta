@@ -258,6 +258,7 @@
     "butter-toast": "^3.3.3",
     "camelcase": "^5.0.0",
     "capital-case": "^1.0.3",
+    "change-case": "^4.1.1",
     "commonmark": "^0.28.1",
     "csv-parse": "^4.4.6",
     "electron-context-menu": "^0.9.1",

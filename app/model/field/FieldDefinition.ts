@@ -1,5 +1,5 @@
 import { IChoice } from "./Field";
-import { titleCase } from "title-case";
+import { capitalCase } from "capital-case";
 
 export class FieldDefinition {
   public key: string;
@@ -35,7 +35,7 @@ export class FieldDefinition {
       rawObject.additional === true || rawObject.additional === "true";
     /// if englishLabel wasn't specified, derive it from the key
     if (!!!this.englishLabel) {
-      this.englishLabel = titleCase(this.key);
+      this.englishLabel = capitalCase(this.key);
     }
   }
 }
