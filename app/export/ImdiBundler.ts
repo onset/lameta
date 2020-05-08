@@ -7,6 +7,7 @@ import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
 import { log } from "util";
 import { sentryBreadCrumb } from "../errorHandling";
+import { sanitizeForArchive } from "../filenameSanitizer";
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -87,7 +88,7 @@ export default class ImdiBundler {
       const imdi = ImdiGenerator.generateSession(session, project);
       const imdiFileName = `${session.filePrefix}.imdi`;
       fs.writeFileSync(
-        Path.join(rootDirectory, secondLevel, imdiFileName),
+        Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName)),
         imdi
       );
       childrenSubpaths.push(secondLevel + "/" + imdiFileName);
@@ -133,7 +134,7 @@ export default class ImdiBundler {
       );
 
       fs.writeFileSync(
-        Path.join(rootDirectory, secondLevel, imdiFileName),
+        Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName)),
         projectDocumentsImdi
       );
       subpaths.push(secondLevel + "/" + imdiFileName);
@@ -162,7 +163,10 @@ export default class ImdiBundler {
         try {
           fs.copyFileSync(
             f.describedFilePath,
-            Path.join(targetDirectory, Path.basename(f.describedFilePath))
+            Path.join(
+              targetDirectory,
+              sanitizeForArchive(Path.basename(f.describedFilePath))
+            )
           );
         } catch (error) {
           errors = errors + `Problem copying ${f.describedFilePath}+\r\n`;
