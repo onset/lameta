@@ -32,7 +32,7 @@ export default class MediaStats extends React.Component<IProps, IState> {
   public UNSAFE_componentWillMount() {
     this.updateStats(this.props.file)
       .then(() => this.setState({}))
-      .catch(error => {
+      .catch((error) => {
         this.setState({ error });
       });
   }
@@ -40,7 +40,7 @@ export default class MediaStats extends React.Component<IProps, IState> {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
     this.updateStats(nextProps.file)
       .then(() => this.setState({}))
-      .catch(error => {
+      .catch((error) => {
         this.setState({ error });
       });
   }
@@ -74,11 +74,11 @@ export default class MediaStats extends React.Component<IProps, IState> {
                 this.addStat(
                   i18n._(t`Length`),
                   humanizeDuration(1000 * result.format.duration, {
-                    round: true
+                    round: true,
                   })
                 );
                 this.addStat(i18n._(t`Format`), result.format.format_long_name);
-                result.streams.forEach(stream => {
+                result.streams.forEach((stream) => {
                   this.processStreamStats(stream);
                 });
                 resolve(result);
@@ -155,23 +155,21 @@ export default class MediaStats extends React.Component<IProps, IState> {
         id: "key",
         Header: "Stat",
         width: 120,
-        accessor: key => key
+        accessor: (key) => key,
       },
       {
         id: "value",
         Header: "Value",
         //width: 200,
-        accessor: key => this.stats.getValue(key)
-      }
+        accessor: (key) => this.stats.getValue(key),
+      },
     ];
 
     return (
       <>
         {this.state.error && (
           <div>
-            {`There was a problem inspecting ${
-              this.props.file.describedFilePath
-            }`}
+            {`There was a problem inspecting ${this.props.file.describedFilePath}`}
             <br /> {this.state.error.toString()}
           </div>
         )}

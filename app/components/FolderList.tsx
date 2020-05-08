@@ -43,7 +43,7 @@ export class FolderList extends React.Component<IProps> {
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
-    this.props.folders.map(folder => {
+    this.props.folders.map((folder) => {
       // Access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
       // when the user does something that causes a rename.
       const dummy = folder.displayName;
@@ -56,7 +56,7 @@ export class FolderList extends React.Component<IProps> {
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
       if (folder instanceof Person) {
-        folder.files.forEach(child => child.describedFilePath);
+        folder.files.forEach((child) => child.describedFilePath);
       }
       // The Session status also needs to be immediately updated in the table view.
       if (folder instanceof Session) {
@@ -70,9 +70,9 @@ export class FolderList extends React.Component<IProps> {
           <input
             title={i18n._(t`Mark for Export`)}
             type="checkbox"
-            onChange={e => {
+            onChange={(e) => {
               e.stopPropagation(); // don't select the folder of row
-              this.props.folders.forEach(f => {
+              this.props.folders.forEach((f) => {
                 f.checked = e.target.checked;
               });
             }}
@@ -100,7 +100,7 @@ export class FolderList extends React.Component<IProps> {
                 type="checkbox"
                 title={i18n._(t`Mark for Export`)}
                 checked={f.checked}
-                onChange={e => {
+                onChange={(e) => {
                   e.stopPropagation(); // don't select the folder of row
                   //(field as SelectionField).toggle();
                   f.checked = !f.checked;
@@ -147,7 +147,7 @@ export class FolderList extends React.Component<IProps> {
             return field.text;
           }
           return "ERROR";
-        }
+        },
       };
       return c;
     });
@@ -184,7 +184,7 @@ export class FolderList extends React.Component<IProps> {
               className:
                 rowInfo && rowInfo.index === this.props.selectedFolder.index
                   ? "selected"
-                  : ""
+                  : "",
             };
           }}
         />

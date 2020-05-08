@@ -27,7 +27,7 @@ export { staticShowExportDialog as ShowExportDialog };
 
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
-}> = props => {
+}> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   staticShowExportDialog = () => setIsOpen(true);
   const [exportFormat, setExportFormat] = useState("csv");
@@ -55,12 +55,12 @@ export const ExportDialog: React.FunctionComponent<{
               ? [
                   {
                     extensions: ["zip"],
-                    name: i18n._(t`ZIP Archive`)
-                  }
+                    name: i18n._(t`ZIP Archive`),
+                  },
                 ]
-              : []
+              : [],
         })
-        .then(result => {
+        .then((result) => {
           try {
             saveFiles(result.filePath!);
           } catch (err) {
@@ -185,7 +185,7 @@ export const ExportDialog: React.FunctionComponent<{
                 name="format"
                 value="csv"
                 checked={exportFormat === "csv"}
-                onChange={e => setExportFormat(e.target.value)}
+                onChange={(e) => setExportFormat(e.target.value)}
               />
               <Trans>Zip of CSVs</Trans>
             </label>
@@ -218,7 +218,7 @@ export const ExportDialog: React.FunctionComponent<{
                 name="format"
                 value="imdi"
                 checked={exportFormat === "imdi"}
-                onChange={e => setExportFormat(e.target.value)}
+                onChange={(e) => setExportFormat(e.target.value)}
               />
               IMDI Only
             </label>
@@ -233,7 +233,7 @@ export const ExportDialog: React.FunctionComponent<{
                 name="format"
                 value="imdi-plus-files"
                 checked={exportFormat === "imdi-plus-files"}
-                onChange={e => setExportFormat(e.target.value)}
+                onChange={(e) => setExportFormat(e.target.value)}
               />
               IMDI + Files
             </label>
@@ -251,7 +251,7 @@ export const ExportDialog: React.FunctionComponent<{
             <select
               name={"Which sessions to export"}
               value={whichSessionsOption}
-              onChange={event => {
+              onChange={(event) => {
                 setWhichSessionsOption(event.target.value);
               }}
             >

@@ -16,10 +16,10 @@ exports.default = async function notarizing(context) {
 
   //return; // DON'T notarize
 
-  const pass = await new Promise(function(resolve, reject) {
+  const pass = await new Promise(function (resolve, reject) {
     keychain.getPassword(
       { account: process.env.APPLEID, service: "altoolpw" },
-      function(err, password) {
+      function (err, password) {
         if (err) {
           console.log("err=" + err);
           return reject(err);
@@ -33,7 +33,7 @@ exports.default = async function notarizing(context) {
     appBundleId: "io.github.onset.lameta",
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLEID,
-    appleIdPassword: pass
+    appleIdPassword: pass,
   };
   console.log(`calling notarize(${JSON.stringify(params)})`);
   console.log(

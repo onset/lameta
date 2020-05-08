@@ -3,7 +3,7 @@ import Tooltip from "react-tooltip-lite";
 // @ts-ignore
 import infoIcon from "info.png";
 // just a little 🛈 with a tooltip of whatever children you give it
-export const InfoAffordance: React.FunctionComponent<{}> = props => {
+export const InfoAffordance: React.FunctionComponent<{}> = (props) => {
   return (
     <Tooltip
       styles={{ display: "inline" }}

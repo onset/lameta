@@ -55,7 +55,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       <PersonChooser
         getPeopleNames={this.props.authorityLists.getPeopleNames}
         name={contribution.personReference}
-        onChange={name => {
+        onChange={(name) => {
           contribution.personReference = name;
           this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
@@ -69,7 +69,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     const key: keyof Contribution = cellInfo.column.id;
     return (
       <textarea
-        onChange={e => {
+        onChange={(e) => {
           this.props.file.contributions[cellInfo.index][key] = e.target.value;
           this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
         }}
@@ -111,12 +111,12 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       {
         Header: i18n._(t`Name`),
         accessor: "name",
-        Cell: (cellInfo: any) => this.renderPerson(cellInfo)
+        Cell: (cellInfo: any) => this.renderPerson(cellInfo),
       },
       {
         Header: i18n._(t`Role`),
         accessor: "role",
-        Cell: (cellInfo: any) => this.renderRole(cellInfo)
+        Cell: (cellInfo: any) => this.renderRole(cellInfo),
       },
       /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
@@ -127,14 +127,14 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       {
         Header: i18n._(t`Comments`),
         accessor: "comments",
-        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
       },
       {
         //Header: i18n._(t`Comments`),
         maxWidth: 40,
         accessor: "delete",
-        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)
-      }
+        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo),
+      },
     ];
 
     return (

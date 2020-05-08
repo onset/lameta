@@ -83,7 +83,7 @@ export default class CreateProjectDialog extends React.Component<
           <input
             id="projectNameInput"
             autoFocus
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ projectName: event.target.value })
             }
           />

@@ -3,7 +3,7 @@
 // 2. yarn test (jest test running environment)
 // 3. yarn lingui-extract
 
-module.exports = function(api) {
+module.exports = function (api) {
   if (api) api.cache(true);
   return {
     presets: [
@@ -16,16 +16,16 @@ module.exports = function(api) {
         {
           targets: {
             // else we get regeneratorRuntime is not defined
-            browsers: ["chrome 76"] // should be set to match whatever chromium electron is using
-          }
-        }
-      ]
+            browsers: ["chrome 76"], // should be set to match whatever chromium electron is using
+          },
+        },
+      ],
     ],
     plugins: [
       "babel-plugin-macros",
       "@babel/plugin-transform-modules-commonjs", //https://github.com/facebook/jest/issues/6913#issuecomment-421618932
       ["@babel/plugin-proposal-decorators", { legacy: true }],
-      ["@babel/plugin-proposal-class-properties", { loose: true }]
-    ]
+      ["@babel/plugin-proposal-class-properties", { loose: true }],
+    ],
   };
 };

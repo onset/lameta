@@ -36,15 +36,15 @@ export default class CustomFieldsTable extends React.Component<IProps> {
   private computeRows(file: File) {
     const customFieldsInThisFileAlready = file.properties
       .values()
-      .filter(f => (f.definition ? f.definition.isCustom : false));
+      .filter((f) => (f.definition ? f.definition.isCustom : false));
 
     let didAddOneOrMoreFields = false;
     //figure out what custom fields are out there on other files of this
     // type that we should make place for
     file.customFieldNamesRegistry
       .getKeysForFileType(file.type)
-      .filter(n => !customFieldsInThisFileAlready.some(f => f.key === n))
-      .forEach(n => {
+      .filter((n) => !customFieldsInThisFileAlready.some((f) => f.key === n))
+      .forEach((n) => {
         didAddOneOrMoreFields = true;
         //actually add this field to the file, empty for now. When saving,
         // empty ones are not going to be saved to disk anyhow.
@@ -68,7 +68,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
 
     this.fieldsForRows = file.properties
       .values()
-      .filter(f => (f.definition ? f.definition.isCustom : false))
+      .filter((f) => (f.definition ? f.definition.isCustom : false))
       .sort((a, b) =>
         a.definition.englishLabel.localeCompare(b.definition.englishLabel)
       ); // enhance: really we don't care about your locale, we care aobut the language of the label
@@ -129,7 +129,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       type: "Text",
       tabIndex: 0,
       isCustom: true,
-      showOnAutoForm: false // we do show it, but in the custom table
+      showOnAutoForm: false, // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -142,7 +142,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       type: "Text",
       tabIndex: 0,
       isCustom: true,
-      showOnAutoForm: false // we do show it, but in the custom table
+      showOnAutoForm: false, // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -169,7 +169,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
               }}
             />
           );
-        }
+        },
       },
       {
         id: "value",
@@ -190,14 +190,14 @@ export default class CustomFieldsTable extends React.Component<IProps> {
               autoFocus={this.focusField === field}
             />
           );
-        }
-      }
+        },
+      },
     ];
     const def: FieldDefinition = new FieldDefinition({
       key: "Custom Fields",
       markAsNotImdi: true,
       specialInfo:
-        "To remove a custom field, clear out the value everywhere you have used it, then restart lameta"
+        "To remove a custom field, clear out the value everywhere you have used it, then restart lameta",
     });
 
     return (

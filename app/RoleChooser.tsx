@@ -21,17 +21,17 @@ export default class RoleChooser extends React.Component<IProps> {
   public render() {
     const choices = this.props.choices ? this.props.choices : [];
 
-    const options = choices.map(c => {
+    const options = choices.map((c) => {
       const label = translateRole(c.label);
       return new Object({
         value: c.id,
         label,
-        title: c.description
+        title: c.description,
       });
     });
     const currentValueWrappedForSelect = {
       value: this.props.contribution.role,
-      label: titleCase(translateRole(this.props.contribution.role))
+      label: titleCase(translateRole(this.props.contribution.role)),
     };
     return (
       <ReactSelectClass

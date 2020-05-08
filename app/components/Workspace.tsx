@@ -42,10 +42,10 @@ export default class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.selectedSession, change => {
+    mobx.observe(this.props.project.selectedSession, (change) => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.selectedPerson, change => {
+    mobx.observe(this.props.project.selectedPerson, (change) => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
   }
@@ -66,7 +66,7 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addSession();
             }
-          }
+          },
         },
         { type: "separator" },
         {
@@ -76,9 +76,9 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     enable = currentTabIndex === 2;
     const peopleMenu = {
@@ -91,7 +91,7 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addPerson();
             }
-          }
+          },
         },
         { type: "separator" },
         {
@@ -101,9 +101,9 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentPerson();
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
   }

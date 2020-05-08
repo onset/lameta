@@ -6,7 +6,7 @@ import { File } from "../../model/file/File";
 import {
   ComponentTab,
   FolderListButtons,
-  FileListButtons
+  FileListButtons,
 } from "../componentTab/ComponentTab";
 import "./PeopleTab.scss";
 import { Trans } from "@lingui/react";
@@ -22,7 +22,7 @@ export class PeopleTab extends React.Component<IProps> {
   public render() {
     const folderListButtons = new Array<JSX.Element>();
     folderListButtons.push(
-      <button key="newPerson" onClick={e => this.props.project.addPerson()}>
+      <button key="newPerson" onClick={(e) => this.props.project.addPerson()}>
         <Trans>New Person</Trans>
       </button>
     );
@@ -30,10 +30,10 @@ export class PeopleTab extends React.Component<IProps> {
       {
         label: i18n._(t`Rename for Consent`),
         enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
-        onClick: f => {
+        onClick: (f) => {
           (f as File).renameForConsent();
-        }
-      }
+        },
+      },
     ];
 
     return (

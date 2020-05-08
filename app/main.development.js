@@ -55,7 +55,9 @@ const installExtensions = () => {
     const extensions = ["REACT_DEVELOPER_TOOLS"];
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
     return Promise.all(
-      extensions.map(name => installer.default(installer[name], forceDownload))
+      extensions.map((name) =>
+        installer.default(installer[name], forceDownload)
+      )
     );
   }
 
@@ -83,14 +85,14 @@ app.on("ready", () =>
     installExtensions().then(() => {
       mainWindow = new BrowserWindow({
         webPreferences: {
-          nodeIntegration: true
+          nodeIntegration: true,
         },
         show: false,
         width: 1024,
         height: 728,
         plugins: true, // to enable the pdf-viewer built in to electron
         //windows
-        icon: path.join(__dirname, "../artwork/windows.ico")
+        icon: path.join(__dirname, "../artwork/windows.ico"),
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this

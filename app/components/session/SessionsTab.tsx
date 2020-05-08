@@ -19,7 +19,7 @@ export class SessionsTab extends React.Component<IProps> {
       <button
         id="newSession"
         key="newSession"
-        onClick={e => this.props.project.addSession()}
+        onClick={(e) => this.props.project.addSession()}
       >
         <Trans>New Session</Trans>
       </button>

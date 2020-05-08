@@ -47,9 +47,7 @@ export class AccessProtocolForm extends React.Component<IProps> {
           </p>
           <TextFieldEdit field={this.props.customChoicesField} />
         </div>
-      ) : (
-        undefined
-      );
+      ) : undefined;
 
     return (
       <div className={"field access-protocol"}>
@@ -58,14 +56,16 @@ export class AccessProtocolForm extends React.Component<IProps> {
           <select
             name={this.props.protocolField.labelInUILanguage} //what does this do? Maybe accessibility?
             value={this.props.protocolField.text}
-            onChange={event => {
+            onChange={(event) => {
               this.props.protocolField.text = event.currentTarget.value;
             }}
           >
-            {//NB: an error about keys here means that the choices were not unique
-            this.props.authorityLists.accessProtocolChoices.map(s => (
-              <option key={s.protocol}>{s.protocol}</option>
-            ))}
+            {
+              //NB: an error about keys here means that the choices were not unique
+              this.props.authorityLists.accessProtocolChoices.map((s) => (
+                <option key={s.protocol}>{s.protocol}</option>
+              ))
+            }
             <option key={"Custom"} value="custom">
               {"Custom"}
             </option>

@@ -12,14 +12,14 @@ export const FieldOpenChoiceChooser = observer<{
   className?: string;
   tabIndex?: number;
   translateChoice: (english: string) => string;
-}>(props => {
+}>((props) => {
   const label = props.field.labelInUILanguage;
   const choices = props.field.definition.complexChoices
     ? props.field.definition.complexChoices
     : [];
 
   const options = choices
-    .map(c => {
+    .map((c) => {
       let tip = c.definition;
       if (c.examples && c.examples.length > 0) {
         tip += "\nExamples: " + c.examples;
@@ -27,7 +27,7 @@ export const FieldOpenChoiceChooser = observer<{
       return new Object({
         value: c.id,
         label: props.translateChoice(c.label),
-        title: tip
+        title: tip,
       });
     })
     .sort((a: any, b: any) => (a.label as string).localeCompare(b.label));
@@ -41,7 +41,7 @@ export const FieldOpenChoiceChooser = observer<{
       ? matchingOption
       : {
           value: props.field.text,
-          label: props.field.text
+          label: props.field.text,
         };
   }
   return (
@@ -64,35 +64,35 @@ export const FieldOpenChoiceChooser = observer<{
             boxShadow: state.isFocused
               ? "0 0 0 1px " + saymore_orange
               : "unset",
-            "&:hover": { borderColor: saymore_orange }
+            "&:hover": { borderColor: saymore_orange },
           }),
-          menu: provided => ({
+          menu: (provided) => ({
             ...provided,
             marginTop: "0",
-            marginBottom: "0"
+            marginBottom: "0",
           }),
-          container: provided => ({
+          container: (provided) => ({
             ...provided,
-            marginTop: "2px"
+            marginTop: "2px",
           }),
-          valueContainer: provided => ({
+          valueContainer: (provided) => ({
             ...provided,
             paddingLeft: "2px",
-            paddingTop: "0"
+            paddingTop: "0",
           }),
-          input: provided => ({
+          input: (provided) => ({
             ...provided,
-            height: "20px"
+            height: "20px",
           }),
-          indicatorsContainer: provided => ({
-            ...provided,
-            height: "26px"
-          }),
-          dropdownIndicator: provided => ({
+          indicatorsContainer: (provided) => ({
             ...provided,
             height: "26px",
-            padding: "1px"
-          })
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            height: "26px",
+            padding: "1px",
+          }),
         }}
         onChange={(s: any) => {
           props.field.text = (s && s.value ? s.value : "") as string;
@@ -104,7 +104,7 @@ export const FieldOpenChoiceChooser = observer<{
   );
 });
 
-const CustomOption = optionProps => {
+const CustomOption = (optionProps) => {
   const {
     cx,
     data,
@@ -114,7 +114,7 @@ const CustomOption = optionProps => {
     isSelected,
     innerRef,
     innerProps,
-    getStyles
+    getStyles,
   } = optionProps;
   return (
     <Tooltip
@@ -130,14 +130,14 @@ const CustomOption = optionProps => {
           ...getStyles("option", optionProps),
           backgroundColor: optionProps.isFocused ? saymore_orange : "white",
           fontWeight: optionProps.isSelected ? "bold" : "normal",
-          color: "black"
+          color: "black",
         }}
         className={cx(
           {
             option: true,
             "option--is-disabled": isDisabled,
             "option--is-focused": isFocused,
-            "option--is-selected": isSelected
+            "option--is-selected": isSelected,
           },
           className
         )}

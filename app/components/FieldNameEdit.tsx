@@ -50,7 +50,7 @@ export default class FieldNameEdit extends React.Component<
         className={classname}
         name={this.props.field.key} //what does this do? Maybe accessibility?
         value={this.props.field.definition.englishLabel}
-        onChange={event => this.onChange(event, this.props.field)}
+        onChange={(event) => this.onChange(event, this.props.field)}
         onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
           const newLabel = this.processLabel(event.currentTarget.value);
           if (!this.isValidXmlName(newLabel)) {

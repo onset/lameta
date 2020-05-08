@@ -14,14 +14,14 @@ interface IConfig {
 let staticShowAlertDialog: (config: IConfig) => void = () => {};
 export { staticShowAlertDialog as ShowAlertDialog };
 
-export const AlertDialog: React.FunctionComponent<{}> = props => {
+export const AlertDialog: React.FunctionComponent<{}> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [config, setConfig] = React.useState<IConfig>({
     title: "",
     text: "",
-    buttonText: ""
+    buttonText: "",
   });
-  staticShowAlertDialog = c => {
+  staticShowAlertDialog = (c) => {
     setConfig(c);
     setIsOpen(true);
   };

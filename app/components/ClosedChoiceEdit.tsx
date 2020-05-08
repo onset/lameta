@@ -40,16 +40,18 @@ export default class ClosedChoiceEdit extends React.Component<
           tabIndex={this.props.tabIndex}
           name={this.props.field.definition.englishLabel} //what does name do? Maybe accessibility?
           value={v}
-          onChange={event => {
+          onChange={(event) => {
             ClosedChoiceEdit.onChange(event, this.props.field);
           }}
         >
-          {//NB: an error about keys here means that the choices were not unique
-          this.props.field.choices.map(s => (
-            <option key={s} value={s}>
-              {s === "unspecified" ? "" : translateChoice(s)}
-            </option>
-          ))}
+          {
+            //NB: an error about keys here means that the choices were not unique
+            this.props.field.choices.map((s) => (
+              <option key={s} value={s}>
+                {s === "unspecified" ? "" : translateChoice(s)}
+              </option>
+            ))
+          }
         </select>
       </div>
     );

@@ -16,7 +16,7 @@ export function ShowSavingNotifier(filename: string) {
   }
 }
 // This is in the upper right corner of the screen.
-export const SaveNotifier: React.FunctionComponent<{}> = props => {
+export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
   const [showSaving, setShowSaving] = useState(false);
   const [filename, setFilename] = useState("");
   staticSetShowSaving = setShowSaving;

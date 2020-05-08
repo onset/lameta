@@ -66,8 +66,8 @@ export default class TextFieldEdit extends React.Component<
           className={classname} // + " " + this.state.validationClass}
           name={this.props.field.definition.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
-          onChange={event => this.onChange(event, this.props.field)}
-          onKeyDown={event => {
+          onChange={(event) => this.onChange(event, this.props.field)}
+          onKeyDown={(event) => {
             if (
               !this.props.field.definition.multipleLines &&
               event.keyCode === 13

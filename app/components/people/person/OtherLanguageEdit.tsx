@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Person,
-  maxOtherLanguages
+  maxOtherLanguages,
 } from "../../../model/Project/Person/Person";
 import { LanguageEdit } from "./LanguageEdit";
 import { Trans } from "@lingui/react";
@@ -10,7 +10,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 export const OtherLanguageEdit: React.FunctionComponent<{
   person: Person;
   languageFinder: LanguageFinder;
-}> = props => {
+}> = (props) => {
   // we use `iteration` just to cause this to update when you click "Add Language"
   const [iteration, setIteration] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
@@ -28,7 +28,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
         );
         return lang.length > 0 ? lang : null;
       })
-      .filter(l => l != null) as string[];
+      .filter((l) => l != null) as string[];
 
     //collapse away any empty lines
     for (let i = 0; i < maxOtherLanguages; i++) {
@@ -64,7 +64,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
     <>
       {langElements}
       {showAdd ? (
-        <a onClick={x => setIteration(iteration + 1)}>
+        <a onClick={(x) => setIteration(iteration + 1)}>
           <Trans>Add Language</Trans>
         </a>
       ) : null}

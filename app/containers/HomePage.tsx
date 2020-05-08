@@ -23,7 +23,7 @@ import { analyticsEvent } from "../analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
   AlertDialog,
-  ShowAlertDialog
+  ShowAlertDialog,
 } from "../components/AlertDialog/AlertDialog";
 import { sentryBreadCrumb } from "../errorHandling";
 
@@ -50,7 +50,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,
-      useSampleProject: false //enhance: this is a really ugly way to control this behavior
+      useSampleProject: false, //enhance: this is a really ugly way to control this behavior
     };
 
     let previousDirectory = userSettings.PreviousProjectDirectory;
@@ -102,7 +102,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       ShowAlertDialog({
         title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
         text: "",
-        buttonText: "I understand"
+        buttonText: "I understand",
       });
     }
 
@@ -110,7 +110,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       RegistrationDialog.show();
     }
     // Save when we're quitting. Review: does this cover shutdown?
-    window.addEventListener("beforeunload", e => {
+    window.addEventListener("beforeunload", (e) => {
       if (this.projectHolder.project) {
         this.projectHolder.project.saveAllFilesInFolder();
       }
@@ -122,7 +122,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     window.setTimeout(() => {
       try {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow()!.on("blur", e => {
+        remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
           if (this.projectHolder.project) {
             this.projectHolder.project.saveAllFilesInFolder();
           }
@@ -144,7 +144,7 @@ export default class HomePage extends React.Component<IProps, IState> {
 
       if (useSampleProject) {
         const sampleSourceDir = locate("sample data/Edolo sample");
-        ncp.ncp(sampleSourceDir, directory, err => {
+        ncp.ncp(sampleSourceDir, directory, (err) => {
           console.log("ncp err=" + err);
           const projectName = Path.basename(directory);
           fs.renameSync(
@@ -257,19 +257,23 @@ export default class HomePage extends React.Component<IProps, IState> {
       filters: [
         {
           name: i18n._(t`lameta and SayMore Project Files`),
-          extensions: ["sprj"]
-        }
-      ]
+          extensions: ["sprj"],
+        },
+      ],
     };
-    remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
-      sentryBreadCrumb("processing callback of open project dialog");
-      if (paths && paths.length > 0 && paths[0].length > 0) {
-        const directory = Path.dirname(paths[0]);
-        this.projectHolder.setProject(
-          Project.fromDirectory(fs.realpathSync(directory))
-        );
-        userSettings.PreviousProjectDirectory = directory;
+    remote.dialog.showOpenDialog(
+      remote.getCurrentWindow(),
+      options,
+      (paths) => {
+        sentryBreadCrumb("processing callback of open project dialog");
+        if (paths && paths.length > 0 && paths[0].length > 0) {
+          const directory = Path.dirname(paths[0]);
+          this.projectHolder.setProject(
+            Project.fromDirectory(fs.realpathSync(directory))
+          );
+          userSettings.PreviousProjectDirectory = directory;
+        }
       }
-    });
+    );
   }
 }

@@ -29,7 +29,7 @@ export default class ParentButton extends React.Component<
         type="button"
         style={{
           visibility:
-            this.props.childLanguage.text.length === 0 ? "hidden" : "visible"
+            this.props.childLanguage.text.length === 0 ? "hidden" : "visible",
         }}
         className={"state " + (matching ? " on" : "")}
         title={i18n._(

@@ -19,10 +19,10 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-export const LanguageEdit: React.FunctionComponent<IProps> = props => {
+export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
-  const updateValidationClass = lang => {
+  const updateValidationClass = (lang) => {
     if (
       lang.trim() === "" ||
       props.languageFinder.findOne639_3CodeFromName(lang, "und") !== "und"

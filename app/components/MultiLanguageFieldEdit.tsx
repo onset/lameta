@@ -14,8 +14,9 @@ export interface IProps {
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
-  React.HTMLAttributes<HTMLDivElement>> = props => {
+export const MultiLanguageFieldEdit: React.FunctionComponent<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> = (props) => {
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
@@ -25,11 +26,11 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange }
+      "&:hover": { borderColor: saymore_orange },
     }),
-    valueContainer: styles => ({ ...styles }),
-    container: styles => ({
-      ...styles
+    valueContainer: (styles) => ({ ...styles }),
+    container: (styles) => ({
+      ...styles,
     }),
     //    clearIndicator:styles => ({ ...styles }),
     multiValue: (styles, { data }) => {
@@ -41,19 +42,19 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
         color: "transparent", // hide the "x" unless the mouse is in us
         div: {
           paddingLeft: 0,
-          fontSize: "13px" //should match $default-font-size: 13px;
+          fontSize: "13px", //should match $default-font-size: 13px;
         },
         // don't show the language code unless we're pointing at it, it's just visual noise
         span: {
-          color: "transparent"
+          color: "transparent",
         },
         ":hover": {
           color: "lightgray", // show the "x"
           //border: "solid 2px #cff09f",
           span: {
-            color: "lightgray" //go ahead and show it
-          }
-        }
+            color: "lightgray", //go ahead and show it
+          },
+        },
       };
     },
     multiValueRemove: (styles, { data }) => ({
@@ -63,9 +64,9 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
       paddingLeft: "4px !important",
       ":hover": {
         backgroundColor: saymore_orange,
-        color: "white"
-      }
-    })
+        color: "white",
+      },
+    }),
   };
 
   const [languageCodeString, setLanguageCodeString] = useState(
@@ -74,11 +75,11 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
 
   const currentValueArray = languageCodeString
     .split(";")
-    .filter(c => c.length > 0)
-    .map(c => c.trim())
-    .map(code => ({
+    .filter((c) => c.length > 0)
+    .map((c) => c.trim())
+    .map((code) => ({
       value: code,
-      label: getName(props.languageFinder, code)
+      label: getName(props.languageFinder, code),
     }));
 
   const loadMatchingOptions = (inputValue, callback) => {
@@ -91,7 +92,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
         (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
           value: m.languageInfo.iso639_3,
           label: m.nameMatchingWhatTheyTyped,
-          language: m.languageInfo
+          language: m.languageInfo,
         })
       )
     );
@@ -105,7 +106,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
         name={props.field.labelInUILanguage}
         components={{
           MultiValueLabel: CustomLanguagePill,
-          Option: CustomOption
+          Option: CustomOption,
         }}
         className="select"
         placeholder=""
@@ -116,7 +117,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
         onChange={(v: any[]) => {
           // if you delete the last member, you get null instead of []
           const newChoices = v ? v : [];
-          const s: string = newChoices.map(o => o.value).join(";");
+          const s: string = newChoices.map((o) => o.value).join(";");
           // NB: haven't worked out how to use mbox with functional components yet, so we
           // set the value
           props.field.setValueFromString(s);
@@ -130,7 +131,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<IProps &
 };
 
 // how to render the choice in the drop
-const CustomOption = props => {
+const CustomOption = (props) => {
   return (
     <div
       {...props.innerProps}
@@ -138,7 +139,7 @@ const CustomOption = props => {
         paddingLeft: "5px",
         backgroundColor: props.isFocused
           ? /*"#cff09f"*/ saymore_orange
-          : "white"
+          : "white",
       }}
     >
       <div>

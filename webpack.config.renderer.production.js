@@ -20,11 +20,11 @@ const port = process.env.PORT || 3000;
 class MonitorWatch {
   apply(compiler) {
     // listen to the "watchRun" event
-    compiler.plugin("watchRun", compiler => {
+    compiler.plugin("watchRun", (compiler) => {
       //from https://stackoverflow.com/questions/43140501/can-webpack-report-which-file-triggered-a-compilation-in-watch-mode
       const changedTimes = compiler.watchFileSystem.watcher.mtimes;
       const files = Object.keys(changedTimes)
-        .map(file => `\n  ${file}`)
+        .map((file) => `\n  ${file}`)
         .join("");
       if (files.length) {
         console.log("^^^^ Files changed:", files);
@@ -46,7 +46,7 @@ module.exports = speedMeasurePlugin.wrap(
       path: path.join(__dirname, "app/dist"),
       // this is what we get when running "yarn dev": publicPath: `http://localhost:${port}/dist/` // this is "as the browser will get it"
       // this is what we get when running "yarn start":
-      publicPath: "file:///**/renderer-bundle.js"
+      publicPath: "file:///**/renderer-bundle.js",
     },
 
     // use the following if you're getting errors in the terminal, before source maps are available.
@@ -61,7 +61,7 @@ module.exports = speedMeasurePlugin.wrap(
     // },
 
     module: {
-      rules: []
+      rules: [],
     },
 
     plugins: [
@@ -69,7 +69,7 @@ module.exports = speedMeasurePlugin.wrap(
 
       // https://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
       // https://github.com/webpack/webpack/issues/864
-      new webpack.optimize.OccurrenceOrderPlugin()
+      new webpack.optimize.OccurrenceOrderPlugin(),
 
       // NODE_ENV should be production so that modules do not perform certain development checks
       // new webpack.DefinePlugin({
@@ -88,6 +88,6 @@ module.exports = speedMeasurePlugin.wrap(
     ],
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-    target: "electron-renderer"
+    target: "electron-renderer",
   })
 );

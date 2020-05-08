@@ -15,8 +15,9 @@ export interface IProps {
   onShowContributorsTab: (contributions: Contribution) => void;
 }
 
-export const PeopleChooser: React.FunctionComponent<IProps &
-  React.HTMLAttributes<HTMLDivElement>> = props => {
+export const PeopleChooser: React.FunctionComponent<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> = (props) => {
   const [toggle, setToggle] = useState(false);
   const customStyles = {
     control: (styles, state) => ({
@@ -25,9 +26,9 @@ export const PeopleChooser: React.FunctionComponent<IProps &
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange }
+      "&:hover": { borderColor: saymore_orange },
     }),
-    multiValue: styles => {
+    multiValue: (styles) => {
       return {
         ...styles,
         fontSize: "12pt",
@@ -37,8 +38,8 @@ export const PeopleChooser: React.FunctionComponent<IProps &
         color: "lightgray", // for the "x"
         ":hover": {
           borderColor: saymore_orange,
-          cursor: "pointer"
-        }
+          cursor: "pointer",
+        },
       };
     },
 
@@ -47,9 +48,9 @@ export const PeopleChooser: React.FunctionComponent<IProps &
       //color: "white",
       ":hover": {
         backgroundColor: saymore_orange,
-        color: "white"
-      }
-    })
+        color: "white",
+      },
+    }),
   };
 
   //const label: string = props.field.labelInUILanguage;
@@ -57,22 +58,22 @@ export const PeopleChooser: React.FunctionComponent<IProps &
     return new Object({
       value: "choice" + index, // only function of this is as a unique key
       contribution: new Contribution(name, "participant", "", ""),
-      label: name
+      label: name,
     });
   });
 
   const currentValueArray = props.folder
-    .metadataFile!.contributions.filter(c => c.personReference)
+    .metadataFile!.contributions.filter((c) => c.personReference)
     .map((c, index) => ({
       value: "existing" + index, // only function of this is as a unique key
       label: c.personReference + ":" + (c.role || ""),
-      contribution: c
+      contribution: c,
     }));
 
   const PersonAndRolePill = ({ children, data, innerProps, isDisabled }) => {
     return (
       <div
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault(); // doesn't work. Trying to prevent the list from react-select list from dropping down
           e.stopPropagation(); // doesn't work
           props.onShowContributorsTab(data.contribution);
@@ -109,7 +110,7 @@ export const PeopleChooser: React.FunctionComponent<IProps &
           // set the value
           //props.field.setValueFromString(s);
           props.folder.metadataFile!.contributions = [];
-          newChoices.forEach(c => {
+          newChoices.forEach((c) => {
             props.folder.metadataFile!.contributions.push(c.contribution);
           });
 

@@ -19,7 +19,7 @@ module.exports = {
   stats: {
     //turn off all the "Entrypoint mini-css-extract-plugin =" messages
     entrypoints: false,
-    children: false
+    children: false,
   },
   // externals: [
   //   {
@@ -43,7 +43,7 @@ module.exports = {
         // make all files ending in .json use the `json5-loader`, so we can have comments
         test: /\.json$/,
         use: "json5-loader",
-        type: "javascript/auto"
+        type: "javascript/auto",
       },
       {
         test: /\.m?js$/,
@@ -51,9 +51,9 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-env"]
-          }
-        }
+            presets: ["@babel/preset-env"],
+          },
+        },
       },
       {
         test: /\.tsx?$/,
@@ -73,24 +73,24 @@ module.exports = {
                   {
                     targets: {
                       // else we get regeneratorRuntime is not defined
-                      browsers: ["chrome 61"] // should be set to match whatever chromium electron is using
-                    }
-                  }
-                ]
+                      browsers: ["chrome 61"], // should be set to match whatever chromium electron is using
+                    },
+                  },
+                ],
               ],
               plugins: [
                 "babel-plugin-macros",
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
-                ["@babel/plugin-proposal-class-properties", { loose: true }]
-              ]
-            }
-          }
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+              ],
+            },
+          },
           // {
           //   // I tried to run this first, for type checking. But it messes up lingui ("macro_1 is not defined").
           //   // So now I'm using ForkTsCheckerWebpackPlugin for type checking, see below.
           //   //loader: "ts-loader"
           // }
-        ]
+        ],
       },
       {
         test: /\.csv$/,
@@ -98,8 +98,8 @@ module.exports = {
         options: {
           dynamicTyping: true,
           header: true,
-          skipEmptyLines: true
-        }
+          skipEmptyLines: true,
+        },
       },
       {
         test: /\.(scss|sass)$/,
@@ -109,7 +109,7 @@ module.exports = {
             // review: I don't know why we need to extract for production
             loader: wantDevelopmentOptimizations
               ? "style-loader"
-              : MiniCssExtractPlugin.loader
+              : MiniCssExtractPlugin.loader,
           },
           {
             loader: "css-loader",
@@ -117,17 +117,17 @@ module.exports = {
               sourceMap: wantDevelopmentOptimizations,
               modules: false,
               importLoaders: 1, // Number of loaders applied before CSS loader.
-              localIdentName: "[name]__[local]__[hash:base64:5]"
-            }
+              localIdentName: "[name]__[local]__[hash:base64:5]",
+            },
           },
           {
             loader: "sass-loader",
             options: {
-              sourceMap: wantDevelopmentOptimizations
-            }
+              sourceMap: wantDevelopmentOptimizations,
+            },
             //loader: "fast-sass-loader" // <-- no source maps
-          }
-        ]
+          },
+        ],
       },
 
       // {
@@ -141,39 +141,39 @@ module.exports = {
         test: /\.md$/,
         use: [
           {
-            loader: "html-loader"
+            loader: "html-loader",
           },
           {
-            loader: "markdown-loader"
-          }
-        ]
+            loader: "markdown-loader",
+          },
+        ],
       },
       {
         test: /\.(xml)$/,
         use: [
           {
             loader: "raw-loader",
-            options: {}
-          }
-        ]
+            options: {},
+          },
+        ],
       },
 
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         exclude: /node_modules/,
-        use: "url-loader"
+        use: "url-loader",
       },
       {
         test: /\.css$/i,
         use: [
           {
-            loader: "style-loader" // creates style nodes from JS strings
+            loader: "style-loader", // creates style nodes from JS strings
           },
           {
-            loader: "css-loader" // translates CSS into CommonJS
-          }
-        ]
+            loader: "css-loader", // translates CSS into CommonJS
+          },
+        ],
       },
       // WOFF Font
       {
@@ -182,9 +182,9 @@ module.exports = {
           loader: "url-loader",
           options: {
             limit: 10000,
-            mimetype: "application/font-woff"
-          }
-        }
+            mimetype: "application/font-woff",
+          },
+        },
       },
       // WOFF2 Font
       {
@@ -193,9 +193,9 @@ module.exports = {
           loader: "url-loader",
           options: {
             limit: 10000,
-            mimetype: "application/font-woff"
-          }
-        }
+            mimetype: "application/font-woff",
+          },
+        },
       },
       // TTF Font
       {
@@ -204,14 +204,14 @@ module.exports = {
           loader: "url-loader",
           options: {
             limit: 10000,
-            mimetype: "application/octet-stream"
-          }
-        }
+            mimetype: "application/octet-stream",
+          },
+        },
       },
       // EOT Font
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: "file-loader"
+        use: "file-loader",
       },
       // SVG Font
       {
@@ -220,11 +220,11 @@ module.exports = {
           loader: "url-loader",
           options: {
             limit: 10000,
-            mimetype: "image/svg+xml"
-          }
-        }
-      }
-    ]
+            mimetype: "image/svg+xml",
+          },
+        },
+      },
+    ],
   },
 
   output: {
@@ -232,7 +232,7 @@ module.exports = {
     //filename: "renderer-bundle.js",
 
     // https://github.com/webpack/webpack/issues/1114
-    libraryTarget: "commonjs2"
+    libraryTarget: "commonjs2",
   },
 
   // https://webpack.github.io/docs/configuration.html#resolve
@@ -241,8 +241,8 @@ module.exports = {
     modules: [
       path.join(__dirname, "app"),
       "node_modules",
-      path.resolve("./assets")
-    ]
+      path.resolve("./assets"),
+    ],
     // alias: {
     //   _assets: path.resolve(__dirname, "assets")
     // }
@@ -251,11 +251,11 @@ module.exports = {
   plugins: [
     // slowed both initial and incremental "watch" builds by a factor of 2-4: new HardSourceWebpackPlugin(),
     new MiniCssExtractPlugin({
-      filename: "style.css"
+      filename: "style.css",
     }),
     // see https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/573
     new webpack.DefinePlugin({
-      "process.env.FLUENTFFMPEG_COV": false
+      "process.env.FLUENTFFMPEG_COV": false,
     }),
     /*    new SentryCliPlugin({
       include: ".",
@@ -273,14 +273,14 @@ module.exports = {
     // to compiling with babel. But Surprise!, babel 7 just throws away the typescript
     // stuff and does not type checking; you're supposed to be happy with tslint.
     // So we added this plugin, which brings back the checking.
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
   ],
 
   optimization: {
-    splitChunks: {}
+    splitChunks: {},
   },
 
-  externals: Object.keys(externals || {})
+  externals: Object.keys(externals || {}),
 };
 
 if (process.env.NODE_ENV === "production") {

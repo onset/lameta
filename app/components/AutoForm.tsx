@@ -123,7 +123,7 @@ export default class AutoForm extends React.Component<IProps> {
                   console.log
                 )(this.props.fieldThatControlsFileNames || "")
               }
-              validate={value =>
+              validate={(value) =>
                 !this.props.validateFieldThatControlsFileNames ||
                 this.props.validateFieldThatControlsFileNames(value)
               }
@@ -165,7 +165,7 @@ export default class AutoForm extends React.Component<IProps> {
     this.sortedKeys = this.props.folder.properties
       .values()
       .filter(
-        f =>
+        (f) =>
           f.definition &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
@@ -182,17 +182,17 @@ export default class AutoForm extends React.Component<IProps> {
 
         return x;
       })
-      .map(f => f.key);
+      .map((f) => f.key);
 
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
         {this.sortedKeys
-          .map(k => this.props.folder.properties.getValueOrThrow(k))
+          .map((k) => this.props.folder.properties.getValueOrThrow(k))
 
-          .filter(field => field.form === this.props.form)
-          .map(field => this.makeEdit(field, this.props))}
+          .filter((field) => field.form === this.props.form)
+          .map((field) => this.makeEdit(field, this.props))}
         {this.props.folder.hasMoreFieldsTable ? (
           <AdditionalFieldsTable folder={this.props.folder} />
         ) : (

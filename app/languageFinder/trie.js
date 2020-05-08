@@ -9,7 +9,7 @@ function Trie() {
  *
  * @returns{Trie} the inserted (or existing) node corresponding to the word
  */
-Trie.prototype.insert = function(word) {
+Trie.prototype.insert = function (word) {
   var node = this;
   for (var i = 0; i < word.length; i++) {
     var letter = word.charAt(i);
@@ -33,7 +33,7 @@ Trie.prototype.insert = function(word) {
  * @param{object}   results - object to put the results into (key is word, value is {node, dist})
  * @param{number}   maxDist - will bail on tree paths whose Levenshtein distance is greater than maxDist
  */
-Trie.prototype._searchRecursive = function(
+Trie.prototype._searchRecursive = function (
   letter,
   word,
   previousRow,
@@ -81,7 +81,7 @@ Trie.prototype._searchRecursive = function(
  *
  * @returns{object} where key is a word from the Trie, and value is {node, dist}.
  */
-Trie.prototype.search = function(word, maxDist) {
+Trie.prototype.search = function (word, maxDist) {
   var currentRow = [];
   for (var i = 0; i <= word.length; i++) {
     currentRow[i] = i;

@@ -34,7 +34,7 @@ export default class LanguagePickerDialog extends React.Component<
       field: undefined,
       langCode: "",
       name: "",
-      suggestions: []
+      suggestions: [],
       //topSuggestion: {}
     };
     LanguagePickerDialog.singleton = this;
@@ -54,7 +54,7 @@ export default class LanguagePickerDialog extends React.Component<
         field,
         langCode: "",
         name: "",
-        isOpen: true
+        isOpen: true,
       });
       return;
     }
@@ -67,7 +67,7 @@ export default class LanguagePickerDialog extends React.Component<
         field,
         langCode: parts[0].trim(),
         name: parts[1].trim(),
-        isOpen: true
+        isOpen: true,
       });
     } else {
       alert(`Could not parse code and language: '${field.text}'`);
@@ -79,12 +79,12 @@ export default class LanguagePickerDialog extends React.Component<
 
   private onSuggestionsFetchRequested({ value }) {
     this.setState({
-      suggestions: this.getSuggestions(value)
+      suggestions: this.getSuggestions(value),
     });
   }
   private onSuggestionsClearRequested() {
     this.setState({
-      suggestions: []
+      suggestions: [],
     });
   }
   private getSuggestions(value) {
@@ -125,7 +125,7 @@ export default class LanguagePickerDialog extends React.Component<
       placeholder: "Type language name or code",
       value,
       onChange: (event, { newValue }) => this.setState({ langCode: newValue }),
-      autoFocus: true
+      autoFocus: true,
     };
     return (
       <CloseOnEscape
@@ -151,7 +151,7 @@ export default class LanguagePickerDialog extends React.Component<
               className="codeEntry"
               type="text"
               value={this.state.langCode}
-              onChange={e => this.change({ langCode: e.target.value })}
+              onChange={(e) => this.change({ langCode: e.target.value })}
             />
             <label>
               <Trans>Name</Trans>
@@ -160,7 +160,7 @@ export default class LanguagePickerDialog extends React.Component<
               className="name"
               type="text"
               value={this.state.name}
-              onChange={e => this.change({ name: e.target.value })}
+              onChange={(e) => this.change({ name: e.target.value })}
             />
             {/* <div className="picker">
               <Autosuggest

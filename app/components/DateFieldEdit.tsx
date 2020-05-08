@@ -36,7 +36,7 @@ export default class DateFieldEdit extends React.Component<
             dateFormat="YYYY-MM-DD"
             selected={m}
             //onChange={d => console.log("change " + d)}
-            onChange={newDate => {
+            onChange={(newDate) => {
               if (newDate != null) {
                 // TODO: while this is changing the value, it's not propagating back to our props so you don't see the change immediately
                 const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";

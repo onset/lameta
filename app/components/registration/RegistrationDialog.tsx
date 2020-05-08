@@ -32,7 +32,7 @@ export default class RegistrationDialog extends React.Component<
       email: "",
       validEmail: false,
       howUsing: "",
-      acceptable: false
+      acceptable: false,
     };
     RegistrationDialog.singleton = this;
   }
@@ -48,7 +48,7 @@ export default class RegistrationDialog extends React.Component<
     RegistrationDialog.singleton.update({
       isOpen: true,
       email: userSettings.Email,
-      howUsing: userSettings.HowUsing
+      howUsing: userSettings.HowUsing,
     });
     analyticsLocation("Registration Dialog");
   }
@@ -81,7 +81,7 @@ export default class RegistrationDialog extends React.Component<
                 }
                 autoFocus
                 value={this.state.email}
-                onChange={e => {
+                onChange={(e) => {
                   this.update({ email: e.target.value });
                 }}
               />
@@ -95,7 +95,7 @@ export default class RegistrationDialog extends React.Component<
                 name="howUsingRadioGroup"
                 className="howUsingRadioGroup"
                 selectedValue={this.state.howUsing}
-                onChange={value => {
+                onChange={(value) => {
                   this.update({ howUsing: value });
                 }}
               >
@@ -143,12 +143,12 @@ export default class RegistrationDialog extends React.Component<
     const email = stateChanges.email || this.state.email;
     const howUsing = stateChanges.howUsing || this.state.howUsing;
     const validEmail = isEmail.validate(email, {
-      minDomainAtoms: 2
+      minDomainAtoms: 2,
     });
     this.setState({
       ...stateChanges,
       validEmail,
-      acceptable: howUsing !== "" && validEmail
+      acceptable: howUsing !== "" && validEmail,
     });
   }
 }

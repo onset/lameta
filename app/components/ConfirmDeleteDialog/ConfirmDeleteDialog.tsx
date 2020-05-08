@@ -38,7 +38,7 @@ export default class ConfirmDeleteDialog extends React.Component<
     ConfirmDeleteDialog.singleton.setState({
       path: fileName,
       isOpen: true,
-      deleteAction
+      deleteAction,
     });
   }
   public render() {

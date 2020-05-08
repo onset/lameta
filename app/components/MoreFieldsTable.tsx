@@ -34,7 +34,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
   private computeRows(nextProps: IProps) {
     this.fieldsForRows = nextProps.folder.properties
       .values()
-      .filter(f => (f.definition ? f.definition.isAdditional : false));
+      .filter((f) => (f.definition ? f.definition.isAdditional : false));
     //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
   }
 
@@ -46,7 +46,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return field.labelInUILanguage;
-        }
+        },
       },
       {
         id: "value",
@@ -74,8 +74,8 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
               />
             );
           }
-        }
-      }
+        },
+      },
     ];
 
     return (

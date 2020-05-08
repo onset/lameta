@@ -19,11 +19,11 @@ export default class StatusControl extends React.Component<IProps> {
           name="status"
           className="radioGroup"
           selectedValue={this.props.statusField.text}
-          onChange={value => {
+          onChange={(value) => {
             this.props.statusField.setValueFromString(value);
           }}
         >
-          {this.props.statusField.choices.map(s => {
+          {this.props.statusField.choices.map((s) => {
             const translated = translateChoice(s);
             return (
               <div key={s}>
