@@ -104,6 +104,13 @@
       "main-bundle.js.map",
       "package.json"
     ],
+    "filesAssociations": [
+      {
+        "ext": "sprj",
+        "name": "lameta/saymore project",
+        "role": "Editor"
+      }
+    ],
     "extraResources": [
       "artwork/"
     ],
