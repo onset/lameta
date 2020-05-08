@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
@@ -19,6 +25,7 @@ import { Folder } from "../../model/Folder";
 import { NotifyError } from "../Notify";
 import { mkdirpSync, ensureDirSync, pathExistsSync } from "fs-extra";
 
+const saymore_orange = "#e69664";
 const { app } = require("electron").remote;
 const sanitize = require("sanitize-filename");
 
@@ -29,6 +36,7 @@ export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
   staticShowExportDialog = () => setIsOpen(true);
   const [exportFormat, setExportFormat] = useState("csv");
   const [whichSessionsOption, setWhichSessionsOption] = useState("all");
@@ -42,7 +50,7 @@ export const ExportDialog: React.FunctionComponent<{
     }
   }, [isOpen]);
 
-  const handleCloseModal = (doSave: boolean) => {
+  const handleContinue = (doSave: boolean) => {
     if (doSave) {
       const defaultPath =
         exportFormat === "csv" ? getPathForCsvSaving() : getPathForIMDISaving();
@@ -61,17 +69,28 @@ export const ExportDialog: React.FunctionComponent<{
               : [],
         })
         .then((result) => {
-          try {
-            saveFiles(result.filePath!);
-          } catch (err) {
-            NotifyError("There was a problem exporting.");
-            setIsOpen(false);
-            throw err; // send it on to sentry
+          setExporting(!result.canceled);
+          if (!result.canceled) {
+            document.body.style.cursor = "wait";
+            // setTimeout lets us update the ui before diving in
+            setTimeout(() => {
+              try {
+                saveFiles(result.filePath!);
+              } catch (err) {
+                setExporting(false);
+                NotifyError(`There was a problem exporting: ${err.message}`);
+                throw err; // send it on to sentry
+              } finally {
+                document.body.style.cursor = "default";
+                setExporting(false);
+              }
+            }, 100);
           }
         });
     } else {
       setIsOpen(false);
     }
+    setExporting(false);
   };
   const getPathForCsvSaving = () => {
     const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
@@ -160,14 +179,14 @@ export const ExportDialog: React.FunctionComponent<{
   return (
     <CloseOnEscape
       onEscape={() => {
-        handleCloseModal(false);
+        handleContinue(false);
       }}
     >
       <ReactModal
         className="exportDialog"
         isOpen={isOpen}
         shouldCloseOnOverlayClick={true}
-        onRequestClose={() => handleCloseModal(false)}
+        onRequestClose={() => handleContinue(false)}
         ariaHideApp={false}
         onAfterOpen={() => analyticsLocation("Export Dialog")}
       >
@@ -269,13 +288,35 @@ export const ExportDialog: React.FunctionComponent<{
             </select>
           </div>
         </div>
+        <div
+          css={css`
+            width: 100%;
+            display: flex;
+            visibility: ${exporting ? "visible" : "hidden"};
+          `}
+        >
+          <div
+            css={css`
+              margin-left: auto;
+              margin-right: auto;
+              margin-bottom: 10px;
+              font-weight: bold;
+              color: ${saymore_orange};
+            `}
+          >
+            {/* It would be much better to show progress. To do that, we'd either have to change the
+              export so that it could be called increments, or else get web workers happening. See the branch
+               WebworkersExport for a very initial start on that. */}
+            Exporting...
+          </div>
+        </div>
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
           <div className={"okCancelGroup"}>
-            <button onClick={() => handleCloseModal(false)}>
+            <button onClick={() => handleContinue(false)}>
               <Trans>Cancel</Trans>
             </button>
-            <button id="okButton" onClick={() => handleCloseModal(true)}>
+            <button id="okButton" onClick={() => handleContinue(true)}>
               <Trans>Export</Trans>
             </button>
           </div>

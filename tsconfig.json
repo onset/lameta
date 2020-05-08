@@ -20,7 +20,15 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin", // adds intellisense for css / emotion
+        "lint": {
+          "validProperties": ["label"]
+        }
+      }
+    ]
   },
   "files": ["app/index.tsx"],
   "include": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"],

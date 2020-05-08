@@ -19,6 +19,8 @@ export default class ImdiBundler {
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean
   ) {
+    //throw new Error("oof");
+
     sentryBreadCrumb("Starting saveImdiBundleToFolder");
     try {
       if (fs.existsSync(rootDirectory)) {
