@@ -5,7 +5,7 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
-import { sanitize } from "../../../filenameSanitizer";
+import { sanitizeForArchive } from "../../../filenameSanitizer";
 import { titleCase } from "title-case";
 
 export class Session extends Folder {
@@ -34,7 +34,7 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("id") === "") {
       this.properties.setText("id", Path.basename(directory));
     }
-    this.safeFileNameBase = sanitize(
+    this.safeFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("id")
     );
     this.knownFields = knownFieldDefinitions.session; // for csv export
@@ -116,10 +116,12 @@ export class Session extends Folder {
     const legacyParticipantNames = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
-      .map(s => s.trim());
+      .map((s) => s.trim());
     legacyParticipantNames.forEach((name: string) => {
       if (
-        !this.metadataFile!.contributions.find(c => c.personReference === name)
+        !this.metadataFile!.contributions.find(
+          (c) => c.personReference === name
+        )
       ) {
         this.metadataFile!.contributions.push(
           new Contribution(name, "participant", "", "")
@@ -152,13 +154,13 @@ export class Session extends Folder {
     newId: string
   ): void {
     const oldNameNormalized = this.normalizeNameReference(oldId);
-    this.files.forEach(f =>
+    this.files.forEach((f) =>
       f.contributions
         .filter(
-          c =>
+          (c) =>
             this.normalizeNameReference(c.personReference) === oldNameNormalized
         )
-        .forEach(c => (c.personReference = newId))
+        .forEach((c) => (c.personReference = newId))
     );
 
     //In addition to being listed in the contributors list for one of the constituent files,
@@ -179,8 +181,8 @@ export class Session extends Folder {
   public getAllContributionsToAllFiles(): Contribution[] {
     const contributionsToList = new Array<Contribution>();
 
-    this.files.forEach(f =>
-      f.contributions.forEach(c => {
+    this.files.forEach((f) =>
+      f.contributions.forEach((c) => {
         if (
           c.personReference &&
           c.personReference.trim().length > 0 /*&& c.role && c.role.length > 0*/
@@ -189,7 +191,7 @@ export class Session extends Folder {
           // the roles are the same, then we don't list them again.
           if (
             !contributionsToList.some(
-              existingContribution =>
+              (existingContribution) =>
                 existingContribution.personReference.toLowerCase() ===
                   c.personReference.toLowerCase() &&
                 existingContribution.role === c.role
@@ -239,15 +241,15 @@ export class Session extends Folder {
     return this.properties
       .getTextStringOrEmpty("languages")
       .split(";")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
   }
   public getWorkingLanguageCodes(): string[] {
     return this.properties
       .getTextStringOrEmpty("workingLanguages")
       .split(";")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
   }
 
   // private setParticipantNames(names: string[]) {

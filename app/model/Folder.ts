@@ -12,7 +12,7 @@ import assert from "assert";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { trash } from "../crossPlatformUtilities";
 import { CustomFieldRegistry } from "./Project/CustomFieldRegistry";
-import { sanitize } from "../filenameSanitizer";
+import { sanitizeForArchive } from "../filenameSanitizer";
 
 export class IFolderSelection {
   @observable
@@ -84,7 +84,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
   public addOneFile(path: string, newFileName?: string): File {
     console.log("copy in " + path);
-    const n = sanitize(newFileName ? newFileName : Path.basename(path));
+    const n = sanitizeForArchive(
+      newFileName ? newFileName : Path.basename(path)
+    );
     const dest = Path.join(this.directory, n);
     fs.copySync(path, dest);
     const f = new OtherFile(dest, this.customFieldRegistry);
@@ -122,7 +124,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     //collect the other files and the metdata files they are paired with
     const filePaths = glob.sync(Path.join(directory, "*.*"));
-    filePaths.forEach(path => {
+    filePaths.forEach((path) => {
       if (path !== folderMetaDataFile.metadataFilePath) {
         // We don't explicitly do anything with the the .meta companion files here,
         // because the the constructor of the ComponentFile is responsible for finding & loading it, (or creating it if missing?).
@@ -197,7 +199,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
 
-    this.files.forEach(f => {
+    this.files.forEach((f) => {
       f.updateNameBasedOnNewFolderName(newFolderName);
     });
     fs.renameSync(this.directory, newDirPath);
@@ -214,7 +216,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
     // part first (i.e. the file renaming)?
     // Then if that failed, we would need to rename the files that had already been changed, and then
     // change the id/name field back to what it was previously.
-    const newFileName = sanitize(this.textValueThatControlsFolderName());
+    const newFileName = sanitizeForArchive(
+      this.textValueThatControlsFolderName()
+    );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
@@ -253,7 +257,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     if (fs.existsSync(this.directory)) {
       // will sometimes be false for things like DescriptionDocuments
       const dir = fs.readdirSync(this.directory);
-      const x = dir.filter(elm =>
+      const x = dir.filter((elm) =>
         elm.match(new RegExp(`.*(${this.metadataFileExtensionWithDot})$`, "ig"))
       );
       if (x.length > 1) {

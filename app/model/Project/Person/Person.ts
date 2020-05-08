@@ -6,7 +6,7 @@ import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
-import { sanitize } from "../../../filenameSanitizer";
+import { sanitizeForArchive } from "../../../filenameSanitizer";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -29,7 +29,7 @@ export class Person extends Folder {
   }
 
   private get mugshotFile(): File | undefined {
-    return this.files.find(f => {
+    return this.files.find((f) => {
       return f.describedFilePath.indexOf("_Photo.") > -1;
     });
   }
@@ -80,14 +80,16 @@ export class Person extends Folder {
     }
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
-    this.safeFileNameBase = sanitize(
+    this.safeFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("name")
     );
-    this.properties.getValueOrThrow("name").textHolder.map.intercept(change => {
-      // a problem with this is that it's going going get called for every keystroke
+    this.properties
+      .getValueOrThrow("name")
+      .textHolder.map.intercept((change) => {
+        // a problem with this is that it's going going get called for every keystroke
 
-      return change;
-    });
+        return change;
+      });
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();

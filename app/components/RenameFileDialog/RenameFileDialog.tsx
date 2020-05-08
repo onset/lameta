@@ -8,7 +8,7 @@ import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
-import { sanitize } from "../../filenameSanitizer";
+import { sanitizeForArchive } from "../../filenameSanitizer";
 const isValidPath = require("is-valid-path");
 
 // tslint:disable-next-line:no-empty-interface
@@ -32,7 +32,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
       file: undefined,
       core: "",
       folder: undefined,
-      filename: ""
+      filename: "",
     };
     RenameFileDialog.singleton = this;
   }
@@ -57,7 +57,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
       filename: Path.basename(file.describedFilePath),
       folder,
       core: this.getCore(file.describedFilePath, folder.filePrefix),
-      isOpen: true
+      isOpen: true,
     });
   }
   public render() {
@@ -100,14 +100,14 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
               </span>
               <input
                 autoFocus
-                onKeyDown={e => {
+                onKeyDown={(e) => {
                   if (e.keyCode === 13 && canRenameNow) {
                     // doesn't close if we do this right away
                     window.setTimeout(() => this.handleCloseModal(true), 0);
                   }
                 }}
                 value={this.state.core}
-                onChange={e => this.setState({ core: e.target.value })}
+                onChange={(e) => this.setState({ core: e.target.value })}
               />
 
               {/* many hassles with this, not worth it
@@ -201,7 +201,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private getValidationProblemsMessage(): string {
-    if (this.getNewFileName() !== sanitize(this.getNewFileName())) {
+    if (this.getNewFileName() !== sanitizeForArchive(this.getNewFileName())) {
       return "There are invalid characters.";
     }
     if (
