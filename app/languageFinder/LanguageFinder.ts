@@ -61,7 +61,7 @@ export class LanguageFinder {
     ]);
 
     // add the primary name and two codes
-    const index = require("./langindex.json5");
+    const index = require("./langindex.json");
     this.index.addAll(index);
 
     // now add the alternative names

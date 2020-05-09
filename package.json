@@ -290,7 +290,7 @@
     "image-size": "^0.6.1",
     "is-valid-path": "^0.1.1",
     "isemail": "^3.2.0",
-    "json5-loader": "^4.0.0",
+    "json5-loader": "^3.0.0",
     "mime": "^2.4.0",
     "mobx": "^5.11.0",
     "mobx-react": "^6.1.1",
