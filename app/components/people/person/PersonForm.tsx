@@ -11,6 +11,7 @@ import CustomFieldsTable from "../../CustomFieldsTable";
 import { Trans } from "@lingui/react";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import { PersonLanguageList } from "./PersonLanguageList";
 
 export interface IProps {
   person: Person;
@@ -123,6 +124,8 @@ export default class PersonForm extends React.Component<IProps> {
           className="description"
         />
         <CustomFieldsTable file={this.props.person.metadataFile!} />
+
+        <PersonLanguageList />
       </form>
     );
   }

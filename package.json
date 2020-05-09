@@ -323,6 +323,7 @@
     "raw-loader": "^0.5.1",
     "react": "^16.12.0",
     "react-autosuggest": "^9.4.0",
+    "react-beautiful-dnd": "^13.0.0",
     "react-close-on-escape": "^2.0.0",
     "react-datepicker": "^1.5.0",
     "react-dom": "^16.12.0",
