@@ -197,7 +197,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       key: "Custom Fields",
       markAsNotImdi: true,
       specialInfo:
-        "To remove a custom field, clear out the value everywhere you have used it, then restart lameta",
+        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
     });
 
     return (

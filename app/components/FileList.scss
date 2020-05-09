@@ -27,7 +27,7 @@
     padding-left: 10px;
     padding-right: 10px;
     margin-bottom: 7px;
-    height: 65px;
+    //height: 65px;
     padding-top: 5px;
     font-size: 12px;
     li {
@@ -43,6 +43,7 @@
       border-color: transparent;
       border-width: 1px;
       font-size: 12px;
+      font-weight: bold;
       height: 21px; //hack for border
       margin: 0;
       border: solid 2px white;
