@@ -31,7 +31,9 @@ export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
   }, [showSaving]);
   return (
     <div id="saveNotifier" className={showSaving ? "show" : "hide"}>
-      <Trans>Saving</Trans>&nbsp;{filename}
+      <Trans>Saving</Trans>&nbsp;
+      <br />
+      {filename}
     </div>
   );
 };
