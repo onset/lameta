@@ -1,3 +1,4 @@
+// this is "json5", should use the webpack:json5-loader & jest:json5-jest
 {
   "project": [
     {

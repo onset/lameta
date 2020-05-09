@@ -4,14 +4,14 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value
+  value,
 } from "../xmlUnitTestUtils";
 
 let project: Project;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
-  const xml = ImdiGenerator.generateCorpus(project, true);
+  const xml = ImdiGenerator.generateCorpus(project, ["ETR009.imdi"], true);
   setResultXml(xml);
 });
 beforeEach(() => {});
@@ -23,9 +23,7 @@ describe("project imdi export", () => {
   it("should contain Corpus/Name", () => {
     expect(value("METATRANSCRIPT/Corpus/Name")).toBe("Edolo Sample");
   });
-  it("should contain Corpus/Title", () => {
-    expect(value("METATRANSCRIPT/Corpus/Title")).toBe("Edolo Sample");
-  });
+
   it("should contain Corpus/Description", () => {
     expect(count("METATRANSCRIPT/Corpus/Description")).toBe(1);
     expect(

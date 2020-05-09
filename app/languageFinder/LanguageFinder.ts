@@ -18,10 +18,10 @@ export class Language {
     this.iso639_1 = jsonFromIndex.iso639_1;
   }
   public someNameMatches(name: string): boolean {
-    const foundAtLeastOne = this.allNames().some(n => {
+    const foundAtLeastOne = this.allNames().some((n) => {
       const match =
         name.localeCompare(n, undefined, {
-          sensitivity: "base"
+          sensitivity: "base",
         }) === 0;
       return match;
     });
@@ -57,17 +57,17 @@ export class LanguageFinder {
       "localName",
       //"altNames", TrieSearch can't handle array values, so we'll add them by hand below
       "iso639_1",
-      "iso639_3"
+      "iso639_3",
     ]);
 
     // add the primary name and two codes
-    const index = require("./langindex.json");
+    const index = require("./langindex.json5");
     this.index.addAll(index);
 
     // now add the alternative names
-    index.forEach(indexEntry => {
+    index.forEach((indexEntry) => {
       if (indexEntry.altNames && indexEntry.altNames.length > 0) {
-        indexEntry.altNames.forEach(alternativeName => {
+        indexEntry.altNames.forEach((alternativeName) => {
           this.index.map(alternativeName, indexEntry);
         });
       }
@@ -101,7 +101,7 @@ export class LanguageFinder {
       language.iso639_3 === pfx ||
       (language.iso639_2 && language.iso639_2 === pfx) ||
       (includeAlternativeNames &&
-        language.altNames.some(n =>
+        language.altNames.some((n) =>
           n.toLocaleLowerCase("en-US").startsWith(pfx)
         ))
     );
@@ -112,7 +112,7 @@ export class LanguageFinder {
     codeIfNoMatches: string = "und"
   ): string {
     // gives us hits on name & codes that start with the prefix
-    const matches = this.index.get(name).map(m => new Language(m));
+    const matches = this.index.get(name).map((m) => new Language(m));
     const x = matches.filter((l: Language) => {
       return l.someNameMatches(name);
     }); // tolerant of case and diacritics
@@ -131,13 +131,13 @@ export class LanguageFinder {
           // if they have given us the name for this custom language in the Project settings, use it
           this.defaultContentLanguage.iso639_3 === prefix
             ? this.defaultContentLanguage.englishName
-            : `${prefix} [Unlisted]`
+            : `${prefix} [Unlisted]`,
       });
       sortedListOfMatches.push(l);
     }
-    return sortedListOfMatches.map(l => ({
+    return sortedListOfMatches.map((l) => ({
       languageInfo: l,
-      nameMatchingWhatTheyTyped: l.englishName
+      nameMatchingWhatTheyTyped: l.englishName,
     }));
   }
 
@@ -148,7 +148,7 @@ export class LanguageFinder {
     const matches = this.index.get(prefix);
     const pfx = prefix.toLocaleLowerCase();
 
-    const langs: Language[] = matches.map(m => new Language(m));
+    const langs: Language[] = matches.map((m) => new Language(m));
     const kMaxMatchesToSpendTimeOne = 100;
     const spendTimeThinking = langs.length <= kMaxMatchesToSpendTimeOne;
     // For languages that will be typed in often, it is awkward to see, for example
@@ -159,24 +159,24 @@ export class LanguageFinder {
       { match: "es", code3: "spa" },
       { match: "ind", code3: "ind" },
       { match: "fre", code3: "fra" },
-      { match: "deu", code3: "de" }
+      { match: "deu", code3: "de" },
     ];
     const sorted = langs.sort((a: Language, b: Language) => {
       // if the user types "en", we want to suggest "english" above "en" of vietnam
       if (
-        commonLanguages.some(p => p.match === pfx && a.iso639_3 === p.code3)
+        commonLanguages.some((p) => p.match === pfx && a.iso639_3 === p.code3)
       ) {
         return -1;
       }
       if (
-        commonLanguages.some(p => p.match === pfx && b.iso639_3 === p.code3)
+        commonLanguages.some((p) => p.match === pfx && b.iso639_3 === p.code3)
       ) {
         return 1;
       }
-      if (commonLanguages.some(p => a.iso639_3 === p.code3)) {
+      if (commonLanguages.some((p) => a.iso639_3 === p.code3)) {
         return -1;
       }
-      if (commonLanguages.some(p => b.iso639_3 === p.code3)) {
+      if (commonLanguages.some((p) => b.iso639_3 === p.code3)) {
         return 1;
       }
       // next, give priority to iso 639-3 codes
@@ -216,7 +216,7 @@ export class LanguageFinder {
     const trimmedCode = code.trim();
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.index.get(trimmedCode);
-    const x = matches.filter(m => {
+    const x = matches.filter((m) => {
       return m.iso639_3 === trimmedCode;
     });
     // TODO unfortunately lang tags gives multiple hits for a given code if (x.length === 1) {

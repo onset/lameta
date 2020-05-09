@@ -5,10 +5,11 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value
+  value,
 } from "../xmlUnitTestUtils";
-import LanguageFinder from "../components/LanguagePickerDialog/LanguageFinder";
+
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
+import { LanguageFinder } from "../languageFinder/LanguageFinder";
 
 let project: Project;
 let person: Person;
@@ -20,30 +21,12 @@ beforeAll(() => {
     new CustomFieldRegistry(),
     (oldName, newName) => true
   );
-  const subsetLanguageFinder = new LanguageFinder([
-    {
-      name: "Edolo",
-      code: { three: "etr" },
-      macro: false,
-      countries: [],
-      altNames: ["Etoro"],
-      country: "Papua New Guinea"
-    },
-    {
-      name: "Tok Pisin",
-      code: { three: "tpi" },
-      altNames: [],
-      country: "Papua New Guinea"
-    },
-    {
-      name: "Huli",
-      code: { three: "hui" },
-      altNames: ["Huri"],
-      country: "Papua New Guinea"
-    }
-  ]);
+  const subsetLanguageFinder = new LanguageFinder({
+    englishName: "Edolo",
+    iso639_3: "etr",
+  });
 
-  const generator = new ImdiGenerator(person, project, subsetLanguageFinder);
+  const generator = new ImdiGenerator(person, project);
   setResultXml(
     generator.actor(person, "pretend-role") as string
     // ImdiGenerator.generateActor(

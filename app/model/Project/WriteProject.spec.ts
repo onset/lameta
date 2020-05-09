@@ -20,7 +20,7 @@ describe("Project Write", () => {
   });
   it("should round-trip AnalysisISO3CodeAndName", () => {
     AttemptRoundTripOfOneField(
-      "analysisISO3CodeAndName",
+      "analysisIso3CodeAndName",
       "AnalysisISO3CodeAndName",
       "foo: Foo"
     );
@@ -65,7 +65,7 @@ function AttemptRoundTripOfOneField(
 
   // now, can we change it and see it saved?
   let newValue = "something different";
-  if (f.properties.getFieldDefinition(key).type === "date") {
+  if (f.properties.getFieldDefinition(key).type === "dateAvailable") {
     f.setTextProperty(key, newValue);
   } else {
     newValue = "1911-1-11";

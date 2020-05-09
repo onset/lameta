@@ -1,4 +1,4 @@
-const knownFieldDefinitions = require("./fields.json");
+const knownFieldDefinitions = require("./fields.json5");
 export function isKnownFieldKey(key: string): boolean {
   return Object.keys(knownFieldDefinitions).some((
     area // e.g. project, session, person
@@ -260,13 +260,13 @@ const countries = [
   "Western Sahara",
   "Yemen",
   "Zambia",
-  "Zimbabwe"
+  "Zimbabwe",
 ];
 
 knownFieldDefinitions.project.find(
-  d => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
+  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
 ).choices = countries;
 knownFieldDefinitions.session.find(
-  d => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
+  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
 ).choices = countries;
 export default knownFieldDefinitions;

@@ -24,11 +24,11 @@ export enum FieldType {
   Language,
   MultiLanguage,
   Function,
-  Boolean
+  Boolean,
 }
 export enum FieldVisibility {
   Always,
-  IfNotEmpty
+  IfNotEmpty,
 }
 
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
@@ -117,7 +117,7 @@ export class Field {
     this.persist = persist;
     this.cssClass = cssClass ? cssClass : key;
     this.text = englishValue;
-    this.choices = choices.filter(c => {
+    this.choices = choices.filter((c) => {
       return c.indexOf("//") !== 0; // we don't yet have webpack allowing comments in json, so we strip out elements that start with //
     });
 
@@ -169,16 +169,19 @@ export class Field {
     }
     // if this field has choices, set it to
     if (this.choices && this.choices.length > 0) {
-      const match = this.choices.find(
-        c => c.toLowerCase() === s.toLocaleLowerCase()
-      );
+      const find = s.toLocaleLowerCase().trim();
+      const match = this.choices.find((c) => {
+        //console.log(`${c}`);
+        return c.toLowerCase().trim() === find;
+      });
       if (match) {
         this.text = match;
       } else {
         //TODO Log a problem where users can see it
         console.log(
-          `Warning: the field ${this.definition.englishLabel} is a choice list but the value, ${s}, is not one of the choices in this version.`
+          `Warning: the field ${this.definition.englishLabel} is a choice list but the value "${s}" is not one of the choices in this version. There are ${this.choices.length} choices.`
         );
+        //console.log(this.choices.join(","));
         this.text = s;
       }
     } else {
@@ -293,11 +296,11 @@ export class HasConsentField extends Field {
     this.definition = new FieldDefinition({
       key: "hasConsent",
       englishLabel: "Consent",
-      persist: false
+      persist: false,
     });
   }
   public hasConsent(): boolean {
-    return !!this.person.files.find(f => f.isLabeledAsConsent());
+    return !!this.person.files.find((f) => f.isLabeledAsConsent());
   }
 }
 export class PersonDisplayNameField extends Field {
@@ -315,7 +318,7 @@ export class PersonDisplayNameField extends Field {
     this.definition = new FieldDefinition({
       key: "displayName",
       englishLabel: "Person",
-      persist: false
+      persist: false,
     });
   }
   public get text(): string {

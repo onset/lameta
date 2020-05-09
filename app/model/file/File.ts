@@ -13,7 +13,7 @@ import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import knownFieldDefinitions, {
-  isKnownFieldKey
+  isKnownFieldKey,
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
@@ -146,7 +146,7 @@ export /*babel doesn't like this: abstract*/ class File {
       persist,
       type: "Date",
       isCustom: false,
-      showOnAutoForm: false
+      showOnAutoForm: false,
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -161,7 +161,7 @@ export /*babel doesn't like this: abstract*/ class File {
       type: "Text",
       isCustom: false,
       showOnAutoForm: false,
-      multipleLines: true
+      multipleLines: true,
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -204,7 +204,7 @@ export /*babel doesn't like this: abstract*/ class File {
         persist,
         type: "Text",
         isCustom,
-        showOnAutoForm
+        showOnAutoForm,
       };
 
       const f = Field.fromFieldDefinition(definition);
@@ -326,9 +326,9 @@ export /*babel doesn't like this: abstract*/ class File {
             // Here we can pull such fields back out of the custom list and up to the top level.
             const isCustom = !isKnownFieldKey(key);
             if (!isCustom) {
-              console.log(
-                `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
-              );
+              //   console.info(
+              //     `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
+              //   );
             }
             this.loadOnePersistentProperty(
               key,
@@ -512,7 +512,7 @@ export /*babel doesn't like this: abstract*/ class File {
         xml,
         {
           async: false,
-          explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+          explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
           //explicitArray: true, this also just... gives you a mess
           //explicitChildren: true this makes even simple items have arrays... what a pain
         },
@@ -651,7 +651,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // enhance, on Linux this might need to be different?
     return (
       aNormalized.localeCompare(bNormalized, undefined, {
-        sensitivity: "accent"
+        sensitivity: "accent",
       }) === 0
     );
   }

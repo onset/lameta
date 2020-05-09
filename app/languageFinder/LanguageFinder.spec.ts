@@ -2,7 +2,10 @@ import { LanguageFinder } from "./LanguageFinder";
 let languageFinder: LanguageFinder;
 
 describe("LanguageFinder", () => {
-  languageFinder = new LanguageFinder();
+  languageFinder = new LanguageFinder({
+    englishName: "Edolo",
+    iso639_3: "etr",
+  });
 
   beforeAll(async () => {});
   it(".findOne639_3CodeFromName should find common names of major languages first", () => {

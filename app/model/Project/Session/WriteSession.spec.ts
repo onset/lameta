@@ -5,10 +5,12 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value
+  value,
 } from "../../../xmlUnitTestUtils";
-import { Field, FieldType, FieldDefinition } from "../../field/Field";
+import { Field, FieldType } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
+import { FieldDefinition } from "../../field/FieldDefinition";
+
 const os = require("os");
 
 let projectDirectory;
@@ -48,8 +50,12 @@ describe("Session Write", () => {
       new CustomFieldRegistry()
     );
     const field = new Field("favoriteColor", FieldType.Text, "orange");
-    field.definition = new FieldDefinition({});
-    field.definition.isCustom = true;
+    field.definition = new FieldDefinition({
+      key: "favoriteColor",
+      englishLabel: "favoriteColor",
+      persist: true,
+      isCustom: true,
+    });
     f.properties.setValue("favoriteColor", field);
     setResultXml(f.getXml());
     expect("Session/CustomFields/favoriteColor").toMatch("orange");

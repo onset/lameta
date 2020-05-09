@@ -57,7 +57,7 @@ describe("Project Read", () => {
       "AnalysisISO3CodeAndName",
       "dde: Doondo"
     );
-    expect(f.properties.getTextStringOrEmpty("analysisISO3CodeAndName")).toBe(
+    expect(f.properties.getTextStringOrEmpty("analysisIso3CodeAndName")).toBe(
       "dde: Doondo"
     );
   });

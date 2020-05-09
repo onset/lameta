@@ -21,7 +21,7 @@ beforeAll(() => {
   //  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
-  sessionsCsv = new CsvExporter(project).makeCsvForSessions();
+  sessionsCsv = new CsvExporter(project).makeCsvForSessions((f) => true);
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
   //fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
   const projectCsv = new CsvExporter(project).makeCsvForProject();
@@ -32,7 +32,7 @@ describe("csv exporter", () => {
   it("should produce the file requested", () => {
     temp.track(); // cleanup on exit: doesn't work
     const path = temp.path({ suffix: ".zip" });
-    new CsvExporter(project).makeZipFile(path);
+    new CsvExporter(project).makeZipFile(path, () => true);
     expect(fs.existsSync(path)).toBe(true);
     temp.cleanupSync(); // doesn't work
     fs.removeSync(path); // so we do it manually
@@ -111,7 +111,7 @@ describe("sessions csv export", () => {
   });
   it("should have good contributor list", () => {
     expect(session(1, "contributions")).toBe(
-      "recorder:Hatton|speaker:Awi Heole|speaker:Ilawi Amosa"
+      "participant:Awi Heole|participant:Ilawi Amosa|recorder:Hatton|speaker:Awi Heole"
     );
   });
 });
