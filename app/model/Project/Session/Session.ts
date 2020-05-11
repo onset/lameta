@@ -74,7 +74,7 @@ export class Session extends Folder {
       const newTargetValue = `${currentTargetValue} ${titleCase(
         migrationSource
       )}: ${valueToMove}`.trim();
-      console.log(`After migration '${migrationTarget}' = '${newTargetValue}'`);
+      //console.log(`After migration '${migrationTarget}' = '${newTargetValue}'`);
       this.properties.setText(migrationTarget, newTargetValue);
       this.properties.remove(migrationSource);
     }

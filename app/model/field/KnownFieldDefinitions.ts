@@ -1,4 +1,4 @@
-const knownFieldDefinitions = require("./fields.json");
+const knownFieldDefinitions = require("./fields.json5");
 export function isKnownFieldKey(key: string): boolean {
   return Object.keys(knownFieldDefinitions).some((
     area // e.g. project, session, person

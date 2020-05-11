@@ -16,10 +16,10 @@ export function assertAttribute(
 ) {
   const hits = select(xpath);
   if (!hits || hits.length === 0) {
-    console.log(resultXml);
+    //console.log(resultXml);
     return {
       message: () => `expected ${xpath} to exist `,
-      pass: false
+      pass: false,
     };
   }
   const xpathWithAttr = xpath + `[@${attribute}="${expected}"]`;
@@ -28,13 +28,13 @@ export function assertAttribute(
     return {
       message: () =>
         `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
-      pass: true
+      pass: true,
     };
   } else {
     return {
       message: () =>
         `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
-      pass: false
+      pass: false,
     };
   }
 }
@@ -75,60 +75,60 @@ expect.extend({
   toMatch(xpath, expectedValue) {
     const hits = select(xpath);
     if (!hits || hits.length === 0) {
-      console.log(resultXml);
+      //console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to be '${expectedValue}' but it did not match anything`,
-        pass: false
+        pass: false,
       };
     }
     const pass = value(xpath) === expectedValue;
     if (pass) {
       return {
         message: () => `expected ${xpath} to be '${expectedValue}'`,
-        pass: true
+        pass: true,
       };
     } else {
-      console.log(resultXml);
+      //      console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to be '${expectedValue}'  but it was '${value(
             xpath
           )}'`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
   toHaveCount(xpath, expectedValue) {
     const matchCount = select(xpath).length;
     if (matchCount !== expectedValue) {
-      console.log(resultXml);
+      //      console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to have ${expectedValue} matches, but got ${matchCount}`,
-        pass: false
+        pass: false,
       };
     }
 
     return {
       message: () => `expected ${xpath} to have ${expectedValue} matches`,
-      pass: true
+      pass: true,
     };
-  }
+  },
 });
 
 expect.extend({
   toDeclareVocabulary(xpath, url) {
     const hits = select(xpath);
     if (!hits || hits.length === 0) {
-      console.log(resultXml);
+      //      console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to be '${url}' but it did not match anything`,
-        pass: false
+        pass: false,
       };
     }
     const xpathWithAttr = xpath + `[@Link="${url}"]`;
@@ -136,25 +136,25 @@ expect.extend({
     if (pass) {
       return {
         message: () => `expected ${xpathWithAttr} Link to be '${url}'`,
-        pass: true
+        pass: true,
       };
     } else {
       return {
         message: () => `expected ${xpathWithAttr} Link to be '${url}'\r\n`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
   toBeClosed(xpath) {
     const hits = select(xpath);
     if (!hits || hits.length === 0) {
-      console.log(resultXml);
+      //      console.log(resultXml);
       return {
         message: () => `expected ${xpath} to be exist`,
-        pass: false
+        pass: false,
       };
     }
     const xpathWithAttr = xpath + `[@Type="ClosedVocabulary"]`;
@@ -162,41 +162,41 @@ expect.extend({
     if (pass) {
       return {
         message: () => `expected ${xpathWithAttr} type to be closed}'`,
-        pass: true
+        pass: true,
       };
     } else {
       return {
         message: () =>
           `expected ${xpathWithAttr} Link to be type to be closed. `,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
   toBeOpen(xpath) {
     return assertAttribute(xpath, "Type", "OpenVocabulary");
-  }
+  },
 });
 expect.extend({
   toHaveAttributeValue(xpath, attributeName, attributeValue) {
     return assertAttribute(xpath, attributeName, attributeValue);
-  }
+  },
 });
 expect.extend({
   toHaveText(xpath, text) {
     if (value(xpath) === text) {
       return {
         message: () => "",
-        pass: true
+        pass: true,
       };
     } else {
       return {
         message: () =>
           `expected ${xpath}, which is "${value(xpath)}", to equal "${text}".`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });

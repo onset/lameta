@@ -366,7 +366,7 @@ export default class ImdiGenerator {
         // we might not want to output. E.g. for  session: filename, size, modifiedDate, type("Session"), contributions
         // That means either we list a black list here, or on the field definition. And once we get into storing things
         // in the definition, maybe we might as well just have the definition tell us if it should go in Keys? E.g.
-        // all custom fields would say yes, plus those in the fields.json set that we don't have a home for. The 3rd set
+        // all custom fields would say yes, plus those in the fields.json5 set that we don't have a home for. The 3rd set
         // is things that the code adds, like type, size, modified date, etc. For now, using a blacklist here.
 
         if (

@@ -37,17 +37,17 @@ export class FolderMetadataFile extends File {
   }
 
   private readDefinitionsFromJson(rawKnownFieldsFromJson: FieldDefinition[]) {
-    const knownFields: FieldDefinition[] = rawKnownFieldsFromJson.map(f => {
+    const knownFields: FieldDefinition[] = rawKnownFieldsFromJson.map((f) => {
       return new FieldDefinition(f);
     });
 
     // load the file containing metadata about this folder with
-    // empty fields from the fields.json file
+    // empty fields from the fields.json5 file
     knownFields.forEach((f: FieldDefinition, i: number) => {
       //f.tabIndex = i;
       const field = Field.fromFieldDefinition(f);
       this.properties.setValue(field.key, field);
-      //console.log("Setting prop from fields.json: " + field.key);
+      //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
 }

@@ -41,7 +41,7 @@ module.exports = {
       // },
       {
         // make all files ending in .json use the `json5-loader`, so we can have comments
-        test: /\.json$/,
+        test: /\.json5?$/,
         use: "json5-loader",
         type: "javascript/auto",
       },

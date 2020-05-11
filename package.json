@@ -65,7 +65,8 @@
       "app/node_modules"
     ],
     "transform": {
-      "^.+\\.json5?$": "json5-jest",
+      "only using json5-jest for one file (fields.json5) because it actually chokes on other json and I haven't figured out why": "json5-jest",
+      "^.+\\.json5$": "json5-jest",
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
       "\\.xml$": "jest-raw-loader"
     },

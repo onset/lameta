@@ -47,7 +47,7 @@ export class Field {
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
 
-  // these definitions normally come from fields.json, which in turn can come from a google spreadsheet with json export
+  // these definitions normally come from fields.json5, which in turn can come from a google spreadsheet with json export
   public static fromFieldDefinition(definition: FieldDefinition): Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";

@@ -9,7 +9,7 @@ describe("LanguageIndex maker", () => {
     const codeToEnglishName = new TrieSearch(["iso639_3"]);
     codeToEnglishName.addAll(langtags);
     let c = 0;
-    const newIndex = ethnologue.map(l => {
+    const newIndex = ethnologue.map((l) => {
       const match = codeToEnglishName.get(l.code.three);
       let extra: string;
       if (match && match[0]) {
@@ -20,7 +20,6 @@ describe("LanguageIndex maker", () => {
             extra = l.name;
           }
         }
-
         //langtags currently has just "Indonesian"; Ethnologue & wikipedia disagree.
         const localName =
           l.code.three === "ind" ? "Bahasa Indonesia" : match[0].localname;
@@ -30,7 +29,7 @@ describe("LanguageIndex maker", () => {
           iso639_3: l.code.three,
           englishName: match[0].name,
           localName,
-          altNames: extra ? [...l.altNames, extra] : l.altNames
+          altNames: extra ? [...l.altNames, extra] : l.altNames,
         };
       } else {
         return {
@@ -38,7 +37,7 @@ describe("LanguageIndex maker", () => {
           iso639_1: l.code.two, // major languages will also have a two letter code
           iso639_3: l.code.three,
           englishName: l.name, // might not be english, but it's the best we can do
-          altNames: l.altNames
+          altNames: l.altNames,
         };
       }
     });
