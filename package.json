@@ -106,13 +106,6 @@
       "main-bundle.js.map",
       "package.json"
     ],
-    "filesAssociations": [
-      {
-        "ext": "sprj",
-        "name": "lameta/saymore project",
-        "role": "Editor"
-      }
-    ],
     "extraResources": [
       "artwork/"
     ],
@@ -129,6 +122,12 @@
       "icon": "build/windows.ico",
       "extraResources": [
         "node_modules/ffprobe-static/bin/win32/x64"
+      ],
+      "fileAssociations": [
+        {
+          "ext": "sprj",
+          "name": "lameta/saymore project"
+        }
       ]
     },
     "mac": {
@@ -136,6 +135,13 @@
       "hardenedRuntime": true,
       "extraResources": [
         "node_modules/ffprobe-static/bin/darwin/x64"
+      ],
+      "fileAssociations": [
+        {
+          "ext": "sprj",
+          "name": "lameta/saymore project",
+          "role": "Editor"
+        }
       ]
     },
     "linux": {
@@ -145,6 +151,12 @@
       ],
       "extraResources": [
         "node_modules/ffprobe-static/bin/linux/x64"
+      ],
+      "fileAssociations": [
+        {
+          "ext": "sprj",
+          "name": "lameta/saymore project"
+        }
       ]
     }
   },
@@ -186,7 +198,7 @@
     "csv-loader": "^3.0.2",
     "devtron": "^1.4.0",
     "electron": "^6.1.5",
-    "electron-builder": "^21.2.0",
+    "electron-builder": "^22.6.1",
     "electron-builder-http": "^19.27.5",
     "electron-devtools-installer": "2.2.4",
     "enzyme": "^3.0.0",
