@@ -27,8 +27,9 @@ beforeAll(() => {
   });
 
   const generator = new ImdiGenerator(person, project);
+  const pretendSessionDate = new Date("2010-06-06");
   setResultXml(
-    generator.actor(person, "pretend-role") as string
+    generator.actor(person, "pretend-role", pretendSessionDate) as string
     // ImdiGenerator.generateActor(
     //   person,
     //   project,
@@ -43,6 +44,10 @@ describe("actor imdi export", () => {
   it("should contain Actor", () => {
     expect("Actor/Name").toMatch("Awi Heole");
     expect(count("Actor/Languages/Language")).toBe(3);
+  });
+  it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
+    expect("Actor/BirthDate").toMatch("1972");
+    expect("Actor/Age").toMatch("38");
   });
   it("should label languages correctly", () => {
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");

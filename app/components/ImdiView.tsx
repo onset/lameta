@@ -63,7 +63,8 @@ export default class ImdiView extends React.Component<IProps, IState> {
       );
       xml = generator.actor(
         this.props.target as Person,
-        "will get role in context of session"
+        "will get role in context of session",
+        new Date() // normally this will be the date of the session for which the IMDI is being exported, but for here we can use today
       ) as string;
     } else if (this.props.target instanceof File) {
       const generator = new ImdiGenerator(

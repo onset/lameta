@@ -16,7 +16,7 @@ export class Person extends Folder {
   protected previousId: string;
 
   public ageOn(referenceDate: Date): string {
-    return this.properties.getDateField("birthYear").ageOn(referenceDate);
+    return this.properties.getDateField("birthYear").yearsSince(referenceDate);
   }
 
   // checks either the name or the code

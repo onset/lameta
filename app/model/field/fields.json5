@@ -110,12 +110,13 @@
       "tooltip": "Contact information about the person or institution responsible for the project.",
       "tabIndex": 10
     },
+    /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
     {
       "key": "dateAvailable",
       "tagInSayMoreClassic": "DateAvailable",
       "type": "Date",
       "tabIndex": 11
-    }
+    }*/
   ],
   "session": [
     {

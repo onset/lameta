@@ -89,7 +89,7 @@ expect.extend({
         pass: true,
       };
     } else {
-      //      console.log(resultXml);
+      //console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to be '${expectedValue}'  but it was '${value(

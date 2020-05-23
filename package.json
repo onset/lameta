@@ -270,6 +270,7 @@
     "change-case": "^4.1.1",
     "commonmark": "^0.28.1",
     "csv-parse": "^4.4.6",
+    "date-fns": "^2.14.0",
     "electron-context-menu": "^0.9.1",
     "electron-debug": "^1.1.0",
     "electron-ga": "^1.0.6",

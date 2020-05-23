@@ -15,9 +15,7 @@ describe("Project Write", () => {
   afterEach(async () => {
     temp.cleanupSync();
   });
-  it("should round-trip DateAvailable", () => {
-    AttemptRoundTripOfOneField("dateAvailable", "DateAvailable", "2015-03-05");
-  });
+
   it("should round-trip AnalysisISO3CodeAndName", () => {
     AttemptRoundTripOfOneField(
       "analysisIso3CodeAndName",
@@ -65,12 +63,9 @@ function AttemptRoundTripOfOneField(
 
   // now, can we change it and see it saved?
   let newValue = "something different";
-  if (f.properties.getFieldDefinition(key).type === "dateAvailable") {
-    f.setTextProperty(key, newValue);
-  } else {
-    newValue = "1911-1-11";
-    f.properties.getDateField(key).setValueFromString(newValue);
-  }
+
+  f.setTextProperty(key, newValue);
+
   f.save(true);
   output = fs.readFileSync(f.metadataFilePath);
   expected = `<${xmlTag}>${newValue}</${xmlTag}>`;

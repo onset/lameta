@@ -6,7 +6,7 @@ import moment from "moment";
 import { translateFieldLabel, currentUILanguage } from "../../localization";
 import { FieldDefinition } from "./FieldDefinition";
 import { Folder } from "../Folder";
-
+import * as DateFns from "date-fns";
 //import * as assert from "assert";
 
 export interface IChoice {
@@ -235,20 +235,29 @@ export class Field {
       conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
   */
 
-  public ageOn(referenceDate: Date): string {
+  public yearsSince(referenceDate: Date): string {
     if (this.text.trim().length === 0) {
       return "";
     }
-    const referenceMoment = moment(referenceDate);
-    const birthMoment = moment(this.text);
-    if (referenceMoment.isValid() && birthMoment.isValid()) {
-      const duration = moment.duration(referenceMoment.diff(birthMoment)); // referenceMoment.from(birthMoment);
-      // this would be good if we had actual birthdates: const r = `${x.years()};${x.months()}.${x.days()}`;
-      // but we currently only have year, so this will give us the year (rounding down)
-      return duration.years().toString();
-    } else {
-      return "";
+    if (
+      // switch to DateFns here because just checking for validity gave a console.warn with moment.
+      DateFns.isValid(referenceDate) &&
+      DateFns.isValid(DateFns.parseISO(this.text))
+    ) {
+      return DateFns.differenceInCalendarYears(
+        referenceDate,
+        DateFns.parseISO(this.text)
+      ).toString();
+      // const referenceMoment = moment(referenceDate);
+      // const birthMoment = moment(this.text);
+      // if (referenceMoment.isValid() && birthMoment.isValid()) {
+      //   const duration = moment.duration(referenceMoment.diff(birthMoment)); // referenceMoment.from(birthMoment);
+      //   // this would be good if we had actual birthdates: const r = `${x.years()};${x.months()}.${x.days()}`;
+      //   // but we currently only have year, so this will give us the year (rounding down)
+      //   return duration.years().toString();
+      // }
     }
+    return "";
   }
 
   public typeAndValueEscapedForXml(): { type: string; value: string } {

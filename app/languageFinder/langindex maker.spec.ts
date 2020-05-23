@@ -46,7 +46,7 @@ describe("LanguageIndex maker", () => {
       JSON.stringify(newIndex, null, 4),
       {}
     );
-    console.log("there were " + c + " extras.");
+    //console.log("there were " + c + " extras.");
   });
 
   // uncomment and rn this in order to regenerate langindex.json:

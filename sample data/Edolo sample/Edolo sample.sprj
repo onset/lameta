@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Project>
 	<Iso639Code />
 	<transcriptionFont />
@@ -16,7 +16,6 @@
 	<AccessProtocol>custom</AccessProtocol>
 	<ContentType />
 	<Applications />
-	<DateAvailable>2017-12-14</DateAvailable>
 	<RightsHolder />
 	<Depositor />
 	<RelatedPublications />
