@@ -17,9 +17,9 @@ import knownFieldDefinitions, {
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
-import { GetFileFormatInfo } from "./FileTypeInfo";
 
 import { titleCase } from "title-case";
+import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 
 export class Contribution {
   //review this @mobx.observable
@@ -299,7 +299,7 @@ export /*babel doesn't like this: abstract*/ class File {
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
     const typeName =
-      GetFileFormatInfo(this.describedFilePath)?.type ??
+      GetFileFormatInfoForPath(this.describedFilePath)?.type ??
       Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }

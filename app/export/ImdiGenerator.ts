@@ -9,7 +9,11 @@ import * as Path from "path";
 import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
 import * as mime from "mime";
-import { GetFileFormatInfo } from "../model/file/FileTypeInfo";
+import {
+  getImdiResourceTypeForPath,
+  GetFileFormatInfoForPath,
+  getMimeType,
+} from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
@@ -32,9 +36,10 @@ export default class ImdiGenerator {
 
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
-  public constructor(folder: Folder, project: Project) {
-    this.folderInFocus = folder;
-    this.project = project;
+  public constructor(folder?: Folder, project?: Project) {
+    // folder and project can be omitted in some tests that are ust calling a function that doesn't need them
+    if (folder) this.folderInFocus = folder;
+    if (project) this.project = project;
   }
 
   public static generateCorpus(
@@ -491,7 +496,7 @@ export default class ImdiGenerator {
   }
 
   private isMediaFile(f: File): boolean {
-    const g = GetFileFormatInfo(f.describedFilePath);
+    const g = GetFileFormatInfoForPath(f.describedFilePath);
     return !!g?.isMediaType;
   }
 
@@ -539,7 +544,7 @@ export default class ImdiGenerator {
     // Review: should we instead be emitting, e.g. application/elan+xml for .eaf?
     this.element(
       "Format",
-      mime.getType(Path.extname(path)) || Path.extname(path),
+      getMimeType(Path.extname(path)) || Path.extname(path),
       false,
       link
     );
@@ -564,21 +569,16 @@ export default class ImdiGenerator {
       this.group("MediaResourceLink", () => {});
 
       this.element("Date", "");
-      const y = GetFileFormatInfo(f.describedFilePath);
-      let resourceType = y?.imdiType ?? "Unspecified";
-      if (resourceType === "Unspecified") {
-        const m = mime.getType(Path.extname(f.describedFilePath));
-        if (m && ["application"].indexOf(m.split("/")[0]) > -1) {
-          resourceType = "Document";
-        }
-      }
+      const imdiResourceType = getImdiResourceTypeForPath(f.describedFilePath);
+
       this.element(
         "Type",
-        resourceType,
+        imdiResourceType,
         false,
         "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml"
       );
       this.element("SubType", "");
+      // "format" here is really mime type. See https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml
       this.formatElement(
         f.describedFilePath,
         "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml"

@@ -10,6 +10,10 @@ import {
 import { Field, FieldType } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { FieldDefinition } from "../../field/FieldDefinition";
+import {
+  getMimeType,
+  getImdiResourceTypeForExtension,
+} from "../../file/FileTypeInfo";
 
 const os = require("os");
 
@@ -86,5 +90,23 @@ describe("Session Write", () => {
     f.setTextProperty("socialContext", "family");
     setResultXml(f.getXml());
     expect("Session/AdditionalFields/Social_Context").toMatch("family");
+  });
+
+  it("should give correct mime types", () => {
+    expect(getMimeType("mp4")).toBe("video/mp4");
+    expect(getMimeType("tiff")).toBe("image/tiff");
+    expect(getMimeType("png")).toBe("image/png");
+    // and then some custom linguistic ones:
+    expect(getMimeType("pfsx")).toBe("text/x-pfsx+xml");
+    expect(getMimeType("tbt")).toBe("text/x-toolbox-text");
+    // and then some where the mime types aren't custom, but knowing that the suffix leads to this mimetype is something lameta has to know:
+    expect(getMimeType("flextext")).toBe("application/xml");
+    expect(getMimeType("fwbackup")).toBe("application/zip");
+  });
+  it("should give correct IMDI types", () => {
+    expect(getImdiResourceTypeForExtension("mp4")).toBe("Video");
+    expect(getImdiResourceTypeForExtension("tif")).toBe("Image");
+    expect(getImdiResourceTypeForExtension("tiff")).toBe("Image");
+    expect(getImdiResourceTypeForExtension("flextex")).toBe("FLEx");
   });
 });
