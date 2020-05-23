@@ -5,7 +5,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value
+  value,
 } from "../xmlUnitTestUtils";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 
@@ -67,31 +67,29 @@ it("should contain Country", () => {
 });
 it("should contain Project", () => {
   expect(count("METATRANSCRIPT/Session/MDGroup/Project")).toBe(1);
-  expect("METATRANSCRIPT/Session/MDGroup/Project/Title").toMatch(
-    "Edolo Sample"
-  );
+  expect("METATRANSCRIPT/Session/MDGroup/Project/Name").toMatch("Edolo Sample");
 });
 it("should contain Content", () => {
   expect(count("METATRANSCRIPT/Session/MDGroup/Content")).toBe(1);
-  expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("narrative");
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("Narrative");
 });
 it("should contain Actors", () => {
   // should get 2 speakers, on one recorder
-  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor").toHaveCount(3);
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor").toHaveCount(4);
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[1]/Name").toMatch(
-    "Hatton"
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Name").toMatch(
     "Awi Heole"
   );
+  expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Name").toMatch(
+    "Ilawi Amosa"
+  );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/BirthDate").toMatch(
-    "1972"
+    "1960"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Role").toMatch(
-    "speaker"
+    "participant"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[3]/Name").toMatch(
-    "Ilawi Amosa"
+    "Hatton"
   );
   // the rest of the actor checks are done in actorImdi.spec.ts
 });
@@ -99,5 +97,5 @@ it("should contain MediaFiles", () => {
   expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
   expect(
     "METATRANSCRIPT/Session/Resources/WrittenResource/ResourceLink"
-  ).toMatch("ETR009.session");
+  ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
 });
