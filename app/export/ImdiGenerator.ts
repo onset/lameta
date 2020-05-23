@@ -174,24 +174,27 @@ export default class ImdiGenerator {
       ); // required but we don't have something to map to it
 
       this.group("CommunicationContext", () => {
+        // Many of these are required even if lameta doesn't have this field.
+        // See https://trello.com/c/YHKvcMDM/88-fill-in-empty-imdi-categories-under-content
         this.element(
           "Interactivity",
-          "",
+          "unspecified",
           true,
           "http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml"
         ); // required but we don't have something to map to it
+        this.requiredField("PlanningType", "planningType");
         this.requiredField("PlanningType", "planningType");
         this.requiredField("Involvement", "involvement");
         this.requiredField("SocialContext", "socialContext");
         this.element(
           "EventStructure",
-          "",
+          "unspecified",
           true,
           "http://www.mpi.nl/IMDI/Schema/Content-EventStructure.xml"
         ); // required but we don't have something to map to it
         this.element(
           "Channel",
-          "",
+          "unspecified",
           true,
           "http://www.mpi.nl/IMDI/Schema/Content-Channel.xml"
         ); // required but we don't have something to map to it
@@ -926,12 +929,18 @@ export default class ImdiGenerator {
       <Modalities Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Modalities.xml" />
       <Subject Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Subject.xml" />
       <CommunicationContext>
-        <Interactivity Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml" />
-        <PlanningType Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml" />
-        <Involvement Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml" />
-        <SocialContext Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml" />
-        <EventStructure Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-EventStructure.xml" />
-        <Channel Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Channel.xml" />
+        <Interactivity Link="http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml"
+                      Type="ClosedVocabulary">Unspecified</Interactivity>
+        <PlanningType Link="http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml"
+                      Type="ClosedVocabulary">Unspecified</PlanningType>
+        <Involvement Link="http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml"
+                    Type="ClosedVocabulary">Unspecified</Involvement>
+        <SocialContext Link="http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml"
+                      Type="ClosedVocabulary">Unspecified</SocialContext>
+        <EventStructure Link="http://www.mpi.nl/IMDI/Schema/Content-EventStructure.xml"
+                        Type="ClosedVocabulary">Unspecified</EventStructure>
+        <Channel Link="http://www.mpi.nl/IMDI/Schema/Content-Channel.xml"
+                Type="ClosedVocabulary">Unspecified</Channel>
       </CommunicationContext>
       <Languages />
       <Keys />
