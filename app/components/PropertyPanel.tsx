@@ -1,27 +1,21 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { File } from "../model/file/File";
-import MediaStats from "./MediaStats";
+import { MediaStats } from "./MediaStats";
 import "./PropertyPanel.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 
-export interface IProps {
-  file: File;
-}
-
 @observer
-export default class PropertyPanel extends React.Component<IProps> {
+export default class PropertyPanel extends React.Component<{
+  file: File;
+}> {
   public render() {
     return (
       <div className="propertyPanel">
         <div className="propertiesColumn">
-          {MediaStats.isMedia(this.props.file) ? (
-            <MediaStats file={this.props.file} />
-          ) : (
-            ""
-          )}
+          {this.props.file.isMedia ? <MediaStats file={this.props.file} /> : ""}
         </div>
         <div className="propertiesColumn customPropertiesColumn">
           <CustomFieldsTable
