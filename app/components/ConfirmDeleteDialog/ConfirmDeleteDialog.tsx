@@ -53,6 +53,7 @@ export default class ConfirmDeleteDialog extends React.Component<
           className="confirmDeleteDialog"
           isOpen={this.state.isOpen}
           shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
           <div className={"dialogTitle"}>

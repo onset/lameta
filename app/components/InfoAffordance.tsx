@@ -11,7 +11,7 @@ export const InfoAffordance: React.FunctionComponent<{}> = (props) => {
       color={"white"}
       content={props.children}
     >
-      <img src={infoIcon} style={{ width: "12px", marginLeft: "5px" }} />
+      <img src={infoIcon} style={{ width: "1em", marginLeft: "5px" }} />
     </Tooltip>
   );
 };

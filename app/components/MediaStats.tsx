@@ -8,13 +8,12 @@ import { default as React, useState, useEffect } from "react";
 import ReactTable from "react-table";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
-import { i18n } from "../localization";
-import { t } from "@lingui/macro";
-import exifr from "exifr";
+// import { i18n } from "../localization";
+// import { t } from "@lingui/macro";
 import ExifReader from "exifreader";
 import fs from "fs";
 
-const imagesize = require("image-size");
+//const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
 
 type Stats = object;

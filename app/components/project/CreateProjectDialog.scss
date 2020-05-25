@@ -21,13 +21,13 @@
     display: flex;
     flex-direction: column;
     h1 {
-      font-size: 12px;
+      font-size: 1em;
       height: 1em;
       font-weight: bold;
       margin: 0;
     }
     p.message {
-      font-size: 12px;
+      font-size: 1em;
       height: 1em;
 
       &.error {
@@ -35,7 +35,9 @@
       }
     }
     input {
-      width: 326px; // this efectively controls the width of the whole dialog
+      // width: calc(
+      //   1em * 30
+      // );
       height: 2em;
       font-size: 12px;
       margin-top: 11px; // In Windows, this must be odd else the top line is invisible. I kid you not.

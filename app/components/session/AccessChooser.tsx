@@ -64,8 +64,8 @@ export default class AccessChooser extends React.Component<
           styles={{
             control: (styles, state) => ({
               ...styles,
-              minHeight: "26px",
-              height: "26px",
+              minHeight: "2em",
+              height: "2em",
               borderStyle: "inset",
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",

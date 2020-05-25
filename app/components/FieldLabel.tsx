@@ -40,7 +40,7 @@ export const FieldLabel: React.FunctionComponent<{
         className={"tooltipWrapper"} // would have no wrapper, but at least reminds us why it is there
         styles={{ display: "inline" }}
         background={"#FDFFB1"}
-        content={tooltip}
+        content={{ tooltip }}
       >
         <span style={{ maxWidth: "100px" }}>{labelElement}</span>
       </Tooltip>

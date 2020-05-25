@@ -42,7 +42,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         color: "transparent", // hide the "x" unless the mouse is in us
         div: {
           paddingLeft: 0,
-          fontSize: "13px", //should match $default-font-size: 13px;
+          fontSize: "1rem", //should match $default-font-size: 13px;
         },
         // don't show the language code unless we're pointing at it, it's just visual noise
         span: {

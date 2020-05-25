@@ -9,7 +9,7 @@
 @import "~react-datepicker/dist/react-datepicker.css";
 
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
-$default-font-size: 13px;
+$default-font-size: 1em; // note, we can't control the electron default font size as easily as the container, so we use em instead of rem
 
 $default-fonts: "-apple-system" /* mac*/, "BlinkMacSystemFont" /* mac*/,
   "Segoe UI" /* windows*/, "Ubuntu", "Open Sans", sans-serif;
@@ -44,9 +44,9 @@ html,
 a {
   cursor: pointer;
   text-decoration: underline;
-  color: blue;
+  color: $link--color;
   &:visited {
-    color: blue; //don't change after they've clicked it once
+    color: $link--color; //don't change after they've clicked it once
   }
 }
 .field textarea,
@@ -70,11 +70,11 @@ input {
 label {
   user-select: none;
   display: block;
-  font-size: $default-font-size;
+  //font-size: $default-font-size;
   font-weight: bold;
 }
 .hint {
-  font-size: 7pt;
+  font-size: 0.6em;
   float: right;
   color: grey;
   font-weight: normal;
@@ -104,7 +104,8 @@ input,
 select,
 .Select--multi .Select-value {
   margin-left: -3px; // make it line up in grids
-  height: $field-height; //match textarea so grid rows are the same height
+  // disable for 0.87 because auto performed better when user makes font size large.
+  //     height: $field-height; //match textarea so grid rows are the same height
 }
 textarea {
   border-style: inset;
@@ -278,7 +279,7 @@ form {
 }
 
 .isoCode {
-  font-size: 7pt;
+  font-size: 0.6em;
   margin-left: 5px;
   color: lightgray;
 }

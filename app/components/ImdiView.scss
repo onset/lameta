@@ -5,6 +5,8 @@
   width: 800px;
   display: flex;
   flex-direction: column;
+  flex-grow: 1; // <--  grow to fit available space and then...
+  overflow: hidden; // <-- ... show scroll if too big, instead of just going off the screen.
   code,
   code * {
     font-family: sans-serif;

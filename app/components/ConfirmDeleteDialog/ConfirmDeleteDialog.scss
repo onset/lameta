@@ -7,6 +7,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    width: calc(1em * 30);
 
     .row {
       display: flex;
@@ -17,7 +18,7 @@
       }
     }
     h1 {
-      font-size: 12px;
+      font-size: 1em;
       height: 1em;
       font-weight: bold;
       margin: 0;

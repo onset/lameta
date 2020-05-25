@@ -31,7 +31,7 @@ export const PeopleChooser: React.FunctionComponent<
     multiValue: (styles) => {
       return {
         ...styles,
-        fontSize: "12pt",
+
         fontWeight: 600,
         border: "solid 2px #cff09f ",
         backgroundColor: "white",

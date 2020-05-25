@@ -56,8 +56,8 @@ export const FieldOpenChoiceChooser = observer<{
         styles={{
           control: (provided, state) => ({
             ...provided,
-            minHeight: "26px",
-            height: "26px",
+            minHeight: "2em",
+            height: "2em",
             borderStyle: "inset",
             borderRadius: 0,
             borderColor: "rgb(169, 169, 169)",
