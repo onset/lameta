@@ -213,6 +213,7 @@ button {
   position: relative !important; //by default it was absolute, which messed up auto sizing
   .Pane {
     display: flex;
+    overflow: hidden; // <-- this is key to fitting the available window space
   }
 }
 .not-implemented {

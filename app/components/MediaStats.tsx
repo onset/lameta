@@ -11,6 +11,8 @@ import ffmpeg from "fluent-ffmpeg";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import exifr from "exifr";
+import ExifReader from "exifreader";
+import fs from "fs";
 
 const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
@@ -53,7 +55,6 @@ export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
       {message.toString()}
       <ReactTable
         css={css`
-          height: 500px;
           border: solid red;
           overflow: auto;
         `}
@@ -76,11 +77,20 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
   switch (file.type) {
     case "Image":
       return new Promise((resolve, reject) => {
-        exifr.parse(file.describedFilePath).then((imageStats: Stats) => {
-          const dimensions = imagesize(file.describedFilePath);
-          imageStats["Height"] = dimensions.height;
-          imageStats["Width"] = dimensions.width;
-          resolve(imageStats);
+        fs.readFile(file.describedFilePath, (error, data) => {
+          if (error) {
+            resolve({ "error reading file": error });
+          }
+          const tags = ExifReader.load(data);
+          const y = {};
+          Object.keys(tags).forEach((k) => {
+            if (tags[k].description) y[k] = tags[k].description;
+          });
+          //normally this comes in as "Image Height/Width" from ExifReader,
+          //but not always (e.g. if it's from a paint program instead a camera).
+          // We'll see if we get complaints, and then can figure out how to incorporate this second opinion from imagesize.
+          // imagesize(file.describedFilePath);
+          resolve(y);
         });
       });
       break;

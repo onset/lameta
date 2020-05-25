@@ -29,6 +29,8 @@
 
   .imageViewer {
     object-fit: contain;
+    object-position: top;
+    max-height: 100%; // <-- this is key to fitting within the available space
   }
 
   .notesForm {

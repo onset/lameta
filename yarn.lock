@@ -5972,10 +5972,12 @@ exenv@^1.2.0:
   resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
   integrity sha1-KueOhdmJQVhnCwPUe+wfA72Ru50=
 
-exifr@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/exifr/-/exifr-5.0.2.tgz#63724cbe00c2292a90958facd1b1b62cd1ee5c4c"
-  integrity sha512-1I0R3CtoyVcFhMhg5VQwkJzvwiDd2vNHoH8dCu0aOPptBKKjgnzsA+JNnwQ3kyoRzdZoCixZFwe2oOSx9MQNqA==
+exifreader@^3.11.2:
+  version "3.11.2"
+  resolved "https://registry.yarnpkg.com/exifreader/-/exifreader-3.11.2.tgz#e343d740f7331cbcd6780c36b7ae435d70a9cb71"
+  integrity sha512-XmFSIJWDRkpuh+viXMg0HZ2R4l4NDe04chwsgSeezJjuWyYFA5w0INmdSAkLPJ25yInZvLLxOXAKf5eHufA6AA==
+  optionalDependencies:
+    xmldom "^0.1.31"
 
 exit@^0.1.2:
   version "0.1.2"
@@ -14451,6 +14453,11 @@ xmldom@^0.1.27:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
   integrity sha1-1QH5ezvbQDr4757MIFcxh6rawOk=
+
+xmldom@^0.1.31:
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.31.tgz#b76c9a1bd9f0a9737e5a72dc37231cf38375e2ff"
+  integrity sha512-yS2uJflVQs6n+CyjHoaBmVSqIDevTAWrzMmjG1Gc7h1qQ7uVozNhEPJAwZXWyGQ/Gafo3fCwrcaokezLPupVyQ==
 
 xpath@^0.0.27:
   version "0.0.27"
