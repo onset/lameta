@@ -10,7 +10,7 @@ import { Trans } from "@lingui/react";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../filenameSanitizer";
 import userSettingsSingleton from "../../UserSettings";
-const isValidPath = require("is-valid-path");
+const sanitizeFilename = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -202,6 +202,9 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private getValidationProblemsMessage(): string {
+    if (this.getNewFileName() !== sanitizeFilename(this.getNewFileName())) {
+      return "Some operating systems would not allow that name.";
+    }
     if (
       this.getNewFileName() !==
       sanitizeForArchive(this.getNewFileName(), userSettingsSingleton.IMDIMode)
@@ -210,10 +213,9 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     }
     if (
       this.getNewFileName().indexOf("/") > -1 ||
-      this.getNewFileName().indexOf("\\") > -1 ||
-      !isValidPath(this.getNewPath())
+      this.getNewFileName().indexOf("\\") > -1
     ) {
-      return "There is a problem with that file path.";
+      return "Sorry, no slashes are allowed";
     }
     if (fs.existsSync(this.getNewPath())) {
       return "A file with the same name already exists at that location.";
