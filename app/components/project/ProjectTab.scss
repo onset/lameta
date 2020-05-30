@@ -21,6 +21,7 @@
   .react-tabs__tab-list {
     background-color: white;
     width: 200px;
+    flex-shrink: 0;
   }
   //right side
   .react-tabs__tab-panel--selected {
