@@ -90,7 +90,11 @@ export default class ImdiBundler {
       const imdi = ImdiGenerator.generateSession(session, project);
       const imdiFileName = `${session.filePrefix}.imdi`;
       fs.writeFileSync(
-        Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName)),
+        Path.join(
+          rootDirectory,
+          secondLevel,
+          sanitizeForArchive(imdiFileName, true)
+        ),
         imdi
       );
       childrenSubpaths.push(secondLevel + "/" + imdiFileName);
@@ -136,7 +140,11 @@ export default class ImdiBundler {
       );
 
       fs.writeFileSync(
-        Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName)),
+        Path.join(
+          rootDirectory,
+          secondLevel,
+          sanitizeForArchive(imdiFileName, true)
+        ),
         projectDocumentsImdi
       );
       subpaths.push(secondLevel + "/" + imdiFileName);
@@ -167,7 +175,7 @@ export default class ImdiBundler {
             f.describedFilePath,
             Path.join(
               targetDirectory,
-              sanitizeForArchive(Path.basename(f.describedFilePath))
+              sanitizeForArchive(Path.basename(f.describedFilePath), true)
             )
           );
         } catch (error) {

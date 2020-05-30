@@ -16,6 +16,7 @@ export class ProjectDocuments extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, null, files, customFieldRegistry);
+    this.prefixForFiles = ""; // looks dumb to prepend "OtherDocuments_" during a rename;
   }
 
   public static fromDirectory(
@@ -26,7 +27,7 @@ export class ProjectDocuments extends Folder {
     const directory = Path.join(rootDirectory, subDirectory);
     const files = new Array<File>();
     const filePaths = glob.sync(Path.join(directory, "*.*"));
-    filePaths.forEach(path => {
+    filePaths.forEach((path) => {
       const file = new OtherFile(path);
       files.push(file);
     });

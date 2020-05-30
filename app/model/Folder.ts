@@ -13,6 +13,7 @@ import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDelete
 import { trash } from "../crossPlatformUtilities";
 import { CustomFieldRegistry } from "./Project/CustomFieldRegistry";
 import { sanitizeForArchive } from "../filenameSanitizer";
+import userSettingsSingleton from "../UserSettings";
 
 export class IFolderSelection {
   @observable
@@ -85,7 +86,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
   public addOneFile(path: string, newFileName?: string): File {
     console.log("copy in " + path);
     const n = sanitizeForArchive(
-      newFileName ? newFileName : Path.basename(path)
+      newFileName ? newFileName : Path.basename(path),
+      userSettingsSingleton.IMDIMode
     );
     const dest = Path.join(this.directory, n);
     fs.copySync(path, dest);
@@ -217,7 +219,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
     // Then if that failed, we would need to rename the files that had already been changed, and then
     // change the id/name field back to what it was previously.
     const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName()
+      this.textValueThatControlsFolderName(),
+      userSettingsSingleton.IMDIMode
     );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.

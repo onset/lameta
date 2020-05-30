@@ -7,6 +7,7 @@ import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../filenameSanitizer";
 import { titleCase } from "title-case";
+import userSettingsSingleton from "../../../UserSettings";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -35,7 +36,8 @@ export class Session extends Folder {
       this.properties.setText("id", Path.basename(directory));
     }
     this.safeFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("id")
+      this.properties.getTextStringOrEmpty("id"),
+      userSettingsSingleton.IMDIMode
     );
     this.knownFields = knownFieldDefinitions.session; // for csv export
 

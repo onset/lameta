@@ -9,6 +9,7 @@ import { Folder } from "../../model/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../filenameSanitizer";
+import userSettingsSingleton from "../../UserSettings";
 const isValidPath = require("is-valid-path");
 
 // tslint:disable-next-line:no-empty-interface
@@ -201,8 +202,11 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private getValidationProblemsMessage(): string {
-    if (this.getNewFileName() !== sanitizeForArchive(this.getNewFileName())) {
-      return "There are invalid characters.";
+    if (
+      this.getNewFileName() !==
+      sanitizeForArchive(this.getNewFileName(), userSettingsSingleton.IMDIMode)
+    ) {
+      return "There are characters not allowed by the Archive Settings.";
     }
     if (
       this.getNewFileName().indexOf("/") > -1 ||

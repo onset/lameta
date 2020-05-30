@@ -7,6 +7,7 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
 import { sanitizeForArchive } from "../../../filenameSanitizer";
+import userSettingsSingleton from "../../../UserSettings";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -81,7 +82,8 @@ export class Person extends Folder {
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
     this.safeFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("name")
+      this.properties.getTextStringOrEmpty("name"),
+      userSettingsSingleton.IMDIMode
     );
     this.properties
       .getValueOrThrow("name")

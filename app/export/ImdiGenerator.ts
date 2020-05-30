@@ -17,6 +17,7 @@ import {
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
+import { sanitizeForArchive } from "../filenameSanitizer";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -187,7 +188,6 @@ export default class ImdiGenerator {
           true,
           "http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml"
         ); // required but we don't have something to map to it
-        this.requiredField("PlanningType", "planningType");
         this.requiredField("PlanningType", "planningType");
         this.requiredField("Involvement", "involvement");
         this.requiredField("SocialContext", "socialContext");
@@ -500,17 +500,25 @@ export default class ImdiGenerator {
     return !!g?.isMediaType;
   }
 
-  private pathRelativeToProjectRoot(path: string): string {
+  private sanitizedPathRelativeToProjectRoot(path: string): string {
+    // If the project has the right setting, then this path is probably already sanitized (though there may be corner
+    // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
+    // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
+    // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
+    // that to the file name we use for it in the xml.
+    const basename = sanitizeForArchive(Path.basename(path), true);
     // Intentionally not using the OS's path separator here, because it's going to XML
     // that could then be read on any OS. (That could be wrong, and we
     // can fix it, but it's intentional to not use Path.join())
-    return [Path.basename(Path.dirname(path)), Path.basename(path)].join("/");
+    const p = [Path.basename(Path.dirname(path)), basename].join("/");
+
+    return p;
   }
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
       this.element(
         "ResourceLink",
-        this.pathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -551,10 +559,9 @@ export default class ImdiGenerator {
   }
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
-      // TODO in a sample, this one had a relative path (..\somewhere\thefile.eaf)
       this.element(
         "ResourceLink",
-        this.pathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
       );
       // whereas this one just had this file name. NOte, you might expect that
       // "MediaResourceLink" doesn't belong under <WrittenResource/> but ELAR says it fails validation

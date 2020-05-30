@@ -2,9 +2,12 @@ const sanitizeFilename = require("sanitize-filename");
 const ASCIIFolder = require("fold-to-ascii");
 import userSettingsSingleton from "./UserSettings";
 
-export function sanitizeForArchive(name: string): string {
+export function sanitizeForArchive(
+  name: string,
+  allowOnlyImdiChars: boolean
+): string {
   let n = name;
-  if (userSettingsSingleton.IMDIMode) {
+  if (allowOnlyImdiChars) {
     // first, get to ascii only
     n = ASCIIFolder.foldReplacing(n, "X");
     n = n.trim().replace(/\s/g, "_");
@@ -18,5 +21,6 @@ export function sanitizeForArchive(name: string): string {
   }
   // finally, make sure it is safe for filesystems
   n = sanitizeFilename(n);
+  console.log(`sanitizeForArchive(${name}) --> ${n}`);
   return n;
 }
