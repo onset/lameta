@@ -338,7 +338,7 @@ function getTabs(
             {standardMetaTabs}
           </TabList>
           <TabPanel>
-            <img className="imageViewer" src={path} />
+            <img className="imageViewer" src={path.replace(/#/g, "%23")} />
           </TabPanel>
           {standardMetaPanels}
         </Tabs>

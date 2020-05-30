@@ -16,7 +16,6 @@ export class ProjectDocuments extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, null, files, customFieldRegistry);
-    this.prefixForFiles = ""; // looks dumb to prepend "OtherDocuments_" during a rename;
   }
 
   public static fromDirectory(
