@@ -1,11 +1,11 @@
 import { LanguageFinder } from "./LanguageFinder";
 let languageFinder: LanguageFinder;
 
+function getDefaultLanguageOfTests() {
+  return { englishName: "Foobar", iso639_3: "qay" };
+}
 describe("LanguageFinder", () => {
-  languageFinder = new LanguageFinder({
-    englishName: "Edolo",
-    iso639_3: "etr",
-  });
+  languageFinder = new LanguageFinder(() => getDefaultLanguageOfTests());
 
   beforeAll(async () => {});
   it(".findOne639_3CodeFromName should find common names of major languages first", () => {
@@ -20,6 +20,17 @@ describe("LanguageFinder", () => {
       "ind"
     );
     expect(languageFinder.findOne639_3CodeFromName("tok pisin")).toBe("tpi");
+  });
+  it("should find our unlisted code", () => {
+    // when we created the languageFinder, we gave it a function to find out the current default language info
+    // This allows the user to map any code, including the "unlisted" range (qaa-qtx) to a name
+    expect(languageFinder.findMatchesForSelect("qay")[0].iso639_3).toBe("qay");
+    expect(languageFinder.findMatchesForSelect("qay")[0].englishName).toBe(
+      "Foobar"
+    );
+    expect(languageFinder.findOne639_3CodeFromName("fooBar", "sorry")).toBe(
+      "qay"
+    );
   });
 
   it("should handle no match", () => {

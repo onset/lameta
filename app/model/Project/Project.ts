@@ -102,7 +102,7 @@ export class Project extends Folder {
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
     this.authorityLists = new AuthorityLists(() =>
-      this.persons.map(p => p.displayName)
+      this.persons.map((p) => p.displayName)
     );
 
     this.setupProtocolChoices();
@@ -110,12 +110,9 @@ export class Project extends Folder {
 
     this.knownFields = knownFieldDefinitions.project; // for csv export
 
-    // todo: how to get this in after it changes?
-    const { code, name } = this.getContentLanguageCodeAndName();
-    this.languageFinder = new LanguageFinder({
-      iso639_3: code,
-      englishName: name
-    });
+    this.languageFinder = new LanguageFinder(() =>
+      this.getContentLanguageCodeAndName()
+    );
   }
 
   public static fromDirectory(directory: string): Project {
@@ -157,7 +154,7 @@ export class Project extends Folder {
     sCurrentProject = project;
     const sesssionsDir = Path.join(directory, "Sessions");
     fs.ensureDirSync(sesssionsDir);
-    fs.readdirSync(sesssionsDir, "utf8").forEach(childName => {
+    fs.readdirSync(sesssionsDir, "utf8").forEach((childName) => {
       const dir = Path.join(sesssionsDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         // console.log(dir);
@@ -168,7 +165,7 @@ export class Project extends Folder {
     });
     const peopleDir = Path.join(directory, "People");
     fs.ensureDirSync(peopleDir);
-    fs.readdirSync(peopleDir, "utf8").forEach(childName => {
+    fs.readdirSync(peopleDir, "utf8").forEach((childName) => {
       const dir = Path.join(peopleDir, childName);
       if (fs.lstatSync(dir).isDirectory()) {
         //console.log(dir);
@@ -251,7 +248,7 @@ export class Project extends Folder {
     // object know so that it can provide the correct set of choices to the Settings form.
     this.properties
       .getValueOrThrow("accessProtocol")
-      .textHolder.map.intercept(change => {
+      .textHolder.map.intercept((change) => {
         this.authorityLists.setAccessProtocol(
           change.newValue as string,
           this.properties.getTextStringOrEmpty("customAccessChoices")
@@ -260,7 +257,7 @@ export class Project extends Folder {
       });
     this.properties
       .getValueOrThrow("customAccessChoices")
-      .textHolder.map.intercept(change => {
+      .textHolder.map.intercept((change) => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
@@ -302,7 +299,7 @@ export class Project extends Folder {
       msg = i18n._(t`That name would lead to an empty filename.`);
     } else if (
       folderArray.some(
-        f =>
+        (f) =>
           f !== folder &&
           (f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase() ||
             f.wouldCollideWithIdFields(value))
@@ -314,7 +311,7 @@ export class Project extends Folder {
       remote.dialog
         .showMessageBox({
           title: "lameta",
-          message: msg
+          message: msg,
         })
         .then(() => {});
       return false;
@@ -343,12 +340,12 @@ export class Project extends Folder {
   public validatePersonCode(person: Person, code: string): boolean {
     if (
       code.trim().length > 0 &&
-      this.persons.some(p => p !== person && p.wouldCollideWithIdFields(code))
+      this.persons.some((p) => p !== person && p.wouldCollideWithIdFields(code))
     ) {
       remote.dialog
         .showMessageBox({
           title: "lameta",
-          message: i18n._(t`There is already a Person with that name or code.`)
+          message: i18n._(t`There is already a Person with that name or code.`),
         })
         .then(() => {});
       return false;
@@ -365,7 +362,7 @@ export class Project extends Folder {
     }
   }
   public countOfMarkedSessions(): number {
-    return this.sessions.filter(s => s.checked).length;
+    return this.sessions.filter((s) => s.checked).length;
   }
   public canDeleteCurrentSession(): boolean {
     return this.selectedSession.index >= 0;
@@ -392,7 +389,7 @@ export class Project extends Folder {
     });
   }
   public findPerson(name: string): Person | undefined {
-    return this.persons.find(p => {
+    return this.persons.find((p) => {
       return p.referenceIdMatches(name);
     });
   }
@@ -403,17 +400,17 @@ export class Project extends Folder {
     oldId: string,
     newId: string
   ): void {
-    this.sessions.forEach(session =>
+    this.sessions.forEach((session) =>
       session.updateSessionReferencesToPersonWhenIdChanges(oldId, newId)
     );
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
     const lowerCaseName = id.toLocaleLowerCase();
-    const arraysOfMatchingContributions = this.sessions.map(session => {
+    const arraysOfMatchingContributions = this.sessions.map((session) => {
       return session
         .getAllContributionsToAllFiles()
-        .map(contribution => {
+        .map((contribution) => {
           if (contribution.personReference.toLowerCase() === lowerCaseName) {
             // the session name isn't normally part of the contribution because it is owned
             // by the session. But we stick it in here for display purposes. Alternatively,
@@ -423,7 +420,7 @@ export class Project extends Folder {
           }
           return undefined;
         })
-        .filter(c => c); // remove the undefined's;
+        .filter((c) => c); // remove the undefined's;
     });
 
     //flatten
@@ -449,19 +446,19 @@ export class Project extends Folder {
     return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
   }*/
 
-  public getContentLanguageCodeAndName(): { code: string; name: string } {
+  public getContentLanguageCodeAndName(): {
+    iso639_3: string;
+    englishName: string;
+  } {
     const x: string = this.properties.getTextStringOrEmpty(
       "vernacularIso3CodeAndName"
     );
-    const parts = x.split(":").map(p => p.trim());
-    return { code: parts[0].toLowerCase(), name: parts[1] };
+    const parts = x.split(":").map((p) => p.trim());
+    return { iso639_3: parts[0].toLowerCase(), englishName: parts[1] };
   }
 
   public getWorkingLanguageName(): string {
-    return this.getWorkingLanguageCode()
-      .split(":")
-      .slice(-1)[0]
-      .trim(); // last element (will be the name , if there is a ':')
+    return this.getWorkingLanguageCode().split(":").slice(-1)[0].trim(); // last element (will be the name , if there is a ':')
   }
   public getWorkingLanguageCode(): string {
     return this.properties.getTextStringOrEmpty("analysisIso3CodeAndName");

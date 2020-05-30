@@ -168,16 +168,16 @@ function getName(languageFinder: LanguageFinder, code: string): string {
   const name = languageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(code);
 
   // first, languages with custom codes need special name handling
-  if (
-    name === code ||
-    // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
-    (code.toLowerCase() >= "qaa" &&
-      code.toLowerCase() <= "qtz" &&
-      name.indexOf("[Unlisted]") >= 0)
-  ) {
-    //code.substr(0, 2).toLowerCase() === "qa") {
-    return code;
-  }
+  // if (
+  //   name === code ||
+  //   // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
+  //   (code.toLowerCase() >= "qaa" &&
+  //     code.toLowerCase() <= "qtz" &&
+  //     name.indexOf("[Unlisted]") >= 0)
+  // ) {
+  //   //code.substr(0, 2).toLowerCase() === "qa") {
+  //   return code;
+  // }
 
   // now remove any commas
   const parts = name.split(",");

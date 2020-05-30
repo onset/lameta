@@ -41,10 +41,10 @@ interface IIndexEntry {
 
 export class LanguageFinder {
   private index: TrieSearch;
-  private defaultContentLanguage: IIndexEntry;
+  private getDefaultLanguage: () => IIndexEntry;
 
-  constructor(defaultContentLanguage: IIndexEntry) {
-    this.defaultContentLanguage = defaultContentLanguage;
+  constructor(getDefaultLanguage: () => IIndexEntry) {
+    this.getDefaultLanguage = getDefaultLanguage;
 
     // currently this uses a trie, which is overkill for this number of items,
     // but I'm using it because I do need prefix matching and this library does that.
@@ -75,15 +75,16 @@ export class LanguageFinder {
         this.index.map(indexEntry.localName, indexEntry);
       }
     });
-    // if the custom language is a custom one, that is, without a real iso639_3 code,
+    /*  the problem with having this here is that this index is not rebuilt if the user changes the default language (e.g. when first
+  setting up the project)
+  
+  // if the custom language is a custom one, that is, without a real iso639_3 code,
     // we want to be able to find it. Enhance: only add this if it is in the qaa-qtz range?
-    this.index.map(defaultContentLanguage.iso639_3, defaultContentLanguage);
-    if (defaultContentLanguage.englishName) {
-      this.index.map(
-        defaultContentLanguage.englishName,
-        defaultContentLanguage
-      );
-    }
+    const dl = getDefaultLanguage();
+    this.index.map(dl.iso639_3, dl);
+    if (dl.englishName) {
+      this.index.map(dl.englishName, dl);
+    }*/
   }
   private matchesPrefix(
     language,
@@ -111,6 +112,15 @@ export class LanguageFinder {
     name: string,
     codeIfNoMatches: string = "und"
   ): string {
+    // handle qaa -- qtx or any other code that we don't have in our index, but the user has
+    // set up as the default language
+    if (
+      name.toLowerCase().trim() ===
+      this.getDefaultLanguage().englishName.toLowerCase().trim()
+    ) {
+      return this.getDefaultLanguage().iso639_3;
+    }
+
     // gives us hits on name & codes that start with the prefix
     const matches = this.index.get(name).map((m) => new Language(m));
     const x = matches.filter((l: Language) => {
@@ -120,7 +130,7 @@ export class LanguageFinder {
   }
   public makeMatchesAndLabelsForSelect(
     prefix: string
-  ): Array<{ languageInfo: Language; nameMatchingWhatTheyTyped: string }> {
+  ): { languageInfo: Language; nameMatchingWhatTheyTyped: string }[] {
     const pfx = prefix.toLocaleLowerCase();
     const sortedListOfMatches = this.findMatchesForSelect(prefix);
     // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
@@ -129,8 +139,8 @@ export class LanguageFinder {
         iso639_3: prefix,
         englishName:
           // if they have given us the name for this custom language in the Project settings, use it
-          this.defaultContentLanguage.iso639_3 === prefix
-            ? this.defaultContentLanguage.englishName
+          this.getDefaultLanguage().iso639_3 === prefix
+            ? this.getDefaultLanguage().englishName
             : `${prefix} [Unlisted]`,
       });
       sortedListOfMatches.push(l);
@@ -141,14 +151,34 @@ export class LanguageFinder {
     }));
   }
 
-  public findMatchesForSelect(prefix: string): Language[] {
+  private lookupInIndexAndCustomLanguages(s: string): IIndexEntry[] {
     // gives us hits on name & codes that start with the prefix
     // Enhance: in order to do search without stripDiacritics,
     // we would probably have to strip them off before adding to TrieSearch.
-    const matches = this.index.get(prefix);
+    const langs = this.index.get(s);
+
+    // handle qaa -- qtx or any other code that we don't have in our index, but the user has
+    // set up as the default language
+    const nameOfProjectDefaultLanguage = this.getDefaultLanguage()
+      .englishName.toLowerCase()
+      .trim();
+    if (
+      nameOfProjectDefaultLanguage.startsWith(s.toLowerCase().trim()) ||
+      this.getDefaultLanguage()
+        .iso639_3.toLowerCase()
+        .startsWith(s.toLowerCase().trim())
+    ) {
+      langs.push(this.getDefaultLanguage());
+    }
+    return langs;
+  }
+
+  public findMatchesForSelect(prefix: string): Language[] {
+    const matches = this.lookupInIndexAndCustomLanguages(prefix);
     const pfx = prefix.toLocaleLowerCase();
 
     const langs: Language[] = matches.map((m) => new Language(m));
+
     const kMaxMatchesToSpendTimeOne = 100;
     const spendTimeThinking = langs.length <= kMaxMatchesToSpendTimeOne;
     // For languages that will be typed in often, it is awkward to see, for example
@@ -215,7 +245,7 @@ export class LanguageFinder {
   public findOneLanguageNameFromCode_Or_ReturnCode(code: string): string {
     const trimmedCode = code.trim();
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
-    const matches = this.index.get(trimmedCode);
+    const matches = this.lookupInIndexAndCustomLanguages(trimmedCode);
     const x = matches.filter((m) => {
       return m.iso639_3 === trimmedCode;
     });
