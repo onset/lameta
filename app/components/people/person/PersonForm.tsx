@@ -3,7 +3,7 @@ import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
 import TextFieldEdit from "../../TextFieldEdit";
 import { FieldSet } from "../../../model/field/FieldSet";
-import { LanguageEdit } from "./LanguageEdit";
+import { PersonLanguagesEditor } from "./PersonLanguagesEditor";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import MugShot from "./MugShot";
 import "./PersonForm.scss";
@@ -60,7 +60,8 @@ export default class PersonForm extends React.Component<IProps> {
                 .englishLabel
             }
           </label>
-          <LanguageEdit
+
+          <PersonLanguagesEditor
             language={this.props.fields.getTextField("primaryLanguage")}
             fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
             motherLanguage={this.props.fields.getTextField("mothersLanguage")}

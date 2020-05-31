@@ -14,13 +14,23 @@ export interface IProps {
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export const MultiLanguageFieldEdit: React.FunctionComponent<
+export const SingleLanguageChooser: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   const customStyles = {
+    input: (provided, state) => ({
+      ...provided,
+      height: "1.3em",
+    }),
     control: (styles, state) => ({
       ...styles,
-      height: "2em",
+      // height: "2em",
+      //height: "1em",
+      // paddingLeft: "8px",
+      // paddingRight: "8px",
+      paddingTop: "0px",
+      paddingBottom: "0px",
+      minHeight: "auto",
       borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
@@ -32,54 +42,53 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
       ...styles,
     }),
     //    clearIndicator:styles => ({ ...styles }),
-    multiValue: (styles, { data }) => {
-      return {
-        ...styles,
-        backgroundColor: "white",
+    // multiValue: (styles, { data }) => {
+    //   return {
+    //     ...styles,
+    //     backgroundColor: "white",
 
-        border: "none",
-        color: "transparent", // hide the "x" unless the mouse is in us
-        div: {
-          paddingLeft: 0,
-          fontSize: "1rem", //should match $default-font-size: 13px;
-        },
-        // don't show the language code unless we're pointing at it, it's just visual noise
-        span: {
-          color: "transparent",
-        },
-        ":hover": {
-          color: "lightgray", // show the "x"
-          //border: "solid 2px #cff09f",
-          span: {
-            color: "lightgray", //go ahead and show it
-          },
-        },
-      };
-    },
-    multiValueRemove: (styles, { data }) => ({
-      ...styles,
-      color: "inherit", //""transparent",
-      // counteract the paddingLeft:0 above
-      paddingLeft: "4px !important",
-      ":hover": {
-        backgroundColor: saymore_orange,
-        color: "white",
-      },
-    }),
+    //     border: "none",
+    //     color: "transparent", // hide the "x" unless the mouse is in us
+    //     div: {
+    //       paddingLeft: 0,
+    //       fontSize: "1rem", //should match $default-font-size: 13px;
+    //     },
+    //     // don't show the language code unless we're pointing at it, it's just visual noise
+    //     span: {
+    //       color: "transparent",
+    //     },
+    //     ":hover": {
+    //       color: "lightgray", // show the "x"
+    //       //border: "solid 2px #cff09f",
+    //       span: {
+    //         color: "lightgray", //go ahead and show it
+    //       },
+    //     },
+    //   };
+    // },
+    // multiValueRemove: (styles, { data }) => ({
+    //   ...styles,
+    //   color: "inherit", //""transparent",
+    //   // counteract the paddingLeft:0 above
+    //   paddingLeft: "4px !important",
+    //   ":hover": {
+    //     backgroundColor: saymore_orange,
+    //     color: "white",
+    //   },
+    // }),
   };
 
   const [languageCodeString, setLanguageCodeString] = useState(
     props.field.text
   );
 
-  const currentValueArray = languageCodeString
-    .split(";")
-    .filter((c) => c.length > 0)
-    .map((c) => c.trim())
-    .map((code) => ({
-      value: code,
-      label: getName(props.languageFinder, code),
-    }));
+  const code = languageCodeString ? languageCodeString.trim() : undefined;
+  const currentValue = code
+    ? {
+        value: code,
+        label: getName(props.languageFinder, code),
+      }
+    : undefined;
 
   const loadMatchingOptions = (inputValue, callback) => {
     const matches =
@@ -98,13 +107,11 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   };
   return (
     <div className={"field " + (props.className ? props.className : "")}>
-      <label>{props.field.labelInUILanguage}</label>
-
       <AsyncSelect
         tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
         name={props.field.labelInUILanguage}
         components={{
-          MultiValueLabel: CustomLanguagePill,
+          //SingleValue: CustomLanguagePill,
           Option: CustomOption,
           // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
           DropdownIndicator: null,
@@ -113,19 +120,16 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         placeholder=""
         isClearable={false} // don't need the extra "x"
         loadOptions={_.debounce(loadMatchingOptions, 100)}
-        value={currentValueArray}
+        value={currentValue}
         styles={customStyles}
-        onChange={(v: any[]) => {
-          // if you delete the last member, you get null instead of []
-          const newChoices = v ? v : [];
-          const s: string = newChoices.map((o) => o.value).join(";");
+        onChange={(choice: any) => {
           // NB: haven't worked out how to use mobx with functional components yet, so we
           // set the value
-          props.field.setValueFromString(s);
+          props.field.setValueFromString(choice.value);
           // and explicitly change the state so that we redraw
-          setLanguageCodeString(s);
+          setLanguageCodeString(choice.value);
         }}
-        isMulti
+        //        isMulti
       />
     </div>
   );

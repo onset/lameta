@@ -106,7 +106,7 @@ export const PeopleChooser: React.FunctionComponent<
         onChange={(v: any[]) => {
           // if you delete the last member, you get null instead of []
           const newChoices = v ? v : [];
-          // NB: haven't worked out how to use mbox with functional components yet, so we
+          // NB: haven't worked out how to use mobx with functional components yet, so we
           // set the value
           //props.field.setValueFromString(s);
           props.folder.metadataFile!.contributions = [];

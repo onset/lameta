@@ -1,11 +1,11 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
 import TextFieldEdit from "../../TextFieldEdit";
 import ParentButton from "./ParentButton";
 import { locate } from "../../../crossPlatformUtilities";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { useState } from "react";
+import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 const femaleSelected: string = locate("assets/Female_Selected.png");
 const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
 const maleSelected: string = locate("assets/Male_Selected.png");
@@ -19,7 +19,9 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
+export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
+  props
+) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
@@ -40,13 +42,18 @@ export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <div className={"field language " + props.language.key}>
-      <TextFieldEdit
+      <SingleLanguageChooser
+        field={props.language}
+        languageFinder={props.languageFinder}
+        className={"language-name " + validationClass}
+      />
+      {/* <TextFieldEdit
         className={"language-name " + validationClass}
         hideLabel={true}
         field={props.language}
         tooltip={tooltip}
         onBlurWithValue={updateValidationClass}
-      />
+      /> */}
       <ParentButton
         childLanguage={props.language}
         parentLanguage={props.motherLanguage}
