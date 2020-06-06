@@ -7,7 +7,6 @@ import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
-import { date } from "@lingui/core";
 import { ShowAlertDialog } from "./components/AlertDialog/AlertDialog";
 
 export default class SayLessMenu {

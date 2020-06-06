@@ -2,6 +2,8 @@ import { showInExplorer } from "../crossPlatformUtilities";
 //import { store } from "react-notifications-component";
 import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
+import userSettings from "../UserSettings";
+
 const electron = require("electron");
 export function NotifyError(message: string) {
   ButterToast.raise({
@@ -47,7 +49,7 @@ export function NotifyMultipleProjectFiles(
         .then((response) => {
           if (response.response > 0) {
             showInExplorer(folder);
-            electron.remote.app.quit();
+            if (!userSettings.DeveloperMode) electron.remote.app.quit();
           }
         });
     }
