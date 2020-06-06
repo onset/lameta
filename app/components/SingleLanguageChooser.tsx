@@ -1,10 +1,17 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
-//import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
+import { LanguageOption, LanguagePill } from "./LanguagePill";
+import { observer } from "mobx-react";
 
 const saymore_orange = "#e69664";
 
@@ -16,7 +23,7 @@ export interface IProps {
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export const SingleLanguageChooser: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
-> = (props) => {
+> = observer((props) => {
   const customStyles = {
     input: (provided, state) => ({
       ...provided,
@@ -24,10 +31,6 @@ export const SingleLanguageChooser: React.FunctionComponent<
     }),
     control: (styles, state) => ({
       ...styles,
-      // height: "2em",
-      //height: "1em",
-      // paddingLeft: "8px",
-      // paddingRight: "8px",
       paddingTop: "0px",
       paddingBottom: "0px",
       minHeight: "auto",
@@ -37,52 +40,14 @@ export const SingleLanguageChooser: React.FunctionComponent<
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
       "&:hover": { borderColor: saymore_orange },
     }),
-    valueContainer: (styles) => ({ ...styles }),
-    container: (styles) => ({
-      ...styles,
-    }),
-    //    clearIndicator:styles => ({ ...styles }),
-    // multiValue: (styles, { data }) => {
-    //   return {
-    //     ...styles,
-    //     backgroundColor: "white",
 
-    //     border: "none",
-    //     color: "transparent", // hide the "x" unless the mouse is in us
-    //     div: {
-    //       paddingLeft: 0,
-    //       fontSize: "1rem", //should match $default-font-size: 13px;
-    //     },
-    //     // don't show the language code unless we're pointing at it, it's just visual noise
-    //     span: {
-    //       color: "transparent",
-    //     },
-    //     ":hover": {
-    //       color: "lightgray", // show the "x"
-    //       //border: "solid 2px #cff09f",
-    //       span: {
-    //         color: "lightgray", //go ahead and show it
-    //       },
-    //     },
-    //   };
-    // },
-    // multiValueRemove: (styles, { data }) => ({
-    //   ...styles,
-    //   color: "inherit", //""transparent",
-    //   // counteract the paddingLeft:0 above
-    //   paddingLeft: "4px !important",
-    //   ":hover": {
-    //     backgroundColor: saymore_orange,
-    //     color: "white",
-    //   },
-    // }),
+    clearIndicator: (styles) => ({
+      ...styles,
+      color: "#e4e4e4", // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
+    }),
   };
 
-  const [languageCodeString, setLanguageCodeString] = useState(
-    props.field.text
-  );
-
-  const code = languageCodeString ? languageCodeString.trim() : undefined;
+  const code = props.field.text ? props.field.text.trim() : undefined;
   const currentValue = code
     ? {
         value: code,
@@ -111,61 +76,26 @@ export const SingleLanguageChooser: React.FunctionComponent<
         tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
         name={props.field.labelInUILanguage}
         components={{
-          //SingleValue: CustomLanguagePill,
-          Option: CustomOption,
+          SingleValue: LanguagePill,
+          Option: LanguageOption,
           // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
           DropdownIndicator: null,
+          // ClearIndicator:
         }}
         className="select"
         placeholder=""
-        isClearable={false} // don't need the extra "x"
+        isClearable={true}
         loadOptions={_.debounce(loadMatchingOptions, 100)}
         value={currentValue}
         styles={customStyles}
         onChange={(choice: any) => {
-          // NB: haven't worked out how to use mobx with functional components yet, so we
-          // set the value
-          props.field.setValueFromString(choice.value);
-          // and explicitly change the state so that we redraw
-          setLanguageCodeString(choice.value);
+          const v = choice && choice.value ? choice.value : "";
+          props.field.setValueFromString(v);
         }}
-        //        isMulti
       />
     </div>
   );
-};
-
-// how to render the choice in the drop
-const CustomOption = (props) => {
-  return (
-    <div
-      {...props.innerProps}
-      style={{
-        paddingLeft: "5px",
-        backgroundColor: props.isFocused
-          ? /*"#cff09f"*/ saymore_orange
-          : "white",
-      }}
-    >
-      <div>
-        {props.data.label}
-        <span className="isoCode">{props.data.value}</span>
-      </div>
-    </div>
-  );
-};
-
-// render what has been previously chosen
-const CustomLanguagePill = ({ children, data, innerProps, isDisabled }) => {
-  return (
-    <div {...innerProps}>
-      <div>
-        {data.label}
-        <span className="isoCode">{data.value}</span>
-      </div>
-    </div>
-  );
-};
+});
 
 // things like German are currently in our index as "German, Standard". This looks weird when it is in a list of other language names.
 // So just make it, e.g., "Standard German"
