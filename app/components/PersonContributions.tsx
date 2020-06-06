@@ -6,6 +6,7 @@ import { Contribution } from "../model/file/File";
 import ReactTable from "react-table";
 import { i18n, translateRole } from "../localization";
 import { t } from "@lingui/macro";
+import Tooltip from "react-tooltip-lite";
 
 export interface IProps {
   person: Person;
@@ -22,7 +23,7 @@ export class PersonContributions extends React.Component<IProps> {
     const columns = [
       {
         id: "name",
-        Header: i18n._(t`Name`),
+        Header: i18n._(t`Session`),
         width: 300,
         accessor: (row: Contribution) => row.sessionName,
       },
@@ -45,13 +46,20 @@ export class PersonContributions extends React.Component<IProps> {
     );
 
     return (
-      <ReactTable
-        className={"personContributions"}
-        showPagination={false}
-        data={rows}
-        columns={columns}
-        minRows={0}
-      />
+      <Tooltip
+        styles={{ display: "inline" }}
+        background={"darkblue"}
+        color={"white"}
+        content={"Changes can only be made from the Sessions tab."}
+      >
+        <ReactTable
+          className={"personContributions"}
+          showPagination={false}
+          data={rows}
+          columns={columns}
+          minRows={0}
+        />
+      </Tooltip>
     );
   }
 }
