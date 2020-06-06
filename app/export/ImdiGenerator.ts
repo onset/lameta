@@ -142,8 +142,8 @@ export default class ImdiGenerator {
         this.element("FamilySocialRole", "");
         this.element("Languages", "");
         this.element("EthnicGroup", "");
-        this.element("Age", "Unspecified");
-        this.element("BirthDate", "");
+        this.element("Age", "");
+        this.element("BirthDate", "Unspecified");
         this.element("Sex", "");
         this.element("Education", "");
         this.element("Anonymized", "false");
@@ -283,19 +283,24 @@ export default class ImdiGenerator {
     if (lang && lang.length > 0) {
       this.startGroup("Language");
 
-      // Enhance: this matching algorithm is far from ideal.
-      // It won't match on alternate names
-      const code = this.project.languageFinder.findOne639_3CodeFromName(
-        lang,
-        "und"
-      );
+      // // Enhance: this matching algorithm is far from ideal.
+      // // It won't match on alternate names
+      // const code = this.project.languageFinder.findOne639_3CodeFromName(
+      //   lang,
+      //   "und"
+      // );
 
       // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
       // a variety of codes to be used. However ELAR in particular apparently can only
       // consume the ISO639-3 variety in 2018.
-      this.element("Id", "ISO639-3:" + code);
+      this.element("Id", "ISO639-3:" + lang);
       //this.fieldLiteral("Id", lang);
-      this.element("Name", lang);
+      this.element(
+        "Name",
+        this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+          lang
+        )
+      );
       this.attributeLiteral(
         "Link",
         "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
@@ -335,7 +340,7 @@ export default class ImdiGenerator {
     this.requiredField("Name", "id");
     this.requiredField("Title", "title");
     this.field("Date", "date", true, "Unspecified");
-    this.optionalField("Description", "description");
+    this.requiredField("Description", "description"); //https://trello.com/c/6VXkbU3a/110-imdi-empty-cells-need-to-become-xml-tags-eg-session-description
     this.keysThatHaveBeenOutput.add("Session.description");
 
     this.startGroup("MDGroup");
@@ -712,7 +717,7 @@ export default class ImdiGenerator {
       if (birthYear === "?") {
         this.element("Age", "unknown"); // ELAR request Oct-Dec 2019
       } else if (birthYear.trim() === "") {
-        this.element("Age", "Unspecified"); // CMDI maker outputs 'unspecified' if you leave it empty
+        this.element("Age", ""); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
         this.tail.comment("Could not compute age");
       } else {
         const age = person.ageOn(dateToCompareWith);
@@ -720,7 +725,8 @@ export default class ImdiGenerator {
           this.element("Age", age);
         }
       }
-      this.requiredField("BirthDate", "birthYear", person);
+      this.requiredFieldWithUnspecified("BirthDate", "birthYear", person);
+
       this.addGender(person);
       this.requiredField("Education", "education", person);
 
@@ -761,6 +767,22 @@ export default class ImdiGenerator {
   //-----------------------------------------------------
   // Utility methods to add various things to the xml
   //-----------------------------------------------------
+
+  private requiredFieldWithUnspecified(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File,
+    projectFallbackFieldName?: string
+  ) {
+    this.field(
+      elementName,
+      fieldName,
+      true,
+      "Unspecified",
+      target,
+      projectFallbackFieldName
+    );
+  }
 
   private requiredField(
     elementName: string,
