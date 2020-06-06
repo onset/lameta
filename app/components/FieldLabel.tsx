@@ -33,6 +33,8 @@ export const FieldLabel: React.FunctionComponent<{
       {translateFieldLabel(props.fieldDef)}
     </label>
   );
+  console.log("tooltip.props: " + JSON.stringify(props));
+  console.log("tooltip: " + JSON.stringify(tooltip));
   const labelMaybeWithTooltip =
     tooltip && tooltip.length > 0 ? (
       <Tooltip
@@ -40,7 +42,8 @@ export const FieldLabel: React.FunctionComponent<{
         className={"tooltipWrapper"} // would have no wrapper, but at least reminds us why it is there
         styles={{ display: "inline" }}
         background={"#FDFFB1"}
-        content={{ tooltip }}
+        // wrapping in a span prevents an error when the tooltip text has problematic characters
+        content={<span>{tooltip}</span>}
       >
         <span style={{ maxWidth: "100px" }}>{labelElement}</span>
       </Tooltip>
