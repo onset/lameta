@@ -549,7 +549,15 @@ export /*babel doesn't like this: abstract*/ class File {
           //   Review: This happen if it finds, e.g. <Session/>.
           properties = {};
         }
-
+        const minimumVersion = properties.$?.minimum_lameta_version_to_read;
+        if (minimumVersion) {
+          const current = require("../../package.json").version;
+          if (compareVersions(minimumVersion, current) === 1) {
+            throw Error(
+              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`
+            );
+          }
+        }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
       }
