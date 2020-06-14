@@ -24,6 +24,7 @@ import {
   sentryBreadCrumb,
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
+import compareVersions from "compare-versions";
 
 export class Contribution {
   //review this @mobx.observable
@@ -528,7 +529,9 @@ export /*babel doesn't like this: abstract*/ class File {
           },
           (err, result) => {
             if (err) {
-              throw err;
+              throw Error(
+                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`
+              );
             }
             xmlAsObject = result;
           }

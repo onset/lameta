@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import Workspace from "../components/Workspace";
 import * as React from "react";
 import * as mobx from "mobx";
@@ -170,6 +176,20 @@ export default class HomePage extends React.Component<IProps, IState> {
   //   });
   // }
   public render() {
+    // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
+    // this has been converted to modern react with hooks.
+    if (this.projectHolder.project?.loadingError) {
+      return (
+        <h1
+          css={css`
+            padding: 50px;
+          `}
+        >
+          {this.projectHolder.project.loadingError}
+        </h1>
+      );
+    }
+
     let title = this.projectHolder.project
       ? `${Path.basename(this.projectHolder.project.directory)}/ ${
           this.projectHolder.project.displayName
@@ -180,13 +200,13 @@ export default class HomePage extends React.Component<IProps, IState> {
     remote.getCurrentWindow().setTitle(title);
     return (
       <div style={{ height: "100%" }}>
-        {this.projectHolder.project ? (
+        {(this.projectHolder.project && (
           <Workspace
             project={this.projectHolder.project}
             authorityLists={this.projectHolder.project.authorityLists}
             menu={this.menu}
           />
-        ) : (
+        )) || (
           <div className={"startScreen"}>
             <div className={"core"}>
               <div className={"top"}>

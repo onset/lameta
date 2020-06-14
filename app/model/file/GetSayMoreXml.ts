@@ -15,19 +15,25 @@ export default function getSayMoreXml(
 ): string {
   const root = xmlbuilder.create(xmlRootName, {
     version: "1.0",
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
-
+  // 0.0.0 because we haven't started using this yet. It is just here  that in the future
+  // *if* we use it, old versions will know not to open the file. Note, we would never just replace
+  // "0.0.0" with the current version; we'd only update it, by hand, when we know we are doing something
+  // that is not backwards compatible. And at the point we would need to be concerned about locking
+  // people into whatever beta version this was introduced in, because they won't be able to go back
+  // to their release version if there is a problem.
+  root.attribute("minimum_lameta_version_to_read", "0.0.0");
   const propertiesToPersist = properties
     .values()
-    .filter(field => field.persist);
+    .filter((field) => field.persist);
   writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
   if (properties.getValue("participants")) {
     // In older versions of SayMore & lameta, there were "participants", people without roles.
     // Now we just use the Contributors, which have roles and comments. But we still write out
     // this list in case the file is opened by an old version of SayMore
     const legacyParticipantsList = contributions
-      .map(c => c.personReference)
+      .map((c) => c.personReference)
       .join(";");
     root.element("participants", {}, legacyParticipantsList);
   }
@@ -38,13 +44,15 @@ export default function getSayMoreXml(
   // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
   writeElementGroup(
     root,
-    propertiesToPersist.filter(f => f.definition && f.definition.isAdditional),
+    propertiesToPersist.filter(
+      (f) => f.definition && f.definition.isAdditional
+    ),
     "AdditionalFields",
     false // only custom fields might need special treatment
   );
   writeElementGroup(
     root,
-    propertiesToPersist.filter(f => f.definition && f.definition.isCustom),
+    propertiesToPersist.filter((f) => f.definition && f.definition.isCustom),
     "CustomFields",
     doOutputEmptyCustomFields
   );
@@ -53,7 +61,7 @@ export default function getSayMoreXml(
     pretty: true,
     indent: "  ",
     /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
-    allowEmpty: true
+    allowEmpty: true,
   });
 }
 //function writeElementsWeDontUnderstand() {}
@@ -64,12 +72,12 @@ function writeSimplePropertyElements(
 ) {
   properties
     .filter(
-      field =>
+      (field) =>
         !field.definition ||
         (!field.definition.isCustom && !field.definition.isAdditional)
     )
     //.filter(field => field.type !== FieldType.Contributions)
-    .forEach(field => {
+    .forEach((field) => {
       writeField(root, field, doOutputTypeInXmlTags);
     });
 }
@@ -81,7 +89,7 @@ function writeElementGroup(
   doOutputEmptyFields: boolean // used for watching empty custom fields
 ) {
   const groupParent = root.element(groupTag, {
-    type: "xml"
+    type: "xml",
   });
 
   let didWriteAtLeastOne = false;
@@ -110,9 +118,9 @@ function writeContributions(
   contributions: Contribution[]
 ) {
   const contributionsElement = root.element("contributions", {
-    type: "xml"
+    type: "xml",
   });
-  contributions.forEach(contribution => {
+  contributions.forEach((contribution) => {
     if (
       contribution.personReference &&
       contribution.personReference.trim().length > 0

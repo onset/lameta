@@ -30,11 +30,12 @@ let sCurrentProject: Project | null = null;
 export class ProjectHolder {
   @mobx.observable
   private projectInternal: Project | null;
+
   public get project(): Project | null {
     return this.projectInternal;
   }
   public setProject(p: Project | null) {
-    if (this.projectInternal) {
+    if (this.projectInternal && !this.projectInternal.loadingError) {
       this.projectInternal.saveAllFilesInFolder();
     }
     if (p == null) {
@@ -49,6 +50,8 @@ export class ProjectHolder {
 }
 
 export class Project extends Folder {
+  public loadingError: string;
+
   @mobx.observable
   public selectedSession: IFolderSelection;
   @mobx.observable
@@ -116,77 +119,86 @@ export class Project extends Folder {
   }
 
   public static fromDirectory(directory: string): Project {
-    const customFieldRegistry = new CustomFieldRegistry();
-    const metadataFile = new ProjectMetadataFile(
-      directory,
-      customFieldRegistry
-    );
+    try {
+      const customFieldRegistry = new CustomFieldRegistry();
+      const metadataFile = new ProjectMetadataFile(
+        directory,
+        customFieldRegistry
+      );
 
-    const descriptionFolder = ProjectDocuments.fromDirectory(
-      directory,
-      "DescriptionDocuments",
-      customFieldRegistry
-    );
+      const descriptionFolder = ProjectDocuments.fromDirectory(
+        directory,
+        "DescriptionDocuments",
+        customFieldRegistry
+      );
 
-    const otherDocsFolder = ProjectDocuments.fromDirectory(
-      directory,
-      "OtherDocuments",
-      customFieldRegistry
-    );
+      const otherDocsFolder = ProjectDocuments.fromDirectory(
+        directory,
+        "OtherDocuments",
+        customFieldRegistry
+      );
 
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      customFieldRegistry
-    );
-    // console.log(
-    //   "Project had " + files.length + " files. " + JSON.stringify(files)
-    // );
+      const files = this.loadChildFiles(
+        directory,
+        metadataFile,
+        customFieldRegistry
+      );
+      // console.log(
+      //   "Project had " + files.length + " files. " + JSON.stringify(files)
+      // );
 
-    const project = new Project(
-      directory,
-      metadataFile,
-      files,
-      descriptionFolder,
-      otherDocsFolder,
-      customFieldRegistry
-    );
-    sCurrentProject = project;
-    const sesssionsDir = Path.join(directory, "Sessions");
-    fs.ensureDirSync(sesssionsDir);
-    fs.readdirSync(sesssionsDir, "utf8").forEach((childName) => {
-      const dir = Path.join(sesssionsDir, childName);
-      if (fs.lstatSync(dir).isDirectory()) {
-        // console.log(dir);
-        const session = Session.fromDirectory(dir, project.customFieldRegistry);
-        project.sessions.push(session);
-      }
-      // else ignore it
-    });
-    const peopleDir = Path.join(directory, "People");
-    fs.ensureDirSync(peopleDir);
-    fs.readdirSync(peopleDir, "utf8").forEach((childName) => {
-      const dir = Path.join(peopleDir, childName);
-      if (fs.lstatSync(dir).isDirectory()) {
-        //console.log(dir);
-        const person = Person.fromDirectory(
-          dir,
-          project.customFieldRegistry,
-          // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
-          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n),
-          project.languageFinder
-        );
-        project.persons.push(person);
-      }
-      // else ignore it
-    });
+      const project = new Project(
+        directory,
+        metadataFile,
+        files,
+        descriptionFolder,
+        otherDocsFolder,
+        customFieldRegistry
+      );
+      sCurrentProject = project;
+      const sesssionsDir = Path.join(directory, "Sessions");
+      fs.ensureDirSync(sesssionsDir);
+      fs.readdirSync(sesssionsDir, "utf8").forEach((childName) => {
+        const dir = Path.join(sesssionsDir, childName);
+        if (fs.lstatSync(dir).isDirectory()) {
+          // console.log(dir);
+          const session = Session.fromDirectory(
+            dir,
+            project.customFieldRegistry
+          );
+          project.sessions.push(session);
+        }
+        // else ignore it
+      });
+      const peopleDir = Path.join(directory, "People");
+      fs.ensureDirSync(peopleDir);
+      fs.readdirSync(peopleDir, "utf8").forEach((childName) => {
+        const dir = Path.join(peopleDir, childName);
+        if (fs.lstatSync(dir).isDirectory()) {
+          //console.log(dir);
+          const person = Person.fromDirectory(
+            dir,
+            project.customFieldRegistry,
+            // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
+            (o, n) =>
+              project.updateSessionReferencesToPersonWhenIdChanges(o, n),
+            project.languageFinder
+          );
+          project.persons.push(person);
+        }
+        // else ignore it
+      });
 
-    project.selectedSession.index = project.sessions.length > 0 ? 0 : -1;
-    project.selectedPerson.index = project.persons.length > 0 ? 0 : -1;
+      project.selectedSession.index = project.sessions.length > 0 ? 0 : -1;
+      project.selectedPerson.index = project.persons.length > 0 ? 0 : -1;
 
-    //project.files[0].save();
-    // tslint:disable-next-line:no-unused-expression
-    return project;
+      //project.files[0].save();
+      // tslint:disable-next-line:no-unused-expression
+      return project;
+    } catch (err) {
+      // tslint:disable-next-line: no-object-literal-type-assertion
+      return { loadingError: err.message } as Project;
+    }
   }
 
   public get displayName(): string {
