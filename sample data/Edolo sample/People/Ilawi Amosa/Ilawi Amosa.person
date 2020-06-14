@@ -2,7 +2,7 @@
 <Person>
   <primaryLanguage type="string">Edolo</primaryLanguage>
   <primaryLanguageLearnedIn type="string">Aiya</primaryLanguageLearnedIn>
-  <otherLanguage0 type="string">Toli Pisin</otherLanguage0>
+  <otherLanguage0 type="string">Tok Pisin</otherLanguage0>
   <fathersLanguage type="string">Edolo</fathersLanguage>
   <mothersLanguage type="string">Edolo</mothersLanguage>
   <otherLanguage1 type="string">Huli</otherLanguage1>

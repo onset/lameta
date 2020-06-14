@@ -173,7 +173,8 @@ export class Project extends Folder {
           dir,
           project.customFieldRegistry,
           // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
-          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n)
+          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n),
+          project.languageFinder
         );
         project.persons.push(person);
       }
@@ -230,7 +231,8 @@ export class Project extends Folder {
       dir,
       this.customFieldRegistry,
       // note: we have to use a fat arrow thing here in order to bind the project to the callback
-      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n)
+      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
+      this.languageFinder
     );
     person.properties.setText("name", i18n._(t`New Person`));
     this.persons.push(person);

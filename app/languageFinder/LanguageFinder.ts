@@ -116,7 +116,7 @@ export class LanguageFinder {
     // set up as the default language
     if (
       name.toLowerCase().trim() ===
-      this.getDefaultLanguage().englishName.toLowerCase().trim()
+      this.getDefaultLanguage()?.englishName.toLowerCase().trim()
     ) {
       return this.getDefaultLanguage().iso639_3;
     }

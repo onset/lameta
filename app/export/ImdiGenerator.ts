@@ -283,6 +283,7 @@ export default class ImdiGenerator {
     if (lang && lang.length > 0) {
       this.startGroup("Language");
 
+      //In SayMore and lameta < 0.8.7, this was stored as a name, rather than
       // // Enhance: this matching algorithm is far from ideal.
       // // It won't match on alternate names
       // const code = this.project.languageFinder.findOne639_3CodeFromName(
@@ -293,7 +294,15 @@ export default class ImdiGenerator {
       // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
       // a variety of codes to be used. However ELAR in particular apparently can only
       // consume the ISO639-3 variety in 2018.
-      this.element("Id", "ISO639-3:" + lang);
+      if (lang.length !== 3) {
+        // und is not *exactly* right. We don't know if it was mislabelled or what.
+        // mis (uncoded languages, originally an abbreviation for 'miscellaneous') is intended for languages which have not (yet) been included in the ISO standard.
+        // und (undetermined) is intended for cases where the language in the data has not been identified, such as when it is mislabeled or never had been labeled. It is not intended for cases such as Trojan where an unattested language has been given a name.
+        this.element("Id", "ISO639-3:und");
+      } else {
+        this.element("Id", "ISO639-3:" + lang);
+      }
+
       //this.fieldLiteral("Id", lang);
       this.element(
         "Name",

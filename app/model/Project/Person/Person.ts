@@ -8,6 +8,9 @@ import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { assertAttribute } from "../../../xmlUnitTestUtils";
 import { sanitizeForArchive } from "../../../filenameSanitizer";
 import userSettingsSingleton from "../../../UserSettings";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import { FieldSet } from "../../field/FieldSet";
+import { Field } from "../../field/Field";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -70,7 +73,8 @@ export class Person extends Folder {
     metadataFile: File,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
-    updateExternalReferencesToThisProjectComponent: idChangeHandler
+    updateExternalReferencesToThisProjectComponent: idChangeHandler,
+    languageFinder: LanguageFinder
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
     // we used to not store the name, relying instead on the folder name.
@@ -95,11 +99,86 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
+    this.migratePersonLanguages(languageFinder);
   }
+  private migratePersonLanguages(languageFinder: LanguageFinder) {
+    Person.migrateOnePersonLanguage(
+      this.properties.getTextFieldOrUndefined("primaryLanguage"),
+
+      languageFinder
+    );
+    Person.migrateOnePersonLanguage(
+      this.properties.getTextFieldOrUndefined("fathersLanguage"),
+      languageFinder
+    );
+    Person.migrateOnePersonLanguage(
+      this.properties.getTextFieldOrUndefined("mothersLanguage"),
+      languageFinder
+    );
+    for (let i = 0; i < maxOtherLanguages; i++) {
+      Person.migrateOnePersonLanguage(
+        this.properties.getTextFieldOrUndefined("otherLanguage" + i),
+        languageFinder
+      );
+    }
+  }
+  // public and static to make it easier to unit test
+  public static migrateOnePersonLanguage(
+    field: Field | undefined,
+    languageFinder: LanguageFinder
+  ) {
+    if (!field) return;
+    const nameOrCode = field.text;
+    if (!nameOrCode) {
+      return; // leave it alone
+    }
+    //In SayMore and lameta < 0.8.7, this was stored as a name, rather than a code.
+    const possibleCode = languageFinder.findOne639_3CodeFromName(
+      nameOrCode,
+      undefined
+    );
+
+    if (possibleCode === "und") {
+      // just leave it alone. If we don't recognize a language name, it's better to just not convert it than
+      // to lose it.
+      return;
+    }
+    let code;
+    if (possibleCode === undefined && nameOrCode.length === 3) {
+      code = nameOrCode;
+    }
+    // I don't suppose this would ever happen, but it would be unambiguous
+    else if (
+      possibleCode &&
+      nameOrCode.length === 3 &&
+      possibleCode === nameOrCode
+    ) {
+      code = nameOrCode;
+    }
+    // ambiguous, but a sampling suggests that 3 letter language names are always given a matching 3 letter code.
+    else if (
+      possibleCode &&
+      nameOrCode.length === 3 &&
+      possibleCode !== nameOrCode
+    ) {
+      // let's error on the side of having the correct code already. Could theoretically
+      // give wrong code for some field filled out in a pre-release version of
+      code = nameOrCode;
+    }
+    // otherwise, go with the name to code lookup
+    else {
+      code = possibleCode;
+    }
+    field.setValueFromString(code);
+
+    //console.log(`Migrate person lang ${key}:${nameOrCode} --> ${code}`);
+  }
+
   public static fromDirectory(
     directory: string,
     customFieldRegistry: CustomFieldRegistry,
-    updateExternalReferencesToThisProjectComponent: idChangeHandler
+    updateExternalReferencesToThisProjectComponent: idChangeHandler,
+    languageFinder: LanguageFinder
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
     const files = this.loadChildFiles(
@@ -112,7 +191,8 @@ export class Person extends Folder {
       metadataFile,
       files,
       customFieldRegistry,
-      updateExternalReferencesToThisProjectComponent
+      updateExternalReferencesToThisProjectComponent,
+      languageFinder
     );
   }
   public static saveFolderMetaData() {

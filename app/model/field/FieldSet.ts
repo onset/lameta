@@ -61,6 +61,13 @@ export class FieldSet extends Dictionary<string, Field> {
       return "";
     }
   }
+  public getTextFieldOrUndefined(key: string): Field | undefined {
+    try {
+      return this.getValueOrThrow(key) as Field;
+    } catch {
+      return undefined;
+    }
+  }
   public getTextField(key: string): Field {
     return this.getValueOrThrow(key) as Field;
   }

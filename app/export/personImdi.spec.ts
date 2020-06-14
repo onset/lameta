@@ -19,12 +19,13 @@ beforeAll(() => {
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
     new CustomFieldRegistry(),
-    (oldName, newName) => true
+    (oldName, newName) => true,
+    new LanguageFinder(() => undefined)
   );
-  const subsetLanguageFinder = new LanguageFinder({
-    englishName: "Edolo",
-    iso639_3: "etr",
-  });
+  // const subsetLanguageFinder = new LanguageFinder({
+  //   englishName: "Edolo",
+  //   iso639_3: "etr",
+  // });
 
   const generator = new ImdiGenerator(person, project);
   const pretendSessionDate = new Date("2010-06-06");

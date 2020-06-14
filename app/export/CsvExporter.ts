@@ -48,7 +48,7 @@ export default class CsvExporter {
     output.on("close", () => {});
 
     // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on("warning", err => {
+    archive.on("warning", (err) => {
       if (err.code === "ENOENT") {
         console.log("csv makeZipFile Warning: " + err);
       } else {
@@ -58,7 +58,7 @@ export default class CsvExporter {
     });
 
     // good practice to catch this error explicitly
-    archive.on("error", err => {
+    archive.on("error", (err) => {
       console.log("csv makeZipFile error: " + err);
       alert("csv makeZipFile error: " + err);
     });
@@ -68,7 +68,7 @@ export default class CsvExporter {
 
     archive.append(this.makeCsvForProject(), { name: "project.csv" });
     archive.append(this.makeCsvForSessions(folderFilter), {
-      name: "sessions.csv"
+      name: "sessions.csv",
     });
     archive.append(this.makeCsvForPeople(), { name: "people.csv" });
 
@@ -77,8 +77,8 @@ export default class CsvExporter {
 
   private getKeys(folders: Folder[]): string[] {
     const foundFields: string[] = [];
-    folders.forEach(folder => {
-      folder.properties.keys().forEach(key => {
+    folders.forEach((folder) => {
+      folder.properties.keys().forEach((key) => {
         if (foundFields.indexOf(key) < 0) {
           foundFields.push(key);
         }
@@ -96,7 +96,7 @@ export default class CsvExporter {
     currentKnownFields = folders[0].knownFields;
     const blacklist = ["modifiedDate", "size", "type", "hasConsent"];
     const foundFields = this.getKeys(folders)
-      .filter(k => blacklist.indexOf(k) === -1)
+      .filter((k) => blacklist.indexOf(k) === -1)
       .sort(this.sortFields);
     let header = foundFields.join(",");
     // we have a bit of hassle in that contributions are currently
@@ -106,9 +106,9 @@ export default class CsvExporter {
       header += ",contributions";
     }
     const lines = folders
-      .map(folder => {
+      .map((folder) => {
         const line = foundFields
-          .map(key => {
+          .map((key) => {
             const field = folder.properties.getValue(key);
             if (
               !field ||
@@ -120,6 +120,7 @@ export default class CsvExporter {
             }
 
             const value = this.fieldToCsv(field);
+            //console.log(`log csv ${key}:fieldValue=${field}:csv=${value}`);
             return CsvExporter.csvEncode(value);
           })
 
@@ -140,12 +141,12 @@ export default class CsvExporter {
     return [
       session
         .getAllContributionsToAllFiles()
-        .map(c => [c.role, c.personReference].join(":"))
-        .join("|")
+        .map((c) => [c.role, c.personReference].join(":"))
+        .join("|"),
     ];
   }
 
-  private fieldToCsv(field: Field) {
+  private fieldToCsv(field: Field): string {
     switch (field.type) {
       case FieldType.Text:
         return field.text;
@@ -161,8 +162,8 @@ export default class CsvExporter {
   }
 
   private sortFields(a: string, b: string): number {
-    let ai = currentKnownFields.findIndex(f => f.key === a);
-    let bi = currentKnownFields.findIndex(f => f.key === b);
+    let ai = currentKnownFields.findIndex((f) => f.key === a);
+    let bi = currentKnownFields.findIndex((f) => f.key === b);
     // unlisted fields go to the end
     ai = ai === -1 ? 1000 : ai;
     bi = bi === -1 ? 1000 : bi;

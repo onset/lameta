@@ -64,7 +64,7 @@ describe("people csv export", () => {
     expect(peopleMatrix.length).toBe(1 + 4);
   });
   it("should contain expected primaryLanguage", () => {
-    expect(people(1, "primaryLanguage")).toBe("Edolo");
+    expect(people(1, "primaryLanguage")).toBe("etr");
   });
   it("should contain expected notes", () => {
     expect(people(1, "notes")).toBe("");
@@ -83,8 +83,8 @@ describe("people csv export", () => {
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
     expect(people(2, "gender")).toBe("Male");
-    expect(people(2, "otherLanguage0")).toBe("Huli");
-    expect(people(2, "otherLanguage1")).toBe("Tok Pisin");
+    expect(people(2, "otherLanguage0")).toBe("hui");
+    expect(people(2, "otherLanguage1")).toBe("tpi");
   });
   it("should have name first", () => {
     expect(location("name")).toBe(0);
