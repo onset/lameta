@@ -14,13 +14,11 @@
       },
       {
         "label": "C",
-        "description":
-          "only Community members are allowed access (normally requires application to Depositor)"
+        "description": "only Community members are allowed access (normally requires application to Depositor)"
       },
       {
         "label": "S",
-        "description":
-          "only Subscribers are allowed access (requires application to Depositor)"
+        "description": "only Subscribers are allowed access (requires application to Depositor)"
       },
       {
         "label": "",
@@ -80,17 +78,8 @@
     "protocol": "REAP",
     "documentation": "reap.html",
     "choices": [
-      { "label": "", "description": "<unknown>" },
-      {
-        "label": "Entity curators",
-        "description": "Restricted to Entity curators"
-      },
-      { "label": "Entity", "description": "Restricted to Entity staff" },
-      { "label": "Insite users", "description": "Restricted to Insite users" },
-      {
-        "label": "Strategic partners",
-        "description": "Restricted to Strategic partners"
-      },
+      { "label": "Entity", "description": "Restricted to Organizational Unit" },
+      { "label": "REAP users", "description": "Restricted to REAP users" },
       { "label": "Public", "description": "Public" }
     ]
   },

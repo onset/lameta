@@ -8,12 +8,8 @@ SIL International
 
 # Choices
 
-* Entity curators
+- Entity
 
-* Entity
+- REAP users
 
-* Insite users
-
-* Strategic partners
-
-* Public
+- Public
