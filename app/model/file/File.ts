@@ -20,6 +20,10 @@ import { NotifyError, NotifyWarning } from "../../components/Notify";
 
 import { titleCase } from "title-case";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
+import {
+  sentryBreadCrumb,
+  sentryExceptionBreadCrumb,
+} from "../../errorHandling";
 
 export class Contribution {
   //review this @mobx.observable
@@ -502,43 +506,58 @@ export /*babel doesn't like this: abstract*/ class File {
 
   private haveReadMetadataFile: boolean = false;
   public readMetadataFile() {
-    if (this.haveReadMetadataFile) {
-      console.error("Already read metadataFile of " + this.metadataFilePath);
-      return;
-    }
-    this.haveReadMetadataFile = true;
-    //console.log("readMetadataFile() " + this.metadataFilePath);
-    if (fs.existsSync(this.metadataFilePath)) {
-      const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
-
-      let xmlAsObject: any = {};
-      xml2js.parseString(
-        xml,
-        {
-          async: false,
-          explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
-          //explicitArray: true, this also just... gives you a mess
-          //explicitChildren: true this makes even simple items have arrays... what a pain
-        },
-        (err, result) => {
-          if (err) {
-            throw err;
-          }
-          xmlAsObject = result;
-        }
-      );
-      // that will have a root with one child, like "Session" or "Meta". Zoom in on that
-      // so that we just have the object with its properties.
-      let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
-      if (properties === "") {
-        //   Review: This happen if it finds, e.g. <Session/>.
-        properties = {};
+    try {
+      sentryBreadCrumb(`enter readMetadataFile ${this.metadataFilePath}`);
+      if (this.haveReadMetadataFile) {
+        console.error("Already read metadataFile of " + this.metadataFilePath);
+        return;
       }
+      this.haveReadMetadataFile = true;
+      //console.log("readMetadataFile() " + this.metadataFilePath);
+      if (fs.existsSync(this.metadataFilePath)) {
+        const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
 
-      //copies from this object (which is just the xml as an object) into this File object
-      this.loadPropertiesFromXml(properties);
+        let xmlAsObject: any = {};
+        xml2js.parseString(
+          xml,
+          {
+            async: false,
+            explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+            //explicitArray: true, this also just... gives you a mess
+            //explicitChildren: true this makes even simple items have arrays... what a pain
+          },
+          (err, result) => {
+            if (err) {
+              throw err;
+            }
+            xmlAsObject = result;
+          }
+        );
+        if (!xmlAsObject) {
+          // there was a sentry error report that seemed to implicate this being null
+          throw new Error(
+            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
+          );
+        }
+        // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+        // so that we just have the object with its properties.
+        let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+        if (properties === "") {
+          //   Review: This happen if it finds, e.g. <Session/>.
+          properties = {};
+        }
+
+        //copies from this object (which is just the xml as an object) into this File object
+        this.loadPropertiesFromXml(properties);
+      }
+      this.recomputedChangeWatcher();
+    } catch (err) {
+      NotifyError(`There was a problem reading ${this.metadataFilePath}`);
+      sentryExceptionBreadCrumb(err); // probably not needed
+      throw err;
+    } finally {
+      sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
-    this.recomputedChangeWatcher();
   }
   private inGetXml: boolean = false;
   public getXml(doOutputEmptyCustomFields: boolean = false) {

@@ -21,6 +21,6 @@ export function sanitizeForArchive(
   }
   // finally, make sure it is safe for filesystems
   n = sanitizeFilename(n);
-  console.log(`sanitizeForArchive(${name}) --> ${n}`);
+  //console.log(`sanitizeForArchive(${name}) --> ${n}`);
   return n;
 }

@@ -33,8 +33,7 @@ export const FieldLabel: React.FunctionComponent<{
       {translateFieldLabel(props.fieldDef)}
     </label>
   );
-  console.log("tooltip.props: " + JSON.stringify(props));
-  console.log("tooltip: " + JSON.stringify(tooltip));
+
   const labelMaybeWithTooltip =
     tooltip && tooltip.length > 0 ? (
       <Tooltip

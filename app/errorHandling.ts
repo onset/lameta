@@ -15,7 +15,7 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
           console.log("Sending " + JSON.stringify(event));
         } catch (err) {}
         return event;
-      }
+      },
       /* This works, but I have it turned off for now because we don't really have a support
             plan in place.
             
@@ -42,7 +42,7 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   }
 }
 export function setUserInfoForErrorReporting(email: string, howUsing: string) {
-  Sentry.configureScope(scope => {
+  Sentry.configureScope((scope) => {
     console.log("setUserInfoForErrorReporting");
     scope.setUser({ email });
     scope.setExtra("how_using", howUsing);
@@ -50,4 +50,7 @@ export function setUserInfoForErrorReporting(email: string, howUsing: string) {
 }
 export function sentryBreadCrumb(msg: string) {
   Sentry.addBreadcrumb({ message: msg });
+}
+export function sentryExceptionBreadCrumb(err: Error) {
+  Sentry.addBreadcrumb({ message: err.message, level: Sentry.Severity.Error });
 }
