@@ -99,3 +99,29 @@ it("should contain MediaFiles", () => {
     "METATRANSCRIPT/Session/Resources/WrittenResource/ResourceLink"
   ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
 });
+
+//https://trello.com/c/GcNAmcOb/107-imdi-category-for-accessdescription-missing-from-imdi-export
+it("should have an Access Description if filled in", () => {
+  session.properties.setText("accessDescription", "just because");
+  setResultXml(
+    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
+  );
+  // each media file will have one of these, hence 4
+  expect(
+    count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
+  ).toBe(4);
+  expect(
+    "METATRANSCRIPT/Session/Resources/MediaFile/Access/Description"
+  ).toMatch("just because");
+});
+
+it("should have an empty Access Description if description is missing", () => {
+  session.properties.setText("accessDescription", "");
+  setResultXml(
+    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
+  );
+  // each media file will have one of these, hence 4
+  expect(
+    count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
+  ).toBe(4);
+});

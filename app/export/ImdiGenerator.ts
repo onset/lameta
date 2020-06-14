@@ -642,7 +642,12 @@ export default class ImdiGenerator {
         (c) => c.label === accessCode
       );
 
-      if (
+      // NB CAREFUL! It's easy to confuse accessDef.description (e.g. what does "U" mean?) with
+      // accessDescription, which is "why am I limiting the access for this session?". The later
+      // is actually "Access Explanation" in the UI. ELAR is (as far as I can tell) not interested
+      // in the accessDef.description.
+
+      /* if (
         accessDef &&
         accessDef.description &&
         accessDef.description.length > 0
@@ -650,13 +655,13 @@ export default class ImdiGenerator {
         const accessProtocol = this.project.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
-        /* ELAR DOESN'T WANT THIS IN IMDI
-        https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
-        if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
-          this.element("Description", "Access Protocol:" + accessProtocol);
-          //this.attributeLiteral("ISO639-3", "eng");
-        }
-        this.element("Description", accessDef.description);*/
+        //  ELAR DOESN'T WANT THIS IN IMDI
+        // https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab
+        // if (accessProtocol && accessProtocol && accessProtocol.length > 0) {
+        //   this.element("Description", "Access Protocol:" + accessProtocol);
+        //   //this.attributeLiteral("ISO639-3", "eng");
+        // }
+        // this.element("Description", accessDef.description);
 
         this.optionalField("Description", "accessDescription");
         //this.attributeLiteral("ISO639-3", "eng");
@@ -664,9 +669,13 @@ export default class ImdiGenerator {
         //      https://trello.com/c/GcNAmcOb/107-imdi-category-for-accessdescription-missing-from-imdi-export
         this.element("Description", "");
       }
+    */
+      this.requiredField("Description", "accessDescription");
     });
+
     //}
   }
+
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(
     person: Person,
