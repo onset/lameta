@@ -78,6 +78,7 @@
     "testURL": "http://localhost/"
   },
   "//This 'build' section is for electron-builder": "",
+  "//Note that 'afterSign': 'build/notarize.js' works but has been swapped here for a form that works on github actions": "",
   "build": {
     "productName": "lameta",
     "appId": "com.github.lameta.lameta",

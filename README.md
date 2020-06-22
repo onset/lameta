@@ -2,7 +2,7 @@ lameta (the Metadata Editor for Transparent Archiving) is a tool for Language Do
 
 # Mac & Windows Installers
 
-Download [Installers](https://github.com/onset/laMETA/releases)
+Download [Installers](https://github.com/onset/lameta/releases)
 
 # For Developers
 

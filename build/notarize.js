@@ -1,4 +1,6 @@
-// notarize the mac version and attach the ticket
+// NOTE June 2020: this does work, but it's semi-retired because on github Actions it was easier to get electron-builder-notarize to
+// work instead.
+// Notarize the mac version and attach the ticket
 // This expects to find an environment variable APPLEID, and a keychain entry "altoolpw" with a app-specific password you made for altool from appid.apple.com.
 
 // to test notarization by hand, do something like:
