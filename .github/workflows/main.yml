@@ -8,6 +8,8 @@ jobs:
 
     strategy:
       matrix:
+        # don't quit checking one OS just because another failed
+        fail-fast: false
         os: [windows-latest, macos-latest]
 
     steps:
