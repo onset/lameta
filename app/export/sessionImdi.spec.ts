@@ -52,6 +52,10 @@ describe("session imdi export", () => {
 
     expect("METATRANSCRIPT/Session/MDGroup/Location/Continent").toBeClosed();
   });
+
+  it("Subject is an OpenVocabularyList, not OpenVocabulary", () => {
+    expect("METATRANSCRIPT/Session/MDGroup/Content/Subject").toBeOpenList();
+  });
 });
 
 it("should contain Country", () => {

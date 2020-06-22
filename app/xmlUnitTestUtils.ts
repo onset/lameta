@@ -180,6 +180,11 @@ expect.extend({
   },
 });
 expect.extend({
+  toBeOpenList(xpath) {
+    return assertAttribute(xpath, "Type", "OpenVocabularyList");
+  },
+});
+expect.extend({
   toHaveAttributeValue(xpath, attributeName, attributeValue) {
     return assertAttribute(xpath, attributeName, attributeValue);
   },

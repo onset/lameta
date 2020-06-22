@@ -176,7 +176,9 @@ export default class ImdiGenerator {
         "Subject",
         "",
         false,
-        "http://www.mpi.nl/IMDI/Schema/Content-Subject.xml"
+        "http://www.mpi.nl/IMDI/Schema/Content-Subject.xml",
+        //https://trello.com/c/u1PWlTQS/125-urgent-errors-in-imdi-output-content-subject
+        VocabularyType.OpenVocabularyList
       ); // required but we don't have something to map to it
 
       this.group("CommunicationContext", () => {
@@ -904,7 +906,8 @@ export default class ImdiGenerator {
     elementName: string,
     value: string,
     isClosedVocabulary?,
-    vocabularyUrl?
+    vocabularyUrl?,
+    vocabularyType?: VocabularyType
   ) {
     const newElement = this.tail.element(
       elementName,
@@ -913,7 +916,11 @@ export default class ImdiGenerator {
     );
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
-      const type = isClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
+      const type = isClosedVocabulary
+        ? "ClosedVocabulary"
+        : vocabularyType
+        ? vocabularyType.toString()
+        : "OpenVocabulary";
       newElement.attribute("Type", type);
     }
 
@@ -974,7 +981,7 @@ export default class ImdiGenerator {
       <SubGenre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml" />
       <Task Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Task.xml" />
       <Modalities Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Modalities.xml" />
-      <Subject Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Subject.xml" />
+      <Subject Type="OpenVocabularyList" Link="http://www.mpi.nl/IMDI/Schema/Content-Subject.xml" />
       <CommunicationContext>
         <Interactivity Link="http://www.mpi.nl/IMDI/Schema/Content-Interactivity.xml"
                       Type="ClosedVocabulary">Unspecified</Interactivity>
@@ -1000,4 +1007,10 @@ export default class ImdiGenerator {
     this.exitGroup(); //Session
     return this.makeString();
   }
+}
+
+enum VocabularyType {
+  ClosedVocabulary = "ClosedVocabulary",
+  OpenVocabulary = "OpenVocabulary",
+  OpenVocabularyList = "OpenVocabularyList",
 }
