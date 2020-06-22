@@ -7,9 +7,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      # don't quit checking one OS just because another failed
+      fail-fast: false
       matrix:
-        # don't quit checking one OS just because another failed
-        fail-fast: false
         os: [windows-latest, macos-latest]
 
     steps:
