@@ -735,7 +735,7 @@ export default class ImdiGenerator {
       if (birthYear === "?") {
         this.element("Age", "unknown"); // ELAR request Oct-Dec 2019
       } else if (birthYear.trim() === "") {
-        this.element("Age", ""); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
+        this.element("Age", "Unspecified"); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
         this.tail.comment("Could not compute age");
       } else {
         const age = person.ageOn(dateToCompareWith);

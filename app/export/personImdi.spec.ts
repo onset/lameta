@@ -13,6 +13,8 @@ import { LanguageFinder } from "../languageFinder/LanguageFinder";
 
 let project: Project;
 let person: Person;
+let generator: ImdiGenerator;
+const pretendSessionDate = new Date("2010-06-06");
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
@@ -27,8 +29,7 @@ beforeAll(() => {
   //   iso639_3: "etr",
   // });
 
-  const generator = new ImdiGenerator(person, project);
-  const pretendSessionDate = new Date("2010-06-06");
+  generator = new ImdiGenerator(person, project);
   setResultXml(
     generator.actor(person, "pretend-role", pretendSessionDate) as string
     // ImdiGenerator.generateActor(
@@ -46,10 +47,7 @@ describe("actor imdi export", () => {
     expect("Actor/Name").toMatch("Awi Heole");
     expect(count("Actor/Languages/Language")).toBe(3);
   });
-  it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
-    expect("Actor/BirthDate").toMatch("1972");
-    expect("Actor/Age").toMatch("38");
-  });
+
   it("should label languages correctly", () => {
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");
     expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:tpi");
@@ -69,5 +67,18 @@ describe("actor imdi export", () => {
     expect(
       "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
+  });
+
+  it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
+    expect("Actor/BirthDate").toMatch("1972");
+    expect("Actor/Age").toMatch("38");
+  });
+  it("should handle birth year being empty the way ELAR wants it", () => {
+    person.properties.setText("birthYear", "");
+    const gen = new ImdiGenerator(person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/BirthDate").toMatch("Unspecified");
+    expect("Actor/Age").toMatch("Unspecified");
   });
 });
