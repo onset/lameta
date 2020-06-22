@@ -1,10 +1,11 @@
 import Store from "electron-store";
-import * as mobx from "mobx";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import * as Sentry from "@sentry/browser";
+import { number } from "@lingui/core";
+import { observable, computed } from "mobx";
 
 class FakeStore {
   public get(s: string, def: any = ""): any {
@@ -13,13 +14,17 @@ class FakeStore {
   public set(key: string, value: any): void {}
   public path: string = "fake path";
 }
+const kFontZoomStepSize = 0.2;
+
 export class UserSettings {
   private store: Store | FakeStore;
 
-  @mobx.observable
+  @observable
   private imdiMode: boolean;
-  @mobx.observable
+  @observable
   private howUsing: string;
+  @observable
+  public uiFontZoom: number;
   private email: string;
   private clientId: string;
 
@@ -37,16 +42,15 @@ export class UserSettings {
     this.store.set("lastVersion", require("./package.json").version);
     // no: sentry is not initialized yet, so let it call this itself when it is initialized
     //      setUserInfoForErrorReporting(this.Email, this.HowUsing);
+    this.uiFontZoom = this.store.get("uiFontZoom", "1.0");
   }
   public get IMDIMode() {
     return this.imdiMode;
   }
-
   public set IMDIMode(show: boolean) {
     this.imdiMode = show;
     this.store.set("imdiMode", this.imdiMode);
   }
-
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person
   public get ClientId() {
@@ -82,7 +86,7 @@ export class UserSettings {
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
 
-  @mobx.computed
+  @computed
   public get HowUsing() {
     return this.howUsing;
   }
@@ -90,6 +94,19 @@ export class UserSettings {
     this.howUsing = howUsing;
     this.store.set("howUsing", howUsing);
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
+  }
+
+  public get FontZoom() {
+    return this.uiFontZoom;
+  }
+  public ZoomFont(direction: number) {
+    let n = parseFloat(this.store.get("uiFontZoom", "1.0"));
+    const kIncrement = 0.5;
+    n += kFontZoomStepSize * direction * kIncrement;
+    n = Math.min(n, 3.0);
+    n = Math.max(1.0, n);
+    this.uiFontZoom = n;
+    this.store.set("uiFontZoom", this.uiFontZoom.toString());
   }
 }
 

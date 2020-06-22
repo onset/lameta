@@ -9,9 +9,11 @@ import { I18nProvider } from "@lingui/react";
 import { catalogs, currentUILanguage } from "../localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";
+import userSettingsSingleton from "../UserSettings";
+import { observer } from "mobx-react";
 
-export const App: React.FunctionComponent = () => {
-  const [fontZoom, setFontZoom] = useState(1.0);
+// being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
+export const App: React.FunctionComponent = observer(() => {
   useEffect(() => {
     ReactModal!.defaultStyles!.overlay!.backgroundColor = "rgba(0,0,0,.5)";
   }, []); // just once
@@ -19,20 +21,16 @@ export const App: React.FunctionComponent = () => {
   // We need to set the base font size all the way up on body because tooltips and other special elements
   // are direct children of it. Note, I didn't find a way to dynamically change the font-size of the electron
   // browser, which would have made it possible to use rem units. So we do this and then stick with em units.
-
   useEffect(() => {
-    document.body.setAttribute(
-      "style",
-      document.body.getAttribute("style") + `;font-size:${fontZoom * 13}px`
-    );
-  }, [fontZoom]);
+    document.body.style.fontSize = `${userSettingsSingleton.uiFontZoom * 13}px`;
+  }, [userSettingsSingleton.FontZoom]);
 
   return (
     <div
       id="app"
       onWheel={(e) => {
         if (e.ctrlKey) {
-          setFontZoom(Math.max(1.0, fontZoom + e.deltaY * -0.001));
+          userSettingsSingleton.ZoomFont(e.deltaY < 0 ? 1 : -1);
         }
       }}
     >
@@ -46,7 +44,7 @@ export const App: React.FunctionComponent = () => {
       </I18nProvider>
     </div>
   );
-};
+});
 
 // This restores hot module replacement *while preserving state*, which was lost when
 // react-hot-loader dropped its react-hot-loader/webpack loader

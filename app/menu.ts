@@ -8,6 +8,7 @@ import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
 import { ShowAlertDialog } from "./components/AlertDialog/AlertDialog";
+import userSettingsSingleton from "./UserSettings";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -146,6 +147,26 @@ export default class SayLessMenu {
     const viewMenu = {
       label: "&" + i18n._(t`View`),
       submenu: [
+        {
+          label: i18n._(t`Font Size`),
+
+          submenu: [
+            {
+              label: "Smaller",
+              accelerator: "CmdOrCtrl+-",
+              click: () => {
+                userSettingsSingleton.ZoomFont(-1);
+              },
+            },
+            {
+              label: "Larger",
+              accelerator: "CmdOrCtrl+=",
+              click: () => {
+                userSettingsSingleton.ZoomFont(1);
+              },
+            },
+          ],
+        },
         {
           label: i18n._(t`Interface Language`),
 
