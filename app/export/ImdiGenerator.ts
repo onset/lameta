@@ -579,6 +579,8 @@ export default class ImdiGenerator {
         "ResourceLink",
         this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
       );
+      this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
+
       // whereas this one just had this file name. NOte, you might expect that
       // "MediaResourceLink" doesn't belong under <WrittenResource/> but ELAR says it fails validation
       // without it.
