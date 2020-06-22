@@ -6,7 +6,7 @@ import * as fs from "fs";
 // this makes the index, then tests it.
 describe("LanguageIndex maker", () => {
   beforeAll(() => {
-    const codeToEnglishName = new TrieSearch(["iso639_3"]);
+    const codeToEnglishName = new TrieSearch(["iso639_3"], {});
     codeToEnglishName.addAll(langtags);
     let c = 0;
     const newIndex = ethnologue.map((l) => {
