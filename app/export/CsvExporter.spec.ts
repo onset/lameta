@@ -1,8 +1,13 @@
-import CsvExporter from "./CsvExporter";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as temp from "temp";
-
+import {
+  makeCsvForPeople,
+  makeCsvForProject,
+  makeCsvForSessions,
+  csvEncode,
+  makeGenericCsvZipFile,
+} from "./CsvExporter";
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");
 
@@ -17,14 +22,14 @@ const kEol: string = require("os").EOL;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
-  peopleCsv = new CsvExporter(project).makeCsvForPeople();
+  peopleCsv = makeCsvForPeople(project);
   //  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
-  sessionsCsv = new CsvExporter(project).makeCsvForSessions((f) => true);
+  sessionsCsv = makeCsvForSessions(project, (f) => true);
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
   //fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
-  const projectCsv = new CsvExporter(project).makeCsvForProject();
+  const projectCsv = makeCsvForProject(project);
   projectMatrix = parseSync(projectCsv);
   //fs.writeFileSync("d:/temp/projectCsv.csv", projectCsv);
 });
@@ -32,7 +37,7 @@ describe("csv exporter", () => {
   it("should produce the file requested", () => {
     temp.track(); // cleanup on exit: doesn't work
     const path = temp.path({ suffix: ".zip" });
-    new CsvExporter(project).makeZipFile(path, () => true);
+    makeGenericCsvZipFile(path, project, () => true);
     // on github actions run, this failed once, but I can't see
     // what is async in the makeZipFile() function. So I'm wrapping it
     // in a short delay.
@@ -48,19 +53,19 @@ describe("csv exporter", () => {
 
 describe("csv encoding", () => {
   it("should not be surrounded by quotes if not needed", () => {
-    expect(CsvExporter.csvEncode("one two")).toBe("one two");
+    expect(csvEncode("one two")).toBe("one two");
   });
   it("should add quotes if there are commas", () => {
-    expect(CsvExporter.csvEncode("one,two")).toBe('"one,two"');
+    expect(csvEncode("one,two")).toBe('"one,two"');
   });
   it("should add quotes if there is a mac newline", () => {
-    expect(CsvExporter.csvEncode("one\rtwo")).toBe('"one\rtwo"');
+    expect(csvEncode("one\rtwo")).toBe('"one\rtwo"');
   });
   it("should add quotes if there is a windows newline", () => {
-    expect(CsvExporter.csvEncode("one\r\ntwo")).toBe('"one\r\ntwo"');
+    expect(csvEncode("one\r\ntwo")).toBe('"one\r\ntwo"');
   });
   it("should double quotes if there are quotes", () => {
-    expect(CsvExporter.csvEncode('please, call me "John"')).toBe(
+    expect(csvEncode('please, call me "John"')).toBe(
       '"please, call me ""John"""'
     );
   });

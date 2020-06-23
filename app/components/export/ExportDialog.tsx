@@ -10,7 +10,6 @@ import { useState } from "react";
 import ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import CsvExporter from "../../export/CsvExporter";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../crossPlatformUtilities";
 import { remote } from "electron";
@@ -24,6 +23,11 @@ import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
 import { NotifyError } from "../Notify";
 import { mkdirpSync, ensureDirSync, pathExistsSync } from "fs-extra";
+import {
+  makeZipFile,
+  genericCsvExporter,
+  makeGenericCsvZipFile,
+} from "../../export/CsvExporter";
 
 const saymore_orange = "#e69664";
 const { app } = require("electron").remote;
@@ -148,8 +152,12 @@ export const ExportDialog: React.FunctionComponent<{
       switch (exportFormat) {
         case "csv":
           analyticsEvent("Export", "Export CSV");
-          const exporter = new CsvExporter(props.projectHolder.project!);
-          exporter.makeZipFile(path, folderFilter);
+
+          makeGenericCsvZipFile(
+            path,
+            props.projectHolder.project!,
+            folderFilter
+          );
           showInExplorer(path);
           break;
         case "imdi":
@@ -284,7 +292,6 @@ export const ExportDialog: React.FunctionComponent<{
               >
                 {i18n._(t`${countOfMarkedSessions} Marked Sessions`)}
               </option>
-              }
             </select>
           </div>
         </div>
