@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import "./RenameFileDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { File } from "../../model/file/File";
-import { Folder } from "../../model/Folder";
+import { Folder } from "../../model/Folder/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../filenameSanitizer";

@@ -2,7 +2,7 @@ import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
-import { IFolderSelection, Folder } from "../Folder";
+import { IFolderSelection, Folder } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";

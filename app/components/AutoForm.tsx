@@ -4,7 +4,7 @@ import TextFieldEdit from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
 import { PeopleChooser } from "./session/PeopleChooser";

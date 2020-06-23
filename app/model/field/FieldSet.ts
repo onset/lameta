@@ -9,7 +9,7 @@ import {
 } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
-import { Folder } from "../Folder";
+import { Folder } from "../Folder/Folder";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {

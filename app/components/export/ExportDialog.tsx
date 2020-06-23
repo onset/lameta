@@ -21,7 +21,7 @@ import { i18n } from "../../localization";
 import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
-import { Folder } from "../../model/Folder";
+import { Folder } from "../../model/Folder/Folder";
 import { NotifyError } from "../Notify";
 import { mkdirpSync, ensureDirSync, pathExistsSync } from "fs-extra";
 

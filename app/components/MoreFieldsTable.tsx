@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";

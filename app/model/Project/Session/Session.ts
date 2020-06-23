@@ -1,4 +1,4 @@
-import { Folder } from "../../Folder";
+import { Folder } from "../../Folder/Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";

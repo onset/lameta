@@ -69,7 +69,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
   private xmlRootName: string;
   private doOutputTypeInXmlTags: boolean;
-  private fileExtensionForMetadata: string;
+  public fileExtensionForMetadata: string;
   public canDelete: boolean;
 
   @mobx.observable

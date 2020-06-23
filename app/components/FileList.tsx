@@ -1,7 +1,7 @@
 import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table";
 import { observer, Observer } from "mobx-react";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone from "react-dropzone";
 import { remote } from "electron";

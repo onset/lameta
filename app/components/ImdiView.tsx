@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 import ImdiGenerator from "../export/ImdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";

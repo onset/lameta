@@ -1,5 +1,5 @@
 import { Project } from "../model/Project/Project";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 const moment = require("moment");
 //import nodeArchiver = require("archiver");
 import * as nodeArchiver from "archiver";

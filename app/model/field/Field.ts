@@ -5,7 +5,7 @@ import { Person } from "../Project/Person/Person";
 import moment from "moment";
 import { translateFieldLabel, currentUILanguage } from "../../localization";
 import { FieldDefinition } from "./FieldDefinition";
-import { Folder } from "../Folder";
+import { Folder } from "../Folder/Folder";
 import * as DateFns from "date-fns";
 //import * as assert from "assert";
 

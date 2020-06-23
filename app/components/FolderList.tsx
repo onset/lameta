@@ -1,7 +1,7 @@
 import * as React from "react";
 import { default as ReactTable, Resize } from "react-table";
 
-import { Folder, IFolderSelection } from "../model/Folder";
+import { Folder, IFolderSelection } from "../model/Folder/Folder";
 import * as mobxReact from "mobx-react";
 import * as mobx from "mobx";
 // tslint:disable-next-line:no-submodule-imports

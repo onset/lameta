@@ -1,0 +1,92 @@
+import { Folder } from "./Folder";
+import * as fs from "fs-extra";
+import * as Path from "path";
+import { ShowAlertDialog } from "../../components/AlertDialog/AlertDialog";
+import { assert } from "console";
+import uuid from "uuid";
+
+// Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,
+// and change the id inside the metadata file.
+export function duplicateFolder(
+  folder: Folder
+): { directory: string; metadataFilePath: string; success: boolean } {
+  try {
+    folder.saveAllFilesInFolder();
+    const name = Path.basename(folder.directory);
+    const parentDir = Path.dirname(folder.directory);
+    const itemsInDir = fs.readdirSync(parentDir);
+    const nameOfDuplicate = getDuplicateFolderPath(name, itemsInDir);
+    const pathOfDuplicate = Path.join(parentDir, nameOfDuplicate);
+    assert(!fs.existsSync(pathOfDuplicate));
+
+    // copy the folder, using its new name
+    fs.copySync(folder.directory, pathOfDuplicate);
+
+    // rename the metadata file in that folder
+
+    // get the name of the metadatafile, e.g. ETR009.session or Joe.person
+    const metaDataFileName = Path.basename(
+      folder.metadataFile!.metadataFilePath
+    );
+
+    // get the full path to that file
+    const duplicateMetadataFilePath = Path.join(
+      pathOfDuplicate,
+      metaDataFileName
+    );
+
+    assert(
+      fs.existsSync(duplicateMetadataFilePath),
+      `Expected to find that we had created ${duplicateMetadataFilePath}`
+    );
+
+    const ext = folder.metadataFile!.fileExtensionForMetadata;
+
+    // get the full path to change it to (ony the name is changing)
+    const fixedDuplicateMetadataFilePath = Path.join(
+      pathOfDuplicate,
+      nameOfDuplicate + ext
+    );
+    // rename that file
+    fs.renameSync(duplicateMetadataFilePath, fixedDuplicateMetadataFilePath);
+
+    assert(
+      fs.existsSync(fixedDuplicateMetadataFilePath),
+      "Failed rename the new file."
+    );
+    assert(
+      !fs.existsSync(duplicateMetadataFilePath),
+      "Failed rename the new file; the old file still exists."
+    );
+    // Change the id inside the file
+    let xml = fs.readFileSync(fixedDuplicateMetadataFilePath, "utf8") as string;
+    const newId = "newGuy";
+    xml = xml.replace(
+      /<id type="string">.*<\/id>/,
+      `<id type="string">${newId}</id>`
+    );
+    assert(
+      xml.indexOf(`${newId}<\/id>`) > -1,
+      "Failed to fix the id of the new file."
+    );
+    fs.writeFileSync(fixedDuplicateMetadataFilePath, xml);
+    return {
+      directory: pathOfDuplicate,
+      metadataFilePath: fixedDuplicateMetadataFilePath,
+      success: true,
+    };
+  } catch (err) {
+    ShowAlertDialog({
+      title: `Error`,
+      text: `There was an error while duplicating ${folder.directory}: ${err}`,
+      buttonText: "OK",
+    });
+    return { success: false, directory: "", metadataFilePath: "" };
+  }
+}
+export function getDuplicateFolderPath(
+  folderName: string,
+  otherItemsInParent: string[]
+): string {
+  return uuid();
+}

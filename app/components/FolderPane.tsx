@@ -4,7 +4,7 @@ import FileList from "./FileList";
 import { observer } from "mobx-react-lite";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";
-import { Folder } from "../model/Folder";
+import { Folder } from "../model/Folder/Folder";
 import Notes from "./Notes";
 import StatusControl from "./StatusControl";
 import ReactPlayer from "react-player";

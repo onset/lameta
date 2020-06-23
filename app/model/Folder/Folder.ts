@@ -1,19 +1,22 @@
-import { File, OtherFile } from "./file/File";
+import { File, OtherFile } from "../file/File";
 import { observable } from "mobx";
-import { Field, FieldType, FieldVisibility } from "./field/Field";
-import { FieldDefinition } from "./field/FieldDefinition";
+import { Field, FieldType, FieldVisibility } from "../field/Field";
+import { FieldDefinition } from "../field/FieldDefinition";
 
-import { NotifyMultipleProjectFiles, NotifyError } from "../components/Notify";
+import {
+  NotifyMultipleProjectFiles,
+  NotifyError,
+} from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as glob from "glob";
-import { FieldSet } from "./field/FieldSet";
+import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
-import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import { trash } from "../crossPlatformUtilities";
-import { CustomFieldRegistry } from "./Project/CustomFieldRegistry";
-import { sanitizeForArchive } from "../filenameSanitizer";
-import userSettingsSingleton from "../UserSettings";
+import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import { trash } from "../../crossPlatformUtilities";
+import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { sanitizeForArchive } from "../../filenameSanitizer";
+import userSettingsSingleton from "../../UserSettings";
 
 export class IFolderSelection {
   @observable

@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
 import { default as React, useState } from "react";
-import { Folder } from "../../model/Folder";
+import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";
 import { Trans } from "@lingui/react";
 import { translateRole } from "../../localization";
