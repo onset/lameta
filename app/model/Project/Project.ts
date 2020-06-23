@@ -24,6 +24,7 @@ import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 const genres = require("./Session/genres.json");
 
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
+import { duplicateFolder } from "../Folder/DuplicateFolder";
 
 let sCurrentProject: Project | null = null;
 
@@ -232,6 +233,41 @@ export class Project extends Folder {
     this.selectedSession.index = this.sessions.length - 1;
     analyticsEvent("Create", "Create Session");
   }
+  public duplicateCurrentSession() {
+    const session = this.sessions[this.selectedSession.index];
+    const { success, metadataFilePath, directory } = duplicateFolder(session);
+    if (success) {
+      const newSession = Session.fromDirectory(
+        directory,
+        this.customFieldRegistry
+      );
+      newSession.properties.setText("id", Path.basename(directory));
+      this.sessions.push(newSession);
+      this.selectedSession.index = this.sessions.length - 1;
+      analyticsEvent("Duplicate", "Duplicate Session");
+    }
+  }
+  public duplicateCurrentPerson() {
+    const person = this.persons[this.selectedPerson.index];
+    const { success, metadataFilePath, directory } = duplicateFolder(person);
+    if (success) {
+      const newPerson = this.setupPerson(directory);
+      newPerson.properties.setText("name", Path.basename(directory));
+      this.persons.push(newPerson);
+      this.selectedPerson.index = this.persons.length - 1;
+      analyticsEvent("Duplicate", "Duplicate person");
+    }
+  }
+
+  setupPerson(dir: string): Person {
+    return Person.fromDirectory(
+      dir,
+      this.customFieldRegistry,
+      // note: we have to use a fat arrow thing here in order to bind the project to the callback
+      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
+      this.languageFinder
+    );
+  }
 
   public addPerson() {
     const dir = this.getUniqueFolder(
@@ -239,13 +275,7 @@ export class Project extends Folder {
       i18n._(t`New Person`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
-    const person = Person.fromDirectory(
-      dir,
-      this.customFieldRegistry,
-      // note: we have to use a fat arrow thing here in order to bind the project to the callback
-      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
-      this.languageFinder
-    );
+    const person = this.setupPerson(dir);
     person.properties.setText("name", i18n._(t`New Person`));
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
@@ -378,12 +408,13 @@ export class Project extends Folder {
   public countOfMarkedSessions(): number {
     return this.sessions.filter((s) => s.checked).length;
   }
-  public canDeleteCurrentSession(): boolean {
+  public haveSelectedSession(): boolean {
     return this.selectedSession.index >= 0;
   }
-  public canDeleteCurrentPerson(): boolean {
+  public haveSelectedPerson(): boolean {
     return this.selectedPerson.index >= 0;
   }
+
   public deleteCurrentSession() {
     const session = this.sessions[this.selectedSession.index];
     ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {

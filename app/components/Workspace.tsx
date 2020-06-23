@@ -55,23 +55,33 @@ export default class Home extends React.Component<IProps> {
   // to reload the whole menu to control the enabled state of anything;
   // https://github.com/electron/electron/issues/528 is somewhat related
   private UpdateMenus(currentTabIndex: number) {
-    let enable = currentTabIndex === 1;
+    let enableMenu = currentTabIndex === 1;
     const sessionMenu = {
       label: "&" + i18n._(t`Session`),
       submenu: [
         {
           label: i18n._(t`New Session`),
-          enabled: enable,
+          enabled: enableMenu,
           click: () => {
             if (this.props.project) {
               this.props.project.addSession();
             }
           },
         },
+        {
+          label: i18n._(t`Duplicate Session`),
+          enabled: enableMenu && this.props.project.haveSelectedSession(),
+          accelerator: "Ctrl+D",
+          click: () => {
+            if (this.props.project) {
+              this.props.project.duplicateCurrentSession();
+            }
+          },
+        },
         { type: "separator" },
         {
           label: i18n._(t`Delete Session...`),
-          enabled: enable && this.props.project.canDeleteCurrentSession(),
+          enabled: enableMenu && this.props.project.haveSelectedSession(),
           click: () => {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
@@ -80,23 +90,32 @@ export default class Home extends React.Component<IProps> {
         },
       ],
     };
-    enable = currentTabIndex === 2;
+    enableMenu = currentTabIndex === 2;
     const peopleMenu = {
       label: "&" + i18n._(t`People`),
       submenu: [
         {
           label: i18n._(t`New Person`),
-          enabled: enable,
+          enabled: enableMenu,
           click: () => {
             if (this.props.project) {
               this.props.project.addPerson();
             }
           },
         },
+        {
+          label: i18n._(t`Duplicate Person`),
+          enabled: enableMenu && this.props.project.haveSelectedPerson(),
+          click: () => {
+            if (this.props.project) {
+              this.props.project.duplicateCurrentPerson();
+            }
+          },
+        },
         { type: "separator" },
         {
           label: i18n._(t`Delete Person...`),
-          enabled: enable && this.props.project.canDeleteCurrentPerson(),
+          enabled: enableMenu && this.props.project.haveSelectedPerson(),
           click: () => {
             if (this.props.project) {
               this.props.project.deleteCurrentPerson();

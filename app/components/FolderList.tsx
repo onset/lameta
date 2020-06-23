@@ -38,6 +38,9 @@ export class FolderList extends React.Component<IProps> {
   }
 
   public render() {
+    // it's important that we access this at this level so that mobx will know to re-render us when this changes.
+    const selectedFolderIndex = this.props.selectedFolder.index;
+
     // Because the class has the mobxReact.observer decorator, mobx is watching the render function.
     // But what happens inside the table's cells is invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
@@ -170,19 +173,16 @@ export class FolderList extends React.Component<IProps> {
                 // console.log(
                 //   "row " + JSON.stringify(rowInfo.original.directory)
                 // );
-                if (
-                  this.props.selectedFolder &&
-                  this.props.selectedFolder.index > -1
-                ) {
+                if (this.props.selectedFolder && selectedFolderIndex > -1) {
                   this.props.folders[
-                    this.props.selectedFolder.index
+                    selectedFolderIndex
                   ].saveAllFilesInFolder();
                 }
                 this.props.selectedFolder.index = rowInfo.index;
                 this.setState({}); // trigger re-render so that the following style: takes effect
               },
               className:
-                rowInfo && rowInfo.index === this.props.selectedFolder.index
+                rowInfo && rowInfo.index === selectedFolderIndex
                   ? "selected"
                   : "",
             };

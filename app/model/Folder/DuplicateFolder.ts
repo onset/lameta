@@ -12,10 +12,9 @@ export function duplicateFolder(
 ): { directory: string; metadataFilePath: string; success: boolean } {
   try {
     folder.saveAllFilesInFolder();
-    const name = Path.basename(folder.directory);
+    //const name = Path.basename(folder.directory);
     const parentDir = Path.dirname(folder.directory);
-    const itemsInDir = fs.readdirSync(parentDir);
-    const nameOfDuplicate = getDuplicateFolderPath(name, itemsInDir);
+    const nameOfDuplicate = getDuplicateFolderName(folder.directory);
     const pathOfDuplicate = Path.join(parentDir, nameOfDuplicate);
     assert(!fs.existsSync(pathOfDuplicate));
 
@@ -58,18 +57,20 @@ export function duplicateFolder(
       !fs.existsSync(duplicateMetadataFilePath),
       "Failed rename the new file; the old file still exists."
     );
-    // Change the id inside the file
-    let xml = fs.readFileSync(fixedDuplicateMetadataFilePath, "utf8") as string;
-    const newId = "newGuy";
-    xml = xml.replace(
-      /<id type="string">.*<\/id>/,
-      `<id type="string">${newId}</id>`
-    );
-    assert(
-      xml.indexOf(`${newId}<\/id>`) > -1,
-      "Failed to fix the id of the new file."
-    );
-    fs.writeFileSync(fixedDuplicateMetadataFilePath, xml);
+    /* No: setting the id will be done when the session is loaded by the project.
+        // Change the id inside the file
+        let xml = fs.readFileSync(fixedDuplicateMetadataFilePath, "utf8") as string;
+        const newId = "newGuy";
+        xml = xml.replace(
+          /<id type="string">.*<\/id>/,
+          `<id type="string">${newId}</id>`
+        );
+        assert(
+          xml.indexOf(`${newId}<\/id>`) > -1,
+          "Failed to fix the id of the new file."
+        );
+        fs.writeFileSync(fixedDuplicateMetadataFilePath, xml);
+    */
     return {
       directory: pathOfDuplicate,
       metadataFilePath: fixedDuplicateMetadataFilePath,
@@ -84,9 +85,14 @@ export function duplicateFolder(
     return { success: false, directory: "", metadataFilePath: "" };
   }
 }
-export function getDuplicateFolderPath(
-  folderName: string,
-  otherItemsInParent: string[]
-): string {
-  return uuid();
+export function getDuplicateFolderName(folderPath: string): string {
+  const originalName = Path.basename(folderPath).replace(/ - Copy \d+/, "");
+  const parentDir = Path.dirname(folderPath);
+  let counter = 0;
+  let name: string;
+  do {
+    ++counter;
+    name = `${originalName} - Copy ${counter.toString()}`;
+  } while (fs.existsSync(Path.join(parentDir, name)));
+  return name;
 }
