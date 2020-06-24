@@ -1768,13 +1768,6 @@
   resolved "https://registry.yarnpkg.com/@types/commonmark/-/commonmark-0.27.1.tgz#d40637518c557ceaa5006149b6a0a044a3dffe29"
   integrity sha512-3K97drCi/zJB1nExp2fx0L50FVyOUXqAlrcUwfXr2pCbR6S67iPv2bPplVaN21osWZcVBPHU1dIk5XVC4JNRqQ==
 
-"@types/csv-parse@^1.1.11":
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/@types/csv-parse/-/csv-parse-1.1.11.tgz#47d68b5579e66aa0d55af9dbae76f1d2ff836f1d"
-  integrity sha512-c4kjQ7avmOV22T+xH2BAE/n4F52mGm+ELyHOk5PrGc/26Ps6RagP5lVKfDoLx+jmRnFKQlq6XIS33tp9Dco0Ug==
-  dependencies:
-    "@types/node" "*"
-
 "@types/debug@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
@@ -4954,10 +4947,10 @@ csv-loader@^3.0.2:
   dependencies:
     loader-utils "^1.1.0"
 
-csv-parse@^4.4.6:
-  version "4.4.6"
-  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.4.6.tgz#08804dbe86037c46810d49ced77fa0e121f83b4f"
-  integrity sha512-VisC5TBBhOF+70zjrF9FOiqI2LZOhXK/vAWlOrqyqz3lLa+P8jzJ7L/sg90MHmkSY/brAXWwrmGSZR0tM5yi4g==
+csv-parse@^4.10.1:
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.10.1.tgz#1e26ba63d29c75e94d0eba6e9de9a8aaf89d72a6"
+  integrity sha512-gdDJVchi0oSLIcYXz1H/VSgLE6htHDqJyFsRU/vTkQgmVOZ3S0IR2LXnNbWUYG7VD76dYVwdfBLyx8AX9+An8A==
 
 cuint@^0.2.1:
   version "0.2.2"

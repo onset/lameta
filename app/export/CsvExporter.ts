@@ -8,7 +8,7 @@ import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
 
-const kEol: string = require("os").EOL;
+export const kEol: string = require("os").EOL;
 
 let currentKnownFields: FieldDefinition[];
 
