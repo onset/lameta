@@ -2,9 +2,22 @@ import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { csvEncode, kEol } from "./CsvExporter";
-import { Contribution } from "../model/file/File";
+import * as fs from "fs";
 
-export function makeParadisecProjectCsv(project: Project) {
+export function makeParadisecCsv(
+  path: string,
+  project: Project,
+  sessionFilter: (f: Folder) => boolean
+) {
+  const csv =
+    makeParadisecProjectFieldsCsv(project) +
+    kEol +
+    kEol +
+    makeParadisecSessionCsv(project, sessionFilter);
+  fs.writeFileSync(path, csv);
+}
+
+export function makeParadisecProjectFieldsCsv(project: Project) {
   const lines: string[] = [];
   lines.push(
     "Collection ID," + csvEncode(project.properties.getTextStringOrEmpty("id"))
@@ -20,8 +33,8 @@ export function makeParadisecProjectCsv(project: Project) {
   const { first, last } = parseNameIntoFirstAndLast(
     project.properties.getTextStringOrEmpty("depositor")
   );
-  lines.push("Collection First Name," + csvEncode(first.trim()));
-  lines.push("Collection Last Name," + csvEncode(last.trim()));
+  lines.push("Collector First Name," + csvEncode(first.trim()));
+  lines.push("Collector Last Name," + csvEncode(last.trim()));
 
   return lines.join(kEol);
 }
@@ -57,7 +70,7 @@ col("Data Categories", ""); // our "genre" has some of these (e.g. instrumental 
 /* must be one of:Collection, Dataset, Event, Image, Interactive Resource, MovingImage, PhysicalObject, Service, Software, Sound, StillImage, Text */
 col("Data Type", ""); // Maybe add to More Fields?
 
-/* must be one of: drama, formulaic_discourse, interactive_discourse, language_play, narrative, procedural_discourse, report, singing, or unintelligible_speech */
+/* Paradisec list is different: drama, formulaic_discourse, interactive_discourse, language_play, narrative, procedural_discourse, report, singing, or unintelligible_speech */
 col("Discourse Type", "genre");
 col("Dialect", ""); // Maybe add to More Fields?
 
@@ -74,7 +87,7 @@ function getCommaSeparatedLanguageNames(session: Session): string {
 }
 export function makeParadisecSessionCsv(
   project: Project,
-  folderFilter: (f: Folder) => boolean
+  sessionFilter: (f: Folder) => boolean
 ) {
   const lines: string[] = [];
   let header = columns.map((c) => csvEncode(c.header)).join(",");
@@ -82,18 +95,19 @@ export function makeParadisecSessionCsv(
   // contributions come in groups of 3 columns. In order to put a header over each one, we need
   // do know how many their will be.
   let contributionGroups = 0;
-  project.sessions.filter(folderFilter).forEach((session) => {
+  project.sessions.filter(sessionFilter).forEach((session) => {
     contributionGroups = Math.max(
       contributionGroups,
       session.getAllContributionsToAllFiles().length
     );
   });
+  //console.log("contributionGroups:" + contributionGroups);
   for (let i = 0; i < contributionGroups; i++) {
-    header += ",role,first,last";
+    header += ",Role,First Name,Last Name";
   }
   lines.push(header);
 
-  project.sessions.filter(folderFilter).forEach((session) => {
+  project.sessions.filter(sessionFilter).forEach((session) => {
     const l = columns
       .map((c) =>
         csvEncode(
@@ -114,17 +128,15 @@ function getContributions(project: Project, session: Session): string[] {
   /* Spreadsheet says: "Add up to six contributions" */
   session.getAllContributionsToAllFiles().map((contribution) => {
     const trimmedName = contribution.personReference.trim();
-    if (trimmedName.length === 0) {
-      return;
-    }
     const person = project.findPerson(trimmedName);
-    if (person) {
-      /* Spreadsheet says: Acceptable roles are author , compiler , consultant , data_inputter , depositor , editor , interviewer , participant , performer , photographer , recorder , researcher , singer , speaker , translator*/
-      cols.push(csvEncode(contribution.role));
-      const { first, last } = parseNameIntoFirstAndLast(trimmedName);
-      cols.push(csvEncode(first));
-      cols.push(csvEncode(last));
-    }
+    // output the person even if they are not in the list of people because... well we have all the info
+    // that the paradisec format wants already (name & role)
+    //if (person) {
+    /* Spreadsheet says: Acceptable roles are author , compiler , consultant , data_inputter , depositor , editor , interviewer , participant , performer , photographer , recorder , researcher , singer , speaker , translator*/
+    cols.push(csvEncode(contribution.role));
+    const { first, last } = parseNameIntoFirstAndLast(trimmedName);
+    cols.push(csvEncode(first));
+    cols.push(csvEncode(last));
   });
   return cols;
 }
@@ -146,5 +158,5 @@ export function parseNameIntoFirstAndLast(
       }
     }
   }
-  return { first: first.trim(), last: last.trim() };
+  return { first: first?.trim() || "", last: last?.trim() || "" };
 }

@@ -22,12 +22,9 @@ import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
 import { NotifyError } from "../Notify";
-import { mkdirpSync, ensureDirSync, pathExistsSync } from "fs-extra";
-import {
-  makeZipFile,
-  genericCsvExporter,
-  makeGenericCsvZipFile,
-} from "../../export/CsvExporter";
+import { ensureDirSync, pathExistsSync } from "fs-extra";
+import { makeGenericCsvZipFile } from "../../export/CsvExporter";
+import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
 
 const saymore_orange = "#e69664";
 const { app } = require("electron").remote;
@@ -56,8 +53,18 @@ export const ExportDialog: React.FunctionComponent<{
 
   const handleContinue = (doSave: boolean) => {
     if (doSave) {
-      const defaultPath =
-        exportFormat === "csv" ? getPathForCsvSaving() : getPathForIMDISaving();
+      let defaultPath;
+      switch (exportFormat) {
+        case "csv":
+          defaultPath = getPathForCsvSaving();
+          break;
+        case "paradisec":
+          defaultPath = getPathForParadisecSaving();
+          break;
+        default:
+          defaultPath = getPathForIMDISaving();
+          break;
+      }
       remote.dialog
         .showSaveDialog({
           title: i18n._(t`Save As`),
@@ -104,6 +111,22 @@ export const ExportDialog: React.FunctionComponent<{
       `${sanitize(
         props.projectHolder.project!.displayName
       )} - lameta CSV Export - ${moment(new Date()).format("YYYY-MM-DD")}.zip`
+    );
+
+    // return `${Path.basename(
+    //   props.projectHolder.project!.directory
+    // )}-${exportFormat}.zip`;
+  };
+  const getPathForParadisecSaving = () => {
+    const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
+    ensureDirSync(parent);
+    return Path.join(
+      parent,
+      `${sanitize(
+        props.projectHolder.project!.displayName
+      )} - lameta Paradisec Export - ${moment(new Date()).format(
+        "YYYY-MM-DD"
+      )}.csv`
     );
 
     // return `${Path.basename(
@@ -158,6 +181,12 @@ export const ExportDialog: React.FunctionComponent<{
             props.projectHolder.project!,
             folderFilter
           );
+          showInExplorer(path);
+          break;
+        case "paradisec":
+          analyticsEvent("Export", "Export Paradisec CSV");
+
+          makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
           showInExplorer(path);
           break;
         case "imdi":
@@ -216,14 +245,29 @@ export const ExportDialog: React.FunctionComponent<{
               />
               <Trans>Zip of CSVs</Trans>
             </label>
-
             <p>
               <Trans>
                 A single zip archive that contains one comma-separated file for
                 each of Project, Sessions, and People.
               </Trans>
             </p>
-
+            <label>
+              <input
+                type="radio"
+                name="format"
+                value="paradisec"
+                checked={exportFormat === "paradisec"}
+                onChange={(e) => setExportFormat(e.target.value)}
+              />
+              <Trans>Paradisec CSV</Trans>
+              {" (Experimental)"}
+            </label>{" "}
+            <p>
+              <Trans>
+                A single comma-separated file with project information followed
+                by one row per session. Many lameta fields are omitted.
+              </Trans>
+            </p>
             {/* <label>
                 <input
                   type="radio"
@@ -238,7 +282,6 @@ export const ExportDialog: React.FunctionComponent<{
                 A single file with sheets for each of Project, Session, and
                 People
               </p> */}
-
             <label>
               <input
                 type="radio"

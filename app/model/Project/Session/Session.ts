@@ -228,6 +228,7 @@ export class Session extends Folder {
     //     contributionsToList.push(new Contribution(name, "speaker", "", ""));
     //   }
     // });
+    //console.log("contributionsToList:" + JSON.stringify(contributionsToList));
     return contributionsToList;
   }
   // public getParticipantNames(): string[] {

@@ -5,7 +5,7 @@
     "module": "commonjs",
     "jsx": "react",
     "target": "es2019",
-    "lib": ["dom", "es6", "dom.iterable", "scripthost"],
+    "lib": ["dom", "es6", "dom.iterable", "scripthost", "es2017"],
     "types": ["jest"],
 
     "alwaysStrict": true,

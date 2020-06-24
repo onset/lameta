@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as temp from "temp";
 import {
   makeParadisecSessionCsv,
-  makeParadisecProjectCsv,
+  makeParadisecProjectFieldsCsv,
   parseNameIntoFirstAndLast,
 } from "./ParadisecCsvExporter";
 // tslint:disable-next-line:no-submodule-imports
@@ -21,7 +21,7 @@ const kEol: string = require("os").EOL;
 project = Project.fromDirectory("sample data/Edolo sample");
 beforeAll(() => {});
 describe("Paradisec project csv export", () => {
-  projectCsv = makeParadisecProjectCsv(project);
+  projectCsv = makeParadisecProjectFieldsCsv(project);
   projectMatrix = parseSync(projectCsv);
   it("should contain right number of rows", () => {
     expect(projectMatrix.length).toBe(5);
@@ -43,7 +43,7 @@ describe("Paradisec project csv export", () => {
 });
 describe("Paradisec session csv export", () => {
   sessionCsv = makeParadisecSessionCsv(project, (f) => true);
-  console.log(sessionCsv);
+  //console.log(sessionCsv);
   sessionMatrix = parseSync(sessionCsv, { relax_column_count: true });
   it("should contain right number of rows", () => {
     expect(sessionMatrix.length).toBe(
@@ -53,7 +53,7 @@ describe("Paradisec session csv export", () => {
   it("should contain contributions", () => {
     const first = sessionMatrix[1] as string[];
     const baseColumnsPerSession = 14;
-    const contributions = 3;
+    const contributions = 4;
     const columnsPerContribution = 3;
     expect(first.length).toBe(
       baseColumnsPerSession + contributions * columnsPerContribution
