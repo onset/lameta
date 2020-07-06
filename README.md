@@ -10,7 +10,7 @@ Stack: Typescript, React, mobx, webpack, electron.
 
 ## Get Started
 
-Install node, yarn, then
+Install node & yarn then
 
 ```bash
 $ yarn
@@ -23,25 +23,7 @@ $ yarn dev
 To package apps for the local platform:
 
 ```bash
-$ npm run package
-```
-
-To package apps for all platforms:
-
-First, refer to
-[Multi Platform Build](https://www.electron.build/multi-platform-build) for
-dependencies.
-
-Then,
-
-```bash
-$ npm run package-all
-```
-
-To package apps with options:
-
-```bash
-$ npm run package -- --[option]
+$ yarn package
 ```
 
 More information available in the upstream project:
