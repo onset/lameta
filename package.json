@@ -199,7 +199,7 @@
     "css-modules-require-hook": "^4.0.6",
     "csv-loader": "^3.0.2",
     "devtron": "^1.4.0",
-    "electron": "^6.1.5",
+    "electron": "^7.2.4",
     "electron-builder": "^22.6.1",
     "electron-builder-http": "^19.27.5",
     "electron-builder-notarize": "^1.1.2",
