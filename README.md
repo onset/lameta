@@ -4,6 +4,11 @@ lameta (the Metadata Editor for Transparent Archiving) is a tool for Language Do
 
 Download [Installers](https://github.com/onset/lameta/releases)
 
+# For Users
+
+Learn more about this tool on its website: [https://www.lameta.org/](https://www.lameta.org/)
+lameta was previously known as SayMoreX.
+
 # For Developers
 
 Stack: Typescript, React, mobx, webpack, electron.
