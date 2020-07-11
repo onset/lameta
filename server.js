@@ -20,15 +20,15 @@ const PORT = process.env.PORT || 3000;
 const wdm = webpackDevMiddleware(compiler, {
   publicPath: config.output.publicPath,
   stats: {
-    colors: true
-  }
+    colors: true,
+  },
 });
 
 app.use(wdm);
 
 app.use(webpackHotMiddleware(compiler));
 
-const server = app.listen(PORT, "localhost", serverError => {
+const server = app.listen(PORT, "localhost", (serverError) => {
   if (serverError) {
     return console.error(serverError);
   }
@@ -37,19 +37,19 @@ const server = app.listen(PORT, "localhost", serverError => {
     spawn("npm", ["run", "start-hot"], {
       shell: true,
       env: process.env,
-      stdio: "inherit"
+      stdio: "inherit",
     })
-      .on("close", code => process.exit(code))
-      .on("error", spawnError => console.error(spawnError));
+      .on("close", (code) => process.exit(code))
+      .on("error", (spawnError) => console.error(spawnError));
   }
   if (argv["start-hot-vscode"]) {
     spawn("npm", ["run", "start-hot-vscode"], {
       shell: true,
       env: process.env,
-      stdio: "inherit"
+      stdio: "inherit",
     })
-      .on("close", code => process.exit(code))
-      .on("error", spawnError => console.error(spawnError));
+      .on("close", (code) => process.exit(code))
+      .on("error", (spawnError) => console.error(spawnError));
   }
   console.log(`Listening at http://localhost:${PORT}`);
 });

@@ -1,17 +1,16 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field } from "../../model/field/Field";
-import { Creatable, Option, OptionValues } from "react-select";
-// tslint:disable-next-line:no-duplicate-imports
-import ReactSelect from "react-select";
-import { observable } from "mobx";
+// tslint:disable-next-line: no-submodule-imports
+import CreatableSelect from "react-select/creatable";
+//import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
-const titleCase = require("title-case");
+const saymore_orange = "#e69664";
 
 export interface IProps {
   name: string;
   getPeopleNames: () => string[];
   onChange: (name: string) => void;
+  highlight: boolean;
 }
 
 @observer
@@ -21,11 +20,20 @@ export default class PersonChooser extends React.Component<IProps> {
   }
 
   public render() {
+    const customStyles = {
+      container: (styles, { data }) => {
+        return {
+          ...styles,
+          border: this.props.highlight ? "solid 2px " + saymore_orange : "none",
+        };
+      },
+    };
+
     //console.log("person name: " + JSON.stringify(this.props.name));
-    const choices = this.props.getPeopleNames().map(c => {
+    const choices = this.props.getPeopleNames().map((c) => {
       return new Object({
         value: c,
-        label: c
+        label: c,
       });
     });
     /* Question: Should we allow contributors that we don't have a "Person" (Actor) record for?
@@ -43,15 +51,15 @@ export default class PersonChooser extends React.Component<IProps> {
     }
     return (
       //<ReactSelect <-- if we didn't want to allow new
-      <Creatable
+      <CreatableSelect
         name={this.props.name}
-        value={this.props.name}
-        onChange={v => {
-          const s: string = v as any;
+        styles={customStyles}
+        value={{ value: this.props.name, label: this.props.name }}
+        onChange={(v: any) => {
+          const s: string = v.value;
           this.props.onChange(s ? s : "");
         }}
         options={choices}
-        simpleValue
       />
     );
   }

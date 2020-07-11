@@ -1,9 +1,15 @@
 import { Dictionary } from "typescript-collections";
 import assert from "assert";
 const camelcase = require("camelcase");
-import { Field, FieldType, FieldDefinition, HasConsentField } from "./Field";
-import { Contribution } from "../file/File";
+import {
+  Field,
+  FieldType,
+  HasConsentField,
+  PersonDisplayNameField,
+} from "./Field";
+import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
+import { Folder } from "../Folder/Folder";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
@@ -26,19 +32,23 @@ export class FieldSet extends Dictionary<string, Field> {
   // SayMore Classic has a mix of ways to name tags, and it... didn't sit well with me,
   // so all keys in this SayMore are camelCase, internally.
   // Then we map to and from the xml so we still use the same tags for I/O, but maybe
-  // someday well migrate to a format that is consistent.
+  // someday we will migrate to a format that is consistent.
   public getKeyFromXmlTag(tag: string): string {
-    // In fields.json, all tags in SayMore Classic which are not camelCase have a "tagInSayMoreClassic".
+    // In fields.json5, all tags in SayMore Classic which are not camelCase have a "tagInSayMoreClassic".
 
     const match = this.values().find(
-      field => field.definition && field.definition.tagInSayMoreClassic === tag
+      (field) =>
+        field.definition && field.definition.tagInSayMoreClassic === tag
     );
     if (match) {
       return match.key;
     }
     return camelcase(tag);
   }
-
+  public checkForFieldDefinition(key: string): boolean {
+    const f = this.getValue(key) as Field;
+    return !!f;
+  }
   public getFieldDefinition(key: string): FieldDefinition {
     const f = this.getValueOrThrow(key) as Field;
     return f.definition;
@@ -49,6 +59,13 @@ export class FieldSet extends Dictionary<string, Field> {
       return s.text;
     } catch {
       return "";
+    }
+  }
+  public getTextFieldOrUndefined(key: string): Field | undefined {
+    try {
+      return this.getValueOrThrow(key) as Field;
+    } catch {
+      return undefined;
     }
   }
   public getTextField(key: string): Field {
@@ -64,54 +81,17 @@ export class FieldSet extends Dictionary<string, Field> {
   public addHasConsentProperty(person: Person) {
     this.setValue("hasConsent", new HasConsentField(person));
   }
-  // public manditoryTextProperty(key: string, value: string) {
-  //   if (!this.containsKey(key)) {
-  //     this.setValue(key, new Field(key, FieldType.Text, value));
-  //   }
-  // }
-  // public manditoryField(field: Field) {
-  //   if (this.containsKey(field.key)) {
-  //     const existing = this.getValue(field.key);
-  //     // a fuller version of this could be made to migrate the old data into what we expect now
-  //     field.setValueFromString(existing)
-  //   }
-  //   else {
-  //     this.setValue(field.key, field);
-  //   }
-  // }
+  public addDisplayNameProperty(person: Person) {
+    this.setValue("displayName", new PersonDisplayNameField(person));
+  }
   public addTextProperty(key: string, value: string) {
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
-  // public addCustomProperty(key: string, value: string) {
-  //   const definition: IFieldDefinition = {
-  //     key,
-  //     englishLabel: key, // key is the englishLabel
-  //     //default?: string;
-  //     persist: true,
-  //     type: "Text",
-  //     //form,
-  //     //cssClass,
-  //     //choices,
-  //     //complexChoices: [],
-  //     order: 0,
-  //     //order: number;
-  //     //imdiRange?: string;
-  //     //imdiIsClosedVocabulary?: boolean;
-  //     isCustom: true
-  //   };
-  //   const f = Field.fromFieldDefinition(definition);
-  //   f.setValueFromString(value);
-  //   this.setValue(key, f);
-  // }
 
   public addCustomProperty(f: Field) {
     this.setValue(f.key, f);
   }
-  public addContributionArrayProperty(key: string, value: Contribution[]): any {
-    const f = new Field(key, FieldType.Contributions, "unused");
-    f.contributorsArray = value;
-    this.setValue(key, f);
-  }
+
   private checkType(key: string, value: any) {
     if (this.containsKey(key)) {
       const a = typeof this.getValueOrThrow(key);

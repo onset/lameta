@@ -1,0 +1,21 @@
+.renameFileDialog {
+  .dialogContent {
+    margin-left: 20px;
+    width: calc(1em * 30);
+    height: 150px;
+
+    h1 {
+      height: 2em;
+    }
+    .validationMessage {
+      color: red;
+    }
+    .row {
+      margin-top: 1em;
+      display: flex;
+    }
+    input {
+      width: 1em * 27;
+    }
+  }
+}

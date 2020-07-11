@@ -11,8 +11,8 @@ const baseConfig = require("./webpack.config.base");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
 
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const { BugsnagBuildReporterPlugin } = require("webpack-bugsnag-plugins");
+//const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+
 const port = process.env.PORT || 3000;
 // -----------------------------------------------------------------------------------------
 // For debugging endless watch loops. I fixed the problem but if it come back I want this
@@ -20,11 +20,11 @@ const port = process.env.PORT || 3000;
 class MonitorWatch {
   apply(compiler) {
     // listen to the "watchRun" event
-    compiler.plugin("watchRun", compiler => {
+    compiler.plugin("watchRun", (compiler) => {
       //from https://stackoverflow.com/questions/43140501/can-webpack-report-which-file-triggered-a-compilation-in-watch-mode
       const changedTimes = compiler.watchFileSystem.watcher.mtimes;
       const files = Object.keys(changedTimes)
-        .map(file => `\n  ${file}`)
+        .map((file) => `\n  ${file}`)
         .join("");
       if (files.length) {
         console.log("^^^^ Files changed:", files);
@@ -46,7 +46,7 @@ module.exports = speedMeasurePlugin.wrap(
       path: path.join(__dirname, "app/dist"),
       // this is what we get when running "yarn dev": publicPath: `http://localhost:${port}/dist/` // this is "as the browser will get it"
       // this is what we get when running "yarn start":
-      publicPath: "file:///**/renderer-bundle.js"
+      publicPath: "file:///**/renderer-bundle.js",
     },
 
     // use the following if you're getting errors in the terminal, before source maps are available.
@@ -61,7 +61,7 @@ module.exports = speedMeasurePlugin.wrap(
     // },
 
     module: {
-      rules: []
+      rules: [],
     },
 
     plugins: [
@@ -85,18 +85,9 @@ module.exports = speedMeasurePlugin.wrap(
       // })
 
       // as far as I know, we just need to report this once per build, so we don't need this done for main.
-      new BugsnagBuildReporterPlugin(
-        {
-          apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
-          appVersion: require("./app/package.json").version
-        },
-        {
-          /* opts */
-        }
-      )
     ],
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-    target: "electron-renderer"
+    target: "electron-renderer",
   })
 );

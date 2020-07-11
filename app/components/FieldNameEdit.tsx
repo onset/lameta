@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-const titleCase = require("title-case");
+
+const XmlNameValidator = require("xml-name-validator");
 
 export interface IProps {
   field: Field;
@@ -20,15 +21,17 @@ export default class FieldNameEdit extends React.Component<
     this.state = { invalid: false };
   }
 
-  private validate(label: string): boolean {
-    return (
-      //label.trim().length > 0 &&
-      label.indexOf("<") === -1 && label.indexOf(">") === -1
-    );
+  private isValidXmlName(label: string): boolean {
+    // this is only used by customFields table, and custom fields actually
+    // get tags that match their labels (not such a great idea, in retrospect.
+    // But it's what SayMore Windows Classic's format requires.
+    return label.trim() === "" || XmlNameValidator.name(label).success;
   }
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, field: Field) {
     // note, we don't want to change the key, we leave that up to the parent component
-    field.englishLabel = this.processLabel(event.currentTarget.value);
+    field.definition.englishLabel = this.processLabel(
+      event.currentTarget.value
+    );
     this.setState({ invalid: false });
   }
   private processLabel(label: string): string {
@@ -46,11 +49,11 @@ export default class FieldNameEdit extends React.Component<
       <textarea
         className={classname}
         name={this.props.field.key} //what does this do? Maybe accessibility?
-        value={this.props.field.englishLabel}
-        onChange={event => this.onChange(event, this.props.field)}
+        value={this.props.field.definition.englishLabel}
+        onChange={(event) => this.onChange(event, this.props.field)}
         onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
           const newLabel = this.processLabel(event.currentTarget.value);
-          if (!this.validate(newLabel)) {
+          if (!this.isValidXmlName(newLabel)) {
             event.preventDefault();
             const textarea = event.currentTarget;
             window.setTimeout(() => {

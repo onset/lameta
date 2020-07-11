@@ -1,0 +1,415 @@
+// this is "json5", should use the webpack:json5-loader & jest:json5-jest
+{
+  "project": [
+    {
+      "key": "title",
+      "englishLabel": "Project ID", // changed to Project ID at ELAR request Dec 2019
+      "tagInSayMoreClassic": "Title",
+      "tabIndex": 0
+    },
+    {
+      "key": "projectDescription",
+      "tagInSayMoreClassic": "ProjectDescription",
+      "englishLabel": "Description",
+      "cssClass": "text-block",
+      "multipleLines": true,
+      "tabIndex": 11
+    },
+    {
+      "key": "vernacularIso3CodeAndName",
+      "englishLabel": "Content Language",
+      "tagInSayMoreClassic": "VernacularISO3CodeAndName",
+      "type": "language",
+      "tabIndex": 1
+    },
+    {
+      "key": "analysisIso3CodeAndName",
+      "englishLabel": "Working Language",
+      "tagInSayMoreClassic": "AnalysisISO3CodeAndName",
+      "type": "language",
+      "tabIndex": 2
+    },
+    {
+      "key": "location",
+      "englishLabel": "Location/Address",
+      "tagInSayMoreClassic": "Location",
+      "cssClass": "field__newSection",
+      "multipleLines": true,
+      "tabIndex": 3
+    },
+    {
+      "key": "region",
+      "tagInSayMoreClassic": "Region",
+      "tabIndex": 4
+    },
+    {
+      "key": "country",
+      "tagInSayMoreClassic": "Country",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
+      "imdiIsClosedVocabulary": false,
+      "tabIndex": 5
+      //choices are filled in by KnownFieldDefinitions.ts
+    },
+    {
+      "key": "continent",
+      "tagInSayMoreClassic": "Continent",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
+      "imdiIsClosedVocabulary": true,
+      "choices": [
+        "unspecified",
+        "Africa",
+        "Asia",
+        "Australia",
+        "Europe",
+        "North-America",
+        "Middle-America",
+        "Oceania",
+        "South-America"
+      ],
+      "tabIndex": 6
+    },
+    {
+      "key": "grantId",
+      "englishLabel": "Grant ID",
+      "tabIndex": 7
+    },
+    {
+      "key": "fundingProjectTitle",
+      "tagInSayMoreClassic": "FundingProjectTitle",
+      "cssClass": "field__newSection",
+      "tabIndex": 8
+    },
+    {
+      "key": "accessProtocol",
+      "form": "accessProtocol",
+      "tagInSayMoreClassic": "AccessProtocol",
+      "englishLabel": "Access Protocol used by this project"
+    },
+    {
+      "key": "customAccessChoices",
+      "form": "accessProtocol",
+      "//": "Older Windows SM actually didn't store this in the sprj at all",
+      "tagInSayMoreClassic": "CustomAccessProtocol",
+      "englishLabel": "Custom access choices"
+    },
+    {
+      "key": "depositor",
+      "tagInSayMoreClassic": "Depositor",
+      "tabIndex": 9
+    },
+    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
+      is a drag.
+    {
+      "key": "rightsHolder",
+      "tagInSayMoreClassic": "RightsHolder"
+    },
+    */
+    {
+      "key": "contactPerson",
+      "tagInSayMoreClassic": "ContactPerson",
+      "tooltip": "Contact information about the person or institution responsible for the project.",
+      "tabIndex": 10
+    },
+    /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
+    {
+      "key": "dateAvailable",
+      "tagInSayMoreClassic": "DateAvailable",
+      "type": "Date",
+      "tabIndex": 11
+    }*/
+  ],
+  "session": [
+    {
+      "key": "id",
+      "englishLabel": "ID",
+      /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
+         However, we can't santize names to archive expectations while preserving the actual unicode name unless
+         we do persist it 
+      "persist": false, */
+      "tabIndex": 0
+    },
+    {
+      "key": "title",
+      "tabIndex": 4
+    },
+    {
+      "key": "languages",
+      "type": "multiLanguage",
+      "englishLabel": "Content Languages",
+      "tabIndex": 12
+    },
+    {
+      "key": "workingLanguages",
+      "type": "multiLanguage",
+      "englishLabel": "Working Languages",
+      "tabIndex": 14
+    },
+    {
+      "key": "participants",
+      "englishLabel": "People",
+      "tabIndex": 3
+    },
+    {
+      "key": "genre",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
+      "tabIndex": 6
+    },
+    {
+      "key": "subgenre",
+      "tagInSayMoreClassic": "Sub-Genre",
+      "englishLabel": "Subgenre",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
+      // moved from additional/more Dec 2019 at ELAR request
+      "tabIndex": 7
+    },
+    /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
+    {
+      "key": "situation",
+      "multipleLines": true,
+      "markAsNotImdi": true
+    },
+    {
+      "key": "setting",
+      "multipleLines": true,
+      "markAsNotImdi": true
+    },*/
+
+    {
+      "key": "location",
+      "englishLabel": "Neighborhood/Town/Village",
+      "tooltip": "A location that is relevant within the group you are studying",
+      "tabIndex": 12
+    },
+    {
+      "key": "access",
+      "tabIndex": 8
+    },
+    {
+      "key": "accessDescription", // this was the inherited key... but really it's an explanation
+      "englishLabel": "Access Explanation",
+      "tooltip": "If the access is not open/free, use this to explain why.",
+      "tabIndex": 9
+    },
+    {
+      "key": "description",
+      "tagInSayMoreClassic": "synopsis",
+      "multipleLines": true,
+      "tabIndex": 5
+    },
+    {
+      "key": "status",
+      "choices": ["Incoming", "In_Progress", "Finished", "Skipped"],
+      "default": "Incoming",
+      "//": "don't show on main form",
+      "form": "status"
+    },
+    {
+      "key": "date",
+      "type": "Date",
+      "tabIndex": 1
+    },
+    {
+      "key": "involvement",
+      "englishLabel": "Researcher Involvement",
+      "tagInSayMoreClassic": "Involvement",
+      "additional": true,
+      "imdiIsClosedVocabulary": true,
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml",
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "elicited",
+        "non-elicited",
+        "no-observer"
+      ],
+      "default": "unspecified"
+    },
+
+    {
+      "key": "locationRegion",
+      "englishLabel": "Region",
+      "tagInSayMoreClassic": "Location_Region",
+      "additional": true
+    },
+    {
+      "key": "locationCountry",
+      "englishLabel": "Country",
+      "tagInSayMoreClassic": "Location_Country",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Countries.xml",
+      "imdiIsClosedVocabulary": false,
+      "additional": true
+      //choices are filled in by KnownFieldDefinitions.ts
+    },
+    {
+      "key": "locationContinent",
+      "englishLabel": "Continent",
+      "tagInSayMoreClassic": "Location_Continent",
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Continents.xml",
+      "imdiIsClosedVocabulary": true,
+      "choices": [
+        "unspecified",
+        "Africa",
+        "Asia",
+        "Australia",
+        "Europe",
+        "North-America",
+        "Middle-America",
+        "Oceania",
+        "South-America"
+      ],
+
+      "additional": true
+    },
+    // Removed Dec 2019 at ELAR request
+    //{
+    //   "key": "locationAddress",
+    //   "tagInSayMoreClassic": "Location_Address",
+    //   "additional": true
+    // },
+    {
+      "key": "planningType",
+      "tagInSayMoreClassic": "Planning_Type",
+      "additional": true,
+      "imdiIsClosedVocabulary": true,
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml",
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "spontaneous",
+        "semi-spontaneous",
+        "planned"
+      ],
+      "default": "unspecified"
+    },
+    {
+      "key": "socialContext",
+      "tagInSayMoreClassic": "Social_Context",
+      "additional": true,
+      "imdiIsClosedVocabulary": true,
+      "choices": [
+        "unspecified",
+        "//leaving out until Windows SayMore can handle it: unknown",
+
+        "family",
+        "private",
+        "public",
+        "controlled environment"
+      ],
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml",
+      "default": "unspecified"
+    },
+    {
+      // added at ELAR request Dec 2019
+      "key": "keyword",
+      "additional": false,
+      "tooltip": "Separate with commas. Note that individual keywords cannot contain a comma.",
+      "tabIndex": 10
+    },
+    {
+      // added at ELAR request Dec 2019
+      "key": "topic",
+      "additional": false,
+      "tooltip": "Separate with commas. Note that individual topics cannot contain a comma.",
+      "tabIndex": 11
+    }
+  ],
+  "person": [
+    {
+      "key": "name",
+      "englishLabel": "Full Name"
+      /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
+         However, we can't santize names to archive expectations while preserving the actual unicode name unless
+         we do persist it */
+      //"persist": false
+    },
+    {
+      "key": "nickname",
+      "tagInSayMoreClassic": "nickName",
+      "englishLabel": "Nickname"
+    },
+    {
+      "key": "code",
+      "englishLabel": "Code"
+    },
+    {
+      "key": "primaryLanguage"
+    },
+    {
+      "key": "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
+      // we're retaining that key to allow migration, but
+      "englishLabel": "Details", // in lameta we extend this to be more general
+      "tooltip": "Relevant details such as where they learned it"
+    },
+    {
+      "key": "otherLanguage0"
+    },
+    {
+      "key": "otherLanguage1"
+    },
+    {
+      "key": "otherLanguage2"
+    },
+    {
+      "key": "otherLanguage3"
+    },
+    {
+      "key": "otherLanguage4"
+    },
+    {
+      "key": "otherLanguage5"
+    },
+    {
+      "key": "otherLanguage6"
+    },
+    {
+      "key": "otherLanguage7"
+    },
+    {
+      "key": "otherLanguage8"
+    },
+    {
+      "key": "otherLanguage9"
+    },
+    {
+      "key": "fathersLanguage"
+    },
+    {
+      "key": "mothersLanguage"
+    },
+    {
+      "key": "education"
+    },
+    {
+      "key": "birthYear",
+      "specialInfo": "If you are estimating, talk about that in the Description",
+      "tooltip": "Enter '?' if you don't know"
+    },
+    {
+      "key": "gender",
+      // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
+      "choices": ["Unknown", "Male", "Female", "Other"],
+      "imdiRange": "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
+      "imdiIsClosedVocabulary": true
+    },
+    {
+      "key": "howToContact",
+      "multipleLines": true,
+      "tooltip": "This is only for the use of the researcher.",
+      "personallyIdentifiableInformation": true,
+      "markAsNotImdi": true
+    },
+
+    {
+      "key": "ethnicGroup"
+    },
+    {
+      "key": "primaryOccupation",
+      "markAsNotImdi": true
+    },
+    {
+      "key": "description"
+    }
+  ]
+}

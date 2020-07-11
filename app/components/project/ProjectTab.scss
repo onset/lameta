@@ -21,6 +21,7 @@
   .react-tabs__tab-list {
     background-color: white;
     width: 200px;
+    flex-shrink: 0;
   }
   //right side
   .react-tabs__tab-panel--selected {
@@ -51,9 +52,9 @@
   .primary,
   .accessProtocol {
     .field {
-      display: flex; // enables the following rule...
-      align-items: center; // which aligns labels and inputs
+      display: flex;
       height: initial;
+      margin-bottom: 20px;
 
       &.field__newSection {
         margin-top: 2em;
@@ -62,6 +63,7 @@
         text-align: right;
         width: 150px;
         margin-right: 1em;
+        margin-top: 7px; // line up the label with the first line of text in the input field
       }
 
       textarea {
@@ -105,4 +107,8 @@
   //border: solid thin $project__outline--color;
   padding: 10px;
   height: 100%; // unlike other tabs, this has tabs on left so can be taller
+
+  .imdiView {
+    margin-top: -22px;
+  }
 }

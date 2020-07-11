@@ -1,21 +1,18 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldType } from "../../model/field/Field";
 import { File, Contribution } from "../../model/file/File";
 import ReactTable from "react-table";
-import DatePicker from "react-datepicker";
-import { Moment } from "moment";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
-
-const moment = require("moment");
+import { i18n } from "../../localization";
+import { t } from "@lingui/macro";
 
 export interface IProps {
-  // contributions: Contribution[];
   file: File;
   authorityLists: AuthorityLists;
+  selectContribution?: Contribution;
 }
 interface IState {
   unused: number;
@@ -24,46 +21,46 @@ interface IState {
 export default class ContributorsTable extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-
-    // this.state = {
-    //   selectedContribution: this.props.file.contributions[
-    //     this.props.file.contributions.length - 1
-    //   ]
-    // };
   }
-  public componentWillMount() {
-    this.ensureOneBlankRow();
+  public UNSAFE_componentWillMount() {
+    this.ensureOneBlankRow(this.props);
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     //if <different className=""></different>
-    this.ensureOneBlankRow();
+    this.ensureOneBlankRow(nextProps);
   }
-  private ensureOneBlankRow() {
-    //console.log("ensureOnBlankRow(): " + this.props.file.describedFilePath);
-    let i = this.props.file.contributions.length;
+  private ensureOneBlankRow(propToUse: IProps) {
+    console.log("ensureOnBlankRow(): " + propToUse.file.describedFilePath);
+    let i = propToUse.file.contributions.length;
     while (i--) {
-      const c = this.props.file.contributions[i];
-      if (!c.name || c.name.length === 0) {
+      const c = propToUse.file.contributions[i];
+      if (!c.personReference || c.personReference.length === 0) {
         //console.log("removing blank contribution at " + i);
-        this.props.file.contributions.splice(i, 1);
+        propToUse.file.contributions.splice(i, 1);
       }
     }
     //console.log("Adding blank contribution");
-    this.props.file.contributions.push(new Contribution());
+    propToUse.file.contributions.push(new Contribution("", "", "", ""));
   }
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     const key: keyof Contribution = cellInfo.column.id;
+
+    const highlight: boolean =
+      this.props.selectContribution !== undefined &&
+      contribution.personReference ===
+        this.props.selectContribution.personReference;
+
     return (
       <PersonChooser
         getPeopleNames={this.props.authorityLists.getPeopleNames}
-        name={contribution.name}
-        onChange={name => {
-          console.log("name:" + name);
-          contribution.name = name;
-          this.ensureOneBlankRow();
+        name={contribution.personReference}
+        onChange={(name) => {
+          contribution.personReference = name;
+          this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}
+        highlight={highlight}
       />
     );
   }
@@ -72,7 +69,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     const key: keyof Contribution = cellInfo.column.id;
     return (
       <textarea
-        onChange={e => {
+        onChange={(e) => {
           this.props.file.contributions[cellInfo.index][key] = e.target.value;
           this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
         }}
@@ -82,8 +79,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
   }
   private renderRole(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
-    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
     return (
       <RoleChooser
         contribution={contribution}
@@ -91,48 +86,55 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       />
     );
   }
-
-  private renderDate(cellInfo: any) {
-    const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
-    const m: Moment = contribution[key] ? moment(contribution[key]) : null;
+  private renderDeleteButton(cellInfo: any) {
+    // don't provide a delete on the intentionally blank row
+    if (cellInfo.index === this.props.file.contributions.length - 1) {
+      return null;
+    }
     return (
-      <DatePicker
-        selected={m}
-        onChange={newDate => {
-          if (newDate != null) {
-            contribution[key] = newDate.toISOString();
-            this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
-          }
+      <button
+        className="deleteButton"
+        onClick={() => {
+          this.props.file.removeContribution(cellInfo.index);
+          this.setState({}); // update to show the change
         }}
-      />
+      >
+        <img alt="delete" src={require(`../../img/trash.png`)} />
+      </button>
     );
   }
 
   public render() {
     //review: this seems wrong, having this data model change here in the render method...
-    const contributors = this.props.file.contributions.slice(); //make normal array
+    const contributors = this.props.file.contributions;
     const columns = [
       {
-        Header: "Name",
+        Header: i18n._(t`Name`),
         accessor: "name",
-        Cell: (cellInfo: any) => this.renderPerson(cellInfo)
+        Cell: (cellInfo: any) => this.renderPerson(cellInfo),
       },
       {
-        Header: "Role",
+        Header: i18n._(t`Role`),
         accessor: "role",
-        Cell: (cellInfo: any) => this.renderRole(cellInfo)
+        Cell: (cellInfo: any) => this.renderRole(cellInfo),
       },
+      /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
-        Header: "Date",
+        Header: i18n._(t`Date`),
         accessor: "date",
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
+      },*/
+      {
+        Header: i18n._(t`Comments`),
+        accessor: "comments",
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
       },
       {
-        Header: "Comments",
-        accessor: "comments",
-        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
-      }
+        //Header: i18n._(t`Comments`),
+        maxWidth: 40,
+        accessor: "delete",
+        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo),
+      },
     ];
 
     return (

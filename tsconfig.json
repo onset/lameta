@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "react",
-    "lib": ["dom", "es6", "dom.iterable", "scripthost"],
-    "types": [],
+    "target": "es2019",
+    "lib": ["dom", "es6", "dom.iterable", "scripthost", "es2017"],
+    "types": ["jest"],
 
     "alwaysStrict": true,
     "strictNullChecks": true,
@@ -19,15 +20,17 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin", // adds intellisense for css / emotion
+        "lint": {
+          "validProperties": ["label"]
+        }
+      }
+    ]
   },
   "files": ["app/index.tsx"],
-  "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "test/**/*.ts",
-    "test/**/*.tsx",
-    "node_modules/@types/**/*.d.ts"
-  ],
-  "exclude": ["dist"]
+  "include": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"],
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }

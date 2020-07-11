@@ -5,28 +5,53 @@ const filesize = require("filesize");
 import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
-const imagesize = require("image-size");
-import { Field, FieldType, FieldDefinition } from "../field/Field";
+import { Field, FieldType } from "../field/Field";
+import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
 import { locate } from "../../crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
+import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import knownFieldDefinitions, {
+  isKnownFieldKey,
+} from "../field/KnownFieldDefinitions";
+import { ShowSavingNotifier } from "../../components/SaveNotifier";
+import { NotifyError, NotifyWarning } from "../../components/Notify";
 
-const titleCase = require("title-case");
+import { titleCase } from "title-case";
+import { GetFileFormatInfoForPath } from "./FileTypeInfo";
+import {
+  sentryBreadCrumb,
+  sentryExceptionBreadCrumb,
+} from "../../errorHandling";
+import compareVersions from "compare-versions";
 
 export class Contribution {
   //review this @mobx.observable
   @mobx.observable
-  public name: string;
+  public personReference: string; // this is the contributor
   @mobx.observable
   public role: string;
   @mobx.observable
   public date: string;
   @mobx.observable
   public comments: string;
+  public sessionName: string; // not persisted; just used by the UI when listing contributions for a person
+
+  public constructor(
+    personReference: string,
+    role: string,
+    date: string,
+    comments: string
+  ) {
+    this.personReference = personReference;
+    this.role = role;
+    this.date = date;
+    this.comments = comments;
+  }
 }
 
-export abstract class File {
+export /*babel doesn't like this: abstract*/ class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
 
@@ -44,7 +69,7 @@ export abstract class File {
 
   private xmlRootName: string;
   private doOutputTypeInXmlTags: boolean;
-  private fileExtensionForMetadata: string;
+  public fileExtensionForMetadata: string;
   public canDelete: boolean;
 
   @mobx.observable
@@ -52,6 +77,12 @@ export abstract class File {
 
   @mobx.observable
   public contributions = new Array<Contribution>();
+
+  public customFieldNamesRegistry: CustomFieldRegistry;
+
+  public get isMedia(): boolean {
+    return ["Image", "Audio", "Video"].indexOf(this.type) > -1;
+  }
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -89,6 +120,12 @@ export abstract class File {
     if (!dateString || dateString.trim().length === 0) {
       return "";
     }
+    if (dateString === "0001-01-01") {
+      // this is used to pacify SM Classic when it requires a date but we don't know it
+      //celnoos.log("SKIPPING 0001-01-01");
+      return "";
+    }
+
     let date: moment.Moment;
 
     date = moment(dateString, "YYYY-MM-DD", true /*strict*/);
@@ -96,10 +133,9 @@ export abstract class File {
       //console.error(`Could not parse ${dateString} strictly.`);
       date = moment(dateString, moment.ISO_8601); // e.g. "2010-01-01T05:06:07"
       if (!date.isValid()) {
-        const notes = this.getTextProperty("notes", "");
         this.setTextProperty(
           "notes",
-          `Parsing Error: SayMore could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+          `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
             moment.now()
           ).toString()}`
         );
@@ -119,13 +155,34 @@ export abstract class File {
       persist,
       type: "Date",
       isCustom: false,
-      showOnAutoForm: false
+      showOnAutoForm: false,
     };
 
     const f = Field.fromFieldDefinition(definition);
     f.setValueFromString(date.toISOString());
     this.properties.setValue(key, f);
   }
+  protected addNotesProperty() {
+    const definition: FieldDefinition = {
+      key: "notes",
+      englishLabel: "notes",
+      persist: true,
+      type: "Text",
+      isCustom: false,
+      showOnAutoForm: false,
+      multipleLines: true,
+    };
+
+    const f = Field.fromFieldDefinition(definition);
+    //f.setValueFromString("");
+    this.properties.setValue("notes", f);
+  }
+
+  //this would be used for round-tripping nested xml that we don't understand
+  // public addObjectProperty(key: string, value: object) {
+  //   this.addTextProperty(key, JSON.stringify(value));
+  // }
+
   public addTextProperty(
     key: string,
     value: string,
@@ -133,6 +190,14 @@ export abstract class File {
     isCustom: boolean = false,
     showOnAutoForm: boolean = false
   ) {
+    // assert.notEqual(
+    //   value,
+    //   undefined,
+    //   `addTextProperty('${key}') was given a value of undefined`
+    // );
+    if (value === undefined) {
+      value = "";
+    }
     // if this field (and more importantly, its definition, already exists, just stick in a new value)
     const field = this.properties.getValue(key);
     if (field) {
@@ -142,11 +207,13 @@ export abstract class File {
     else {
       const definition = {
         key,
-        englishLabel: isCustom ? key : titleCase(key),
+        // no: don't mess with the case of things we don't know about, we will probably just be round-tripping this
+        //  englishLabel: isCustom ? key : titleCase(key),
+        englishLabel: key,
         persist,
         type: "Text",
         isCustom,
-        showOnAutoForm
+        showOnAutoForm,
       };
 
       const f = Field.fromFieldDefinition(definition);
@@ -172,7 +239,12 @@ export abstract class File {
     // );
     //this.properties.setValue(key, field);
 
-    assert.ok(value === this.properties.getTextField(key).text);
+    assert.ok(
+      value === this.properties.getTextField(key).text,
+      `expected value of '${key}', '${value}'==='${
+        this.properties.getTextField(key).text
+      }'`
+    );
   }
   public setTextProperty(key: string, value: string) {
     //many SayMore 1/2/3.x xml files used a mix of upper and lower case
@@ -223,106 +295,151 @@ export abstract class File {
 
   // call this after loading in your definitions
   protected finishLoading() {
+    this.addNotesProperty();
     this.addFieldsUsedInternally();
     this.readMetadataFile();
-    this.computeProperties(); //enhance: do this on demand, instead of for every file
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
   private addFieldsUsedInternally() {
     this.addTextProperty("filename", "", false);
     this.setFileNameProperty();
-    this.addTextProperty("notes", "");
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-    this.addDateProperty("modifiedDate", stats.mtime);
-    const typePatterns = [
-      ["Session", /\.session$/i],
-      ["Person", /\.person$/i],
-      ["Audio", /\.((mp3)|(wav)|(ogg))$/i],
-      ["Video", /\.((mp4))$/i],
-      ["ELAN", /\.((eaf))$/i],
-      ["Image", /\.(jpg)|(bmp)|(gif)|(png)/i],
-      ["Text", /\.(txt)/i]
-    ];
-    const match = typePatterns.find(t => {
-      return !!this.describedFilePath.match(t[1]);
-    });
-    const typeName = match
-      ? (match[0] as string)
-      : Path.extname(this.describedFilePath);
+    this.addDateProperty("modifiedDate", stats.mtime, false);
+    const typeName =
+      GetFileFormatInfoForPath(this.describedFilePath)?.type ??
+      Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }
 
   private loadPropertiesFromXml(propertiesFromXml: any) {
-    const keys = Object.keys(propertiesFromXml);
+    const tags = Object.keys(propertiesFromXml);
 
-    for (const key of keys) {
-      if (key.toLocaleLowerCase() === "contributions") {
-        this.loadContributions(propertiesFromXml[key]);
+    for (const tag of tags) {
+      if (tag.toLocaleLowerCase() === "contributions") {
+        this.loadContributions(propertiesFromXml[tag]);
       }
 
       // <CustomFields>
-      else if (key.toLowerCase() === "customfields") {
+      else if (tag.toLowerCase() === "customfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
-        const customKeys = Object.keys(propertiesFromXml[key]);
-        for (const customKey of customKeys) {
+        const customKeys = Object.keys(propertiesFromXml[tag]);
+        for (const key of customKeys) {
           // first one is just $":{"type":"xml"}
-          if (customKey !== "$") {
+          if (key !== "$") {
+            // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
+            // understand. It will move them to the set of "custom" fields. Notably, in Dec 2019
+            // this happened when we introduced "id" as a field (instead of just relying on the folder
+            // name).
+            // Here we can pull such fields back out of the custom list and up to the top level.
+            const isCustom = !isKnownFieldKey(key);
+            if (!isCustom) {
+              //   console.info(
+              //     `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
+              //   );
+            }
             this.loadOnePersistentProperty(
-              customKey,
-              propertiesFromXml[key][customKey],
-              true // isCustom
+              key,
+              propertiesFromXml[tag][key],
+              isCustom
             );
           }
         }
       }
       // <AdditionalFields>
-      else if (key.toLowerCase() === "additionalfields") {
+      else if (tag.toLowerCase() === "additionalfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
-        const additionalKeys = Object.keys(propertiesFromXml[key]);
-        for (const additionalKey of additionalKeys) {
+        const tagsInAdditionalFieldSection = Object.keys(
+          propertiesFromXml[tag]
+        );
+        for (const childTag of tagsInAdditionalFieldSection) {
           // first one is just $":{"type":"xml"}
-          if (additionalKey !== "$") {
+          if (childTag !== "$") {
             this.loadOnePersistentProperty(
-              additionalKey,
-              propertiesFromXml[key][additionalKey],
+              childTag,
+              propertiesFromXml[tag][childTag],
               false
             );
           }
         }
       } else {
-        this.loadOnePersistentProperty(key, propertiesFromXml[key], false);
+        // "Normal" fields
+        this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
       }
     }
   }
 
   private loadOnePersistentProperty(
-    key: string,
+    xmlTag: string,
     value: any,
     isCustom: boolean
   ) {
+    //for some reason xml gives us undefined for things with just a space. Let's just trim while we're at it.
+    if (value === undefined) {
+      value = "";
+    }
+
     // console.log("loadProperties key: " + key);
     // console.log(JSON.stringify(value));
     if (value === undefined) {
       value = "";
     } else if (typeof value === "object") {
       if (
-        (value.$ && value.$.type && value.$.type === "string") ||
-        value.$.type === "date"
+        value.$ &&
+        value.$.type &&
+        (value.$.type === "string" || value.$.type === "date")
       ) {
         value = value._;
-      } else {
-        //console.log("Skipping " + key + " which was " + JSON.stringify(value));
+      }
+      // if we decide we do need to roundtrip nested unknown elements
+      //else {
+      //   this.addObjectProperty(elementName, value);
+      //   return;
+      // }
+      else {
+        // console.log(
+        //   "Skipping " + xmlTag + " which was " + JSON.stringify(value)
+        // );
         return;
       }
     }
 
     const textValue: string = value;
-    const fixedKey = this.properties.getKeyFromXmlTag(key);
+
+    if (isCustom && textValue.length > 0) {
+      this.customFieldNamesRegistry.encountered(this.type, xmlTag);
+    }
+
+    // this is getting messy... we don't want to enforce our casing
+    // on keys that we don't understand, because we need to round-trip them.
+    // Starting to wish I just used whatever the xml element name was for the
+    // key, regardless. Since SayMore Windows Classic uses all manor of case
+    // styles for elements... ending up with all this code to work around that.
+    let fixedKey = xmlTag;
+    if (
+      // if we know about this field, then we know how to roundtrip correctly
+      // already.
+      // Note the following would give a false positive if the key was
+      // known in, say, session, but we are currently loading a person.
+      // Since we do not expect any new versions of SayMore Classic,
+      // (which could theoretically introduce such a situation),
+      // I'm living with that risk.
+      Object.keys(knownFieldDefinitions).some((
+        area // e.g. project, session, person
+      ) =>
+        knownFieldDefinitions[area].find(
+          (d: any) =>
+            d.key.toLowerCase() === xmlTag.toLowerCase() ||
+            d.tagInSayMoreClassic === xmlTag
+        )
+      )
+    ) {
+      fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
+    }
 
     // ---- DATES  --
-    if (key.toLowerCase().indexOf("date") > -1) {
+    if (xmlTag.toLowerCase().indexOf("date") > -1) {
       const normalizedDateString = this.normalizeIncomingDateString(textValue);
       if (this.properties.containsKey(fixedKey)) {
         const existingDateField = this.properties.getValueOrThrow(fixedKey);
@@ -353,6 +470,7 @@ export abstract class File {
   }
 
   private loadContributions(contributionsFromXml: any) {
+    //console.log("loadContributions() " + this.metadataFilePath);
     if (!contributionsFromXml.contributor) {
       return;
     }
@@ -365,100 +483,111 @@ export abstract class File {
     }
   }
   private loadOneContribution(contributionFromXml: any) {
-    const n = new Contribution();
-    n.name = contributionFromXml.name;
-    n.role = contributionFromXml.role;
-    n.date = contributionFromXml.date;
-    n.comments = contributionFromXml.comments;
+    //console.log("loadOneContribution() " + this.metadataFilePath);
+
+    // SayMore Classic doesn't allow "unspecified" as a role, so if we need that, we
+    // emit an <smxrole>unspecified</smxrole>, which it won't see, but here we do
+    // see it if it's there and use it instead of the one in <role>.
+    // prettier-ignore
+    const role = contributionFromXml.smxrole
+      ? (contributionFromXml.smxrole === "unspecified" ? "" : contributionFromXml.smxrole)
+      : contributionFromXml.role;
+    const n = new Contribution(
+      contributionFromXml.name,
+      role,
+      this.normalizeIncomingDateString(contributionFromXml.date),
+      contributionFromXml.comments
+    );
     this.contributions.push(n);
   }
-
-  public computeProperties() {
-    switch (this.type) {
-      case "Audio":
-        if (this.describedFilePath.match(/\.((mp3)|(ogg))$/i)) {
-          //TODO: this is killing unrleated unit testing... presumably because the callback happens after the tests are done?
-          // musicmetadata(fs.createReadStream(this.path), (err, metadata) => {
-          //   if (err) {
-          //     console.log("Error:" + err.message);
-          //   }
-          //   this.addTextProperty(
-          //     "duration",
-          //     err ? "????" : metadata.duration.toString() // <-- haven't see this work yet. I think we'll give in and ship with ffmpeg eventually
-          //   );
-          //   // todo bit rate & such, which musicmetadata doesn't give us
-          // });
-        }
-        break;
-      case "Image":
-        const dimensions = imagesize(this.describedFilePath);
-        this.addTextProperty("width", dimensions.width.toString());
-        this.addTextProperty("height", dimensions.height.toString());
-        break;
-    }
+  public removeContribution(index: number) {
+    console.assert(index >= 0 && index < this.contributions.length);
+    this.contributions.splice(index, 1);
   }
+
+  private haveReadMetadataFile: boolean = false;
   public readMetadataFile() {
-    if (fs.existsSync(this.metadataFilePath)) {
-      const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
-
-      let xmlAsObject: any = {};
-      xml2js.parseString(
-        xml,
-        {
-          async: false,
-          explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
-          //explicitArray: true, this also just... gives you a mess
-          //explicitChildren: true this makes even simple items have arrays... what a pain
-        },
-        (err, result) => {
-          if (err) {
-            throw err;
-          }
-          xmlAsObject = result;
-        }
-      );
-      // that will have a root with one child, like "Session" or "Meta". Zoom in on that
-      // so that we just have the object with its properties.
-      let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
-      if (properties === "") {
-        //   Review: This happen if it finds, e.g. <Session/>.
-        properties = {};
+    try {
+      sentryBreadCrumb(`enter readMetadataFile ${this.metadataFilePath}`);
+      if (this.haveReadMetadataFile) {
+        console.error("Already read metadataFile of " + this.metadataFilePath);
+        return;
       }
-      // else {
-      //   properties = properties.$$; // this is needed if xml2js.parstring() has explicitChildren:true
-      // }
+      this.haveReadMetadataFile = true;
+      //console.log("readMetadataFile() " + this.metadataFilePath);
+      if (fs.existsSync(this.metadataFilePath)) {
+        const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
 
-      //copies from this object (which is just the xml as an object) into this File object
-      this.loadPropertiesFromXml(properties);
-      //review: this is looking kinda ugly... not sure what I want to do
-      // because contributions is only one array at the moment
-      this.properties.addContributionArrayProperty(
-        "contributions",
-        this.contributions
-      );
+        let xmlAsObject: any = {};
+        xml2js.parseString(
+          xml,
+          {
+            async: false,
+            explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+            //explicitArray: true, this also just... gives you a mess
+            //explicitChildren: true this makes even simple items have arrays... what a pain
+          },
+          (err, result) => {
+            if (err) {
+              throw Error(
+                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`
+              );
+            }
+            xmlAsObject = result;
+          }
+        );
+        if (!xmlAsObject) {
+          // there was a sentry error report that seemed to implicate this being null
+          throw new Error(
+            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
+          );
+        }
+        // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+        // so that we just have the object with its properties.
+        let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+        if (properties === "") {
+          //   Review: This happen if it finds, e.g. <Session/>.
+          properties = {};
+        }
+        const minimumVersion = properties.$?.minimum_lameta_version_to_read;
+        if (minimumVersion) {
+          const current = require("../../package.json").version;
+          if (compareVersions(minimumVersion, current) === 1) {
+            throw Error(
+              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`
+            );
+          }
+        }
+        //copies from this object (which is just the xml as an object) into this File object
+        this.loadPropertiesFromXml(properties);
+      }
+      this.recomputedChangeWatcher();
+    } catch (err) {
+      NotifyError(`There was a problem reading ${this.metadataFilePath}`);
+      sentryExceptionBreadCrumb(err); // probably not needed
+      throw err;
+    } finally {
+      sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
-
-    // It's important to do this *after* all the deserializing, so that we don't count the deserializing as a change
-    // and then re-save, which would make every file look as if it was modified today.
-    // And we also need to run it even if the meta file companion doesn't exist yet for some file, so that
-    // we'll create it if/when some property gets set.
-    this.watchForChange = mobx.reaction(
-      // Function to check for a change. Mobx looks at its result, and if it is different
-      // than the first run, it will call the second function.
-      () => {
-        return this.getXml();
-      },
-      // Function fires when a change is detected
-      () => this.changed()
-    );
   }
-  public getXml() {
-    return getSayMoreXml(
-      this.xmlRootName,
-      this.properties,
-      this.contributions,
-      this.doOutputTypeInXmlTags
-    );
+  private inGetXml: boolean = false;
+  public getXml(doOutputEmptyCustomFields: boolean = false) {
+    if (this.inGetXml) {
+      throw new Error("Loop detected in getXml() for " + this.metadataFilePath);
+    }
+    this.inGetXml = true;
+    try {
+      //console.log("-----------getXml() of " + this.metadataFilePath);
+      return getSayMoreXml(
+        this.xmlRootName,
+        this.properties,
+        this.contributions,
+        this.doOutputTypeInXmlTags,
+        doOutputEmptyCustomFields
+      );
+    } finally {
+      this.inGetXml = false;
+    }
   }
 
   public save(forceSave: boolean = false) {
@@ -469,41 +598,57 @@ export abstract class File {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
+
     //    console.log(`Saving ${this.metadataFilePath}`);
 
-    const xml = this.getXml();
+    const xml = this.getXml(false);
 
     if (this.describedFilePath.indexOf("sample data") > -1) {
-      // console.log(
-      //   "PREVENTING SAVING IN DIRECTORY THAT CONTAINS THE WORDS 'sample data'"
-      // );
+      NotifyWarning(
+        "Not saving because directory contains the words 'sample data'"
+      );
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
-      // console.log(xml);
     } else {
-      //console.log("writing:" + xml);
       try {
+        ShowSavingNotifier(Path.basename(this.metadataFilePath));
         fs.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {
-        console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
+        if (error.code === "EPERM") {
+          NotifyError(
+            `Cannot save because file is locked:\r\n${this.metadataFilePath}. Is it open in another program?`
+          );
+        } else {
+          NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);
+        }
+        //console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
       }
     }
   }
 
   private getUniqueFilePath(intendedPath: string): string {
-    let i = 0;
-    let path = intendedPath;
-    const extension = Path.extname(intendedPath);
-    // enhance: there are pathological file names like "foo.mp3.mp3" where this would mess up.
-    const pathWithoutExtension = Path.join(
-      Path.dirname(intendedPath),
-      Path.basename(intendedPath).replace(extension, "")
-    );
-    while (fs.existsSync(path)) {
-      i++;
-      path = pathWithoutExtension + " " + i + extension;
+    if (fs.existsSync(intendedPath)) {
+      // Dec 2019, I don't think this ever gets used
+      throw Error(
+        `Please report error: getUniqueFilePath("${intendedPath}") did not expect that it was actually possible to have to come up with a unique name.`
+      );
     }
-    return path;
+    return intendedPath;
+    // this was in-progress when I decided I don't need it
+    // let path = intendedPath;
+    // const extension = Path.extname(intendedPath);
+    // // enhance: there are pathological file names like "foo.mp3.mp3" where this would mess up.
+    // const pathWithoutExtension = Path.join(
+    //   Path.dirname(intendedPath),
+    //   Path.basename(intendedPath).replace(extension, "")
+    // );
+    // let lastNumber = 0;
+    // let pathBeforeNumber = pathWithoutExtension;
+    // while (fs.existsSync(path)) {
+    //   const match = pathWithoutExtension.match("(S+)s(d+)$");
+    //   if (match && match.length > 1) {
+    //     lastNumber = parseInt(match[match.length - 1], undefined);
+    //   }
   }
 
   // Rename one file on disk and return the new full path.
@@ -521,13 +666,28 @@ export abstract class File {
     if (oldFilename.startsWith(oldbase)) {
       const newFilename = oldFilename.replace(oldbase, newbase);
       let newPath = Path.join(Path.dirname(currentFilePath), newFilename);
-      // can't think of a strong scenario for this at the moment,
-      // but it makes sure the rename will not fail due to a collision
-      newPath = this.getUniqueFilePath(newPath);
+
+      // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
+      // Windows is always case-insensitive, and macos usually (but not always!) is. Here we
+      // currently only support case-insensitive.
+      if (!this.areSamePath(newPath, currentFilePath)) {
+        newPath = this.getUniqueFilePath(newPath);
+      }
       fs.renameSync(currentFilePath, newPath);
       return newPath;
     }
     return currentFilePath;
+  }
+  private areSamePath(a: string, b: string) {
+    //fix slashes and such
+    const aNormalized = Path.normalize(a);
+    const bNormalized = Path.normalize(b);
+    // enhance, on Linux this might need to be different?
+    return (
+      aNormalized.localeCompare(bNormalized, undefined, {
+        sensitivity: "accent",
+      }) === 0
+    );
   }
   private updateFolderOnly(path: string, newFolderName: string): string {
     const filePortion = Path.basename(path);
@@ -543,7 +703,10 @@ export abstract class File {
   public updateNameBasedOnNewFolderName(newFolderName: string) {
     const hasSeparateMetaDataFile =
       this.metadataFilePath !== this.describedFilePath;
-    if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)) {
+    //was: if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)),
+    // but the file might not have been saved yet... we still need to change the
+    // path so that it points to somewhere in the newly renamed folder.
+    if (hasSeparateMetaDataFile) {
       this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
         this.metadataFilePath,
         newFolderName
@@ -574,26 +737,11 @@ export abstract class File {
     Enhance: move to its own class
   */
 
-  private watchForChange: mobx.IReactionDisposer;
+  private watchForChangeDisposer: mobx.IReactionDisposer;
 
   //does this need to be saved?
   private dirty: boolean;
-  public isDirty(): boolean {
-    return this.dirty;
-  }
 
-  // This is/was called whenever a UI shows that has user-changable things.
-  // I did this before setting up the mobx.reaction system to actually notice
-  // when something changes. Leaving it around, made to do nothing, until I gain
-  // confidence in the new system.
-  public couldPossiblyBecomeDirty() {
-    if (this.dirty) {
-      //console.log(`Already dirty: ${this.metadataFilePath}`);
-    } else {
-      //console.log(`Considered dirty: ${this.metadataFilePath}`);
-    }
-    //this.dirty = true;
-  }
   private clearDirty() {
     this.dirty = false;
     //console.log("dirty cleared " + this.metadataFilePath);
@@ -601,7 +749,7 @@ export abstract class File {
 
   private changed() {
     if (this.dirty) {
-      //console.log("changed() but already dirty " + this.metadataFilePath);
+      // console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
       //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
@@ -609,6 +757,27 @@ export abstract class File {
   }
   public wasChangeThatMobxDoesNotNotice() {
     this.changed();
+  }
+
+  public recomputedChangeWatcher() {
+    if (this.watchForChangeDisposer) {
+      this.watchForChangeDisposer();
+    }
+    // It's important to do this *after* all the deserializing, so that we don't count the deserializing as a change
+    // and then re-save, which would make every file look as if it was modified today.
+    // And we also need to run it even if the meta file companion doesn't exist yet for some file, so that
+    // we'll create it if/when some property gets set.
+    this.watchForChangeDisposer = mobx.reaction(
+      // Function to check for a change. Mobx looks at its result, and if it is different
+      // than the first run, it will call the second function.
+      // IMPORTANT! the only change it can see is what gets into the xml result. Mobx is *not* looking at access here. So if a
+      // field is not written (because it is blank), this is not going to detect that the field was added or removed.
+      () => {
+        return this.getXml(true);
+      },
+      // Function fires when a change is detected
+      () => this.changed()
+    );
   }
 
   public getIconName(): string {
@@ -629,8 +798,9 @@ export abstract class File {
    * @param roleName e.g. "consent"
    */
   private getCoreNameWithRole(roleName: string): string {
-    // TODO: this needs to become a lot more sophisticated
-    return this.getCoreName() + "_" + roleName;
+    const directoryPortion = Path.dirname(this.metadataFilePath);
+    const directoryName = Path.basename(directoryPortion);
+    return directoryName + "_" + roleName;
   }
   private tryToRenameToFunction(roleName: string): boolean {
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
@@ -639,7 +809,7 @@ export abstract class File {
     return false;
   }
 
-  private tryToRenameBothFiles(newCoreName: string): boolean {
+  public tryToRenameBothFiles(newCoreName: string): boolean {
     assert(
       this.metadataFilePath !== this.describedFilePath,
       "this method is not for renaming the person or session files"
@@ -653,15 +823,15 @@ export abstract class File {
 
     const newMetadataFilePath = newDescribedFilePath + ".meta";
 
-    if (
-      fs.existsSync(newDescribedFilePath) ||
-      fs.existsSync(newMetadataFilePath)
-    ) {
-      console.error(
-        "Cannot rename: one of the files that would result from the rename already exists."
-      );
+    if (fs.existsSync(newDescribedFilePath)) {
+      NotifyWarning(`Cannot rename: ${newDescribedFilePath} already exists.`);
       return false;
     }
+    if (fs.existsSync(newMetadataFilePath)) {
+      NotifyWarning(`Cannot rename: ${newMetadataFilePath} already exists.`);
+      return false;
+    }
+
     try {
       fs.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
@@ -693,17 +863,22 @@ export abstract class File {
   public renameForConsent() {
     assert(!this.isOnlyMetadata());
     assert(!this.isLabeledAsConsent());
+
     if (!this.tryToRenameToFunction("Consent")) {
-      window.alert("Sorry, something prevented the rename");
+      NotifyWarning("Sorry, something prevented the rename");
+    } else {
+      console.log("renameForConsent " + this.describedFilePath);
     }
-    console.log("renameForConsent " + this.describedFilePath);
     //this.properties.setValue("hasConsent", true);
   }
 }
 
 export class OtherFile extends File {
-  constructor(path: string) {
+  constructor(path: string, customFieldRegistry?: CustomFieldRegistry) {
     super(path, path + ".meta", "Meta", false, ".meta", true);
+    if (customFieldRegistry) {
+      this.customFieldNamesRegistry = customFieldRegistry;
+    }
     this.finishLoading();
   }
 }

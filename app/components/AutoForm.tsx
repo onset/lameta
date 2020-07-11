@@ -4,16 +4,20 @@ import TextFieldEdit from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { Folder } from "../model/Folder";
-import GenreChooser from "./session/GenreChooser";
+import { Folder } from "../model/Folder/Folder";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import AccessChooser from "./session/AccessChooser";
-import PeopleChooser from "./session/PeopleChooser";
+import { PeopleChooser } from "./session/PeopleChooser";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
 import AdditionalFieldsTable from "./MoreFieldsTable";
 import IsoLanguageEdit from "./IsoLanguageEdit";
+import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
+import { Contribution } from "../model/file/File";
+import { LanguageFinder } from "../languageFinder/LanguageFinder";
+import { FieldOpenChoiceChooser } from "./session/FieldChoiceChooser";
+import { translateGenre } from "../localization";
 
 export interface IProps {
   folder: Folder;
@@ -21,9 +25,12 @@ export interface IProps {
 
   formClass: string; // used to activate the right stylesheet
   authorityLists: AuthorityLists;
+  //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
   validateFieldThatControlsFileNames?: (value: string) => boolean;
+  onShowContributorsTab?: (contributions: Contribution) => void;
+  languageFinder: LanguageFinder;
 }
 
 /** Constructs a form by looking at the properties of the given fields */
@@ -35,7 +42,7 @@ export default class AutoForm extends React.Component<IProps> {
     super(props);
   }
 
-  private makeEdit(field: Field): JSX.Element {
+  private makeEdit(field: Field, props: IProps): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
@@ -47,6 +54,7 @@ export default class AutoForm extends React.Component<IProps> {
               field={f}
               key={field.key}
               className={field.cssClass}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition && f.definition.key === "access") {
@@ -55,27 +63,45 @@ export default class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
+              tabIndex={field.definition.tabIndex}
+            />
+          );
+        } else if (
+          f.definition.key === "languages" ||
+          f.definition.key === "workingLanguages"
+        ) {
+          return (
+            <MultiLanguageFieldEdit
+              className={field.cssClass}
+              key={field.key}
+              field={field as Field}
+              languageFinder={props.languageFinder}
+              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition.key === "participants") {
           return (
             <PeopleChooser
               key={f.key} // for some reason we get a key error without this
-              field={field as Field}
+              folder={props.folder}
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
+              onShowContributorsTab={this.props.onShowContributorsTab!}
+              tabIndex={field.definition.tabIndex}
             />
           );
-        } else if (
-          f.definition &&
-          f.definition.complexChoices &&
-          f.definition.complexChoices.length > 0
-        ) {
+        } else if (f.definition && f.definition.key === "genre") {
+          console.assert(
+            f.definition!.complexChoices &&
+              f.definition!.complexChoices!.length > 0
+          );
           return (
-            <GenreChooser
+            <FieldOpenChoiceChooser
               field={f}
               key={field.key}
               className={field.cssClass}
+              tabIndex={field.definition.tabIndex}
+              translateChoice={translateGenre}
             />
           );
         } else if (
@@ -88,13 +114,16 @@ export default class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               key={field.key}
               field={field as Field}
+              tabIndex={field.definition.tabIndex}
               onBlur={() =>
                 // for some reason typescript isn't noticing that I have already checked that this isn't null,
                 // so the || console.log is just to pacify it
-                (this.props.fieldThatControlsFileNamesMightHaveChanged ||
-                  console.log)(this.props.fieldThatControlsFileNames || "")
+                (
+                  this.props.fieldThatControlsFileNamesMightHaveChanged ||
+                  console.log
+                )(this.props.fieldThatControlsFileNames || "")
               }
-              validate={value =>
+              validate={(value) =>
                 !this.props.validateFieldThatControlsFileNames ||
                 this.props.validateFieldThatControlsFileNames(value)
               }
@@ -103,6 +132,7 @@ export default class AutoForm extends React.Component<IProps> {
         } else {
           return (
             <TextFieldEdit
+              tabIndex={field.definition.tabIndex}
               className={field.cssClass}
               key={field.key}
               field={field as Field}
@@ -112,9 +142,10 @@ export default class AutoForm extends React.Component<IProps> {
       case FieldType.Date:
         return (
           <DateFieldEdit
+            tabIndex={field.definition.tabIndex}
             className={field.cssClass}
             key={field.key}
-            date={field as Field}
+            field={field as Field}
           />
         );
       case FieldType.Language:
@@ -122,7 +153,7 @@ export default class AutoForm extends React.Component<IProps> {
           <IsoLanguageEdit
             key={field.key}
             className={field.cssClass}
-            language={field}
+            field={field}
           />
         );
       default:
@@ -134,7 +165,7 @@ export default class AutoForm extends React.Component<IProps> {
     this.sortedKeys = this.props.folder.properties
       .values()
       .filter(
-        f =>
+        (f) =>
           f.definition &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
@@ -142,33 +173,33 @@ export default class AutoForm extends React.Component<IProps> {
       )
       .sort((a, b) => {
         const x =
-          (a.definition && a.definition.order !== undefined
-            ? a.definition.order
+          (a.definition && a.definition.tabIndex !== undefined
+            ? a.definition.tabIndex
             : 1000) -
-          (b.definition && b.definition.order !== undefined
-            ? b.definition.order
+          (b.definition && b.definition.tabIndex !== undefined
+            ? b.definition.tabIndex
             : 1000);
 
         return x;
       })
-      .map(f => f.key);
+      .map((f) => f.key);
 
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
         {this.sortedKeys
-          .map(k => this.props.folder.properties.getValueOrThrow(k))
+          .map((k) => this.props.folder.properties.getValueOrThrow(k))
 
-          .filter(field => field.form === this.props.form)
-          .map(field => this.makeEdit(field))}
+          .filter((field) => field.form === this.props.form)
+          .map((field) => this.makeEdit(field, this.props))}
         {this.props.folder.hasMoreFieldsTable ? (
           <AdditionalFieldsTable folder={this.props.folder} />
         ) : (
           ""
         )}
         {this.props.folder.hasCustomFieldsTable ? (
-          <CustomFieldsTable folder={this.props.folder} />
+          <CustomFieldsTable file={this.props.folder.metadataFile!} />
         ) : (
           ""
         )}

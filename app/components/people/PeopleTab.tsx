@@ -6,9 +6,12 @@ import { File } from "../../model/file/File";
 import {
   ComponentTab,
   FolderListButtons,
-  FileListButtons
+  FileListButtons,
 } from "../componentTab/ComponentTab";
 import "./PeopleTab.scss";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../../localization";
 interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -19,27 +22,28 @@ export class PeopleTab extends React.Component<IProps> {
   public render() {
     const folderListButtons = new Array<JSX.Element>();
     folderListButtons.push(
-      <button key="newPerson" onClick={e => this.props.project.addPerson()}>
-        New Person
+      <button key="newPerson" onClick={(e) => this.props.project.addPerson()}>
+        <Trans>New Person</Trans>
       </button>
     );
     const fileListButtons = [
       {
-        label: "Rename for Consent",
+        label: i18n._(t`Rename for Consent`),
         enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
-        onClick: f => {
+        onClick: (f) => {
           (f as File).renameForConsent();
-        }
-      }
+        },
+      },
     ];
 
     return (
       <ComponentTab
+        nameForPersistingUsersTableConfiguration="people"
         project={this.props.project}
         folders={this.props.project.persons}
         selectedFolder={this.props.project.selectedPerson}
         folderTypeStyleClass="people"
-        columns={["name", "hasConsent"]}
+        columns={["displayName", "hasConsent"]}
         columnWidths={[200, 100]}
         authorityLists={this.props.authorityLists}
         folderListButtons={folderListButtons}

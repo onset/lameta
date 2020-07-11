@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MetaData>
-  <Device type="string">Shure X2u A/D, into GoldWave</Device>
-  <Microphone type="string">Sure SM10A Headset</Microphone>
-  <Channels type="string">mono</Channels>
-  <notes type="string">This was downgraded to low bit-rate mp3 to keep the SayMore installer from getting huge.</notes>
-  <contributions type="xml">
-	<contributor>
-	  <name>Hatton</name>
-	  <role>recorder</role>
-	  <date>2010-09-10</date>
-	  <notes></notes>
-	</contributor>
-	<contributor>
-	  <name>Awi Heole</name>
-	  <role>speaker</role>
-	  <date>2010-09-10</date>
-	  <notes></notes>
-	</contributor>
-  </contributions>
-  <Duration type="string">00:00:25</Duration>
-  <Sample_Rate type="string">44100 Hz</Sample_Rate>
-  <Audio_Bit_Rate type="string">96 kbps</Audio_Bit_Rate>
+    <Device type="string">Shure X2u A/D, into GoldWave</Device>
+    <Microphone type="string">Sure SM10A Headset</Microphone>
+    <notes type="string">This was downgraded to low bit-rate mp3 to keep the SayMore installer from getting huge.</notes>
+    <contributions type="xml">
+        <contributor>
+            <name>Hatton</name>
+            <role>recorder</role>
+            <date>2010-09-10</date>
+            <notes></notes>
+        </contributor>
+        <contributor>
+            <name>Awi Heole</name>
+            <role>speaker</role>
+            <date>2010-09-10</date>
+            <notes></notes>
+        </contributor>
+    </contributions>
 </MetaData>

@@ -1,16 +1,16 @@
 import * as React from "react";
 import { FolderList } from "../FolderList";
-import { Folder, IFolderSelection } from "../../model/Folder";
+import { Folder, IFolderSelection } from "../../model/Folder/Folder";
 import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
 import "./ComponentTab.scss";
 
-//import SplitPane from "react-split-pane";
-const SplitPane = require("react-split-pane");
+import SplitPane from "react-split-pane";
 
 interface IProps {
+  nameForPersistingUsersTableConfiguration: string;
   folders: Folder[];
   selectedFolder: IFolderSelection;
   folderTypeStyleClass: string;
@@ -39,12 +39,13 @@ export class ComponentTab extends React.Component<IProps> {
         <SplitPane
           split="vertical"
           defaultSize={sp}
-          minHeight="auto"
-          height="auto"
           onChange={(size: any) => localStorage.setItem(splitterKey, size)}
         >
           <div className={"firstColumn"}>
             <FolderList
+              nameForPersistingUsersTableConfiguration={
+                this.props.nameForPersistingUsersTableConfiguration
+              }
               folders={this.props.folders}
               selectedFolder={this.props.selectedFolder}
               columns={this.props.columns}

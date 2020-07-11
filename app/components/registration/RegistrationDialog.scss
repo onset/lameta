@@ -1,0 +1,45 @@
+@import "../../colors";
+
+.ReactModal__Content.registrationDialog {
+  background-color: $session--color;
+  .dialogTitle {
+    background-color: hsla(84, 73%, 67%, 1);
+  }
+  .dialogContent {
+    background-color: $session--color;
+    margin-top: 1em;
+    margin-right: 3em;
+    margin-left: 3em;
+    min-width: 300px;
+    //margin-bottom: 2em;
+    textarea {
+      box-sizing: content-box;
+      &.markInvalidIfNotFocussed:not(:focus) {
+        border: solid 2px red;
+      }
+    }
+    .howUsingRadioGroup {
+      margin-top: 3px;
+    }
+    .row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1em;
+    }
+    span {
+      font-weight: 500;
+    }
+    .howUsingRadioGroup {
+      display: flex;
+      flex-direction: column;
+    }
+    .validationMessage {
+      color: gray;
+      text-align: right;
+      min-height: 2em;
+    }
+    .bottomButtonRow {
+      margin-right: 0;
+    }
+  }
+}

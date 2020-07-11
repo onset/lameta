@@ -2,9 +2,11 @@ import { observable } from "mobx";
 import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
-const moment = require("moment");
-
-const titleCase = require("title-case");
+import moment from "moment";
+import { translateFieldLabel, currentUILanguage } from "../../localization";
+import { FieldDefinition } from "./FieldDefinition";
+import { Folder } from "../Folder/Folder";
+import * as DateFns from "date-fns";
 //import * as assert from "assert";
 
 export interface IChoice {
@@ -14,47 +16,19 @@ export interface IChoice {
   examples: string[];
 }
 
-export class FieldDefinition {
-  public key: string;
-  public englishLabel?: string;
-  public default?: string;
-  public persist: boolean;
-  public type: string = "Text";
-  public form?: string; // what form this shows on, if not the main one
-  //visibility?: string;
-  public cssClass?: string;
-  public choices?: string[];
-  public complexChoices?: IChoice[];
-  public order?: number = 0;
-  public imdiRange?: string;
-  public imdiIsClosedVocabulary?: boolean;
-  public isCustom: boolean = false;
-  // this is for the fields in session that appear under "More Fields".
-  public isAdditional?: boolean = false;
-  //awkward... this is not use for people, where we don't use the autoform
-  public showOnAutoForm: boolean = true;
-  // SayMore Windows, at least through version 3.3, has inconsistent capitalization
-  public tagInSayMoreClassic?: string = "";
-
-  // this constructor lets us take something read in from json and
-  // get a definition with any default values set above
-  public constructor(rawObject) {
-    Object.assign(this, rawObject);
-    this.isAdditional = rawObject.additional === "true";
-  }
-}
-
 export enum FieldType {
   Text,
   Date,
   Image,
-  Contributions,
+  // Contributions,
   Language,
-  Function
+  MultiLanguage,
+  Function,
+  Boolean,
 }
 export enum FieldVisibility {
   Always,
-  IfNotEmpty
+  IfNotEmpty,
 }
 
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
@@ -62,7 +36,6 @@ export enum FieldVisibility {
 export class Field {
   //TODO: remove things that just repeat field definition
   public key: string;
-  public englishLabel: string;
   public readonly type: FieldType;
   public readonly form: string; // where to show it
   public readonly visibility: FieldVisibility;
@@ -74,7 +47,7 @@ export class Field {
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
 
-  // these definitions normally come from fields.json, which in turn can come from a google spreadsheet with json export
+  // these definitions normally come from fields.json5, which in turn can come from a google spreadsheet with json export
   public static fromFieldDefinition(definition: FieldDefinition): Field {
     if (!definition.form || definition.form.length === 0) {
       definition.form = "primary";
@@ -87,11 +60,14 @@ export class Field {
       case "image":
         type = FieldType.Image;
         break;
-      case "contributions":
-        type = FieldType.Contributions;
-        break;
+      // case "contributions":
+      //   type = FieldType.Contributions;
+      //   break;
       case "language":
         type = FieldType.Language;
+        break;
+      case "multiLanguage":
+        type = FieldType.MultiLanguage;
         break;
       case "function":
         type = FieldType.Function;
@@ -109,7 +85,6 @@ export class Field {
       definition.key,
       type,
       definition.default,
-      definition.englishLabel,
       definition.form,
       FieldVisibility.Always, //todo
       definition.persist,
@@ -127,7 +102,6 @@ export class Field {
     key: string,
     type: FieldType = FieldType.Text,
     englishValue: string = "",
-    englishLabel: string = titleCase(key),
     form: string = "",
     visibility: FieldVisibility = FieldVisibility.Always,
     persist: boolean = true,
@@ -137,15 +111,14 @@ export class Field {
     // imdiIsClosedVocabulary?: boolean
   ) {
     this.key = key;
-    this.englishLabel = englishLabel;
     this.form = form;
     this.type = type;
     this.visibility = visibility;
     this.persist = persist;
     this.cssClass = cssClass ? cssClass : key;
     this.text = englishValue;
-    this.choices = choices.filter(c => {
-      return c.indexOf("//") !== 0; // we dont yet have webpack allowing comments in json, so we strip out elements that start with //
+    this.choices = choices.filter((c) => {
+      return c.indexOf("//") !== 0; // we don't yet have webpack allowing comments in json, so we strip out elements that start with //
     });
 
     // Review: maybe it's lame to have some fields have a format definition, and some don't.
@@ -174,21 +147,46 @@ export class Field {
       this.key.toLowerCase().indexOf("date") > -1 &&
       this.type !== FieldType.Date
     ) {
-      console.error(key + " should be a date? ");
+      console.log("***" + key + " should be a date? ");
     }
   }
-
-  get text(): string {
+  // returns the label translated or if unavailable, English
+  public get labelInUILanguage(): string {
+    return translateFieldLabel(this.definition);
+  }
+  public get text(): string {
     return this.textHolder.textInDefaultLanguage;
   }
-  set text(value: string) {
+  public set text(value: string) {
     this.textHolder.textInDefaultLanguage = value;
   }
   public toString(): string {
     return this.text;
   }
   public setValueFromString(s: string): any {
-    this.text = s;
+    if (this.key === "name") {
+      //console.log(`setValueFromString(${s})`);
+    }
+    // if this field has choices, set it to
+    if (this.choices && this.choices.length > 0) {
+      const find = s.toLocaleLowerCase().trim();
+      const match = this.choices.find((c) => {
+        //console.log(`${c}`);
+        return c.toLowerCase().trim() === find;
+      });
+      if (match) {
+        this.text = match;
+      } else {
+        //TODO Log a problem where users can see it
+        console.log(
+          `Warning: the field ${this.definition.englishLabel} is a choice list but the value "${s}" is not one of the choices in this version. There are ${this.choices.length} choices.`
+        );
+        //console.log(this.choices.join(","));
+        this.text = s;
+      }
+    } else {
+      this.text = s;
+    }
   }
 
   // public asDate(): Date {
@@ -202,22 +200,68 @@ export class Field {
     // our rule is that we always keep strings in "YYYY-MM-DD" format, and it's always UTC
     return this.text;
   }
-  public asDateDisplayString(): string {
+  // public asDateDisplayString(): string {
+  //   const m = moment(this.text);
+  //   if (m.isValid()) {
+  //     moment.locale(navigator.language);
+  //     const localeData = moment.localeData();
+  //     const dateFormat = localeData.longDateFormat("ll");
+  //     return m.format(dateFormat);
+  //   }
+  //   return this.text;
+  // }
+  // public asDateTimeDisplayString(): string {
+  //   const m = moment(this.text);
+  //   if (m.isValid()) {
+  //     moment.locale(navigator.language);
+  //     const localeData = moment.localeData();
+  //     const dateFormat = localeData.longDateFormat("YYYY-MM-DD");
+  //     return m.format(dateFormat);
+  //   }
+  //   return this.text;
+  // }
+  public asDate(): Date | undefined {
     const m = moment(this.text);
     if (m.isValid()) {
-      return m.format("ll"); // Aug 11 2017
+      return m.toDate();
+    } else {
+      return undefined;
     }
-    return this.text;
   }
-  public asDateTimeDisplayString(): string {
-    const m = moment(this.text);
-    if (m.isValid()) {
-      return m.format("lll"); // Aug 11 2017
+
+  /*  This is currently used for IMDI export.
+     Its docs say: Please enter the age in the following format: YY or YY;MM or YY;MM.DD.
+      If the exact age is not known, it is nevertheless useful to enter an approximate age. This will allow you later to 
+      conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
+  */
+
+  public yearsSince(referenceDate: Date): string {
+    if (this.text.trim().length === 0) {
+      return "";
     }
-    return this.text;
+    if (
+      // switch to DateFns here because just checking for validity gave a console.warn with moment.
+      DateFns.isValid(referenceDate) &&
+      DateFns.isValid(DateFns.parseISO(this.text))
+    ) {
+      return DateFns.differenceInCalendarYears(
+        referenceDate,
+        DateFns.parseISO(this.text)
+      ).toString();
+      // const referenceMoment = moment(referenceDate);
+      // const birthMoment = moment(this.text);
+      // if (referenceMoment.isValid() && birthMoment.isValid()) {
+      //   const duration = moment.duration(referenceMoment.diff(birthMoment)); // referenceMoment.from(birthMoment);
+      //   // this would be good if we had actual birthdates: const r = `${x.years()};${x.months()}.${x.days()}`;
+      //   // but we currently only have year, so this will give us the year (rounding down)
+      //   return duration.years().toString();
+      // }
+    }
+    return "";
   }
 
   public typeAndValueEscapedForXml(): { type: string; value: string } {
+    console.assert(this.text !== null && this.text !== undefined);
     switch (this.type) {
       case FieldType.Text:
         return { type: "string", value: Field.escapeSpecialChars(this.text) };
@@ -225,7 +269,8 @@ export class Field {
         return { type: "date", value: this.asISODateString() };
       case FieldType.Language:
         return { type: "language", value: this.text };
-
+      case FieldType.MultiLanguage:
+        return { type: "multiLanguage", value: this.text };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }
@@ -233,6 +278,7 @@ export class Field {
 
   //https://stackoverflow.com/questions/4253367/how-to-escape-a-json-string-containing-newline-characters-using-javascript
   protected static escapeSpecialChars(s: string): string {
+    console.assert(s !== null && s !== undefined);
     return s
       .replace(/\\n/g, "\\n")
       .replace(/\\'/g, "\\'")
@@ -250,15 +296,64 @@ export class HasConsentField extends Field {
     super(
       "hasConsent",
       FieldType.Function,
-      undefined,
       "Consent",
       undefined,
       undefined,
       false
     );
     this.person = person;
+    this.definition = new FieldDefinition({
+      key: "hasConsent",
+      englishLabel: "Consent",
+      persist: false,
+    });
   }
   public hasConsent(): boolean {
-    return !!this.person.files.find(f => f.isLabeledAsConsent());
+    return !!this.person.files.find((f) => f.isLabeledAsConsent());
   }
 }
+export class PersonDisplayNameField extends Field {
+  private person: Person;
+  constructor(person: Person) {
+    super(
+      "displayName",
+      FieldType.Function,
+      "Person",
+      undefined,
+      undefined,
+      false
+    );
+    this.person = person;
+    this.definition = new FieldDefinition({
+      key: "displayName",
+      englishLabel: "Person",
+      persist: false,
+    });
+  }
+  public get text(): string {
+    return this.person.displayName;
+  }
+  public set text(value: string) {
+    // has no effect
+  }
+  public displayName(): string {
+    return this.person.displayName;
+  }
+}
+// used to temporarily select folders for some action, e.g. exporting
+// export class CheckedField extends Field {
+//   private folder: Folder;
+//   private checked: boolean = false;
+//   constructor(folder: Folder) {
+//     super("checked", FieldType.Boolean, "Checked", undefined, undefined, false);
+//     this.folder = folder;
+//     this.definition = new FieldDefinition({
+//       key: "checked",
+//       englishLabel: "Checked",
+//       persist: false
+//     });
+//   }
+//   public toggle() {
+//     this.checked = !this.checked;
+//   }
+// }

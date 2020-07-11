@@ -5,6 +5,7 @@ import ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../crossPlatformUtilities";
+import { Trans } from "@lingui/react";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -37,7 +38,7 @@ export default class ConfirmDeleteDialog extends React.Component<
     ConfirmDeleteDialog.singleton.setState({
       path: fileName,
       isOpen: true,
-      deleteAction
+      deleteAction,
     });
   }
   public render() {
@@ -52,29 +53,33 @@ export default class ConfirmDeleteDialog extends React.Component<
           className="confirmDeleteDialog"
           isOpen={this.state.isOpen}
           shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
           onRequestClose={() => this.handleCloseModal(false)}
         >
-          <div className={"dialogTitle"}>Confirm Delete</div>
+          <div className={"dialogTitle"}>
+            <Trans>Confirm Delete</Trans>
+          </div>
           <div className="dialogContent">
             <div className="row">
               <img src={locate("assets/trash.png")} />
-              <h1>{`${this.state.path} will be moved to the Trash`}</h1>
+              <h1>
+                <Trans>{this.state.path} will be moved to the Trash</Trans>
+              </h1>
             </div>
-            <div className={"bottomButtonRow"}>
-              <div className={"okCancelGroup"}>
-                {/* List as default last (in the corner). */}
-                {/* The actual order of these will be platform-specific, controlled by
-          a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
-                <button onClick={() => this.handleCloseModal(false)}>
-                  Cancel
-                </button>
-                <button
-                  id="deleteButton"
-                  onClick={() => this.handleCloseModal(true)}
-                >
-                  Delete
-                </button>
-              </div>
+          </div>
+          <div className={"bottomButtonRow"}>
+            <div className={"okCancelGroup"}>
+              {}
+              {}
+              <button onClick={() => this.handleCloseModal(false)}>
+                <Trans>Cancel</Trans>
+              </button>
+              <button
+                id="deleteButton"
+                onClick={() => this.handleCloseModal(true)}
+              >
+                <Trans>Delete</Trans>
+              </button>
             </div>
           </div>
         </ReactModal>

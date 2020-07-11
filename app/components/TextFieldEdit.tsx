@@ -1,17 +1,22 @@
 import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-const titleCase = require("title-case");
+import { InfoAffordance } from "./InfoAffordance";
+import { FieldLabel } from "./FieldLabel";
 
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
   hideLabel?: boolean;
   onBlur?: () => void;
+  onBlurWithValue?: (currentValue: string) => void;
+  // this one will prevent the user from moving on
   validate?: (value: string) => boolean;
+  tooltip?: string;
 }
 interface IState {
   invalid: boolean;
+  //validationClass: string;
 }
 // automatically update when the value changes
 @mobx.observer
@@ -22,20 +27,15 @@ export default class TextFieldEdit extends React.Component<
 > {
   constructor(props: IProps) {
     super(props);
-    this.getLabel = this.getLabel.bind(this);
     this.state = { invalid: false };
   }
-
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
+    // NB: Don't trim here. It is tempting, because at the end of the day we'd
+    // like it trimmed, but if you do it here, it's not possible to even
+    // type a space.
+    // NO: text.text = event.currentTarget.value.trim();
     text.text = event.currentTarget.value;
     this.setState({ invalid: false });
-  }
-
-  private getLabel() {
-    if (this.props.field === undefined) {
-      return "Null Text";
-    }
-    return this.props.field.englishLabel;
   }
 
   private static getValue(text: Field): string {
@@ -52,15 +52,33 @@ export default class TextFieldEdit extends React.Component<
         className={
           "field " + (this.props.className ? this.props.className : "")
         }
+        title={this.props.tooltip}
       >
-        {this.props.hideLabel ? "" : <label>{this.getLabel()}</label>}
+        {this.props.hideLabel ? (
+          ""
+        ) : (
+          <FieldLabel fieldDef={this.props.field.definition} />
+        )}
+
         <textarea
+          tabIndex={this.props.tabIndex}
           autoFocus={this.props.autoFocus}
-          className={classname}
-          name={this.props.field.englishLabel} //what does this do? Maybe accessibility?
+          className={classname} // + " " + this.state.validationClass}
+          name={this.props.field.definition.englishLabel} //what does this do? Maybe accessibility?
           value={TextFieldEdit.getValue(this.props.field)}
-          onChange={event => this.onChange(event, this.props.field)}
+          onChange={(event) => this.onChange(event, this.props.field)}
+          onKeyDown={(event) => {
+            if (
+              !this.props.field.definition.multipleLines &&
+              event.keyCode === 13
+            ) {
+              event.preventDefault();
+            }
+          }}
           onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
+            if (this.props.onBlurWithValue) {
+              this.props.onBlurWithValue(event.currentTarget.value);
+            }
             if (
               this.props.validate &&
               !this.props.validate(event.currentTarget.value)

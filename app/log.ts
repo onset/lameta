@@ -20,7 +20,7 @@ const log = Winston.createLogger({
           info => `${info.timestamp} ${info.level}: ${info.message}`
         )
       ),
-      handleExceptions: true
+      handleExceptions: false // "true" here kills react ErrorBoundary
     })
   ]
 });

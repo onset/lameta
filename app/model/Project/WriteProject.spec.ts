@@ -2,6 +2,7 @@ import { ProjectMetadataFile } from "./Project";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
+import { CustomFieldRegistry } from "./CustomFieldRegistry";
 
 let projectDirectory;
 let projectName;
@@ -14,12 +15,10 @@ describe("Project Write", () => {
   afterEach(async () => {
     temp.cleanupSync();
   });
-  it("should round-trip DateAvailable", () => {
-    AttemptRoundTripOfOneField("dateAvailable", "DateAvailable", "2015-03-05");
-  });
+
   it("should round-trip AnalysisISO3CodeAndName", () => {
     AttemptRoundTripOfOneField(
-      "analysisISO3CodeAndName",
+      "analysisIso3CodeAndName",
       "AnalysisISO3CodeAndName",
       "foo: Foo"
     );
@@ -64,12 +63,9 @@ function AttemptRoundTripOfOneField(
 
   // now, can we change it and see it saved?
   let newValue = "something different";
-  if (f.properties.getFieldDefinition(key).type === "date") {
-    f.setTextProperty(key, newValue);
-  } else {
-    newValue = "1911-1-11";
-    f.properties.getDateField(key).setValueFromString(newValue);
-  }
+
+  f.setTextProperty(key, newValue);
+
   f.save(true);
   output = fs.readFileSync(f.metadataFilePath);
   expected = `<${xmlTag}>${newValue}</${xmlTag}>`;
@@ -89,5 +85,5 @@ function GetProjectFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Project><${tag}>${content}</${tag}></Project>`
   );
-  return new ProjectMetadataFile(projectDirectory);
+  return new ProjectMetadataFile(projectDirectory, new CustomFieldRegistry());
 }

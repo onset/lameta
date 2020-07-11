@@ -10,6 +10,10 @@
   display: flex;
   flex-direction: column;
 
+  // this fixes (hides?) a weird problem where the table
+  // just keeps growing, but without a vscroll bar.
+  min-height: 0;
+
   img {
     height: 16px;
     width: auto;
@@ -23,9 +27,9 @@
     padding-left: 10px;
     padding-right: 10px;
     margin-bottom: 7px;
-    height: 65px;
+    min-height: calc(1em + 10px);
     padding-top: 5px;
-    font-size: 12px;
+    font-size: 1em;
     li {
       list-style: none;
     }
@@ -38,7 +42,8 @@
       background-color: inherit;
       border-color: transparent;
       border-width: 1px;
-      font-size: 12px;
+      font-size: 1em;
+      font-weight: bold;
       height: 21px; //hack for border
       margin: 0;
       border: solid 2px white;

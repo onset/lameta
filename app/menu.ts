@@ -1,10 +1,14 @@
-import { Menu, remote } from "electron";
+import { remote, shell } from "electron";
 import HomePage from "./containers/HomePage";
-import ImdiGenerator from "./export/imdiGenerator";
 import log from "./log";
-import ExportDialog from "./components/export/ExportDialog";
-import bugsnag from "bugsnag-js";
-const bugsnagClient = bugsnag("f8b144863f4723ebb4bdd6c747c5d7b6");
+import { ShowExportDialog } from "./components/export/ExportDialog";
+import { t } from "@lingui/macro";
+import { i18n, setUILanguage, currentUILanguage } from "./localization";
+import userSettings from "./UserSettings";
+import RegistrationDialog from "./components/registration/RegistrationDialog";
+import { initializeSentry } from "./errorHandling";
+import { ShowAlertDialog } from "./components/AlertDialog/AlertDialog";
+import userSettingsSingleton from "./UserSettings";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -26,79 +30,199 @@ export default class SayLessMenu {
 
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
     log.info("updateMainMenu");
-    const haveProject = true; //this.homePage.projectHolder.project;
+
+    const haveProject = this.homePage.projectHolder.project !== null;
+    // console.log(
+    //   `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
+    // );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: "SayMore JS",
+      label: i18n._(t`lameta`),
       submenu: [
         {
-          label: "About SayMore JS",
-          selector: "orderFrontStandardAboutPanel:"
+          label: i18n._(t`About lameta`),
+          selector: "orderFrontStandardAboutPanel:",
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
-          label: "Services",
-          submenu: []
+          label: i18n._(t`Services`),
+          submenu: [],
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
-          label: "Hide SayMore JS",
+          label: i18n._(t`Hide lameta`),
           accelerator: "Command+H",
-          selector: "hide:"
+          selector: "hide:",
         },
         {
-          label: "Hide Others",
+          label: i18n._(t`Hide Others`),
           accelerator: "Command+Shift+H",
-          selector: "hideOtherApplications:"
+          selector: "hideOtherApplications:",
         },
         {
-          label: "Show All",
-          selector: "unhideAllApplications:"
+          label: i18n._(t`Show All`),
+          selector: "unhideAllApplications:",
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
-          label: "Quit",
+          label: i18n._(t`Quit`),
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
-    const projectMenu = {
-      label: "&Project",
+    const editMenu = {
+      label: i18n._(t`Edit`),
       submenu: [
         {
-          label: "&Open Project...",
+          label: i18n._(t`Undo`),
+          accelerator: "CmdOrCtrl+Z",
+          selector: "undo:",
+        },
+        {
+          label: i18n._(t`Redo`),
+          accelerator: "Shift+CmdOrCtrl+Z",
+          selector: "redo:",
+        },
+        { type: "separator" },
+        { label: i18n._(t`Cut`), accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        {
+          label: i18n._(t`Copy`),
+          accelerator: "CmdOrCtrl+C",
+          selector: "copy:",
+        },
+        {
+          label: i18n._(t`Paste`),
+          accelerator: "CmdOrCtrl+V",
+          selector: "paste:",
+        },
+        {
+          label: i18n._(t`Select All`),
+          accelerator: "CmdOrCtrl+A",
+          selector: "selectAll:",
+        },
+      ],
+    };
+
+    const fileMenu = {
+      label: "&" + i18n._(t`File`),
+      submenu: [
+        {
+          label: "&" + i18n._(t`Open Project...`),
           accelerator: "Ctrl+O",
-          click: () => this.homePage.openProject()
+          click: () => this.homePage.openProject(),
         },
         {
-          label: "&Create Project...",
-          click: () => this.homePage.createProject(false)
+          label: "&" + i18n._(t`Create Project...`),
+          click: () => this.homePage.createProject(false),
         },
         {
-          label: "&Start Screen",
-          click: () => this.homePage.projectHolder.setProject(null)
+          label: "&" + i18n._(t`Start Screen`),
+          click: () => this.homePage.projectHolder.setProject(null),
         },
         { type: "separator" },
         {
-          label: "Export &Project...",
+          label: "&" + i18n._(t`Export Project...`),
           accelerator: "Ctrl+E",
           enabled: haveProject,
           click: () => {
-            ExportDialog.show();
-          }
+            ShowExportDialog();
+          },
         },
-        { type: "separator" },
-        { role: "quit" }
-      ]
+      ],
+    };
+    if (fileMenu && process.platform !== "darwin") {
+      fileMenu.submenu.push({ type: "separator" });
+      fileMenu.submenu.push({ role: "quit" } as any);
+    }
+
+    const viewMenu = {
+      label: "&" + i18n._(t`View`),
+      submenu: [
+        {
+          label: i18n._(t`Font Size`),
+
+          submenu: [
+            {
+              label: "Smaller",
+              accelerator: "CmdOrCtrl+-",
+              click: () => {
+                userSettingsSingleton.ZoomFont(-1);
+              },
+            },
+            {
+              label: "Larger",
+              accelerator: "CmdOrCtrl+=",
+              click: () => {
+                userSettingsSingleton.ZoomFont(1);
+              },
+            },
+          ],
+        },
+        {
+          label: i18n._(t`Interface Language`),
+
+          submenu: [
+            {
+              label: "English",
+              type: "radio",
+              click: () => {
+                setUILanguage("en");
+              },
+              checked: currentUILanguage === "en",
+            },
+            {
+              label: "Español (27%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("es");
+              },
+              checked: currentUILanguage === "es",
+            },
+            {
+              label: "Français  (24%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("fr");
+              },
+              checked: currentUILanguage === "fr",
+            },
+            userSettings.DeveloperMode
+              ? {
+                  label: "Pseudo",
+                  type: "radio",
+                  click: () => {
+                    setUILanguage("ps");
+                  },
+                  checked: currentUILanguage === "ps",
+                }
+              : { type: "separator" },
+            {
+              label: "Help translate",
+              click: () => {
+                shell.openExternal("https://crowdin.com/project/lameta");
+              },
+            },
+          ],
+        },
+        {
+          label: "IMDI Mode",
+          // tooltip only works in macos
+          tooltip:
+            "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
+          type: "checkbox",
+          checked: userSettings.IMDIMode,
+          click: () => (userSettings.IMDIMode = !userSettings.IMDIMode),
+        },
+      ],
     };
     // sessionMenu,
     // peopleMenu,
@@ -110,28 +234,35 @@ export default class SayLessMenu {
           accelerator: "Ctrl+R",
           click() {
             mainWindow.webContents.reload();
-          }
+          },
         },
         {
           label: "Toggle &Developer Tools",
           accelerator: "Alt+Ctrl+I",
           click() {
             mainWindow.webContents.toggleDevTools();
-          }
+          },
         },
         {
-          label: "Test throw",
+          label: "Test throw (for testing Sentry)",
           click() {
-            throw new Error("Test throw from menu");
-          }
+            initializeSentry(true);
+            throw new Error(
+              "Test throw from menu " + Date.now().toLocaleString()
+            );
+          },
         },
         {
-          label: "Test bugsnag",
+          label: "Test alert dialog",
           click() {
-            bugsnagClient.notify(new Error("Test notify bugsnag from menu"));
-          }
-        }
-      ]
+            ShowAlertDialog({
+              title: `The title`,
+              text: "the text",
+              buttonText: "ok",
+            });
+          },
+        },
+      ],
     };
     const testMenu = {
       label: "Test",
@@ -140,29 +271,66 @@ export default class SayLessMenu {
           label: "Menu Test",
           click() {
             mainWindow.setTitle("Menu Test Invoked");
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     const helpMenu = {
-      label: "Help",
-      submenu: []
+      label: i18n._(t`Help`),
+      submenu: [
+        {
+          label: i18n._(t`Registration...`),
+          click: () => {
+            RegistrationDialog.show();
+          },
+        },
+        {
+          label: i18n._(t`Report a problem`),
+          click: () => {
+            shell.openExternal("https://saymorex.page.link/problem");
+          },
+        },
+        {
+          type: "separator",
+        },
+
+        {
+          label: i18n._(t`Check for new version`),
+          click: () => {
+            shell.openExternal("https://saymorex.page.link/releases");
+          },
+        },
+        {
+          label: "lameta " + require("./package.json").version,
+          enabled: false,
+        },
+      ],
     };
 
     const template = Array<any>();
     if (process.platform === "darwin") {
       template.push(macMenu);
     }
+
+    template.push(fileMenu);
+    template.push(editMenu);
+    template.push(viewMenu);
+
     // use sessionMenu being undefined to signal that we are in the start screen, so these menus are just confusing
     if (sessionMenu) {
-      template.push(projectMenu, sessionMenu, peopleMenu);
+      template.push(sessionMenu, peopleMenu);
     }
-    if (process.env.NODE_ENV === "development") {
+
+    template.push(helpMenu);
+
+    if (
+      // process.env.NODE_ENV === "development" ||
+      // process.env.NODE_ENV === "test" ||
+      userSettings.DeveloperMode
+    ) {
       template.push(devMenu);
+      //template.push(testMenu);
     }
-    //if (process.env.NODE_ENV === "test") {
-    template.push(testMenu);
-    //}
     const menu = remote.Menu.buildFromTemplate(
       template as Electron.MenuItemConstructorOptions[]
     );
@@ -178,78 +346,16 @@ export default class SayLessMenu {
       const webContents = remote.getCurrentWebContents();
       remote.getCurrentWebContents().on("context-menu", (e, props) => {
         const { x, y } = props;
-        console.log("Main process go context click");
+        //console.log("Main process go context click");
         remote.Menu.buildFromTemplate([
           {
             label: "Inspect element",
             click() {
               remote.getCurrentWebContents().inspectElement(x, y);
-            }
-          }
+            },
+          },
         ]).popup({});
       });
     }
   }
-
-  //     {
-  //       label: "Edit",
-  //       submenu: [
-  //         {
-  //           label: "Undo",
-  //           accelerator: "Command+Z",
-  //           selector: "undo:"
-  //         },
-  //         {
-  //           label: "Redo",
-  //           accelerator: "Shift+Command+Z",
-  //           selector: "redo:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Cut",
-  //           accelerator: "Command+X",
-  //           selector: "cut:"
-  //         },
-  //         {
-  //           label: "Copy",
-  //           accelerator: "Command+C",
-  //           selector: "copy:"
-  //         },
-  //         {
-  //           label: "Paste",
-  //           accelerator: "Command+V",
-  //           selector: "paste:"
-  //         },
-  //         {
-  //           label: "Select All",
-  //           accelerator: "Command+A",
-  //           selector: "selectAll:"
-  //         }
-  //       ]
-  //     },
-
-  //     {
-  //       label: "Window",
-  //       submenu: [
-  //         {
-  //           label: "Minimize",
-  //           accelerator: "Command+M",
-  //           selector: "performMiniaturize:"
-  //         },
-  //         {
-  //           label: "Close",
-  //           accelerator: "Command+W",
-  //           selector: "performClose:"
-  //         },
-  //         {
-  //           type: "separator"
-  //         },
-  //         {
-  //           label: "Bring All to Front",
-  //           selector: "arrangeInFront:"
-  //         }
-  //       ]
-  //     },
 }

@@ -16,16 +16,16 @@ module.exports = merge(baseConfig, {
   entry: [
     "react-hot-loader/patch",
     `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr&reload=true`,
-    "./app/index"
+    "./app/index",
   ],
 
   output: {
     publicPath: `http://localhost:${port}/dist/`, // this is "as the browser will get it"
-    filename: "renderer-bundle.js"
+    filename: "renderer-bundle.js",
   },
 
   module: {
-    rules: []
+    rules: [],
   },
 
   plugins: [
@@ -40,10 +40,10 @@ module.exports = merge(baseConfig, {
     // }),
 
     new webpack.LoaderOptionsPlugin({
-      debug: true
-    })
+      debug: true,
+    }),
   ],
 
   // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-  target: "electron-renderer"
+  target: "electron-renderer",
 });

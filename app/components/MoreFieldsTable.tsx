@@ -1,13 +1,16 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldDefinition } from "../model/field/Field";
-import { Folder } from "../model/Folder";
+import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
-import FieldNameEdit from "./FieldNameEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
+import { Trans } from "@lingui/react";
+import { i18n } from "../localization";
+import { t } from "@lingui/macro";
 
 export interface IProps {
   folder: Folder;
@@ -16,23 +19,22 @@ export interface IProps {
 @observer
 export default class AdditionalFieldsTable extends React.Component<IProps> {
   private fieldsForRows: Field[];
-  private focusField: Field;
   constructor(props: IProps) {
     super(props);
     this.state = { fieldsForRows: [] };
   }
 
-  public componentWillMount() {
+  public UNSAFE_componentWillMount() {
     this.computeRows(this.props);
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
     this.computeRows(nextProps);
   }
   private computeRows(nextProps: IProps) {
     this.fieldsForRows = nextProps.folder.properties
       .values()
-      .filter(f => (f.definition ? f.definition.isAdditional : false));
+      .filter((f) => (f.definition ? f.definition.isAdditional : false));
     //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
   }
 
@@ -40,15 +42,15 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
     const additionalFieldTableColumns = [
       {
         id: "name",
-        Header: "Field",
+        Header: i18n._(t`Field`),
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
-          return field.englishLabel;
-        }
+          return field.labelInUILanguage;
+        },
       },
       {
         id: "value",
-        Header: "Value",
+        Header: i18n._(t`Value`),
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
 
@@ -72,15 +74,17 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
               />
             );
           }
-        }
-      }
+        },
+      },
     ];
 
     return (
       <div className="moreFieldsBlock">
-        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in SayMore JS we
+        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in lameta we
           too are using the 'additional' term internally, and 'more' in the English label. */}
-        <label>More Fields</label>
+        <label>
+          <Trans>More Fields</Trans>
+        </label>
         <ReactTable
           className="moreFieldsTable"
           noDataText=""

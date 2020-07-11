@@ -1,4 +1,10 @@
-import Home from "../components/Home";
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
+import Workspace from "../components/Workspace";
 import * as React from "react";
 import * as mobx from "mobx";
 import { observer } from "mobx-react";
@@ -9,13 +15,24 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, powerMonitor } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-const { Menu } = require("electron");
-import Store = require("electron-store");
+import userSettings from "../UserSettings";
+
 import SayLessMenu from "../menu";
 import { locate } from "../crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../log";
-import ExportDialog from "../components/export/ExportDialog";
+import { ExportDialog } from "../components/export/ExportDialog";
+import { Trans } from "@lingui/react";
+import { t } from "@lingui/macro";
+import { i18n } from "../localization";
+import { analyticsEvent } from "../analytics";
+import RegistrationDialog from "../components/registration/RegistrationDialog";
+import {
+  AlertDialog,
+  ShowAlertDialog,
+} from "../components/AlertDialog/AlertDialog";
+import { sentryBreadCrumb } from "../errorHandling";
+
 const isDev = require("electron-is-dev");
 
 // tslint:disable-next-line:no-empty-interface
@@ -30,7 +47,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
   @mobx.observable
   public projectHolder: ProjectHolder;
-  private userSettings: Store;
+
   private menu: SayLessMenu;
   public static homePageForTests: HomePage;
 
@@ -39,19 +56,18 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,
-      useSampleProject: false //enhance: this is a really ugly way to control this behavior
+      useSampleProject: false, //enhance: this is a really ugly way to control this behavior
     };
 
-    this.userSettings = new Store({ name: "saymore-user-settings" });
-    let previousDirectory = this.userSettings.get("previousProjectDirectory");
-    console.log(
-      "************** process.env.startInStartScreen=" +
-        process.env.startInStartScreen
-    );
-    log.info(
-      "**************log process.env.startInStartScreen=" +
-        process.env.startInStartScreen
-    );
+    let previousDirectory = userSettings.PreviousProjectDirectory;
+    // console.log(
+    //   "************** process.env.startInStartScreen=" +
+    //     process.env.startInStartScreen
+    // );
+    // log.info(
+    //   "**************log process.env.startInStartScreen=" +
+    //     process.env.startInStartScreen
+    // );
     if (process.env.startInStartScreen === "true") {
       previousDirectory = null;
     }
@@ -62,6 +78,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       this.projectHolder.setProject(null);
     }
 
+    this.updateMenu();
     HomePage.homePageForTests = this;
   }
   public createProject(useSample: boolean) {
@@ -73,7 +90,10 @@ export default class HomePage extends React.Component<IProps, IState> {
     //this.projectHolder.setProject(null);
   }
 
-  public componentWillMount() {
+  public componentDidUpdate() {
+    this.updateMenu();
+  }
+  private updateMenu() {
     this.menu = new SayLessMenu(this);
     this.menu.setupContentMenu();
     // do this in case we're just opening to the start screen. Otherwise, we get some confusing default Electron menu
@@ -85,29 +105,34 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
-      window.alert(
-        "Warning: this version of SayMore JS not suitable for real use. It probably isn't complete enough to do real work, and that's good because it would probably lose your work anyhow."
-      );
+      ShowAlertDialog({
+        title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
+        text: "",
+        buttonText: "I understand",
+      });
+    }
+
+    if (userSettings.HowUsing === "") {
+      RegistrationDialog.show();
     }
     // Save when we're quitting. Review: does this cover shutdown?
-    window.addEventListener("beforeunload", e => {
+    window.addEventListener("beforeunload", (e) => {
       if (this.projectHolder.project) {
         this.projectHolder.project.saveAllFilesInFolder();
       }
     });
 
     // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailble sometimes, particularly when running production build via "yarn start" on Windows.
+    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
     // So we give it a few seconds and catch the problem if it still fails.
     window.setTimeout(() => {
       try {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow()!.on("blur", e => {
+        remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
           if (this.projectHolder.project) {
             this.projectHolder.project.saveAllFilesInFolder();
           }
         });
-        console.log("Successfully set window blur event callback");
       } catch (error) {
         log.error(
           "Error trying to set the window blur event callback: " + error
@@ -125,7 +150,7 @@ export default class HomePage extends React.Component<IProps, IState> {
 
       if (useSampleProject) {
         const sampleSourceDir = locate("sample data/Edolo sample");
-        ncp.ncp(sampleSourceDir, directory, err => {
+        ncp.ncp(sampleSourceDir, directory, (err) => {
           console.log("ncp err=" + err);
           const projectName = Path.basename(directory);
           fs.renameSync(
@@ -134,65 +159,89 @@ export default class HomePage extends React.Component<IProps, IState> {
           );
           this.projectHolder.setProject(Project.fromDirectory(directory));
         });
+        analyticsEvent("Create Project", "Create Sample Project");
       } else {
         this.projectHolder.setProject(Project.fromDirectory(directory));
+        analyticsEvent("Create Project", "Create Custom Project");
       }
-      this.userSettings.set("previousProjectDirectory", directory);
+      userSettings.PreviousProjectDirectory = directory;
     }
   }
-  private listDir(dir: string) {
-    fs.readdir(dir, (err, files) => {
-      console.log("listing " + dir);
-      files.forEach(file => {
-        console.log(file);
-      });
-    });
-  }
+  // private listDir(dir: string) {
+  //   fs.readdir(dir, (err, files) => {
+  //     console.log("listing " + dir);
+  //     files.forEach(file => {
+  //       console.log(file);
+  //     });
+  //   });
+  // }
   public render() {
+    // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
+    // this has been converted to modern react with hooks.
+    if (this.projectHolder.project?.loadingError) {
+      return (
+        <h1
+          css={css`
+            padding: 50px;
+          `}
+        >
+          {this.projectHolder.project.loadingError}
+        </h1>
+      );
+    }
+
     let title = this.projectHolder.project
-      ? this.projectHolder.project.displayName + " - SayMore JS"
-      : "SayMore JS";
-    title += " " + require("../package.json").version;
+      ? `${Path.basename(this.projectHolder.project.directory)}/ ${
+          this.projectHolder.project.displayName
+        }  - lameta`
+      : "lameta";
+    title += " " + require("../package.json").version + " Beta";
 
     remote.getCurrentWindow().setTitle(title);
     return (
       <div style={{ height: "100%" }}>
-        {this.projectHolder.project ? (
-          <Home
+        {(this.projectHolder.project && (
+          <Workspace
             project={this.projectHolder.project}
             authorityLists={this.projectHolder.project.authorityLists}
             menu={this.menu}
           />
-        ) : (
+        )) || (
           <div className={"startScreen"}>
-            <div className={"top"}>
-              <img src={locate("assets/start-screen/icon.png")} />
-              <h1>
-                SayMore <span>JS</span>
-              </h1>
-            </div>
-            <div className={"choices"}>
-              <img src={locate("assets/start-screen/create.png")} />
-              <a
-                className={"creatNewProjectLink"}
-                id="creatNewProjectLink"
-                onClick={() => this.createProject(false)}
-              >
-                Create New Project
-              </a>
-              <br />
-              <img src={locate("assets/start-screen/open.png")} />
-              <a onClick={() => this.openProject()}>Open SayMore Project</a>
-              <br />
-              <img src={locate("assets/start-screen/sample.png")} />
-              <a
-                id="createNewProjectWithSampleDataLink"
-                onClick={() => {
-                  this.createProject(true);
-                }}
-              >
-                Create New Project with Sample Data
-              </a>
+            <div className={"core"}>
+              <div className={"top"}>
+                <img src={locate("assets/start-screen/wordmark.png")} />
+              </div>
+              <div className={"choices"}>
+                <img src={locate("assets/start-screen/create.png")} />
+                <a
+                  className={"creatNewProjectLink"}
+                  id="creatNewProjectLink"
+                  onClick={() => this.createProject(false)}
+                >
+                  <Trans>Create New Project</Trans>
+                </a>
+                <br />
+                <img src={locate("assets/start-screen/open.png")} />
+                <a onClick={() => this.openProject()}>
+                  <Trans>Open Project</Trans>
+                </a>
+                <br />
+                <img src={locate("assets/start-screen/sample.png")} />
+                <a
+                  id="createNewProjectWithSampleDataLink"
+                  onClick={() => {
+                    this.createProject(true);
+                  }}
+                >
+                  <Trans>Create New Project with Sample Data</Trans>
+                </a>
+              </div>
+              {/* <p className="description">
+                SayMore<sub>X</sub> is a cross-platform rewrite of SayMore. At
+                this point, SayMore<sub>X</sub> lacks the BOLD (Basic Oral
+                Language Documentation) features of the original SayMore.
+              </p> */}
             </div>
           </div>
         )}
@@ -208,6 +257,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
+        <AlertDialog />
       </div>
     );
   }
@@ -215,25 +265,35 @@ export default class HomePage extends React.Component<IProps, IState> {
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
       app.getPath("documents"),
-      "SayMore"
+      "lameta" // we don't translate this
     );
-
+    sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
-      title: "Open Project...",
+      title: i18n._(t`Open Project...`),
       defaultPath: defaultProjectParentDirectory,
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects
       properties: ["openFile"],
-      filters: [{ name: "SayMore/SayMore Project Files", extensions: ["sprj"] }]
+      filters: [
+        {
+          name: i18n._(t`lameta and SayMore Project Files`),
+          extensions: ["sprj"],
+        },
+      ],
     };
-    remote.dialog.showOpenDialog(remote.getCurrentWindow(), options, paths => {
-      if (paths) {
-        const directory = Path.dirname(paths[0]);
-        this.projectHolder.setProject(
-          Project.fromDirectory(fs.realpathSync(directory))
-        );
-        this.userSettings.set("previousProjectDirectory", directory);
+    remote.dialog.showOpenDialog(
+      remote.getCurrentWindow(),
+      options,
+      (paths) => {
+        sentryBreadCrumb("processing callback of open project dialog");
+        if (paths && paths.length > 0 && paths[0].length > 0) {
+          const directory = Path.dirname(paths[0]);
+          this.projectHolder.setProject(
+            Project.fromDirectory(fs.realpathSync(directory))
+          );
+          userSettings.PreviousProjectDirectory = directory;
+        }
       }
-    });
+    );
   }
 }

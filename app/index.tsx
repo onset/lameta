@@ -1,48 +1,27 @@
-import bugsnag from "bugsnag-js";
-import createPlugin from "bugsnag-react";
 import * as React from "react";
 import { render } from "react-dom";
-import { AppContainer } from "react-hot-loader";
-import Root from "./containers/Root";
 import { remote } from "electron";
 import "./app.global.scss";
+import App from "./containers/App";
+import { setConfig } from "react-hot-loader";
+import { initializeAnalytics, analyticsEvent } from "./analytics";
+import { initializeSentry as initializeErrorReporting } from "./errorHandling";
+import { initializeLocalization } from "./localization";
 
-export const bugsnagClient = bugsnag({
-  apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
-  appVersion: require("./package.json").version,
-  notifyReleaseStages: ["production"],
-  releaseStage: process.env.NODE_ENV // so we'll only send bugsnag notices if this matches those listed above in notifyReleaseStages
-});
-console.log("bugsnag set to appVersion: " + bugsnagClient.config.appVersion);
-// bugsnagClient.notify(
-//   new Error("Test notify from index.tsx for installed version")
-// );
+//if (!process.env.HOT) {
+// sentry kills hot reloading with react-hot-loader
+// possibly it's trying to report some RHL error... you do see them if you turn on
+// "Pause on caught exceptions" in the chrome debug tools
+// (note: it is possible to work around this by going away from the screen being modified)
+initializeErrorReporting(false);
+//}
+
+initializeLocalization();
+initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
+analyticsEvent("Launch", "Launch");
+
+setConfig({ logLevel: "debug" });
 
 document.body.setAttribute("class", remote.process.platform);
-render(
-  <AppContainer>
-    <Root />
-  </AppContainer>,
-  document.getElementById("root")
-);
 
-if ((module as any).hot) {
-  (module as any).hot.accept("./containers/Root", () => {
-    const NextRoot = require("./containers/Root").default;
-    const ErrorBoundary = bugsnagClient.use(createPlugin(React));
-    render(
-      <ErrorBoundary>
-        <AppContainer>
-          <NextRoot />
-        </AppContainer>{" "}
-      </ErrorBoundary>,
-
-      document.getElementById("root")
-    );
-  });
-}
-
-// const base = document.createElement("base");
-// console.log("Setting base to " + locate("app"));
-// base.setAttribute("href", locate("app"));
-// document.getElementsByTagName("head")[0].appendChild(base);
+render(<App />, document.getElementById("root"));

@@ -2,5 +2,14 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "editor.formatOnSave": true,
   "typescript.format.enable": false,
-  "javascript.format.enable": false
+  "javascript.format.enable": false,
+  "cSpell.words": [
+    "ELAR",
+    "Heole",
+    "Huli",
+    "Paradisec",
+    "Pardesic",
+    "lameta",
+    "scripthost"
+  ]
 }

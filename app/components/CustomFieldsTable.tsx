@@ -1,15 +1,20 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { Field, FieldDefinition } from "../model/field/Field";
-import { Folder } from "../model/Folder";
+import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { File } from "../model/file/File";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
+import { t } from "@lingui/macro";
+import { i18n } from "../localization";
+import { FieldLabel } from "./FieldLabel";
 
 export interface IProps {
-  folder: Folder;
+  file: File;
+  firstColumnHeaderText?: string;
 }
 
 @observer
@@ -21,69 +26,123 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     this.state = { fieldsForRows: [] };
   }
 
-  public componentWillMount() {
-    this.computeRows(this.props);
+  public UNSAFE_componentWillMount() {
+    this.computeRows(this.props.file);
   }
-  public componentWillReceiveProps(nextProps: IProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
     // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
-    this.computeRows(nextProps);
+    this.computeRows(nextProps.file);
   }
-  private computeRows(nextProps: IProps) {
-    this.fieldsForRows = nextProps.folder.properties
+  private computeRows(file: File) {
+    const customFieldsInThisFileAlready = file.properties
       .values()
-      .filter(f => (f.definition ? f.definition.isCustom : false))
-      .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
+      .filter((f) => (f.definition ? f.definition.isCustom : false));
+
+    let didAddOneOrMoreFields = false;
+    //figure out what custom fields are out there on other files of this
+    // type that we should make place for
+    file.customFieldNamesRegistry
+      .getKeysForFileType(file.type)
+      .filter((n) => !customFieldsInThisFileAlready.some((f) => f.key === n))
+      .forEach((n) => {
+        didAddOneOrMoreFields = true;
+        //actually add this field to the file, empty for now. When saving,
+        // empty ones are not going to be saved to disk anyhow.
+        file.properties.addCustomProperty(
+          this.makeFieldForUnusedCustomField(n, n)
+        );
+      });
+
+    // When the file set up its dirty detection, this field did not exist on this file.
+    // Now we have added it, and if the user does decide to type something in there,
+    // it would not not be noticed by the dirty detection. So just have it reset
+    // based on the fields it has now.
+    // NOTE that this will be called basically every time they run SayMore on every
+    // file that they display which can have custom fields, unless all custom fields
+    // are non-empty. I expect this to be very fast, though... the time it takes is
+    // roughly the time to construct the xml string that we would save if we were writing
+    // to disk.
+    if (didAddOneOrMoreFields) {
+      file.recomputedChangeWatcher();
+    }
+
+    this.fieldsForRows = file.properties
+      .values()
+      .filter((f) => (f.definition ? f.definition.isCustom : false))
+      .sort((a, b) =>
+        a.definition.englishLabel.localeCompare(b.definition.englishLabel)
+      ); // enhance: really we don't care about your locale, we care aobut the language of the label
 
     // add one blank row
-    const placeHolder = this.makePlaceholderForNewCustomField();
+    const placeHolder = this.makePlaceholderForCustomField();
     this.fieldsForRows.push(placeHolder);
-
-    // this.fieldsForRows.forEach(f =>
-    //   console.log(
-    //     `custom field row: ${nextProps.folder.displayName} ${f.key}= "${
-    //       f.text
-    //     }"`
-    //   )
-    // );
   }
 
   private fieldLabelChanged(f: Field) {
+    //review: what should happen if we have a couple instances of a custom field
+    // and we change the name of one of the instances?
+
     if (f.definition.persist) {
       // we're updating
-      if (f.englishLabel.trim().length === 0) {
-        this.props.folder.properties.remove(f.key);
-        this.computeRows(this.props);
+      if (f.definition.englishLabel.trim().length === 0) {
+        this.props.file.properties.remove(f.key);
+        this.computeRows(this.props.file);
         this.forceUpdate();
       } else {
-        this.props.folder.properties.changeKeyOfCustomField(f, f.englishLabel);
+        this.props.file.properties.changeKeyOfCustomField(
+          f,
+          f.definition.englishLabel
+        );
       }
     } else {
-      if (f.englishLabel.trim().length === 0) {
+      if (f.definition.englishLabel.trim().length === 0) {
         // ignore empty placehholders
         return;
       }
-      // we're adding
-      console.log(`adding custom field ${f.englishLabel}=${f.text}`);
-      f.key = f.englishLabel;
+      // we're adding a new field because the user typed in a field name
+      console.log(`adding custom field ${f.definition.englishLabel}=${f.text}`);
+
+      f.key = f.definition.englishLabel;
+
+      // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
+      //review do this here?
+      this.props.file.customFieldNamesRegistry.encountered(
+        this.props.file.type,
+        f.key
+      );
+
       f.persist = f.definition.persist = true; // But what if it is empty? Let the saving code worry about that.
-      this.props.folder.properties.addCustomProperty(f);
+      this.props.file.properties.addCustomProperty(f);
       // add a new placeholder
       this.focusField = f;
-      this.computeRows(this.props);
+      this.computeRows(this.props.file);
       this.forceUpdate();
     }
-    this.props.folder.wasChangeThatMobxDoesNotNotice();
+    this.props.file.wasChangeThatMobxDoesNotNotice();
   }
 
-  private makePlaceholderForNewCustomField() {
+  private makeFieldForUnusedCustomField(key: string, englishLabel: string) {
+    const definition: FieldDefinition = {
+      key,
+      englishLabel,
+      persist: true,
+      type: "Text",
+      tabIndex: 0,
+      isCustom: true,
+      showOnAutoForm: false, // we do show it, but in the custom table
+    };
+    return Field.fromFieldDefinition(definition);
+  }
+
+  private makePlaceholderForCustomField() {
     const definition: FieldDefinition = {
       key: "placeholder",
       englishLabel: "",
       persist: false, // we'll change this if they make it real
       type: "Text",
-      order: 0,
+      tabIndex: 0,
       isCustom: true,
-      showOnAutoForm: false // we do show it, but in the custom table
+      showOnAutoForm: false, // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -95,7 +154,10 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     const customFieldTableColumns = [
       {
         id: "name",
-        Header: "Field",
+        Header: this.props.firstColumnHeaderText
+          ? this.props.firstColumnHeaderText
+          : i18n._(t`Field`),
+        maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return (
@@ -107,11 +169,11 @@ export default class CustomFieldsTable extends React.Component<IProps> {
               }}
             />
           );
-        }
+        },
       },
       {
         id: "value",
-        Header: "Value",
+        Header: i18n._(t`Value`),
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return (
@@ -122,19 +184,25 @@ export default class CustomFieldsTable extends React.Component<IProps> {
               field={field as Field}
               // if we go to the placeholder row and make it "real", then a new
               // row gets created underneath, which would normally
-              // cause the cursor to go down there. Istead, we
+              // cause the cursor to go down there. Instead, we
               // want the focus to go to the value column of the newly created
               // custom field
               autoFocus={this.focusField === field}
             />
           );
-        }
-      }
+        },
+      },
     ];
+    const def: FieldDefinition = new FieldDefinition({
+      key: "Custom Fields",
+      markAsNotImdi: true,
+      specialInfo:
+        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+    });
 
     return (
       <div className="customFieldsBlock">
-        <label>Custom Fields</label>
+        <FieldLabel fieldDef={def} />
         <ReactTable
           className="customFieldsTable"
           noDataText=""

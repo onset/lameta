@@ -3,7 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { Field } from "../../field/Field";
-
+import { CustomFieldRegistry } from "../CustomFieldRegistry";
 let sessionDirectory;
 let sessionName;
 
@@ -65,19 +65,31 @@ describe("Session Read", () => {
     );
   });
 
-  it("should read addition fields", () => {
+  // in many cases, the key used internally to this version of SayMore
+  // does not match the element name. This is especially true in the
+  // AdditionalFields area. Here, the xml tag is Location_Country, but our
+  // key is locationCountry:
+  it("should read additional fields and convert name", () => {
     const f = GetSessionFileWithOneField(
       "AdditionalFields",
-      '<Location_Country type="string">Congo Republic of the</Location_Country>'
+      '<Location_Country type="string">Colombia</Location_Country>'
     );
-    expect(f.getTextProperty("locationCountry")).toBe("Congo Republic of the");
+    expect(f.getTextProperty("locationCountry")).toBe("Colombia");
     let x: Field = f.properties.getValueOrThrow("locationCountry");
     expect(x.definition.isAdditional).toBeTruthy();
 
     //After changing that value, it should still be an "additional" field.
-    f.setTextProperty("locationCountry", "somewhere else");
+    f.setTextProperty("locationCountry", "Bulgaria");
     x = f.properties.getValueOrThrow("locationCountry");
     expect(x.definition.isAdditional).toBeTruthy();
+  });
+
+  it("should read choices that vary by case", () => {
+    const f = GetSessionFileWithOneField(
+      "AdditionalFields",
+      '<Planning_Type type="string">pLAnNed</Planning_Type>'
+    );
+    expect(f.getTextProperty("planningType")).toBe("planned");
   });
 });
 
@@ -90,5 +102,5 @@ function GetSessionFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Session><${tag}>${content}</${tag}></Session>`
   );
-  return new SessionMetadataFile(sessionDirectory);
+  return new SessionMetadataFile(sessionDirectory, new CustomFieldRegistry());
 }

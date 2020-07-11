@@ -39,7 +39,7 @@
       vertical-align: text-top;
     }
     h1 {
-      font-size: 12px;
+      font-size: 1em;
       height: 1em;
       font-weight: bold;
       margin: 0;
@@ -48,7 +48,9 @@
   .bottomButtonRow {
     align-self: flex-end;
     float: right;
-    margin-top: 2em;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
 
     // see flex-direction in a rule that incorporates os class from app
     display: flex;

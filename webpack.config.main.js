@@ -23,7 +23,7 @@ module.exports = merge(baseConfig, {
 
     // so at the moment we're putting the main-bundle.js up in app and use this
     path: path.join(__dirname, "app"),
-    publicPath: `http://localhost:${port}/` // needed by bugsnag sourcemap upload
+    publicPath: `http://localhost:${port}/`, // needed by bugsnag sourcemap upload
   },
 
   plugins: [
@@ -53,6 +53,6 @@ module.exports = merge(baseConfig, {
    */
   node: {
     __dirname: false,
-    __filename: false
-  }
+    __filename: false,
+  },
 });

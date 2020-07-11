@@ -1,11 +1,11 @@
 {
-  "name": "saymore-js",
-  "productName": "SayMore JS",
-  "version": "0.0.2",
+  "name": "lameta",
+  "productName": "lameta",
+  "version": "0.8.9",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
-    "name": "MEaCoM"
+    "name": "lameta"
   },
   "license": "MIT",
   "dependencies": {}

@@ -2,6 +2,7 @@ const electron = require("electron");
 import { remote } from "electron";
 import * as Path from "path";
 import * as fs from "fs-extra";
+import { NotifyError } from "./components/Notify";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -17,7 +18,7 @@ export function trash(path: string): boolean {
   const fixedPath = Path.normalize(path).replace("/", Path.sep);
   const success = electron.shell.moveItemToTrash(fixedPath);
   if (!success) {
-    window.alert("Failed to delete " + fixedPath);
+    NotifyError("Failed to delete " + fixedPath);
   }
   return success;
 }

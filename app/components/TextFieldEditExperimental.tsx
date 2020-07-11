@@ -2,7 +2,7 @@
 import { observer, inject } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { File } from "../model/file/File";
-const titleCase = require("title-case");
+import {titleCase} from "title-case";
 
 export interface IProps {
   file: File;

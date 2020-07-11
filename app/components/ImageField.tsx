@@ -15,13 +15,15 @@ export default class ImageField extends React.Component<
   }
 
   public render() {
+    //It doesn't find the file if I url encode the whole thing, but # messes it up (at least on windows)
+    const safePath = this.props.path.replace(/#/g, "%23");
     //console.log("render ImageField");
     return (
       <div
         className={"field " + this.props.className}
-        style={{ backgroundImage: `url(${this.props.path})` }}
+        // style={{ backgroundImage: `url(${this.props.path})` }}
       >
-        <img src={this.props.path} />
+        <img src={safePath} />
       </div>
     );
   }

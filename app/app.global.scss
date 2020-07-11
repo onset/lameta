@@ -4,19 +4,15 @@
 
 @import "~react-tabs/style/react-tabs.css";
 
-$select-input-height: 28px;
-@import "~react-select/scss/default";
-
 @import "./colors";
 
 @import "~react-datepicker/dist/react-datepicker.css";
 
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
-$default-font-size: 13px;
+$default-font-size: 1em; // note, we can't control the electron default font size as easily as the container, so we use em instead of rem
 
-$default-fonts: -apple-system, /* mac*/ "BlinkMacSystemFont",
-  /* mac*/ "Segoe UI", /* windows*/ "Ubuntu", "Open Sans", sans-serif;
-
+$default-fonts: "-apple-system" /* mac*/, "BlinkMacSystemFont" /* mac*/,
+  "Segoe UI" /* windows*/, "Ubuntu", "Open Sans", sans-serif;
 .tab-project.react-tabs__tab--selected {
   background-color: $project--color;
 }
@@ -31,6 +27,10 @@ $color-interstitial: #f0f0f0;
 * {
   box-sizing: border-box;
 }
+
+$field-height: 2em;
+$label-to-field-sep: 3px;
+
 body,
 html,
 #root,
@@ -42,11 +42,16 @@ html,
   font-family: $default-fonts;
 }
 a {
+  cursor: pointer;
   text-decoration: underline;
-  color: blue;
+  color: $link--color;
   &:visited {
-    color: blue; //don't change after they've clicked it once
+    color: $link--color; //don't change after they've clicked it once
   }
+}
+.field textarea,
+input {
+  padding-left: 5px;
 }
 // .field {
 //   // display: flex;
@@ -63,9 +68,23 @@ a {
   //height: 40px;
 }
 label {
+  user-select: none;
   display: block;
-  font-size: $default-font-size;
+  //font-size: $default-font-size;
   font-weight: bold;
+}
+.hint {
+  font-size: 0.6em;
+  float: right;
+  color: grey;
+  font-weight: normal;
+}
+.moreFieldsBlock label + div, // More Fields
+.field label + div, // e.g People chooser
+span + textarea,
+label + textarea,
+label + .select {
+  margin-top: $label-to-field-sep;
 }
 li {
   cursor: default;
@@ -79,11 +98,19 @@ select,
 button,
 .Select--multi .Select-value {
   font-size: $default-font-size;
+  font-family: $default-fonts;
+}
+input,
+select,
+.Select--multi .Select-value {
+  margin-left: -3px; // make it line up in grids
+  // disable for 0.87 because auto performed better when user makes font size large.
+  //     height: $field-height; //match textarea so grid rows are the same height
 }
 textarea {
   border-style: inset;
   resize: none;
-  height: 2em;
+  height: $field-height;
   width: 100%; //just fill the container
   font-size: $default-font-size;
 
@@ -92,10 +119,20 @@ textarea {
   }
   font-family: $default-fonts;
 }
+
+.rt-noData {
+  display: none !important;
+}
 // no border when in a grid
+.rt-tbody {
+  cursor: pointer;
+}
 .rt-td {
   textarea {
     border: none;
+    &.invalid {
+      border: solid 2px red;
+    }
   }
   select {
     border: none;
@@ -104,6 +141,7 @@ textarea {
 }
 button {
   font-family: $default-fonts;
+  user-select: none;
 }
 
 .react-tabs {
@@ -176,12 +214,20 @@ button {
   position: relative !important; //by default it was absolute, which messed up auto sizing
   .Pane {
     display: flex;
+    overflow: hidden; // <-- this is key to fitting the available window space
   }
 }
 .not-implemented {
   color: lightgray;
 }
+.ReactTable {
+  background-color: white;
 
+  // prevent horizontal table scrolling (which can happen automatically and hide left columns)
+  .rt-table {
+    overflow-x: hidden;
+  }
+}
 .ReactTable .rt-thead.-header {
   box-shadow: none;
   //todo: this needs work
@@ -210,4 +256,41 @@ form .ReactTable {
   margin-left: auto;
   margin-right: auto;
   margin-top: 3em;
+}
+
+.date-picker {
+  height: $field-height;
+}
+
+//take up the whole cell, because else you get dead areas where you click and nothing happens
+// I know, I know, it looks... wrong...
+.rt-td .react-datepicker-wrapper {
+  width: 100%;
+  .react-datepicker__input-container {
+    width: 100%;
+    .input {
+      width: 100%;
+    }
+  }
+}
+
+form {
+  padding-right: 10px;
+}
+
+input {
+  border-style: inset;
+  border-color: rgb(169, 169, 169);
+  border-width: 1px;
+}
+.markAsNotImdi {
+  color: #6d6d6d;
+}
+
+.react-tooltip-lite {
+  max-width: 300px !important;
+}
+
+.notificationTray ul li div div {
+  width: 500px !important;
 }

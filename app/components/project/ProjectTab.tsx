@@ -9,6 +9,8 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
+import { Trans } from "@lingui/react";
+import userSettings from "../../UserSettings";
 
 interface IProps {
   project: Project;
@@ -18,7 +20,6 @@ interface IProps {
 @observer
 export class ProjectTab extends React.Component<IProps> {
   public render() {
-    this.props.project.couldPossiblyBecomeDirty();
     const kFirstTabToOpen = 0;
     return (
       <Tabs
@@ -27,13 +28,25 @@ export class ProjectTab extends React.Component<IProps> {
         onSelect={() => this.props.project.saveFolderMetaData()}
       >
         <TabList>
-          <Tab className={"tab-project-about"}>About This Project</Tab>
-          <Tab className={"tab-project-access"}>Access Protocol</Tab>
-          <Tab className={"tab-project-description-docs"}>
-            Description Documents
+          <Tab className={"tab-project-about"}>
+            <Trans>About This Project</Trans>
           </Tab>
-          <Tab className={"tab-project-other-docs"}>Other Documents</Tab>
-          <Tab className={"tab-project-imdi"}>IMDI</Tab>
+          <Tab className={"tab-project-access"}>
+            <Trans>Access Protocol</Trans>
+          </Tab>
+          <Tab className={"tab-project-description-docs"}>
+            <Trans>Description Documents</Trans>
+          </Tab>
+          <Tab className={"tab-project-other-docs"}>
+            <Trans>Other Documents</Trans>
+          </Tab>
+          {userSettings.IMDIMode ? (
+            <Tab className={"tab-project-imdi"}>
+              IMDI {/* don't translate  */}
+            </Tab>
+          ) : (
+            <></>
+          )}
         </TabList>
         <TabPanel>
           <AutoForm
@@ -41,6 +54,7 @@ export class ProjectTab extends React.Component<IProps> {
             formClass="project"
             folder={this.props.project}
             authorityLists={this.props.authorityLists}
+            languageFinder={this.props.project.languageFinder}
           />
         </TabPanel>
         <TabPanel>
@@ -63,11 +77,10 @@ export class ProjectTab extends React.Component<IProps> {
             authorityLists={this.props.authorityLists}
           >
             <strong>
-              Add documents here that describe the projects and corpus.
+              <Trans>
+                Add documents here that describe the projects and corpus.
+              </Trans>
             </strong>
-            <br />
-            <a>How these are archived</a>
-            <br /> <br />
             <br />
           </FolderPane>
         </TabPanel>
@@ -79,21 +92,28 @@ export class ProjectTab extends React.Component<IProps> {
             showStandardMetaTabs={false}
             authorityLists={this.props.authorityLists}
           >
-            {" "}
             <strong>
-              Add documents here that don't seem to fit anywhere else. An
-              example would be documents explaining how the project was funded.
+              <Trans>
+                Add documents here that don't seem to fit anywhere else. An
+                example would be documents explaining how the project was
+                funded.
+              </Trans>
             </strong>
-            <br />
-            <a>How these are archived</a>
-            <br />
             <br />
             <br />
           </FolderPane>
         </TabPanel>
-        <TabPanel>
-          <ImdiView folder={this.props.project} project={this.props.project} />
-        </TabPanel>
+        {userSettings.IMDIMode ? (
+          <TabPanel>
+            <ImdiView
+              target={this.props.project}
+              project={this.props.project}
+              folder={this.props.project}
+            />
+          </TabPanel>
+        ) : (
+          <></>
+        )}
       </Tabs>
     );
   }
