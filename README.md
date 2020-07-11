@@ -12,6 +12,14 @@ Stack: Typescript, React, mobx, webpack, electron.
 
 Install node & yarn then
 
+clone lameta
+```bash
+$ git clone https://github.com/onset/lameta.git
+```
+navigate into the lameta folder
+
+use yarn to compile
+
 ```bash
 $ yarn
 $ yarn lingui-compile
