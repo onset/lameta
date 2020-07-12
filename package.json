@@ -154,6 +154,8 @@
       "extraResources": [
         "node_modules/ffprobe-static/bin/linux/x64"
       ],
+      "category": "science",
+      "description": "A metadata tool to help with organising collections of files. It is mainly aimed at collections made in the course of documenting language, music, and other cultural expressions.",
       "fileAssociations": [
         {
           "ext": "sprj",

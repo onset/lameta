@@ -5,7 +5,8 @@
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {
-    "name": "lameta"
+    "name": "lameta",
+    "email": "sorryno@email.org"
   },
   "license": "MIT",
   "dependencies": {}
