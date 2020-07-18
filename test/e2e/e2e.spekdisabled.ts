@@ -1,4 +1,4 @@
-import SayLessRunner from "./SaylessRunner";
+import lametaRunner from "./lametaRunner";
 
 // NOTE: if using JEST vscode extension, it doesn't seem to run in the background
 // like with normal unit tests, but when you click "Debug" to run a test, it will
@@ -9,10 +9,10 @@ import SayLessRunner from "./SaylessRunner";
 
 /// MUST call with await, e.g. await delay(3000);
 const delay = (time: number) =>
-  new Promise(resolve => setTimeout(resolve, time));
+  new Promise((resolve) => setTimeout(resolve, time));
 
 describe("main window", function spec() {
-  const runner = new SayLessRunner();
+  const runner = new lametaRunner();
 
   const kProjectName = "e2eproject";
   beforeAll(async () => {

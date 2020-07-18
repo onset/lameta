@@ -15,25 +15,25 @@ import menuAddon from "spectron-menu-addon";
 // can say expect(selector).to.be.there()
 // SEe https://medium.com/@RubenOostinga/combining-chai-and-jest-matchers-d12d1ffd0303
 
-export default class SayLessRunner {
+export default class lametaRunner {
   public app: Application;
   public kProjectName = "e2eproject";
 
   public constructor() {
     process.env.startInStartScreen = "true";
-    process.env.log = "e2e sayless.log";
+    process.env.log = "e2e lameta.log";
     process.env.NODE_ENV = "test";
   }
 
   public async start(doClear: boolean = true): Promise<any> {
-    // if (fs.existsSync("sayless.log")) {
-    //   fs.removeSync("sayless.log");
+    // if (fs.existsSync("lameta.log")) {
+    //   fs.removeSync("lameta.log");
     // }
 
     // const logger = Winston.createLogger({
     //   transports: [
     //     new Winston.transports.File({
-    //       filename: "sayless.log",
+    //       filename: "lameta.log",
     //       format: Winston.format.combine(
     //         Winston.format.timestamp({
     //           format: "hh:mm:ss"
@@ -57,7 +57,7 @@ export default class SayLessRunner {
       path: electronPath.toString(),
       args: [Path.join(__dirname, "..", "..", "app")],
       //doesn't seem to work.. maybe something else overrides
-      env: { NODE_ENV: "test" }
+      env: { NODE_ENV: "test" },
     });
 
     // "Unable to find Electron app at ____\sayles\app" here can be caused
@@ -103,7 +103,7 @@ export default class SayLessRunner {
     if (this.app && this.app.isRunning()) {
       return this.app.stop();
     }
-    throw new Error("SayLessRunner.stop() called but app wasn't running.");
+    throw new Error("lametaRunner.stop() called but app wasn't running.");
   }
 
   public async shouldExist(selector: string, log?: string) {
@@ -319,4 +319,4 @@ export default class SayLessRunner {
 }
 
 const delay = (time: number) =>
-  new Promise(resolve => setTimeout(resolve, time));
+  new Promise((resolve) => setTimeout(resolve, time));
