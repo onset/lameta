@@ -20,6 +20,7 @@ import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../analytics";
 import userSettings from "../../UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
+import * as Sentry from "@sentry/browser";
 
 const genres = require("./Session/genres.json");
 
@@ -197,6 +198,8 @@ export class Project extends Folder {
       // tslint:disable-next-line:no-unused-expression
       return project;
     } catch (err) {
+      Sentry.captureException(err);
+      console.error(err);
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;
     }
@@ -499,6 +502,9 @@ export class Project extends Folder {
       "vernacularIso3CodeAndName"
     );
     const parts = x.split(":").map((p) => p.trim());
+    if (!parts[0]) {
+      throw Error(`vernacularIso3CodeAndName was '${x}'.`);
+    }
     return { iso639_3: parts[0].toLowerCase(), englishName: parts[1] };
   }
 

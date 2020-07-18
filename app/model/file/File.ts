@@ -546,7 +546,8 @@ export /*babel doesn't like this: abstract*/ class File {
         // so that we just have the object with its properties.
         let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
         if (properties === "") {
-          //   Review: This happen if it finds, e.g. <Session/>.
+          // This happen if it finds, e.g. <Session/>. Which is what we get when making a new file.
+
           properties = {};
         }
         const minimumVersion = properties.$?.minimum_lameta_version_to_read;
