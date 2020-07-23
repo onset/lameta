@@ -129,3 +129,19 @@ it("should have an empty Access Description if description is missing", () => {
     count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
   ).toBe(4);
 });
+
+it("should make separate keys for each topic separated by a comma", () => {
+  session.properties.setText("accessDescription", "");
+  setResultXml(
+    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[1]").toMatch(
+    "Incoming"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[2]").toMatch(
+    "Fishing"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[3]").toMatch(
+    "Poison"
+  );
+});

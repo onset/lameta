@@ -119,7 +119,7 @@ describe("sessions csv export", () => {
     expect(session(1, "location")).toBe("Huya");
   });
   it("should contain customFields", () => {
-    expect(session(1, "topic")).toBe("fishing");
+    expect(session(1, "topic")).toBe("fishing, poison");
   });
   it("should have good contributor list", () => {
     expect(session(1, "contributions")).toBe(

@@ -18,6 +18,7 @@ import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
 import { sanitizeForArchive } from "../filenameSanitizer";
+import { values } from "mobx";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -397,19 +398,27 @@ export default class ImdiGenerator {
           !this.keysThatHaveBeenOutput.contains(target.type + "." + key) &&
           blacklist.indexOf(key) < 0
         ) {
-          let v = target.properties.getTextStringOrEmpty(key);
-          if (v && v.length > 0) {
-            //https://trello.com/c/GdRJamgi/83-export-of-topic-field
-            if (["topic", "status", "keyword"].indexOf(key) > -1) {
-              v = sentenceCase(
-                v,
-                /* don't strip anything */ { stripRegexp: /^[]/ }
-              );
-            }
-            this.tail = this.tail.element("Key", v);
-            this.mostRecentElement = this.tail;
-            this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
-            this.tail = this.tail.up();
+          const fieldContents = target.properties.getTextStringOrEmpty(key);
+          if (fieldContents && fieldContents.length > 0) {
+            //https://trello.com/c/Xkq8cdoR/73-already-done-allow-for-more-than-one-topic
+            const shouldSplitByCommas = ["topic", "keyword"].indexOf(key) > -1;
+            const valueElements = shouldSplitByCommas
+              ? fieldContents.split(",").map((x) => x.trim())
+              : [fieldContents.trim()];
+            valueElements.forEach((v) => {
+              //https://trello.com/c/GdRJamgi/83-export-of-topic-field
+              if (["topic", "status", "keyword"].indexOf(key) > -1) {
+                v = sentenceCase(
+                  v,
+                  /* don't strip anything */ { stripRegexp: /^[]/ }
+                );
+              }
+
+              this.tail = this.tail.element("Key", v);
+              this.mostRecentElement = this.tail;
+              this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+              this.tail = this.tail.up();
+            });
           }
         }
       });

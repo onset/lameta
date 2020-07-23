@@ -11,6 +11,6 @@
     <date type="string">2010-06-06</date>
     <status type="string">Incoming</status>
     <CustomFields type="xml">
-        <topic type="string">fishing</topic>
+        <topic type="string">fishing, poison</topic>
     </CustomFields>
 </Session>
