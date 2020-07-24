@@ -836,11 +836,18 @@ export /*babel doesn't like this: abstract*/ class File {
     try {
       fs.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
+      NotifyWarning(`Cannot rename: ${err.message}`);
       return false;
     }
     try {
       fs.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
+      if (err.code === "EBUSY") {
+        NotifyWarning(`Cannot rename: Is the file open in another program?`);
+      } else {
+        NotifyWarning(`Cannot rename: ${err.message}`);
+      }
+
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
         fs.renameSync(newMetadataFilePath, this.metadataFilePath);
