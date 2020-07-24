@@ -280,19 +280,22 @@ export default class HomePage extends React.Component<IProps, IState> {
         },
       ],
     };
-    remote.dialog.showOpenDialog(
-      remote.getCurrentWindow(),
-      options,
-      (paths) => {
+    remote.dialog
+      .showOpenDialog(remote.getCurrentWindow(), options)
+      .then((results) => {
         sentryBreadCrumb("processing callback of open project dialog");
-        if (paths && paths.length > 0 && paths[0].length > 0) {
-          const directory = Path.dirname(paths[0]);
+        if (
+          results &&
+          results!.filePaths &&
+          results.filePaths!.length > 0 &&
+          results.filePaths![0].length > 0
+        ) {
+          const directory = Path.dirname(results.filePaths[0]);
           this.projectHolder.setProject(
             Project.fromDirectory(fs.realpathSync(directory))
           );
           userSettings.PreviousProjectDirectory = directory;
         }
-      }
-    );
+      });
   }
 }

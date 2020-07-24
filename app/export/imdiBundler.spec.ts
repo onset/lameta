@@ -19,7 +19,6 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
 });
 beforeEach(() => {
-  console.log("************************");
   rootDir = temp.mkdirSync("ImdiBundlerTests");
   ImdiBundler.saveImdiBundleToFolder(project, rootDir, true, (f) => true, true);
 });
