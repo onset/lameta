@@ -12,7 +12,7 @@ import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as ncp from "ncp";
 import * as Path from "path";
-import { remote, OpenDialogOptions, powerMonitor } from "electron";
+import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
 import userSettings from "../UserSettings";
@@ -280,22 +280,20 @@ export default class HomePage extends React.Component<IProps, IState> {
         },
       ],
     };
-    remote.dialog
-      .showOpenDialog(remote.getCurrentWindow(), options)
-      .then((results) => {
-        sentryBreadCrumb("processing callback of open project dialog");
-        if (
-          results &&
-          results!.filePaths &&
-          results.filePaths!.length > 0 &&
-          results.filePaths![0].length > 0
-        ) {
-          const directory = Path.dirname(results.filePaths[0]);
-          this.projectHolder.setProject(
-            Project.fromDirectory(fs.realpathSync(directory))
-          );
-          userSettings.PreviousProjectDirectory = directory;
-        }
-      });
+    ipcRenderer.invoke("showOpenDialog", options).then((results) => {
+      sentryBreadCrumb("processing callback of open project dialog");
+      if (
+        results &&
+        results!.filePaths &&
+        results.filePaths!.length > 0 &&
+        results.filePaths![0].length > 0
+      ) {
+        const directory = Path.dirname(results.filePaths[0]);
+        this.projectHolder.setProject(
+          Project.fromDirectory(fs.realpathSync(directory))
+        );
+        userSettings.PreviousProjectDirectory = directory;
+      }
+    });
   }
 }

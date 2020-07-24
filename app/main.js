@@ -8,7 +8,14 @@ require("./init-sentry").initializeSentry();
 const { initializeSentry } = require("./init-sentry");
 */
 
-const { app, BrowserWindow, Menu, shell, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  shell,
+  ipcMain,
+  dialog,
+} = require("electron");
 
 // Note: when actually running the program, stuff will be stored where you expect them,
 // using the name of the app. But running in development, you get everything in just
@@ -140,6 +147,10 @@ app.on("ready", () =>
 
       ipcMain.on("show-debug-tools", (event, arg) => {
         mainWindow.openDevTools();
+      });
+
+      ipcMain.handle("showOpenDialog", async (event, options) => {
+        return await dialog.showOpenDialog(mainWindow, options);
       });
 
       // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing

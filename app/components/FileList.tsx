@@ -3,7 +3,7 @@ import { default as ReactTable, RowInfo } from "react-table";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone, { ImageFile } from "react-dropzone";
-import { remote, OpenDialogOptions } from "electron";
+import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
 import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
@@ -304,8 +304,7 @@ function addFiles(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
   };
-
-  remote.dialog.showOpenDialog(options).then((result) => {
+  ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
       folder.addFiles(result.filePaths.map((p) => ({ path: p })));
     }
