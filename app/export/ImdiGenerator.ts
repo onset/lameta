@@ -19,6 +19,7 @@ import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
 import { sanitizeForArchive } from "../filenameSanitizer";
 import { values } from "mobx";
+const pkg = require("../package.json");
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -956,7 +957,7 @@ export default class ImdiGenerator {
     this.tail
       //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())
-      .a("Originator", "lameta " + require("package.json").version)
+      .a("Originator", "lameta " + pkg.version)
       .a("FormatId", "IMDI 3.0");
     this.mostRecentElement = this.tail;
     return this.tail;
