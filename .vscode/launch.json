@@ -14,10 +14,7 @@
       "protocol": "inspector",
       "runtimeExecutable": "npm",
       "cwd": "${workspaceRoot}",
-      "runtimeArgs": [
-        "run-script",
-        "dev-vscode"
-      ],
+      "runtimeArgs": ["run-script", "dev-vscode"],
       "timeout": 30000,
       "console": "integratedTerminal"
     },
@@ -31,14 +28,11 @@
       "windows": {
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
       },
-      "program": "${workspaceRoot}/app/main.development.js",
+      "program": "${workspaceRoot}/app/main.js",
       "env": {
         "NODE_ENV": "development"
       }, //electron opens with blank with this: ,"HOT": "1" },
-      "runtimeArgs": [
-        "--remote-debugging-port=9223",
-        "${workspaceRoot}/app/."
-      ]
+      "runtimeArgs": ["--remote-debugging-port=9223", "${workspaceRoot}/app/."]
     },
     // this works in tandom with the previous one, call via the compound "Electron: All".
     {
@@ -66,18 +60,12 @@
     // this runs, but doesn't build, hot-reload, etc.
     {
       "name": "Electron: All",
-      "configurations": [
-        "Electron: Main",
-        "Electron: Renderer"
-      ]
+      "configurations": ["Electron: Main", "Electron: Renderer"]
     },
     // this runs the hot load system we want, but doesn't connect
     {
       "name": "Electron: test",
-      "configurations": [
-        "run hot with debugging",
-        "Electron: Renderer"
-      ]
+      "configurations": ["run hot with debugging", "Electron: Renderer"]
     }
   ]
 }

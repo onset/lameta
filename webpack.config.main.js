@@ -9,7 +9,7 @@ const path = require("path");
 const port = process.env.PORT || 3000;
 
 module.exports = merge(baseConfig, {
-  entry: ["./app/main.development"],
+  entry: ["./app/main"],
 
   mode: process.env.NODE_ENV === "production" ? "production" : "development",
 

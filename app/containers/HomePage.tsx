@@ -86,7 +86,6 @@ export default class HomePage extends React.Component<IProps, IState> {
   }
 
   public goToStartScreenForTests() {
-    console.log("********************goToStartScreenForTests()");
     //this.projectHolder.setProject(null);
   }
 
