@@ -2,7 +2,7 @@ import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
-import Dropzone from "react-dropzone";
+import Dropzone, { ImageFile } from "react-dropzone";
 import { remote, OpenDialogOptions } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
@@ -14,12 +14,47 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../UserSettings";
 import { observer } from "mobx-react-lite";
+import { NotifyError } from "./Notify";
 const electron = require("electron");
 
 export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
   (props) => {
-    const [inRenameMode, setRenameMode] = React.useState(false);
+    //    const [inRenameMode, setRenameMode] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(undefined);
+    // these aren't just images, but that is the name DropZone give us
+    const [filesToCopy, setFilesToCopy] = React.useState<
+      ImageFile[] | undefined
+    >(undefined);
+    const [filesBeingCopied, setFilesBeingCopied] = React.useState<
+      ImageFile[] | undefined
+    >(undefined);
+
+    // Currently our copying is synchronous, and can be *really* slow if the user is copying in a 4GB video.
+    // So we go to great lengths to at least refresh the view with a message that we are copying,
+    // before we start the synchronous copy.
+    React.useEffect(() => {
+      if (filesBeingCopied && filesBeingCopied.length > 0) {
+        // if there is an error in here, it leave the drop zone in an active state, and you have to restart
+        // so we catch the error
+        try {
+          document.body.style.cursor = "wait";
+          //console.log(JSON.stringify(acceptedFiles));
+          props.folder.selectedFile = props.folder.addFiles(filesBeingCopied);
+        } catch (error) {
+          console.log(error);
+          NotifyError("Copy Failed: " + error);
+        } finally {
+          setFilesToCopy(undefined);
+          setFilesBeingCopied(undefined);
+          document.body.style.cursor = "default";
+        }
+      }
+    }, [filesBeingCopied]);
+
+    // let the UI redraw before we start the synchronous file copy
+    React.useEffect(() => {
+      setTimeout(() => setFilesBeingCopied(filesToCopy), 100);
+    }, [filesToCopy]);
 
     // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
     // What this mobxDummy is about:
@@ -42,7 +77,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           const f: File = d;
           return f.getIconName();
         },
-        Cell: (props) => <img src={props.value} />,
+        Cell: (p) => <img src={p.value} />,
       },
       {
         id: "name",
@@ -82,16 +117,19 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
     const isSpecialSayMoreFile =
       props.folder.selectedFile === props.folder.metadataFile;
     const filesPerPage = Math.min(300, props.folder.files.length);
+
     return (
       <Dropzone
         activeClassName={"drop-active"}
         className={"fileList"}
-        onDrop={(accepted, rejected) =>
-          onDrop(props.folder, accepted, rejected)
-        }
+        onDrop={(accepted, rejected) => {
+          setFilesToCopy(accepted);
+          //onDrop(props.folder, accepted, rejected);
+        }}
         disableClick
       >
-        <div className={"mask"}>Drop files here</div>
+        <div className={"mask onlyIfInDropZone"}>Drop files here</div>
+        {filesToCopy && <div className={"mask"}>Copying...</div>}
         <div className={"fileBar"}>
           <button
             disabled={
@@ -262,22 +300,6 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function onDrop(
-  folder: Folder,
-  acceptedFiles: Dropzone.ImageFile[],
-  rejectedFiles: Dropzone.ImageFile[]
-) {
-  if (acceptedFiles.length > 0) {
-    // if there is an error in here, it leave the drop zone in an active state, and you have to restart
-    // so we catch the error
-    try {
-      //console.log(JSON.stringify(acceptedFiles));
-      folder.selectedFile = folder.addFiles(acceptedFiles);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-}
 function addFiles(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
