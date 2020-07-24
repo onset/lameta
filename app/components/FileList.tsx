@@ -306,7 +306,7 @@ function addFiles(folder: Folder) {
   };
 
   remote.dialog.showOpenDialog(options).then((result) => {
-    if (result && result.filePaths.length > 0) {
+    if (result && result.filePaths && result.filePaths.length > 0) {
       folder.addFiles(result.filePaths.map((p) => ({ path: p })));
     }
   });
