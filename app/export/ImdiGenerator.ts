@@ -629,7 +629,10 @@ export default class ImdiGenerator {
       this.element("LanguageId", "");
       this.element("Anonymized", "Unspecified");
 
-      this.addAccess(f);
+      // this bit is confusing... want this to work with Project Document Folders
+      if (this.folderInFocus instanceof Session) {
+        this.addAccess(f);
+      }
       this.addCustomKeys(f);
     });
   }
@@ -857,7 +860,7 @@ export default class ImdiGenerator {
     //if they specified a folder, use that, otherwise use the current default
     const f = target ? target : this.folderInFocus;
     let v = f.properties.getTextStringOrEmpty(fieldName);
-    if (["genre", "socialContext"].indexOf(fieldName) > -1) {
+    if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
       // they want "Formulaic Discourse"
       //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token

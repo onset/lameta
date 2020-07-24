@@ -8,6 +8,10 @@ import ImdiGenerator from "./ImdiGenerator";
 import { log } from "util";
 import { sentryBreadCrumb } from "../errorHandling";
 import { sanitizeForArchive } from "../filenameSanitizer";
+import * as temp from "temp";
+import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
+import * as glob from "glob";
+temp.track();
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -17,7 +21,8 @@ export default class ImdiBundler {
     // If this is false, we're just making the IMDI files.
     // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
     copyInProjectFiles: boolean,
-    folderFilter: (f: Folder) => boolean
+    folderFilter: (f: Folder) => boolean,
+    omitNamespaces?: boolean
   ) {
     //throw new Error("oof");
 
@@ -84,6 +89,19 @@ export default class ImdiBundler {
       copyInProjectFiles
     );
 
+    // I'm thinking, this only makes sense if we're going to provide the files
+    if (copyInProjectFiles) {
+      this.addConsentBundle(
+        project,
+        rootDirectory,
+        secondLevel,
+        childrenSubpaths,
+        copyInProjectFiles,
+        folderFilter,
+        omitNamespaces
+      );
+    }
+
     //---- Sessions ----
 
     project.sessions.filter(folderFilter).forEach((session: Session) => {
@@ -111,6 +129,8 @@ export default class ImdiBundler {
       }
     });
 
+    //childrenSubpaths.push(..something for consent if we have it---);
+
     // ---  Now that we know what all the child imdi's are, we can output the root  ---
     fs.writeFileSync(
       Path.join(rootDirectory, `${project.displayName}.imdi`),
@@ -118,48 +138,6 @@ export default class ImdiBundler {
     );
 
     sentryBreadCrumb("Done with saveImdiBundleToFolder");
-  }
-
-  // IMDI doesn't have a place for project-level documents, so we have to create IMDI
-  // Sessions even though they are not related to actual sessions
-  private static outputDocumentFolder(
-    project: Project,
-    name: string,
-    imdiFileName: string,
-    rootDirectory: string,
-    secondLevel: string,
-    folder: Folder,
-    subpaths: string[],
-    copyInProjectFiles: boolean
-  ): void {
-    if (folder.files.length > 0) {
-      const generator = new ImdiGenerator(folder, project);
-      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
-        name,
-        folder
-      );
-
-      fs.writeFileSync(
-        Path.join(
-          rootDirectory,
-          secondLevel,
-          sanitizeForArchive(imdiFileName, true)
-        ),
-        projectDocumentsImdi
-      );
-      subpaths.push(secondLevel + "/" + imdiFileName);
-
-      if (copyInProjectFiles) {
-        this.copyFolderOfFiles(
-          folder.files,
-          Path.join(
-            rootDirectory,
-            secondLevel,
-            Path.basename(imdiFileName, ".imdi")
-          )
-        );
-      }
-    }
   }
 
   private static copyFolderOfFiles(files: File[], targetDirectory: string) {
@@ -189,5 +167,129 @@ export default class ImdiBundler {
     if (errors.length > 0) {
       alert(`Failed to copy ${failed} of ${count} files\r\n${errors}`);
     }
+  }
+
+  // IMDI doesn't have a place for project-level documents, so we have to create this
+  // dummy Session to contain them.
+  private static outputDocumentFolder(
+    project: Project,
+    name: string,
+    imdiFileName: string,
+    rootDirectory: string,
+    secondLevel: string,
+    folder: Folder,
+    subpaths: string[],
+    copyInProjectFiles: boolean
+  ): void {
+    if (folder.files.length > 0) {
+      const generator = new ImdiGenerator(folder, project);
+      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
+        name,
+        folder
+      );
+
+      ImdiBundler.WritePseudoSession(
+        rootDirectory,
+        secondLevel,
+        imdiFileName,
+        projectDocumentsImdi,
+        subpaths,
+        copyInProjectFiles,
+        folder
+      );
+    }
+  }
+
+  // This is called 3 times, to create folders and imdi files: one for project description documents,
+  // other project documents, and a collection of all the consent files we find
+  private static WritePseudoSession(
+    rootDirectory: string,
+    secondLevel: string,
+    imdiFileName: string,
+    imdiXml: string,
+    subpaths: string[],
+    copyInProjectFiles: boolean,
+    folder: Folder
+  ) {
+    fs.writeFileSync(
+      Path.join(
+        rootDirectory,
+        secondLevel,
+        sanitizeForArchive(imdiFileName, true)
+      ),
+      imdiXml
+    );
+    subpaths.push(secondLevel + "/" + imdiFileName);
+
+    const destinationFolderPath = Path.join(
+      rootDirectory,
+      secondLevel,
+      Path.basename(imdiFileName, ".imdi" /* tells basename to strip this off*/)
+    );
+
+    if (copyInProjectFiles) {
+      this.copyFolderOfFiles(folder.files, destinationFolderPath);
+    }
+  }
+
+  // IMDI doesn't have a place for consent files, so we have to create this
+  // dummy Session to contain them.
+  private static addConsentBundle(
+    project: Project,
+    rootDirectory: string,
+    secondLevel: string,
+    subpaths: string[],
+    // If this is false, we're just making the IMDI files.
+    // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
+    copyInProjectFiles: boolean,
+    folderFilter: (f: Folder) => boolean,
+    omitNamespaces?: boolean
+  ) {
+    const dir = temp.mkdirSync("imdiConsentBundle");
+
+    // complex: for each session, find each involved person, copy in their consent.
+    // simpler: for each person, for each document, if it is marked as consent, copy it in
+    // for now, we're simply finding all files with the right pattern and copying them in, where ever they are.
+    const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
+
+    filePaths.forEach((path) => {
+      fs.copyFileSync(path, Path.join(dir, Path.basename(path)));
+    });
+
+    const dummySession = Session.fromDirectory(dir, new CustomFieldRegistry());
+    dummySession.properties.setText(
+      "id",
+      project.displayName + " consent documents"
+    );
+    dummySession.properties.setText(
+      "title",
+      `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty(
+        "title"
+      )}`
+    );
+    dummySession.properties.setText(
+      "description",
+      `This bundle contains media demonstrating informed consent for sessions in this bundle.`
+    );
+    dummySession.properties.setText("genre", "Secondary document");
+    dummySession.properties.setText("subgenre", "Consent forms");
+    //dummySession.files.forEach(consentFile=>consentFile.setTextProperty("",""))
+
+    const imdiXml = ImdiGenerator.generateSession(
+      dummySession,
+      project,
+      omitNamespaces
+    );
+    const imdiFileName = `${dummySession.filePrefix}.imdi`;
+
+    ImdiBundler.WritePseudoSession(
+      rootDirectory,
+      secondLevel,
+      "ConsentDocuments.imdi",
+      imdiXml,
+      subpaths,
+      copyInProjectFiles,
+      dummySession
+    );
   }
 }
