@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import FileList from "./FileList";
+import {FileList} from "./FileList";
 import { observer } from "mobx-react-lite";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";

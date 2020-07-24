@@ -1,6 +1,5 @@
 import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table";
-import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone from "react-dropzone";
@@ -14,58 +13,14 @@ import { Trans } from "@lingui/react";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../UserSettings";
-
+import { observer } from "mobx-react-lite";
 const electron = require("electron");
-export interface IProps {
-  folder: Folder;
-  extraButtons?: object[];
-}
 
-interface IState {
-  inRenameMode: boolean;
-}
-export interface IProps {
-  folder: Folder;
-  extraButtons?: object[];
-}
+export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
+  (props) => {
+    const [inRenameMode, setRenameMode] = React.useState(false);
+    const [selectedFile, setSelectedFile] = React.useState(undefined);
 
-@observer
-export default class FileList extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = { inRenameMode: false };
-  }
-
-  private onDrop(
-    acceptedFiles: Dropzone.ImageFile[],
-    rejectedFiles: Dropzone.ImageFile[]
-  ) {
-    if (acceptedFiles.length > 0) {
-      // if there is an error in here, it leave the drop zone in an active state, and you have to restart
-      // so we catch the error
-      try {
-        //console.log(JSON.stringify(acceptedFiles));
-        this.props.folder.selectedFile = this.props.folder.addFiles(
-          acceptedFiles
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
-  private addFiles() {
-    const options: OpenDialogOptions = {
-      properties: ["openFile", "multiSelections"],
-    };
-
-    remote.dialog.showOpenDialog(options).then((result) => {
-      if (result && result.filePaths.length > 0) {
-        this.props.folder.addFiles(result.filePaths.map((p) => ({ path: p })));
-      }
-    });
-  }
-
-  public render() {
     // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
     // What this mobxDummy is about:
     // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
@@ -74,11 +29,10 @@ export default class FileList extends React.Component<IProps, IState> {
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
-    const mobxDummy = this.props.folder.files.map((f) =>
+    const mobxDummy = props.folder.files.map((f) =>
       f.getTextProperty("filename")
     );
-    // tslint:disable-next-line:no-this-assignment
-    const tableObject = this;
+
     const columns = [
       {
         id: "icon",
@@ -126,25 +80,28 @@ export default class FileList extends React.Component<IProps, IState> {
       },
     ];
     const isSpecialSayMoreFile =
-      this.props.folder.selectedFile === this.props.folder.metadataFile;
-    const filesPerPage = Math.min(300, this.props.folder.files.length);
+      props.folder.selectedFile === props.folder.metadataFile;
+    const filesPerPage = Math.min(300, props.folder.files.length);
     return (
       <Dropzone
         activeClassName={"drop-active"}
         className={"fileList"}
-        onDrop={(accepted, rejected) => this.onDrop(accepted, rejected)}
+        onDrop={(accepted, rejected) =>
+          onDrop(props.folder, accepted, rejected)
+        }
         disableClick
       >
         <div className={"mask"}>Drop files here</div>
         <div className={"fileBar"}>
           <button
             disabled={
-              isNullOrUndefined(this.props.folder.selectedFile) ||
+              isNullOrUndefined(props.folder.selectedFile) ||
               isSpecialSayMoreFile
             }
             onClick={() => {
-              this.showFileMenu(
-                this.props.folder.selectedFile!,
+              showFileMenu(
+                props.folder,
+                props.folder.selectedFile!,
                 false,
                 isSpecialSayMoreFile
               );
@@ -161,39 +118,37 @@ export default class FileList extends React.Component<IProps, IState> {
             className={"cmd-rename"}
             disabled={isSpecialSayMoreFile}
             onClick={() =>
-              RenameFileDialog.show(
-                this.props.folder.selectedFile!,
-                this.props.folder
-              )
+              RenameFileDialog.show(props.folder.selectedFile!, props.folder)
             }
           >
             <Trans>Rename...</Trans>
           </button>
-          {this.props.extraButtons
-            ? this.props.extraButtons.map((c) => (
+          {props.extraButtons
+            ? props.extraButtons.map((c) => (
                 <button
                   key={(c as any).label}
-                  disabled={!(c as any).enabled(this.props.folder.selectedFile)}
-                  onClick={() =>
-                    (c as any).onClick(this.props.folder.selectedFile)
-                  }
+                  disabled={!(c as any).enabled(props.folder.selectedFile)}
+                  onClick={() => (c as any).onClick(props.folder.selectedFile)}
                 >
                   {(c as any).label}
                 </button>
               ))
             : null}
-          <button className={"cmd-add-files"} onClick={() => this.addFiles()}>
+          <button
+            className={"cmd-add-files"}
+            onClick={() => addFiles(props.folder)}
+          >
             <Trans> Add Files</Trans>
           </button>
         </div>
         <ReactTable
           //cause us to reset scroll to top when we change folders
-          key={this.props.folder.directory}
+          key={props.folder.directory}
           className="fileList"
-          showPagination={this.props.folder.files.length > filesPerPage}
+          showPagination={props.folder.files.length > filesPerPage}
           pageSize={filesPerPage}
           showPageSizeOptions={false}
-          data={this.props.folder.files}
+          data={props.folder.files}
           columns={columns}
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
@@ -202,15 +157,16 @@ export default class FileList extends React.Component<IProps, IState> {
               onContextMenu: (e: any) => {
                 e.preventDefault();
                 //First select the row
-                this.props.folder.selectedFile = rowInfo.original;
-                this.setState({}); // trigger re-render so that the following style: takes effect
+                props.folder.selectedFile = rowInfo.original;
+                setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
                 //this event doesn't want to be accessed in the timeout, so store the coordinates
                 const x = e.clientX;
                 const y = e.clientY;
                 // then after it is selected, show the context menu
                 window.setTimeout(
                   () =>
-                    tableObject.showFileMenu(
+                    showFileMenu(
+                      props.folder,
                       rowInfo.original,
                       true,
                       isSpecialSayMoreFile,
@@ -221,15 +177,15 @@ export default class FileList extends React.Component<IProps, IState> {
                 );
               },
               onClick: (e: any, x: any) => {
-                if (this.props.folder.selectedFile != null) {
+                if (props.folder.selectedFile != null) {
                   // will only save if it thinks it is dirty
-                  this.props.folder.selectedFile.save();
+                  props.folder.selectedFile.save();
                 }
-                this.props.folder.selectedFile = rowInfo.original;
-                this.setState({}); // trigger re-render so that the following style: takes effect
+                props.folder.selectedFile = rowInfo.original;
+                setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
               },
               className:
-                rowInfo && rowInfo.original === this.props.folder.selectedFile
+                rowInfo && rowInfo.original === props.folder.selectedFile
                   ? "selected"
                   : "",
             };
@@ -238,69 +194,98 @@ export default class FileList extends React.Component<IProps, IState> {
       </Dropzone>
     );
   }
+);
 
-  private showFileMenu(
-    file: File,
-    contextMenu: boolean,
-    isSpecialSayMoreFile: boolean,
-    x: number = 0,
-    y: number = 0
-  ) {
-    const mainWindow = remote.getCurrentWindow(); // as any;
-    if (!file) {
-      return;
-    }
-    const showDevOnlyItems = userSettings.DeveloperMode;
-
-    let items = [
-      {
-        label:
-          process.platform === "darwin"
-            ? i18n._(t`Show in Finder`)
-            : i18n._(t`Show in File Explorer`),
-        click: () => {
-          showInExplorer(file.describedFilePath);
-        },
-      },
-      {
-        label: i18n._(t`Open in program associated with this file type`),
-        click: () => {
-          // the "file://" prefix is required on mac, works fine on windows
-          electron.shell.openExternal("file://" + file.describedFilePath);
-        },
-        visible: !isSpecialSayMoreFile || showDevOnlyItems,
-      },
-      {
-        label: i18n._(t`Rename...`),
-        click: () => {
-          RenameFileDialog.show(file, this.props.folder);
-        },
-        visible: contextMenu && !isSpecialSayMoreFile,
-      },
-      { type: "separator", visible: !contextMenu },
-      {
-        label: i18n._(t`Delete File...`),
-        enabled: file.canDelete,
-        click: () => {
-          this.props.folder.moveFileToTrash(file);
-        },
-        visible: contextMenu,
-      },
-      {
-        type: "separator",
-        visible: contextMenu && showDevOnlyItems,
-      },
-      {
-        label: "Inspect element",
-        click() {
-          (mainWindow as any).inspectElement(x, y);
-        },
-        visible: contextMenu && showDevOnlyItems,
-      },
-    ];
-
-    items = items.filter((item) => item.visible !== false);
-
-    remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
+function showFileMenu(
+  folder: Folder,
+  file: File,
+  contextMenu: boolean,
+  isSpecialSayMoreFile: boolean,
+  x: number = 0,
+  y: number = 0
+) {
+  const mainWindow = remote.getCurrentWindow(); // as any;
+  if (!file) {
+    return;
   }
+  const showDevOnlyItems = userSettings.DeveloperMode;
+
+  let items = [
+    {
+      label:
+        process.platform === "darwin"
+          ? i18n._(t`Show in Finder`)
+          : i18n._(t`Show in File Explorer`),
+      click: () => {
+        showInExplorer(file.describedFilePath);
+      },
+    },
+    {
+      label: i18n._(t`Open in program associated with this file type`),
+      click: () => {
+        // the "file://" prefix is required on mac, works fine on windows
+        electron.shell.openExternal("file://" + file.describedFilePath);
+      },
+      visible: !isSpecialSayMoreFile || showDevOnlyItems,
+    },
+    {
+      label: i18n._(t`Rename...`),
+      click: () => {
+        RenameFileDialog.show(file, folder);
+      },
+      visible: contextMenu && !isSpecialSayMoreFile,
+    },
+    { type: "separator", visible: !contextMenu },
+    {
+      label: i18n._(t`Delete File...`),
+      enabled: file.canDelete,
+      click: () => {
+        folder.moveFileToTrash(file);
+      },
+      visible: contextMenu,
+    },
+    {
+      type: "separator",
+      visible: contextMenu && showDevOnlyItems,
+    },
+    {
+      label: "Inspect element",
+      click() {
+        (mainWindow as any).inspectElement(x, y);
+      },
+      visible: contextMenu && showDevOnlyItems,
+    },
+  ];
+
+  items = items.filter((item) => item.visible !== false);
+
+  remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
+}
+
+function onDrop(
+  folder: Folder,
+  acceptedFiles: Dropzone.ImageFile[],
+  rejectedFiles: Dropzone.ImageFile[]
+) {
+  if (acceptedFiles.length > 0) {
+    // if there is an error in here, it leave the drop zone in an active state, and you have to restart
+    // so we catch the error
+    try {
+      //console.log(JSON.stringify(acceptedFiles));
+      folder.selectedFile = folder.addFiles(acceptedFiles);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+function addFiles(folder: Folder) {
+  const options: OpenDialogOptions = {
+    properties: ["openFile", "multiSelections"],
+  };
+
+  remote.dialog.showOpenDialog(options).then((result) => {
+    if (result && result.filePaths.length > 0) {
+      folder.addFiles(result.filePaths.map((p) => ({ path: p })));
+    }
+  });
 }
