@@ -281,10 +281,10 @@ export default class HomePage extends React.Component<IProps, IState> {
         },
       ],
     };
-    remote.dialog.showOpenDialog(
-      remote.getCurrentWindow(),
-      options,
-      (paths) => {
+    remote.dialog
+      .showOpenDialog(remote.getCurrentWindow(), options)
+      .then((result) => {
+        const paths = result.filePaths;
         sentryBreadCrumb("processing callback of open project dialog");
         if (paths && paths.length > 0 && paths[0].length > 0) {
           const directory = Path.dirname(paths[0]);
@@ -293,7 +293,6 @@ export default class HomePage extends React.Component<IProps, IState> {
           );
           userSettings.PreviousProjectDirectory = directory;
         }
-      }
-    );
+      });
   }
 }

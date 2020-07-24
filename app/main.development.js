@@ -86,13 +86,15 @@ app.on("ready", () =>
       mainWindow = new BrowserWindow({
         webPreferences: {
           nodeIntegration: true,
+
+          enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
         },
         show: false,
         width: 1024,
         height: 728,
         plugins: true, // to enable the pdf-viewer built in to electron
         //windows
-        icon: path.join(__dirname, "../artwork/windows.ico"),
+        icon: path.join(__dirname, "../build/windows.ico"),
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this

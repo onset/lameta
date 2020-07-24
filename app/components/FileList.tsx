@@ -4,7 +4,7 @@ import { observer, Observer } from "mobx-react";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone from "react-dropzone";
-import { remote } from "electron";
+import { remote, OpenDialogOptions } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../crossPlatformUtilities";
 import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
@@ -54,11 +54,13 @@ export default class FileList extends React.Component<IProps, IState> {
     }
   }
   private addFiles() {
-    const options: any = { properties: ["openFile", "multiSelections"] };
+    const options: OpenDialogOptions = {
+      properties: ["openFile", "multiSelections"],
+    };
 
-    remote.dialog.showOpenDialog(options, (paths) => {
-      if (paths && paths.length > 0) {
-        this.props.folder.addFiles(paths.map((p) => ({ path: p })));
+    remote.dialog.showOpenDialog(options).then((result) => {
+      if (result && result.filePaths.length > 0) {
+        this.props.folder.addFiles(result.filePaths.map((p) => ({ path: p })));
       }
     });
   }
