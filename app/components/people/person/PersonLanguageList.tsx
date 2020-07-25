@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 //import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
@@ -14,6 +14,13 @@ import {
 } from "react-sortable-hoc";
 // @ts-ignore
 import dragIcon from "drag-affordance.svg";
+import {
+  Person,
+  maxOtherLanguages,
+} from "../../../model/Project/Person/Person";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import { PersonLanguagesEditor } from "./PersonLanguagesEditor";
+import arrayMove from "array-move";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
   const result = Array.from(list);
@@ -34,14 +41,18 @@ const DragHandle = SortableHandle(() => (
   />
 ));
 const SortableItem = SortableElement(({ value }) => (
-  <div>
+  <div
+    css={css`
+      display: flex;
+    `}
+  >
     <DragHandle />
     {value}
   </div>
 ));
 const SortableList = SortableContainer(({ items }) => {
   return (
-    <div>
+    <div className="languages">
       {items.map((value, index) => (
         <SortableItem key={`item-${value}`} index={index} value={value} />
       ))}
@@ -49,44 +60,57 @@ const SortableList = SortableContainer(({ items }) => {
   );
 });
 
-// const Item: React.FunctionComponent<{ label: string; index: number }> = (
-//   props
-// ) => {
-//   return (
+export const PersonLanguageList: React.FunctionComponent<{
+  person: Person;
+  languageFinder: LanguageFinder;
+}> = (props) => {
+  const [iteration, setIteration] = useState(0);
+  const [showAdd, setShowAdd] = useState(false);
+  const [langElements, setLangElements] = useState<JSX.Element[]>([]);
+  const father = props.person.properties.getTextField("fathersLanguage");
+  const mother = props.person.properties.getTextField("mothersLanguage");
 
-//     // <Draggable draggableId={props.label} index={props.index}>
-//     //   {(provided) => (
-//     //     <div
-//     //       css={css`
-//     //         width: 200px;
-//     //         //margin-bottom: ${grid}px
-//     //         padding: ${grid}px;
-//     //         display: flex;
-//     //       `}
-//     //       ref={provided.innerRef}
-//     //       {...provided.draggableProps}
-//     //       {...provided.dragHandleProps}
-//     //     >
-//     //       <DragAffordance />
-//     //       <div
-//     //         css={css`
-//     //           background-color: white;
-//     //         `}
-//     //       >
-//     //         {props.label}
-//     //       </div>
-//     //     </div>
-//     //   )}
-//     // </Draggable>
-//   );
-// };
+  useEffect(() => {
+    // gather up the existing "other languages"
+    const languages: string[] = new Array(maxOtherLanguages)
+      .fill(0)
+      .map((ignore, index) => {
+        const lang: string = props.person.properties.getTextStringOrEmpty(
+          "otherLanguage" + index
+        );
+        return lang.length > 0 ? lang : null;
+      })
+      .filter((l) => l != null) as string[];
 
-const firstList = ["11111111", "222222222", "33333333333"];
+    //collapse away any empty lines
+    for (let i = 0; i < maxOtherLanguages; i++) {
+      if (i < languages.length) {
+        props.person.properties.setText("otherLanguage" + i, languages[i]);
+      } else {
+        props.person.properties.setText("otherLanguage" + i, "");
+      }
+    }
+    // make a blank one to fill out, if we aren't already at the max
+    if (languages.length < maxOtherLanguages) {
+      languages.push("");
+    }
+    setShowAdd(languages.length < maxOtherLanguages);
 
-export const PersonLanguageList: React.FunctionComponent<{ items }> = (
-  props
-) => {
-  const [list, setList] = useState(firstList);
+    // create elements for each of those slots
+    setLangElements(
+      languages.map((l, index) => (
+        <PersonLanguagesEditor
+          key={index}
+          language={props.person.properties.getTextField(
+            "otherLanguage" + index
+          )}
+          fatherLanguage={father}
+          motherLanguage={mother}
+          languageFinder={props.languageFinder}
+        />
+      ))
+    );
+  }, [iteration]);
 
   const onDragEnd = (result) => {
     if (!result.destination) {
@@ -106,33 +130,15 @@ export const PersonLanguageList: React.FunctionComponent<{ items }> = (
     setList(newList);
   };
 
-  return <SortableList items={list} axis={"y"} lockAxis={"y"} useDragHandle />;
+  return (
+    <SortableList
+      items={langElements}
+      axis={"y"}
+      lockAxis={"y"}
+      useDragHandle
+      onSortEnd={({ oldIndex, newIndex }) => {
+        setLangElements(arrayMove(langElements, oldIndex, newIndex));
+      }}
+    />
+  );
 };
-
-export const DragAffordance: React.FunctionComponent<{}> = (props) => (
-  <span
-    css={css`
-      content: "....";
-      width: 16px;
-      height: 20px;
-      display: inline-block;
-      overflow: hidden;
-      line-height: 5px;
-      padding: 3px 4px;
-      cursor: move;
-      vertical-align: middle;
-      //margin-top: -0.7em;
-      margin-right: 0.3em;
-      font-size: 12px;
-      font-weight: bold;
-      font-family: sans-serif;
-      letter-spacing: 2px;
-      color: #6b6b6b;
-      //text-shadow: 1px 0 1px black;
-
-      &:after {
-        content: ".. .. .. ..";
-      }
-    `}
-  ></span>
-);

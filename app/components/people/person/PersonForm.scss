@@ -48,8 +48,13 @@
   .left-side {
     grid-column: 1/3;
   }
-  .other-languages {
+  .languages {
     grid-row: 5/8;
+    grid-column: 1/3;
+  }
+
+  .other-languages {
+    //grid-row: 5/8;
     grid-column: 1/3;
   }
   .birth {

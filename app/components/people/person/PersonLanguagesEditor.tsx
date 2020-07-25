@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
@@ -41,7 +47,12 @@ export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
   }, []);
 
   return (
-    <div className={"field language " + props.language.key}>
+    <div
+      className={"field language " + props.language.key}
+      css={css`
+        flex-grow: 1;
+      `}
+    >
       <SingleLanguageChooser
         field={props.language}
         languageFinder={props.languageFinder}

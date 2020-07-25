@@ -279,6 +279,7 @@
     "@types/xml2js": "^0.4.2",
     "@types/xmlbuilder": "^0.0.32",
     "archiver": "^2.1.1",
+    "array-move": "^3.0.0",
     "assert": "^1.4.1",
     "butter-toast": "^3.3.3",
     "camelcase": "^5.0.0",
