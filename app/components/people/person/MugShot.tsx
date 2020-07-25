@@ -32,7 +32,7 @@ export default class MugShot extends React.Component<IProps> {
         onDrop={this.onMugShotDrop.bind(this)}
         accept="image/jpg,image/jpeg,image/png"
       >
-        <div className={"mask"}>Drop here</div>
+        <div className={"mask onlyIfInDropZone"}>Drop here</div>
         {this.props.person.mugshotPath &&
         this.props.person.mugshotPath.length > 0 &&
         fs.existsSync(this.props.person.mugshotPath) ? (
