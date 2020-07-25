@@ -125,7 +125,7 @@ export default class PersonForm extends React.Component<IProps> {
         />
         <CustomFieldsTable file={this.props.person.metadataFile!} />
 
-        <PersonLanguageList />
+        <PersonLanguageList items={[]} />
       </form>
     );
   }

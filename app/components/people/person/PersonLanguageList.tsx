@@ -6,7 +6,14 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+//import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {
+  SortableContainer,
+  SortableElement,
+  SortableHandle,
+} from "react-sortable-hoc";
+// @ts-ignore
+import dragIcon from "drag-affordance.svg";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
   const result = Array.from(list);
@@ -17,37 +24,62 @@ const reorder = (list: string[], startIndex, endIndex): string[] => {
 };
 
 const grid = 8;
-
-const Item: React.FunctionComponent<{ label: string; index: number }> = (
-  props
-) => {
+const DragHandle = SortableHandle(() => (
+  <img
+    src={dragIcon}
+    css={css`
+      margin-right: 10px;
+      height: 14px;
+    `}
+  />
+));
+const SortableItem = SortableElement(({ value }) => (
+  <div>
+    <DragHandle />
+    {value}
+  </div>
+));
+const SortableList = SortableContainer(({ items }) => {
   return (
-    <Draggable draggableId={props.label} index={props.index}>
-      {(provided) => (
-        <div
-          css={css`
-            width: 200px;
-            //margin-bottom: ${grid}px
-            padding: ${grid}px;
-            display: flex;
-          `}
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <DragAffordance />
-          <div
-            css={css`
-              background-color: white;
-            `}
-          >
-            {props.label}
-          </div>
-        </div>
-      )}
-    </Draggable>
+    <div>
+      {items.map((value, index) => (
+        <SortableItem key={`item-${value}`} index={index} value={value} />
+      ))}
+    </div>
   );
-};
+});
+
+// const Item: React.FunctionComponent<{ label: string; index: number }> = (
+//   props
+// ) => {
+//   return (
+
+//     // <Draggable draggableId={props.label} index={props.index}>
+//     //   {(provided) => (
+//     //     <div
+//     //       css={css`
+//     //         width: 200px;
+//     //         //margin-bottom: ${grid}px
+//     //         padding: ${grid}px;
+//     //         display: flex;
+//     //       `}
+//     //       ref={provided.innerRef}
+//     //       {...provided.draggableProps}
+//     //       {...provided.dragHandleProps}
+//     //     >
+//     //       <DragAffordance />
+//     //       <div
+//     //         css={css`
+//     //           background-color: white;
+//     //         `}
+//     //       >
+//     //         {props.label}
+//     //       </div>
+//     //     </div>
+//     //   )}
+//     // </Draggable>
+//   );
+// };
 
 const firstList = ["11111111", "222222222", "33333333333"];
 
@@ -74,20 +106,7 @@ export const PersonLanguageList: React.FunctionComponent<{ items }> = (
     setList(newList);
   };
 
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="list">
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
-            {list.map((l: string, index: number) => (
-              <Item index={index} label={l} />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
+  return <SortableList items={list} axis={"y"} lockAxis={"y"} useDragHandle />;
 };
 
 export const DragAffordance: React.FunctionComponent<{}> = (props) => (
