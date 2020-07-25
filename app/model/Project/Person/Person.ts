@@ -1,5 +1,5 @@
 import { Folder } from "../../Folder/Folder";
-import { File } from "../../file/File";
+import { File, PersonLanguage } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
@@ -11,7 +11,7 @@ import userSettingsSingleton from "../../../UserSettings";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { FieldSet } from "../../field/FieldSet";
 import { Field } from "../../field/Field";
-import { Exception } from "@sentry/browser";
+import * as mobx from "mobx";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -69,6 +69,9 @@ export class Person extends Folder {
       : this.properties.getTextStringOrEmpty("name");
   }
 
+  @mobx.observable
+  public languages = new Array<PersonLanguage>();
+
   public constructor(
     directory: string,
     metadataFile: File,
@@ -100,8 +103,15 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
+
     this.migratePersonLanguages(languageFinder);
+
+    // temporary
+    this.languages.push(new PersonLanguage("etr"));
+    this.languages.push(new PersonLanguage("es"));
+    this.languages.push(new PersonLanguage("fr"));
   }
+
   private migratePersonLanguages(languageFinder: LanguageFinder) {
     Person.migrateOnePersonLanguage(
       this.properties.getTextFieldOrUndefined("primaryLanguage"),

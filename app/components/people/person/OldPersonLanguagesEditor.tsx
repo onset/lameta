@@ -4,14 +4,17 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
 import TextFieldEdit from "../../TextFieldEdit";
 import ParentButton from "./ParentButton";
 import { locate } from "../../../crossPlatformUtilities";
-import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { useState } from "react";
+import {
+  LanguageFinder,
+  Language,
+} from "../../../languageFinder/LanguageFinder";
+import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 const femaleSelected: string = locate("assets/Female_Selected.png");
 const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
 const maleSelected: string = locate("assets/Male_Selected.png");
@@ -25,7 +28,9 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
+export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (
+  props
+) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
@@ -41,21 +46,31 @@ export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
     }
   };
   React.useEffect(() => {
-    console.assert(props.language);
     updateValidationClass(props.language.text);
   }, []);
 
   return (
-    <div className={"field language " + props.language.key}>
-      <DragAffordance />
-      <TextFieldEdit
+    <div
+      className={"field language " + props.language.key}
+      css={css`
+        flex-grow: 1;
+      `}
+    >
+      <SingleLanguageChooser
+        languageTag={props.language.text}
+        languageFinder={props.languageFinder}
+        labelInUILanguage={props.language.labelInUILanguage}
+        onChange={(v) => props.language.setValueFromString(v)}
+        className={"language-name " + validationClass}
+      />
+      {/* <TextFieldEdit
         className={"language-name " + validationClass}
         hideLabel={true}
         field={props.language}
         tooltip={tooltip}
         onBlurWithValue={updateValidationClass}
-      />
-      <ParentButton
+      /> */}
+      {/* <ParentButton
         childLanguage={props.language}
         parentLanguage={props.motherLanguage}
         selectedIcon={femaleSelected}
@@ -66,37 +81,7 @@ export const LanguageEdit: React.FunctionComponent<IProps> = (props) => {
         parentLanguage={props.fatherLanguage}
         selectedIcon={maleSelected}
         notSelectedIcon={maleNotSelected}
-      />
+      /> */}
     </div>
-  );
-};
-
-const DragAffordance: React.FunctionComponent = () => {
-  return (
-    <span
-      css={css`
-        content: "....";
-        width: 16px;
-        height: 20px;
-        display: inline-block;
-        overflow: hidden;
-        line-height: 5px;
-        padding: 3px 4px;
-        cursor: move;
-        vertical-align: middle;
-        //margin-top: -0.7em;
-        margin-right: 0.3em;
-        font-size: 12px;
-        font-weight: bold;
-        font-family: sans-serif;
-        letter-spacing: 2px;
-        color: #6b6b6b;
-        //text-shadow: 1px 0 1px black;
-
-        &:after {
-          content: ".. .. .. ..";
-        }
-      `}
-    ></span>
   );
 };

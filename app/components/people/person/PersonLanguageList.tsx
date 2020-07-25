@@ -19,8 +19,9 @@ import {
   maxOtherLanguages,
 } from "../../../model/Project/Person/Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { PersonLanguagesEditor } from "./PersonLanguagesEditor";
+import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
+import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
   const result = Array.from(list);
@@ -35,6 +36,8 @@ const DragHandle = SortableHandle(() => (
   <img
     src={dragIcon}
     css={css`
+      margin-top: auto;
+      margin-bottom: auto;
       margin-right: 10px;
       height: 14px;
     `}
@@ -66,78 +69,83 @@ export const PersonLanguageList: React.FunctionComponent<{
 }> = (props) => {
   const [iteration, setIteration] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
-  const [langElements, setLangElements] = useState<JSX.Element[]>([]);
+
+  //const [langElements, setLangElements] = useState<JSX.Element[]>([]);
   const father = props.person.properties.getTextField("fathersLanguage");
   const mother = props.person.properties.getTextField("mothersLanguage");
 
-  useEffect(() => {
-    // gather up the existing "other languages"
-    const languages: string[] = new Array(maxOtherLanguages)
-      .fill(0)
-      .map((ignore, index) => {
-        const lang: string = props.person.properties.getTextStringOrEmpty(
-          "otherLanguage" + index
-        );
-        return lang.length > 0 ? lang : null;
-      })
-      .filter((l) => l != null) as string[];
+  // useEffect(() => {
+  //   // gather up the existing "other languages"
+  //   const languages: string[] = new Array(maxOtherLanguages)
+  //     .fill(0)
+  //     .map((ignore, index) => {
+  //       const lang: string = props.person.properties.getTextStringOrEmpty(
+  //         "otherLanguage" + index
+  //       );
+  //       return lang.length > 0 ? lang : null;
+  //     })
+  //     .filter((l) => l != null) as string[];
 
-    //collapse away any empty lines
-    for (let i = 0; i < maxOtherLanguages; i++) {
-      if (i < languages.length) {
-        props.person.properties.setText("otherLanguage" + i, languages[i]);
-      } else {
-        props.person.properties.setText("otherLanguage" + i, "");
-      }
-    }
-    // make a blank one to fill out, if we aren't already at the max
-    if (languages.length < maxOtherLanguages) {
-      languages.push("");
-    }
-    setShowAdd(languages.length < maxOtherLanguages);
+  //   //collapse away any empty lines
+  //   for (let i = 0; i < maxOtherLanguages; i++) {
+  //     if (i < languages.length) {
+  //       props.person.properties.setText("otherLanguage" + i, languages[i]);
+  //     } else {
+  //       props.person.properties.setText("otherLanguage" + i, "");
+  //     }
+  //   }
+  //   // make a blank one to fill out, if we aren't already at the max
+  //   if (languages.length < maxOtherLanguages) {
+  //     languages.push("");
+  //   }
+  //   setShowAdd(languages.length < maxOtherLanguages);
 
-    // create elements for each of those slots
-    setLangElements(
-      languages.map((l, index) => (
-        <PersonLanguagesEditor
-          key={index}
-          language={props.person.properties.getTextField(
-            "otherLanguage" + index
-          )}
-          fatherLanguage={father}
-          motherLanguage={mother}
-          languageFinder={props.languageFinder}
-        />
-      ))
-    );
-  }, [iteration]);
+  //   // create elements for each of those slots
+  //   setLangElements(
+  //     languages.map((l, index) => (
+  //       <PersonLanguagesEditor
+  //         key={index}
+  //         language={props.person.properties.getTextField(
+  //           "otherLanguage" + index
+  //         )}
+  //         fatherLanguage={father}
+  //         motherLanguage={mother}
+  //         languageFinder={props.languageFinder}
+  //       />
+  //     ))
+  //   );
+  // }, [iteration]);
 
-  const onDragEnd = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    if (result.destination.index === result.source.index) {
-      return;
-    }
-
-    const newList = reorder(
-      list,
-      result.source.index,
-      result.destination.index
-    );
-
-    setList(newList);
-  };
+  const editors = props.person.languages.map((l, index) => (
+    <OnePersonLanguageEditor
+      key={index}
+      language={l}
+      languageFinder={props.languageFinder}
+      onChange={(tag: string) => {
+        if (!tag) {
+          props.person.languages.splice(index, 1);
+        } else {
+          l.tag = tag;
+        }
+        setIteration(iteration + 1);
+      }}
+    />
+  ));
 
   return (
     <SortableList
-      items={langElements}
+      items={editors}
       axis={"y"}
       lockAxis={"y"}
       useDragHandle
       onSortEnd={({ oldIndex, newIndex }) => {
-        setLangElements(arrayMove(langElements, oldIndex, newIndex));
+        //setLangElements(arrayMove(langElements, oldIndex, newIndex));
+        props.person.languages = arrayMove(
+          props.person.languages,
+          oldIndex,
+          newIndex
+        );
+        setIteration(iteration + 1);
       }}
     />
   );

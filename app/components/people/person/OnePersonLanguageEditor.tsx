@@ -12,22 +12,17 @@ import ParentButton from "./ParentButton";
 import { locate } from "../../../crossPlatformUtilities";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
+import { PersonLanguage } from "../../../model/file/File";
 const femaleSelected: string = locate("assets/Female_Selected.png");
 const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
 const maleSelected: string = locate("assets/Male_Selected.png");
 const maleNotSelected: string = locate("assets/Male_NotSelected.png");
 
-export interface IProps {
-  language: Field;
-  fatherLanguage: Field;
-  motherLanguage: Field;
-  //changed?: () => void;
+export const OnePersonLanguageEditor: React.FunctionComponent<{
+  language: PersonLanguage;
   languageFinder: LanguageFinder;
-}
-
-export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
-  props
-) => {
+  onChange: (tag: string) => void;
+}> = (props) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
@@ -43,18 +38,20 @@ export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
     }
   };
   React.useEffect(() => {
-    updateValidationClass(props.language.text);
+    updateValidationClass(props.language.tag);
   }, []);
 
   return (
     <div
-      className={"field language " + props.language.key}
+      className={"field language"}
       css={css`
         flex-grow: 1;
       `}
     >
       <SingleLanguageChooser
-        field={props.language}
+        languageTag={props.language.tag}
+        labelInUILanguage={"AAAABBBB"}
+        onChange={(v) => props.onChange(v)}
         languageFinder={props.languageFinder}
         className={"language-name " + validationClass}
       />
@@ -65,7 +62,7 @@ export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
         tooltip={tooltip}
         onBlurWithValue={updateValidationClass}
       /> */}
-      <ParentButton
+      {/* <ParentButton
         childLanguage={props.language}
         parentLanguage={props.motherLanguage}
         selectedIcon={femaleSelected}
@@ -76,7 +73,7 @@ export const PersonLanguagesEditor: React.FunctionComponent<IProps> = (
         parentLanguage={props.fatherLanguage}
         selectedIcon={maleSelected}
         notSelectedIcon={maleNotSelected}
-      />
+      /> */}
     </div>
   );
 };

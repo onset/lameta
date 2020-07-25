@@ -51,6 +51,16 @@ export class Contribution {
   }
 }
 
+export class PersonLanguage {
+  //review this @mobx.observable
+  @mobx.observable
+  public tag: string; // bcp47 language tag
+
+  public constructor(tag: string) {
+    this.tag = tag;
+  }
+}
+
 export /*babel doesn't like this: abstract*/ class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";

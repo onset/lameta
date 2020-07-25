@@ -334,6 +334,10 @@
       "englishLabel": "Code"
     },
     {
+      // new for lameta (after 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
+      "key": "languages"
+    },
+    {
       "key": "primaryLanguage"
     },
     {

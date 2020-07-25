@@ -18,6 +18,7 @@ export default class IsoLanguageEdit extends React.Component<
   }
 
   public render() {
+    console.assert(this.props.field);
     const label = this.props.field.labelInUILanguage;
     return (
       <div className={"field " + this.props.className}>

@@ -3,7 +3,7 @@ import {
   Person,
   maxOtherLanguages,
 } from "../../../model/Project/Person/Person";
-import { PersonLanguagesEditor } from "./PersonLanguagesEditor";
+import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import { Trans } from "@lingui/react";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
@@ -47,7 +47,7 @@ export const OtherLanguageEdit: React.FunctionComponent<{
     // create elements for each of those slots
     setLangElements(
       languages.map((l, index) => (
-        <PersonLanguagesEditor
+        <OldPersonLanguagesEditor
           key={index}
           language={props.person.properties.getTextField(
             "otherLanguage" + index
