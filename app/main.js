@@ -152,7 +152,9 @@ app.on("ready", () =>
       ipcMain.handle("showOpenDialog", async (event, options) => {
         return await dialog.showOpenDialog(mainWindow, options);
       });
-
+      ipcMain.handle("showMessageBox", async (event, options) => {
+        return await dialog.showMessageBox(mainWindow, options);
+      });
       // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
       // if (process.env.NODE_ENV === "development") {
       //   console.log(

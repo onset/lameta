@@ -39,8 +39,8 @@ export function NotifyMultipleProjectFiles(
   NotifyWarning(
     `There is a problem with ${displayName}. Click for more information.`,
     () => {
-      electron.remote.dialog
-        .showMessageBox(null as any, {
+      electron.ipcRenderer
+        .invoke("showMessageBox", {
           buttons: ["Cancel", "Let me fix this"],
           title: "Something is wrong here...",
           message: `There are more than one files of type ${projectType} in this folder.`,

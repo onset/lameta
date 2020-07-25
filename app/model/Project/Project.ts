@@ -8,7 +8,7 @@ import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import { remote } from "electron";
+import { remote, ipcRenderer } from "electron";
 import { trash } from "../../crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
@@ -26,6 +26,7 @@ const genres = require("./Session/genres.json");
 
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
+import { ShowAlertDialog } from "../../components/AlertDialog/AlertDialog";
 
 let sCurrentProject: Project | null = null;
 
@@ -355,12 +356,11 @@ export class Project extends Folder {
       msg = i18n._(t`There is already a ${folderKind} "${value}".`);
     }
     if (msg.length > 0) {
-      remote.dialog
-        .showMessageBox({
-          title: "lameta",
-          message: msg,
-        })
-        .then(() => {});
+      ShowAlertDialog({
+        title: "Cannot use that name",
+        text: msg,
+        buttonText: "OK",
+      });
       return false;
     } else {
       return true;
