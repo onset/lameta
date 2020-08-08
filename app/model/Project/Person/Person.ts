@@ -1,17 +1,15 @@
 import { Folder } from "../../Folder/Folder";
-import { File, PersonLanguage } from "../../file/File";
+import { File } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-import { assertAttribute } from "../../../xmlUnitTestUtils";
 import { sanitizeForArchive } from "../../../filenameSanitizer";
 import userSettingsSingleton from "../../../UserSettings";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { FieldSet } from "../../field/FieldSet";
 import { Field } from "../../field/Field";
-import * as mobx from "mobx";
+import { PersonLanguage } from "../../PersonLanguage";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -69,9 +67,6 @@ export class Person extends Folder {
       : this.properties.getTextStringOrEmpty("name");
   }
 
-  @mobx.observable
-  public languages = new Array<PersonLanguage>();
-
   public constructor(
     directory: string,
     metadataFile: File,
@@ -89,6 +84,7 @@ export class Person extends Folder {
     }
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
+
     this.safeFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("name"),
       userSettingsSingleton.IMDIMode
@@ -105,11 +101,13 @@ export class Person extends Folder {
     this.previousId = this.getIdToUseForReferences();
 
     this.migratePersonLanguages(languageFinder);
+  }
 
-    // temporary
-    this.languages.push(new PersonLanguage("etr"));
-    this.languages.push(new PersonLanguage("es"));
-    this.languages.push(new PersonLanguage("fr"));
+  public get languages() {
+    return this.metadataFile!.personLanguages;
+  }
+  public set languages(newLanguageArray: PersonLanguage[]) {
+    this.metadataFile!.personLanguages.splice(0, 99, ...newLanguageArray);
   }
 
   private migratePersonLanguages(languageFinder: LanguageFinder) {

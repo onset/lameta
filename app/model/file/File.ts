@@ -25,6 +25,7 @@ import {
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
 import compareVersions from "compare-versions";
+import { PersonLanguage } from "../PersonLanguage";
 
 export class Contribution {
   //review this @mobx.observable
@@ -48,16 +49,6 @@ export class Contribution {
     this.role = role;
     this.date = date;
     this.comments = comments;
-  }
-}
-
-export class PersonLanguage {
-  //review this @mobx.observable
-  @mobx.observable
-  public tag: string; // bcp47 language tag
-
-  public constructor(tag: string) {
-    this.tag = tag;
   }
 }
 
@@ -87,6 +78,9 @@ export /*babel doesn't like this: abstract*/ class File {
 
   @mobx.observable
   public contributions = new Array<Contribution>();
+  // only used for people files
+  @mobx.observable
+  public personLanguages = new Array<PersonLanguage>();
 
   public customFieldNamesRegistry: CustomFieldRegistry;
 
@@ -329,6 +323,8 @@ export /*babel doesn't like this: abstract*/ class File {
     for (const tag of tags) {
       if (tag.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[tag]);
+      } else if (tag.toLocaleLowerCase() === "personlanguages") {
+        this.loadPersonLanguages(propertiesFromXml[tag]);
       }
 
       // <CustomFields>
@@ -479,6 +475,12 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
 
+  private loadPersonLanguages(xml: any) {
+    ensureArray(xml.language).forEach((lang) => {
+      this.personLanguages.push(new PersonLanguage(lang.$.tag));
+    });
+  }
+
   private loadContributions(contributionsFromXml: any) {
     //console.log("loadContributions() " + this.metadataFilePath);
     if (!contributionsFromXml.contributor) {
@@ -593,6 +595,7 @@ export /*babel doesn't like this: abstract*/ class File {
         this.xmlRootName,
         this.properties,
         this.contributions,
+        this.personLanguages,
         this.doOutputTypeInXmlTags,
         doOutputEmptyCustomFields
       );
@@ -899,4 +902,11 @@ export class OtherFile extends File {
     }
     this.finishLoading();
   }
+}
+
+// for a given attribute the xml parser will give us an object if there is one child, or an array if there are multiple
+// This will give [] if x null or undefined (but not empty string), [x] if x is an object, or x if x is already an array
+function ensureArray(x: any): any[] {
+  if (x === null || x === undefined) return [];
+  return Array.isArray(x) ? x : [x];
 }

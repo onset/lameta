@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 //import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
@@ -22,6 +22,9 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
 import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
+import { Trans } from "@lingui/react";
+import { PersonLanguage } from "../../../model/PersonLanguage";
+import { observer } from "mobx-react";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
   const result = Array.from(list);
@@ -40,6 +43,7 @@ const DragHandle = SortableHandle(() => (
       margin-bottom: auto;
       margin-right: 10px;
       height: 14px;
+      user-select: none;
     `}
   />
 ));
@@ -57,7 +61,7 @@ const SortableList = SortableContainer(({ items }) => {
   return (
     <div className="languages">
       {items.map((value, index) => (
-        <SortableItem key={`item-${value}`} index={index} value={value} />
+        <SortableItem key={index} index={index} value={value} />
       ))}
     </div>
   );
@@ -66,9 +70,19 @@ const SortableList = SortableContainer(({ items }) => {
 export const PersonLanguageList: React.FunctionComponent<{
   person: Person;
   languageFinder: LanguageFinder;
-}> = (props) => {
-  const [iteration, setIteration] = useState(0);
-  const [showAdd, setShowAdd] = useState(false);
+}> = observer((props) => {
+  const slots = [...props.person.languages];
+
+  const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
+    PersonLanguage | undefined
+  >(undefined);
+  const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
+  // Show an empty slot if there are no languages listed at all
+  useEffect(() => {
+    if (props.person.languages.length === 0)
+      setNewLanguagePlaceholder(new PersonLanguage(""));
+    setFocusOnPlaceholder(false);
+  }, [props.person.languages]);
 
   //const [langElements, setLangElements] = useState<JSX.Element[]>([]);
   const father = props.person.properties.getTextField("fathersLanguage");
@@ -116,37 +130,66 @@ export const PersonLanguageList: React.FunctionComponent<{
   //   );
   // }, [iteration]);
 
-  const editors = props.person.languages.map((l, index) => (
+  if (newLanguagePlaceholder) slots.push(newLanguagePlaceholder);
+  const editors = slots.map((l, index) => (
     <OnePersonLanguageEditor
-      key={index}
       language={l}
       languageFinder={props.languageFinder}
+      autoFocus={focusOnPlaceholder}
       onChange={(tag: string) => {
-        if (!tag) {
+        if (l === newLanguagePlaceholder) {
+          newLanguagePlaceholder.tag = tag;
+          props.person.languages.push(newLanguagePlaceholder);
+          setNewLanguagePlaceholder(undefined);
+        } else if (!tag) {
           props.person.languages.splice(index, 1);
         } else {
           l.tag = tag;
         }
-        setIteration(iteration + 1);
       }}
     />
   ));
 
   return (
-    <SortableList
-      items={editors}
-      axis={"y"}
-      lockAxis={"y"}
-      useDragHandle
-      onSortEnd={({ oldIndex, newIndex }) => {
-        //setLangElements(arrayMove(langElements, oldIndex, newIndex));
-        props.person.languages = arrayMove(
-          props.person.languages,
-          oldIndex,
-          newIndex
-        );
-        setIteration(iteration + 1);
-      }}
-    />
+    <div>
+      <SortableList
+        items={editors}
+        axis={"y"}
+        lockAxis={"y"}
+        useDragHandle
+        onSortEnd={({ oldIndex, newIndex }) => {
+          //setLangElements(arrayMove(langElements, oldIndex, newIndex));
+          props.person.languages = arrayMove(
+            props.person.languages,
+            oldIndex,
+            newIndex
+          );
+        }}
+      />
+      {/* {!newLanguage || (
+        <OnePersonLanguageEditor
+          key={"slotfornewone"}
+          language={newLanguage}
+          languageFinder={props.languageFinder}
+          autoFocus={true}
+          onChange={(tag: string) => {
+            newLanguage.tag = tag;
+            props.person.languages.push(newLanguage);
+            setNewLanguage(undefined);
+          }}
+        />
+      )} */}
+      {/* Show a new language link if there is not already an empty slot */}
+      {!!newLanguagePlaceholder || (
+        <a
+          onClick={(x) => {
+            setNewLanguagePlaceholder(new PersonLanguage(""));
+            setFocusOnPlaceholder(true);
+          }}
+        >
+          <Trans>Add Language</Trans>
+        </a>
+      )}
+    </div>
   );
-};
+});

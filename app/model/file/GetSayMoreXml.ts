@@ -4,12 +4,14 @@ import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { Contribution } from "./File";
 import assert from "assert";
+import { PersonLanguage } from "../PersonLanguage";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
   contributions: Contribution[],
+  languagesOfPerson: PersonLanguage[] | undefined,
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
@@ -23,6 +25,7 @@ export default function getSayMoreXml(
   // that is not backwards compatible. And at the point we would need to be concerned about locking
   // people into whatever beta version this was introduced in, because they won't be able to go back
   // to their release version if there is a problem.
+  // 0.9.1 (predicted) switched to new person languages format
   root.attribute("minimum_lameta_version_to_read", "0.0.0");
   const propertiesToPersist = properties
     .values()
@@ -38,6 +41,9 @@ export default function getSayMoreXml(
     root.element("participants", {}, legacyParticipantsList);
   }
 
+  if (languagesOfPerson && languagesOfPerson.length > 0) {
+    writePersonLanguages(root, languagesOfPerson);
+  }
   writeContributions(root, contributions);
 
   // "Additional Fields are labeled "More Fields" in the UI.
@@ -153,6 +159,21 @@ function writeContributions(
       if (contribution.comments && contribution.comments.trim().length > 0) {
         tail = tail.element("comments", contribution.comments).up();
       }
+    }
+  });
+}
+
+function writePersonLanguages(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  languages: PersonLanguage[]
+) {
+  const languageElement = root.element("personLanguages", {
+    type: "xml",
+  });
+  languages.forEach((language) => {
+    if (language.tag.trim().length > 0) {
+      let tail = languageElement.element("language");
+      tail.attribute("tag", language.tag.trim());
     }
   });
 }

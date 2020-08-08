@@ -12,7 +12,7 @@ import ParentButton from "./ParentButton";
 import { locate } from "../../../crossPlatformUtilities";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
-import { PersonLanguage } from "../../../model/file/File";
+import { PersonLanguage } from "../../../model/PersonLanguage";
 const femaleSelected: string = locate("assets/Female_Selected.png");
 const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
 const maleSelected: string = locate("assets/Male_Selected.png");
@@ -22,7 +22,8 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
   language: PersonLanguage;
   languageFinder: LanguageFinder;
   onChange: (tag: string) => void;
-}> = (props) => {
+  autoFocus?: boolean;
+}> = observer((props) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
@@ -54,6 +55,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         onChange={(v) => props.onChange(v)}
         languageFinder={props.languageFinder}
         className={"language-name " + validationClass}
+        autoFocus={props.autoFocus}
       />
       {/* <TextFieldEdit
         className={"language-name " + validationClass}
@@ -76,4 +78,4 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
       /> */}
     </div>
   );
-};
+});

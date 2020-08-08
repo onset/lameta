@@ -20,6 +20,7 @@ export interface IProps {
   languageTag: string;
   onChange: (newTag: string) => void;
   languageFinder: LanguageFinder;
+  autoFocus?: boolean;
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
@@ -94,6 +95,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
           const v = choice && choice.value ? choice.value : "";
           props.onChange(v);
         }}
+        autoFocus={props.autoFocus}
       />
     </div>
   );
