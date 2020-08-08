@@ -6,17 +6,12 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { Field } from "../../../model/field/Field";
-import TextFieldEdit from "../../TextFieldEdit";
-import ParentButton from "./ParentButton";
-import { locate } from "../../../crossPlatformUtilities";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 import { PersonLanguage } from "../../../model/PersonLanguage";
-const femaleSelected: string = locate("assets/Female_Selected.png");
-const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
-const maleSelected: string = locate("assets/Male_Selected.png");
-const maleNotSelected: string = locate("assets/Male_NotSelected.png");
+import { ToggleIconButton } from "./ToggleIconButton";
+import { i18n } from "../../../localization";
+import { t } from "@lingui/macro";
 
 export const OnePersonLanguageEditor: React.FunctionComponent<{
   language: PersonLanguage;
@@ -49,6 +44,14 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         flex-grow: 1;
       `}
     >
+      <ToggleIconButton
+        title={i18n._(t`Mark as a primary language.`)}
+        onImagePath={"assets/star-selected.svg"}
+        offImagePath={"assets/star-unselected.svg"}
+        isOn={props.language.primary}
+        onChange={(isOn) => (props.language.primary = isOn)}
+      />
+
       <SingleLanguageChooser
         languageTag={props.language.tag}
         labelInUILanguage={"AAAABBBB"}
@@ -57,25 +60,20 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         className={"language-name " + validationClass}
         autoFocus={props.autoFocus}
       />
-      {/* <TextFieldEdit
-        className={"language-name " + validationClass}
-        hideLabel={true}
-        field={props.language}
-        tooltip={tooltip}
-        onBlurWithValue={updateValidationClass}
-      /> */}
-      {/* <ParentButton
-        childLanguage={props.language}
-        parentLanguage={props.motherLanguage}
-        selectedIcon={femaleSelected}
-        notSelectedIcon={femaleNotSelected}
+      <ToggleIconButton
+        title={i18n._(t`Mark as a primary language of the mother.`)}
+        onImagePath={"assets/mother-selected.svg"}
+        offImagePath={"assets/mother-unselected.svg"}
+        isOn={props.language.mother}
+        onChange={(isOn) => (props.language.mother = isOn)}
       />
-      <ParentButton
-        childLanguage={props.language}
-        parentLanguage={props.fatherLanguage}
-        selectedIcon={maleSelected}
-        notSelectedIcon={maleNotSelected}
-      /> */}
+      <ToggleIconButton
+        title={i18n._(t`Mark as primary language of the father.`)}
+        onImagePath={"assets/father-selected.svg"}
+        offImagePath={"assets/father-unselected.svg"}
+        isOn={props.language.father}
+        onChange={(isOn) => (props.language.father = isOn)}
+      />
     </div>
   );
 });

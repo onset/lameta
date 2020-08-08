@@ -26,7 +26,7 @@ const genres = require("./Session/genres.json");
 
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
-import { ShowAlertDialog } from "../../components/AlertDialog/AlertDialog";
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 let sCurrentProject: Project | null = null;
 
@@ -356,7 +356,7 @@ export class Project extends Folder {
       msg = i18n._(t`There is already a ${folderKind} "${value}".`);
     }
     if (msg.length > 0) {
-      ShowAlertDialog({
+      ShowMessageDialog({
         title: "Cannot use that name",
         text: msg,
         buttonText: "OK",

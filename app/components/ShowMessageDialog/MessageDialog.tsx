@@ -1,6 +1,6 @@
 import * as React from "react";
 import ReactModal from "react-modal";
-import "./AlertDialog.scss";
+import "./MessageDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../crossPlatformUtilities";
 import { Trans } from "@lingui/react";
@@ -9,19 +9,20 @@ interface IConfig {
   title: string;
   text: string;
   buttonText: string;
+  iconPath?: string | undefined | /* alert */ null /* none */;
 }
 
-let staticShowAlertDialog: (config: IConfig) => void = () => {};
-export { staticShowAlertDialog as ShowAlertDialog };
+let staticShowMessageDialog: (config: IConfig) => void = () => {};
+export { staticShowMessageDialog as ShowMessageDialog };
 
-export const AlertDialog: React.FunctionComponent<{}> = (props) => {
+export const MessageDialog: React.FunctionComponent<{}> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [config, setConfig] = React.useState<IConfig>({
     title: "",
     text: "",
     buttonText: "",
   });
-  staticShowAlertDialog = (c) => {
+  staticShowMessageDialog = (c) => {
     setConfig(c);
     setIsOpen(true);
   };
@@ -29,14 +30,16 @@ export const AlertDialog: React.FunctionComponent<{}> = (props) => {
     <CloseOnEscape onEscape={() => setIsOpen(false)}>
       <ReactModal
         ariaHideApp={false}
-        className="alertDialog"
+        className="messageDialog"
         isOpen={isOpen}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setIsOpen(false)}
       >
         <div className="dialogContent">
           <div className="row">
-            <img src={locate("assets/warning.png")} />
+            {config.iconPath !== null && (
+              <img src={locate(config.iconPath || "assets/warning.png")} />
+            )}
             <h1>{config.title}</h1>
           </div>
           <div className="row">

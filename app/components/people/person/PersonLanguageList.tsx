@@ -59,7 +59,7 @@ const SortableItem = SortableElement(({ value }) => (
 ));
 const SortableList = SortableContainer(({ items }) => {
   return (
-    <div className="languages">
+    <div>
       {items.map((value, index) => (
         <SortableItem key={index} index={index} value={value} />
       ))}
@@ -151,7 +151,10 @@ export const PersonLanguageList: React.FunctionComponent<{
   ));
 
   return (
-    <div>
+    <div className="languages">
+      <label>
+        <Trans>Languages</Trans>
+      </label>
       <SortableList
         items={editors}
         axis={"y"}
@@ -166,19 +169,6 @@ export const PersonLanguageList: React.FunctionComponent<{
           );
         }}
       />
-      {/* {!newLanguage || (
-        <OnePersonLanguageEditor
-          key={"slotfornewone"}
-          language={newLanguage}
-          languageFinder={props.languageFinder}
-          autoFocus={true}
-          onChange={(tag: string) => {
-            newLanguage.tag = tag;
-            props.person.languages.push(newLanguage);
-            setNewLanguage(undefined);
-          }}
-        />
-      )} */}
       {/* Show a new language link if there is not already an empty slot */}
       {!!newLanguagePlaceholder || (
         <a

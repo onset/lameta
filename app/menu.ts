@@ -7,7 +7,7 @@ import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "./components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
-import { ShowAlertDialog } from "./components/AlertDialog/AlertDialog";
+import { ShowMessageDialog } from "./components/ShowMessageDialog/MessageDialog";
 import userSettingsSingleton from "./UserSettings";
 
 export default class SayLessMenu {
@@ -255,7 +255,7 @@ export default class SayLessMenu {
         {
           label: "Test alert dialog",
           click() {
-            ShowAlertDialog({
+            ShowMessageDialog({
               title: `The title`,
               text: "the text",
               buttonText: "ok",
@@ -293,7 +293,17 @@ export default class SayLessMenu {
         {
           type: "separator",
         },
-
+        {
+          label: i18n._(t`Credits`),
+          click: () => {
+            ShowMessageDialog({
+              title: `Credits`,
+              text: "Profile Man & Woman by mikicon from the Noun Project",
+              buttonText: "OK",
+              iconPath: null,
+            });
+          },
+        },
         {
           label: i18n._(t`Check for new version`),
           click: () => {

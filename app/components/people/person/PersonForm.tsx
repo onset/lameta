@@ -54,35 +54,7 @@ export default class PersonForm extends React.Component<IProps> {
             this.props.person.IdMightHaveChanged();
           }}
         />
-        <div className="primary-language">
-          <label className="languageGroup">
-            {
-              this.props.fields.getTextField("primaryLanguage").definition
-                .englishLabel
-            }
-          </label>
 
-          <OldPersonLanguagesEditor
-            language={this.props.fields.getTextField("primaryLanguage")}
-            fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
-            motherLanguage={this.props.fields.getTextField("mothersLanguage")}
-            languageFinder={this.props.languageFinder}
-          />
-          <TextFieldEdit
-            className="primaryLanguageLearnedIn left-side"
-            field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
-          />
-        </div>
-
-        <div className="other-languages">
-          <label className="languageGroup">
-            <Trans>Other Languages</Trans>
-          </label>
-          <OtherLanguageEdit
-            person={this.props.person}
-            languageFinder={this.props.languageFinder}
-          />
-        </div>
         {/* uncomment for testing that the parent buttons are working
           <TextFieldEdit className={"language-name"} field={mother} />
           <TextFieldEdit className={"language-name"} field={father} /> */}
@@ -129,6 +101,36 @@ export default class PersonForm extends React.Component<IProps> {
           person={this.props.person}
           languageFinder={this.props.languageFinder}
         />
+
+        <div className="primary-language">
+          <label className="languageGroup">
+            {
+              this.props.fields.getTextField("primaryLanguage").definition
+                .englishLabel
+            }
+          </label>
+
+          <OldPersonLanguagesEditor
+            language={this.props.fields.getTextField("primaryLanguage")}
+            fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
+            motherLanguage={this.props.fields.getTextField("mothersLanguage")}
+            languageFinder={this.props.languageFinder}
+          />
+          <TextFieldEdit
+            className="primaryLanguageLearnedIn left-side"
+            field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
+          />
+        </div>
+
+        <div className="other-languages">
+          <label className="languageGroup">
+            <Trans>Other Languages</Trans>
+          </label>
+          <OtherLanguageEdit
+            person={this.props.person}
+            languageFinder={this.props.languageFinder}
+          />
+        </div>
       </form>
     );
   }

@@ -83,6 +83,7 @@ label {
 .field label + div, // e.g People chooser
 span + textarea,
 label + textarea,
+.languages label + div,
 label + .select {
   margin-top: $label-to-field-sep;
 }

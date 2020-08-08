@@ -172,10 +172,17 @@ function writePersonLanguages(
   });
   languages.forEach((language) => {
     if (language.tag.trim().length > 0) {
-      let tail = languageElement.element("language");
+      const tail = languageElement.element("language");
       tail.attribute("tag", language.tag.trim());
+      writeBooleanAttribute(tail, "primary", language.primary);
+      writeBooleanAttribute(tail, "mother", language.mother);
+      writeBooleanAttribute(tail, "father", language.father);
     }
   });
+}
+
+function writeBooleanAttribute(tail: any, name: string, value: boolean) {
+  tail.attribute(name, value ? "true" : "false");
 }
 
 function writeField(

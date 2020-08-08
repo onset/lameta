@@ -1,7 +1,7 @@
 import { Folder } from "./Folder";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { ShowAlertDialog } from "../../components/AlertDialog/AlertDialog";
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { assert } from "console";
 import uuid from "uuid";
 
@@ -77,7 +77,7 @@ export function duplicateFolder(
       success: true,
     };
   } catch (err) {
-    ShowAlertDialog({
+    ShowMessageDialog({
       title: `Error`,
       text: `There was an error while duplicating ${folder.directory}: ${err}`,
       buttonText: "OK",
