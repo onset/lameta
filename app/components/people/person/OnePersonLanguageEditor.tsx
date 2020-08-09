@@ -8,13 +8,13 @@ import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
-import { PersonLanguage } from "../../../model/PersonLanguage";
+import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { ToggleIconButton } from "./ToggleIconButton";
 import { i18n } from "../../../localization";
 import { t } from "@lingui/macro";
 
 export const OnePersonLanguageEditor: React.FunctionComponent<{
-  language: PersonLanguage;
+  language: IPersonLanguage;
   languageFinder: LanguageFinder;
   onChange: (tag: string) => void;
   autoFocus?: boolean;
@@ -48,7 +48,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         title={i18n._(t`Mark as a primary language.`)}
         onImagePath={"assets/star-selected.svg"}
         offImagePath={"assets/star-unselected.svg"}
-        isOn={props.language.primary}
+        isOn={!!props.language.primary}
         onChange={(isOn) => (props.language.primary = isOn)}
       />
 
@@ -64,14 +64,14 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         title={i18n._(t`Mark as a primary language of the mother.`)}
         onImagePath={"assets/mother-selected.svg"}
         offImagePath={"assets/mother-unselected.svg"}
-        isOn={props.language.mother}
+        isOn={!!props.language.mother}
         onChange={(isOn) => (props.language.mother = isOn)}
       />
       <ToggleIconButton
         title={i18n._(t`Mark as primary language of the father.`)}
         onImagePath={"assets/father-selected.svg"}
         offImagePath={"assets/father-unselected.svg"}
-        isOn={props.language.father}
+        isOn={!!props.language.father}
         onChange={(isOn) => (props.language.father = isOn)}
       />
     </div>

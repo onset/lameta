@@ -1,18 +1,25 @@
 import * as mobx from "mobx";
 
-export class PersonLanguage {
+export interface IPersonLanguage {
   //review this @mobx.observable
-  @mobx.observable
-  public tag: string; // bcp47 language tag
 
-  @mobx.observable
-  public primary: boolean;
-  @mobx.observable
-  public mother: boolean;
-  @mobx.observable
-  public father: boolean;
+  tag: string; // bcp47 language tag
 
-  public constructor(tag: string) {
-    this.tag = tag;
-  }
+  primary?: boolean;
+
+  mother?: boolean;
+
+  father?: boolean;
+
+  // public constructor(
+  //   tag: string,
+  //   primary?: boolean,
+  //   mother?: boolean,
+  //   father?: boolean
+  // ) {
+  //   this.tag = tag;
+  //   this.primary = !!primary;
+  //   this.mother = !!mother;
+  //   this.father = !!father;
+  // }
 }

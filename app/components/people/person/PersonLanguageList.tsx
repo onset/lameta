@@ -23,7 +23,7 @@ import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
 import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
 import { Trans } from "@lingui/react";
-import { PersonLanguage } from "../../../model/PersonLanguage";
+import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { observer } from "mobx-react";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
@@ -74,13 +74,13 @@ export const PersonLanguageList: React.FunctionComponent<{
   const slots = [...props.person.languages];
 
   const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
-    PersonLanguage | undefined
+    IPersonLanguage | undefined
   >(undefined);
   const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {
     if (props.person.languages.length === 0)
-      setNewLanguagePlaceholder(new PersonLanguage(""));
+      setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
     setFocusOnPlaceholder(false);
   }, [props.person.languages]);
 
@@ -173,7 +173,7 @@ export const PersonLanguageList: React.FunctionComponent<{
       {!!newLanguagePlaceholder || (
         <a
           onClick={(x) => {
-            setNewLanguagePlaceholder(new PersonLanguage(""));
+            setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
             setFocusOnPlaceholder(true);
           }}
         >

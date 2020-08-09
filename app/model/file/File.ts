@@ -25,7 +25,7 @@ import {
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
 import compareVersions from "compare-versions";
-import { PersonLanguage } from "../PersonLanguage";
+import { IPersonLanguage } from "../PersonLanguage";
 
 export class Contribution {
   //review this @mobx.observable
@@ -80,7 +80,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public contributions = new Array<Contribution>();
   // only used for people files
   @mobx.observable
-  public personLanguages = new Array<PersonLanguage>();
+  public personLanguages = new Array<IPersonLanguage>();
 
   public customFieldNamesRegistry: CustomFieldRegistry;
 
@@ -477,7 +477,12 @@ export /*babel doesn't like this: abstract*/ class File {
 
   private loadPersonLanguages(xml: any) {
     ensureArray(xml.language).forEach((lang) => {
-      this.personLanguages.push(new PersonLanguage(lang.$.tag));
+      this.personLanguages.push({
+        tag: lang.$.tag,
+        primary: lang.$.primary,
+        mother: lang.$.mother,
+        father: lang.$.father,
+      });
     });
   }
 

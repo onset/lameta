@@ -9,7 +9,8 @@ import { sanitizeForArchive } from "../../../filenameSanitizer";
 import userSettingsSingleton from "../../../UserSettings";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { Field } from "../../field/Field";
-import { PersonLanguage } from "../../PersonLanguage";
+import { IPersonLanguage } from "../../PersonLanguage";
+import { FieldSet } from "../../field/FieldSet";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -100,39 +101,123 @@ export class Person extends Folder {
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
 
-    this.migratePersonLanguages(languageFinder);
+    this.migrateLegacyPersonLanguagesFromNameToCode(languageFinder);
+    Person.migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+      this.properties,
+      this.metadataFile!.personLanguages,
+      languageFinder
+    );
   }
 
   public get languages() {
     return this.metadataFile!.personLanguages;
   }
-  public set languages(newLanguageArray: PersonLanguage[]) {
+  public set languages(newLanguageArray: IPersonLanguage[]) {
     this.metadataFile!.personLanguages.splice(0, 99, ...newLanguageArray);
   }
+  // see https://trello.com/c/f6hVbGoY and https://trello.com/c/zWaSIuSj
+  public static migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+    properties: FieldSet,
+    languages: IPersonLanguage[],
+    languageFinder: LanguageFinder
+  ) {
+    // we don't try merging in the old fields; if we already have this modern languages list, then we
+    // ignore the new fields.
+    if (languages.length) return;
+    const primary = properties.getTextFieldOrUndefined("primaryLanguage");
+    if (primary && primary.text)
+      languages.push({
+        tag: primary.text,
+        primary: true,
+        mother: false,
+        father: false,
+      });
+    let x = properties.getTextFieldOrUndefined("mothersLanguage");
+    if (x && x.text) {
+      const match = languages.find((l) => l.tag === x!.text);
+      if (match) {
+        match.mother = true;
+      } else {
+        languages.push({
+          tag: x.text,
+          primary: false,
+          mother: true,
+          father: false,
+        });
+      }
+    }
+    x = properties.getTextFieldOrUndefined("fathersLanguage");
+    if (x && x.text) {
+      const match = languages.find((l) => l.tag === x!.text);
+      if (match) {
+        match.father = true;
+      } else {
+        languages.push({
+          tag: x.text,
+          primary: false,
+          mother: false,
+          father: true,
+        });
+      }
+    }
+    for (let i = 0; i < maxOtherLanguages; i++) {
+      x = properties.getTextFieldOrUndefined("otherLanguage" + i);
+      if (x && x.text) {
+        const match = languages.find((l) => l.tag === x!.text);
+        if (!match) {
+          languages.push({
+            tag: x.text,
+            primary: false,
+            mother: false,
+            father: false,
+          });
+        }
+      }
+    }
 
-  private migratePersonLanguages(languageFinder: LanguageFinder) {
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("primaryLanguage"),
+    // preserve contents of the legacy primaryLanguageLearnedIn field which was labeled as "detail" in some versions.
+    const legacyLearnedin = properties.getTextFieldOrUndefined(
+      "primaryLanguageLearnedIn"
+    );
+    if (legacyLearnedin) {
+      const primaryLanguageName =
+        primary && primary.text
+          ? languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              primary.text
+            )
+          : "???";
+      const d = properties.getTextStringOrEmpty("description");
+      properties.setText(
+        "description",
+        `${d} Info about ${primaryLanguageName}: ${legacyLearnedin}`
+      );
+    }
+  }
 
-      languageFinder
-    );
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("fathersLanguage"),
-      languageFinder
-    );
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("mothersLanguage"),
-      languageFinder
+  // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
+  private migrateLegacyPersonLanguagesFromNameToCode(
+    languageFinder: LanguageFinder
+  ) {
+    [
+      "primaryLanguage",
+      "fathersLanguage",
+      "mothersLanguage",
+    ].forEach((fieldName) =>
+      Person.migrateOnePersonLanguageFromNameToCode(
+        this.properties.getTextFieldOrUndefined(fieldName),
+        languageFinder
+      )
     );
     for (let i = 0; i < maxOtherLanguages; i++) {
-      Person.migrateOnePersonLanguage(
+      Person.migrateOnePersonLanguageFromNameToCode(
         this.properties.getTextFieldOrUndefined("otherLanguage" + i),
         languageFinder
       );
     }
   }
+  // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
   // public and static to make it easier to unit test
-  public static migrateOnePersonLanguage(
+  public static migrateOnePersonLanguageFromNameToCode(
     field: Field | undefined,
     languageFinder: LanguageFinder
   ) {

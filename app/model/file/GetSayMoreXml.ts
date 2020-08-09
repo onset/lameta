@@ -4,14 +4,14 @@ import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { Contribution } from "./File";
 import assert from "assert";
-import { PersonLanguage } from "../PersonLanguage";
+import { IPersonLanguage } from "../PersonLanguage";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
   contributions: Contribution[],
-  languagesOfPerson: PersonLanguage[] | undefined,
+  languagesOfPerson: IPersonLanguage[] | undefined,
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
@@ -42,7 +42,7 @@ export default function getSayMoreXml(
   }
 
   if (languagesOfPerson && languagesOfPerson.length > 0) {
-    writePersonLanguages(root, languagesOfPerson);
+    //writePersonLanguages(root, languagesOfPerson);
   }
   writeContributions(root, contributions);
 
@@ -165,7 +165,7 @@ function writeContributions(
 
 function writePersonLanguages(
   root: xmlbuilder.XMLElementOrXMLNode,
-  languages: PersonLanguage[]
+  languages: IPersonLanguage[]
 ) {
   const languageElement = root.element("personLanguages", {
     type: "xml",
@@ -174,9 +174,9 @@ function writePersonLanguages(
     if (language.tag.trim().length > 0) {
       const tail = languageElement.element("language");
       tail.attribute("tag", language.tag.trim());
-      writeBooleanAttribute(tail, "primary", language.primary);
-      writeBooleanAttribute(tail, "mother", language.mother);
-      writeBooleanAttribute(tail, "father", language.father);
+      writeBooleanAttribute(tail, "primary", !!language.primary);
+      writeBooleanAttribute(tail, "mother", !!language.mother);
+      writeBooleanAttribute(tail, "father", !!language.father);
     }
   });
 }
