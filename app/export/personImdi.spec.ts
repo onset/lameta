@@ -16,13 +16,18 @@ let person: Person;
 let generator: ImdiGenerator;
 const pretendSessionDate = new Date("2010-06-06");
 
+const languageFinder = new LanguageFinder(() => ({
+  iso639_3: "",
+  englishName: "",
+}));
+
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
     new CustomFieldRegistry(),
     (oldName, newName) => true,
-    new LanguageFinder(() => undefined)
+    languageFinder
   );
   // const subsetLanguageFinder = new LanguageFinder({
   //   englishName: "Edolo",

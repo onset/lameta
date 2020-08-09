@@ -3,44 +3,51 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { FieldSet } from "../../field/FieldSet";
 import { Field, FieldType } from "../../field/Field";
 import { IPersonLanguage } from "../../PersonLanguage";
+import {
+  migrateOnePersonLanguageFromNameToCode,
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+} from "./PersonMigration";
 
-const languageFinder = new LanguageFinder(() => undefined);
+const languageFinder = new LanguageFinder(() => ({
+  iso639_3: "",
+  englishName: "",
+}));
 
 // this migration happened before we switched to the new PersonLanguages structure
 describe("migrateOnePersonLanguageFromNameToCode", () => {
   it("should convert Tok Pisin to tpi", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("Tok Pisin");
-    Person.migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
     expect(field.text).toBe("tpi");
   });
   it("should leave tpi as tpi", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("tpi");
-    Person.migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
     expect(field.text).toBe("tpi");
   });
   it("should leave qax as qax", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("qax");
-    Person.migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
     expect(field.text).toBe("qax");
   });
   it("should leave an unrecognized language alone, else we'll loose it", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("foobar lives");
-    Person.migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
     expect(field.text).toBe("foobar lives");
   });
   it("should leave empty string as empty string", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("");
-    Person.migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
     expect(field.text).toBe("");
   });
   it("should take undefined and just leave that alone", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
-    Person.migrateOnePersonLanguageFromNameToCode(undefined, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(undefined, languageFinder);
   });
 });
 
@@ -53,7 +60,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     fields.addTextProperty("fathersLanguage", "tpi");
     fields.addTextProperty("otherLanguage", "tpi");
 
-    Person.migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       fields,
       languages,
       languageFinder
@@ -75,7 +82,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     fields.addTextProperty("otherLanguage0", "de");
     fields.addTextProperty("otherLanguage1", "etr");
 
-    Person.migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       fields,
       languages,
       languageFinder
@@ -123,7 +130,7 @@ it("should not import legacy fields if there is already a modern languages list"
   fields.addTextProperty("otherLanguage0", "de");
   fields.addTextProperty("otherLanguage1", "etr");
 
-  Person.migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
     fields,
     languages,
     languageFinder
@@ -131,18 +138,21 @@ it("should not import legacy fields if there is already a modern languages list"
   expect(languages.length).toBe(1);
   expect(languages[0].tag).toBe("foo");
 });
+
 it("should store the primary language detail text in the description", () => {
   const languages: IPersonLanguage[] = [];
   // these will be ignored
   const fields = new FieldSet();
   fields.addTextProperty("primaryLanguage", "etr");
   fields.addTextProperty("primaryLanguageLearnedIn", "Huya");
+  fields.addTextProperty("description", "Lorem Ipsum.");
 
-  Person.migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
     fields,
     languages,
     languageFinder
   );
   expect(languages.length).toBe(1);
-  expect(languages[0].tag).toContain("Huya");
+  expect(fields.getTextStringOrEmpty("description")).toContain("Lorem Ipsum");
+  expect(fields.getTextStringOrEmpty("description")).toContain("Huya");
 });
