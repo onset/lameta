@@ -1,5 +1,6 @@
+import * as mobx from "mobx";
 import { Folder } from "../../Folder/Folder";
-import { File } from "../../file/File";
+import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
@@ -103,19 +104,14 @@ export class Person extends Folder {
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
 
-    migrateLegacyPersonLanguagesFromNameToCode(this.properties, languageFinder);
-    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
-      this.properties,
-      this.metadataFile!.personLanguages,
-      languageFinder
-    );
+    (this.metadataFile! as PersonMetadataFile).migrate(languageFinder);
   }
 
   public get languages() {
-    return this.metadataFile!.personLanguages;
+    return (this.metadataFile! as PersonMetadataFile).languages;
   }
   public set languages(newLanguageArray: IPersonLanguage[]) {
-    this.metadataFile!.personLanguages.splice(0, 99, ...newLanguageArray);
+    this.languages.splice(0, 99, ...newLanguageArray);
   }
 
   public static fromDirectory(
@@ -184,6 +180,10 @@ export class Person extends Folder {
 }
 
 export class PersonMetadataFile extends FolderMetadataFile {
+  // only used for people files
+  @mobx.observable
+  public languages = new Array<IPersonLanguage>();
+
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
       directory,
@@ -193,5 +193,39 @@ export class PersonMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.person,
       customFieldRegistry
     );
+    //console.log("PersonMetadataFile.ctr");
+  }
+
+  public migrate(languageFinder: LanguageFinder) {
+    migrateLegacyPersonLanguagesFromNameToCode(this.properties, languageFinder);
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+      this.properties,
+      this.languages,
+      languageFinder
+    );
+  }
+
+  // override
+  protected specialHandlingOfField(
+    tag: string,
+    propertiesFromXml: any
+  ): boolean {
+    //console.log("PersonMetadataFile.specialHandlingOfField");
+    if (tag.toLocaleLowerCase() === "languages") {
+      this.loadPersonLanguages(propertiesFromXml[tag]);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  private loadPersonLanguages(xml: any) {
+    ensureArray(xml.language).forEach((lang) => {
+      this.languages.push({
+        tag: lang.$.tag,
+        primary: lang.$.primary === "true",
+        mother: lang.$.mother === "true",
+        father: lang.$.father === "true",
+      });
+    });
   }
 }

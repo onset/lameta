@@ -167,7 +167,7 @@ function writePersonLanguages(
   root: xmlbuilder.XMLElementOrXMLNode,
   languages: IPersonLanguage[]
 ) {
-  const languageElement = root.element("personLanguages", {
+  const languageElement = root.element("languages", {
     type: "xml",
   });
   languages.forEach((language) => {

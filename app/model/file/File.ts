@@ -18,7 +18,6 @@ import knownFieldDefinitions, {
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import { NotifyError, NotifyWarning } from "../../components/Notify";
 
-import { titleCase } from "title-case";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import {
   sentryBreadCrumb,
@@ -26,6 +25,7 @@ import {
 } from "../../errorHandling";
 import compareVersions from "compare-versions";
 import { IPersonLanguage } from "../PersonLanguage";
+import { Person } from "../Project/Person/Person";
 
 export class Contribution {
   //review this @mobx.observable
@@ -78,9 +78,6 @@ export /*babel doesn't like this: abstract*/ class File {
 
   @mobx.observable
   public contributions = new Array<Contribution>();
-  // only used for people files
-  @mobx.observable
-  public personLanguages = new Array<IPersonLanguage>();
 
   public customFieldNamesRegistry: CustomFieldRegistry;
 
@@ -316,15 +313,20 @@ export /*babel doesn't like this: abstract*/ class File {
       Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }
-
+  protected specialHandlingOfField(
+    tag: string,
+    propertiesFromXml: any
+  ): boolean {
+    //console.log("Field.specialHandlingOfField");
+    return false;
+  }
   private loadPropertiesFromXml(propertiesFromXml: any) {
     const tags = Object.keys(propertiesFromXml);
-
     for (const tag of tags) {
-      if (tag.toLocaleLowerCase() === "contributions") {
+      if (this.specialHandlingOfField(tag, propertiesFromXml)) {
+        continue;
+      } else if (tag.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[tag]);
-      } else if (tag.toLocaleLowerCase() === "personlanguages") {
-        this.loadPersonLanguages(propertiesFromXml[tag]);
       }
 
       // <CustomFields>
@@ -473,17 +475,6 @@ export /*babel doesn't like this: abstract*/ class File {
         undefined /*showOnAutoForm*/
       );
     }
-  }
-
-  private loadPersonLanguages(xml: any) {
-    ensureArray(xml.language).forEach((lang) => {
-      this.personLanguages.push({
-        tag: lang.$.tag,
-        primary: lang.$.primary,
-        mother: lang.$.mother,
-        father: lang.$.father,
-      });
-    });
   }
 
   private loadContributions(contributionsFromXml: any) {
@@ -911,7 +902,7 @@ export class OtherFile extends File {
 
 // for a given attribute the xml parser will give us an object if there is one child, or an array if there are multiple
 // This will give [] if x null or undefined (but not empty string), [x] if x is an object, or x if x is already an array
-function ensureArray(x: any): any[] {
+export function ensureArray(x: any): any[] {
   if (x === null || x === undefined) return [];
   return Array.isArray(x) ? x : [x];
 }

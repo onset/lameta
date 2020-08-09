@@ -50,4 +50,11 @@ export class FolderMetadataFile extends File {
       //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
+  protected specialHandlingOfField(
+    tag: string,
+    propertiesFromXml: any
+  ): boolean {
+    //console.log("FolderMetaDataFile.specialHandlingOfField");
+    return false;
+  }
 }
