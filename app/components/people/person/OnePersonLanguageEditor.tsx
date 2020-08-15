@@ -23,6 +23,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
     if (
+      !lang ||
       lang.trim() === "" ||
       props.languageFinder.findOne639_3CodeFromName(lang, "und") !== "und"
     ) {

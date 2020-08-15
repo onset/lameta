@@ -74,6 +74,38 @@ describe("actor imdi export", () => {
     ).toHaveCount(1);
   });
 
+  it("should output new languages list", () => {
+    person.properties.setText("primaryLanguage", "");
+    person.properties.setText("mothersLanguage", "");
+    person.properties.setText("fathersLanguage", "");
+    person.properties.setText("otherLanguage0", "");
+    person.properties.setText("otherLanguage1", "");
+    person.properties.setText("otherLanguage2", "");
+    person.properties.setText("otherLanguage3", "");
+    //person.languages.splice(0, 10);
+    const gen = new ImdiGenerator(person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");
+    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:tpi");
+    expect("Actor/Languages/Language[3]/Id").toHaveText("ISO639-3:hui");
+
+    expect(
+      "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
+    ).toHaveCount(1);
+
+    /* "Mother Tongue" doesn't actually mean "mother's language". SM doesn't have a way to express MT at the moment.
+    expect(
+      "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
+    ).toHaveCount(1);
+    expect(
+        "Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
+    ).toHaveCount(1);*/
+    expect(
+      "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
+    ).toHaveCount(1);
+  });
+
   it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
     expect("Actor/BirthDate").toMatch("1972");
     expect("Actor/Age").toMatch("38");
