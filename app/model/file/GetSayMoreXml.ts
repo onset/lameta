@@ -2,16 +2,17 @@ import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { Contribution } from "./File";
+import { File, Contribution } from "./File";
 import assert from "assert";
 import { IPersonLanguage } from "../PersonLanguage";
+import { FolderMetadataFile } from "./FolderMetaDataFile";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
   contributions: Contribution[],
-  languagesOfPerson: IPersonLanguage[] | undefined,
+  file: File,
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
@@ -41,10 +42,8 @@ export default function getSayMoreXml(
     root.element("participants", {}, legacyParticipantsList);
   }
 
-  if (languagesOfPerson && languagesOfPerson.length > 0) {
-    //writePersonLanguages(root, languagesOfPerson);
-  }
-  writeContributions(root, contributions);
+  file.writeXmlForComplexFields(root);
+  writeContributions(root, contributions); // enhance: move this a writeXmlForComplexFields() method on Session
 
   // "Additional Fields are labeled "More Fields" in the UI.
   // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
@@ -161,28 +160,6 @@ function writeContributions(
       }
     }
   });
-}
-
-function writePersonLanguages(
-  root: xmlbuilder.XMLElementOrXMLNode,
-  languages: IPersonLanguage[]
-) {
-  const languageElement = root.element("languages", {
-    type: "xml",
-  });
-  languages.forEach((language) => {
-    if (language.tag.trim().length > 0) {
-      const tail = languageElement.element("language");
-      tail.attribute("tag", language.tag.trim());
-      writeBooleanAttribute(tail, "primary", !!language.primary);
-      writeBooleanAttribute(tail, "mother", !!language.mother);
-      writeBooleanAttribute(tail, "father", !!language.father);
-    }
-  });
-}
-
-function writeBooleanAttribute(tail: any, name: string, value: boolean) {
-  tail.attribute(name, value ? "true" : "false");
 }
 
 function writeField(

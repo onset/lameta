@@ -14,6 +14,7 @@ import {
   migrateLegacyPersonLanguagesFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
 } from "./PersonMigration";
+import xmlbuilder from "xmlbuilder";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -206,7 +207,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
   }
 
   // override
-  protected specialHandlingOfField(
+  protected specialLoadingOfField(
     tag: string,
     propertiesFromXml: any
   ): boolean {
@@ -227,5 +228,23 @@ export class PersonMetadataFile extends FolderMetadataFile {
         father: lang.$.father === "true",
       });
     });
+  }
+
+  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {
+    const languageElement = root.element("languages", {
+      type: "xml",
+    });
+    this.languages.forEach((language) => {
+      if (language.tag.trim().length > 0) {
+        const tail = languageElement.element("language");
+        tail.attribute("tag", language.tag.trim());
+        this.writeBooleanAttribute(tail, "primary", !!language.primary);
+        this.writeBooleanAttribute(tail, "mother", !!language.mother);
+        this.writeBooleanAttribute(tail, "father", !!language.father);
+      }
+    });
+  }
+  private writeBooleanAttribute(tail: any, name: string, value: boolean) {
+    tail.attribute(name, value ? "true" : "false");
   }
 }

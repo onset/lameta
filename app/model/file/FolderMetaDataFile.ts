@@ -4,6 +4,7 @@ import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import xmlbuilder from "xmlbuilder";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -50,7 +51,7 @@ export class FolderMetadataFile extends File {
       //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
-  protected specialHandlingOfField(
+  protected specialLoadingOfField(
     tag: string,
     propertiesFromXml: any
   ): boolean {

@@ -4,6 +4,14 @@ import Path from "path";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { PersonMetadataFile } from "./Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+
+import {
+  setResultXml,
+  xexpect as expect,
+  count,
+  value,
+} from "../../../xmlUnitTestUtils";
+
 let personDirectory;
 let personId;
 const languageFinder = new LanguageFinder(() => ({
@@ -47,6 +55,61 @@ describe("Person Languages Read", () => {
     );
     expect(p.languages.length).toBe(1);
     expect(p.languages[0].tag).toBe("foo");
+  });
+
+  it("should output languages element", () => {
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new CustomFieldRegistry()
+    );
+    f.languages.push({ tag: "foo" });
+    setResultXml(f.getXml());
+    expect("Person/languages").toHaveCount(1);
+    expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
+  });
+  it("should output correct defaults for a language", () => {
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new CustomFieldRegistry()
+    );
+    f.languages.push({ tag: "foo" });
+    setResultXml(f.getXml());
+    expect("Person/languages").toHaveCount(1);
+    expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "mother",
+      "false"
+    );
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "father",
+      "false"
+    );
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "primary",
+      "false"
+    );
+  });
+  it("should output all the fields of a language", () => {
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new CustomFieldRegistry()
+    );
+    f.languages.push({ tag: "foo", mother: true, father: true, primary: true });
+    setResultXml(f.getXml());
+    expect("Person/languages/language").toHaveCount(1);
+    expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "mother",
+      "true"
+    );
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "father",
+      "true"
+    );
+    expect("Person/languages/language[1]").toHaveAttributeValue(
+      "primary",
+      "true"
+    );
   });
 });
 

@@ -26,6 +26,7 @@ import {
 import compareVersions from "compare-versions";
 import { IPersonLanguage } from "../PersonLanguage";
 import { Person } from "../Project/Person/Person";
+import xmlbuilder from "xmlbuilder";
 
 export class Contribution {
   //review this @mobx.observable
@@ -313,7 +314,7 @@ export /*babel doesn't like this: abstract*/ class File {
       Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }
-  protected specialHandlingOfField(
+  protected specialLoadingOfField(
     tag: string,
     propertiesFromXml: any
   ): boolean {
@@ -323,7 +324,7 @@ export /*babel doesn't like this: abstract*/ class File {
   private loadPropertiesFromXml(propertiesFromXml: any) {
     const tags = Object.keys(propertiesFromXml);
     for (const tag of tags) {
-      if (this.specialHandlingOfField(tag, propertiesFromXml)) {
+      if (this.specialLoadingOfField(tag, propertiesFromXml)) {
         continue;
       } else if (tag.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[tag]);
@@ -591,7 +592,7 @@ export /*babel doesn't like this: abstract*/ class File {
         this.xmlRootName,
         this.properties,
         this.contributions,
-        this.personLanguages,
+        this,
         this.doOutputTypeInXmlTags,
         doOutputEmptyCustomFields
       );
@@ -599,6 +600,8 @@ export /*babel doesn't like this: abstract*/ class File {
       this.inGetXml = false;
     }
   }
+  //overridden by person (eventually session)
+  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(forceSave: boolean = false) {
     // console.log("SAVING DISABLED");

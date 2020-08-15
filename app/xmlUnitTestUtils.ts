@@ -2,7 +2,7 @@ const XPATH = require("xpath");
 const dom = require("xmldom").DOMParser;
 
 let resultXml: string;
-let resultDom: any;
+let resultDom: Document;
 
 export function setResultXml(xml: string) {
   resultXml = xml;
