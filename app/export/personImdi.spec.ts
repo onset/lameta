@@ -75,6 +75,7 @@ describe("actor imdi export", () => {
   });
 
   it("should output new languages list", () => {
+    // clear out old depricated fields, which should have been already migrated into the new languages array if they had content
     person.properties.setText("primaryLanguage", "");
     person.properties.setText("mothersLanguage", "");
     person.properties.setText("fathersLanguage", "");
@@ -82,27 +83,18 @@ describe("actor imdi export", () => {
     person.properties.setText("otherLanguage1", "");
     person.properties.setText("otherLanguage2", "");
     person.properties.setText("otherLanguage3", "");
-    //person.languages.splice(0, 10);
+    person.languages.splice(0, 10);
     const gen = new ImdiGenerator(person, project);
+    person.languages.push({ tag: "spa", father: true, primary: true });
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
-    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:etr");
-    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:tpi");
-    expect("Actor/Languages/Language[3]/Id").toHaveText("ISO639-3:hui");
-
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:spa");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("español");
+    expect("Actor/Languages/Language[1]/Description").toHaveText(
+      "Also spoken by father."
+    );
     expect(
-      "Actor/Languages/Language[Name[text()='Edolo']]/PrimaryLanguage[text()='true']"
-    ).toHaveCount(1);
-
-    /* "Mother Tongue" doesn't actually mean "mother's language". SM doesn't have a way to express MT at the moment.
-    expect(
-      "Actor/Languages/Language[Name[text()='Edolo']]/MotherTongue[text()='true']"
-    ).toHaveCount(1);
-    expect(
-        "Actor/Languages/Language[Name[text()='Huli']]/MotherTongue[text()='false']"
-    ).toHaveCount(1);*/
-    expect(
-      "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
+      "Actor/Languages/Language[Name[text()='español']]/PrimaryLanguage[text()='true']"
     ).toHaveCount(1);
   });
 

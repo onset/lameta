@@ -322,8 +322,8 @@ export default class ImdiGenerator {
         "Description",
         `${[
           lang.father ? "Also spoken by father." : undefined,
-          lang.mother ? "Also spoken by mother." : "",
-        ].join(" ")}`
+          lang.mother ? "Also spoken by mother." : undefined,
+        ].join(" ").trim()}`
       );
     }
     // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
