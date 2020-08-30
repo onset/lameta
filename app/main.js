@@ -141,6 +141,16 @@ app.on("ready", () =>
           mainWindow.openDevTools();
         }
       });
+
+      ipcMain.handle("showOpenDialog", (event, options) => {
+        //returns a promise which is somehow funneled to the caller in the render process
+        return dialog.showOpenDialog(mainWindow, options);
+      });
+
+      ipcMain.handle("showMessageBox", (event, options) => {
+        return dialog.showMessageBoxSync(mainWindow, options);
+      });
+
       mainWindow.on("closed", () => {
         mainWindow = null;
       });
