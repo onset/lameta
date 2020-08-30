@@ -262,9 +262,9 @@ module.exports = {
       ignoreFile: ".sentrycliignore",
       ignore: [
         "node_modules",
-        "webpack.config.base.js",
-        "webpack.config.main.js",
-        "webpack.config.production.js"
+        "webpack.common.js",
+        "webpack.main-process.js",
+        "webpack.renderer-process.production.js"
       ],
       configFile: "sentry.properties"
     }),*/

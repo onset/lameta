@@ -4,7 +4,7 @@
 
 const webpack = require("webpack");
 const merge = require("webpack-merge");
-const baseConfig = require("./webpack.config.base");
+const baseConfig = require("./webpack.common");
 const path = require("path");
 const port = process.env.PORT || 3000;
 

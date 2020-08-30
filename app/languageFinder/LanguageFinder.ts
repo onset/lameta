@@ -60,8 +60,9 @@ export class LanguageFinder {
       "iso639_3",
     ]);
 
-    // add the primary name and two codes
+    // NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
     const index = require("./langindex.json");
+    // add the primary name and two codes
     this.index.addAll(index);
 
     // now add the alternative names

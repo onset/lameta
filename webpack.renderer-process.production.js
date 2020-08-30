@@ -6,7 +6,7 @@ const path = require("path");
 const webpack = require("webpack");
 const merge = require("webpack-merge");
 //const HtmlWebpackPlugin = require("html-webpack-plugin");
-const baseConfig = require("./webpack.config.base");
+const baseConfig = require("./webpack.common");
 
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const speedMeasurePlugin = new SpeedMeasurePlugin();
