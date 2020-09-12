@@ -290,7 +290,7 @@ export const ExportDialog: React.FunctionComponent<{
                 checked={exportFormat === "imdi"}
                 onChange={(e) => setExportFormat(e.target.value)}
               />
-              IMDI Only
+              <Trans>IMDI Only</Trans>
             </label>
             <p>
               <Trans>
@@ -305,7 +305,7 @@ export const ExportDialog: React.FunctionComponent<{
                 checked={exportFormat === "imdi-plus-files"}
                 onChange={(e) => setExportFormat(e.target.value)}
               />
-              IMDI + Files
+              <Trans>IMDI + Files</Trans>
             </label>
             <p>
               <Trans>

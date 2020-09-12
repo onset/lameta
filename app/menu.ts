@@ -152,14 +152,14 @@ export default class SayLessMenu {
 
           submenu: [
             {
-              label: "Smaller",
+              label: i18n._(t`Smaller`),
               accelerator: "CmdOrCtrl+-",
               click: () => {
                 userSettingsSingleton.ZoomFont(-1);
               },
             },
             {
-              label: "Larger",
+              label: i18n._(t`Larger`),
               accelerator: "CmdOrCtrl+=",
               click: () => {
                 userSettingsSingleton.ZoomFont(1);
@@ -206,7 +206,7 @@ export default class SayLessMenu {
                 }
               : { type: "separator" },
             {
-              label: "Help translate",
+              label: i18n._(t`Help translate`),
               click: () => {
                 shell.openExternal("https://crowdin.com/project/lameta");
               },
@@ -214,7 +214,7 @@ export default class SayLessMenu {
           ],
         },
         {
-          label: "IMDI Mode",
+          label: i18n._(t`IMDI Mode`),
           // tooltip only works in macos
           tooltip:
             "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",

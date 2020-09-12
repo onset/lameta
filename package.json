@@ -199,7 +199,7 @@
     "cross-env": "^5.1.4",
     "css-loader": "^1.0.0",
     "css-modules-require-hook": "^4.0.6",
-    "csv-loader": "^3.0.2",
+    "csv-loader": "^3.0.3",
     "devtron": "^1.4.0",
     "electron": "^6.1.5",
     "electron-builder": "^22.6.1",

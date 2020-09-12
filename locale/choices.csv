@@ -1,10 +1,27 @@
 "Context","En","Es","Fr", "Ru", "zh-CN"
-"Session Status","Incoming","Nuevamente añadido","Entrant"
-"Session Status","In Progress","En curso","En cours"
-"Session Status","Finished","Completado","Terminé"
-"Session Status. Here skipped means that the user has decided not to continue working with this session","Skipped","Omitido","Sauté"
+"Session.Status.Incoming","Incoming","Nuevamente añadido","Entrant"
+"Session.Status.InProgress","In Progress","En curso","En cours"
+"Session.Status.Finished","Finished","Completado","Terminé"
+"Session.Status. Here skipped means that the user has decided not to continue working with this session","Skipped","Omitido","Sauté"
 "Male","Male","Macho","Mâle"
 "Female","Female","Hembra","Femelle"
+"Unknown","Unknown"
 "Other","Other"
-
-
+"Continent.Africa","Africa",
+"Continent.Asia","Asia",
+"Continent.Australia","Australia",
+"Continent.Europe","Europe",
+"Continent.North-America","North-America",
+"Continent.Middle-America","Middle-America",
+"Continent.Oceania","Oceania",
+"Continent.South-America","South-America"
+"involvement.elicited","elicited"
+"involvement.non-elicited","non-elicited"
+"involvement.no-observer","no-observer"
+"planningType.spontaneous","spontaneous"
+"planningType.semi-spontaneous","semi-spontaneous"
+"planningType.planned","planned"
+"socialContext.family","family"
+"socialContext.private","private"
+"socialContext.public","public"
+"socialContext.controlled environment","controlled environment"

@@ -24,7 +24,11 @@ For some reason, these forms options don't work:
 }
 ```
 
-To build the string catalog, do
+# Checking for new strings using pseudo localization
+
+Under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
+
+# Build the string catalog
 
 `yarn lingui-extract`
 
@@ -75,7 +79,3 @@ And in the menu.ts, add the language options.
 In Crowdin:Translations:Build & Download. Take the resulting files and replace the ones in the codebase.
 
 `yarn lingui-compile`
-
-# Pseudo localization
-
-Under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the word "pseudo" prepended to the English name.

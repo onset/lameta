@@ -9,6 +9,7 @@ import {
   translateSpecialInfo,
   i18n,
   translateTooltip,
+  translateTooltipNotice,
 } from "../localization";
 import { Trans } from "@lingui/react";
 import { observer } from "mobx-react";
@@ -18,7 +19,8 @@ export const FieldLabel: React.FunctionComponent<{
 }> = observer((props) => {
   let tooltip = translateTooltip(props.fieldDef);
   if (userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi) {
-    tooltip = ("" && tooltip) + " Not important for IMDI.";
+    tooltip =
+      ("" && tooltip) + " " + translateTooltipNotice("Not important for IMDI.");
   }
   const specialInfo = translateSpecialInfo(props.fieldDef);
 

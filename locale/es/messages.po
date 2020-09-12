@@ -88,7 +88,7 @@ msgstr "Agregar documentos aquí que no pertenecen en otro lugar (por ejemplo, d
 msgid "All Sessions"
 msgstr ""
 
-#: app/components/FieldLabel.tsx:28
+#: app/components/FieldLabel.tsx:29
 msgid "As Personally Identifiable Information, this will not be exported to other formats."
 msgstr ""
 
@@ -331,6 +331,10 @@ msgstr "Nombre completo"
 msgid "Help"
 msgstr "Ayuda"
 
+#: app/menu.ts:199
+msgid "Help translate"
+msgstr ""
+
 #: app/menu.ts:56
 msgid "Hide Others"
 msgstr ""
@@ -352,6 +356,18 @@ msgstr "ID"
 #~ msgid "IMDI"
 #~ msgstr "IMDI"
 
+#: app/components/export/ExportDialog.tsx:204
+msgid "IMDI + Files"
+msgstr ""
+
+#: app/menu.ts:207
+msgid "IMDI Mode"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:195
+msgid "IMDI Only"
+msgstr ""
+
 #: app/components/FolderPane.tsx:199
 #: app/localization.ts:63
 msgid "Image"
@@ -372,6 +388,10 @@ msgstr ""
 #: app/components/people/person/PersonLanguageList.tsx:107
 #~ msgid "Languages"
 #~ msgstr ""
+
+#: app/menu.ts:153
+msgid "Larger"
+msgstr ""
 
 #: app/components/RegistrationReminder.tsx:32
 msgid "Learner"
@@ -611,6 +631,10 @@ msgstr ""
 msgid "Size"
 msgstr "Tamaño"
 
+#: app/menu.ts:146
+msgid "Smaller"
+msgstr ""
+
 #: app/menu.ts:121
 msgid "Start Screen"
 msgstr ""
@@ -712,6 +736,10 @@ msgstr "Archivo ZIP"
 
 #: app/components/export/ExportDialog.tsx:173
 msgid "Zip of CSVs"
+msgstr ""
+
+#: app/components/IsoLanguageEdit.tsx:22
+msgid "choose..."
 msgstr ""
 
 #: app/components/MediaStats.tsx:54
