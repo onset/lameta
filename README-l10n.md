@@ -78,4 +78,4 @@ In Crowdin:Translations:Build & Download. Take the resulting files and replace t
 
 # Pseudo localization
 
-I could not get lingui to make the pseudo js file following the instructions that said the name could be anything. It makes the po file, but `yarn lingui-compile` does not make the js file. If I change the name in .lingui to "ps", then I do get a js file. Note, this pseudo localization is on for the stuff that goes through lingui; i.e. not the strings in fields.json5 and genres.json. Those should show with the word "pseudo" prepended to the English name.
+Under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the word "pseudo" prepended to the English name.
