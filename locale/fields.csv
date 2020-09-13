@@ -50,8 +50,7 @@
 "person.code","person","Code","Código","Code","","","Código",""
 "person.primaryLanguage","person","Primary Language","Idioma principal","Langue principale","","","Primeira Língua",""
 "person.primaryLanguageLearnedIn","person","Details","","Informations","","","",""
-"person.education","person","Education","Educación","Formation","","","Educação
-Escolaridade",""
+"person.education","person","Education","Educación","Formation","","","Educação",""
 "person.birthYear","person","Birth Year","Año de nacimiento","Année de naissance","","","Ano de nascimento",""
 "person.gender","person","Gender","Género","Sexe","","","Gênero",""
 "person.howToContact","person","How To Contact","Información de contacto","Comment contacter","","","Como contactar",""
