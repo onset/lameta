@@ -4,17 +4,19 @@ msgstr ""
 "Mime-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: crowdin.com\n"
+"X-Generator: @lingui/cli\n"
 "Language: es\n"
-"Project-Id-Version: lameta\n"
+"Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-12-18 23:00\n"
-"Last-Translator: lameta <hattonjohn+lameta@gmail.com>\n"
+"PO-Revision-Date: 2020-09-13 21:13\n"
+"Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Crowdin-Project: lameta\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
 "X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: messages.po\n"
+"X-Crowdin-File-ID: 36\n"
 
 #: app/components/FileList.tsx:197
 #~ msgid "\"Open in program associated with this file type"
@@ -62,7 +64,7 @@ msgstr ""
 
 #: app/components/session/AccessChooser.tsx:41
 msgid "Access"
-msgstr "Acceso"
+msgstr "Acces&o"
 
 #: app/components/project/ProjectTab.tsx:27
 msgid "Access Protocol"
@@ -140,7 +142,7 @@ msgstr "Cancelar"
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:71
 msgid "Change Name To:"
-msgstr ""
+msgstr "Cambiar el nombre a:"
 
 #: app/menu.ts:300
 msgid "Check for new version"
@@ -206,7 +208,7 @@ msgstr "Crear proyecto..."
 
 #: app/components/project/AccessProtocolForm.tsx:36
 msgid "Custom Access Choices"
-msgstr ""
+msgstr "Opciones de acceso personalizadas"
 
 #: app/components/PropertyPanel.tsx:21
 msgid "Custom Field"
@@ -214,7 +216,7 @@ msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:158
 #~ msgid "Custom Fields"
-#~ msgstr "Campos definidos por el usuario"
+#~ msgstr ""
 
 #: app/menu.ts:90
 msgid "Cut"
@@ -222,7 +224,7 @@ msgstr ""
 
 #: app/components/session/ContributorsTable.tsx:91
 #~ msgid "Date"
-#~ msgstr "Fecha"
+#~ msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:63
 msgid "Delete"
@@ -266,7 +268,7 @@ msgstr ""
 
 #: app/components/project/AccessProtocolForm.tsx:39
 msgid "Enter each choice, separated by commas"
-msgstr ""
+msgstr "Escriba las opciones separadas por comas."
 
 #: app/components/export/ExportDialog.tsx:252
 msgid "Export"
@@ -274,7 +276,7 @@ msgstr "Exportar"
 
 #: app/components/export/ExportDialog.tsx:164
 msgid "Export Project"
-msgstr "Exportar proyecto"
+msgstr ""
 
 #: app/menu.ts:126
 msgid "Export Project..."
@@ -354,7 +356,7 @@ msgstr "ID"
 #: app/components/FolderPane.tsx:79
 #: app/components/project/ProjectTab.tsx:36
 #~ msgid "IMDI"
-#~ msgstr "IMDI"
+#~ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:204
 msgid "IMDI + Files"
@@ -474,7 +476,7 @@ msgstr ""
 
 #: app/containers/HomePage.tsx:165
 #~ msgid "Open SayMore Project"
-#~ msgstr "Abrir proyecto de SayMore"
+#~ msgstr ""
 
 #: app/components/FolderPane.tsx:232
 msgid "Open in ELAN"
@@ -531,7 +533,7 @@ msgstr "Proyecto"
 
 #: app/components/project/CreateProjectDialog.tsx:42
 msgid "Project will be created in: {path}."
-msgstr ""
+msgstr "Proyecto se creará in: {path}."
 
 #: app/components/FolderPane.tsx:74
 msgid "Properties"
@@ -555,7 +557,7 @@ msgstr ""
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:102
 msgid "Rename"
-msgstr ""
+msgstr "Cambiar el nombre"
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:66
 msgid "Rename File"
@@ -621,7 +623,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:174
 msgid "Show in File Explorer"
-msgstr "Mostrar en el explorador de archivos"
+msgstr ""
 
 #: app/components/FileList.tsx:173
 msgid "Show in Finder"
@@ -719,7 +721,7 @@ msgstr "Video"
 
 #: app/menu.ts:140
 msgid "View"
-msgstr ""
+msgstr "Vista"
 
 #: app/components/project/CreateProjectDialog.tsx:51
 msgid "What would you like to call this project?"
@@ -766,3 +768,4 @@ msgstr ""
 #: app/components/export/ExportDialog.tsx:224
 msgid "{countOfMarkedSessions} Marked Sessions"
 msgstr ""
+

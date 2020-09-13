@@ -4,17 +4,19 @@ msgstr ""
 "Mime-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: crowdin.com\n"
+"X-Generator: @lingui/cli\n"
 "Language: ru\n"
-"Project-Id-Version: lameta\n"
+"Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2019-01-05 21:04\n"
-"Last-Translator: lameta <hattonjohn+lameta@gmail.com>\n"
+"PO-Revision-Date: 2020-09-13 21:13\n"
+"Last-Translator: \n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
-"X-Crowdin-Project: lameta\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: messages.po\n"
+"X-Crowdin-File-ID: 36\n"
 
 #: app/components/FileList.tsx:197
 #~ msgid "\"Open in program associated with this file type"
@@ -115,7 +117,7 @@ msgstr "Аудио"
 
 #: app/components/MediaStats.tsx:90
 #~ msgid "Audio Bit Rate"
-#~ msgstr "Аудио битрейт"
+#~ msgstr ""
 
 #: app/components/MediaStats.tsx:88
 #~ msgid "Audio Channels"
@@ -474,7 +476,7 @@ msgstr ""
 
 #: app/containers/HomePage.tsx:165
 #~ msgid "Open SayMore Project"
-#~ msgstr "Откройте проект SayMore"
+#~ msgstr ""
 
 #: app/components/FolderPane.tsx:232
 msgid "Open in ELAN"
@@ -576,7 +578,7 @@ msgstr ""
 
 #: app/components/MediaStats.tsx:103
 #~ msgid "Resolution"
-#~ msgstr "Разрешение"
+#~ msgstr ""
 
 #: app/components/PersonContributions.tsx:27
 #: app/components/session/ContributorsTable.tsx:86
@@ -621,7 +623,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:174
 msgid "Show in File Explorer"
-msgstr "Показать в проводнике"
+msgstr ""
 
 #: app/components/FileList.tsx:173
 msgid "Show in Finder"
@@ -766,3 +768,4 @@ msgstr ""
 #: app/components/export/ExportDialog.tsx:224
 msgid "{countOfMarkedSessions} Marked Sessions"
 msgstr ""
+
