@@ -199,9 +199,9 @@ export default class SayLessMenu {
               label: "Portuguesa, Brasileiro  (38%)",
               type: "radio",
               click: () => {
-                setUILanguage("pt-BR");
+                setUILanguage("Pt-BR");
               },
-              checked: currentUILanguage === "pt-BR",
+              checked: currentUILanguage === "Pt-BR",
             },
             {
               label: "Russian  (11%)",

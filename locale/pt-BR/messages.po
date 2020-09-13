@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: saymorex\n"
 "X-Crowdin-Project-ID: 324607\n"
-"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-Language: Pt-BR\n"
 "X-Crowdin-File: messages.po\n"
 "X-Crowdin-File-ID: 36\n"
 

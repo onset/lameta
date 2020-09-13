@@ -64,7 +64,7 @@ In Crowdin:settings:translations:Target Languages, add the language.
 
 First, make sure you have the latest translations into your local files.
 
-Now you have to add the new column. By hand, add a column to top row of locale/\*.csv. Then in Crowdin:Files select each of these csv files and choose "Change Scheme" & select your local file to upload. This will open a UI in that lets you identify the new language of the column.
+Now you have to add the new column. By hand, add a column to top row of locale/\*.csv. For some reason, lameta expects the 1st letter to be capitalized, e.g. "Pt-BR". Then in Crowdin:Files select each of these csv files and choose "Change Scheme" & select your local file to upload. This will open a UI in that lets you identify the new language of the column.
 
 DANGER: Crowdin "Change Scheme" can actually remove translations as well. So first pull in any new translations before adding new languages.
 If you do loose translations, they will still by in Crowdin's Translation Memory. You can apply them one by one or use the "Pre-Translation" to use the lameta TM to fill them back in. This is scary becuase the Crowdin UI does not make it clear that it will NOT use the "global TM". I tested it on a test.csv file, to ensure that it only pre-translates from the lameta TM.
