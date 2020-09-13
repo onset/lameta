@@ -1,24 +1,17 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2018-12-15 15:06-0700\n"
+"POT-Creation-Date: 2020-09-13 08:57-0600\n"
 "Mime-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: crowdin.com\n"
-"Language: fr\n"
-"Project-Id-Version: lameta\n"
+"X-Generator: @lingui/cli\n"
+"Language: pt-BR\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-12-18 23:00\n"
-"Last-Translator: lameta <hattonjohn+lameta@gmail.com>\n"
-"Language-Team: French\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Crowdin-Project: lameta\n"
-"X-Crowdin-Language: fr\n"
-"X-Crowdin-File: messages.po\n"
-
-#: app/components/FileList.tsx:197
-#~ msgid "\"Open in program associated with this file type"
-#~ msgstr ""
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
 
 #: app/components/export/ExportDialog.tsx:207
 msgid "A folder containing both the IMDI files and all the project's archivable files."
@@ -28,33 +21,17 @@ msgstr ""
 msgid "A folder with an IMDI file for the project and each session."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:106
-#~ msgid "A single ISLE Meta Data Initiative XML file."
-#~ msgstr ""
-
 #: app/components/export/ExportDialog.tsx:187
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr ""
-
-#: app/components/export/ExportDialog.tsx:105
-#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
-#~ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:176
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:127
-#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
-#: app/components/export/ExportDialog.tsx:118
-#~ msgid "A zip file with an IMDI file for the project and each session."
-#~ msgstr ""
-
 #: app/components/project/ProjectTab.tsx:24
 msgid "About This Project"
-msgstr "À propos de ce projet"
+msgstr ""
 
 #: app/menu.ts:37
 msgid "About lameta"
@@ -62,15 +39,15 @@ msgstr ""
 
 #: app/components/session/AccessChooser.tsx:41
 msgid "Access"
-msgstr "Accès"
+msgstr ""
 
 #: app/components/project/ProjectTab.tsx:27
 msgid "Access Protocol"
-msgstr "Protocole d'accès"
+msgstr ""
 
 #: app/components/FileList.tsx:130
 msgid "Add Files"
-msgstr "Ajouter des fichiers"
+msgstr ""
 
 #: app/components/people/person/OtherLanguageEdit.tsx:41
 msgid "Add Language"
@@ -107,27 +84,7 @@ msgstr ""
 #: app/components/FolderPane.tsx:169
 #: app/localization.ts:65
 msgid "Audio"
-msgstr "Audio"
-
-#: app/components/MediaStats.tsx:96
-#~ msgid "Audio Bit Depth"
-#~ msgstr ""
-
-#: app/components/MediaStats.tsx:90
-#~ msgid "Audio Bit Rate"
-#~ msgstr ""
-
-#: app/components/MediaStats.tsx:88
-#~ msgid "Audio Channels"
-#~ msgstr ""
-
-#: app/components/MediaStats.tsx:87
-#~ msgid "Audio Codec"
-#~ msgstr ""
-
-#: app/components/MediaStats.tsx:93
-#~ msgid "Audio Sample Rate"
-#~ msgstr ""
+msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:60
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:136
@@ -136,7 +93,7 @@ msgstr "Audio"
 #: app/components/project/CreateProjectDialog.tsx:61
 #: app/components/registration/RegistrationDialog.tsx:96
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:71
 msgid "Change Name To:"
@@ -161,24 +118,24 @@ msgstr ""
 #: app/components/PersonContributions.tsx:33
 #: app/components/session/ContributorsTable.tsx:97
 msgid "Comments"
-msgstr "Commentaires"
+msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:45
 msgid "Confirm Delete"
-msgstr "Confirmer la suppression"
+msgstr ""
 
 #: app/components/FolderPane.tsx:143
 msgid "Contributions"
-msgstr "Contributions"
+msgstr ""
 
 #: app/components/FolderPane.tsx:77
 #: app/components/FolderPane.tsx:107
 msgid "Contributors"
-msgstr "Contributeurs"
+msgstr ""
 
 #: app/menu.ts:92
 msgid "Copy"
-msgstr "Copier"
+msgstr ""
 
 #: app/containers/HomePage.tsx:172
 msgid "Create New Project"
@@ -200,10 +157,6 @@ msgstr ""
 msgid "Create Project..."
 msgstr ""
 
-#: app/menu.ts:284
-#~ msgid "Credits"
-#~ msgstr ""
-
 #: app/components/project/AccessProtocolForm.tsx:36
 msgid "Custom Access Choices"
 msgstr ""
@@ -212,37 +165,29 @@ msgstr ""
 msgid "Custom Field"
 msgstr ""
 
-#: app/components/CustomFieldsTable.tsx:158
-#~ msgid "Custom Fields"
-#~ msgstr "Champs personnalisés"
-
 #: app/menu.ts:90
 msgid "Cut"
 msgstr ""
 
-#: app/components/session/ContributorsTable.tsx:91
-#~ msgid "Date"
-#~ msgstr "Date"
-
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:63
 msgid "Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #: app/components/FileList.tsx:196
 msgid "Delete File..."
-msgstr "Supprimer le fichier..."
+msgstr ""
 
 #: app/components/Workspace.tsx:107
 msgid "Delete Person..."
-msgstr "Supprimer une personne..."
+msgstr ""
 
 #: app/components/Workspace.tsx:73
 msgid "Delete Session..."
-msgstr "Supprimer la session..."
+msgstr ""
 
 #: app/components/project/ProjectTab.tsx:30
 msgid "Description Documents"
-msgstr "Documents de description"
+msgstr ""
 
 #: app/components/Workspace.tsx:97
 msgid "Duplicate Person"
@@ -251,10 +196,6 @@ msgstr ""
 #: app/components/Workspace.tsx:62
 msgid "Duplicate Session"
 msgstr ""
-
-#: app/components/FolderPane.tsx:222
-#~ msgid "ELAN"
-#~ msgstr ""
 
 #: app/menu.ts:77
 msgid "Edit"
@@ -270,7 +211,7 @@ msgstr ""
 
 #: app/components/export/ExportDialog.tsx:252
 msgid "Export"
-msgstr "Exporter"
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:164
 msgid "Export Project"
@@ -283,7 +224,7 @@ msgstr ""
 #: app/components/CustomFieldsTable.tsx:133
 #: app/components/MoreFieldsTable.tsx:39
 msgid "Field"
-msgstr "Champ"
+msgstr ""
 
 #: app/components/FolderPane.tsx:241
 #: app/menu.ts:109
@@ -306,11 +247,6 @@ msgstr ""
 msgid "For documenting my own language"
 msgstr ""
 
-#: app/components/MediaStats.tsx:68
-#: app/components/MediaStats.tsx:68
-#~ msgid "Format"
-#~ msgstr ""
-
 #: app/components/FolderList.tsx:95
 msgid "Found file with a name containing 'Consent'"
 msgstr ""
@@ -319,17 +255,13 @@ msgstr ""
 msgid "Found no file with a name containing 'Consent'"
 msgstr ""
 
-#: app/components/MediaStats.tsx:106
-#~ msgid "Frame rate"
-#~ msgstr ""
-
 #: app/model/Project/Project.ts:254
 msgid "Full Name"
-msgstr "Nom complet"
+msgstr ""
 
 #: app/menu.ts:282
 msgid "Help"
-msgstr "Aide"
+msgstr ""
 
 #: app/menu.ts:215
 msgid "Help translate"
@@ -349,12 +281,7 @@ msgstr ""
 
 #: app/model/Project/Project.ts:251
 msgid "ID"
-msgstr "ID"
-
-#: app/components/FolderPane.tsx:79
-#: app/components/project/ProjectTab.tsx:36
-#~ msgid "IMDI"
-#~ msgstr "IMDI"
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:204
 msgid "IMDI + Files"
@@ -371,7 +298,7 @@ msgstr ""
 #: app/components/FolderPane.tsx:199
 #: app/localization.ts:63
 msgid "Image"
-msgstr "Image"
+msgstr ""
 
 #: app/components/people/person/ParentButton.tsx:20
 msgid "Indicates that this is the father or mother's primary language."
@@ -385,10 +312,6 @@ msgstr ""
 msgid "Language Code"
 msgstr ""
 
-#: app/components/people/person/PersonLanguageList.tsx:107
-#~ msgid "Languages"
-#~ msgstr ""
-
 #: app/menu.ts:153
 msgid "Larger"
 msgstr ""
@@ -396,23 +319,6 @@ msgstr ""
 #: app/components/RegistrationReminder.tsx:32
 msgid "Learner"
 msgstr ""
-
-#: app/components/MediaStats.tsx:65
-#: app/components/MediaStats.tsx:65
-#~ msgid "Length"
-#~ msgstr ""
-
-#: app/components/people/person/OnePersonLanguageEditor.tsx:34
-#~ msgid "Mark as a primary language of the mother."
-#~ msgstr ""
-
-#: app/components/people/person/OnePersonLanguageEditor.tsx:31
-#~ msgid "Mark as a primary language."
-#~ msgstr ""
-
-#: app/components/people/person/OnePersonLanguageEditor.tsx:35
-#~ msgid "Mark as primary language of the father."
-#~ msgstr ""
 
 #: app/components/FolderList.tsx:56
 #: app/components/FolderList.tsx:74
@@ -425,43 +331,43 @@ msgstr ""
 
 #: app/components/MoreFieldsTable.tsx:63
 msgid "More Fields"
-msgstr "Champs supplémentaires"
+msgstr ""
 
 #: app/components/FileList.tsx:72
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:128
 #: app/components/session/ContributorsTable.tsx:81
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: app/components/Workspace.tsx:88
 #: app/components/people/PeopleTab.tsx:18
 #: app/model/Project/Project.ts:187
 #: app/model/Project/Project.ts:190
 msgid "New Person"
-msgstr "Nouvelle personne"
+msgstr ""
 
 #: app/components/Workspace.tsx:53
 #: app/components/session/SessionsTab.tsx:16
 #: app/model/Project/Project.ts:150
 msgid "New Session"
-msgstr "Nouvelle session"
+msgstr ""
 
 #: app/components/FolderPane.tsx:80
 #: app/components/FolderPane.tsx:113
 #: app/components/FolderPane.tsx:146
 msgid "Notes"
-msgstr "Notes"
+msgstr ""
 
 #: app/components/AlertDialog/AlertDialog.tsx:34
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:139
 #: app/components/project/CreateProjectDialog.tsx:64
 #: app/components/registration/RegistrationDialog.tsx:99
 msgid "OK"
-msgstr "Bien"
+msgstr ""
 
 #: app/components/FileList.tsx:118
 msgid "Open"
-msgstr "Ouvrir"
+msgstr ""
 
 #: app/containers/HomePage.tsx:177
 msgid "Open Project"
@@ -471,10 +377,6 @@ msgstr ""
 #: app/menu.ts:112
 msgid "Open Project..."
 msgstr ""
-
-#: app/containers/HomePage.tsx:165
-#~ msgid "Open SayMore Project"
-#~ msgstr "Ouvrir un projet SayMore"
 
 #: app/components/FolderPane.tsx:232
 msgid "Open in ELAN"
@@ -486,11 +388,11 @@ msgstr ""
 
 #: app/components/project/ProjectTab.tsx:33
 msgid "Other Documents"
-msgstr "Autres documents"
+msgstr ""
 
 #: app/components/people/person/PersonForm.tsx:46
 msgid "Other Languages"
-msgstr "Autres langues"
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:183
 msgid "Paradisec CSV"
@@ -504,13 +406,13 @@ msgstr ""
 #: app/components/Workspace.tsx:153
 #: app/components/session/PeopleChooser.tsx:56
 msgid "People"
-msgstr "Personnes"
+msgstr ""
 
 #: app/components/FolderPane.tsx:140
 #: app/localization.ts:59
 #: app/model/Project/Project.ts:254
 msgid "Person"
-msgstr "Personne"
+msgstr ""
 
 #: app/components/RegistrationReminder.tsx:25
 msgid "Please Register"
@@ -519,15 +421,7 @@ msgstr ""
 #: app/components/Workspace.tsx:141
 #: app/localization.ts:55
 msgid "Project"
-msgstr "Projet"
-
-#: app/components/project/CreateProjectDialog.tsx:42
-#~ msgid "Project will be created in: {folderPath}"
-#~ msgstr ""
-
-#: app/components/project/CreateProjectDialog.tsx:42
-#~ msgid "Project will be created in: {path}"
-#~ msgstr ""
+msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:42
 msgid "Project will be created in: {path}."
@@ -535,7 +429,7 @@ msgstr ""
 
 #: app/components/FolderPane.tsx:74
 msgid "Properties"
-msgstr "Propriétés"
+msgstr ""
 
 #: app/menu.ts:68
 msgid "Quit"
@@ -568,20 +462,16 @@ msgstr ""
 #: app/components/FileList.tsx:122
 #: app/components/FileList.tsx:188
 msgid "Rename..."
-msgstr "Renommer..."
+msgstr ""
 
 #: app/menu.ts:291
 msgid "Report a problem"
 msgstr ""
 
-#: app/components/MediaStats.tsx:103
-#~ msgid "Resolution"
-#~ msgstr ""
-
 #: app/components/PersonContributions.tsx:27
 #: app/components/session/ContributorsTable.tsx:86
 msgid "Role"
-msgstr "Rôle"
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:59
 msgid "Save As"
@@ -590,10 +480,6 @@ msgstr ""
 #: app/components/SaveNotifier.tsx:30
 msgid "Saving"
 msgstr ""
-
-#: app/containers/HomePage.tsx:192
-#~ msgid "SayMore/SayMore Project Files"
-#~ msgstr ""
 
 #: app/menu.ts:102
 msgid "Select All"
@@ -609,11 +495,11 @@ msgstr ""
 #: app/localization.ts:57
 #: app/model/Project/Project.ts:251
 msgid "Session"
-msgstr "Session"
+msgstr ""
 
 #: app/components/Workspace.tsx:147
 msgid "Sessions"
-msgstr "Sessions"
+msgstr ""
 
 #: app/menu.ts:61
 msgid "Show All"
@@ -621,7 +507,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:174
 msgid "Show in File Explorer"
-msgstr "Afficher dans l'Explorateur de fichiers"
+msgstr ""
 
 #: app/components/FileList.tsx:173
 msgid "Show in Finder"
@@ -629,7 +515,7 @@ msgstr ""
 
 #: app/components/FileList.tsx:96
 msgid "Size"
-msgstr "Taille"
+msgstr ""
 
 #: app/menu.ts:146
 msgid "Smaller"
@@ -641,7 +527,7 @@ msgstr ""
 
 #: app/components/FolderPane.tsx:110
 msgid "Status"
-msgstr "État"
+msgstr ""
 
 #: app/components/FolderPane.tsx:212
 msgid "Text"
@@ -651,25 +537,13 @@ msgstr ""
 msgid "That name would lead to an empty filename."
 msgstr ""
 
-#: app/model/Project/Project.ts:178
-#~ msgid "That would lead to an empty filename"
-#~ msgstr ""
-
 #: app/model/Project/Project.ts:227
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
-#: app/model/Project/Project.ts:208
-#~ msgid "There is already a Person with that name or code"
-#~ msgstr ""
-
 #: app/model/Project/Project.ts:262
 msgid "There is already a Person with that name or code."
 msgstr ""
-
-#: app/components/project/CreateProjectDialog.tsx:37
-#~ msgid "There is already a project at: {path}"
-#~ msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:37
 msgid "There is already a project at: {path}."
@@ -679,43 +553,23 @@ msgstr ""
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr ""
 
-#: app/model/Project/Project.ts:183
-#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
-#~ msgstr ""
-
-#: app/model/Project/Project.ts:183
-#~ msgid "There is already a {folderKind} with that name or code '{value}'"
-#~ msgstr ""
-
-#: app/model/Project/Project.ts:183
-#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
-#~ msgstr ""
-
-#: app/model/Project/Project.ts:178
-#~ msgid "There is already a {folderKind} with the name '{value}'"
-#~ msgstr ""
-
 #: app/components/FileList.tsx:80
 msgid "Type"
-msgstr "Type"
+msgstr ""
 
 #: app/menu.ts:80
 msgid "Undo"
-msgstr "Annuler l'action"
+msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:144
 #: app/components/MoreFieldsTable.tsx:47
 msgid "Value"
-msgstr "Valeur"
+msgstr ""
 
 #: app/components/FolderPane.tsx:184
 #: app/localization.ts:61
 msgid "Video"
-msgstr "Vidéo"
-
-#: app/components/MediaStats.tsx:101
-#~ msgid "Video Codec"
-#~ msgstr ""
+msgstr ""
 
 #: app/menu.ts:140
 msgid "View"
@@ -723,16 +577,11 @@ msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:51
 msgid "What would you like to call this project?"
-msgstr "Que voulez-vous appeler ce projet ?"
-
-#: app/components/MediaStats.tsx:53
-#: app/components/MediaStats.tsx:53
-#~ msgid "Width"
-#~ msgstr ""
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:65
 msgid "ZIP Archive"
-msgstr "Archive ZIP"
+msgstr ""
 
 #: app/components/export/ExportDialog.tsx:173
 msgid "Zip of CSVs"
@@ -742,11 +591,6 @@ msgstr ""
 msgid "choose..."
 msgstr ""
 
-#: app/components/MediaStats.tsx:54
-#: app/components/MediaStats.tsx:54
-#~ msgid "height"
-#~ msgstr ""
-
 #: app/menu.ts:34
 msgid "lameta"
 msgstr ""
@@ -754,10 +598,6 @@ msgstr ""
 #: app/containers/HomePage.tsx:207
 msgid "lameta and SayMore Project Files"
 msgstr ""
-
-#: app/components/SMRadio.tsx:11
-#~ msgid "{0}"
-#~ msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:51
 msgid "{0} will be moved to the Trash"

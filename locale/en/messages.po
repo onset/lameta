@@ -139,7 +139,7 @@ msgstr ""
 msgid "Change Name To:"
 msgstr ""
 
-#: app/menu.ts:284
+#: app/menu.ts:300
 msgid "Check for new version"
 msgstr ""
 
@@ -324,11 +324,11 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: app/menu.ts:266
+#: app/menu.ts:282
 msgid "Help"
 msgstr ""
 
-#: app/menu.ts:199
+#: app/menu.ts:215
 msgid "Help translate"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgstr ""
 msgid "IMDI + Files"
 msgstr ""
 
-#: app/menu.ts:207
+#: app/menu.ts:223
 msgid "IMDI Mode"
 msgstr ""
 
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/menu.ts:269
+#: app/menu.ts:285
 msgid "Registration..."
 msgstr ""
 
@@ -567,7 +567,7 @@ msgstr ""
 msgid "Rename..."
 msgstr ""
 
-#: app/menu.ts:275
+#: app/menu.ts:291
 msgid "Report a problem"
 msgstr ""
 

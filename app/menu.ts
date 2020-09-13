@@ -180,7 +180,7 @@ export default class SayLessMenu {
               checked: currentUILanguage === "en",
             },
             {
-              label: "Español (27%)",
+              label: "Español (15%)",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -188,12 +188,28 @@ export default class SayLessMenu {
               checked: currentUILanguage === "es",
             },
             {
-              label: "Français  (24%)",
+              label: "Français  (23%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
               },
               checked: currentUILanguage === "fr",
+            },
+            {
+              label: "Portuguesa, Brasileiro  (38%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("pt-BR");
+              },
+              checked: currentUILanguage === "pt-BR",
+            },
+            {
+              label: "Russian  (11%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("ru");
+              },
+              checked: currentUILanguage === "ru",
             },
             userSettings.DeveloperMode
               ? {

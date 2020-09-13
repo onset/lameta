@@ -8,7 +8,7 @@ import { t } from "@lingui/macro";
 import moment from "moment";
 import { FieldDefinition } from "./model/field/FieldDefinition";
 
-const languages = ["en", "es", "fr", "ps"];
+const languages = ["en", "es", "fr", "ps", "id", "zh-CN", "pt-BR", "ru"];
 export const catalogs = {};
 export let currentUILanguage: string;
 export let i18n: I18n;

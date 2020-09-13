@@ -32,7 +32,11 @@ Under View Menu, choose "pseudo". Things that go through lingui will show letter
 
 `yarn lingui-extract`
 
-That reads .linguirc to know what files to include. That puts json files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+That reads .linguirc to know what files to include. This puts json files in ./locale/.
+
+# Send new strings to Crowdin
+
+Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 At runtime, lingui uses javascript file, which you get by running
 
@@ -64,11 +68,19 @@ In Crowdin:settings:translations:Target Languages, add the language.
 
 `yarn lingui-add xyz`
 
-`yarn lingui-extract` (note: this will fail if the program is running)
+`yarn lingui-extract` (note: this will fail if the program is running, including JEST. So in vscode ctrl-shift-p, "Jest: Stop Runner")
 
-Next, you have to, by hand, add a column to locale/\*.csv. Then in Crowdin select each of these and choose "Change Scheme", upload it, and set the column header. For some reason, for genres.csv, I also had to use libre office to add a comma to the end of each line. This was not necessary for the the other files. Beware Excel, which doesn't notice the utf-8 marker.
+## CSVs
 
-When the language has enough translated to add to the program, download the files from crowdin, and in `l10nUtils.ts`, add "xyz", e.g.
+A bit of chicken and egg? You will need to do a "Change Scheme", but that actually can remove translations as well (if that happens, they will still by in Crowdin's Translation Memory). So first pull in any new translations before adding new languages.
+
+Next, you have to, by hand, add a column to top row of locale/\*.csv. Then in Crowdin:Files select each of these csv files and choose "Change Scheme" & select your local file to upload. This will open a UI in that lets you identify the new language of the column.
+
+For some reason, for genres.csv, the "Change scheme" tool doesn't recognize the csv nature of this file. You have to open it in Libre Office, then save as, and you can get it to add the commas at the end of the last field.
+
+Beware Excel, which doesn't notice the utf-8 marker. At all times, check on the Russian, which will become obviously wrong if something changs the encoding.
+
+When the language has enough translated to add to the program, download the files from crowdin, and in `localization.ts`, add "xyz", e.g.
 
     `const languages = ["en", "es", "fr", "xyz"];`
 
