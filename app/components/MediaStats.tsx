@@ -105,7 +105,7 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
                 `error testing ffprobe on '${file.describedFilePath}'`
               );
               reject(err);
-            } else {
+            } else if (result && result.format && result.format.duration) {
               stats["Length"] = humanizeDuration(
                 1000 * result.format.duration,
                 {
