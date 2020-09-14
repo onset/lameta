@@ -1,4 +1,4 @@
-"ID","Context","En","Es","Fr","Ru","zh-CN","Pt-BR","Id"
+"ID","Context","en","es","fr","ru","zh-CN","pt-BR","id"
 "role.label.annotator","Contributor Role","Annotator","","Annotateur","","","",""
 "role.description.annotator","Description of contributor role 'Annotator'","The participant produced an annotation of this or a related resource.","","Le participant a produit une traduction de cette ressource ou d'une ressource connexe.","","","",""
 "role.label.author","Contributor Role","Author","","Auteur(rice)","","","",""

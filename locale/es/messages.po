@@ -64,7 +64,7 @@ msgstr ""
 
 #: app/components/session/AccessChooser.tsx:41
 msgid "Access"
-msgstr "Acces&o"
+msgstr "Acceso"
 
 #: app/components/project/ProjectTab.tsx:27
 msgid "Access Protocol"

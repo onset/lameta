@@ -8,7 +8,7 @@ import { t } from "@lingui/macro";
 import moment from "moment";
 import { FieldDefinition } from "./model/field/FieldDefinition";
 
-const languages = ["en", "es", "fr", "ps", "ru", "Pt-BR"];
+const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
 export let currentUILanguage: string;
 export let i18n: I18n;
@@ -124,11 +124,11 @@ function getMatch(
   fileThatShouldHaveThis: string,
   fieldName?: string
 ): string {
-  const match = lines.find((f) => f.En === s);
+  const match = lines.find((f) => f.en === s);
 
   if (currentUILanguage === "ps") {
     // do we have a column for english for this?
-    if (match && match["En"]) return s + "✓";
+    if (match && match["en"]) return s + "✓";
     else {
       if (s && s.length > 0) {
         // at the moment we're not asking translators to take on translating country names, so we don't expect to find them in the locale/choices.csv file
@@ -143,15 +143,10 @@ function getMatch(
       }
     }
   }
-  const key = toCsvLanguageKey();
 
-  if (match && match[key]) {
-    return match[key];
+  if (match && match[currentUILanguage]) {
+    return match[currentUILanguage];
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
-}
-// in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
-function toCsvLanguageKey() {
-  return currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);
 }
