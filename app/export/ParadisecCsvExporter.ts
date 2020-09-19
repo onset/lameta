@@ -85,16 +85,18 @@ const contributorColumns: IColumn[] = [];
 contributorColumns.push({ header: "Role", property: "" });
 contributorColumns.push({ header: "First name", property: "" });
 contributorColumns.push({ header: "Last name", property: "" });
+
 function getCommaSeparatedLanguageNames(session: Session): string {
   // enhance: can we get at the name if it's qaa-qtx?
   return session.getContentLanguageCodes().join(",");
 }
-export function makeParadisecSessionCsv(
+
+export function makeParadisecSessionFields(
   project: Project,
   sessionFilter: (f: Folder) => boolean
-) {
-  const lines: string[] = [];
-  let header = columns.map((c) => csvEncode(c.header)).join(",");
+): string[][] {
+  const lines: string[][] = [];
+  const header = columns.map((c) => c.header);
 
   // contributions come in groups of 3 columns. In order to put a header over each one, we need
   // do know how many their will be.
@@ -107,25 +109,32 @@ export function makeParadisecSessionCsv(
   });
   //console.log("contributionGroups:" + contributionGroups);
   for (let i = 0; i < contributionGroups; i++) {
-    header += ",Role,First Name,Last Name";
+    header.push("Role", "First Name", "Last Name");
   }
   lines.push(header);
 
   project.sessions.filter(sessionFilter).forEach((session) => {
     const l = columns
       .map((c) =>
-        csvEncode(
-          c.func
-            ? c.func(session)
-            : session.properties.getTextStringOrEmpty(c.property)
-        )
+        c.func
+          ? c.func(session)
+          : session.properties.getTextStringOrEmpty(c.property)
       )
-      .concat(getContributions(project, session))
-      .join(",");
+      .concat(getContributions(project, session));
     lines.push(l);
   });
-  return lines.join(kEol);
+  return lines;
 }
+
+export function makeParadisecSessionCsv(
+  project: Project,
+  sessionFilter: (f: Folder) => boolean
+): string {
+  return makeParadisecSessionFields(project, sessionFilter)
+    .map((row) => row.map((column) => csvEncode(column)).join(","))
+    .join(kEol);
+}
+
 // Get 3 fields for each contributor: [role,first,last,role,first,last,role,first,last, etc]
 function getContributions(project: Project, session: Session): string[] {
   const cols: string[] = [];
@@ -137,10 +146,10 @@ function getContributions(project: Project, session: Session): string[] {
     // that the paradisec format wants already (name & role)
     //if (person) {
     /* Spreadsheet says: Acceptable roles are author , compiler , consultant , data_inputter , depositor , editor , interviewer , participant , performer , photographer , recorder , researcher , singer , speaker , translator*/
-    cols.push(csvEncode(contribution.role));
+    cols.push(contribution.role);
     const { first, last } = parseNameIntoFirstAndLast(trimmedName);
-    cols.push(csvEncode(first));
-    cols.push(csvEncode(last));
+    cols.push(first);
+    cols.push(last);
   });
   return cols;
 }

@@ -8,7 +8,10 @@ import { default as React, useState, useEffect } from "react";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
-import { makeParadisecProjectFields } from "../export/ParadisecCsvExporter";
+import {
+  makeParadisecProjectFields,
+  makeParadisecSessionFields,
+} from "../export/ParadisecCsvExporter";
 
 //const HtmlTree = require("react-htmltree");
 
@@ -49,8 +52,12 @@ export const ParadisecView: React.FunctionComponent<{
 
   //   }
 
-  const rows = makeParadisecProjectFields(props.project);
-
+  const rows =
+    props.target instanceof Project
+      ? makeParadisecProjectFields(props.project)
+      : transpose(
+          makeParadisecSessionFields(props.project, (f) => f === props.target)
+        );
   return (
     <div>
       <h3>
@@ -66,11 +73,14 @@ export const ParadisecView: React.FunctionComponent<{
           td:first-of-type {
             width: 175px;
           }
+          .Role {
+            background-color: rgba(256, 256, 256, 0.3);
+          }
         `}
       >
         {rows.map((columns) => {
           return (
-            <tr>
+            <tr className={columns[0]}>
               {columns.map((c) => (
                 <td>{c}</td>
               ))}
@@ -81,3 +91,8 @@ export const ParadisecView: React.FunctionComponent<{
     </div>
   );
 };
+function transpose(matrix: string[][]): string[][] {
+  return Object.keys(matrix[0]).map((colNumber) =>
+    matrix.map((rowNumber) => rowNumber[colNumber])
+  );
+}
