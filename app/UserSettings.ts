@@ -22,6 +22,8 @@ export class UserSettings {
   @observable
   private imdiMode: boolean;
   @observable
+  private paradisecMode: boolean;
+  @observable
   private howUsing: string;
   @observable
   public uiFontZoom: number;
@@ -50,6 +52,13 @@ export class UserSettings {
   public set IMDIMode(show: boolean) {
     this.imdiMode = show;
     this.store.set("imdiMode", this.imdiMode);
+  }
+  public get ParadisecMode() {
+    return this.paradisecMode;
+  }
+  public set ParadisecMode(show: boolean) {
+    this.paradisecMode = show;
+    this.store.set("paradisecMode", this.ParadisecMode);
   }
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person

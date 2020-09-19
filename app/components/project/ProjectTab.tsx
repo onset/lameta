@@ -11,6 +11,7 @@ import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
 import { Trans } from "@lingui/react";
 import userSettings from "../../UserSettings";
+import { ParadisecView } from "../ParadisecView";
 
 interface IProps {
   project: Project;
@@ -43,6 +44,13 @@ export class ProjectTab extends React.Component<IProps> {
           {userSettings.IMDIMode ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
+            </Tab>
+          ) : (
+            <></>
+          )}
+          {userSettings.ParadisecMode ? (
+            <Tab className={"tab-project-paradisec"}>
+              PARADISEC {/* don't translate  */}
             </Tab>
           ) : (
             <></>
@@ -106,6 +114,17 @@ export class ProjectTab extends React.Component<IProps> {
         {userSettings.IMDIMode ? (
           <TabPanel>
             <ImdiView
+              target={this.props.project}
+              project={this.props.project}
+              folder={this.props.project}
+            />
+          </TabPanel>
+        ) : (
+          <></>
+        )}
+        {userSettings.ParadisecMode ? (
+          <TabPanel>
+            <ParadisecView
               target={this.props.project}
               project={this.props.project}
               folder={this.props.project}

@@ -116,7 +116,10 @@ export default class HomePage extends React.Component<IProps, IState> {
     }
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", (e) => {
-      if (this.projectHolder.project) {
+      if (
+        this.projectHolder.project &&
+        this.projectHolder.project.saveAllFilesInFolder
+      ) {
         this.projectHolder.project.saveAllFilesInFolder();
       }
     });

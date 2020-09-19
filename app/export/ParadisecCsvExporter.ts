@@ -17,26 +17,30 @@ export function makeParadisecCsv(
   fs.writeFileSync(path, csv);
 }
 
-export function makeParadisecProjectFieldsCsv(project: Project) {
-  const lines: string[] = [];
-  lines.push(
-    "Collection ID," + csvEncode(project.properties.getTextStringOrEmpty("id"))
-  );
-  lines.push(
-    "Collection Title," +
-      csvEncode(project.properties.getTextStringOrEmpty("title"))
-  );
-  lines.push(
-    "Collection Description," +
-      csvEncode(project.properties.getTextStringOrEmpty("projectDescription"))
-  );
+export function makeParadisecProjectFields(project: Project): string[][] {
+  const rows: string[][] = [];
+  rows.push(["Collection ID", project.properties.getTextStringOrEmpty("id")]);
+  rows.push([
+    "Collection Title",
+    project.properties.getTextStringOrEmpty("title"),
+  ]);
+  rows.push([
+    "Collection Description",
+    project.properties.getTextStringOrEmpty("projectDescription"),
+  ]);
   const { first, last } = parseNameIntoFirstAndLast(
     project.properties.getTextStringOrEmpty("depositor")
   );
-  lines.push("Collector First Name," + csvEncode(first.trim()));
-  lines.push("Collector Last Name," + csvEncode(last.trim()));
+  rows.push(["Collector First Name", first.trim()]);
+  rows.push(["Collector Last Name", last.trim()]);
 
-  return lines.join(kEol);
+  return rows;
+}
+
+export function makeParadisecProjectFieldsCsv(project: Project): string {
+  return makeParadisecProjectFields(project)
+    .map((row) => row.map((column) => csvEncode(column)).join(","))
+    .join(kEol);
 }
 
 interface IColumn {
@@ -62,7 +66,7 @@ col("Subject Language", ""); // Maybe add to More Fields?
 col("Country/Countries", "locationCountry");
 col("Origination Date", "date");
 col("Region", "locationRegion");
-col("Original media", ""); // lameta has multiple files and we don't know which one is the primary one that this is wanting
+col("Original media", ""); // lameta has multiple files and we don't know which one is the primary one that this is wanting. Nick says "can be ignored"
 
 /* must be one of: historical reconstruction, historical text, instrumental music, language description, lexicon, primary text, song, typological analysis*/
 col("Data Categories", ""); // our "genre" has some of these (e.g. instrumental music)

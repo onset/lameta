@@ -238,6 +238,15 @@ export default class SayLessMenu {
           checked: userSettings.IMDIMode,
           click: () => (userSettings.IMDIMode = !userSettings.IMDIMode),
         },
+        {
+          label: i18n._(t`PARADISEC Mode`),
+          // tooltip only works in macos
+          tooltip: "Show PARADISEC output preview panels",
+          type: "checkbox",
+          checked: userSettings.ParadisecMode,
+          click: () =>
+            (userSettings.ParadisecMode = !userSettings.ParadisecMode),
+        },
       ],
     };
     // sessionMenu,
