@@ -59,7 +59,9 @@ function col(
 
 col("Item Identifier", "id");
 col("Item Title", "title");
-col("Item Description", "description");
+col("Item Description", "unused because we're using a function", (session) =>
+  getDescriptionWithAllHomelessFields(session)
+);
 col("Content Language", "", getCommaSeparatedLanguageNames);
 col("Subject Language", ""); // Maybe add to More Fields?
 
@@ -78,7 +80,7 @@ col("Data Type", ""); // Maybe add to More Fields?
 col("Discourse Type", "genre");
 col("Dialect", ""); // Maybe add to More Fields?
 
-col("Language as given", ""); // Maybe add to More Fields?
+col("Language as given", ""); // We don't have a field for this. Maybe add to More Fields?
 
 const contributorColumns: IColumn[] = [];
 /* Add up to six roles. All roles must have a first name. If there is no last name, leave the last name column blank, and enter information about additional roles starting in the next “Role” column. Acceptable roles are author , compiler , consultant , data_inputter , depositor , editor , interviewer , participant , performer , photographer , recorder , researcher , singer , speaker , translator */
@@ -133,6 +135,32 @@ export function makeParadisecSessionCsv(
   return makeParadisecSessionFields(project, sessionFilter)
     .map((row) => row.map((column) => csvEncode(column)).join(","))
     .join(kEol);
+}
+
+const blacklist = [
+  "modifiedDate",
+  "size",
+  "type",
+  "filename",
+  "id", // output in its own column
+  "title", // output in its own column
+  "languages", // output in its own column
+  "date", // output in its own column
+  "genre", // output as "Discourse Type"
+];
+function getDescriptionWithAllHomelessFields(session: Session): string {
+  const descriptionComponents = [
+    session.properties.getTextStringOrEmpty("description"),
+  ];
+  session.properties.keys().forEach((key) => {
+    if (blacklist.indexOf(key) < 0) {
+      const fieldContents = session.properties.getTextStringOrEmpty(key);
+      if (fieldContents && fieldContents.length > 0) {
+        descriptionComponents.push(`${key}: ${fieldContents}`);
+      }
+    }
+  });
+  return descriptionComponents.join(" | ");
 }
 
 // Get 3 fields for each contributor: [role,first,last,role,first,last,role,first,last, etc]
