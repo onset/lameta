@@ -49,7 +49,9 @@ export function NotifyMultipleProjectFiles(
         .then((response) => {
           if (response.response > 0) {
             showInExplorer(folder);
-            if (!userSettings.DeveloperMode) electron.remote.app.quit();
+            if (!userSettings.DeveloperMode) {
+              window.setTimeout(() => electron.remote.app.quit(), 1000);
+            }
           }
         });
     }
