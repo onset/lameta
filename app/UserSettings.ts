@@ -1,10 +1,6 @@
 import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
-import * as Path from "path";
-import * as fs from "fs-extra";
-import * as Sentry from "@sentry/browser";
-import { number } from "@lingui/core";
 import { observable, computed } from "mobx";
 
 class FakeStore {
@@ -37,6 +33,7 @@ export class UserSettings {
         : new Store({ name: "lameta-user-settings" });
 
     this.imdiMode = this.store.get("imdiMode") || false;
+    this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
