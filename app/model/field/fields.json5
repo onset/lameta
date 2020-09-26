@@ -17,7 +17,7 @@
     },
     {
       "key": "vernacularIso3CodeAndName",
-      "englishLabel": "Content Language",
+      "englishLabel": "Subject Language",
       "tagInSayMoreClassic": "VernacularISO3CodeAndName",
       "type": "language",
       "tabIndex": 1
@@ -135,7 +135,7 @@
     {
       "key": "languages",
       "type": "multiLanguage",
-      "englishLabel": "Content Languages",
+      "englishLabel": "Subject Languages",
       "tabIndex": 12
     },
     {
