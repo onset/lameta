@@ -132,9 +132,13 @@
         }
       ]
     },
+    "nsis":{
+      "artifactName":"${productName} Windows Setup ${version}.${ext}"
+    },
     "mac": {
       "icon": "build/mac.icns",
       "hardenedRuntime": true,
+      "artifactName":"${productName} Mac ${version}.${ext}",
       "extraResources": [
         "node_modules/ffprobe-static/bin/darwin/x64"
       ],
