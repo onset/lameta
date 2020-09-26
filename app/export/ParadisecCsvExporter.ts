@@ -19,15 +19,38 @@ export function makeParadisecCsv(
 
 export function makeParadisecProjectFields(project: Project): string[][] {
   const rows: string[][] = [];
-  rows.push(["Collection ID", project.properties.getTextStringOrEmpty("id")]);
+  rows.push([
+    "Collection ID",
+    project.properties.getTextStringOrEmpty("grantId"),
+  ]);
   rows.push([
     "Collection Title",
-    project.properties.getTextStringOrEmpty("title"),
+    project.properties.getTextStringOrEmpty("fundingProjectTitle"),
   ]);
-  rows.push([
-    "Collection Description",
-    project.properties.getTextStringOrEmpty("projectDescription"),
-  ]);
+
+  const projectDescriptionBlacklist = [
+    "modifiedDate",
+    "size",
+    "type",
+    "filename",
+    "projectDescription",
+    "id", // output in its own column
+    "grantId", // output in its own column
+    "depositor", // output in its own column
+    "fundingProjectTitle", // output in its own column
+  ];
+
+  const descriptionWithHomelessFields = getDescriptionWithAllHomelessFields(
+    project,
+    "projectDescription",
+    projectDescriptionBlacklist,
+    (key) =>
+      key
+        .replace("vernacularIso3CodeAndName", "subject-lang")
+        .replace("analysisIso3CodeAndName", "working-lang")
+  );
+
+  rows.push(["Collection Description", descriptionWithHomelessFields]);
   const { first, last } = parseNameIntoFirstAndLast(
     project.properties.getTextStringOrEmpty("depositor")
   );
@@ -60,10 +83,28 @@ function col(
 col("Item Identifier", "id");
 col("Item Title", "title");
 col("Item Description", "unused because we're using a function", (session) =>
-  getDescriptionWithAllHomelessFields(session)
+  getDescriptionWithAllHomelessFields(
+    session,
+    "description",
+    sessionBlacklist,
+    (key) => key
+  )
 );
-col("Content Language", "", getCommaSeparatedLanguageNames);
-col("Subject Language", ""); // Maybe add to More Fields?
+
+/* If the recording is people speaking in English about Chinese, then
+  +----------+---------+-----------+-----------+
+  | language | lameta  | elar/imdi | PARADISEC |
+  +----------+---------+-----------+-----------+
+  | English  | working | working   | content   |
+  | Chinese  | subject | content   | subject   |
+  +----------+---------+-----------+-----------+
+  */
+col("Content Language", "", (session) =>
+  session.getWorkingLanguageCodes().join(",")
+);
+col("Subject Language", "", (session) =>
+  session.getSubjectLanguageCodes().join(",")
+);
 
 col("Country/Countries", "locationCountry");
 col("Origination Date", "date");
@@ -78,7 +119,7 @@ col("Data Type", ""); // Maybe add to More Fields?
 
 /* Paradisec list is different: drama, formulaic_discourse, interactive_discourse, language_play, narrative, procedural_discourse, report, singing, or unintelligible_speech */
 col("Discourse Type", "genre");
-col("Dialect", ""); // Maybe add to More Fields?
+col("Dialect", ""); // Could add to More Fields, or better, expand our language code from iso639-3 to language tags? E.g. en-GB.
 
 col("Language as given", ""); // We don't have a field for this. Maybe add to More Fields?
 
@@ -87,11 +128,6 @@ const contributorColumns: IColumn[] = [];
 contributorColumns.push({ header: "Role", property: "" });
 contributorColumns.push({ header: "First name", property: "" });
 contributorColumns.push({ header: "Last name", property: "" });
-
-function getCommaSeparatedLanguageNames(session: Session): string {
-  // enhance: can we get at the name if it's qaa-qtx?
-  return session.getContentLanguageCodes().join(",");
-}
 
 export function makeParadisecSessionFields(
   project: Project,
@@ -137,7 +173,7 @@ export function makeParadisecSessionCsv(
     .join(kEol);
 }
 
-const blacklist = [
+const sessionBlacklist = [
   "modifiedDate",
   "size",
   "type",
@@ -148,15 +184,21 @@ const blacklist = [
   "date", // output in its own column
   "genre", // output as "Discourse Type"
 ];
-function getDescriptionWithAllHomelessFields(session: Session): string {
+
+function getDescriptionWithAllHomelessFields(
+  folder: Folder,
+  descriptionField: string,
+  blacklist: string[],
+  relabel: (label: string) => string
+): string {
   const descriptionComponents = [
-    session.properties.getTextStringOrEmpty("description"),
+    folder.properties.getTextStringOrEmpty(descriptionField),
   ];
-  session.properties.keys().forEach((key) => {
+  folder.properties.keys().forEach((key) => {
     if (blacklist.indexOf(key) < 0) {
-      const fieldContents = session.properties.getTextStringOrEmpty(key);
+      const fieldContents = folder.properties.getTextStringOrEmpty(key);
       if (fieldContents && fieldContents.length > 0) {
-        descriptionComponents.push(`${key}: ${fieldContents}`);
+        descriptionComponents.push(`${relabel(key)}: ${fieldContents}`);
       }
     }
   });

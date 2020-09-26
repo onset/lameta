@@ -240,19 +240,18 @@ export class Session extends Folder {
 
   // we no longer use "participants" except when serializing for legacy versions of SayMore(x) out there
 
-  public getContentLanguageCodes(): string[] {
+  public getLanguageCodes(fieldKey: string): string[] {
     return this.properties
-      .getTextStringOrEmpty("languages")
+      .getTextStringOrEmpty(fieldKey)
       .split(";")
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
   }
   public getWorkingLanguageCodes(): string[] {
-    return this.properties
-      .getTextStringOrEmpty("workingLanguages")
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+    return this.getLanguageCodes("workingLanguages");
+  }
+  public getSubjectLanguageCodes(): string[] {
+    return this.getLanguageCodes("languages");
   }
 
   // private setParticipantNames(names: string[]) {

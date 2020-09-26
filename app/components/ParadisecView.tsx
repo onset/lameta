@@ -78,15 +78,17 @@ export const ParadisecView: React.FunctionComponent<{
           }
         `}
       >
-        {rows.map((columns) => {
-          return (
-            <tr className={columns[0]}>
-              {columns.map((c) => (
-                <td>{c}</td>
-              ))}
-            </tr>
-          );
-        })}
+        <tbody>
+          {rows.map((columns) => {
+            return (
+              <tr className={columns[0]}>
+                {columns.map((c) => (
+                  <td>{c}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
     </div>
   );
