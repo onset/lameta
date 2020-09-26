@@ -4,6 +4,7 @@ import { Field } from "../model/field/Field";
 import { RadioGroup, Radio } from "react-radio-group";
 import "./StatusControl.scss";
 import { translateChoice } from "../localization";
+import { locate } from "../crossPlatformUtilities";
 
 export interface IProps {
   statusField: Field;
@@ -27,7 +28,7 @@ export default class StatusControl extends React.Component<IProps> {
             const translated = translateChoice(s);
             return (
               <div key={s}>
-                <img src={require(`../img/status-${s}.png`)} />
+                <img src={locate(`assets/status-${s}.png`)} />
                 <label>
                   <Radio value={s} />
                   {/* saymore windows classic used "In_Progress" as the key */}

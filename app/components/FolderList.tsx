@@ -14,7 +14,6 @@ import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-import { titleCase } from "title-case";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -202,10 +201,10 @@ export class FolderList extends React.Component<IProps> {
 
   private getStatusIcon(status: string) {
     try {
-      return require(`../img/status-${status}.png`);
+      return locate(`assets/status-${status}.png`);
     } catch (e) {
       // there is some status this version doesn't understand
-      return require(`../img/Warning.png`);
+      return locate("assets/warning.png");
     }
   }
 }
