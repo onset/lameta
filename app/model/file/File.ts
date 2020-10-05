@@ -27,14 +27,9 @@ import {
 import compareVersions from "compare-versions";
 
 export class Contribution {
-  //review this @mobx.observable
-  @mobx.observable
   public personReference: string; // this is the contributor
-  @mobx.observable
   public role: string;
-  @mobx.observable
   public date: string;
-  @mobx.observable
   public comments: string;
   public sessionName: string; // not persisted; just used by the UI when listing contributions for a person
 
@@ -44,6 +39,12 @@ export class Contribution {
     date: string,
     comments: string
   ) {
+    mobx.makeObservable(this, {
+      personReference: mobx.observable,
+      role: mobx.observable,
+      date: mobx.observable,
+      comments: mobx.observable,
+    });
     this.personReference = personReference;
     this.role = role;
     this.date = date;
@@ -58,7 +59,6 @@ export /*babel doesn't like this: abstract*/ class File {
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
-  @mobx.observable
   public describedFilePath: string;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
@@ -283,6 +283,11 @@ export /*babel doesn't like this: abstract*/ class File {
     fileExtensionForMetadata: string,
     canDelete: boolean
   ) {
+    mobx.makeObservable(this, {
+      describedFilePath: mobx.observable,
+      properties: mobx.observable,
+      contributions: mobx.observable,
+    });
     this.canDelete = canDelete;
     this.describedFilePath = describedFilePath;
     this.metadataFilePath = metadataFilePath;

@@ -45,7 +45,6 @@ interface IState {
 @observer
 export default class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
-  @mobx.observable
   public projectHolder: ProjectHolder;
 
   private menu: SayLessMenu;
@@ -53,6 +52,7 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+    mobx.makeObservable(this, { projectHolder: mobx.observable });
     this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,

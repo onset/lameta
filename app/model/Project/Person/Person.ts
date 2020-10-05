@@ -12,6 +12,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { FieldSet } from "../../field/FieldSet";
 import { Field } from "../../field/Field";
 import { Exception } from "@sentry/browser";
+import { intercept } from "mobx";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -90,13 +91,21 @@ export class Person extends Folder {
       this.properties.getTextStringOrEmpty("name"),
       userSettingsSingleton.IMDIMode
     );
-    this.properties
-      .getValueOrThrow("name")
-      .textHolder.map.intercept((change) => {
-        // a problem with this is that it's going going get called for every keystroke
+    // this.properties
+    //   .getValueOrThrow("name")
+    //   .textHolder.map.intercept((change) => {
+    //     // a problem with this is that it's going going get called for every keystroke
 
+    //     return change;
+    //   });
+    intercept(
+      this.properties.getValueOrThrow("name").textHolder.map,
+      (change) => {
+        // a problem with this is that it's going to get called for every keystroke
         return change;
-      });
+      }
+    );
+
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();

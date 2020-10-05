@@ -1,5 +1,6 @@
 import * as React from "react";
-import { observer } from "mobx-react";
+import * as MobxReact from "mobx-react";
+import { makeObservable } from "mobx";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
@@ -12,39 +13,42 @@ export interface IProps {
   choices: IChoice[];
 }
 
-@observer
-export default class RoleChooser extends React.Component<IProps> {
-  constructor(props: IProps) {
-    super(props);
-  }
+const RoleChooser = MobxReact.observer(
+  class RoleChooser extends React.PureComponent<IProps> {
+    constructor(props: IProps) {
+      super(props);
+    }
 
-  public render() {
-    const choices = this.props.choices ? this.props.choices : [];
+    public render() {
+      const choices = this.props.choices ? this.props.choices : [];
 
-    const options = choices.map((c) => {
-      const label = translateRole(c.label);
-      return new Object({
-        value: c.id,
-        label,
-        title: c.description,
+      const options = choices.map((c) => {
+        const label = translateRole(c.label);
+        return new Object({
+          value: c.id,
+          label,
+          title: c.description,
+        });
       });
-    });
-    const currentValueWrappedForSelect = {
-      value: this.props.contribution.role,
-      label: titleCase(translateRole(this.props.contribution.role)),
-    };
-    return (
-      <ReactSelectClass
-        name={"select role"}
-        value={currentValueWrappedForSelect}
-        onChange={(s: any) => {
-          this.props.contribution.role = (s && s.value
-            ? s.value
-            : "") as string;
-          this.setState({});
-        }}
-        options={options}
-      />
-    );
+      const currentValueWrappedForSelect = {
+        value: this.props.contribution.role,
+        label: titleCase(translateRole(this.props.contribution.role)),
+      };
+      return (
+        <ReactSelectClass
+          name={"select role"}
+          value={currentValueWrappedForSelect}
+          onChange={(s: any) => {
+            this.props.contribution.role = (s && s.value
+              ? s.value
+              : "") as string;
+            this.setState({});
+          }}
+          options={options}
+        />
+      );
+    }
   }
-}
+);
+
+export default RoleChooser;

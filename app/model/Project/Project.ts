@@ -30,9 +30,12 @@ import { duplicateFolder } from "../Folder/DuplicateFolder";
 let sCurrentProject: Project | null = null;
 
 export class ProjectHolder {
-  @mobx.observable
-  private projectInternal: Project | null;
+  public projectInternal: Project | null;
 
+  constructor() {
+    // if it's private, does it need to be observable?
+    mobx.makeObservable(this, { projectInternal: mobx.observable });
+  }
   public get project(): Project | null {
     return this.projectInternal;
   }
@@ -54,13 +57,9 @@ export class ProjectHolder {
 export class Project extends Folder {
   public loadingError: string;
 
-  @mobx.observable
   public selectedSession: IFolderSelection;
-  @mobx.observable
   public selectedPerson: IFolderSelection;
-  @mobx.observable
   public sessions: Session[] = [];
-  @mobx.observable
   public persons: Person[] = [];
 
   public descriptionFolder: Folder;
@@ -98,6 +97,13 @@ export class Project extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
+
+    mobx.makeObservable(this, {
+      selectedSession: mobx.observable,
+      selectedPerson: mobx.observable,
+      sessions: mobx.observable,
+      persons: mobx.observable,
+    });
 
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
@@ -293,18 +299,19 @@ export class Project extends Folder {
 
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
-    this.properties
-      .getValueOrThrow("accessProtocol")
-      .textHolder.map.intercept((change) => {
+    mobx.intercept(
+      this.properties.getValueOrThrow("accessProtocol").textHolder.map,
+      (change) => {
         this.authorityLists.setAccessProtocol(
           change.newValue as string,
           this.properties.getTextStringOrEmpty("customAccessChoices")
         );
         return change;
-      });
-    this.properties
-      .getValueOrThrow("customAccessChoices")
-      .textHolder.map.intercept((change) => {
+      }
+    );
+    mobx.intercept(
+      this.properties.getValueOrThrow("customAccessChoices").textHolder.map,
+      (change) => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
@@ -314,7 +321,8 @@ export class Project extends Folder {
           change.newValue as string
         );
         return change;
-      });
+      }
+    );
   }
 
   private setupGenreDefinition() {

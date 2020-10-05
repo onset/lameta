@@ -14,7 +14,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": false,
-
+    "useDefineForClassFields": true, // for mobx 6 (worked without it, but this is what the migration guide from mobx 5 to 6 says to do)
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,

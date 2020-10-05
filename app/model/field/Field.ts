@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
@@ -41,7 +41,6 @@ export class Field {
   public readonly visibility: FieldVisibility;
   public persist: boolean;
   public readonly cssClass: string;
-  @observable
   public textHolder = new TextHolder();
   public choices: string[];
   public definition: FieldDefinition;
@@ -110,6 +109,10 @@ export class Field {
     // imdiRange?: string,
     // imdiIsClosedVocabulary?: boolean
   ) {
+    makeObservable(this, {
+      textHolder: observable
+    });
+
     this.key = key;
     this.form = form;
     this.type = type;

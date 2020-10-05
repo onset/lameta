@@ -1,5 +1,5 @@
 import { File, OtherFile } from "../file/File";
-import { observable } from "mobx";
+import { makeObservable, observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 
@@ -19,22 +19,24 @@ import { sanitizeForArchive } from "../../filenameSanitizer";
 import userSettingsSingleton from "../../UserSettings";
 
 export class IFolderSelection {
-  @observable
   public index: number;
+  constructor() {
+    makeObservable(this, { index: observable });
+  }
 }
 
 // Project, Session, or Person
 export /*babel doesn't like this: abstract*/ class Folder {
   // Is the folder's checkbox ticked?
-  @observable
+
   public checked: boolean = false;
 
   public directory: string = "";
-  @observable
+
   public files: File[] = [];
 
   // file from this folder that is currently selected in the UI
-  @observable
+
   public selectedFile: File | null;
 
   public metadataFile: File | null;
@@ -47,6 +49,11 @@ export /*babel doesn't like this: abstract*/ class Folder {
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
+    makeObservable(this, {
+      checked: observable,
+      directory: observable,
+      selectedFile: observable,
+    });
     this.customFieldRegistry = customFieldRegistry;
     this.directory = directory;
     this.metadataFile = metadataFile;
@@ -127,7 +134,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     files.push(folderMetaDataFile);
 
-    //collect the other files and the metdata files they are paired with
+    //collect the other files and the metadata files they are paired with
     const filePaths = glob.sync(Path.join(directory, "*.*"));
     filePaths.forEach((path) => {
       if (path !== folderMetaDataFile.metadataFilePath) {
