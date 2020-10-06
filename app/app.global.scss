@@ -81,8 +81,9 @@ label {
 }
 .moreFieldsBlock label + div, // More Fields
 .field label + div, // e.g People chooser
-span + textarea,
-label + textarea,
+// span + textarea,
+// label + textarea,
+textarea
 .languages label + div,
 label + .select {
   margin-top: $label-to-field-sep;
