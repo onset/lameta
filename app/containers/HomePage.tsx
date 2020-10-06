@@ -10,7 +10,6 @@ import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
-import * as ncp from "ncp";
 import * as Path from "path";
 import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
@@ -32,6 +31,7 @@ import {
   ShowMessageDialog,
 } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../errorHandling";
+import { NotifyError, NotifyWarning } from "../components/Notify";
 
 const isDev = require("electron-is-dev");
 
@@ -149,34 +149,30 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.setState({ showModal: false });
     if (directory) {
       fs.ensureDirSync(directory);
-
-      if (useSampleProject) {
-        const sampleSourceDir = locate("sample data/Edolo sample");
-        ncp.ncp(sampleSourceDir, directory, (err) => {
-          console.log("ncp err=" + err);
+      try {
+        if (useSampleProject) {
+          const sampleSourceDir = locate("sample data/Edolo sample");
+          fs.copySync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
           fs.renameSync(
             Path.join(directory, "Edolo sample.sprj"),
             Path.join(directory, projectName + ".sprj")
           );
           this.projectHolder.setProject(Project.fromDirectory(directory));
-        });
-        analyticsEvent("Create Project", "Create Sample Project");
-      } else {
-        this.projectHolder.setProject(Project.fromDirectory(directory));
-        analyticsEvent("Create Project", "Create Custom Project");
+          analyticsEvent("Create Project", "Create Sample Project");
+        } else {
+          this.projectHolder.setProject(Project.fromDirectory(directory));
+          analyticsEvent("Create Project", "Create Custom Project");
+        }
+        userSettings.PreviousProjectDirectory = directory;
+      } catch (err) {
+        NotifyError(
+          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`
+        );
       }
-      userSettings.PreviousProjectDirectory = directory;
     }
   }
-  // private listDir(dir: string) {
-  //   fs.readdir(dir, (err, files) => {
-  //     console.log("listing " + dir);
-  //     files.forEach(file => {
-  //       console.log(file);
-  //     });
-  //   });
-  // }
+
   public render() {
     // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
     // this has been converted to modern react with hooks.
