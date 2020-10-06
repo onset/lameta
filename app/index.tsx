@@ -8,6 +8,8 @@ import { initializeAnalytics, analyticsEvent } from "./analytics";
 import { initializeSentry as initializeErrorReporting } from "./errorHandling";
 import { initializeLocalization } from "./localization";
 
+import * as mobx from "mobx";
+
 //if (!process.env.HOT) {
 // sentry kills hot reloading with react-hot-loader
 // possibly it's trying to report some RHL error... you do see them if you turn on
@@ -23,5 +25,13 @@ analyticsEvent("Launch", "Launch");
 setConfig({ logLevel: "debug" });
 
 document.body.setAttribute("class", remote.process.platform);
+
+mobx.configure({
+  enforceActions: "never",
+  computedRequiresReaction: false,
+  reactionRequiresObservable: false,
+  observableRequiresReaction: false,
+  disableErrorBoundaries: false,
+});
 
 render(<App />, document.getElementById("root"));

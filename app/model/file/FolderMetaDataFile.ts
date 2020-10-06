@@ -32,8 +32,6 @@ export class FolderMetadataFile extends File {
     );
     this.customFieldNamesRegistry = customFieldRegistry;
     this.readDefinitionsFromJson(rawKnownFieldsFromJson);
-
-    this.finishLoading();
   }
 
   private readDefinitionsFromJson(rawKnownFieldsFromJson: FieldDefinition[]) {

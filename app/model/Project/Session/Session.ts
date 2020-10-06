@@ -278,5 +278,6 @@ export class SessionMetadataFile extends FolderMetadataFile {
     mobx.observe(thingGettingChangedMysteriously, (change: any) => {
       console.log(`** status  '${change.oldValue}' --> '${change.newValue}'`);
     });*/
+    this.finishLoading();
   }
 }

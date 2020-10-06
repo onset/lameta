@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as MobxReact from "mobx-react";
-import { makeObservable } from "mobx";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
@@ -14,7 +13,7 @@ export interface IProps {
 }
 
 const RoleChooser = MobxReact.observer(
-  class RoleChooser extends React.PureComponent<IProps> {
+  class RoleChooserC extends React.Component<IProps> {
     constructor(props: IProps) {
       super(props);
     }

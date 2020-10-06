@@ -267,5 +267,6 @@ export class PersonMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.person,
       customFieldRegistry
     );
+    this.finishLoading();
   }
 }
