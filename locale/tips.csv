@@ -1,9 +1,12 @@
-"Context","En","Es","Fr", "Ru", "zh-CN"
-"Project","Contact information about the person or institution responsible for the project.", "","","",""
-"Person birthYear","If you are estimating, talk about that in the Description", "","","","",""
-"Person birthYear","Enter '?' if you don't know","","","",""
-
-
-
-
-
+"Context","en","es","fr","ru","zh-CN","pt-BR","id"
+"Project","Contact information about the person or institution responsible for the project.","","","","","",""
+"Person birthYear.info","If you are estimating, talk about that in the Description","","","","","",""
+"Person birthYear","Enter '?' if you don't know","","","","","",""
+"Keywords","Separate with commas. Note that individual keywords cannot contain a comma.","","","","","",""
+"Topics","Separate with commas. Note that individual topics cannot contain a comma.","","","","","",""
+"Neighborhood/Town/Village","A location that is relevant within the group you are studying","","","","","",""
+"Custom Fields-info","Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.","","","","","",""
+"Access Description","If the access is not open/free, use this to explain why.","","","","","",""
+"Person.howToContact","This is only for the use of the researcher.","","","","","",""
+"Not important for IMDI.","Not important for IMDI.","","","","","",""
+"Relevant details such as where they learned it","Relevant details such as where they learned it","","","","","",""

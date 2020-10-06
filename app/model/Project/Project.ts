@@ -494,18 +494,28 @@ export class Project extends Folder {
     return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
   }*/
 
-  public getContentLanguageCodeAndName(): {
-    iso639_3: string;
-    englishName: string;
-  } {
-    const x: string = this.properties.getTextStringOrEmpty(
+  public getContentLanguageCodeAndName():
+    | {
+        iso639_3: string;
+        englishName: string;
+      }
+    | undefined {
+    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
       "vernacularIso3CodeAndName"
     );
-    const parts = x.split(":").map((p) => p.trim());
-    if (!parts[0]) {
-      throw Error(`vernacularIso3CodeAndName was '${x}'.`);
+
+    if (projectDefaultContentLanguage.trim().length === 0) {
+      // hasn't been defined yet, e.g. a new project
+      return undefined;
     }
-    return { iso639_3: parts[0].toLowerCase(), englishName: parts[1] };
+    const parts = projectDefaultContentLanguage.split(":").map((p) => p.trim());
+    if (!parts[0]) {
+      return undefined; // hasn't been defined yet, e.g. a new project (but somehow still has a colon)
+    }
+    // In the degenerate case in which there was no ":" in the <vernacularIso3CodeAndName> element,
+    // use the code as the name.
+    const langName = parts.length > 1 ? parts[1] : parts[0];
+    return { iso639_3: parts[0].toLowerCase(), englishName: langName };
   }
 
   public getWorkingLanguageName(): string {

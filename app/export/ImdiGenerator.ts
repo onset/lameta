@@ -209,8 +209,18 @@ export default class ImdiGenerator {
           "http://www.mpi.nl/IMDI/Schema/Content-Channel.xml"
         ); // required but we don't have something to map to it
       });
+
+      /* If the recording is people speaking in English about Chinese, then
+        +----------+---------+-----------+-----------+
+        | language | lameta  | elar/imdi | PARADISEC |
+        +----------+---------+-----------+-----------+
+        | English  | working | working   | content   |
+        | Chinese  | subject | content   | subject   |
+        +----------+---------+-----------+-----------+
+        */
+
       this.group("Languages", () => {
-        const languages = session.getContentLanguageCodes();
+        const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
             const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(

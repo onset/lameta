@@ -8,6 +8,7 @@ import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
 import { i18n } from "../../localization";
 import { t } from "@lingui/macro";
+import { locate } from "../../crossPlatformUtilities";
 
 export interface IProps {
   file: File;
@@ -99,7 +100,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
           this.setState({}); // update to show the change
         }}
       >
-        <img alt="delete" src={require(`../../img/trash.png`)} />
+        <img alt="delete" src={locate("assets/small-trash.png")} />
       </button>
     );
   }

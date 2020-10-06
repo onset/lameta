@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import {FileList} from "./FileList";
+import { FileList } from "./FileList";
 import { observer } from "mobx-react-lite";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";
@@ -25,6 +25,7 @@ import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
 import userSettings from "../UserSettings";
 import SplitPane from "react-split-pane";
+import { ParadisecView } from "./ParadisecView";
 
 export interface IProps {
   folder: Folder;
@@ -124,10 +125,30 @@ function getTabs(
   ) : (
     <></>
   );
+  const paradisecTab = userSettings.ParadisecMode ? (
+    <Tab>PARADISEC {/* don't translate  */}</Tab>
+  ) : (
+    <></>
+  );
 
   const imdiPanel = userSettings.IMDIMode ? (
     <TabPanel>
       <ImdiView
+        target={
+          file.type === "Session" || file.type === "Person"
+            ? directoryObject
+            : file
+        }
+        folder={props.folder}
+        project={props.project}
+      />
+    </TabPanel>
+  ) : (
+    <></>
+  );
+  const paradisecPanel = userSettings.ParadisecMode ? (
+    <TabPanel>
+      <ParadisecView
         target={
           file.type === "Session" || file.type === "Person"
             ? directoryObject
@@ -162,6 +183,7 @@ function getTabs(
       {contributorsPanel}
       {notesPanel}
       {imdiPanel}
+      {paradisecPanel}
     </>
   ) : null;
 
@@ -196,7 +218,7 @@ function getTabs(
             <Tab>
               <Trans>Notes</Trans>
             </Tab>
-            {imdiTab}
+            {imdiTab} {paradisecTab}
           </TabList>
           <TabPanel>
             <SMErrorBoundary
@@ -237,6 +259,7 @@ function getTabs(
 
           {notesPanel}
           {imdiPanel}
+          {paradisecPanel}
         </Tabs>
       );
     case "Person":

@@ -22,7 +22,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
-      height: "2em",
+      height: "100%",
       borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",

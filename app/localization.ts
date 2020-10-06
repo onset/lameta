@@ -8,7 +8,7 @@ import { t } from "@lingui/macro";
 import moment from "moment";
 import { FieldDefinition } from "./model/field/FieldDefinition";
 
-const languages = ["en", "es", "fr", "ps"];
+const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
 export let currentUILanguage: string;
 export let i18n: I18n;
@@ -84,47 +84,69 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
   if (fieldDef === undefined) {
     return "LABEL ERROR";
   }
-  return getMatch(fields, fieldDef.englishLabel);
+  return getMatch(fields, fieldDef.englishLabel, "fields.csv");
 }
 export function translateTooltip(fieldDef: FieldDefinition): string {
   if (!fieldDef.tooltip) {
     return "";
   }
-  return fieldDef.tooltip ? getMatch(tips, fieldDef.tooltip) : "";
+  return fieldDef.tooltip ? getMatch(tips, fieldDef.tooltip, "tips.csv") : "";
+}
+
+export function translateTooltipNotice(notice: string): string {
+  return getMatch(tips, notice, "tips.csv");
 }
 export function translateSpecialInfo(fieldDef: FieldDefinition): string {
   if (!fieldDef.specialInfo) {
     return "";
   }
-  return fieldDef.specialInfo ? getMatch(tips, fieldDef.specialInfo) : "";
+  return fieldDef.specialInfo
+    ? getMatch(tips, fieldDef.specialInfo, "tips.csv")
+    : "";
 }
 export function translateAccessProtocol(choice: string): string {
-  return getMatch(accessProtocols, choice);
+  return getMatch(accessProtocols, choice, "accessProtocols.csv");
 }
-export function translateChoice(choice: string): string {
-  return getMatch(choices, choice);
+export function translateChoice(choice: string, fieldName?: string): string {
+  return getMatch(choices, choice, "choices.csv", fieldName);
 }
 
 export function translateRole(role: string) {
-  return getMatch(roles, role);
+  return getMatch(roles, role, "roles.csv");
 }
 
 export function translateGenre(genre: string) {
-  return getMatch(genres, genre);
+  return getMatch(genres, genre, "genres.csv");
 }
-function getMatch(lines: any[], s: string): string {
+function getMatch(
+  lines: any[],
+  s: string,
+  fileThatShouldHaveThis: string,
+  fieldName?: string
+): string {
+  const match = lines.find((f) => f.en === s);
+
   if (currentUILanguage === "ps") {
-    return "Pseudo" + s;
+    // do we have a column for english for this?
+    if (match && match["en"]) return s + "✓";
+    else {
+      if (s && s.length > 0) {
+        // at the moment we're not asking translators to take on translating country names, so we don't expect to find them in the locale/choices.csv file
+        if (!fieldName || fieldName.toLowerCase().indexOf("country") < 0) {
+          const forField = fieldName ? `for field ${fieldName}` : "";
+
+          console.log(
+            `TODO: Add \t"${s}"\t to locale/${fileThatShouldHaveThis} ${forField}`
+          );
+        }
+        return "MISSING-" + s;
+      }
+    }
   }
-  const key = toCsvLanguageKey();
-  const match = lines.find((f) => f.En === s);
-  if (match && match[key]) {
-    return match[key];
+
+  if (match && match[currentUILanguage]) {
+    return match[currentUILanguage];
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
-}
-// in this csv, we have "En", "Es", etc. Not "en", "es"... which is what the po file-based things use
-function toCsvLanguageKey() {
-  return currentUILanguage.charAt(0).toUpperCase() + currentUILanguage.slice(1);
 }

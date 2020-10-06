@@ -14,7 +14,6 @@ import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-import { titleCase } from "title-case";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -84,7 +83,15 @@ export class FolderList extends React.Component<IProps> {
           this.props.folders[0].properties.getValueOrThrow(key)
             .labelInUILanguage
         ) : (
-          titleCase(key)
+          // Enhance: This is a design flaw. If we don't have any items in the folder list, then the above
+          // cannot ask one of them for the labelInUiLanguage.
+          // titleCase(key)
+          key
+            .replace(/([A-Z])/g, (match) => ` ${match}`)
+            .replace(/^./, (match) => match.toUpperCase())
+            .trim()
+            .replace("Id", "ID")
+            .replace("Display Name", "Person")
         );
 
       const c: object = {
@@ -194,10 +201,10 @@ export class FolderList extends React.Component<IProps> {
 
   private getStatusIcon(status: string) {
     try {
-      return require(`../img/status-${status}.png`);
+      return locate(`assets/status-${status}.png`);
     } catch (e) {
       // there is some status this version doesn't understand
-      return require(`../img/Warning.png`);
+      return locate("assets/warning.png");
     }
   }
 }

@@ -152,14 +152,14 @@ export default class SayLessMenu {
 
           submenu: [
             {
-              label: "Smaller",
+              label: i18n._(t`Smaller`),
               accelerator: "CmdOrCtrl+-",
               click: () => {
                 userSettingsSingleton.ZoomFont(-1);
               },
             },
             {
-              label: "Larger",
+              label: i18n._(t`Larger`),
               accelerator: "CmdOrCtrl+=",
               click: () => {
                 userSettingsSingleton.ZoomFont(1);
@@ -180,7 +180,7 @@ export default class SayLessMenu {
               checked: currentUILanguage === "en",
             },
             {
-              label: "Español (27%)",
+              label: "Español (15%)",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -188,12 +188,28 @@ export default class SayLessMenu {
               checked: currentUILanguage === "es",
             },
             {
-              label: "Français  (24%)",
+              label: "Français  (23%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
               },
               checked: currentUILanguage === "fr",
+            },
+            {
+              label: "Portuguesa, Brasileiro  (38%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("pt-BR");
+              },
+              checked: currentUILanguage === "pt-BR",
+            },
+            {
+              label: "Russian  (11%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("ru");
+              },
+              checked: currentUILanguage === "ru",
             },
             userSettings.DeveloperMode
               ? {
@@ -206,7 +222,7 @@ export default class SayLessMenu {
                 }
               : { type: "separator" },
             {
-              label: "Help translate",
+              label: i18n._(t`Help translate`),
               click: () => {
                 shell.openExternal("https://crowdin.com/project/lameta");
               },
@@ -214,13 +230,22 @@ export default class SayLessMenu {
           ],
         },
         {
-          label: "IMDI Mode",
+          label: i18n._(t`IMDI Mode`),
           // tooltip only works in macos
           tooltip:
             "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
           type: "checkbox",
           checked: userSettings.IMDIMode,
           click: () => (userSettings.IMDIMode = !userSettings.IMDIMode),
+        },
+        {
+          label: i18n._(t`PARADISEC Mode`),
+          // tooltip only works in macos
+          tooltip: "Show PARADISEC output preview panels",
+          type: "checkbox",
+          checked: userSettings.ParadisecMode,
+          click: () =>
+            (userSettings.ParadisecMode = !userSettings.ParadisecMode),
         },
       ],
     };

@@ -1,10 +1,6 @@
 import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
-import * as Path from "path";
-import * as fs from "fs-extra";
-import * as Sentry from "@sentry/browser";
-import { number } from "@lingui/core";
 import { observable, computed } from "mobx";
 
 class FakeStore {
@@ -22,6 +18,8 @@ export class UserSettings {
   @observable
   private imdiMode: boolean;
   @observable
+  private paradisecMode: boolean;
+  @observable
   private howUsing: string;
   @observable
   public uiFontZoom: number;
@@ -35,6 +33,7 @@ export class UserSettings {
         : new Store({ name: "lameta-user-settings" });
 
     this.imdiMode = this.store.get("imdiMode") || false;
+    this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     this.email = this.store.get("email", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
@@ -50,6 +49,13 @@ export class UserSettings {
   public set IMDIMode(show: boolean) {
     this.imdiMode = show;
     this.store.set("imdiMode", this.imdiMode);
+  }
+  public get ParadisecMode() {
+    return this.paradisecMode;
+  }
+  public set ParadisecMode(show: boolean) {
+    this.paradisecMode = show;
+    this.store.set("paradisecMode", this.ParadisecMode);
   }
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person

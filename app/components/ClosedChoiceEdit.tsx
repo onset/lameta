@@ -48,7 +48,9 @@ export default class ClosedChoiceEdit extends React.Component<
             //NB: an error about keys here means that the choices were not unique
             this.props.field.choices.map((s) => (
               <option key={s} value={s}>
-                {s === "unspecified" ? "" : translateChoice(s)}
+                {s === "unspecified"
+                  ? ""
+                  : translateChoice(s, this.props.field.definition.key)}
               </option>
             ))
           }

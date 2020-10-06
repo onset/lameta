@@ -41,9 +41,9 @@ interface IIndexEntry {
 
 export class LanguageFinder {
   private index: TrieSearch;
-  private getDefaultLanguage: () => IIndexEntry;
+  private getDefaultLanguage: () => IIndexEntry | undefined;
 
-  constructor(getDefaultLanguage: () => IIndexEntry) {
+  constructor(getDefaultLanguage: () => IIndexEntry | undefined) {
     this.getDefaultLanguage = getDefaultLanguage;
 
     // currently this uses a trie, which is overkill for this number of items,
@@ -113,13 +113,15 @@ export class LanguageFinder {
     name: string,
     codeIfNoMatches: string = "und"
   ): string {
+    const projectContentLanguage = this.getDefaultLanguage();
+
     // handle qaa -- qtx or any other code that we don't have in our index, but the user has
     // set up as the default language
     if (
       name.toLowerCase().trim() ===
       this.getDefaultLanguage()?.englishName.toLowerCase().trim()
     ) {
-      return this.getDefaultLanguage().iso639_3;
+      return projectContentLanguage?.iso639_3 || "";
     }
 
     // gives us hits on name & codes that start with the prefix
@@ -132,6 +134,7 @@ export class LanguageFinder {
   public makeMatchesAndLabelsForSelect(
     prefix: string
   ): { languageInfo: Language; nameMatchingWhatTheyTyped: string }[] {
+    const projectContentLanguage = this.getDefaultLanguage();
     const pfx = prefix.toLocaleLowerCase();
     const sortedListOfMatches = this.findMatchesForSelect(prefix);
     // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
@@ -140,8 +143,8 @@ export class LanguageFinder {
         iso639_3: prefix,
         englishName:
           // if they have given us the name for this custom language in the Project settings, use it
-          this.getDefaultLanguage().iso639_3 === prefix
-            ? this.getDefaultLanguage().englishName
+          projectContentLanguage?.iso639_3 === prefix
+            ? projectContentLanguage?.englishName
             : `${prefix} [Unlisted]`,
       });
       sortedListOfMatches.push(l);
@@ -157,19 +160,18 @@ export class LanguageFinder {
     // Enhance: in order to do search without stripDiacritics,
     // we would probably have to strip them off before adding to TrieSearch.
     const langs = this.index.get(s);
-
+    const projectContentLanguage = this.getDefaultLanguage();
     // handle qaa -- qtx or any other code that we don't have in our index, but the user has
     // set up as the default language
-    const nameOfProjectDefaultLanguage = this.getDefaultLanguage()
-      .englishName.toLowerCase()
-      .trim();
+    const nameOfProjectDefaultLanguage =
+      projectContentLanguage?.englishName.toLowerCase().trim() || "";
     if (
       nameOfProjectDefaultLanguage.startsWith(s.toLowerCase().trim()) ||
-      this.getDefaultLanguage()
-        .iso639_3.toLowerCase()
+      projectContentLanguage?.iso639_3
+        .toLowerCase()
         .startsWith(s.toLowerCase().trim())
     ) {
-      langs.push(this.getDefaultLanguage());
+      langs.push(projectContentLanguage);
     }
     return langs;
   }

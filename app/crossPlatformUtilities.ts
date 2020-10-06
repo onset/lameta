@@ -41,7 +41,12 @@ function replaceall(replaceThis: string, withThis: string, inThis: string) {
 // The path will vary when we're running from source vs in an asar-packaged mac app.
 // See https://github.com/electron-userland/electron-builder/issues/751
 
+const fileLocationCache = new Map<string, string>();
+
 export function locate(relativePath: string): string {
+  const cached = fileLocationCache.get(relativePath);
+  if (cached) return cached;
+
   //remote unavailable in unit tests (because I haven't figure out how to do it yet)
   const appPath = remote ? remote.app.getAppPath() : "";
 
@@ -85,6 +90,7 @@ export function locate(relativePath: string): string {
   try {
     const result = fs.realpathSync(adjustedPath);
     //console.log(`locate(${path})  result= ${result}`);
+    fileLocationCache.set(relativePath, result);
     return result;
   } catch (err) {
     // console.error(
