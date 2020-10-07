@@ -75,9 +75,7 @@ describe("people csv export", () => {
   it("should contain right number of people", () => {
     expect(peopleMatrix.length).toBe(1 + 4);
   });
-  it("should contain expected primaryLanguage", () => {
-    expect(people(1, "primaryLanguage")).toBe("etr");
-  });
+
   it("should contain expected notes", () => {
     expect(people(1, "notes")).toBe("");
   });
@@ -89,14 +87,21 @@ describe("people csv export", () => {
     expect(peopleMatrix[0]).not.toContainEqual("Size");
     expect(peopleMatrix[0]).not.toContainEqual("modifiedDate");
     expect(peopleMatrix[0]).not.toContainEqual("type");
+    expect(peopleMatrix[0]).not.toContainEqual("filename");
+    expect(peopleMatrix[0]).not.toContainEqual("displayname");
   });
   it("check Igali", () => {
+    console.log(peopleMatrix[0]);
+    console.log(peopleMatrix[2]);
     expect(people(2, "name")).toBe("Igali Sagali (Joseph)");
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
     expect(people(2, "gender")).toBe("Male");
-    expect(people(2, "otherLanguage0")).toBe("hui");
-    expect(people(2, "otherLanguage1")).toBe("tpi");
+    expect(people(2, "languages")).toContain(
+      "*etr (also mother) (also father)"
+    );
+    expect(people(2, "languages")).toContain("hui");
+    expect(people(2, "languages")).toContain("tpi");
   });
   it("should have name first", () => {
     expect(location("name")).toBe(0);

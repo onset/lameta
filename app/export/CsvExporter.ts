@@ -7,6 +7,7 @@ import * as fs from "fs";
 import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
+import { Person } from "../model/Project/Person/Person";
 
 export const kEol: string = require("os").EOL;
 
@@ -107,9 +108,24 @@ function getGenericCsv(folders: Folder[]): string {
     return "";
   }
   currentKnownFields = folders[0].knownFields;
-  const blacklist = ["modifiedDate", "size", "type", "hasConsent"];
+  const blacklist = [
+    "modifiedDate",
+    "size",
+    "type",
+    "hasConsent",
+    "displayName",
+    "filename",
+  ];
   const foundFields = getKeys(folders)
-    .filter((k) => blacklist.indexOf(k) === -1)
+    .filter((k) => {
+      if (blacklist.indexOf(k) > -1) return false;
+      if (folders[0].properties.getValue(k)?.definition.omitExport) {
+        console.log("will not export " + k);
+        return false;
+      }
+      return true;
+    })
+
     .sort(sortFields);
   let header = foundFields.join(",");
   // we have a bit of hassle in that contributions are currently
@@ -124,19 +140,20 @@ function getGenericCsv(folders: Folder[]): string {
         .map((key) => {
           const field = folder.properties.getValue(key);
           if (
-            !field ||
-            (field &&
-              field.definition &&
-              field.definition.personallyIdentifiableInformation)
+            !field
+            // wait no don't make it impossible to export PII || ( field?.definition?.personallyIdentifiableInformation)
           ) {
             return "";
           }
-
-          const value = fieldToCsv(field);
+          let value = "";
+          if (field.type === FieldType.PersonLanguageList) {
+            value = getLanguagesOfPerson(folder as Person);
+          } else {
+            value = fieldToCsv(field);
+          }
           //console.log(`log csv ${key}:fieldValue=${field}:csv=${value}`);
           return csvEncode(value);
         })
-
         .concat(addContributionsIfSession(folder))
         .join(",");
       return line;
@@ -146,6 +163,17 @@ function getGenericCsv(folders: Folder[]): string {
   return header + kEol + lines;
 }
 
+function getLanguagesOfPerson(person: Person): string {
+  return person.languages
+    .map((l) => {
+      let n = l.tag;
+      if (l.primary) n = "*" + n;
+      if (l.mother) n = n + " (also mother)";
+      if (l.father) n = n + " (also father)";
+      return n;
+    })
+    .join("|");
+}
 function addContributionsIfSession(folder: Folder): string[] {
   if (!(folder instanceof Session)) {
     return [];

@@ -336,51 +336,66 @@
     {
       // new for lameta (starting with 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
       key: "languages",
+      type: "personLanguageList",
     },
     {
       key: "primaryLanguage",
+      omitExport: "true",
     },
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
       // we're retaining that key to allow migration, but
       englishLabel: "Details", // in lameta we extend this to be more general
       tooltip: "Relevant details such as where they learned it",
+      omitExport: "true",
     },
     {
       key: "otherLanguage0",
+      omitExport: "true",
     },
     {
       key: "otherLanguage1",
+      omitExport: "true",
     },
     {
       key: "otherLanguage2",
+      omitExport: "true",
     },
     {
       key: "otherLanguage3",
+      omitExport: "true",
     },
     {
       key: "otherLanguage4",
+      omitExport: "true",
     },
     {
       key: "otherLanguage5",
+      omitExport: "true",
     },
     {
       key: "otherLanguage6",
+      omitExport: "true",
     },
     {
       key: "otherLanguage7",
+      omitExport: "true",
     },
     {
       key: "otherLanguage8",
+      omitExport: "true",
     },
     {
       key: "otherLanguage9",
+      omitExport: "true",
     },
     {
       key: "fathersLanguage",
+      omitExport: "true",
     },
     {
       key: "mothersLanguage",
+      omitExport: "true",
     },
     {
       key: "education",

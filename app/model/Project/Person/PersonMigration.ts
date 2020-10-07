@@ -21,6 +21,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
       mother: false,
       father: false,
     });
+  //properties.remove("primaryLanguage");
   let x = properties.getTextFieldOrUndefined("mothersLanguage");
   if (x && x.text) {
     const match = languages.find((l) => l.tag === x!.text);
@@ -35,6 +36,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
       });
     }
   }
+  //properties.remove("mothersLanguage");
   x = properties.getTextFieldOrUndefined("fathersLanguage");
   if (x && x.text) {
     const match = languages.find((l) => l.tag === x!.text);
@@ -49,8 +51,10 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
       });
     }
   }
+  //properties.remove("fathersLanguage");
   for (let i = 0; i < maxOtherLanguages; i++) {
-    x = properties.getTextFieldOrUndefined("otherLanguage" + i);
+    const key = "otherLanguage" + i;
+    x = properties.getTextFieldOrUndefined(key);
     if (x && x.text) {
       const match = languages.find((l) => l.tag === x!.text);
       if (!match) {
@@ -62,6 +66,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
         });
       }
     }
+    //properties.remove(key);
   }
 
   // preserve contents of the legacy primaryLanguageLearnedIn field which was labeled as "detail" in some versions.
@@ -69,15 +74,16 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
     "primaryLanguageLearnedIn"
   );
   if (legacyLearnedin) {
-    const primaryLanguageName =
-      primary && primary.text
-        ? languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(primary.text)
-        : "???";
-    const d = properties.getTextStringOrEmpty("description");
-    properties.setText(
-      "description",
-      `${d} Info about ${primaryLanguageName}: ${legacyLearnedin}`
-    );
+    if (primary && primary.text) {
+      const primaryLanguageName = languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+        primary.text
+      );
+      const d = properties.getTextStringOrEmpty("description");
+      properties.setText(
+        "description",
+        `${d} Info about ${primaryLanguageName}: ${legacyLearnedin}`
+      );
+    }
   }
 }
 

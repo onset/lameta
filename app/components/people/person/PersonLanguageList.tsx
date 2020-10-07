@@ -85,8 +85,8 @@ export const PersonLanguageList: React.FunctionComponent<{
   }, [props.person.languages]);
 
   //const [langElements, setLangElements] = useState<JSX.Element[]>([]);
-  const father = props.person.properties.getTextField("fathersLanguage");
-  const mother = props.person.properties.getTextField("mothersLanguage");
+  // const father = props.person.properties.getTextField("fathersLanguage");
+  // const mother = props.person.properties.getTextField("mothersLanguage");
 
   // useEffect(() => {
   //   // gather up the existing "other languages"

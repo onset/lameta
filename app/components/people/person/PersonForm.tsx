@@ -101,7 +101,7 @@ export default class PersonForm extends React.Component<IProps> {
           person={this.props.person}
           languageFinder={this.props.languageFinder}
         />
-
+        {/* 
         <div className="primary-language">
           <label className="languageGroup">
             {
@@ -130,7 +130,7 @@ export default class PersonForm extends React.Component<IProps> {
             person={this.props.person}
             languageFinder={this.props.languageFinder}
           />
-        </div>
+        </div> */}
       </form>
     );
   }

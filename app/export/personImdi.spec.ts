@@ -75,17 +75,10 @@ describe("actor imdi export", () => {
   });
 
   it("should output new languages list", () => {
-    // clear out old depricated fields, which should have been already migrated into the new languages array if they had content
-    person.properties.setText("primaryLanguage", "");
-    person.properties.setText("mothersLanguage", "");
-    person.properties.setText("fathersLanguage", "");
-    person.properties.setText("otherLanguage0", "");
-    person.properties.setText("otherLanguage1", "");
-    person.properties.setText("otherLanguage2", "");
-    person.properties.setText("otherLanguage3", "");
     person.languages.splice(0, 10);
     const gen = new ImdiGenerator(person, project);
     person.languages.push({ tag: "spa", father: true, primary: true });
+    person.languages.push({ tag: "qaa", mother: true, primary: false });
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:spa");
@@ -95,6 +88,17 @@ describe("actor imdi export", () => {
     );
     expect(
       "Actor/Languages/Language[Name[text()='español']]/PrimaryLanguage[text()='true']"
+    ).toHaveCount(1);
+
+    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:qaa");
+    expect("Actor/Languages/Language[2]/Name").toHaveText(
+      "Language Not Listed"
+    );
+    expect("Actor/Languages/Language[2]/Description").toHaveText(
+      "Also spoken by mother."
+    );
+    expect(
+      "Actor/Languages/Language[2]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
   });
 
