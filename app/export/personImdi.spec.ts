@@ -102,6 +102,16 @@ describe("actor imdi export", () => {
     ).toHaveCount(1);
   });
 
+  it("should not output migrated language fields", () => {
+    person.languages.splice(0, 10);
+
+    person.properties.setText("primaryLanguage", "xyz");
+    const gen = new ImdiGenerator(person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect('Actor/Keys/Key[@Name="Primary Language"]').toHaveCount(0);
+  });
+
   it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
     expect("Actor/BirthDate").toMatch("1972");
     expect("Actor/Age").toMatch("38");

@@ -333,7 +333,9 @@ export default class ImdiGenerator {
         `${[
           lang.father ? "Also spoken by father." : undefined,
           lang.mother ? "Also spoken by mother." : undefined,
-        ].join(" ").trim()}`
+        ]
+          .join(" ")
+          .trim()}`
       );
     }
     // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
@@ -405,6 +407,15 @@ export default class ImdiGenerator {
           !this.keysThatHaveBeenOutput.contains(target.type + "." + key) &&
           blacklist.indexOf(key) < 0
         ) {
+          // don't export if we know it has been migrated
+          const definition = target.properties.getFieldDefinition(key);
+          if (
+            definition &&
+            definition.deprecated &&
+            definition.deprecated.indexOf("migrated") > -1
+          ) {
+            return;
+          }
           const fieldContents = target.properties.getTextStringOrEmpty(key);
           if (fieldContents && fieldContents.length > 0) {
             //https://trello.com/c/Xkq8cdoR/73-already-done-allow-for-more-than-one-topic
