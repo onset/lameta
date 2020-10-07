@@ -166,12 +166,14 @@
     {
       "key": "situation",
       "multipleLines": true,
-      "markAsNotImdi": true
+      "markAsNotImdi": true,
+      "deprecated":"migrated to description by lameta"
     },
     {
       "key": "setting",
       "multipleLines": true,
-      "markAsNotImdi": true
+      "markAsNotImdi": true,
+      "deprecated":"migrated to description by lameta"
     },*/
 
     {
@@ -341,6 +343,7 @@
     {
       key: "primaryLanguage",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
@@ -348,54 +351,67 @@
       englishLabel: "Details", // in lameta we extend this to be more general
       tooltip: "Relevant details such as where they learned it",
       omitExport: "true",
+      deprecated: "migrated to description by lameta",
     },
     {
       key: "otherLanguage0",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage1",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage2",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage3",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage4",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage5",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage6",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage7",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage8",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "otherLanguage9",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "fathersLanguage",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "mothersLanguage",
       omitExport: "true",
+      deprecated: "migrated to languages by lameta",
     },
     {
       key: "education",

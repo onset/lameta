@@ -187,13 +187,12 @@ function writeField(
       field.key.indexOf("date") === -1 || type === "date",
       "SHOULDN'T " + field.key + " BE A DATE?"
     );
+    const attributes: any = {};
+    // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
+    if (doOutputTypeInXmlTags) attributes.type = type;
+    if (field.definition?.deprecated) attributes.deprecated = "true";
     if (doOutputEmptyFields || value.trim().length > 0) {
-      // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
-      if (doOutputTypeInXmlTags) {
-        root.element(tag, { type }, value.trim()).up();
-      } else {
-        root.element(tag, value.trim()).up();
-      }
+      root.element(tag, attributes, value.trim()).up();
     }
   }
 }
