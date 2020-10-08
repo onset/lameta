@@ -66,19 +66,6 @@ export default class AutoForm extends React.Component<IProps> {
               tabIndex={field.definition.tabIndex}
             />
           );
-        } else if (
-          f.definition.key === "languages" ||
-          f.definition.key === "workingLanguages"
-        ) {
-          return (
-            <MultiLanguageFieldEdit
-              className={field.cssClass}
-              key={field.key}
-              field={field as Field}
-              languageFinder={props.languageFinder}
-              tabIndex={field.definition.tabIndex}
-            />
-          );
         } else if (f.definition.key === "participants") {
           return (
             <PeopleChooser
@@ -156,6 +143,17 @@ export default class AutoForm extends React.Component<IProps> {
             field={field}
           />
         );
+      case FieldType.MultiLanguage:
+        return (
+          <MultiLanguageFieldEdit
+            className={field.cssClass}
+            key={field.key}
+            field={field as Field}
+            languageFinder={props.languageFinder}
+            tabIndex={field.definition.tabIndex}
+          />
+        );
+
       default:
         throw Error("unknown type: " + field.type.toString());
     }
