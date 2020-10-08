@@ -107,34 +107,6 @@
     //margin-top: 1em;
   }
 
-  .language {
-    margin-top: 0;
-    margin-bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    .field {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .language-name {
-      width: 100px;
-      flex-grow: 1;
-      margin-right: 8px;
-      textarea {
-        width: 100%; //just fill container
-      }
-    }
-    .state {
-      border: none;
-      background-color: transparent;
-      &:focus {
-        outline: none;
-      }
-      &:hover {
-        border: solid thin blue;
-      }
-    }
-  }
   .customFieldsBlock {
     grid-column: 1 / 3;
     // this doesn't actually change the appearance, but it keeps the row where this starts from being defined as really tall, which
@@ -173,5 +145,36 @@
 
   .languageNotRecognized textarea {
     color: red;
+  }
+}
+
+// don't put these inside of .personForm because during dragging, they exist outside of it
+
+.language {
+  margin-top: 0;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  .field {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .language-name {
+    width: 100px;
+    flex-grow: 1;
+    margin-right: 8px;
+    textarea {
+      width: 100%; //just fill container
+    }
+  }
+  .state {
+    border: none;
+    background-color: transparent;
+    &:focus {
+      outline: none;
+    }
+    &:hover {
+      border: solid thin blue;
+    }
   }
 }
