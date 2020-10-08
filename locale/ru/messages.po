@@ -54,7 +54,7 @@ msgstr ""
 #~ msgid "A zip file with an IMDI file for the project and each session."
 #~ msgstr ""
 
-#: app/components/project/ProjectTab.tsx:24
+#: app/components/project/ProjectTab.tsx:25
 msgid "About This Project"
 msgstr "Об этом проекте"
 
@@ -66,7 +66,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:27
+#: app/components/project/ProjectTab.tsx:28
 msgid "Access Protocol"
 msgstr "Протокол доступа"
 
@@ -74,15 +74,15 @@ msgstr "Протокол доступа"
 msgid "Add Files"
 msgstr "Добавление файлов"
 
-#: app/components/people/person/OtherLanguageEdit.tsx:41
+#: app/components/people/person/PersonLanguageList.tsx:118
 msgid "Add Language"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:48
+#: app/components/project/ProjectTab.tsx:52
 msgid "Add documents here that describe the projects and corpus."
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:58
+#: app/components/project/ProjectTab.tsx:62
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
@@ -106,8 +106,8 @@ msgstr ""
 msgid "As a trainer"
 msgstr ""
 
-#: app/components/FolderPane.tsx:169
-#: app/localization.ts:65
+#: app/components/FolderPane.tsx:178
+#: app/localization.ts:68
 msgid "Audio"
 msgstr "Аудио"
 
@@ -144,7 +144,7 @@ msgstr "Отмена"
 msgid "Change Name To:"
 msgstr "Изменить имя на:"
 
-#: app/menu.ts:300
+#: app/menu.ts:319
 msgid "Check for new version"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgid "Choose which Sessions to export:"
 msgstr ""
 
 #: app/components/PersonContributions.tsx:33
-#: app/components/session/ContributorsTable.tsx:97
+#: app/components/session/ContributorsTable.tsx:98
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -169,12 +169,12 @@ msgstr "Комментарии"
 msgid "Confirm Delete"
 msgstr "Подтвердить удаление"
 
-#: app/components/FolderPane.tsx:143
+#: app/components/FolderPane.tsx:152
 msgid "Contributions"
 msgstr "Участники"
 
-#: app/components/FolderPane.tsx:77
-#: app/components/FolderPane.tsx:107
+#: app/components/FolderPane.tsx:84
+#: app/components/FolderPane.tsx:115
 msgid "Contributors"
 msgstr "Составители"
 
@@ -182,11 +182,11 @@ msgstr "Составители"
 msgid "Copy"
 msgstr "Копия"
 
-#: app/containers/HomePage.tsx:172
+#: app/containers/HomePage.tsx:168
 msgid "Create New Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:184
+#: app/containers/HomePage.tsx:180
 msgid "Create New Project with Sample Data"
 msgstr ""
 
@@ -202,9 +202,9 @@ msgstr ""
 msgid "Create Project..."
 msgstr ""
 
-#: app/menu.ts:284
-#~ msgid "Credits"
-#~ msgstr ""
+#: app/menu.ts:308
+msgid "Credits"
+msgstr ""
 
 #: app/components/project/AccessProtocolForm.tsx:36
 msgid "Custom Access Choices"
@@ -242,7 +242,7 @@ msgstr ""
 msgid "Delete Session..."
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:30
+#: app/components/project/ProjectTab.tsx:31
 msgid "Description Documents"
 msgstr "Документы описания"
 
@@ -287,7 +287,7 @@ msgstr ""
 msgid "Field"
 msgstr "Поле"
 
-#: app/components/FolderPane.tsx:241
+#: app/components/FolderPane.tsx:250
 #: app/menu.ts:109
 msgid "File"
 msgstr ""
@@ -313,11 +313,11 @@ msgstr ""
 #~ msgid "Format"
 #~ msgstr ""
 
-#: app/components/FolderList.tsx:95
+#: app/components/FolderList.tsx:103
 msgid "Found file with a name containing 'Consent'"
 msgstr ""
 
-#: app/components/FolderList.tsx:98
+#: app/components/FolderList.tsx:106
 msgid "Found no file with a name containing 'Consent'"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: app/menu.ts:282
+#: app/menu.ts:290
 msgid "Help"
 msgstr "Справка"
 
@@ -370,8 +370,8 @@ msgstr ""
 msgid "IMDI Only"
 msgstr ""
 
-#: app/components/FolderPane.tsx:199
-#: app/localization.ts:63
+#: app/components/FolderPane.tsx:208
+#: app/localization.ts:66
 msgid "Image"
 msgstr "Изображение"
 
@@ -405,19 +405,19 @@ msgstr ""
 #~ msgstr ""
 
 #: app/components/people/person/OnePersonLanguageEditor.tsx:34
-#~ msgid "Mark as a primary language of the mother."
-#~ msgstr ""
+msgid "Mark as a primary language of the mother."
+msgstr ""
 
 #: app/components/people/person/OnePersonLanguageEditor.tsx:31
-#~ msgid "Mark as a primary language."
-#~ msgstr ""
+msgid "Mark as a primary language."
+msgstr ""
 
 #: app/components/people/person/OnePersonLanguageEditor.tsx:35
-#~ msgid "Mark as primary language of the father."
-#~ msgstr ""
+msgid "Mark as primary language of the father."
+msgstr ""
 
-#: app/components/FolderList.tsx:56
-#: app/components/FolderList.tsx:74
+#: app/components/FolderList.tsx:55
+#: app/components/FolderList.tsx:82
 msgid "Mark for Export"
 msgstr ""
 
@@ -431,31 +431,31 @@ msgstr ""
 
 #: app/components/FileList.tsx:72
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:128
-#: app/components/session/ContributorsTable.tsx:81
+#: app/components/session/ContributorsTable.tsx:82
 msgid "Name"
 msgstr "Имя"
 
 #: app/components/Workspace.tsx:88
 #: app/components/people/PeopleTab.tsx:18
-#: app/model/Project/Project.ts:187
-#: app/model/Project/Project.ts:190
+#: app/model/Project/Project.ts:188
+#: app/model/Project/Project.ts:191
 msgid "New Person"
 msgstr "Новое лицо"
 
 #: app/components/Workspace.tsx:53
 #: app/components/session/SessionsTab.tsx:16
-#: app/model/Project/Project.ts:150
+#: app/model/Project/Project.ts:151
 msgid "New Session"
 msgstr "Новое событие"
 
-#: app/components/FolderPane.tsx:80
-#: app/components/FolderPane.tsx:113
-#: app/components/FolderPane.tsx:146
+#: app/components/FolderPane.tsx:87
+#: app/components/FolderPane.tsx:121
+#: app/components/FolderPane.tsx:155
 msgid "Notes"
 msgstr "Примечания"
 
-#: app/components/AlertDialog/AlertDialog.tsx:34
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:139
+#: app/components/ShowMessageDialog/MessageDialog.tsx:34
 #: app/components/project/CreateProjectDialog.tsx:64
 #: app/components/registration/RegistrationDialog.tsx:99
 msgid "OK"
@@ -465,11 +465,11 @@ msgstr "Хорошо"
 msgid "Open"
 msgstr "Открыть"
 
-#: app/containers/HomePage.tsx:177
+#: app/containers/HomePage.tsx:173
 msgid "Open Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:200
+#: app/containers/HomePage.tsx:196
 #: app/menu.ts:112
 msgid "Open Project..."
 msgstr ""
@@ -478,7 +478,7 @@ msgstr ""
 #~ msgid "Open SayMore Project"
 #~ msgstr ""
 
-#: app/components/FolderPane.tsx:232
+#: app/components/FolderPane.tsx:241
 msgid "Open in ELAN"
 msgstr ""
 
@@ -486,12 +486,16 @@ msgstr ""
 msgid "Open in program associated with this file type"
 msgstr ""
 
-#: app/components/project/ProjectTab.tsx:33
+#: app/components/project/ProjectTab.tsx:34
 msgid "Other Documents"
 msgstr "Другие документы"
 
 #: app/components/people/person/PersonForm.tsx:46
-msgid "Other Languages"
+#~ msgid "Other Languages"
+#~ msgstr ""
+
+#: app/menu.ts:231
+msgid "PARADISEC Mode"
 msgstr ""
 
 #: app/components/export/ExportDialog.tsx:183
@@ -508,8 +512,8 @@ msgstr ""
 msgid "People"
 msgstr "Люди"
 
-#: app/components/FolderPane.tsx:140
-#: app/localization.ts:59
+#: app/components/FolderPane.tsx:149
+#: app/localization.ts:62
 #: app/model/Project/Project.ts:254
 msgid "Person"
 msgstr "Лицо"
@@ -519,7 +523,7 @@ msgid "Please Register"
 msgstr ""
 
 #: app/components/Workspace.tsx:141
-#: app/localization.ts:55
+#: app/localization.ts:58
 msgid "Project"
 msgstr "Проект"
 
@@ -535,7 +539,7 @@ msgstr "Проект"
 msgid "Project will be created in: {path}."
 msgstr "Проект будет создан в: {path}."
 
-#: app/components/FolderPane.tsx:74
+#: app/components/FolderPane.tsx:81
 msgid "Properties"
 msgstr "Свойства"
 
@@ -551,7 +555,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/menu.ts:285
+#: app/menu.ts:293
 msgid "Registration..."
 msgstr ""
 
@@ -572,7 +576,7 @@ msgstr ""
 msgid "Rename..."
 msgstr "Переименовать"
 
-#: app/menu.ts:291
+#: app/menu.ts:299
 msgid "Report a problem"
 msgstr ""
 
@@ -581,7 +585,7 @@ msgstr ""
 #~ msgstr ""
 
 #: app/components/PersonContributions.tsx:27
-#: app/components/session/ContributorsTable.tsx:86
+#: app/components/session/ContributorsTable.tsx:87
 msgid "Role"
 msgstr "Роль"
 
@@ -605,10 +609,10 @@ msgstr ""
 msgid "Services"
 msgstr ""
 
-#: app/components/FolderPane.tsx:104
+#: app/components/FolderPane.tsx:112
 #: app/components/PersonContributions.tsx:21
 #: app/components/Workspace.tsx:50
-#: app/localization.ts:57
+#: app/localization.ts:60
 #: app/model/Project/Project.ts:251
 msgid "Session"
 msgstr "Событие"
@@ -641,15 +645,15 @@ msgstr ""
 msgid "Start Screen"
 msgstr ""
 
-#: app/components/FolderPane.tsx:110
+#: app/components/FolderPane.tsx:118
 msgid "Status"
 msgstr "Статус"
 
-#: app/components/FolderPane.tsx:212
+#: app/components/FolderPane.tsx:221
 msgid "Text"
 msgstr ""
 
-#: app/model/Project/Project.ts:230
+#: app/model/Project/Project.ts:231
 msgid "That name would lead to an empty filename."
 msgstr ""
 
@@ -657,7 +661,7 @@ msgstr ""
 #~ msgid "That would lead to an empty filename"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:227
+#: app/model/Project/Project.ts:228
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
@@ -677,7 +681,7 @@ msgstr ""
 msgid "There is already a project at: {path}."
 msgstr ""
 
-#: app/model/Project/Project.ts:235
+#: app/model/Project/Project.ts:236
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr ""
 
@@ -710,8 +714,8 @@ msgstr "Отменить"
 msgid "Value"
 msgstr "Значение"
 
-#: app/components/FolderPane.tsx:184
-#: app/localization.ts:61
+#: app/components/FolderPane.tsx:193
+#: app/localization.ts:64
 msgid "Video"
 msgstr "Видео"
 
@@ -740,7 +744,7 @@ msgstr ""
 msgid "Zip of CSVs"
 msgstr ""
 
-#: app/components/IsoLanguageEdit.tsx:22
+#: app/components/IsoLanguageEdit.tsx:23
 msgid "choose..."
 msgstr ""
 
@@ -753,7 +757,7 @@ msgstr ""
 msgid "lameta"
 msgstr ""
 
-#: app/containers/HomePage.tsx:207
+#: app/containers/HomePage.tsx:203
 msgid "lameta and SayMore Project Files"
 msgstr ""
 
@@ -768,4 +772,3 @@ msgstr ""
 #: app/components/export/ExportDialog.tsx:224
 msgid "{countOfMarkedSessions} Marked Sessions"
 msgstr ""
-

@@ -36,7 +36,7 @@ This creates files named `messages.js` in the language folders inside of /locale
 
 # Checking for new strings using pseudo localization
 
-Under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
+Under Help:Registration, make sure you are listed as a "Developer". Next, under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
 
 # Build the string catalog
 
@@ -46,7 +46,7 @@ That reads .linguirc to know what files to include. This puts json files in ./lo
 
 # Send new strings to Crowdin
 
-Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 # Non-code Lookups in CSV
 
