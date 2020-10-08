@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import ReactDOM from "react-dom";
 //import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
@@ -25,6 +25,7 @@ import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
 import { Trans } from "@lingui/react";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { observer } from "mobx-react";
+import { FieldLabel } from "../../FieldLabel";
 
 const reorder = (list: string[], startIndex, endIndex): string[] => {
   const result = Array.from(list);
@@ -72,7 +73,10 @@ export const PersonLanguageList: React.FunctionComponent<{
   languageFinder: LanguageFinder;
 }> = observer((props) => {
   const slots = [...props.person.languages];
-
+  const languagesDefinition = useMemo(
+    () => props.person.properties.getFieldDefinition("languages"),
+    []
+  );
   const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
     IPersonLanguage | undefined
   >(undefined);
@@ -152,9 +156,7 @@ export const PersonLanguageList: React.FunctionComponent<{
 
   return (
     <div className="languages">
-      <label>
-        <Trans>Languages</Trans>
-      </label>
+      <FieldLabel fieldDef={languagesDefinition} />
       <SortableList
         items={editors}
         axis={"y"}
