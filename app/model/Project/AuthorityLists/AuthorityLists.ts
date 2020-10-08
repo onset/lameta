@@ -1,12 +1,8 @@
 import * as xml2js from "xml2js";
+import { IChoice } from "../../field/Field";
 
 const accessProtocols = require("./AccessProtocols/AccessProtocols.json");
 
-export interface IChoice {
-  id: string;
-  label: string;
-  description: string;
-}
 export interface IAccessProtocolChoice {
   protocol: string;
   description: string;
@@ -23,13 +19,13 @@ export class AuthorityLists {
     this.getPeopleNames = getPersons;
     this.accessProtocolChoices = accessProtocols;
     this.accessChoices = [];
-    this.loadRoles();
+    this.roleChoices = loadOLACRoles();
   }
 
   public setAccessProtocol(protocolName: string, customChoices: string) {
     if (protocolName === "custom") {
       // tslint:disable-next-line:arrow-return-shorthand
-      this.accessChoices = customChoices.split(",").map(c => {
+      this.accessChoices = customChoices.split(",").map((c) => {
         return { id: c, label: c, description: "" };
       });
     } else {
@@ -40,46 +36,21 @@ export class AuthorityLists {
     }
   }
 
-  private loadRoles() {
-    const xml: string = require("./olac-roles.xml");
-
-    let xmlAsObject: any = {};
-    xml2js.parseString(
-      xml,
-      { async: false, explicitArray: false },
-      (err, result) => {
-        if (err) {
-          throw err;
-        }
-        xmlAsObject = result;
-      }
-    );
-    // that will have a root with one child, like "Session" or "Meta". Zoom in on that
-    // so that we just have the object with its properties.
-    this.roleChoices = xmlAsObject.OLAC_doc.body.section[1].term.map(
-      (t: any) => ({ id: t.code, label: t.name, description: t.definition })
-    );
-
-    //xmlAsObject[Object.keys(xmlAsObject)[0]];
-  }
-
   // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
   private convertRolesToCSVForLocalization() {
-    this.roleChoices.forEach(p => {
+    this.roleChoices.forEach((p) => {
       console.log(`"role.label.${p.id}", "Contributor Role", "${p.label}"`);
       console.log(
-        `"role.description.${p.id}", "Description of contributor role '${
-          p.label
-        }'", "${p.description}"`
+        `"role.description.${p.id}", "Description of contributor role '${p.label}'", "${p.description}"`
       );
     });
   }
 
   public static convertGenresToCSVForLocalization(genres: any[]) {
-    genres.forEach(g => {
+    genres.forEach((g) => {
       console.log(`"Genre which is: ${g.definition}", "${g.label}"`);
       console.log(`"Definition of genre '${g.label}'", "${g.definition}"`);
-      g.examples.forEach(e =>
+      g.examples.forEach((e) =>
         console.log(`"Example of genre '${g.label}'", "${e}"`)
       );
     });
@@ -87,18 +58,41 @@ export class AuthorityLists {
 
   // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
   private convertAccessProtocolsToCSVForLocalization() {
-    (accessProtocols as IAccessProtocolChoice[]).forEach(p => {
+    (accessProtocols as IAccessProtocolChoice[]).forEach((p) => {
       console.log(`"${p.protocol}", "Access Protocol Name", "${p.protocol}"`);
-      p.choices.forEach(c => {
+      p.choices.forEach((c) => {
         console.log(
           `"${p.protocol}.${c.label}", "${p.protocol} choice", "${c.label}"`
         );
         console.log(
-          `"${p.protocol}.${c.label}", "Description of ${p.protocol} choice '${
-            c.label
-          }'", "${c.description}"`
+          `"${p.protocol}.${c.label}", "Description of ${p.protocol} choice '${c.label}'", "${c.description}"`
         );
       });
     });
   }
+}
+
+export function loadOLACRoles(): IChoice[] {
+  const xml: string = require("./olac-roles.xml");
+
+  let xmlAsObject: any = {};
+  xml2js.parseString(
+    xml,
+    { async: false, explicitArray: false },
+    (err, result) => {
+      if (err) {
+        throw err;
+      }
+      xmlAsObject = result;
+    }
+  );
+  // that will have a root with one child, like "Session" or "Meta". Zoom in on that
+  // so that we just have the object with its properties.
+  return xmlAsObject.OLAC_doc.body.section[1].term.map((t: any) => ({
+    id: t.code,
+    label: t.name,
+    description: t.definition,
+  }));
+
+  //xmlAsObject[Object.keys(xmlAsObject)[0]];
 }

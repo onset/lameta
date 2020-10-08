@@ -2,10 +2,10 @@ import * as React from "react";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
-import { IChoice } from "./model/Project/AuthorityLists/AuthorityLists";
 import { Contribution } from "./model/file/File";
 import { translateRole } from "./localization";
 import { titleCase } from "title-case";
+import { IChoice } from "./model/field/Field";
 
 export interface IProps {
   contribution: Contribution;
@@ -22,9 +22,9 @@ export default class RoleChooser extends React.Component<IProps> {
     const choices = this.props.choices ? this.props.choices : [];
 
     const options = choices.map((c) => {
-      const label = translateRole(c.label);
+      const label = translateRole(c.id);
       return new Object({
-        value: c.id,
+        value: c.id, // this is snake case, as that's what we get from olac-roles.xml
         label,
         title: c.description,
       });
