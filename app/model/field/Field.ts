@@ -12,8 +12,8 @@ import * as DateFns from "date-fns";
 export interface IChoice {
   id: string;
   label: string;
-  definition: string;
-  examples: string[];
+  description: string;
+  examples?: string[];
 }
 
 export enum FieldType {
