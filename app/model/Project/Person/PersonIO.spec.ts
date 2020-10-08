@@ -46,7 +46,7 @@ describe("Person Languages Read", () => {
     const p = GetPersonFileWithOneTag("primaryLanguage", "etr");
     p.migrate(languageFinder);
     expect(p.languages.length).toBe(1);
-    expect(p.languages[0].tag).toBe("etr");
+    expect(p.languages[0].code).toBe("etr");
     expect(p.languages[0].primary).toBe(true);
   });
   it("does not do migration if there are languages", () => {
@@ -54,7 +54,7 @@ describe("Person Languages Read", () => {
       '<languages><language tag="foo"/></languages><primaryLanguage>fr</primaryLanguage>'
     );
     expect(p.languages.length).toBe(1);
-    expect(p.languages[0].tag).toBe("foo");
+    expect(p.languages[0].code).toBe("foo");
   });
 
   it("should output languages element", () => {
@@ -62,7 +62,7 @@ describe("Person Languages Read", () => {
       personDirectory,
       new CustomFieldRegistry()
     );
-    f.languages.push({ tag: "foo" });
+    f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
@@ -72,7 +72,7 @@ describe("Person Languages Read", () => {
       personDirectory,
       new CustomFieldRegistry()
     );
-    f.languages.push({ tag: "foo" });
+    f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
@@ -89,12 +89,60 @@ describe("Person Languages Read", () => {
       "false"
     );
   });
+  it("should output deprecated xml fields for person languages for use by saymore", () => {
+    /*   <primaryLanguage type="string">etr</primaryLanguage>
+  <primaryLanguageLearnedIn type="string">Huya</primaryLanguageLearnedIn>
+  <otherLanguage0 type="string">hui</otherLanguage0>
+  <otherLanguage1 type="string">tpi</otherLanguage1>
+  <fathersLanguage type="string">etr</fathersLanguage>
+  <mothersLanguage type="string">etr</mothersLanguage>
+  */
+
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new CustomFieldRegistry()
+    );
+    f.languages.push({
+      code: "fra",
+      mother: false,
+      father: true,
+      primary: true,
+    });
+    f.languages.push({
+      code: "spa",
+      mother: true,
+      father: false,
+      primary: false,
+    });
+    f.languages.push({
+      code: "qaa",
+      mother: true, // but we should only output the first one
+      father: true, // but we should only output the first one
+      primary: true, // but we should only output the first one
+    });
+    setResultXml(f.getXml());
+    expect("Person/primaryLanguage").toHaveCount(1); // we should only output the first one
+    expect("Person/mothersLanguage").toHaveCount(1); // we should only output the first one
+    expect("Person/fathersLanguage").toHaveCount(1); // we should only output the first one
+    expect('Person/primaryLanguage[text()="français"]').toHaveCount(1);
+    expect('Person/fathersLanguage[text()="français"]').toHaveCount(1);
+    expect('Person/mothersLanguage[text()="español"]').toHaveCount(1);
+    expect('Person/mothersLanguage[text()="qaa"]').toHaveCount(0); // we should only output the first one
+    expect('Person/otherLanguage0[text()="español"]').toHaveCount(1);
+    expect('Person/otherLanguage1[text()="qaa"]').toHaveCount(1);
+  });
+
   it("should output all the fields of a language", () => {
     const f = new PersonMetadataFile(
       personDirectory,
       new CustomFieldRegistry()
     );
-    f.languages.push({ tag: "foo", mother: true, father: true, primary: true });
+    f.languages.push({
+      code: "foo",
+      mother: true,
+      father: true,
+      primary: true,
+    });
     setResultXml(f.getXml());
     expect("Person/languages/language").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");

@@ -26,7 +26,7 @@ export default function getSayMoreXml(
   // that is not backwards compatible. And at the point we would need to be concerned about locking
   // people into whatever beta version this was introduced in, because they won't be able to go back
   // to their release version if there is a problem.
-  // 0.9.1 (predicted) switched to new person languages format
+  // 0.9.2 (predicted) switched to new person languages format
   root.attribute("minimum_lameta_version_to_read", "0.0.0");
   const propertiesToPersist = properties
     .values()

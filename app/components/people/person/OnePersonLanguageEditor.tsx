@@ -16,7 +16,7 @@ import { t } from "@lingui/macro";
 export const OnePersonLanguageEditor: React.FunctionComponent<{
   language: IPersonLanguage;
   languageFinder: LanguageFinder;
-  onChange: (tag: string) => void;
+  onChange: (code: string) => void;
   autoFocus?: boolean;
 }> = observer((props) => {
   const [tooltip, setTooltip] = useState("");
@@ -35,7 +35,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
     }
   };
   React.useEffect(() => {
-    updateValidationClass(props.language.tag);
+    updateValidationClass(props.language.code);
   }, []);
 
   return (
@@ -54,7 +54,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
       />
 
       <SingleLanguageChooser
-        languageTag={props.language.tag}
+        languageTag={props.language.code}
         labelInUILanguage={"AAAABBBB"}
         onChange={(v) => props.onChange(v)}
         languageFinder={props.languageFinder}

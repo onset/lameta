@@ -309,13 +309,13 @@ export default class ImdiGenerator {
     // } else {
     //   this.element("Id", "ISO639-3:" + lang);
     // }
-    this.element("Id", "ISO639-3:" + lang.tag);
+    this.element("Id", "ISO639-3:" + lang.code);
 
     //this.fieldLiteral("Id", lang);
     this.element(
       "Name",
       this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-        lang.tag
+        lang.code
       )
     );
     this.attributeLiteral(

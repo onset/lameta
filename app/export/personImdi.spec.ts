@@ -77,8 +77,8 @@ describe("actor imdi export", () => {
   it("should output new languages list", () => {
     person.languages.splice(0, 10);
     const gen = new ImdiGenerator(person, project);
-    person.languages.push({ tag: "spa", father: true, primary: true });
-    person.languages.push({ tag: "qaa", mother: true, primary: false });
+    person.languages.push({ code: "spa", father: true, primary: true });
+    person.languages.push({ code: "qaa", mother: true, primary: false });
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:spa");

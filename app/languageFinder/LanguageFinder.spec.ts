@@ -1,8 +1,9 @@
 import { LanguageFinder } from "./LanguageFinder";
 let languageFinder: LanguageFinder;
 
+const kUnlistedCode = "qaa";
 function getDefaultLanguageOfTests() {
-  return { englishName: "Foobar", iso639_3: "qay" };
+  return { englishName: "Foobar", iso639_3: kUnlistedCode };
 }
 describe("LanguageFinder", () => {
   languageFinder = new LanguageFinder(() => getDefaultLanguageOfTests());
@@ -24,12 +25,14 @@ describe("LanguageFinder", () => {
   it("should find our unlisted code", () => {
     // when we created the languageFinder, we gave it a function to find out the current default language info
     // This allows the user to map any code, including the "unlisted" range (qaa-qtx) to a name
-    expect(languageFinder.findMatchesForSelect("qay")[0].iso639_3).toBe("qay");
-    expect(languageFinder.findMatchesForSelect("qay")[0].englishName).toBe(
-      "Foobar"
+    expect(languageFinder.findMatchesForSelect(kUnlistedCode)[0].iso639_3).toBe(
+      kUnlistedCode
     );
+    expect(
+      languageFinder.findMatchesForSelect(kUnlistedCode)[0].englishName
+    ).toBe("Foobar");
     expect(languageFinder.findOne639_3CodeFromName("fooBar", "sorry")).toBe(
-      "qay"
+      kUnlistedCode
     );
   });
 

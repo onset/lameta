@@ -88,67 +88,21 @@ export const PersonLanguageList: React.FunctionComponent<{
     setFocusOnPlaceholder(false);
   }, [props.person.languages]);
 
-  //const [langElements, setLangElements] = useState<JSX.Element[]>([]);
-  // const father = props.person.properties.getTextField("fathersLanguage");
-  // const mother = props.person.properties.getTextField("mothersLanguage");
-
-  // useEffect(() => {
-  //   // gather up the existing "other languages"
-  //   const languages: string[] = new Array(maxOtherLanguages)
-  //     .fill(0)
-  //     .map((ignore, index) => {
-  //       const lang: string = props.person.properties.getTextStringOrEmpty(
-  //         "otherLanguage" + index
-  //       );
-  //       return lang.length > 0 ? lang : null;
-  //     })
-  //     .filter((l) => l != null) as string[];
-
-  //   //collapse away any empty lines
-  //   for (let i = 0; i < maxOtherLanguages; i++) {
-  //     if (i < languages.length) {
-  //       props.person.properties.setText("otherLanguage" + i, languages[i]);
-  //     } else {
-  //       props.person.properties.setText("otherLanguage" + i, "");
-  //     }
-  //   }
-  //   // make a blank one to fill out, if we aren't already at the max
-  //   if (languages.length < maxOtherLanguages) {
-  //     languages.push("");
-  //   }
-  //   setShowAdd(languages.length < maxOtherLanguages);
-
-  //   // create elements for each of those slots
-  //   setLangElements(
-  //     languages.map((l, index) => (
-  //       <PersonLanguagesEditor
-  //         key={index}
-  //         language={props.person.properties.getTextField(
-  //           "otherLanguage" + index
-  //         )}
-  //         fatherLanguage={father}
-  //         motherLanguage={mother}
-  //         languageFinder={props.languageFinder}
-  //       />
-  //     ))
-  //   );
-  // }, [iteration]);
-
   if (newLanguagePlaceholder) slots.push(newLanguagePlaceholder);
   const editors = slots.map((l, index) => (
     <OnePersonLanguageEditor
       language={l}
       languageFinder={props.languageFinder}
       autoFocus={focusOnPlaceholder}
-      onChange={(tag: string) => {
+      onChange={(code: string) => {
         if (l === newLanguagePlaceholder) {
-          newLanguagePlaceholder.tag = tag;
+          newLanguagePlaceholder.code = code;
           props.person.languages.push(newLanguagePlaceholder);
           setNewLanguagePlaceholder(undefined);
-        } else if (!tag) {
+        } else if (!code) {
           props.person.languages.splice(index, 1);
         } else {
-          l.tag = tag;
+          l.code = code;
         }
       }}
     />

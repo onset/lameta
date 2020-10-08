@@ -67,7 +67,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     );
     expect(languages.length).toBe(1);
     expect(languages[0]).toStrictEqual({
-      tag: "tpi",
+      code: "tpi",
       primary: true,
       mother: true,
       father: true,
@@ -89,31 +89,31 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     );
     expect(languages.length).toBe(5);
     expect(languages[0]).toStrictEqual({
-      tag: "tpi",
+      code: "tpi",
       primary: true,
       mother: false,
       father: false,
     });
     expect(languages[1]).toStrictEqual({
-      tag: "en",
+      code: "en",
       primary: false,
       mother: true,
       father: false,
     });
     expect(languages[2]).toStrictEqual({
-      tag: "fr",
+      code: "fr",
       primary: false,
       mother: false,
       father: true,
     });
     expect(languages[3]).toStrictEqual({
-      tag: "de",
+      code: "de",
       primary: false,
       mother: false,
       father: false,
     });
     expect(languages[4]).toStrictEqual({
-      tag: "etr",
+      code: "etr",
       primary: false,
       mother: false,
       father: false,
@@ -121,7 +121,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
   });
 });
 it("should not import legacy fields if there is already a modern languages list", () => {
-  const languages: IPersonLanguage[] = [{ tag: "foo" }];
+  const languages: IPersonLanguage[] = [{ code: "foo" }];
   // these will be ignored
   const fields = new FieldSet();
   fields.addTextProperty("primaryLanguage", "tpi");
@@ -136,7 +136,7 @@ it("should not import legacy fields if there is already a modern languages list"
     languageFinder
   );
   expect(languages.length).toBe(1);
-  expect(languages[0].tag).toBe("foo");
+  expect(languages[0].code).toBe("foo");
 });
 
 it("should store the primary language detail text in the description", () => {

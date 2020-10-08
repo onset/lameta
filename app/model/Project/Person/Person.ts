@@ -8,7 +8,10 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { sanitizeForArchive } from "../../../filenameSanitizer";
 import userSettingsSingleton from "../../../UserSettings";
-import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import {
+  LanguageFinder,
+  staticLanguageFinder,
+} from "../../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
@@ -222,7 +225,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
   private loadPersonLanguages(xml: any) {
     ensureArray(xml.language).forEach((lang) => {
       this.languages.push({
-        tag: lang.$.tag,
+        code: lang.$.tag,
         primary: lang.$.primary === "true",
         mother: lang.$.mother === "true",
         father: lang.$.father === "true",
@@ -234,13 +237,59 @@ export class PersonMetadataFile extends FolderMetadataFile {
     const languageElement = root.element("languages", {
       type: "xml",
     });
+
     this.languages.forEach((language) => {
-      if (language.tag.trim().length > 0) {
+      if (language.code.trim().length > 0) {
         const tail = languageElement.element("language");
-        tail.attribute("tag", language.tag.trim());
+        tail.attribute("tag", language.code.trim());
         this.writeBooleanAttribute(tail, "primary", !!language.primary);
         this.writeBooleanAttribute(tail, "mother", !!language.mother);
         this.writeBooleanAttribute(tail, "father", !!language.father);
+      }
+    });
+    // Now output the legacy SayMore format that was used before lameta 0.92, for saymore and older lametas
+    const legacyLanguageFields = [
+      "primaryLanguage",
+      "otherLanguage0",
+      "otherLanguage1",
+      "otherLanguage2",
+      "otherLanguage3",
+      "otherLanguage4",
+      "otherLanguage5",
+    ];
+    let index = 0;
+    let haveFatherLanguage = false;
+    let haveMotherLanguage = false;
+    const kNotice =
+      "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
+    this.languages.forEach((language) => {
+      // the legacy format uses name, not code
+      const name =
+        // if we have qaa-qtz, just output that
+        language.code.toLowerCase() >= "qaa" &&
+        language.code.toLowerCase() <= "qtz"
+          ? language.code
+          : // otherwise look up the name
+            staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+              language.code
+            );
+      if (language.code.trim().length > 0) {
+        root
+          .element(legacyLanguageFields[index], name)
+          .attribute("deprecated", kNotice);
+        ++index;
+        if (!haveFatherLanguage && language.father) {
+          root
+            .element("fathersLanguage", name)
+            .attribute("deprecated", kNotice);
+          haveFatherLanguage = true;
+        }
+        if (!haveMotherLanguage && language.mother) {
+          root
+            .element("mothersLanguage", name)
+            .attribute("deprecated", kNotice);
+          haveMotherLanguage = true;
+        }
       }
     });
   }

@@ -16,57 +16,57 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
   const primary = properties.getTextFieldOrUndefined("primaryLanguage");
   if (primary && primary.text)
     languages.push({
-      tag: primary.text,
+      code: primary.text,
       primary: true,
       mother: false,
       father: false,
     });
-  //properties.remove("primaryLanguage");
+  properties.remove("primaryLanguage");
   let x = properties.getTextFieldOrUndefined("mothersLanguage");
   if (x && x.text) {
-    const match = languages.find((l) => l.tag === x!.text);
+    const match = languages.find((l) => l.code === x!.text);
     if (match) {
       match.mother = true;
     } else {
       languages.push({
-        tag: x.text,
+        code: x.text,
         primary: false,
         mother: true,
         father: false,
       });
     }
   }
-  //properties.remove("mothersLanguage");
+  properties.remove("mothersLanguage");
   x = properties.getTextFieldOrUndefined("fathersLanguage");
   if (x && x.text) {
-    const match = languages.find((l) => l.tag === x!.text);
+    const match = languages.find((l) => l.code === x!.text);
     if (match) {
       match.father = true;
     } else {
       languages.push({
-        tag: x.text,
+        code: x.text,
         primary: false,
         mother: false,
         father: true,
       });
     }
   }
-  //properties.remove("fathersLanguage");
+  properties.remove("fathersLanguage");
   for (let i = 0; i < maxOtherLanguages; i++) {
     const key = "otherLanguage" + i;
     x = properties.getTextFieldOrUndefined(key);
     if (x && x.text) {
-      const match = languages.find((l) => l.tag === x!.text);
+      const match = languages.find((l) => l.code === x!.text);
       if (!match) {
         languages.push({
-          tag: x.text,
+          code: x.text,
           primary: false,
           mother: false,
           father: false,
         });
       }
     }
-    //properties.remove(key);
+    properties.remove(key);
   }
 
   // preserve contents of the legacy primaryLanguageLearnedIn field which was labeled as "detail" in some versions.
@@ -79,10 +79,11 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
         primary.text
       );
       const d = properties.getTextStringOrEmpty("description");
-      properties.setText(
-        "description",
-        `${d} Info about ${primaryLanguageName}: ${legacyLearnedin}`
-      );
+      const descriptionToAdd = `${primaryLanguageName} learned in ${legacyLearnedin}.`;
+      // if they are going back and forth with SayMore, we might already have this text. In which case do not add it again.
+      if (d.indexOf(descriptionToAdd) === -1) {
+        properties.setText("description", `${d} ${descriptionToAdd}`.trim());
+      }
     }
   }
 }

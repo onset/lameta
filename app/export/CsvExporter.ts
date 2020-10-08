@@ -166,7 +166,7 @@ function getGenericCsv(folders: Folder[]): string {
 function getLanguagesOfPerson(person: Person): string {
   return person.languages
     .map((l) => {
-      let n = l.tag;
+      let n = l.code;
       if (l.primary) n = "*" + n;
       if (l.mother) n = n + " (also mother)";
       if (l.father) n = n + " (also father)";
