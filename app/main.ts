@@ -4,18 +4,11 @@ const electron = require("electron");
 /* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
 See https://github.com/getsentry/sentry-electron/issues/92. Probably don't really need the "electron" version anyhow,
 could just use the node or web sdk's?
-require("./init-sentry").initializeSentry();
-const { initializeSentry } = require("./init-sentry");
 */
+// import {initializeSentry} from("./errorHandling");
+// initializeSentry();
 
-const {
-  app,
-  BrowserWindow,
-  Menu,
-  shell,
-  ipcMain,
-  dialog,
-} = require("electron");
+import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
 
 // Note: when actually running the program, stuff will be stored where you expect them,
 // using the name of the app. But running in development, you get everything in just
@@ -25,14 +18,14 @@ const {
 // When running from code, the path is something like <somewhere>lameta\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
 // When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json
 // see https://stackoverflow.com/a/43389268/723299
-global.ffprobepath = require("ffprobe-static").path.replace(
+(global as any).ffprobepath = require("ffprobe-static").path.replace(
   "app.asar",
   "node_modules/ffprobe-static"
 );
 
-console.log("Setting global.ffprobepath to " + global.ffprobepath);
+console.log("Setting global.ffprobepath to " + (global as any).ffprobepath);
 
-let mainWindow = null;
+let mainWindow: BrowserWindow | undefined;
 
 if (process.env.NODE_ENV === "production") {
   const sourceMapSupport = require("source-map-support"); // eslint-disable-line
@@ -73,8 +66,8 @@ const installExtensions = () => {
 
 function fillLastMonitor() {
   var displays = electron.screen.getAllDisplays();
-  mainWindow.setBounds(displays[displays.length - 1].bounds);
-  mainWindow.maximize();
+  mainWindow?.setBounds(displays[displays.length - 1].bounds);
+  mainWindow?.maximize();
 }
 
 app.on("ready", () =>
@@ -93,13 +86,13 @@ app.on("ready", () =>
       mainWindow = new BrowserWindow({
         webPreferences: {
           nodeIntegration: true,
-
+          plugins: true, // to enable the pdf-viewer built in to electron
           enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
         },
         show: false,
         width: 1024,
         height: 728,
-        plugins: true, // to enable the pdf-viewer built in to electron
+
         //windows
         icon: path.join(__dirname, "../build/windows.ico"),
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
@@ -121,7 +114,7 @@ app.on("ready", () =>
 
       // Send links to the browser, instead of opening new electron windows
       var handleRedirect = (e, url) => {
-        if (url != mainWindow.webContents.getURL()) {
+        if (url != mainWindow!.webContents.getURL()) {
           e.preventDefault();
           require("electron").shell.openExternal(url);
         }
@@ -130,40 +123,40 @@ app.on("ready", () =>
       mainWindow.webContents.on("new-window", handleRedirect);
 
       mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow.show();
-        mainWindow.focus();
+        mainWindow!.show();
+        mainWindow!.focus();
         fillLastMonitor();
         if (process.env.NODE_ENV === "development") {
           console.log(
             "*****If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
           );
 
-          mainWindow.openDevTools();
+          mainWindow!.webContents.openDevTools();
         }
       });
 
       ipcMain.handle("showOpenDialog", (event, options) => {
         //returns a promise which is somehow funneled to the caller in the render process
-        return dialog.showOpenDialog(mainWindow, options);
+        return dialog.showOpenDialog(mainWindow!, options);
       });
 
       ipcMain.handle("showMessageBox", (event, options) => {
-        return dialog.showMessageBoxSync(mainWindow, options);
+        return dialog.showMessageBoxSync(mainWindow!, options);
       });
 
       mainWindow.on("closed", () => {
-        mainWindow = null;
+        mainWindow = undefined;
       });
 
       ipcMain.on("show-debug-tools", (event, arg) => {
-        mainWindow.openDevTools();
+        mainWindow!.webContents.openDevTools();
       });
 
       ipcMain.handle("showOpenDialog", async (event, options) => {
-        return await dialog.showOpenDialog(mainWindow, options);
+        return dialog.showOpenDialog(mainWindow!, options);
       });
       ipcMain.handle("showMessageBox", async (event, options) => {
-        return await dialog.showMessageBox(mainWindow, options);
+        return dialog.showMessageBox(mainWindow!, options);
       });
       // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
       // if (process.env.NODE_ENV === "development") {

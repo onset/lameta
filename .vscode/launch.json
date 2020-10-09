@@ -28,7 +28,7 @@
       "windows": {
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
       },
-      "program": "${workspaceRoot}/app/main.js",
+      "program": "${workspaceRoot}/app/main-bundle.js",
       "env": {
         "NODE_ENV": "development"
       }, //electron opens with blank with this: ,"HOT": "1" },
