@@ -102,6 +102,7 @@ describe("actor imdi export", () => {
     ).toHaveCount(1);
   });
 
+  /* we now remove that field, so we cannot test it this way
   it("should not output migrated language fields", () => {
     person.languages.splice(0, 10);
 
@@ -111,6 +112,7 @@ describe("actor imdi export", () => {
     setResultXml(xml);
     expect('Actor/Keys/Key[@Name="Primary Language"]').toHaveCount(0);
   });
+  */
 
   it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
     expect("Actor/BirthDate").toMatch("1972");
