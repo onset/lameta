@@ -3,12 +3,14 @@ import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { csvEncode, kEol } from "./CsvExporter";
 import * as fs from "fs";
+import { sentryBreadCrumb } from "../errorHandling";
 
 export function makeParadisecCsv(
   path: string,
   project: Project,
   sessionFilter: (f: Folder) => boolean
 ) {
+  sentryBreadCrumb("makeParadisecCsv()");
   const csv =
     makeParadisecProjectFieldsCsv(project) +
     kEol +

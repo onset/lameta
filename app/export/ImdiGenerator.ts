@@ -20,6 +20,7 @@ import { capitalCase } from "capital-case";
 import { sanitizeForArchive } from "../filenameSanitizer";
 import { values } from "mobx";
 import { IPersonLanguage } from "../model/PersonLanguage";
+import { sentryBreadCrumb } from "../errorHandling";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -70,6 +71,9 @@ export default class ImdiGenerator {
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    sentryBreadCrumb(
+      `Generating IMDI for session ${session.metadataFile?.metadataFilePath}`
+    );
     return generator.session();
   }
 

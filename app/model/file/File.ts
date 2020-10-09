@@ -604,8 +604,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(forceSave: boolean = false) {
-    // console.log("SAVING DISABLED");
-    // return;
+    sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
     if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
@@ -629,7 +628,7 @@ export /*babel doesn't like this: abstract*/ class File {
       } catch (error) {
         if (error.code === "EPERM") {
           NotifyError(
-            `Cannot save because file is locked:\r\n${this.metadataFilePath}. Is it open in another program?`
+            `Cannot save because lameta was denied write access:\r\n${this.metadataFilePath}. Is it open in another program? Is it set to read-only or locked? Does the current user have access permissions to this folder?`
           );
         } else {
           NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);

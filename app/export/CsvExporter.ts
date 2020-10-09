@@ -8,6 +8,7 @@ import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
+import { sentryBreadCrumb } from "../errorHandling";
 
 export const kEol: string = require("os").EOL;
 
@@ -103,6 +104,7 @@ function getKeys(folders: Folder[]): string[] {
 
 // folders: a set of person folders, or a set of session folders
 function getGenericCsv(folders: Folder[]): string {
+  sentryBreadCrumb(`getGenericCsv()`);
   if (folders.length === 0) {
     // without even one folder (one person, or one session), this code can't even determine the fields, so just bail
     return "";

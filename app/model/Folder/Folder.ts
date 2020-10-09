@@ -17,6 +17,10 @@ import { trash } from "../../crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { sanitizeForArchive } from "../../filenameSanitizer";
 import userSettingsSingleton from "../../UserSettings";
+import {
+  sentryBreadCrumb,
+  sentryExceptionBreadCrumb,
+} from "../../errorHandling";
 
 export class IFolderSelection {
   @observable
@@ -86,21 +90,32 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string, newFileName?: string): File {
-    console.log("copy in " + path);
+  public addOneFile(path: string, newFileName?: string): File | null {
     const n = sanitizeForArchive(
       newFileName ? newFileName : Path.basename(path),
       userSettingsSingleton.IMDIMode
     );
     const dest = Path.join(this.directory, n);
-    fs.copySync(path, dest);
-    const f = new OtherFile(dest, this.customFieldRegistry);
-    this.files.push(f);
-    return f;
+    sentryBreadCrumb(`addOneFile ${path} to  ${dest}`);
+    try {
+      //throw new Error("testing");
+      fs.copySync(path, dest);
+      const f = new OtherFile(dest, this.customFieldRegistry);
+      this.files.push(f);
+      return f;
+    } catch (err) {
+      sentryExceptionBreadCrumb(err);
+      let msg = err.message;
+      if (err.code === "ENOSPC") {
+        msg = "This hard drive does not have enough room to fit that file.";
+      }
+      NotifyError(`Copy of ${path} to ${dest} failed: ` + msg);
+    }
+    return null;
   }
   public addFiles(files: object[]): File | null {
     assert.ok(files.length > 0, "addFiles given an empty array of files");
-
+    sentryBreadCrumb(`addFiles ${files.length} files.`);
     let lastFile: File | null = null;
     files.forEach((f: any) => {
       lastFile = this.addOneFile(f.path);
