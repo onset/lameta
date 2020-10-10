@@ -54,3 +54,21 @@ export function sentryBreadCrumb(msg: string) {
 export function sentryExceptionBreadCrumb(err: Error) {
   Sentry.addBreadcrumb({ message: err.message, level: Sentry.Severity.Error });
 }
+export function sentryException(err: Error) {
+  if (userSettingsSingleton.SendErrors) {
+    Sentry.captureException(err);
+  } else {
+    console.log(`Skipping sending error: ${err.message}`);
+  }
+}
+export function sentryErrorFromString(message: string) {
+  if (userSettingsSingleton.SendErrors) {
+    try {
+      throw new Error(message);
+    } catch (err) {
+      Sentry.captureException(err);
+    }
+  } else {
+    console.log(`Skipping sending error: ${message}`);
+  }
+}

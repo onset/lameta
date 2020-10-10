@@ -269,6 +269,15 @@ export default class SayLessMenu {
           },
         },
         {
+          label: "Send errors to sentry",
+          type: "checkbox",
+          checked: userSettings.SendErrors,
+          click() {
+            userSettings.SendErrors = !userSettings.SendErrors;
+            initializeSentry(userSettings.SendErrors);
+          },
+        },
+        {
           label: "Test throw (for testing Sentry)",
           click() {
             initializeSentry(true);

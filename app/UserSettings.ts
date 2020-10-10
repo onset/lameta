@@ -23,6 +23,9 @@ export class UserSettings {
   private howUsing: string;
   @observable
   public uiFontZoom: number;
+  @observable
+  private sendErrors: boolean;
+
   private email: string;
   private clientId: string;
 
@@ -31,6 +34,7 @@ export class UserSettings {
       process.env.NODE_ENV === "test"
         ? new FakeStore()
         : new Store({ name: "lameta-user-settings" });
+    this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     this.imdiMode = this.store.get("imdiMode") || false;
     this.paradisecMode = this.store.get("paradisecMode") || false;
@@ -43,6 +47,14 @@ export class UserSettings {
     //      setUserInfoForErrorReporting(this.Email, this.HowUsing);
     this.uiFontZoom = this.store.get("uiFontZoom", "1.0");
   }
+
+  public get SendErrors() {
+    return this.sendErrors;
+  }
+  public set SendErrors(doSend: boolean) {
+    this.sendErrors = doSend;
+  }
+
   public get IMDIMode() {
     return this.imdiMode;
   }
