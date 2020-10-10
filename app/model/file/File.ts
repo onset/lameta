@@ -21,6 +21,7 @@ import { NotifyError, NotifyWarning } from "../../components/Notify";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import {
   sentryBreadCrumb,
+  sentryException,
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
 import compareVersions from "compare-versions";
@@ -574,7 +575,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.recomputedChangeWatcher();
     } catch (err) {
       NotifyError(`There was a problem reading ${this.metadataFilePath}`);
-      sentryExceptionBreadCrumb(err); // probably not needed
+      sentryException(err);
       throw err;
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
@@ -844,12 +845,18 @@ export /*babel doesn't like this: abstract*/ class File {
       return false;
     }
 
+    sentryBreadCrumb(
+      `Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`
+    );
     try {
       fs.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
       NotifyWarning(`Cannot rename: ${err.message}`);
       return false;
     }
+    sentryBreadCrumb(
+      `Attempting rename from ${this.describedFilePath} to ${newDescribedFilePath}`
+    );
     try {
       fs.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {

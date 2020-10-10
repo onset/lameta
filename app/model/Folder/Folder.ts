@@ -19,8 +19,11 @@ import { sanitizeForArchive } from "../../filenameSanitizer";
 import userSettingsSingleton from "../../UserSettings";
 import {
   sentryBreadCrumb,
+  sentryErrorFromString,
+  sentryException,
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
+import filesize from "filesize";
 
 export class IFolderSelection {
   @observable
@@ -96,21 +99,36 @@ export /*babel doesn't like this: abstract*/ class Folder {
       userSettingsSingleton.IMDIMode
     );
     const dest = Path.join(this.directory, n);
-    sentryBreadCrumb(`addOneFile ${path} to  ${dest}`);
+    const size: string = filesize(fs.statSync(path).size);
+    sentryBreadCrumb(`addOneFile ${path} to  ${dest}, ${size}`);
+
     try {
       //throw new Error("testing");
       fs.copySync(path, dest);
+
+      /* there was a report that mac were sometimes failing to copy the file in, and the user wasn't seeing an error.
+      I cannot verify the last part of that. But these error reports came when we were using ncp (which is pretty old) instead of fs-extra.
+      Anyhow to be sure, let's now make sure the file is there. */
+      if (!fs.existsSync(dest)) {
+        const msg =
+          `Copy of ${path} to ${dest} failed: ` +
+          "After copying, the file is not actually in the destination folder.";
+        sentryErrorFromString(msg);
+        NotifyError(msg);
+        return null;
+      }
       const f = new OtherFile(dest, this.customFieldRegistry);
       this.files.push(f);
       return f;
     } catch (err) {
-      sentryExceptionBreadCrumb(err);
+      sentryException(err);
       let msg = err.message;
       if (err.code === "ENOSPC") {
         msg = "This hard drive does not have enough room to fit that file.";
       }
       NotifyError(`Copy of ${path} to ${dest} failed: ` + msg);
     }
+
     return null;
   }
   public addFiles(files: object[]): File | null {
@@ -169,6 +187,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
   public moveFileToTrash(file: File) {
     ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
+      sentryBreadCrumb(`Moving to trash: ${file.describedFilePath}`);
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.describedFilePath)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
