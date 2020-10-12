@@ -65,7 +65,7 @@ const installExtensions = () => {
 };
 
 function fillLastMonitor() {
-  var displays = electron.screen.getAllDisplays();
+  const displays = electron.screen.getAllDisplays();
   mainWindow?.setBounds(displays[displays.length - 1].bounds);
   mainWindow?.maximize();
 }

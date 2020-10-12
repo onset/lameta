@@ -22,11 +22,11 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
     //    const [inRenameMode, setRenameMode] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(undefined);
     // these aren't just images, but that is the name DropZone give us
-    const [filesToCopy, setFilesToCopy] = React.useState<
-      ImageFile[] | undefined
-    >(undefined);
+    const [filesToCopy, setFilesToCopy] = React.useState<string[] | undefined>(
+      undefined
+    );
     const [filesBeingCopied, setFilesBeingCopied] = React.useState<
-      ImageFile[] | undefined
+      string[] | undefined
     >(undefined);
 
     // Currently our copying is synchronous, and can be *really* slow if the user is copying in a 4GB video.
@@ -123,7 +123,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         activeClassName={"drop-active"}
         className={"fileList"}
         onDrop={(accepted, rejected) => {
-          setFilesToCopy(accepted);
+          setFilesToCopy(accepted.map((f) => f.path));
           //onDrop(props.folder, accepted, rejected);
         }}
         disableClick
@@ -174,7 +174,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={() => addFiles(props.folder)}
+            onClick={() => addFiles(setFilesToCopy, props.folder)}
           >
             <Trans> Add Files</Trans>
           </button>
@@ -300,13 +300,14 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function addFiles(folder: Folder) {
+function addFiles(setFilesToAdd: (paths: string[]) => void, folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
-      folder.addFiles(result.filePaths.map((p) => ({ path: p })));
+      //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
+      setFilesToAdd(result.filePaths);
     }
   });
 }

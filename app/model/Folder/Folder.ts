@@ -131,12 +131,12 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     return null;
   }
-  public addFiles(files: object[]): File | null {
-    assert.ok(files.length > 0, "addFiles given an empty array of files");
-    sentryBreadCrumb(`addFiles ${files.length} files.`);
+  public addFiles(paths: string[]): File | null {
+    assert.ok(paths.length > 0, "addFiles given an empty array of files");
+    sentryBreadCrumb(`addFiles ${paths.length} files.`);
     let lastFile: File | null = null;
-    files.forEach((f: any) => {
-      lastFile = this.addOneFile(f.path);
+    paths.forEach((p: string) => {
+      lastFile = this.addOneFile(p);
     });
     return lastFile;
   }
