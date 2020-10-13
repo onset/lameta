@@ -7,7 +7,7 @@ import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
 import { log } from "util";
 import { sentryBreadCrumb } from "../errorHandling";
-import { sanitizeForArchive } from "../filenameSanitizer";
+import { sanitizeForArchive } from "../fileUtilities";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";

@@ -22,13 +22,14 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
     //    const [inRenameMode, setRenameMode] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(undefined);
     // these aren't just images, but that is the name DropZone give us
-    const [filesToCopy, setFilesToCopy] = React.useState<string[] | undefined>(
-      undefined
-    );
-    const [filesBeingCopied, setFilesBeingCopied] = React.useState<
-      string[] | undefined
-    >(undefined);
+    // const [filesToCopy, setFilesToCopy] = React.useState<string[] | undefined>(
+    //   undefined
+    // );
+    // const [filesBeingCopied, setFilesBeingCopied] = React.useState<
+    //   string[] | undefined
+    // >(undefined);
 
+    /*
     // Currently our copying is synchronous, and can be *really* slow if the user is copying in a 4GB video.
     // So we go to great lengths to at least refresh the view with a message that we are copying,
     // before we start the synchronous copy.
@@ -39,7 +40,8 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         try {
           document.body.style.cursor = "wait";
           //console.log(JSON.stringify(acceptedFiles));
-          props.folder.selectedFile = props.folder.addFiles(filesBeingCopied);
+          props.folder.addFiles(filesBeingCopied);
+          //props.folder.selectedFile =
         } catch (error) {
           console.log(error);
           NotifyError("Copy Failed: " + error);
@@ -51,22 +53,23 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       }
     }, [filesBeingCopied]);
 
-    // let the UI redraw before we start the synchronous file copy
+    // let the UI redraw before we start the synchronous file copy [<--- update: no longer doing synchronous copies, could probably simplify this]
     React.useEffect(() => {
       setTimeout(() => setFilesBeingCopied(filesToCopy), 100);
     }, [filesToCopy]);
+*/
 
-    // REVIEW: we're now using react-table instead of blueprintjs; is this still needed?
     // What this mobxDummy is about:
-    // What happens inside the component blueprintjs's cells is invisible to mobx; it doesn't
+    // What happens inside the component tabeles cells are invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
     // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
     // when the user does something that causes a rename.
-    const mobxDummy = props.folder.files.map((f) =>
-      f.getTextProperty("filename")
-    );
+    const mobxDummy = props.folder.files.map((f) => {
+      f.getTextProperty("filename");
+      const unused = f.copyPending;
+    });
 
     const columns = [
       {
@@ -93,14 +96,18 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         width: 72,
         accessor: (d: any) => {
           const f: File = d;
-          return translateFileType(f.getTextProperty("type"));
+          return translateFileType(f.getTextProperty("type", ""));
         },
       },
       {
         id: "modifiedDate",
         Header: i18n._(t`Modified`),
         accessor: (d: any) => {
-          return d.properties.getValueOrThrow("modifiedDate").asISODateString();
+          const f: File = d;
+
+          return f.copyPending
+            ? i18n._(t`Copy Requested...`)
+            : d.properties.getValueOrThrow("modifiedDate").asISODateString();
         },
       },
       {
@@ -110,7 +117,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         style: { textAlign: "right" },
         accessor: (d: any) => {
           const f: File = d;
-          return f.getTextProperty("size");
+          return f.getTextProperty("size", "");
         },
       },
     ];
@@ -123,13 +130,14 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         activeClassName={"drop-active"}
         className={"fileList"}
         onDrop={(accepted, rejected) => {
-          setFilesToCopy(accepted.map((f) => f.path));
+          props.folder.addFiles(accepted.map((f) => f.path));
+          //setFilesToCopy(accepted.map((f) => f.path));
           //onDrop(props.folder, accepted, rejected);
         }}
         disableClick
       >
         <div className={"mask onlyIfInDropZone"}>Drop files here</div>
-        {filesToCopy && <div className={"mask"}>Copying...</div>}
+        {/* {filesToCopy && <div className={"mask"}>Copying...</div>} */}
         <div className={"fileBar"}>
           <button
             disabled={
@@ -174,7 +182,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={() => addFiles(setFilesToCopy, props.folder)}
+            onClick={() => addFiles(props.folder)}
           >
             <Trans> Add Files</Trans>
           </button>
@@ -215,17 +223,21 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
                 );
               },
               onClick: (e: any, x: any) => {
-                if (props.folder.selectedFile != null) {
-                  // will only save if it thinks it is dirty
-                  props.folder.selectedFile.save();
+                const file = rowInfo.original as File;
+                if (!file.copyPending) {
+                  if (props.folder.selectedFile != null) {
+                    // will only save if it thinks it is dirty
+                    props.folder.selectedFile.save();
+                  }
+                  props.folder.selectedFile = rowInfo.original;
+                  setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
                 }
-                props.folder.selectedFile = rowInfo.original;
-                setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
               },
               className:
-                rowInfo && rowInfo.original === props.folder.selectedFile
+                (rowInfo.original.copyPending ? "copyPending " : "") +
+                (rowInfo && rowInfo.original === props.folder.selectedFile
                   ? "selected"
-                  : "",
+                  : ""),
             };
           }}
         />
@@ -300,14 +312,14 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function addFiles(setFilesToAdd: (paths: string[]) => void, folder: Folder) {
+function addFiles(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
       //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
-      setFilesToAdd(result.filePaths);
+      folder.addFiles(result.filePaths);
     }
   });
 }

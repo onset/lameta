@@ -293,3 +293,8 @@ input {
 .notificationTray ul li div div {
   width: 500px !important;
 }
+
+.copyPending {
+  //background-color: aqua;
+  color: $session--color;
+}

@@ -5,7 +5,7 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
-import { sanitizeForArchive } from "../../../filenameSanitizer";
+import { sanitizeForArchive } from "../../../fileUtilities";
 import { titleCase } from "title-case";
 import userSettingsSingleton from "../../../UserSettings";
 

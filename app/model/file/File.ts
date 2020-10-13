@@ -64,6 +64,9 @@ export /*babel doesn't like this: abstract*/ class File {
   @mobx.observable
   public describedFilePath: string;
 
+  @mobx.observable
+  public copyPending: boolean;
+
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
@@ -293,20 +296,22 @@ export /*babel doesn't like this: abstract*/ class File {
     this.doOutputTypeInXmlTags = doOutputTypeInXmlTags;
     this.fileExtensionForMetadata = fileExtensionForMetadata;
 
+    this.addNotesProperty();
+    this.addTextProperty("filename", "", false);
+    this.setFileNameProperty();
+
     // NB: subclasses should call this (as super()), then read in their definitions, then let us finish by calling finishLoading();
   }
 
   // call this after loading in your definitions
-  protected finishLoading() {
-    this.addNotesProperty();
+  public finishLoading() {
     this.addFieldsUsedInternally();
     this.readMetadataFile();
+    this.copyPending = false;
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
   private addFieldsUsedInternally() {
-    this.addTextProperty("filename", "", false);
-    this.setFileNameProperty();
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
@@ -905,7 +910,8 @@ export class OtherFile extends File {
     if (customFieldRegistry) {
       this.customFieldNamesRegistry = customFieldRegistry;
     }
-    this.finishLoading();
+    this.copyPending = true;
+    // caller should call  finishLoading() if the file already exists, or after copying completes
   }
 }
 

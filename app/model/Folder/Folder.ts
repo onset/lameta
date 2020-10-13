@@ -6,6 +6,7 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import {
   NotifyMultipleProjectFiles,
   NotifyError,
+  NotifyWarning,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -15,14 +16,13 @@ import assert from "assert";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { trash } from "../../crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import { sanitizeForArchive } from "../../filenameSanitizer";
-import userSettingsSingleton from "../../UserSettings";
 import {
-  sentryBreadCrumb,
-  sentryErrorFromString,
-  sentryException,
-  sentryExceptionBreadCrumb,
-} from "../../errorHandling";
+  safeAsyncCopyFileWithErrorNotification,
+  sanitizeForArchive,
+  getExtension,
+} from "../../fileUtilities";
+import userSettingsSingleton from "../../UserSettings";
+import { sentryBreadCrumb } from "../../errorHandling";
 import filesize from "filesize";
 
 export class IFolderSelection {
@@ -93,52 +93,70 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string, newFileName?: string): File | null {
+  public addOneFile(path: string, newFileName?: string) {
+    if (
+      ["session", "person", "meta"].includes(getExtension(path)?.toLowerCase())
+    ) {
+      NotifyWarning(`Cannot add files of type ${getExtension(path)}`);
+      return;
+    }
     const n = sanitizeForArchive(
       newFileName ? newFileName : Path.basename(path),
       userSettingsSingleton.IMDIMode
     );
     const dest = Path.join(this.directory, n);
-    const size: string = filesize(fs.statSync(path).size);
-    sentryBreadCrumb(`addOneFile ${path} to  ${dest}, ${size}`);
 
-    try {
-      //throw new Error("testing");
-      fs.copySync(path, dest);
+    const f = new OtherFile(dest, this.customFieldRegistry);
+    const stats = fs.statSync(path);
+    f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
+    this.files.push(f);
 
-      /* there was a report that mac were sometimes failing to copy the file in, and the user wasn't seeing an error.
-      I cannot verify the last part of that. But these error reports came when we were using ncp (which is pretty old) instead of fs-extra.
-      Anyhow to be sure, let's now make sure the file is there. */
-      if (!fs.existsSync(dest)) {
-        const msg =
-          `Copy of ${path} to ${dest} failed: ` +
-          "After copying, the file is not actually in the destination folder.";
-        sentryErrorFromString(msg);
-        NotifyError(msg);
-        return null;
-      }
-      const f = new OtherFile(dest, this.customFieldRegistry);
-      this.files.push(f);
-      return f;
-    } catch (err) {
-      sentryException(err);
-      let msg = err.message;
-      if (err.code === "ENOSPC") {
-        msg = "This hard drive does not have enough room to fit that file.";
-      }
-      NotifyError(`Copy of ${path} to ${dest} failed: ` + msg);
-    }
+    //throw new Error("testing");
+    // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
+    // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
 
-    return null;
+    window.setTimeout(
+      () =>
+        safeAsyncCopyFileWithErrorNotification(path, dest)
+          .then((successfulDestinationPath) => {
+            const pendingFile = this.files.find(
+              (x) => x.describedFilePath === dest
+            );
+            if (!pendingFile) {
+              NotifyError(
+                `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+              );
+              return;
+            }
+            //const f = new OtherFile(dest, this.customFieldRegistry);
+            //this.files.push(f);
+            pendingFile!.finishLoading();
+          })
+          .catch((error) => {
+            console.log(`error ${error}`);
+            const fileIndex = this.files.findIndex(
+              (x) => x.describedFilePath === dest
+            );
+            if (fileIndex < 0) {
+              NotifyError(
+                `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+              );
+              return;
+            }
+            this.files.splice(fileIndex, 1);
+          }),
+      0
+    );
   }
-  public addFiles(paths: string[]): File | null {
+
+  public addFiles(paths: string[]) {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
-    let lastFile: File | null = null;
+    //let lastFile: File | null = null;
     paths.forEach((p: string) => {
-      lastFile = this.addOneFile(p);
+      this.addOneFile(p);
+      //lastFile = p;
     });
-    return lastFile;
   }
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -174,6 +192,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
             Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
           const file = new OtherFile(path, customFieldRegistry);
+          file.finishLoading();
           files.push(file);
         }
       }
