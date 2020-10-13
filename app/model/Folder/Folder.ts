@@ -18,12 +18,14 @@ import { trash } from "../../crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import {
   safeAsyncCopyFileWithErrorNotification,
-  sanitizeForArchive,
   getExtension,
-} from "../../fileUtilities";
+} from "../../RobustLargeFileCopy";
+import { sanitizeForArchive } from "../../sanitizeForArchive";
 import userSettingsSingleton from "../../UserSettings";
 import { sentryBreadCrumb } from "../../errorHandling";
 import filesize from "filesize";
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/macro";
 
 export class IFolderSelection {
   @observable
@@ -106,9 +108,15 @@ export /*babel doesn't like this: abstract*/ class Folder {
     );
     const dest = Path.join(this.directory, n);
 
+    if (fs.existsSync(dest)) {
+      NotifyWarning(`There is already a file here with the name "${n}"`);
+      return;
+    }
+
     const f = new OtherFile(dest, this.customFieldRegistry);
     const stats = fs.statSync(path);
     f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
+    f.copyProgress = i18n._(t`Copy Requested...`);
     this.files.push(f);
 
     //throw new Error("testing");
@@ -117,7 +125,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     window.setTimeout(
       () =>
-        safeAsyncCopyFileWithErrorNotification(path, dest)
+        safeAsyncCopyFileWithErrorNotification(
+          path,
+          dest,
+          (progress: string) => {
+            f.copyProgress = progress;
+          }
+        )
           .then((successfulDestinationPath) => {
             const pendingFile = this.files.find(
               (x) => x.describedFilePath === dest

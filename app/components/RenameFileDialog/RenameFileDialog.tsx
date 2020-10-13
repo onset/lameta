@@ -8,7 +8,7 @@ import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
-import { sanitizeForArchive } from "../../fileUtilities";
+import { sanitizeForArchive } from "../../sanitizeForArchive";
 import userSettingsSingleton from "../../UserSettings";
 const sanitizeFilename = require("sanitize-filename");
 

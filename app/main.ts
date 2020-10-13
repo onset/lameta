@@ -43,10 +43,33 @@ if (process.env.NODE_ENV === "development") {
   require("module").globalPaths.push(p); // eslint-disable-line
 }
 
+// will become unavailable in electron 11. Using until these are sorted out: https://github.com/electron/electron/pull/25869 https://github.com/electron/electron/issues/25405#issuecomment-707455020
+app.allowRendererProcessReuse = false;
+
 app.on("window-all-closed", () => {
-  //if (process.platform !== "darwin")
   app.quit();
 });
+
+let copyInProgress: boolean;
+ipcMain.on("copyInProgress", () => {
+  copyInProgress = true;
+});
+ipcMain.on("copyStopped", () => {
+  copyInProgress = false;
+});
+ipcMain.handle("confirm-quit", async (event, ...args) => {
+  const result = await dialog.showMessageBox(mainWindow!, {
+    message: args[0],
+    buttons: [args[1], args[2]],
+  });
+  return result;
+});
+// app.on("before-quit", (event) => {
+//   //if (copyInProgress) {
+//   dialog.showMessageBox(mainWindow!, { message: "hello" });
+//   event.preventDefault();
+//   //}
+// });
 
 const installExtensions = () => {
   if (process.env.NODE_ENV === "development") {

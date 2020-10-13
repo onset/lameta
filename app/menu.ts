@@ -9,6 +9,7 @@ import RegistrationDialog from "./components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
 import { ShowMessageDialog } from "./components/ShowMessageDialog/MessageDialog";
 import userSettingsSingleton from "./UserSettings";
+import { abandonCopying } from "./RobustLargeFileCopy";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -259,6 +260,12 @@ export default class SayLessMenu {
           accelerator: "Ctrl+R",
           click() {
             mainWindow.webContents.reload();
+          },
+        },
+        {
+          label: "Abandon Copying",
+          click() {
+            abandonCopying(true);
           },
         },
         {

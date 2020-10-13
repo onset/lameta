@@ -14,50 +14,13 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../UserSettings";
 import { observer } from "mobx-react-lite";
-import { NotifyError } from "./Notify";
+import { NotifyError, NotifyWarning } from "./Notify";
+import * as fs from "fs-extra";
 const electron = require("electron");
 
 export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
   (props) => {
-    //    const [inRenameMode, setRenameMode] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(undefined);
-    // these aren't just images, but that is the name DropZone give us
-    // const [filesToCopy, setFilesToCopy] = React.useState<string[] | undefined>(
-    //   undefined
-    // );
-    // const [filesBeingCopied, setFilesBeingCopied] = React.useState<
-    //   string[] | undefined
-    // >(undefined);
-
-    /*
-    // Currently our copying is synchronous, and can be *really* slow if the user is copying in a 4GB video.
-    // So we go to great lengths to at least refresh the view with a message that we are copying,
-    // before we start the synchronous copy.
-    React.useEffect(() => {
-      if (filesBeingCopied && filesBeingCopied.length > 0) {
-        // if there is an error in here, it leave the drop zone in an active state, and you have to restart
-        // so we catch the error
-        try {
-          document.body.style.cursor = "wait";
-          //console.log(JSON.stringify(acceptedFiles));
-          props.folder.addFiles(filesBeingCopied);
-          //props.folder.selectedFile =
-        } catch (error) {
-          console.log(error);
-          NotifyError("Copy Failed: " + error);
-        } finally {
-          setFilesToCopy(undefined);
-          setFilesBeingCopied(undefined);
-          document.body.style.cursor = "default";
-        }
-      }
-    }, [filesBeingCopied]);
-
-    // let the UI redraw before we start the synchronous file copy [<--- update: no longer doing synchronous copies, could probably simplify this]
-    React.useEffect(() => {
-      setTimeout(() => setFilesBeingCopied(filesToCopy), 100);
-    }, [filesToCopy]);
-*/
 
     // What this mobxDummy is about:
     // What happens inside the component tabeles cells are invisible to mobx; it doesn't
@@ -69,6 +32,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
     const mobxDummy = props.folder.files.map((f) => {
       f.getTextProperty("filename");
       const unused = f.copyPending;
+      const progressUnused = f.copyProgress;
     });
 
     const columns = [
@@ -106,7 +70,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           const f: File = d;
 
           return f.copyPending
-            ? i18n._(t`Copy Requested...`)
+            ? f.copyProgress
             : d.properties.getValueOrThrow("modifiedDate").asISODateString();
         },
       },
@@ -130,14 +94,27 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         activeClassName={"drop-active"}
         className={"fileList"}
         onDrop={(accepted, rejected) => {
-          props.folder.addFiles(accepted.map((f) => f.path));
-          //setFilesToCopy(accepted.map((f) => f.path));
-          //onDrop(props.folder, accepted, rejected);
+          if (
+            accepted.some((f) => ["session", "person", "meta"].includes(f.type))
+          ) {
+            NotifyWarning(`You cannot add files of that type`);
+            return;
+          }
+          if (accepted.some((f) => fs.lstatSync(f.path).isDirectory())) {
+            NotifyWarning(`You cannot add folders.`);
+            return;
+          }
+          props.folder.addFiles(
+            accepted
+              .filter((f) => {
+                return f.type !== "session";
+              })
+              .map((f) => f.path)
+          );
         }}
         disableClick
       >
         <div className={"mask onlyIfInDropZone"}>Drop files here</div>
-        {/* {filesToCopy && <div className={"mask"}>Copying...</div>} */}
         <div className={"fileBar"}>
           <button
             disabled={

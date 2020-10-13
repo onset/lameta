@@ -1,12 +1,17 @@
 import * as React from "react";
 import { render } from "react-dom";
-import { remote } from "electron";
+import { app, ipcRenderer, remote } from "electron";
 import "./app.global.scss";
 import App from "./containers/App";
 import { setConfig } from "react-hot-loader";
 import { initializeAnalytics, analyticsEvent } from "./analytics";
 import { initializeSentry as initializeErrorReporting } from "./errorHandling";
-import { initializeLocalization } from "./localization";
+import { i18n, initializeLocalization } from "./localization";
+import {
+  abandonCopying,
+  hasActiveSpawns as haveActiveFileCopySpawns,
+} from "./RobustLargeFileCopy";
+import { t } from "@lingui/macro";
 
 //if (!process.env.HOT) {
 // sentry kills hot reloading with react-hot-loader
@@ -24,4 +29,23 @@ setConfig({ logLevel: "debug" });
 
 document.body.setAttribute("class", remote.process.platform);
 
+window.onbeforeunload = (e: BeforeUnloadEvent) => {
+  if (haveActiveFileCopySpawns()) {
+    ipcRenderer
+      .invoke(
+        "confirm-quit",
+        i18n._(t`One or more files are still being copied into your project.`),
+        i18n._(t`Do not quit`),
+        i18n._(t`Abandon files that are still copying`)
+      )
+      .then((result) => {
+        if (result.response === 1) {
+          abandonCopying(true);
+          remote.app.quit(); // this time it will go through
+        }
+      });
+    return "this is ignored but prevents quitting";
+  }
+  return; // just quit
+};
 render(<App />, document.getElementById("root"));

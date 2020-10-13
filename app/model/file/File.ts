@@ -67,6 +67,9 @@ export /*babel doesn't like this: abstract*/ class File {
   @mobx.observable
   public copyPending: boolean;
 
+  @mobx.observable
+  public copyProgress: string;
+
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
   // in which case the metadata will be stored in afile with the same name as the described file, but
