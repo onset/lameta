@@ -58,7 +58,7 @@ export function safeAsyncCopyFileWithErrorNotification(
   const args =
     process.platform === "win32"
       ? [`"${sourcePath}"`, `"${destPath}"`, "/z"] // cp
-      : [`"${sourcePath}"`, `"${destPath}"`, "-vt"]; // rsync verbose, preserve time stamp
+      : [`"${sourcePath}"`, `"${destPath}"`, "-t", "--progress"]; // rsync verbose, preserve time stamp
 
   return new Promise<string>((resolve, reject) => {
     // By using spawn, we can get progress during the copy.
@@ -69,11 +69,13 @@ export function safeAsyncCopyFileWithErrorNotification(
     });
     activeJobs.push({ process, destination: destPath });
     //spawn.unref(); // allow lameta to quit even if this is still going
+    const percentage = /(\d+%)/g;
     process.stdout?.on("data", (data: string) => {
       // with large files, we often get, e.g. "copied 1% copied 1%"
       const messages = data.toString().trim();
-      if (messages.indexOf("%") > -1) {
-        if (progress) progress(`${messages.split("%")[0]}%`);
+      const matches = percentage.exec(messages);
+      if (matches && matches.length) {
+        if (progress) progress(`${matches[0]}`);
       }
     });
     process.stderr?.on("data", (data) => {
