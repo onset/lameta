@@ -19,9 +19,10 @@ import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
 // When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json
 // see https://stackoverflow.com/a/43389268/723299
 (global as any).ffprobepath = require("ffprobe-static").path.replace(
-  "app.asar",
+  "app",
   "node_modules/ffprobe-static"
 );
+//C:\dev\lameta\app\bin\win32\x64\
 
 console.log("Setting global.ffprobepath to " + (global as any).ffprobepath);
 
@@ -38,7 +39,6 @@ if (process.env.NODE_ENV === "development") {
   app.commandLine.appendSwitch("remote-debugging-port", "9223");
 
   require("electron-debug")(); // eslint-disable-line global-require
-  const path = require("path"); // eslint-disable-line
   const p = path.join(__dirname, "..", "app", "node_modules"); // eslint-disable-line
   require("module").globalPaths.push(p); // eslint-disable-line
 }
@@ -136,8 +136,8 @@ app.on("ready", () =>
       /*}*/
 
       // Send links to the browser, instead of opening new electron windows
-      var handleRedirect = (e, url) => {
-        if (url != mainWindow!.webContents.getURL()) {
+      const handleRedirect = (e, url) => {
+        if (url !== mainWindow!.webContents.getURL()) {
           e.preventDefault();
           require("electron").shell.openExternal(url);
         }
