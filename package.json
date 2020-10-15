@@ -332,7 +332,7 @@
     "react-dom": "^16.12.0",
     "react-dropzone": "4.1",
     "react-modal": "^3.1.10",
-    "react-player": "^1.6.4",
+    "react-player": "^2.6.2",
     "react-radio-group": "^3.0.3",
     "react-select": "^3.0.4",
     "react-sortable-hoc": "^1.11.0",

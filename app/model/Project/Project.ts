@@ -92,7 +92,7 @@ export class Project extends Folder {
 
   private constructor(
     directory: string,
-    metadataFile: File,
+    metadataFile: FolderMetadataFile,
     files: File[],
     descriptionFolder: Folder,
     otherDocsFolder: Folder,

@@ -28,6 +28,11 @@ import compareVersions from "compare-versions";
 import { IPersonLanguage } from "../PersonLanguage";
 import { Person } from "../Project/Person/Person";
 import xmlbuilder from "xmlbuilder";
+import {
+  i18n,
+  initializeLocalization,
+  translateMessage,
+} from "../../localization";
 
 export class Contribution {
   //review this @mobx.observable
@@ -868,10 +873,24 @@ export /*babel doesn't like this: abstract*/ class File {
     try {
       fs.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
+      const cannotRename = translateMessage(
+        "lameta was not able to rename that file."
+      );
       if (err.code === "EBUSY") {
-        NotifyWarning(`Cannot rename: Is the file open in another program?`);
+        if (this.type === "Video" || this.type === "Audio")
+          NotifyError(
+            `${cannotRename} ${translateMessage(
+              "Restart lameta and do the rename before playing the video again."
+            )}`
+          );
+        else
+          NotifyError(
+            `${cannotRename}  ${translateMessage(
+              "Try restarting lameta. If that doesn't do it, restart your computer."
+            )}`
+          );
       } else {
-        NotifyWarning(`Cannot rename: ${err.message}`);
+        NotifyError(`${cannotRename} ${err.message}`);
       }
 
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.

@@ -77,7 +77,7 @@ export class Person extends Folder {
 
   public constructor(
     directory: string,
-    metadataFile: File,
+    metadataFile: FolderMetadataFile,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,

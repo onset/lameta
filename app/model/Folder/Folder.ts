@@ -26,6 +26,7 @@ import { sentryBreadCrumb } from "../../errorHandling";
 import filesize from "filesize";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
+import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 
 export class IFolderSelection {
   @observable
@@ -46,13 +47,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
   @observable
   public selectedFile: File | null;
 
-  public metadataFile: File | null;
+  public metadataFile: FolderMetadataFile | null;
   protected safeFileNameBase: string;
   protected customFieldRegistry: CustomFieldRegistry;
 
   public constructor(
     directory: string,
-    metadataFile: File | null,
+    metadataFile: FolderMetadataFile | null,
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
@@ -226,8 +227,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
         // electron.shell.showItemInFolder(file.describedFilePath);
         continueTrashing = trash(file.describedFilePath);
       }
+      if (!continueTrashing) {
+        return;
+      }
       if (
-        continueTrashing && // don't trash metadata if something went wrong trashing "described file"
         file.metadataFilePath &&
         file.metadataFilePath !== file.describedFilePath
       ) {
@@ -248,9 +251,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       file.describedFilePath = "";
       file.properties = new FieldSet();
 
-      if (continueTrashing) {
-        this.forgetFile(file);
-      }
+      this.forgetFile(file);
     });
   }
   public renameChildWithFilenameMinusExtension(
@@ -271,9 +272,21 @@ export /*babel doesn't like this: abstract*/ class Folder {
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
 
+    // first, we just do a trial run to see if this will work
+    try {
+      fs.renameSync(this.directory, newDirPath);
+      fs.renameSync(newDirPath, this.directory);
+    } catch (err) {
+      NotifyError(
+        `Could not rename the directory to ${newDirPath}. This can happen when a media player is holding on to a video file. Please restart lameta and try again.`
+      );
+      return;
+    }
+    // ok, that worked, so now inform all the files
     this.files.forEach((f) => {
       f.updateNameBasedOnNewFolderName(newFolderName);
     });
+    // and actually do the rename
     fs.renameSync(this.directory, newDirPath);
     this.directory = newDirPath;
   }
@@ -304,11 +317,44 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
   public saveFolderMetaData() {
     assert.ok(this.metadataFile);
+
     if (this.metadataFile) {
+      this.detectAndRepairMisnamedMetadataFile(
+        this.directory,
+        this.metadataFile.metadataFilePath,
+        this.metadataFileExtensionWithDot
+      );
       this.metadataFile.save();
     }
   }
 
+  public detectAndRepairMisnamedMetadataFile(
+    directory: string,
+    expectedMetadataFilePath: string,
+    metadataFileExtensionWithDot: string
+  ) {
+    if (!fs.existsSync(expectedMetadataFilePath)) {
+      const matchingPaths = this.findZombieMetadataFiles(
+        directory,
+        metadataFileExtensionWithDot
+      );
+      if (matchingPaths.length > 1) {
+        try {
+          fs.renameSync(matchingPaths[0], expectedMetadataFilePath);
+          return;
+        } catch (err) {
+          NotifyError(
+            `Failed to fix the name of ${matchingPaths[0]} to fit the folder name.`
+          );
+          // not sure what to do now....
+        }
+      }
+    }
+  }
+  private findZombieMetadataFiles(directory: string, extension: string) {
+    const dir = fs.readdirSync(directory);
+    return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
+  }
   public saveAllFilesInFolder() {
     for (const f of this.files) {
       f.save();
