@@ -96,7 +96,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string, newFileName?: string) {
+  public copyInOneFile(path: string, newFileName?: string) {
     if (
       ["session", "person", "meta"].includes(getExtension(path)?.toLowerCase())
     ) {
@@ -114,7 +114,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return;
     }
 
-    const f = new OtherFile(dest, this.customFieldRegistry);
+    const f = new OtherFile(dest, this.customFieldRegistry, true);
     const stats = fs.statSync(path);
     f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     f.copyProgress = i18n._(t`Copy Requested...`);
@@ -164,12 +164,12 @@ export /*babel doesn't like this: abstract*/ class Folder {
     );
   }
 
-  public addFiles(paths: string[]) {
+  public copyInFiles(paths: string[]) {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
     //let lastFile: File | null = null;
     paths.forEach((p: string) => {
-      this.addOneFile(p);
+      this.copyInOneFile(p);
       //lastFile = p;
     });
   }
@@ -207,7 +207,6 @@ export /*babel doesn't like this: abstract*/ class Folder {
             Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
           const file = new OtherFile(path, customFieldRegistry);
-          file.finishLoading();
           files.push(file);
         }
       }

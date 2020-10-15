@@ -27,7 +27,10 @@ export class ProjectDocuments extends Folder {
     const files = new Array<File>();
     const filePaths = glob.sync(Path.join(directory, "*.*"));
     filePaths.forEach((path) => {
-      const file = new OtherFile(path);
+      const file = new OtherFile(
+        path,
+        new CustomFieldRegistry() /* we don't have custom fields on project files yet */
+      );
       files.push(file);
     });
     return new ProjectDocuments(directory, files, customFieldRegistry);

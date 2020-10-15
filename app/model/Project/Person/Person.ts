@@ -62,7 +62,7 @@ export class Person extends Folder {
 
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
 
-    this.addOneFile(path, renamedPhotoPath);
+    this.copyInOneFile(path, renamedPhotoPath);
   }
 
   public get displayName(): string {

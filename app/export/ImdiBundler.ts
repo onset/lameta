@@ -11,6 +11,7 @@ import { sanitizeForArchive } from "../sanitizeForArchive";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
+import { NotifyError } from "../components/Notify";
 temp.track();
 
 // This class handles making/copying all the files for an IMDI archive.
@@ -57,11 +58,11 @@ export default class ImdiBundler {
     try {
       fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
     } catch (error) {
-      alert(
+      NotifyError(
         `There was a problem getting the directory ${Path.join(
           rootDirectory,
           secondLevel
-        )} ready. Maybe close any open Finder/Explorer windows and try again`
+        )} ready. Maybe close any open Finder/Explorer windows and try again.`
       );
       return;
     }

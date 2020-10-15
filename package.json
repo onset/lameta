@@ -304,6 +304,7 @@
     "exifreader": "^3.11.2",
     "ffprobe-static": "^3.0.0",
     "filesize": "^6.1.0",
+    "flatted": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "fold-to-ascii": "^5.0.0",
     "font-awesome": "^4.7.0",

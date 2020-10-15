@@ -21,6 +21,7 @@ import { sanitizeForArchive } from "../sanitizeForArchive";
 import { values } from "mobx";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../errorHandling";
+import { stringify } from "flatted";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -882,17 +883,25 @@ export default class ImdiGenerator {
   ) {
     //if they specified a folder, use that, otherwise use the current default
     const f = target ? target : this.folderInFocus;
-    let v = f.properties.getTextStringOrEmpty(fieldName);
+
+    sentryBreadCrumb(
+      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} f:{${stringify(
+        f
+      )}}`
+    );
+
+    let value = f.properties.getTextStringOrEmpty(fieldName);
+
     if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
       // they want "Formulaic Discourse"
       //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
       // Theoretically we could fish out the original English label, but this is quite safe and easy
       // and gives the same result since the keys are directly mappable to the English label via TitleCase.
-      v = titleCase(v);
+      value = titleCase(value);
     }
-    if (projectFallbackFieldName && (!v || v.length === 0)) {
-      v = this.project.properties.getTextStringOrEmpty(
+    if (projectFallbackFieldName && (!value || value.length === 0)) {
+      value = this.project.properties.getTextStringOrEmpty(
         projectFallbackFieldName
       );
     } else {
@@ -903,12 +912,13 @@ export default class ImdiGenerator {
     }
 
     //ELAR wants these capitalized
-    v = v === "unspecified" ? "Unspecified" : v;
+    value = value === "unspecified" ? "Unspecified" : value;
 
-    const text = v && v.length > 0 ? v : defaultValue;
-    if (xmlElementIsRequired || (v && v.length > 0)) {
+    const text = value && value.length > 0 ? value : defaultValue;
+    if (xmlElementIsRequired || (value && value.length > 0)) {
       this.tail = this.tail.element(elementName, text);
       const definition = f.properties.getFieldDefinition(fieldName);
+
       if (definition.imdiRange) {
         this.tail.attribute("Link", definition.imdiRange);
         const type = definition.imdiIsClosedVocabulary

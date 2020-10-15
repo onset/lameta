@@ -70,7 +70,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public describedFilePath: string;
 
   @mobx.observable
-  public copyPending: boolean;
+  public copyInProgress: boolean;
 
   @mobx.observable
   public copyProgress: string;
@@ -311,11 +311,11 @@ export /*babel doesn't like this: abstract*/ class File {
     // NB: subclasses should call this (as super()), then read in their definitions, then let us finish by calling finishLoading();
   }
 
-  // call this after loading in your definitions
+  // call this after loading in your definitions, or, if doing a copy, when the copy is complete.
   public finishLoading() {
     this.addFieldsUsedInternally();
     this.readMetadataFile();
-    this.copyPending = false;
+    this.copyInProgress = false;
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
@@ -927,13 +927,21 @@ export /*babel doesn't like this: abstract*/ class File {
 }
 
 export class OtherFile extends File {
-  constructor(path: string, customFieldRegistry?: CustomFieldRegistry) {
+  constructor(
+    path: string,
+    customFieldRegistry: CustomFieldRegistry,
+    partialLoadWhileCopyingInThisFile?: boolean
+  ) {
     super(path, path + ".meta", "Meta", false, ".meta", true);
-    if (customFieldRegistry) {
-      this.customFieldNamesRegistry = customFieldRegistry;
+
+    this.customFieldNamesRegistry = customFieldRegistry;
+
+    if (partialLoadWhileCopyingInThisFile) {
+      this.copyInProgress = true;
+      // caller should call  finishLoading() if the file already exists, or after copying completes
+    } else {
+      this.finishLoading();
     }
-    this.copyPending = true;
-    // caller should call  finishLoading() if the file already exists, or after copying completes
   }
 }
 

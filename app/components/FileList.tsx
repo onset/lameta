@@ -31,7 +31,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
     // when the user does something that causes a rename.
     const mobxDummy = props.folder.files.map((f) => {
       f.getTextProperty("filename");
-      const unused = f.copyPending;
+      const unused = f.copyInProgress;
       const progressUnused = f.copyProgress;
     });
 
@@ -69,7 +69,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         accessor: (d: any) => {
           const f: File = d;
 
-          return f.copyPending
+          return f.copyInProgress
             ? f.copyProgress
             : d.properties.getValueOrThrow("modifiedDate").asISODateString();
         },
@@ -104,7 +104,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
             NotifyWarning(`You cannot add folders.`);
             return;
           }
-          props.folder.addFiles(
+          props.folder.copyInFiles(
             accepted
               .filter((f) => {
                 return f.type !== "session";
@@ -201,7 +201,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
               },
               onClick: (e: any, x: any) => {
                 const file = rowInfo.original as File;
-                if (!file.copyPending) {
+                if (!file.copyInProgress) {
                   if (props.folder.selectedFile != null) {
                     // will only save if it thinks it is dirty
                     props.folder.selectedFile.save();
@@ -296,7 +296,7 @@ function addFiles(folder: Folder) {
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
       //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
-      folder.addFiles(result.filePaths);
+      folder.copyInFiles(result.filePaths);
     }
   });
 }
