@@ -66,6 +66,9 @@ const genres = require("../locale/genres.csv");
 const accessProtocols = require("../locale/accessProtocols.csv");
 const tips = require("../locale/tips.csv"); // tooltips and specialinfo
 
+export function translateMessage(english: string): string {
+  return i18n._(t`${english}`);
+}
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
     case "Project":

@@ -3,6 +3,7 @@ import { remote } from "electron";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import { NotifyError } from "./components/Notify";
+import { translateMessage } from "./localization";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -16,10 +17,23 @@ export function trash(path: string): boolean {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
   const fixedPath = Path.normalize(path).replace("/", Path.sep);
-  const success = electron.shell.moveItemToTrash(fixedPath);
+
+  // NB: if the file is locked (at least on windows), electron 10 wrongly returns true for success, so
+  // we verify that it is now not there.
+  // To test this manually, try to trash a video while it is playing.
+  const success =
+    electron.shell.moveItemToTrash(fixedPath) && !fs.existsSync(fixedPath);
+
   if (!success) {
-    NotifyError("Failed to delete " + fixedPath);
+    NotifyError(
+      `${translateMessage(
+        "lameta was not able to delete the file."
+      )} (${fixedPath})  ${translateMessage(
+        "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+      )}`
+    );
   }
+
   return success;
 }
 
