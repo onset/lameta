@@ -59,7 +59,19 @@ export default class HomePage extends React.Component<IProps, IState> {
       useSampleProject: false, //enhance: this is a really ugly way to control this behavior
     };
 
-    let previousDirectory = userSettings.PreviousProjectDirectory;
+    let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
+
+    const args = remote.getGlobal("arguments");
+    // const args = [
+    //   "ignore",
+    //   "ignore",
+    //   "C:/Users/hatto/Documents/laMeta/qq/qq.sprj",
+    // ];
+    console.log(`args = ${JSON.stringify(args)}`);
+    if (args && args.length > 1 && (args[1] as string).endsWith(".sprj")) {
+      expectedProjectDirectory = Path.dirname(args[1]);
+    }
+
     // console.log(
     //   "************** process.env.startInStartScreen=" +
     //     process.env.startInStartScreen
@@ -69,14 +81,17 @@ export default class HomePage extends React.Component<IProps, IState> {
     //     process.env.startInStartScreen
     // );
     if (process.env.startInStartScreen === "true") {
-      previousDirectory = null;
+      expectedProjectDirectory = null;
     }
-    if (previousDirectory && fs.existsSync(previousDirectory)) {
-      const project = Project.fromDirectory(previousDirectory);
+    if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
+      const project = Project.fromDirectory(expectedProjectDirectory);
       this.projectHolder.setProject(project);
     } else {
       this.projectHolder.setProject(null);
     }
+
+    // remember this
+    userSettings.PreviousProjectDirectory = expectedProjectDirectory;
 
     this.updateMenu();
     HomePage.homePageForTests = this;

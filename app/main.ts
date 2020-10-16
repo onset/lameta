@@ -1,4 +1,4 @@
-const path = require("path");
+const Path = require("path");
 const electron = require("electron");
 
 /* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
@@ -9,6 +9,8 @@ could just use the node or web sdk's?
 // initializeSentry();
 
 import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
+
+(global as any).arguments = process.argv;
 
 // Note: when actually running the program, stuff will be stored where you expect them,
 // using the name of the app. But running in development, you get everything in just
@@ -26,7 +28,7 @@ console.log(
 );
 
 (global as any).ffprobepath = require("ffprobe-static")
-  .path// during run from release (win-unpacked or installed)
+  .path // during run from release (win-unpacked or installed)
   .replace("app.asar", "node_modules/ffprobe-static")
   // during run from dev
   .replace("app/", "node_modules/ffprobe-static/");
@@ -46,12 +48,23 @@ if (process.env.NODE_ENV === "development") {
   app.commandLine.appendSwitch("remote-debugging-port", "9223");
 
   require("electron-debug")(); // eslint-disable-line global-require
-  const p = path.join(__dirname, "..", "app", "node_modules"); // eslint-disable-line
+  const p = Path.join(__dirname, "..", "app", "node_modules"); // eslint-disable-line
   require("module").globalPaths.push(p); // eslint-disable-line
 }
 
 // will become unavailable in electron 11. Using until these are sorted out: https://github.com/electron/electron/pull/25869 https://github.com/electron/electron/issues/25405#issuecomment-707455020
 app.allowRendererProcessReuse = false;
+
+// on macos, this will be called if the user directly opens an sprj file.
+app.on("open-file", (event, path: string) => {
+  console.log(`main got open-file(${path})`);
+  // This approach assumes that we get this even before the renderer process is started.
+  // Otherwise, we'd need to use IPC to notify it.
+  if (path.endsWith(".sprj")) {
+    (global as any).arguments = ["ignore", path];
+    event.preventDefault();
+  }
+});
 
 app.on("window-all-closed", () => {
   app.quit();
@@ -124,7 +137,7 @@ app.on("ready", () =>
         height: 728,
 
         //windows
-        icon: path.join(__dirname, "../build/windows.ico"),
+        icon: Path.join(__dirname, "../build/windows.ico"),
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this
