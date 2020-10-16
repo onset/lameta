@@ -9,7 +9,7 @@ import { initializeSentry as initializeErrorReporting } from "./errorHandling";
 import { i18n, initializeLocalization } from "./localization";
 import {
   abandonCopying,
-  hasActiveSpawns as haveActiveFileCopySpawns,
+  filesAreStillCopying as haveActiveFileCopySpawns,
 } from "./RobustLargeFileCopy";
 import { t } from "@lingui/macro";
 

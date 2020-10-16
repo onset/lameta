@@ -12,6 +12,10 @@ import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
 import { NotifyError } from "../components/Notify";
+import {
+  filesAreStillCopying,
+  safeAsyncCopyFileWithErrorNotification,
+} from "../RobustLargeFileCopy";
 temp.track();
 
 // This class handles making/copying all the files for an IMDI archive.
@@ -24,24 +28,25 @@ export default class ImdiBundler {
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
-  ) {
+  ): Promise<string> {
     //throw new Error("oof");
-
-    sentryBreadCrumb("Starting saveImdiBundleToFolder");
-    try {
-      if (fs.existsSync(rootDirectory)) {
-        fs.removeSync(rootDirectory);
+    return new Promise((resolve, reject) => {
+      sentryBreadCrumb("Starting saveImdiBundleToFolder");
+      try {
+        if (fs.existsSync(rootDirectory)) {
+          fs.removeSync(rootDirectory);
+        }
+        // make all parts of the directory as needed
+        fs.ensureDirSync(rootDirectory);
+      } catch (error) {
+        console.log(error);
+        NotifyError(
+          `There was a problem getting the directory ${rootDirectory} ready. Maybe close any open Finder/Explorer windows or other programs that might be showing file from that directory,  and try again. \r\n\r\n${error}`
+        );
+        reject();
+        return;
       }
-      // make all parts of the directory as needed
-      fs.ensureDirSync(rootDirectory);
-    } catch (error) {
-      console.log(error);
-      alert(
-        `There was a problem getting the directory ${rootDirectory} ready. Maybe close any open Finder/Explorer windows or other programs that might be showing file from that directory,  and try again. \r\n\r\n${error}`
-      );
-      return;
-    }
-    /* we want (from saymore classic)
+      /* we want (from saymore classic)
      myproject_3-6-2019/  <--- rootDirectory
         myproject.imdi
         myproject/     <--- "secondLevel"
@@ -53,94 +58,104 @@ export default class ImdiBundler {
              ...files...
     */
 
-    const childrenSubpaths: string[] = new Array<string>();
-    const secondLevel = Path.basename(project.directory);
-    try {
-      fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
-    } catch (error) {
-      NotifyError(
-        `There was a problem getting the directory ${Path.join(
-          rootDirectory,
-          secondLevel
-        )} ready. Maybe close any open Finder/Explorer windows and try again.`
-      );
-      return;
-    }
-    //---- Project Documents -----
+      const childrenSubpaths: string[] = new Array<string>();
+      const secondLevel = Path.basename(project.directory);
+      try {
+        fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
+      } catch (error) {
+        NotifyError(
+          `There was a problem getting the directory ${Path.join(
+            rootDirectory,
+            secondLevel
+          )} ready. Maybe close any open Finder/Explorer windows and try again.`
+        );
+        reject();
+        return;
+      }
+      //---- Project Documents -----
 
-    this.outputDocumentFolder(
-      project,
-      "OtherDocuments",
-      "OtherDocuments.imdi",
-      rootDirectory,
-      secondLevel,
-      project.otherDocsFolder,
-      childrenSubpaths,
-      copyInProjectFiles
-    );
-
-    this.outputDocumentFolder(
-      project,
-      "DescriptionDocuments",
-      "DescriptionDocuments.imdi",
-      rootDirectory,
-      secondLevel,
-      project.descriptionFolder,
-      childrenSubpaths,
-      copyInProjectFiles
-    );
-
-    // I'm thinking, this only makes sense if we're going to provide the files
-    if (copyInProjectFiles) {
-      this.addConsentBundle(
+      this.outputDocumentFolder(
         project,
+        "OtherDocuments",
+        "OtherDocuments.imdi",
         rootDirectory,
         secondLevel,
+        project.otherDocsFolder,
         childrenSubpaths,
-        copyInProjectFiles,
-        folderFilter,
-        omitNamespaces
+        copyInProjectFiles
       );
-    }
 
-    //---- Sessions ----
+      this.outputDocumentFolder(
+        project,
+        "DescriptionDocuments",
+        "DescriptionDocuments.imdi",
+        rootDirectory,
+        secondLevel,
+        project.descriptionFolder,
+        childrenSubpaths,
+        copyInProjectFiles
+      );
 
-    project.sessions.filter(folderFilter).forEach((session: Session) => {
-      const imdi = ImdiGenerator.generateSession(session, project);
-      const imdiFileName = `${session.filePrefix}.imdi`;
-      fs.writeFileSync(
-        Path.join(
+      // I'm thinking, this only makes sense if we're going to provide the files
+      if (copyInProjectFiles) {
+        this.addConsentBundle(
+          project,
           rootDirectory,
           secondLevel,
-          sanitizeForArchive(imdiFileName, true)
-        ),
-        imdi
-      );
-      childrenSubpaths.push(secondLevel + "/" + imdiFileName);
+          childrenSubpaths,
+          copyInProjectFiles,
+          folderFilter,
+          omitNamespaces
+        );
+      }
 
-      if (copyInProjectFiles) {
-        this.copyFolderOfFiles(
-          session.files,
+      //---- Sessions ----
+
+      project.sessions.filter(folderFilter).forEach((session: Session) => {
+        const imdi = ImdiGenerator.generateSession(session, project);
+        const imdiFileName = `${session.filePrefix}.imdi`;
+        fs.writeFileSync(
           Path.join(
             rootDirectory,
             secondLevel,
-            Path.basename(session.directory)
-          )
+            sanitizeForArchive(imdiFileName, true)
+          ),
+          imdi
         );
-      }
+        childrenSubpaths.push(secondLevel + "/" + imdiFileName);
+
+        if (copyInProjectFiles) {
+          this.copyFolderOfFiles(
+            session.files,
+            Path.join(
+              rootDirectory,
+              secondLevel,
+              Path.basename(session.directory)
+            )
+          );
+        }
+      });
+
+      //childrenSubpaths.push(..something for consent if we have it---);
+
+      // ---  Now that we know what all the child imdi's are, we can output the root  ---
+      fs.writeFileSync(
+        Path.join(rootDirectory, `${project.displayName}.imdi`),
+        ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
+      );
+
+      const waitForCopying = () => {
+        if (filesAreStillCopying()) {
+          setTimeout(() => waitForCopying(), 1000);
+        } else {
+          sentryBreadCrumb("Done with saveImdiBundleToFolder");
+          resolve();
+        }
+      };
+      sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
+      waitForCopying();
     });
-
-    //childrenSubpaths.push(..something for consent if we have it---);
-
-    // ---  Now that we know what all the child imdi's are, we can output the root  ---
-    fs.writeFileSync(
-      Path.join(rootDirectory, `${project.displayName}.imdi`),
-      ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
-    );
-
-    sentryBreadCrumb("Done with saveImdiBundleToFolder");
   }
-
   private static copyFolderOfFiles(files: File[], targetDirectory: string) {
     fs.ensureDirSync(Path.join(targetDirectory));
     let errors = "";
@@ -150,12 +165,13 @@ export default class ImdiBundler {
       if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
         count++;
         try {
-          fs.copyFileSync(
+          safeAsyncCopyFileWithErrorNotification(
             f.describedFilePath,
             Path.join(
               targetDirectory,
               sanitizeForArchive(Path.basename(f.describedFilePath), true)
-            )
+            ),
+            (progressMessage) => {}
           );
         } catch (error) {
           errors = errors + `Problem copying ${f.describedFilePath}+\r\n`;

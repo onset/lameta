@@ -38,8 +38,11 @@ export function abandonCopying(cancelJobsFirst: boolean) {
   }
   activeJobs.splice(0, activeJobs.length);
 }
-export function hasActiveSpawns(): boolean {
+export function filesAreStillCopying(): boolean {
   return activeJobs.length > 0;
+}
+function toWin32Path(path: string): string {
+  return path.replace(/\//gi, "\\");
 }
 // copying large files on mac with node was very flaky. So we now use an external system command instead.
 export function safeAsyncCopyFileWithErrorNotification(
@@ -57,7 +60,7 @@ export function safeAsyncCopyFileWithErrorNotification(
 
   const args =
     process.platform === "win32"
-      ? [`"${sourcePath}"`, `"${destPath}"`, "/z"] // cp
+      ? [`"${toWin32Path(sourcePath)}"`, `"${toWin32Path(destPath)}"`, "/z"] // cp
       : [`"${sourcePath}"`, `"${destPath}"`, "-t", "--progress"]; // rsync verbose, preserve time stamp
 
   return new Promise<string>((resolve, reject) => {
@@ -79,10 +82,11 @@ export function safeAsyncCopyFileWithErrorNotification(
       }
     });
     process.stderr?.on("data", (data) => {
-      NotifyError(data.toString());
+      NotifyError(`${data.toString()} ${sourcePath}-->${destPath}`);
     });
+
     process.on("error", (err) => {
-      console.error(err);
+      NotifyError(`${err.message} ${sourcePath}-->${destPath}`);
       reject(err.message);
     });
     process.on("close", (code) => {
@@ -90,16 +94,17 @@ export function safeAsyncCopyFileWithErrorNotification(
       if (index > -1) {
         activeJobs.splice(index, 1);
       }
-      console.log(`done copy ${destPath}`);
+
       if (code) {
-        sentryBreadCrumb(
-          `error copying ${sourcePath} to  ${destPath}, ${size}`
-        );
+        const fullmsg = `RobustLargeFileCopy got a code ${code} in the close event while copying ${sourcePath} to ${destPath}, ${size}`;
+        console.error(fullmsg);
+        sentryBreadCrumb(fullmsg);
         //sentryException(code);
-        const msg = `copy exited with code ${code}`;
+        const msg = `lameta had a problem copying ${sourcePath} to ${destPath}. The call to ${cmd} exited with code ${code}`;
         NotifyError(`${msg}`);
         reject(msg);
       } else {
+        console.log(`done copy ${destPath}`);
         sentryBreadCrumb(`finished copying ${sourcePath} to  ${destPath}`);
         resolve(destPath);
       }

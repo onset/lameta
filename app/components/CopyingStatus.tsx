@@ -9,7 +9,7 @@ import { t } from "@lingui/macro";
 import { i18n } from "../localization";
 import { Trans } from "@lingui/react";
 import { useEffect, useRef, useState } from "react";
-import { hasActiveSpawns } from "../RobustLargeFileCopy";
+import { filesAreStillCopying } from "../RobustLargeFileCopy";
 import { ipcRenderer } from "electron";
 
 const saymore_orange = "#e69664";
@@ -18,8 +18,8 @@ const saymore_orange = "#e69664";
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
   const [message, setMessage] = useState("");
   useInterval(() => {
-    setMessage(hasActiveSpawns() ? "Copying..." : "");
-    if (hasActiveSpawns()) {
+    setMessage(filesAreStillCopying() ? "Copying..." : "");
+    if (filesAreStillCopying()) {
       ipcRenderer.send("copyInProgress");
     } else {
       ipcRenderer.send("copyStopped");
