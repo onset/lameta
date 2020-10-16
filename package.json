@@ -29,7 +29,7 @@
     "postinstall": "",
     "hot-server": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=1  NODE_ENV=development node --max_old_space_size=2096 server.js",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render, but hot-loading of render process only. For attempt at hot-loading everything, see webpack.for-dev-mode.js",
-    "dev": "npm run build-dev-main && npm run hot-server -- --start-hot",
+    "dev": "yarn lingui-compile && yarn build-dev-main && npm run hot-server -- --start-hot",
     "dev-renderer-only": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
