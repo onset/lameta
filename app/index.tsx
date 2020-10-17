@@ -7,10 +7,7 @@ import { setConfig } from "react-hot-loader";
 import { initializeAnalytics, analyticsEvent } from "./analytics";
 import { initializeSentry as initializeErrorReporting } from "./errorHandling";
 import { i18n, initializeLocalization } from "./localization";
-import {
-  abandonCopying,
-  filesAreStillCopying as haveActiveFileCopySpawns,
-} from "./RobustLargeFileCopy";
+import { CopyManager } from "./CopyManager";
 import { t } from "@lingui/macro";
 
 //if (!process.env.HOT) {
@@ -30,7 +27,7 @@ setConfig({ logLevel: "debug" });
 document.body.setAttribute("class", remote.process.platform);
 
 window.onbeforeunload = (e: BeforeUnloadEvent) => {
-  if (haveActiveFileCopySpawns()) {
+  if (CopyManager.filesAreStillCopying()) {
     ipcRenderer
       .invoke(
         "confirm-quit",
@@ -40,7 +37,7 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
       )
       .then((result) => {
         if (result.response === 1) {
-          abandonCopying(true);
+          CopyManager.abandonCopying(true);
           remote.app.quit(); // this time it will go through
         }
       });

@@ -21,12 +21,12 @@ import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
-import { NotifyError, NotifyException } from "../Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../Notify";
 import { ensureDirSync, pathExistsSync } from "fs-extra";
 import { makeGenericCsvZipFile } from "../../export/CsvExporter";
 import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
 import { ExportChoices } from "./ExportChoices";
-import { getActiveCopyJobs, ICopyJob } from "../../RobustLargeFileCopy";
+import { CopyManager, ICopyJob } from "../../CopyManager";
 import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../UserSettings";
 
@@ -42,6 +42,7 @@ enum Mode {
   choosing = 1,
   exporting = 2,
   copying = 3,
+  finished = 4,
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
@@ -69,12 +70,11 @@ export const ExportDialog: React.FunctionComponent<{
   const [copyJobsInProgress, setCopyJobsInProgress] = useState<ICopyJob[]>([]);
   useInterval(() => {
     if (mode === Mode.copying) {
-      if (getActiveCopyJobs().length === 0) {
-        showInExplorer(outputPath || "");
-        setMode(Mode.closed);
+      if (CopyManager.getActiveCopyJobs().length === 0) {
+        setMode(Mode.finished);
       }
       // we have to clone it or react will see that the object didn't change, and will not re-render
-      setCopyJobsInProgress([...getActiveCopyJobs()]);
+      setCopyJobsInProgress([...CopyManager.getActiveCopyJobs()]);
     }
   }, 500); // REVIEW: when this dialog is closed, does this keep running?
 
@@ -131,6 +131,7 @@ export const ExportDialog: React.FunctionComponent<{
           }
         });
     } else {
+      CopyManager.abandonCopying(true); // cancel can be clicked while doing imdi+files.
       setMode(Mode.closed);
     }
   };
@@ -212,15 +213,13 @@ export const ExportDialog: React.FunctionComponent<{
             props.projectHolder.project!,
             folderFilter
           );
-          showInExplorer(path);
-          setMode(Mode.closed); // don't have to wait for any copying of big files
+          setMode(Mode.finished); // don't have to wait for any copying of big files
           break;
         case "paradisec":
           analyticsEvent("Export", "Export Paradisec CSV");
 
           makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
-          showInExplorer(path);
-          setMode(Mode.closed); // don't have to wait for any copying of big files
+          setMode(Mode.finished); // don't have to wait for any copying of big files
           break;
         case "imdi":
           analyticsEvent("Export", "Export IMDI Xml");
@@ -230,22 +229,28 @@ export const ExportDialog: React.FunctionComponent<{
             false,
             folderFilter
           );
-          showInExplorer(path);
-          setMode(Mode.closed); // don't have to wait for any copying of big files
+          setMode(Mode.finished); // don't have to wait for any copying of big files
           break;
         case "imdi-plus-files":
           analyticsEvent("Export", "Export IMDI Plus Files");
-
-          ImdiBundler.saveImdiBundleToFolder(
-            props.projectHolder.project!,
-            path,
-            true,
-            folderFilter
-          ).then(() => {
-            console.log("After ImdiBundler.saveImdiBundleToFolder()");
-            // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
-            setMode(Mode.copying); // don't have to wait for any copying of big files
-          });
+          if (CopyManager.filesAreStillCopying()) {
+            NotifyWarning(
+              i18n._(
+                t`lameta cannot export files while files are still being copied in.`
+              )
+            );
+            setMode(Mode.choosing);
+          } else {
+            ImdiBundler.saveImdiBundleToFolder(
+              props.projectHolder.project!,
+              path,
+              true,
+              folderFilter
+            ).then(() => {
+              // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
+              setMode(Mode.copying); // don't have to wait for any copying of big files
+            });
+          }
           break;
       }
     }
@@ -286,32 +291,63 @@ export const ExportDialog: React.FunctionComponent<{
               setCountOfMarkedSessions={setCountOfMarkedSessions}
             />
           )}
-          {mode === Mode.exporting && <h1>{i18n._(t`Exporting...`)}</h1>}
-          {mode === Mode.copying && (
-            <div>
-              <h1>{i18n._(t`Copying in Files...`)}</h1>
-              <br />
-              {copyJobsInProgress.map((j) => {
-                const name = Path.basename(j.destination);
-                return (
-                  <div>
-                    {name} {j.progress}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <div
+            css={css`
+              margin-left: 20px;
+            `}
+          >
+            {mode === Mode.exporting && (
+              <h1>
+                <Trans>Exporting...</Trans>
+              </h1>
+            )}
+            {mode === Mode.finished && (
+              <h1>
+                <Trans>Done</Trans>
+              </h1>
+            )}
+            {mode === Mode.copying && (
+              <div>
+                <h1>
+                  <Trans>Copying in Files...</Trans>
+                </h1>
+                <br />
+                {copyJobsInProgress.map((j) => {
+                  const name = Path.basename(j.destination);
+                  return (
+                    <div>
+                      {name} {j.progress}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
           <div className={"okCancelGroup"}>
-            <button onClick={() => handleContinue(false)}>
+            <button
+              onClick={() => handleContinue(false)}
+              disabled={mode === Mode.finished}
+            >
               <Trans>Cancel</Trans>
             </button>
             {mode === Mode.choosing && (
               <button id="okButton" onClick={() => handleContinue(true)}>
                 <Trans>Export</Trans>
+              </button>
+            )}
+            {mode === Mode.finished && (
+              <button
+                id="okButton"
+                onClick={() => {
+                  setMode(Mode.closed);
+                  showInExplorer(outputPath || "");
+                }}
+              >
+                <Trans>Show export</Trans>
               </button>
             )}
           </div>

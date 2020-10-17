@@ -16,10 +16,7 @@ import assert from "assert";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { trash } from "../../crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import {
-  safeAsyncCopyFileWithErrorNotification,
-  getExtension,
-} from "../../RobustLargeFileCopy";
+import { CopyManager, getExtension } from "../../CopyManager";
 import { sanitizeForArchive } from "../../sanitizeForArchive";
 import userSettingsSingleton from "../../UserSettings";
 import { sentryBreadCrumb } from "../../errorHandling";
@@ -126,7 +123,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     window.setTimeout(
       () =>
-        safeAsyncCopyFileWithErrorNotification(
+        CopyManager.safeAsyncCopyFileWithErrorNotification(
           path,
           dest,
           (progress: string) => {

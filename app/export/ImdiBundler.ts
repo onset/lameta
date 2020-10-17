@@ -11,11 +11,8 @@ import { sanitizeForArchive } from "../sanitizeForArchive";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
-import { NotifyError } from "../components/Notify";
-import {
-  filesAreStillCopying,
-  safeAsyncCopyFileWithErrorNotification,
-} from "../RobustLargeFileCopy";
+import { NotifyError, NotifyWarning } from "../components/Notify";
+import { CopyManager } from "../CopyManager";
 temp.track();
 
 // This class handles making/copying all the files for an IMDI archive.
@@ -29,7 +26,6 @@ export default class ImdiBundler {
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
   ): Promise<string> {
-    //throw new Error("oof");
     return new Promise((resolve, reject) => {
       sentryBreadCrumb("Starting saveImdiBundleToFolder");
       try {
@@ -167,7 +163,7 @@ export default class ImdiBundler {
       if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
         count++;
         try {
-          safeAsyncCopyFileWithErrorNotification(
+          CopyManager.safeAsyncCopyFileWithErrorNotification(
             f.describedFilePath,
             Path.join(
               targetDirectory,

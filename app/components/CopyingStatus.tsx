@@ -7,11 +7,10 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import { t } from "@lingui/macro";
 import { i18n } from "../localization";
-import { Trans } from "@lingui/react";
-import { useEffect, useRef, useState } from "react";
-import { filesAreStillCopying } from "../RobustLargeFileCopy";
+import { CopyManager } from "../CopyManager";
 import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
+import { useState } from "react";
 
 const saymore_orange = "#e69664";
 
@@ -19,8 +18,8 @@ const saymore_orange = "#e69664";
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
   const [message, setMessage] = useState("");
   useInterval(() => {
-    setMessage(filesAreStillCopying() ? "Copying..." : "");
-    if (filesAreStillCopying()) {
+    setMessage(CopyManager.filesAreStillCopying() ? i18n._(t`Copying...`) : "");
+    if (CopyManager.filesAreStillCopying()) {
       ipcRenderer.send("copyInProgress");
     } else {
       ipcRenderer.send("copyStopped");
