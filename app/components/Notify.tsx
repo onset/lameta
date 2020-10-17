@@ -3,8 +3,10 @@ import { showInExplorer } from "../crossPlatformUtilities";
 import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../UserSettings";
+import { sentryException } from "../errorHandling";
 
 const electron = require("electron");
+
 export function NotifyError(message: string) {
   ButterToast.raise({
     content: (
@@ -17,6 +19,11 @@ export function NotifyError(message: string) {
     timeout: 60 * 1000,
   });
 }
+export function NotifyException(message: string, err: Error) {
+  NotifyError(message);
+  sentryException(err);
+}
+
 export function NotifyWarning(message: string, onClick?: () => void) {
   ButterToast.raise({
     onClick,

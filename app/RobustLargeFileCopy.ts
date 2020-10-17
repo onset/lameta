@@ -5,12 +5,17 @@ import { NotifyError } from "./components/Notify";
 import filesize from "filesize";
 import * as fs from "fs-extra";
 
-interface ICopyJob {
+export interface ICopyJob {
   process: child_process.ChildProcess;
   destination: string;
+  progress: string;
 }
 
 const activeJobs: ICopyJob[] = [];
+
+export function getActiveCopyJobs(): ICopyJob[] {
+  return activeJobs;
+}
 
 export function abandonCopying(cancelJobsFirst: boolean) {
   if (cancelJobsFirst) {
@@ -70,7 +75,8 @@ export function safeAsyncCopyFileWithErrorNotification(
       shell: true,
       detached: true, // without this, if we quit while the copy is going, it will be corrupt
     });
-    activeJobs.push({ process, destination: destPath });
+    const job = { process, destination: destPath, progress: "0%" };
+    activeJobs.push(job);
     //spawn.unref(); // allow lameta to quit even if this is still going
     const percentage = /(\d+%)/g;
     process.stdout?.on("data", (data: string) => {
@@ -78,7 +84,8 @@ export function safeAsyncCopyFileWithErrorNotification(
       const messages = data.toString().trim();
       const matches = percentage.exec(messages);
       if (matches && matches.length) {
-        if (progress) progress(`${matches[0]}`);
+        job.progress = matches[0];
+        if (progress) progress(matches[0]);
       }
     });
     process.stderr?.on("data", (data) => {
@@ -96,6 +103,7 @@ export function safeAsyncCopyFileWithErrorNotification(
       }
 
       if (code) {
+        job.progress = "100%";
         const fullmsg = `RobustLargeFileCopy got a code ${code} in the close event while copying ${sourcePath} to ${destPath}, ${size}`;
         console.error(fullmsg);
         sentryBreadCrumb(fullmsg);

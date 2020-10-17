@@ -144,16 +144,18 @@ export default class ImdiBundler {
         ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
       );
 
-      const waitForCopying = () => {
-        if (filesAreStillCopying()) {
-          setTimeout(() => waitForCopying(), 1000);
-        } else {
-          sentryBreadCrumb("Done with saveImdiBundleToFolder");
-          resolve();
-        }
-      };
-      sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
-      waitForCopying();
+      // const waitForCopying = () => {
+      //   if (filesAreStillCopying()) {
+      //     setTimeout(() => waitForCopying(), 1000);
+      //   } else {
+      //     sentryBreadCrumb("Done with saveImdiBundleToFolder");
+      //     resolve();
+      //   }
+      // };
+      // sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
+      // waitForCopying();
+
+      resolve();
     });
   }
   private static copyFolderOfFiles(files: File[], targetDirectory: string) {

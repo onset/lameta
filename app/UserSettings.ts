@@ -78,6 +78,13 @@ export class UserSettings {
     return this.clientId;
   }
 
+  public get ExportFormat(): string {
+    return this.store.get("exportFormat", "csv");
+  }
+  public set ExportFormat(format: string) {
+    this.store.set("exportFormat", format);
+  }
+
   public get SendErrorsAndAnalytics(): boolean {
     return this.howUsing !== "developer";
   }

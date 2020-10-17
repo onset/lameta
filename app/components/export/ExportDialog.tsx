@@ -21,10 +21,14 @@ import { analyticsLocation, analyticsEvent } from "../../analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
-import { NotifyError } from "../Notify";
+import { NotifyError, NotifyException } from "../Notify";
 import { ensureDirSync, pathExistsSync } from "fs-extra";
 import { makeGenericCsvZipFile } from "../../export/CsvExporter";
 import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
+import { ExportChoices } from "./ExportChoices";
+import { getActiveCopyJobs, ICopyJob } from "../../RobustLargeFileCopy";
+import { useInterval } from "../UseInterval";
+import userSettingsSingleton from "../../UserSettings";
 
 const saymore_orange = "#e69664";
 const { app } = require("electron").remote;
@@ -33,13 +37,24 @@ const sanitize = require("sanitize-filename");
 let staticShowExportDialog: () => void = () => {};
 export { staticShowExportDialog as ShowExportDialog };
 
+enum Mode {
+  closed = 0,
+  choosing = 1,
+  exporting = 2,
+  copying = 3,
+}
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  staticShowExportDialog = () => setIsOpen(true);
-  const [exportFormat, setExportFormat] = useState("csv");
+  const [mode, setMode] = useState<Mode>(Mode.closed);
+  staticShowExportDialog = () => {
+    setMode(Mode.choosing);
+  };
+
+  const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
+  const [exportFormat, setExportFormat] = useState(
+    userSettingsSingleton.ExportFormat
+  );
   const [whichSessionsOption, setWhichSessionsOption] = useState("all");
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
@@ -49,10 +64,23 @@ export const ExportDialog: React.FunctionComponent<{
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");
     }
-  }, [isOpen]);
+  }, [mode]);
+
+  const [copyJobsInProgress, setCopyJobsInProgress] = useState<ICopyJob[]>([]);
+  useInterval(() => {
+    if (mode === Mode.copying) {
+      if (getActiveCopyJobs().length === 0) {
+        showInExplorer(outputPath || "");
+        setMode(Mode.closed);
+      }
+      // we have to clone it or react will see that the object didn't change, and will not re-render
+      setCopyJobsInProgress([...getActiveCopyJobs()]);
+    }
+  }, 500); // REVIEW: when this dialog is closed, does this keep running?
 
   const handleContinue = (doSave: boolean) => {
     if (doSave) {
+      userSettingsSingleton.ExportFormat = exportFormat;
       let defaultPath;
       switch (exportFormat) {
         case "csv":
@@ -80,28 +108,31 @@ export const ExportDialog: React.FunctionComponent<{
               : [],
         })
         .then((result) => {
-          setExporting(!result.canceled);
-          if (!result.canceled) {
+          if (result.canceled) {
+            setMode(Mode.closed);
+          } else {
+            setMode(Mode.exporting);
             document.body.style.cursor = "wait";
             // setTimeout lets us update the ui before diving in
             setTimeout(() => {
               try {
+                setOutputPath(result.filePath);
                 saveFiles(result.filePath!);
               } catch (err) {
-                setExporting(false);
-                NotifyError(`There was a problem exporting: ${err.message}`);
-                throw err; // send it on to sentry
+                NotifyException(
+                  `${i18n._(t`There was a problem exporting:`)} ${err.message}`,
+                  err
+                );
+                setMode(Mode.closed);
               } finally {
                 document.body.style.cursor = "default";
-                setExporting(false);
               }
             }, 100);
           }
         });
     } else {
-      setIsOpen(false);
+      setMode(Mode.closed);
     }
-    setExporting(false);
   };
   const getPathForCsvSaving = () => {
     const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
@@ -182,12 +213,14 @@ export const ExportDialog: React.FunctionComponent<{
             folderFilter
           );
           showInExplorer(path);
+          setMode(Mode.closed); // don't have to wait for any copying of big files
           break;
         case "paradisec":
           analyticsEvent("Export", "Export Paradisec CSV");
 
           makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
           showInExplorer(path);
+          setMode(Mode.closed); // don't have to wait for any copying of big files
           break;
         case "imdi":
           analyticsEvent("Export", "Export IMDI Xml");
@@ -197,19 +230,24 @@ export const ExportDialog: React.FunctionComponent<{
             false,
             folderFilter
           );
+          showInExplorer(path);
+          setMode(Mode.closed); // don't have to wait for any copying of big files
           break;
         case "imdi-plus-files":
           analyticsEvent("Export", "Export IMDI Plus Files");
+
           ImdiBundler.saveImdiBundleToFolder(
             props.projectHolder.project!,
             path,
             true,
             folderFilter
-          );
+          ).then(() => {
+            console.log("After ImdiBundler.saveImdiBundleToFolder()");
+            // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
+            setMode(Mode.copying); // don't have to wait for any copying of big files
+          });
           break;
       }
-      showInExplorer(path);
-      setIsOpen(false);
     }
   };
 
@@ -221,7 +259,7 @@ export const ExportDialog: React.FunctionComponent<{
     >
       <ReactModal
         className="exportDialog"
-        isOpen={isOpen}
+        isOpen={mode !== Mode.closed}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => handleContinue(false)}
         ariaHideApp={false}
@@ -230,145 +268,52 @@ export const ExportDialog: React.FunctionComponent<{
         <div className={"dialogTitle "}>
           <Trans>Export Project</Trans>
         </div>
-        <div className="dialogContent">
-          <fieldset>
-            <legend>
-              <Trans>Choose an export format:</Trans>
-            </legend>
-            <label>
-              <input
-                type="radio"
-                name="format"
-                value="csv"
-                checked={exportFormat === "csv"}
-                onChange={(e) => setExportFormat(e.target.value)}
-              />
-              <Trans>Zip of CSVs</Trans>
-            </label>
-            <p>
-              <Trans>
-                A single zip archive that contains one comma-separated file for
-                each of Project, Sessions, and People.
-              </Trans>
-            </p>
-            <label>
-              <input
-                type="radio"
-                name="format"
-                value="paradisec"
-                checked={exportFormat === "paradisec"}
-                onChange={(e) => setExportFormat(e.target.value)}
-              />
-              <Trans>Paradisec CSV</Trans>
-              {" (Experimental)"}
-            </label>{" "}
-            <p>
-              <Trans>
-                A single comma-separated file with project information followed
-                by one row per session. Many lameta fields are omitted.
-              </Trans>
-            </p>
-            {/* <label>
-                <input
-                  type="radio"
-                  name="format"
-                  value="spreadsheet"
-                  checked={true}
-                  disabled={true}
-                />
-                Spreadsheet (not implemented yet)
-              </label>
-              <p>
-                A single file with sheets for each of Project, Session, and
-                People
-              </p> */}
-            <label>
-              <input
-                type="radio"
-                name="format"
-                value="imdi"
-                checked={exportFormat === "imdi"}
-                onChange={(e) => setExportFormat(e.target.value)}
-              />
-              <Trans>IMDI Only</Trans>
-            </label>
-            <p>
-              <Trans>
-                A folder with an IMDI file for the project and each session.
-              </Trans>
-            </p>
-            <label>
-              <input
-                type="radio"
-                name="format"
-                value="imdi-plus-files"
-                checked={exportFormat === "imdi-plus-files"}
-                onChange={(e) => setExportFormat(e.target.value)}
-              />
-              <Trans>IMDI + Files</Trans>
-            </label>
-            <p>
-              <Trans>
-                A folder containing both the IMDI files and all the project's
-                archivable files.
-              </Trans>
-            </p>
-          </fieldset>
-          <div id="whichSessions">
-            <label>
-              <Trans>Choose which Sessions to export:</Trans>
-            </label>
-            <select
-              name={"Which sessions to export"}
-              value={whichSessionsOption}
-              onChange={(event) => {
-                setWhichSessionsOption(event.target.value);
-              }}
-            >
-              <option key={"all"} value={"all"}>
-                {i18n._(t`All Sessions`)}
-              </option>
-              <option
-                key={"marked"}
-                value={"marked"}
-                disabled={countOfMarkedSessions === 0}
-              >
-                {i18n._(t`${countOfMarkedSessions} Marked Sessions`)}
-              </option>
-            </select>
-          </div>
-        </div>
         <div
+          className="dialogContent"
           css={css`
-            width: 100%;
-            display: flex;
-            visibility: ${exporting ? "visible" : "hidden"};
+            height: 420px;
+            max-height: 420px;
+            overflow-y: auto;
           `}
         >
-          <div
-            css={css`
-              margin-left: auto;
-              margin-right: auto;
-              margin-bottom: 10px;
-              font-weight: bold;
-              color: ${saymore_orange};
-            `}
-          >
-            {/* It would be much better to show progress. To do that, we'd either have to change the
-              export so that it could be called increments, or else get web workers happening. See the branch
-               WebworkersExport for a very initial start on that. */}
-            Exporting...
-          </div>
+          {mode === Mode.choosing && (
+            <ExportChoices
+              exportFormat={exportFormat}
+              setExportFormat={setExportFormat}
+              whichSessionsOption={whichSessionsOption}
+              setWhichSessionsOption={setWhichSessionsOption}
+              countOfMarkedSessions={countOfMarkedSessions}
+              setCountOfMarkedSessions={setCountOfMarkedSessions}
+            />
+          )}
+          {mode === Mode.exporting && <h1>{i18n._(t`Exporting...`)}</h1>}
+          {mode === Mode.copying && (
+            <div>
+              <h1>{i18n._(t`Copying in Files...`)}</h1>
+              <br />
+              {copyJobsInProgress.map((j) => {
+                const name = Path.basename(j.destination);
+                return (
+                  <div>
+                    {name} {j.progress}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
+
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
           <div className={"okCancelGroup"}>
             <button onClick={() => handleContinue(false)}>
               <Trans>Cancel</Trans>
             </button>
-            <button id="okButton" onClick={() => handleContinue(true)}>
-              <Trans>Export</Trans>
-            </button>
+            {mode === Mode.choosing && (
+              <button id="okButton" onClick={() => handleContinue(true)}>
+                <Trans>Export</Trans>
+              </button>
+            )}
           </div>
         </div>
       </ReactModal>
