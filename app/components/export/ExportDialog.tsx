@@ -315,7 +315,7 @@ export const ExportDialog: React.FunctionComponent<{
                 {copyJobsInProgress.map((j) => {
                   const name = Path.basename(j.destination);
                   return (
-                    <div>
+                    <div key={j.destination}>
                       {name} {j.progress}
                     </div>
                   );

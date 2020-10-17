@@ -2,16 +2,16 @@ We are using Crowdin.com for crowdsourcing translation, and combination of [ling
 
 # Lingui
 
-Lingui is used for all the UI element that are in the code. The idea is that you use macros which lingui can find, so it can put the in the string catalog:
-
-```xml
-<Trans id="project.DescriptionDocuments">Description Documents</Trans>
-```
-
-For some reason, these forms options don't work:
+Lingui is used for all the hard-coded UI elements. The idea is that you use macros which lingui can find, so it can put the in the string catalog:
 
 ```xml
 <Trans>Description Documents</Trans>
+```
+
+or
+
+```xml
+<Trans id="project.DescriptionDocuments">Description Documents</Trans>
 ```
 
 ```ts
@@ -21,6 +21,14 @@ For some reason, these forms options don't work:
     {},
     { defaults: "Description Documents" }
   );
+}
+```
+
+This format uses our own wrapper. Note that you still have to include the comment part for the lingui scanner to find it.
+
+```ts
+{
+  translateMessage(/*i18n*/ { id: "Description Documents" });
 }
 ```
 

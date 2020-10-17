@@ -2,7 +2,7 @@
 "project.id","project","Project ID","","","","","",""
 "project.grantId","project","Grant ID","","","","","",""
 "project.projectDescription","project","Description","Descripción","Description","","","Descrição",""
-"project.vernacularIso3CodeAndName","project","Content Language","","Language du contenu","","","Língua do conteúdo",""
+"project.vernacularIso3CodeAndName","project","Subject Language","","Language du contenu","","","Língua do conteúdo",""
 "project.analysisISO3CodeAndName","project","Working Language","","","","","Língua de trabalho",""
 "project.location","project","Location/Address","Ubicación/Dirección","Adresse","","","Localização/Endereço",""
 "project.region","project","Region","Región","Région","","","Região",""

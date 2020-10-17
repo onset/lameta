@@ -66,9 +66,12 @@ const genres = require("../locale/genres.csv");
 const accessProtocols = require("../locale/accessProtocols.csv");
 const tips = require("../locale/tips.csv"); // tooltips and specialinfo
 
-export function translateMessage(english: string): string {
-  return i18n._(t`${english}`);
+// call to this must have the comment /*18n*/ in order for the lingui scanner to find it
+// e.g. translationMessage(/*18n*/{id: "foobar"})
+export function translateMessage(arg: { id: string }): string {
+  return i18n._(arg.id);
 }
+
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
     case "Project":
@@ -145,7 +148,7 @@ function getMatch(
         if (!fieldName || fieldName.toLowerCase().indexOf("country") < 0) {
           const forField = fieldName ? `for field ${fieldName}` : "";
 
-          console.log(
+          console.warn(
             `TODO: Add \t"${s}"\t to locale/${fileThatShouldHaveThis} ${forField}`
           );
         }

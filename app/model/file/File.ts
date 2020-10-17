@@ -25,14 +25,8 @@ import {
   sentryExceptionBreadCrumb,
 } from "../../errorHandling";
 import compareVersions from "compare-versions";
-import { IPersonLanguage } from "../PersonLanguage";
-import { Person } from "../Project/Person/Person";
 import xmlbuilder from "xmlbuilder";
-import {
-  i18n,
-  initializeLocalization,
-  translateMessage,
-} from "../../localization";
+import { translateMessage } from "../../localization";
 
 export class Contribution {
   //review this @mobx.observable
@@ -874,19 +868,25 @@ export /*babel doesn't like this: abstract*/ class File {
       fs.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
       const cannotRename = translateMessage(
-        "lameta was not able to rename that file."
+        /*i18n*/ { id: "lameta was not able to rename that file." }
       );
       if (err.code === "EBUSY") {
         if (this.type === "Video" || this.type === "Audio")
           NotifyError(
             `${cannotRename} ${translateMessage(
-              "Restart lameta and do the rename before playing the video again."
+              /*i18n*/ {
+                id:
+                  "Restart lameta and do the rename before playing the video again.",
+              }
             )}`
           );
         else
           NotifyError(
             `${cannotRename}  ${translateMessage(
-              "Try restarting lameta. If that doesn't do it, restart your computer."
+              /*i18n*/ {
+                id:
+                  "Try restarting lameta. If that doesn't do it, restart your computer.",
+              }
             )}`
           );
       } else {

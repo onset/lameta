@@ -27,9 +27,12 @@ export function trash(path: string): boolean {
   if (!success) {
     NotifyError(
       `${translateMessage(
-        "lameta was not able to delete the file."
+        /*i18n*/ { id: "lameta was not able to delete the file." }
       )} (${fixedPath})  ${translateMessage(
-        "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+        /*i18n*/ {
+          id:
+            "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer.",
+        }
       )}`
     );
   }

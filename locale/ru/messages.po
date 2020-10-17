@@ -22,11 +22,11 @@ msgstr ""
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:207
+#: app/components/export/ExportChoices.tsx:48
 msgid "A folder containing both the IMDI files and all the project's archivable files."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:198
+#: app/components/export/ExportChoices.tsx:39
 msgid "A folder with an IMDI file for the project and each session."
 msgstr ""
 
@@ -34,7 +34,7 @@ msgstr ""
 #~ msgid "A single ISLE Meta Data Initiative XML file."
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:187
+#: app/components/export/ExportChoices.tsx:28
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 #~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:176
+#: app/components/export/ExportChoices.tsx:17
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr ""
 
@@ -54,11 +54,15 @@ msgstr ""
 #~ msgid "A zip file with an IMDI file for the project and each session."
 #~ msgstr ""
 
+#: app/index.tsx:27
+msgid "Abandon files that are still copying"
+msgstr ""
+
 #: app/components/project/ProjectTab.tsx:25
 msgid "About This Project"
 msgstr "Об этом проекте"
 
-#: app/menu.ts:37
+#: app/menu.ts:38
 msgid "About lameta"
 msgstr ""
 
@@ -70,11 +74,11 @@ msgstr ""
 msgid "Access Protocol"
 msgstr "Протокол доступа"
 
-#: app/components/FileList.tsx:130
+#: app/components/FileList.tsx:116
 msgid "Add Files"
 msgstr "Добавление файлов"
 
-#: app/components/people/person/PersonLanguageList.tsx:118
+#: app/components/people/person/PersonLanguageList.tsx:76
 msgid "Add Language"
 msgstr ""
 
@@ -86,7 +90,7 @@ msgstr ""
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:221
+#: app/components/export/ExportChoices.tsx:62
 msgid "All Sessions"
 msgstr ""
 
@@ -106,8 +110,8 @@ msgstr ""
 msgid "As a trainer"
 msgstr ""
 
-#: app/components/FolderPane.tsx:178
-#: app/localization.ts:68
+#: app/components/FolderPane.tsx:183
+#: app/localization.ts:73
 msgid "Audio"
 msgstr "Аудио"
 
@@ -134,7 +138,7 @@ msgstr "Аудио"
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:60
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:136
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:99
-#: app/components/export/ExportDialog.tsx:249
+#: app/components/export/ExportDialog.tsx:235
 #: app/components/project/CreateProjectDialog.tsx:61
 #: app/components/registration/RegistrationDialog.tsx:96
 msgid "Cancel"
@@ -144,7 +148,7 @@ msgstr "Отмена"
 msgid "Change Name To:"
 msgstr "Изменить имя на:"
 
-#: app/menu.ts:319
+#: app/menu.ts:335
 msgid "Check for new version"
 msgstr ""
 
@@ -152,11 +156,11 @@ msgstr ""
 msgid "Choose Language"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:169
+#: app/components/export/ExportChoices.tsx:10
 msgid "Choose an export format:"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:215
+#: app/components/export/ExportChoices.tsx:56
 msgid "Choose which Sessions to export:"
 msgstr ""
 
@@ -169,24 +173,36 @@ msgstr "Комментарии"
 msgid "Confirm Delete"
 msgstr "Подтвердить удаление"
 
-#: app/components/FolderPane.tsx:152
+#: app/components/FolderPane.tsx:157
 msgid "Contributions"
 msgstr "Участники"
 
-#: app/components/FolderPane.tsx:84
-#: app/components/FolderPane.tsx:115
+#: app/components/FolderPane.tsx:89
+#: app/components/FolderPane.tsx:120
 msgid "Contributors"
 msgstr "Составители"
 
-#: app/menu.ts:92
+#: app/menu.ts:93
 msgid "Copy"
 msgstr "Копия"
 
-#: app/containers/HomePage.tsx:168
-msgid "Create New Project"
+#: app/model/Folder/Folder.ts:88
+msgid "Copy Requested..."
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:218
+msgid "Copying in Files..."
+msgstr ""
+
+#: app/components/CopyingStatus.tsx:16
+msgid "Copying..."
 msgstr ""
 
 #: app/containers/HomePage.tsx:180
+msgid "Create New Project"
+msgstr ""
+
+#: app/containers/HomePage.tsx:192
 msgid "Create New Project with Sample Data"
 msgstr ""
 
@@ -198,11 +214,11 @@ msgstr ""
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: app/menu.ts:117
+#: app/menu.ts:118
 msgid "Create Project..."
 msgstr ""
 
-#: app/menu.ts:308
+#: app/menu.ts:324
 msgid "Credits"
 msgstr ""
 
@@ -218,7 +234,7 @@ msgstr ""
 #~ msgid "Custom Fields"
 #~ msgstr ""
 
-#: app/menu.ts:90
+#: app/menu.ts:91
 msgid "Cut"
 msgstr ""
 
@@ -230,15 +246,15 @@ msgstr ""
 msgid "Delete"
 msgstr "Удалить"
 
-#: app/components/FileList.tsx:196
+#: app/components/FileList.tsx:186
 msgid "Delete File..."
 msgstr ""
 
-#: app/components/Workspace.tsx:107
+#: app/components/Workspace.tsx:111
 msgid "Delete Person..."
 msgstr ""
 
-#: app/components/Workspace.tsx:73
+#: app/components/Workspace.tsx:77
 msgid "Delete Session..."
 msgstr ""
 
@@ -246,11 +262,19 @@ msgstr ""
 msgid "Description Documents"
 msgstr "Документы описания"
 
-#: app/components/Workspace.tsx:97
+#: app/index.tsx:27
+msgid "Do not quit"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:214
+msgid "Done"
+msgstr ""
+
+#: app/components/Workspace.tsx:101
 msgid "Duplicate Person"
 msgstr ""
 
-#: app/components/Workspace.tsx:62
+#: app/components/Workspace.tsx:66
 msgid "Duplicate Session"
 msgstr ""
 
@@ -258,7 +282,7 @@ msgstr ""
 #~ msgid "ELAN"
 #~ msgstr ""
 
-#: app/menu.ts:77
+#: app/menu.ts:78
 msgid "Edit"
 msgstr ""
 
@@ -270,16 +294,24 @@ msgstr ""
 msgid "Enter each choice, separated by commas"
 msgstr "Введите каждый выбор разделяя запятыми"
 
-#: app/components/export/ExportDialog.tsx:252
+#: app/components/Notify.tsx:11
+msgid "Error"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:238
 msgid "Export"
 msgstr "Экспортировать"
 
-#: app/components/export/ExportDialog.tsx:164
+#: app/components/export/ExportDialog.tsx:199
 msgid "Export Project"
 msgstr ""
 
-#: app/menu.ts:126
+#: app/menu.ts:127
 msgid "Export Project..."
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:211
+msgid "Exporting..."
 msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:133
@@ -287,12 +319,12 @@ msgstr ""
 msgid "Field"
 msgstr "Поле"
 
-#: app/components/FolderPane.tsx:250
-#: app/menu.ts:109
+#: app/components/FolderPane.tsx:259
+#: app/menu.ts:110
 msgid "File"
 msgstr ""
 
-#: app/menu.ts:143
+#: app/menu.ts:144
 msgid "Font Size"
 msgstr ""
 
@@ -329,19 +361,19 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: app/menu.ts:290
+#: app/menu.ts:306
 msgid "Help"
 msgstr "Справка"
 
-#: app/menu.ts:215
+#: app/menu.ts:216
 msgid "Help translate"
 msgstr ""
 
-#: app/menu.ts:56
+#: app/menu.ts:57
 msgid "Hide Others"
 msgstr ""
 
-#: app/menu.ts:51
+#: app/menu.ts:52
 msgid "Hide lameta"
 msgstr ""
 
@@ -358,20 +390,20 @@ msgstr ""
 #~ msgid "IMDI"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:204
+#: app/components/export/ExportChoices.tsx:45
 msgid "IMDI + Files"
 msgstr ""
 
-#: app/menu.ts:223
+#: app/menu.ts:224
 msgid "IMDI Mode"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:195
+#: app/components/export/ExportChoices.tsx:36
 msgid "IMDI Only"
 msgstr ""
 
-#: app/components/FolderPane.tsx:208
-#: app/localization.ts:66
+#: app/components/FolderPane.tsx:217
+#: app/localization.ts:71
 msgid "Image"
 msgstr "Изображение"
 
@@ -379,7 +411,7 @@ msgstr "Изображение"
 msgid "Indicates that this is the father or mother's primary language."
 msgstr ""
 
-#: app/menu.ts:162
+#: app/menu.ts:163
 msgid "Interface Language"
 msgstr ""
 
@@ -391,7 +423,7 @@ msgstr ""
 #~ msgid "Languages"
 #~ msgstr ""
 
-#: app/menu.ts:153
+#: app/menu.ts:154
 msgid "Larger"
 msgstr ""
 
@@ -421,7 +453,7 @@ msgstr ""
 msgid "Mark for Export"
 msgstr ""
 
-#: app/components/FileList.tsx:89
+#: app/components/FileList.tsx:62
 msgid "Modified"
 msgstr ""
 
@@ -429,28 +461,28 @@ msgstr ""
 msgid "More Fields"
 msgstr ""
 
-#: app/components/FileList.tsx:72
+#: app/components/FileList.tsx:45
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:128
 #: app/components/session/ContributorsTable.tsx:82
 msgid "Name"
 msgstr "Имя"
 
-#: app/components/Workspace.tsx:88
+#: app/components/Workspace.tsx:92
 #: app/components/people/PeopleTab.tsx:18
 #: app/model/Project/Project.ts:188
 #: app/model/Project/Project.ts:191
 msgid "New Person"
 msgstr "Новое лицо"
 
-#: app/components/Workspace.tsx:53
+#: app/components/Workspace.tsx:57
 #: app/components/session/SessionsTab.tsx:16
 #: app/model/Project/Project.ts:151
 msgid "New Session"
 msgstr "Новое событие"
 
-#: app/components/FolderPane.tsx:87
-#: app/components/FolderPane.tsx:121
-#: app/components/FolderPane.tsx:155
+#: app/components/FolderPane.tsx:92
+#: app/components/FolderPane.tsx:126
+#: app/components/FolderPane.tsx:160
 msgid "Notes"
 msgstr "Примечания"
 
@@ -461,16 +493,20 @@ msgstr "Примечания"
 msgid "OK"
 msgstr "Хорошо"
 
-#: app/components/FileList.tsx:118
+#: app/index.tsx:27
+msgid "One or more files are still being copied into your project."
+msgstr ""
+
+#: app/components/FileList.tsx:104
 msgid "Open"
 msgstr "Открыть"
 
-#: app/containers/HomePage.tsx:173
+#: app/containers/HomePage.tsx:185
 msgid "Open Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:196
-#: app/menu.ts:112
+#: app/containers/HomePage.tsx:208
+#: app/menu.ts:113
 msgid "Open Project..."
 msgstr ""
 
@@ -478,11 +514,11 @@ msgstr ""
 #~ msgid "Open SayMore Project"
 #~ msgstr ""
 
-#: app/components/FolderPane.tsx:241
+#: app/components/FolderPane.tsx:250
 msgid "Open in ELAN"
 msgstr ""
 
-#: app/components/FileList.tsx:180
+#: app/components/FileList.tsx:170
 msgid "Open in program associated with this file type"
 msgstr ""
 
@@ -494,26 +530,26 @@ msgstr "Другие документы"
 #~ msgid "Other Languages"
 #~ msgstr ""
 
-#: app/menu.ts:231
+#: app/menu.ts:232
 msgid "PARADISEC Mode"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:183
+#: app/components/export/ExportChoices.tsx:24
 msgid "Paradisec CSV"
 msgstr ""
 
-#: app/menu.ts:97
+#: app/menu.ts:98
 msgid "Paste"
 msgstr ""
 
-#: app/components/Workspace.tsx:85
-#: app/components/Workspace.tsx:153
+#: app/components/Workspace.tsx:89
+#: app/components/Workspace.tsx:168
 #: app/components/session/PeopleChooser.tsx:56
 msgid "People"
 msgstr "Люди"
 
-#: app/components/FolderPane.tsx:149
-#: app/localization.ts:62
+#: app/components/FolderPane.tsx:154
+#: app/localization.ts:67
 #: app/model/Project/Project.ts:254
 msgid "Person"
 msgstr "Лицо"
@@ -522,8 +558,8 @@ msgstr "Лицо"
 msgid "Please Register"
 msgstr ""
 
-#: app/components/Workspace.tsx:141
-#: app/localization.ts:58
+#: app/components/Workspace.tsx:156
+#: app/localization.ts:63
 msgid "Project"
 msgstr "Проект"
 
@@ -539,15 +575,15 @@ msgstr "Проект"
 msgid "Project will be created in: {path}."
 msgstr "Проект будет создан в: {path}."
 
-#: app/components/FolderPane.tsx:81
+#: app/components/FolderPane.tsx:86
 msgid "Properties"
 msgstr "Свойства"
 
-#: app/menu.ts:68
+#: app/menu.ts:69
 msgid "Quit"
 msgstr ""
 
-#: app/menu.ts:85
+#: app/menu.ts:86
 msgid "Redo"
 msgstr ""
 
@@ -555,7 +591,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/menu.ts:293
+#: app/menu.ts:309
 msgid "Registration..."
 msgstr ""
 
@@ -571,12 +607,12 @@ msgstr ""
 msgid "Rename for Consent"
 msgstr ""
 
-#: app/components/FileList.tsx:122
-#: app/components/FileList.tsx:188
+#: app/components/FileList.tsx:108
+#: app/components/FileList.tsx:178
 msgid "Rename..."
 msgstr "Переименовать"
 
-#: app/menu.ts:299
+#: app/menu.ts:315
 msgid "Report a problem"
 msgstr ""
 
@@ -584,12 +620,16 @@ msgstr ""
 #~ msgid "Resolution"
 #~ msgstr ""
 
+#: app/model/file/File.ts:662
+msgid "Restart lameta and do the rename before playing the video again."
+msgstr ""
+
 #: app/components/PersonContributions.tsx:27
 #: app/components/session/ContributorsTable.tsx:87
 msgid "Role"
 msgstr "Роль"
 
-#: app/components/export/ExportDialog.tsx:59
+#: app/components/export/ExportDialog.tsx:84
 msgid "Save As"
 msgstr ""
 
@@ -601,55 +641,59 @@ msgstr ""
 #~ msgid "SayMore/SayMore Project Files"
 #~ msgstr ""
 
-#: app/menu.ts:102
+#: app/menu.ts:103
 msgid "Select All"
 msgstr ""
 
-#: app/menu.ts:44
+#: app/menu.ts:45
 msgid "Services"
 msgstr ""
 
-#: app/components/FolderPane.tsx:112
+#: app/components/FolderPane.tsx:117
 #: app/components/PersonContributions.tsx:21
-#: app/components/Workspace.tsx:50
-#: app/localization.ts:60
+#: app/components/Workspace.tsx:54
+#: app/localization.ts:65
 #: app/model/Project/Project.ts:251
 msgid "Session"
 msgstr "Событие"
 
-#: app/components/Workspace.tsx:147
+#: app/components/Workspace.tsx:162
 msgid "Sessions"
 msgstr "Элементы проекта"
 
-#: app/menu.ts:61
+#: app/menu.ts:62
 msgid "Show All"
 msgstr ""
 
-#: app/components/FileList.tsx:174
+#: app/components/export/ExportDialog.tsx:244
+msgid "Show export"
+msgstr ""
+
+#: app/components/FileList.tsx:164
 msgid "Show in File Explorer"
 msgstr ""
 
-#: app/components/FileList.tsx:173
+#: app/components/FileList.tsx:163
 msgid "Show in Finder"
 msgstr ""
 
-#: app/components/FileList.tsx:96
+#: app/components/FileList.tsx:72
 msgid "Size"
 msgstr "Размер"
 
-#: app/menu.ts:146
+#: app/menu.ts:147
 msgid "Smaller"
 msgstr ""
 
-#: app/menu.ts:121
+#: app/menu.ts:122
 msgid "Start Screen"
 msgstr ""
 
-#: app/components/FolderPane.tsx:118
+#: app/components/FolderPane.tsx:123
 msgid "Status"
 msgstr "Статус"
 
-#: app/components/FolderPane.tsx:221
+#: app/components/FolderPane.tsx:230
 msgid "Text"
 msgstr ""
 
@@ -701,11 +745,23 @@ msgstr ""
 #~ msgid "There is already a {folderKind} with the name '{value}'"
 #~ msgstr ""
 
-#: app/components/FileList.tsx:80
+#: app/components/export/ExportDialog.tsx:109
+msgid "There was a problem exporting:"
+msgstr ""
+
+#: app/crossPlatformUtilities.ts:25
+msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+msgstr ""
+
+#: app/model/file/File.ts:667
+msgid "Try restarting lameta. If that doesn't do it, restart your computer."
+msgstr ""
+
+#: app/components/FileList.tsx:53
 msgid "Type"
 msgstr "Тип"
 
-#: app/menu.ts:80
+#: app/menu.ts:81
 msgid "Undo"
 msgstr "Отменить"
 
@@ -714,8 +770,8 @@ msgstr "Отменить"
 msgid "Value"
 msgstr "Значение"
 
-#: app/components/FolderPane.tsx:193
-#: app/localization.ts:64
+#: app/components/FolderPane.tsx:198
+#: app/localization.ts:69
 msgid "Video"
 msgstr "Видео"
 
@@ -723,9 +779,13 @@ msgstr "Видео"
 #~ msgid "Video Codec"
 #~ msgstr ""
 
-#: app/menu.ts:140
+#: app/menu.ts:141
 msgid "View"
 msgstr "Вид"
+
+#: app/components/Notify.tsx:22
+msgid "Warning"
+msgstr ""
 
 #: app/components/project/CreateProjectDialog.tsx:51
 msgid "What would you like to call this project?"
@@ -736,11 +796,11 @@ msgstr "Как назвать этот проект?"
 #~ msgid "Width"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:65
+#: app/components/export/ExportDialog.tsx:90
 msgid "ZIP Archive"
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:173
+#: app/components/export/ExportChoices.tsx:14
 msgid "Zip of CSVs"
 msgstr ""
 
@@ -753,22 +813,38 @@ msgstr ""
 #~ msgid "height"
 #~ msgstr ""
 
-#: app/menu.ts:34
+#: app/menu.ts:35
 msgid "lameta"
 msgstr ""
 
-#: app/containers/HomePage.tsx:203
+#: app/containers/HomePage.tsx:215
 msgid "lameta and SayMore Project Files"
+msgstr ""
+
+#: app/components/export/ExportDialog.tsx:181
+msgid "lameta cannot export files while files are still being copied in."
+msgstr ""
+
+#: app/crossPlatformUtilities.ts:24
+msgid "lameta was not able to delete the file."
+msgstr ""
+
+#: app/model/file/File.ts:658
+msgid "lameta was not able to rename that file."
 msgstr ""
 
 #: app/components/SMRadio.tsx:11
 #~ msgid "{0}"
 #~ msgstr ""
 
+#: app/components/export/ExportChoices.tsx:65
+msgid "{0} Marked Sessions"
+msgstr ""
+
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:51
 msgid "{0} will be moved to the Trash"
 msgstr ""
 
 #: app/components/export/ExportDialog.tsx:224
-msgid "{countOfMarkedSessions} Marked Sessions"
-msgstr ""
+#~ msgid "{countOfMarkedSessions} Marked Sessions"
+#~ msgstr ""

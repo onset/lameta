@@ -4,6 +4,7 @@ import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../UserSettings";
 import { sentryException } from "../errorHandling";
+import { translateMessage } from "../localization";
 
 const electron = require("electron");
 
@@ -11,7 +12,7 @@ export function NotifyError(message: string) {
   ButterToast.raise({
     content: (
       <Cinnamon.Crunch
-        title="Error"
+        title={translateMessage(/*i18n*/ { id: "Error" })}
         content={message}
         scheme={Cinnamon.Crunch.SCHEME_RED}
       />
@@ -29,7 +30,7 @@ export function NotifyWarning(message: string, onClick?: () => void) {
     onClick,
     content: (
       <Cinnamon.Crunch
-        title="Warning"
+        title={translateMessage(/*i18n*/ { id: "Warning" })}
         content={message}
         scheme={Cinnamon.Crunch.SCHEME_ORANGE}
       />
