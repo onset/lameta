@@ -539,7 +539,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
+        const xml: string = patientReadFileSync(this.metadataFilePath);
 
         let xmlAsObject: any = {};
         xml2js.parseString(
