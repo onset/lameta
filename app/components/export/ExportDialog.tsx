@@ -120,8 +120,8 @@ export const ExportDialog: React.FunctionComponent<{
                 saveFiles(result.filePath!);
               } catch (err) {
                 NotifyException(
-                  `${i18n._(t`There was a problem exporting:`)} ${err.message}`,
-                  err
+                  err,
+                  `${i18n._(t`There was a problem exporting:`)} ${err.message}`
                 );
                 setMode(Mode.closed);
               } finally {

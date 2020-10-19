@@ -1,4 +1,8 @@
-import { File, OtherFile } from "../file/File";
+import {
+  File,
+  getStandardMessageAboutLockedFiles,
+  OtherFile,
+} from "../file/File";
 import { observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -7,6 +11,7 @@ import {
   NotifyMultipleProjectFiles,
   NotifyError,
   NotifyWarning,
+  NotifyException,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -24,6 +29,7 @@ import filesize from "filesize";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { translateMessage } from "../../other/localization";
 
 export class IFolderSelection {
   @observable
@@ -259,6 +265,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
   // TODO see https://sentry.io/organizations/meacom/issues/1268125527/events/3243884b36944f418d975dc6f7ebd80c/
   protected renameFilesAndFolders(newFolderName: string) {
+    this.saveAllFilesInFolder();
+
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
     if (oldFolderName === newFolderName) {
@@ -267,24 +275,70 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
+    const couldNotRenameDirectory = translateMessage(
+      /*i18n*/ { id: "lameta could not rename the directory." }
+    );
 
     // first, we just do a trial run to see if this will work
     try {
       fs.renameSync(this.directory, newDirPath);
       fs.renameSync(newDirPath, this.directory);
     } catch (err) {
-      NotifyError(
-        `Could not rename the directory to ${newDirPath}. This can happen when a media player is holding on to a video file. Please restart lameta and try again.`
+      NotifyException(
+        err,
+        couldNotRenameDirectory +
+          getStandardMessageAboutLockedFiles() +
+          " [[LOCATION:Precheck]]"
       );
       return;
     }
-    // ok, that worked, so now inform all the files
+    try {
+      this.files.forEach((f) => {
+        f.throwIfFilesMissing();
+      });
+    } catch (err) {
+      NotifyException(
+        err,
+        couldNotRenameDirectory +
+          getStandardMessageAboutLockedFiles() +
+          " [[LOCATION:Files Exist]]"
+      );
+      return;
+    }
+
+    // ok, that worked, so now have all the folder rename themselves if their name depends on the folder name
     this.files.forEach((f) => {
-      f.updateNameBasedOnNewFolderName(newFolderName);
+      try {
+        f.updateNameBasedOnNewFolderName(newFolderName);
+      } catch (err) {
+        const base = Path.basename(f.metadataFilePath);
+        NotifyException(
+          err,
+          `Could not rename ${base}` +
+            getStandardMessageAboutLockedFiles() +
+            " [[LOCATION:File names]]"
+        );
+      }
     });
     // and actually do the rename
-    fs.renameSync(this.directory, newDirPath);
-    this.directory = newDirPath;
+    try {
+      fs.renameSync(this.directory, newDirPath);
+      this.directory = newDirPath;
+    } catch (err) {
+      NotifyException(
+        err,
+        `Could not rename the directory containing ${this.displayName}.` +
+          getStandardMessageAboutLockedFiles() +
+          " [[LOCATION:Actual folder]]"
+      );
+      return; // don't continue on with telling the folders that they moved.
+    }
+
+    // ok, only after the folder was successfully renamed do we tell the individual files that they have been movd
+    this.files.forEach((f) => {
+      // no file i/o here
+      f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
+    });
   }
 
   protected textValueThatControlsFolderName(): string {

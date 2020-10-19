@@ -20,8 +20,9 @@ export function NotifyError(message: string) {
     timeout: 60 * 1000,
   });
 }
-export function NotifyException(message: string, err: Error) {
-  NotifyError(message);
+export function NotifyException(err: Error, message?: string) {
+  const errWas = ` Error was: ${err.message}`;
+  NotifyError(message ? message + errWas : errWas);
   sentryException(err);
 }
 
@@ -37,7 +38,17 @@ export function NotifyWarning(message: string, onClick?: () => void) {
     ),
   });
 }
-
+export function NotifySuccess(message: string, onClick?: () => void) {
+  ButterToast.raise({
+    content: (
+      <Cinnamon.Crunch
+        //title={translateMessage(/*i18n*/ { id: "" })}
+        content={message}
+        scheme={Cinnamon.Crunch.SCHEME_GREEN}
+      />
+    ),
+  });
+}
 export function NotifyMultipleProjectFiles(
   displayName: string,
   projectType: string,

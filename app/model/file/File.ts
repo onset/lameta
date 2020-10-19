@@ -16,7 +16,12 @@ import knownFieldDefinitions, {
   isKnownFieldKey,
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
-import { NotifyError, NotifyWarning } from "../../components/Notify";
+import {
+  NotifyError,
+  NotifyException,
+  NotifySuccess,
+  NotifyWarning,
+} from "../../components/Notify";
 
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import {
@@ -27,6 +32,7 @@ import {
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
 import { translateMessage } from "../../other/localization";
+import { patientReadFileSync } from "../../other/PatientFile";
 
 export class Contribution {
   //review this @mobx.observable
@@ -562,6 +568,7 @@ export /*babel doesn't like this: abstract*/ class File {
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
         let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+
         if (properties === "") {
           // This happen if it finds, e.g. <Session/>. Which is what we get when making a new file.
 
@@ -581,8 +588,10 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
-      NotifyError(`There was a problem reading ${this.metadataFilePath}`);
-      sentryException(err);
+      NotifyException(
+        err,
+        `There was a problem reading ${this.metadataFilePath}`
+      );
       throw err;
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
@@ -718,6 +727,15 @@ export /*babel doesn't like this: abstract*/ class File {
   public isOnlyMetadata(): boolean {
     return this.metadataFilePath === this.describedFilePath;
   }
+
+  public throwIfFilesMissing() {
+    if (!fs.existsSync(this.metadataFilePath)) {
+      throw new Error(`${this.metadataFilePath} does not exist.`);
+    }
+    if (!fs.existsSync(this.describedFilePath)) {
+      throw new Error(`${this.describedFilePath} does not exist.`);
+    }
+  }
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
@@ -731,15 +749,33 @@ export /*babel doesn't like this: abstract*/ class File {
         this.metadataFilePath,
         newFolderName
       );
-      this.metadataFilePath = this.updateFolderOnly(
-        this.metadataFilePath,
-        newFolderName
-      );
+      // this.metadataFilePath = this.updateFolderOnly(
+      //   this.metadataFilePath,
+      //   newFolderName
+      // );
     }
     this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
       this.describedFilePath,
       newFolderName
     );
+    // this.describedFilePath = this.updateFolderOnly(
+    //   this.describedFilePath,
+    //   newFolderName
+    // );
+    if (!hasSeparateMetaDataFile) {
+      this.metadataFilePath = this.describedFilePath;
+    }
+    this.setFileNameProperty();
+  }
+  public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
+    const hasSeparateMetaDataFile =
+      this.metadataFilePath !== this.describedFilePath;
+    if (hasSeparateMetaDataFile) {
+      this.metadataFilePath = this.updateFolderOnly(
+        this.metadataFilePath,
+        newFolderName
+      );
+    }
     this.describedFilePath = this.updateFolderOnly(
       this.describedFilePath,
       newFolderName
@@ -747,7 +783,6 @@ export /*babel doesn't like this: abstract*/ class File {
     if (!hasSeparateMetaDataFile) {
       this.metadataFilePath = this.describedFilePath;
     }
-    this.setFileNameProperty();
   }
 
   private setFileNameProperty() {
@@ -950,4 +985,16 @@ export class OtherFile extends File {
 export function ensureArray(x: any): any[] {
   if (x === null || x === undefined) return [];
   return Array.isArray(x) ? x : [x];
+}
+
+export function getStandardMessageAboutLockedFiles(): string {
+  return (
+    " " + // add space because this will always follow another message
+    translateMessage(
+      /*i18n*/ {
+        id:
+          "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+      }
+    )
+  );
 }
