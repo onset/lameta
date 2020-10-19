@@ -42,7 +42,7 @@ export class UserSettings {
     this.email = this.store.get("email", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
-    this.store.set("lastVersion", require("./package.json").version);
+    this.store.set("lastVersion", require("../package.json").version);
     // no: sentry is not initialized yet, so let it call this itself when it is initialized
     //      setUserInfoForErrorReporting(this.Email, this.HowUsing);
     this.uiFontZoom = this.store.get("uiFontZoom", "1.0");

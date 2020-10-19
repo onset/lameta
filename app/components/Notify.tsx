@@ -1,10 +1,10 @@
-import { showInExplorer } from "../crossPlatformUtilities";
+import { showInExplorer } from "../other/crossPlatformUtilities";
 //import { store } from "react-notifications-component";
 import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
-import userSettings from "../UserSettings";
-import { sentryException } from "../errorHandling";
-import { translateMessage } from "../localization";
+import userSettings from "../other/UserSettings";
+import { sentryException } from "../other/errorHandling";
+import { translateMessage } from "../other/localization";
 
 const electron = require("electron");
 

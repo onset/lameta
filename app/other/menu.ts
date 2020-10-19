@@ -1,13 +1,13 @@
 import { remote, shell } from "electron";
-import HomePage from "./containers/HomePage";
+import HomePage from "../containers/HomePage";
 import log from "./log";
-import { ShowExportDialog } from "./components/export/ExportDialog";
+import { ShowExportDialog } from "../components/export/ExportDialog";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
 import { t } from "@lingui/macro";
 import userSettings from "./UserSettings";
-import RegistrationDialog from "./components/registration/RegistrationDialog";
+import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
-import { ShowMessageDialog } from "./components/ShowMessageDialog/MessageDialog";
+import { ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
 
@@ -352,7 +352,7 @@ export default class SayLessMenu {
           },
         },
         {
-          label: "lameta " + require("./package.json").version,
+          label: "lameta " + require("../package.json").version,
           enabled: false,
         },
       ],

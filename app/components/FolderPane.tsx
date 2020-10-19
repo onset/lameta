@@ -23,11 +23,11 @@ import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
-import userSettings from "../UserSettings";
+import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
-import { locate } from "../crossPlatformUtilities";
+import { locate } from "../other/crossPlatformUtilities";
 import * as URL from "url";
 
 export interface IProps {

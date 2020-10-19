@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
-import { translateChoice } from "../localization";
+import { translateChoice } from "../other/localization";
 
 export interface IProps {
   includeLabel: boolean;

@@ -2,10 +2,10 @@ import * as React from "react";
 import { observer } from "mobx-react";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
-import { Contribution } from "./model/file/File";
-import { translateRole } from "./localization";
+import { Contribution } from "../model/file/File";
+import { translateRole } from "../other/localization";
 import { titleCase } from "title-case";
-import { IChoice } from "./model/field/Field";
+import { IChoice } from "../model/field/Field";
 
 export interface IProps {
   contribution: Contribution;

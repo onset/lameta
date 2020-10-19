@@ -6,13 +6,13 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
 import { log } from "util";
-import { sentryBreadCrumb } from "../errorHandling";
-import { sanitizeForArchive } from "../sanitizeForArchive";
+import { sentryBreadCrumb } from "../other/errorHandling";
+import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
 import { NotifyError, NotifyWarning } from "../components/Notify";
-import { CopyManager } from "../CopyManager";
+import { CopyManager } from "../other/CopyManager";
 temp.track();
 
 // This class handles making/copying all the files for an IMDI archive.

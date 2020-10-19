@@ -4,10 +4,10 @@ import { app, ipcRenderer, remote } from "electron";
 import "./app.global.scss";
 import App from "./containers/App";
 import { setConfig } from "react-hot-loader";
-import { initializeAnalytics, analyticsEvent } from "./analytics";
-import { initializeSentry as initializeErrorReporting } from "./errorHandling";
-import { i18n, initializeLocalization } from "./localization";
-import { CopyManager } from "./CopyManager";
+import { initializeAnalytics, analyticsEvent } from "./other/analytics";
+import { initializeSentry as initializeErrorReporting } from "./other/errorHandling";
+import { i18n, initializeLocalization } from "./other/localization";
+import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 
 //if (!process.env.HOT) {

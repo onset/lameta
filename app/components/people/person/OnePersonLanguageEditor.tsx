@@ -10,7 +10,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { ToggleIconButton } from "./ToggleIconButton";
-import { i18n } from "../../../localization";
+import { i18n } from "../../../other/localization";
 import { t } from "@lingui/macro";
 
 export const OnePersonLanguageEditor: React.FunctionComponent<{

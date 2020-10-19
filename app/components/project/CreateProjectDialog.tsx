@@ -6,9 +6,9 @@ const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
 import { t } from "@lingui/macro";
-import { i18n } from "../../localization";
+import { i18n } from "../../other/localization";
 import { Trans } from "@lingui/react";
-import { analyticsLocation } from "../../analytics";
+import { analyticsLocation } from "../../other/analytics";
 
 interface IProps {
   isOpen: boolean;

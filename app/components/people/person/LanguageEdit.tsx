@@ -9,7 +9,7 @@ import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
 import TextFieldEdit from "../../TextFieldEdit";
 import ParentButton from "./ParentButton";
-import { locate } from "../../../crossPlatformUtilities";
+import { locate } from "../../../other/crossPlatformUtilities";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { useState } from "react";
 const femaleSelected: string = locate("assets/Female_Selected.png");

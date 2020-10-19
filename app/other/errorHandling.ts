@@ -8,7 +8,7 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
       dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@sentry.io/3369701",
-      release: `${require("./package.json").version}`,
+      release: `${require("../package.json").version}`,
 
       beforeSend(event) {
         try {

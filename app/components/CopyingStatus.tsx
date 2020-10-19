@@ -6,8 +6,8 @@ import { jsx } from "@emotion/core";
 
 import * as React from "react";
 import { t } from "@lingui/macro";
-import { i18n } from "../localization";
-import { CopyManager } from "../CopyManager";
+import { i18n } from "../other/localization";
+import { CopyManager } from "../other/CopyManager";
 import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
 import { useState } from "react";

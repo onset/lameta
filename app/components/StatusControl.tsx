@@ -3,8 +3,8 @@ import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { RadioGroup, Radio } from "react-radio-group";
 import "./StatusControl.scss";
-import { translateChoice } from "../localization";
-import { locate } from "../crossPlatformUtilities";
+import { translateChoice } from "../other/localization";
+import { locate } from "../other/crossPlatformUtilities";
 
 export interface IProps {
   statusField: Field;

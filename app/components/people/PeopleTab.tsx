@@ -11,7 +11,7 @@ import {
 import "./PeopleTab.scss";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
-import { i18n } from "../../localization";
+import { i18n } from "../../other/localization";
 interface IProps {
   project: Project;
   authorityLists: AuthorityLists;

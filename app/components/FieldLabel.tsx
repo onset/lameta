@@ -3,14 +3,14 @@ import Tooltip from "react-tooltip-lite";
 import { Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { InfoAffordance } from "./InfoAffordance";
-import userSettingsSingleton from "../UserSettings";
+import userSettingsSingleton from "../other/UserSettings";
 import {
   translateFieldLabel,
   translateSpecialInfo,
   i18n,
   translateTooltip,
   translateTooltipNotice,
-} from "../localization";
+} from "../other/localization";
 import { Trans } from "@lingui/react";
 import { observer } from "mobx-react";
 

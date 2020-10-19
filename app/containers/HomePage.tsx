@@ -14,23 +14,23 @@ import * as Path from "path";
 import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import userSettings from "../UserSettings";
+import userSettings from "../other/UserSettings";
 
-import SayLessMenu from "../menu";
-import { locate } from "../crossPlatformUtilities";
+import SayLessMenu from "../other/menu";
+import { locate } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
-import log from "../log";
+import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
-import { i18n } from "../localization";
-import { analyticsEvent } from "../analytics";
+import { i18n } from "../other/localization";
+import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
   MessageDialog,
   ShowMessageDialog,
 } from "../components/ShowMessageDialog/MessageDialog";
-import { sentryBreadCrumb } from "../errorHandling";
+import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 
 const isDev = require("electron-is-dev");

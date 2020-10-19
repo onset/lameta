@@ -1,7 +1,7 @@
 import * as Path from "path";
 import * as child_process from "child_process";
 import { sentryBreadCrumb, sentryException } from "./errorHandling";
-import { NotifyError } from "./components/Notify";
+import { NotifyError } from "../components/Notify";
 import filesize from "filesize";
 import * as fs from "fs-extra";
 

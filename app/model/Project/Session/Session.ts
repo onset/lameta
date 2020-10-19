@@ -5,9 +5,9 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
-import { sanitizeForArchive } from "../../../sanitizeForArchive";
+import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
-import userSettingsSingleton from "../../../UserSettings";
+import userSettingsSingleton from "../../../other/UserSettings";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {

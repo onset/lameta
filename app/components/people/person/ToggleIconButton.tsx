@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
-import { locate } from "../../../crossPlatformUtilities";
+import { locate } from "../../../other/crossPlatformUtilities";
 
 export const ToggleIconButton: React.FunctionComponent<{
   onImagePath: string;

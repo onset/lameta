@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import * as React from "react";
 import { t } from "@lingui/macro";
-import { i18n } from "../../localization";
+import { i18n } from "../../other/localization";
 import { Trans } from "@lingui/react";
 
 export const ExportChoices: React.FunctionComponent<{

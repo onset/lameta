@@ -8,7 +8,7 @@ import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { sentryBreadCrumb } from "../errorHandling";
+import { sentryBreadCrumb } from "../other/errorHandling";
 
 export const kEol: string = require("os").EOL;
 

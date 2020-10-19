@@ -9,7 +9,7 @@ import ReactTable from "react-table";
 import TextFieldEdit from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
 import { t } from "@lingui/macro";
-import { i18n } from "../localization";
+import { i18n } from "../other/localization";
 import { FieldLabel } from "./FieldLabel";
 
 export interface IProps {

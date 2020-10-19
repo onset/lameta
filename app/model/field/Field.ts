@@ -3,7 +3,10 @@ import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
-import { translateFieldLabel, currentUILanguage } from "../../localization";
+import {
+  translateFieldLabel,
+  currentUILanguage,
+} from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
 import { Folder } from "../Folder/Folder";
 import * as DateFns from "date-fns";

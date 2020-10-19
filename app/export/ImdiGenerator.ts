@@ -17,10 +17,10 @@ import {
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
-import { sanitizeForArchive } from "../sanitizeForArchive";
+import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { values } from "mobx";
 import { IPersonLanguage } from "../model/PersonLanguage";
-import { sentryBreadCrumb } from "../errorHandling";
+import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 const pkg = require("../package.json");
 

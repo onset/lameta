@@ -2,7 +2,7 @@ import * as React from "react";
 import ReactModal from "react-modal";
 import "./MessageDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { locate } from "../../crossPlatformUtilities";
+import { locate } from "../../other/crossPlatformUtilities";
 import { Trans } from "@lingui/react";
 
 interface IConfig {

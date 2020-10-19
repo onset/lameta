@@ -6,8 +6,8 @@ import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-import { sanitizeForArchive } from "../../../sanitizeForArchive";
-import userSettingsSingleton from "../../../UserSettings";
+import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
+import userSettingsSingleton from "../../../other/UserSettings";
 import {
   LanguageFinder,
   staticLanguageFinder,

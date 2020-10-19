@@ -3,7 +3,7 @@ import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { csvEncode, kEol } from "./CsvExporter";
 import * as fs from "fs";
-import { sentryBreadCrumb } from "../errorHandling";
+import { sentryBreadCrumb } from "../other/errorHandling";
 
 export function makeParadisecCsv(
   path: string,

@@ -30,7 +30,7 @@
       }
     ]
   },
-  "files": ["app/index.tsx", "./app/sanitizeForArchive.ts"],
+  "files": ["app/index.tsx", "app/other/sanitizeForArchive.ts"],
   "include": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"],
   "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }

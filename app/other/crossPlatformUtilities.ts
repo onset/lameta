@@ -2,7 +2,7 @@ const electron = require("electron");
 import { remote } from "electron";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { NotifyError } from "./components/Notify";
+import { NotifyError } from "../components/Notify";
 import { translateMessage } from "./localization";
 
 export function showInExplorer(path: string) {

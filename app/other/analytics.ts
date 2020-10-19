@@ -17,14 +17,14 @@ export function initializeAnalytics() {
       appName: "bogus",
       appVersion: require("package.json").version,
       language: currentUILanguage || "",
-      clientId: "bogus"
+      clientId: "bogus",
     });
   } else {
     analytics = new Analytics("UA-131224630-1", {
       appName: "lameta",
       appVersion: require("package.json").version,
       language: currentUILanguage || "",
-      clientId: userSettingsSingleton.ClientId
+      clientId: userSettingsSingleton.ClientId,
     });
   }
   //analytics.send("event", { ec: "launch", ea: "launch", an: "saymorex" });
@@ -34,7 +34,7 @@ export function analyticsLocation(name: string) {
   analytics
     .send("screenview", { cd: name })
     //.then(() => console.log("Sent screen view" + name))
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
   // in case of an error later, also list this in the error log
   sentryBreadCrumb(name);
 }
@@ -46,8 +46,8 @@ export function analyticsEvent(category: string, action: string) {
       // at the moment, I'm not clear where it is best to stick how-using
       cn: userSettingsSingleton.HowUsing, // Campaign Name not clear to me what part of Campaign I should put this in
       ci: userSettingsSingleton.HowUsing, // Campaign ID
-      ck: userSettingsSingleton.HowUsing // Campaign Keyword
+      ck: userSettingsSingleton.HowUsing, // Campaign Keyword
     })
     //.then(() => console.log(`Sent event ${category}/${action}`))
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
 }

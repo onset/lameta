@@ -8,7 +8,7 @@ const camelcase = require("camelcase");
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
-import { locate } from "../../crossPlatformUtilities";
+import { locate } from "../../other/crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
@@ -23,10 +23,10 @@ import {
   sentryBreadCrumb,
   sentryException,
   sentryExceptionBreadCrumb,
-} from "../../errorHandling";
+} from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
-import { translateMessage } from "../../localization";
+import { translateMessage } from "../../other/localization";
 
 export class Contribution {
   //review this @mobx.observable

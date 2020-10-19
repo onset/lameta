@@ -17,7 +17,7 @@ import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 import { Contribution } from "../model/file/File";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import { FieldOpenChoiceChooser } from "./session/FieldChoiceChooser";
-import { translateGenre } from "../localization";
+import { translateGenre } from "../other/localization";
 
 export interface IProps {
   folder: Folder;
