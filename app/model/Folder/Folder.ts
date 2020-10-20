@@ -29,7 +29,6 @@ import filesize from "filesize";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
-import { translateMessage } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 
 export class IFolderSelection {
@@ -107,7 +106,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
           getExtension(path)?.toLowerCase()
         )
       ) {
-        NotifyWarning(`Cannot add files of type ${getExtension(path)}`);
+        NotifyWarning(
+          i18n._(t`Cannot add files of that type`) + ` (${getExtension(path)}`
+        );
         return;
       }
       const n = sanitizeForArchive(
@@ -117,7 +118,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
       const dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
-        NotifyWarning(`There is already a file here with the name "${n}"`);
+        NotifyWarning(
+          i18n._(t`There is already a file here with the name`) + ` (${n})`
+        );
         return;
       }
 
@@ -146,6 +149,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
               );
               if (!pendingFile) {
                 NotifyError(
+                  // not translating for now
                   `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
                 );
                 reject();
@@ -160,7 +164,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
                 (x) => x.describedFilePath === dest
               );
               if (fileIndex < 0) {
-                NotifyError(
+                NotifyException(
+                  error, // not translating for now
                   `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
                 );
                 reject();
@@ -243,10 +248,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          console.log(`attempting trash of meta: ${file.metadataFilePath}`);
           if (!trash(file.metadataFilePath)) {
             NotifyError(
-              "Failed to trash metadatafile:" + file.metadataFilePath
+              i18n._(t`lameta was not able to put this file in the trash`) +
+                ` (${file.metadataFilePath})`
             );
           }
         }
@@ -271,9 +276,12 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
   // TODO see https://sentry.io/organizations/meacom/issues/1268125527/events/3243884b36944f418d975dc6f7ebd80c/
   protected renameFilesAndFolders(newFolderName: string): boolean {
+    sentryBreadCrumb(`renameFilesAndFolders ${newFolderName}.`);
     if (this.files.some((f) => f.copyInProgress)) {
       NotifyWarning(
-        "Please wait until all files are finished copying into this folder"
+        i18n._(
+          t`Please wait until all files are finished copying into this folder`
+        )
       );
       return false;
     }
@@ -287,8 +295,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
-    const couldNotRenameDirectory = translateMessage(
-      /*i18n*/ { id: "lameta could not rename the directory." }
+    const couldNotRenameDirectory = i18n._(
+      t`lameta could not rename the directory.`
     );
 
     // first, we just do a trial run to see if this will work
@@ -323,9 +331,12 @@ export /*babel doesn't like this: abstract*/ class Folder {
         f.updateNameBasedOnNewFolderName(newFolderName);
       } catch (err) {
         const base = Path.basename(f.metadataFilePath);
+        const msg = i18n._(
+          t`lameta was not able to rename one of the files in the folder.`
+        );
         NotifyException(
           err,
-          `Could not rename ${base}` +
+          `${msg} (${base})` +
             getStandardMessageAboutLockedFiles() +
             " [[STEP:File names]]"
         );
@@ -336,9 +347,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
     } catch (err) {
+      const msg = i18n._(t`lameta was not able to rename the folder.`);
       NotifyException(
         err,
-        `Could not rename the directory containing ${this.displayName}.` +
+        `${msg} (${this.displayName}).` +
           getStandardMessageAboutLockedFiles() +
           " [[STEP:Actual folder]]"
       );
@@ -409,8 +421,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
           PatientFS.renameSync(matchingPaths[0], expectedMetadataFilePath);
           return;
         } catch (err) {
-          NotifyError(
-            `Failed to fix the name of ${matchingPaths[0]} to fit the folder name.`
+          NotifyException(
+            err,
+            `lameta was not able to fix the name of ${matchingPaths[0]} to fit the folder name.` // intentionally not adding the translation list
           );
           // not sure what to do now....
         }

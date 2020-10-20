@@ -31,8 +31,13 @@ import {
 } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
-import { translateMessage } from "../../other/localization";
+import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
+import { t } from "@lingui/macro";
+
+function getCannotRenameFileMsg() {
+  return i18n._(t`lameta  was not able to rename that file.`);
+}
 
 export class Contribution {
   //review this @mobx.observable
@@ -858,6 +863,9 @@ export /*babel doesn't like this: abstract*/ class File {
     return directoryName + "_" + roleName;
   }
   private tryToRenameToFunction(roleName: string): boolean {
+    sentryBreadCrumb(
+      `Rename for function ${roleName} (${this.describedFilePath})`
+    );
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
       return true;
     }
@@ -878,37 +886,41 @@ export /*babel doesn't like this: abstract*/ class File {
 
     const newMetadataFilePath = newDescribedFilePath + ".meta";
 
+    const cannotRenameBecauseExists = translateMessage(
+      /*i18n*/ {
+        id: "Renaming failed because there is already a file with that name.",
+      }
+    );
     if (fs.existsSync(newDescribedFilePath)) {
-      NotifyWarning(`Cannot rename: ${newDescribedFilePath} already exists.`);
+      NotifyWarning(`${cannotRenameBecauseExists} (${newDescribedFilePath})`);
       return false;
     }
     if (fs.existsSync(newMetadataFilePath)) {
-      NotifyWarning(`Cannot rename: ${newMetadataFilePath} already exists.`);
+      NotifyWarning(`${cannotRenameBecauseExists} (${newMetadataFilePath})`);
       return false;
     }
 
     sentryBreadCrumb(
       `Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`
     );
+
     try {
       PatientFS.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
-      NotifyWarning(`Cannot rename: ${err.message}`);
+      NotifyWarning(`${getCannotRenameFileMsg()} (${err.message})`);
       return false;
     }
     sentryBreadCrumb(
       `Attempting rename from ${this.describedFilePath} to ${newDescribedFilePath}`
     );
+
     try {
       PatientFS.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
-      const cannotRename = translateMessage(
-        /*i18n*/ { id: "lameta was not able to rename that file." }
-      );
       if (err.code === "EBUSY") {
         if (this.type === "Video" || this.type === "Audio")
           NotifyError(
-            `${cannotRename} ${translateMessage(
+            `${getCannotRenameFileMsg()} ${translateMessage(
               /*i18n*/ {
                 id:
                   "Restart lameta and do the rename before playing the video again.",
@@ -917,7 +929,7 @@ export /*babel doesn't like this: abstract*/ class File {
           );
         else
           NotifyError(
-            `${cannotRename}  ${translateMessage(
+            `${getCannotRenameFileMsg()}  ${translateMessage(
               /*i18n*/ {
                 id:
                   "Try restarting lameta. If that doesn't do it, restart your computer.",
@@ -925,7 +937,7 @@ export /*babel doesn't like this: abstract*/ class File {
             )}`
           );
       } else {
-        NotifyError(`${cannotRename} ${err.message}`);
+        NotifyError(`${getCannotRenameFileMsg()} ${err.message}`);
       }
 
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
@@ -953,11 +965,8 @@ export /*babel doesn't like this: abstract*/ class File {
     assert(!this.isLabeledAsConsent());
 
     if (!this.tryToRenameToFunction("Consent")) {
-      NotifyWarning("Sorry, something prevented the rename");
-    } else {
-      console.log("renameForConsent " + this.describedFilePath);
+      NotifyWarning(`${getCannotRenameFileMsg()}`);
     }
-    //this.properties.setValue("hasConsent", true);
   }
 }
 

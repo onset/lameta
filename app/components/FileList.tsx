@@ -14,7 +14,7 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react-lite";
-import { NotifyError, NotifyWarning } from "./Notify";
+import { NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
 const electron = require("electron");
 
@@ -97,11 +97,11 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           if (
             accepted.some((f) => ["session", "person", "meta"].includes(f.type))
           ) {
-            NotifyWarning(`You cannot add files of that type`);
+            NotifyWarning(i18n._(t`You cannot add files of that type`));
             return;
           }
           if (accepted.some((f) => fs.lstatSync(f.path).isDirectory())) {
-            NotifyWarning(`You cannot add folders.`);
+            NotifyWarning(i18n._(t`You cannot add folders.`));
             return;
           }
           props.folder.copyInFiles(

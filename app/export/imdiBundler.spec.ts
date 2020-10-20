@@ -5,7 +5,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../xmlUnitTestUtils";
+} from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import temp from "temp";
 import * as fs from "fs-extra";
