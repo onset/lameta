@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import { showInExplorer } from "../other/crossPlatformUtilities";
 //import { store } from "react-notifications-component";
 import * as React from "react";
@@ -8,21 +14,37 @@ import { translateMessage } from "../other/localization";
 
 const electron = require("electron");
 
-export function NotifyError(message: string) {
+export function NotifyError(message: string, details?: string) {
   ButterToast.raise({
     content: (
       <Cinnamon.Crunch
         title={translateMessage(/*i18n*/ { id: "Error" })}
-        content={message}
+        content={
+          <React.Fragment>
+            <div>{message}</div>
+            <div
+              css={css`
+                font-size: 8pt;
+                margin-top: 1em;
+              `}
+            >
+              {details}
+            </div>
+          </React.Fragment>
+        }
         scheme={Cinnamon.Crunch.SCHEME_RED}
       />
     ),
     timeout: 60 * 1000,
   });
 }
-export function NotifyException(err: Error, message?: string) {
+export function NotifyException(
+  err: Error,
+  message?: string,
+  details?: string
+) {
   const errWas = ` Error was: ${err.message}`;
-  NotifyError(message ? message + errWas : errWas);
+  NotifyError(message ? message : errWas, details + errWas);
   sentryException(err);
 }
 export function NotifyNoBigDeal(message: string, onClick?: () => void) {

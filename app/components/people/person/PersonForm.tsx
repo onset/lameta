@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
-import TextFieldEdit from "../../TextFieldEdit";
+import { TextFieldEdit } from "../../TextFieldEdit";
 import { FieldSet } from "../../../model/field/FieldSet";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";

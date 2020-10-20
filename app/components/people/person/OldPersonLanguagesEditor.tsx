@@ -7,8 +7,6 @@ import { jsx } from "@emotion/core";
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
-import TextFieldEdit from "../../TextFieldEdit";
-import ParentButton from "./ParentButton";
 import { locate } from "../../../other/crossPlatformUtilities";
 import {
   LanguageFinder,

@@ -270,13 +270,19 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
 
   // TODO see https://sentry.io/organizations/meacom/issues/1268125527/events/3243884b36944f418d975dc6f7ebd80c/
-  protected renameFilesAndFolders(newFolderName: string) {
+  protected renameFilesAndFolders(newFolderName: string): boolean {
+    if (this.files.some((f) => f.copyInProgress)) {
+      NotifyWarning(
+        "Please wait until all files are finished copying into this folder"
+      );
+      return false;
+    }
     this.saveAllFilesInFolder();
 
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
     if (oldFolderName === newFolderName) {
-      return; // nothing to do
+      return false; // nothing to do
     }
 
     const parentPath = Path.dirname(this.directory);
@@ -292,11 +298,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
     } catch (err) {
       NotifyException(
         err,
-        couldNotRenameDirectory +
-          getStandardMessageAboutLockedFiles() +
-          " [[LOCATION:Precheck]]"
+        couldNotRenameDirectory + getStandardMessageAboutLockedFiles(),
+        " [[STEP:Precheck]]"
       );
-      return;
+      return false;
     }
     try {
       this.files.forEach((f) => {
@@ -307,9 +312,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         err,
         couldNotRenameDirectory +
           getStandardMessageAboutLockedFiles() +
-          " [[LOCATION:Files Exist]]"
+          " [[STEP:Files Exist]]"
       );
-      return;
+      return false;
     }
 
     // ok, that worked, so now have all the folder rename themselves if their name depends on the folder name
@@ -322,7 +327,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
           err,
           `Could not rename ${base}` +
             getStandardMessageAboutLockedFiles() +
-            " [[LOCATION:File names]]"
+            " [[STEP:File names]]"
         );
       }
     });
@@ -335,9 +340,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         err,
         `Could not rename the directory containing ${this.displayName}.` +
           getStandardMessageAboutLockedFiles() +
-          " [[LOCATION:Actual folder]]"
+          " [[STEP:Actual folder]]"
       );
-      return; // don't continue on with telling the folders that they moved.
+      return false; // don't continue on with telling the folders that they moved.
     }
 
     // ok, only after the folder was successfully renamed do we tell the individual files that they have been movd
@@ -345,13 +350,14 @@ export /*babel doesn't like this: abstract*/ class Folder {
       // no file i/o here
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
     });
+    return true;
   }
 
   protected textValueThatControlsFolderName(): string {
     return "UNUSED-IN-THIS-CLASS";
   }
 
-  public nameMightHaveChanged() {
+  public nameMightHaveChanged(): boolean {
     // Enhance: If something goes wrong here, we're going to have things out of sync. Is there some
     // way to do this atomically (that is, as a transaction), or at least do the most dangerous
     // part first (i.e. the file renaming)?
@@ -366,9 +372,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
     // so far gets by with being case sensitive.
     if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
-      this.safeFileNameBase = newFileName;
-      this.renameFilesAndFolders(newFileName);
+      const renameSucceeded = this.renameFilesAndFolders(newFileName);
+      if (renameSucceeded) {
+        this.safeFileNameBase = newFileName;
+      }
+      return renameSucceeded;
     }
+    return true; // review not clear if true or false makes more sense if there was no relevant change?
   }
 
   public saveFolderMetaData() {

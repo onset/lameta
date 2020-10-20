@@ -640,7 +640,7 @@ export /*babel doesn't like this: abstract*/ class File {
     } else {
       try {
         ShowSavingNotifier(Path.basename(this.metadataFilePath));
-        fs.writeFileSync(this.metadataFilePath, xml);
+        PatientFS.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {
         if (error.code === "EPERM") {

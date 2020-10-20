@@ -6,7 +6,7 @@ import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";
 import ReactTable from "react-table";
-import TextFieldEdit from "./TextFieldEdit";
+import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { Trans } from "@lingui/react";
 import { i18n } from "../other/localization";

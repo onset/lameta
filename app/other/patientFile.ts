@@ -12,6 +12,11 @@ export class PatientFS {
       fs.readFileSync(path, "utf8")
     );
   }
+  public static writeFileSync(path: string, contents: string): string {
+    return PatientFS.patientFileOperationSync(() =>
+      fs.writeFileSync(path, contents, { encoding: "utf8" })
+    );
+  }
   public static renameSync(from: string, to: string) {
     PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
   }

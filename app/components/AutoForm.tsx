@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import TextFieldEdit from "./TextFieldEdit";
+import { TextFieldEdit } from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
@@ -27,7 +27,7 @@ export interface IProps {
   authorityLists: AuthorityLists;
   //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
-  fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
+  fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => boolean;
   validateFieldThatControlsFileNames?: (value: string) => boolean;
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
@@ -102,14 +102,16 @@ export default class AutoForm extends React.Component<IProps> {
               key={field.key}
               field={field as Field}
               tabIndex={field.definition.tabIndex}
-              onBlur={() =>
-                // for some reason typescript isn't noticing that I have already checked that this isn't null,
-                // so the || console.log is just to pacify it
-                (
-                  this.props.fieldThatControlsFileNamesMightHaveChanged ||
-                  console.log
-                )(this.props.fieldThatControlsFileNames || "")
-              }
+              attemptFileChanges={() => {
+                if (
+                  !this.props.fieldThatControlsFileNamesMightHaveChanged!(
+                    this.props.fieldThatControlsFileNames || ""
+                  )
+                ) {
+                  return false;
+                }
+                return true;
+              }}
               validate={(value) =>
                 !this.props.validateFieldThatControlsFileNames ||
                 this.props.validateFieldThatControlsFileNames(value)
