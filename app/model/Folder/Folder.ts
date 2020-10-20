@@ -100,72 +100,77 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public copyInOneFile(path: string, newFileName?: string) {
-    if (
-      ["session", "person", "meta"].includes(getExtension(path)?.toLowerCase())
-    ) {
-      NotifyWarning(`Cannot add files of type ${getExtension(path)}`);
-      return;
-    }
-    const n = sanitizeForArchive(
-      newFileName ? newFileName : Path.basename(path),
-      userSettingsSingleton.IMDIMode
-    );
-    const dest = Path.join(this.directory, n);
-
-    if (fs.existsSync(dest)) {
-      NotifyWarning(`There is already a file here with the name "${n}"`);
-      return;
-    }
-
-    const f = new OtherFile(dest, this.customFieldRegistry, true);
-    const stats = fs.statSync(path);
-    f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-    f.copyProgress = i18n._(t`Copy Requested...`);
-    this.files.push(f);
-
-    //throw new Error("testing");
-    // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
-    // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
-
-    window.setTimeout(
-      () =>
-        CopyManager.safeAsyncCopyFileWithErrorNotification(
-          path,
-          dest,
-          (progress: string) => {
-            f.copyProgress = progress;
-          }
+  public copyInOneFile(path: string, newFileName?: string): Promise<null> {
+    return new Promise((resolve, reject) => {
+      if (
+        ["session", "person", "meta"].includes(
+          getExtension(path)?.toLowerCase()
         )
-          .then((successfulDestinationPath) => {
-            const pendingFile = this.files.find(
-              (x) => x.describedFilePath === dest
-            );
-            if (!pendingFile) {
-              NotifyError(
-                `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
-              );
-              return;
+      ) {
+        NotifyWarning(`Cannot add files of type ${getExtension(path)}`);
+        return;
+      }
+      const n = sanitizeForArchive(
+        newFileName ? newFileName : Path.basename(path),
+        userSettingsSingleton.IMDIMode
+      );
+      const dest = Path.join(this.directory, n);
+
+      if (fs.existsSync(dest)) {
+        NotifyWarning(`There is already a file here with the name "${n}"`);
+        return;
+      }
+
+      const f = new OtherFile(dest, this.customFieldRegistry, true);
+      const stats = fs.statSync(path);
+      f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
+      f.copyProgress = i18n._(t`Copy Requested...`);
+      this.files.push(f);
+
+      //throw new Error("testing");
+      // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
+      // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
+
+      window.setTimeout(
+        () =>
+          CopyManager.safeAsyncCopyFileWithErrorNotification(
+            path,
+            dest,
+            (progress: string) => {
+              f.copyProgress = progress;
             }
-            //const f = new OtherFile(dest, this.customFieldRegistry);
-            //this.files.push(f);
-            pendingFile!.finishLoading();
-          })
-          .catch((error) => {
-            console.log(`error ${error}`);
-            const fileIndex = this.files.findIndex(
-              (x) => x.describedFilePath === dest
-            );
-            if (fileIndex < 0) {
-              NotifyError(
-                `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+          )
+            .then((successfulDestinationPath) => {
+              const pendingFile = this.files.find(
+                (x) => x.describedFilePath === dest
               );
-              return;
-            }
-            this.files.splice(fileIndex, 1);
-          }),
-      0
-    );
+              if (!pendingFile) {
+                NotifyError(
+                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                );
+                reject();
+                return;
+              }
+              pendingFile!.finishLoading();
+              resolve();
+            })
+            .catch((error) => {
+              console.log(`error ${error}`);
+              const fileIndex = this.files.findIndex(
+                (x) => x.describedFilePath === dest
+              );
+              if (fileIndex < 0) {
+                NotifyError(
+                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                );
+                reject();
+                return;
+              }
+              this.files.splice(fileIndex, 1);
+            }),
+        0
+      );
+    });
   }
 
   public copyInFiles(paths: string[]) {

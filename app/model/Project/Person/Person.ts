@@ -39,22 +39,22 @@ export class Person extends Folder {
     return ".person";
   }
 
-  private get mugshotFile(): File | undefined {
+  private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
       return f.describedFilePath.indexOf("_Photo.") > -1;
     });
   }
 
   public get mugshotPath(): string {
-    const m = this.mugshotFile;
+    const m = this.getMugshotFile();
     return m ? m.describedFilePath : "";
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
-  public set mugshotPath(path: string) {
+  public copyInMugshot(path: string): Promise<null> {
     //console.log("photopath " + path);
 
-    const f = this.mugshotFile;
+    const f = this.getMugshotFile();
     if (f) {
       fs.removeSync(f.describedFilePath);
       this.files.splice(this.files.indexOf(f), 1); //remove that one
@@ -62,7 +62,7 @@ export class Person extends Folder {
 
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
 
-    this.copyInOneFile(path, renamedPhotoPath);
+    return this.copyInOneFile(path, renamedPhotoPath);
   }
 
   public get displayName(): string {
