@@ -32,7 +32,7 @@ import {
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
 import { translateMessage } from "../../other/localization";
-import { patientReadFileSync } from "../../other/PatientFile";
+import { PatientFS } from "../../other/PatientFile";
 
 export class Contribution {
   //review this @mobx.observable
@@ -539,7 +539,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = patientReadFileSync(this.metadataFilePath);
+        const xml: string = PatientFS.readFileSync(this.metadataFilePath);
 
         let xmlAsObject: any = {};
         xml2js.parseString(
@@ -702,7 +702,7 @@ export /*babel doesn't like this: abstract*/ class File {
       if (!this.areSamePath(newPath, currentFilePath)) {
         newPath = this.getUniqueFilePath(newPath);
       }
-      fs.renameSync(currentFilePath, newPath);
+      PatientFS.renameSync(currentFilePath, newPath);
       return newPath;
     }
     return currentFilePath;
@@ -891,7 +891,7 @@ export /*babel doesn't like this: abstract*/ class File {
       `Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`
     );
     try {
-      fs.renameSync(this.metadataFilePath, newMetadataFilePath);
+      PatientFS.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
       NotifyWarning(`Cannot rename: ${err.message}`);
       return false;
@@ -900,7 +900,7 @@ export /*babel doesn't like this: abstract*/ class File {
       `Attempting rename from ${this.describedFilePath} to ${newDescribedFilePath}`
     );
     try {
-      fs.renameSync(this.describedFilePath, newDescribedFilePath);
+      PatientFS.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
       const cannotRename = translateMessage(
         /*i18n*/ { id: "lameta was not able to rename that file." }
@@ -930,7 +930,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
-        fs.renameSync(newMetadataFilePath, this.metadataFilePath);
+        PatientFS.renameSync(newMetadataFilePath, this.metadataFilePath);
       } catch (err) {
         return false;
       }

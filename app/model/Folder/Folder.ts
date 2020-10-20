@@ -30,6 +30,7 @@ import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { translateMessage } from "../../other/localization";
+import { PatientFS } from "../../other/PatientFile";
 
 export class IFolderSelection {
   @observable
@@ -281,8 +282,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     // first, we just do a trial run to see if this will work
     try {
-      fs.renameSync(this.directory, newDirPath);
-      fs.renameSync(newDirPath, this.directory);
+      PatientFS.renameSync(this.directory, newDirPath);
+      PatientFS.renameSync(newDirPath, this.directory);
     } catch (err) {
       NotifyException(
         err,
@@ -322,7 +323,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     });
     // and actually do the rename
     try {
-      fs.renameSync(this.directory, newDirPath);
+      PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
     } catch (err) {
       NotifyException(
@@ -390,7 +391,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       );
       if (matchingPaths.length > 1) {
         try {
-          fs.renameSync(matchingPaths[0], expectedMetadataFilePath);
+          PatientFS.renameSync(matchingPaths[0], expectedMetadataFilePath);
           return;
         } catch (err) {
           NotifyError(

@@ -25,6 +25,14 @@ export function NotifyException(err: Error, message?: string) {
   NotifyError(message ? message + errWas : errWas);
   sentryException(err);
 }
+export function NotifyNoBigDeal(message: string, onClick?: () => void) {
+  ButterToast.raise({
+    onClick,
+    content: (
+      <Cinnamon.Crunch content={message} scheme={Cinnamon.Crunch.SCHEME_GREY} />
+    ),
+  });
+}
 
 export function NotifyWarning(message: string, onClick?: () => void) {
   ButterToast.raise({
