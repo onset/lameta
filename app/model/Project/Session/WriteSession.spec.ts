@@ -6,7 +6,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../../../xmlUnitTestUtils";
+} from "../../../other/xmlUnitTestUtils";
 import { Field, FieldType } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { FieldDefinition } from "../../field/FieldDefinition";

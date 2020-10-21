@@ -9,6 +9,7 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { sentryBreadCrumb } from "../other/errorHandling";
+import { NotifyException } from "../components/Notify";
 
 export const kEol: string = require("os").EOL;
 
@@ -54,7 +55,6 @@ export function makeZipFile(
   // 'close' event is fired only when a file descriptor is involved
   output.on("close", () => {});
 
-  // good practice to catch warnings (ie stat failures and other non-blocking errors)
   archive.on("warning", (err) => {
     if (err.code === "ENOENT") {
       console.log("csv makeZipFile Warning: " + err);
@@ -66,8 +66,7 @@ export function makeZipFile(
 
   // good practice to catch this error explicitly
   archive.on("error", (err) => {
-    console.log("csv makeZipFile error: " + err);
-    alert("csv makeZipFile error: " + err);
+    NotifyException(err, "There was an error file making the zip file.");
   });
 
   // pipe archive data to the file

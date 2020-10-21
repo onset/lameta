@@ -9,8 +9,8 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value
-} from "../../xmlUnitTestUtils";
+  value,
+} from "../../other/xmlUnitTestUtils";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

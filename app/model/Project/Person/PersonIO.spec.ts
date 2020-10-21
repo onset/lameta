@@ -10,7 +10,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../../../xmlUnitTestUtils";
+} from "../../../other/xmlUnitTestUtils";
 
 let personDirectory;
 let personId;
@@ -120,7 +120,7 @@ describe("Person Languages Read", () => {
       father: true, // but we should only output the first one
       primary: true, // but we should only output the first one
     });
-    const x = f.getXml();/* ? */
+    const x = f.getXml(); /* ? */
     setResultXml(x);
     expect("Person/primaryLanguage").toHaveCount(1); // we should only output the first one
     expect("Person/mothersLanguage").toHaveCount(1); // we should only output the first one

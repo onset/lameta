@@ -91,8 +91,8 @@ describe("people csv export", () => {
     expect(peopleMatrix[0]).not.toContainEqual("displayname");
   });
   it("check Igali", () => {
-    console.log(peopleMatrix[0]);
-    console.log(peopleMatrix[2]);
+    // console.log(peopleMatrix[0]);
+    // console.log(peopleMatrix[2]);
     expect(people(2, "name")).toBe("Igali Sagali (Joseph)");
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
