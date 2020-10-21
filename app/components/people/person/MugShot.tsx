@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import { Person } from "../../../model/Project/Person/Person";
 import Dropzone from "react-dropzone";
 import * as fs from "fs-extra";
-import { MugshotPlaceholder } from "./MugshotPlaceholder";
+import { MugshotPlaceholder } from "./MugshotPlaceholderIcon";
 import ImageField from "../../ImageField";
 import "../../common.scss";
 import React, { useState } from "react";

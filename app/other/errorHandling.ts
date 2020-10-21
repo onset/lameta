@@ -14,6 +14,10 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
       dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@sentry.io/3369701",
       release: `${require("../package.json").version}`,
       integrations: [
+        new Sentry.Integrations.Breadcrumbs({
+          // these aren't bad but my errors were getting refused for being too big
+          console: false,
+        }),
         new RewriteFrames({
           iteratee: (frame: StackFrame) => {
             const start = frame.filename!.indexOf("dist");
