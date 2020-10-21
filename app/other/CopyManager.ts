@@ -125,7 +125,6 @@ export class CopyManager {
           NotifyError(`${msg}`);
           reject(msg);
         } else {
-          console.log(`done copy ${destPath}`);
           sentryBreadCrumb(`finished copying ${sourcePath} to  ${destPath}`);
           resolve(destPath);
         }

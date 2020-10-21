@@ -2,14 +2,26 @@
 // Switched to the Browser SDK
 
 import * as Sentry from "@sentry/browser";
+import { StackFrame } from "@sentry/browser";
+import { RewriteFrames } from "@sentry/integrations";
 import userSettingsSingleton from "./UserSettings";
+
+// frame.replace("file:///C:/dev/lameta/app/dist", "dist"),
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
       dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@sentry.io/3369701",
       release: `${require("../package.json").version}`,
-
+      integrations: [
+        new RewriteFrames({
+          iteratee: (frame: StackFrame) => {
+            const start = frame.filename!.indexOf("dist");
+            const newFilename = "~/" + frame.filename?.substr(start, 99);
+            return { ...frame, filename: newFilename };
+          },
+        }),
+      ],
       beforeSend(event) {
         try {
           console.log("Sending " + JSON.stringify(event));
