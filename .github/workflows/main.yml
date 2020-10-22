@@ -47,3 +47,12 @@ jobs:
           # See https://github.com/marketplace/actions/electron-builder-action for a description of all the repository:settings secrets this is using.
           API_KEY_ID: ${{ secrets.api_key_id }}
           API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
+
+      - name: Make new release on Sentry
+        env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          # only need this once per version, not once per operating system
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+          ./make-sentry-release.sh
