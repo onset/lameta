@@ -4,9 +4,21 @@ import { NotifyNoBigDeal, NotifyWarning } from "../components/Notify";
 
 /* Do what we can to co-exist with things like Dropbox that can temporarily lock files.
     To torture test this stuff, use https://github.com/hatton/filemeddler
+
+    Note, I wrote this before discovering graceful-fs. I've added that, as it's more
+    extensive. Keeping this around for now because there is some question about some 
+    windows corner-cases in the graceful-fs system.
+
+    But I'm reducing the number of retry attempts to just 1 for now.
  */
 
 export class PatientFS {
+  public static init() {
+    // monkey-patch fs
+    const realFs = require("fs");
+    const gracefulFs = require("graceful-fs");
+    gracefulFs.gracefulify(realFs);
+  }
   public static readFileSync(path: string): string {
     return PatientFS.patientFileOperationSync(() =>
       fs.readFileSync(path, "utf8")
@@ -21,7 +33,9 @@ export class PatientFS {
     PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
   }
   private static patientFileOperationSync(operation: () => any): any {
-    const kattempts = 5;
+    // note, graceful-fs is already pausing up to 60 seconds on each attempt.
+    // So even 2 attempts may be too much.
+    const kattempts = 2;
     for (let attempt = 0; attempt < kattempts; attempt++) {
       try {
         const result = operation();
