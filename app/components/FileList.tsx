@@ -211,7 +211,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
                 }
               },
               className:
-                (rowInfo.original.copyPending ? "copyPending " : "") +
+                (rowInfo.original.copyInProgress ? "copyPending " : "") +
                 (rowInfo && rowInfo.original === props.folder.selectedFile
                   ? "selected"
                   : ""),

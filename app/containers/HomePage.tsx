@@ -209,7 +209,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           this.projectHolder.project.displayName
         }  - lameta`
       : "lameta";
-    title += " " + require("../package.json").version + " Beta";
+    title += " " + require("../package.json").version + " Alpha";
 
     remote.getCurrentWindow().setTitle(title);
     return (
