@@ -1,10 +1,10 @@
 import * as React from "react";
-import userSettings from "../UserSettings";
+import userSettings from "../other/UserSettings";
 import "./RegistrationReminder.scss";
 import RegistrationDialog from "./registration/RegistrationDialog";
 import * as mobx from "mobx-react";
 import { t } from "@lingui/macro";
-import { i18n } from "../localization";
+import { i18n } from "../other/localization";
 import { Trans } from "@lingui/react";
 
 // This is in the upper right corner of the screen. It shows either

@@ -17,8 +17,11 @@ import {
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
-import { sanitizeForArchive } from "../filenameSanitizer";
+import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { values } from "mobx";
+import { IPersonLanguage } from "../model/PersonLanguage";
+import { sentryBreadCrumb } from "../other/errorHandling";
+import { stringify } from "flatted";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -69,6 +72,9 @@ export default class ImdiGenerator {
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    sentryBreadCrumb(
+      `Generating IMDI for session ${session.metadataFile?.metadataFilePath}`
+    );
     return generator.session();
   }
 
@@ -286,62 +292,60 @@ export default class ImdiGenerator {
       this.element("Description", description);
     });
   }
-  private addActorLanguage(
-    person: Person,
-    key: string,
-    details?: string,
-    isPrimaryTongue?: boolean
-  ) {
-    const lang = person.properties.getTextStringOrEmpty(key);
-    this.keysThatHaveBeenOutput.add("Person." + key);
-    if (lang && lang.length > 0) {
-      this.startGroup("Language");
+  private addActorLanguage(lang: IPersonLanguage) {
+    this.startGroup("Language");
 
-      //In SayMore and lameta < 0.8.7, this was stored as a name, rather than
-      // // Enhance: this matching algorithm is far from ideal.
-      // // It won't match on alternate names
-      // const code = this.project.languageFinder.findOne639_3CodeFromName(
-      //   lang,
-      //   "und"
-      // );
+    //In SayMore and lameta < 0.8.7, this was stored as a name, rather than
+    // // Enhance: this matching algorithm is far from ideal.
+    // // It won't match on alternate names
+    // const code = this.project.languageFinder.findOne639_3CodeFromName(
+    //   lang,
+    //   "und"
+    // );
 
-      // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
-      // a variety of codes to be used. However ELAR in particular apparently can only
-      // consume the ISO639-3 variety in 2018.
-      if (lang.length !== 3) {
-        // und is not *exactly* right. We don't know if it was mislabelled or what.
-        // mis (uncoded languages, originally an abbreviation for 'miscellaneous') is intended for languages which have not (yet) been included in the ISO standard.
-        // und (undetermined) is intended for cases where the language in the data has not been identified, such as when it is mislabeled or never had been labeled. It is not intended for cases such as Trojan where an unattested language has been given a name.
-        this.element("Id", "ISO639-3:und");
-      } else {
-        this.element("Id", "ISO639-3:" + lang);
-      }
+    // Note. https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf allows
+    // a variety of codes to be used. However ELAR in particular apparently can only
+    // consume the ISO639-3 variety in 2018.
+    // if (lang.length !== 3) {
+    //   // und is not *exactly* right. We don't know if it was mislabelled or what.
+    //   // mis (uncoded languages, originally an abbreviation for 'miscellaneous') is intended for languages which have not (yet) been included in the ISO standard.
+    //   // und (undetermined) is intended for cases where the language in the data has not been identified, such as when it is mislabeled or never had been labeled. It is not intended for cases such as Trojan where an unattested language has been given a name.
+    //   this.element("Id", "ISO639-3:und");
+    // } else {
+    //   this.element("Id", "ISO639-3:" + lang);
+    // }
+    this.element("Id", "ISO639-3:" + lang.code);
 
-      //this.fieldLiteral("Id", lang);
+    //this.fieldLiteral("Id", lang);
+    this.element(
+      "Name",
+      this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+        lang.code
+      )
+    );
+    this.attributeLiteral(
+      "Link",
+      "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
+    );
+
+    this.element("PrimaryLanguage", lang.primary ? "true" : "false");
+    this.attributeLiteral("Type", "ClosedVocabulary");
+    this.attributeLiteral("Link", "http://www.mpi.nl/IMDI/Schema/Boolean.xml");
+
+    if (lang.father || lang.mother) {
       this.element(
-        "Name",
-        this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-          lang
-        )
+        "Description",
+        `${[
+          lang.father ? "Also spoken by father." : undefined,
+          lang.mother ? "Also spoken by mother." : undefined,
+        ]
+          .join(" ")
+          .trim()}`
       );
-      this.attributeLiteral(
-        "Link",
-        "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
-      );
-
-      this.element("PrimaryLanguage", isPrimaryTongue ? "true" : "false");
-      this.attributeLiteral("Type", "ClosedVocabulary");
-      this.attributeLiteral(
-        "Link",
-        "http://www.mpi.nl/IMDI/Schema/Boolean.xml"
-      );
-
-      if (details && details.length > 0) {
-        this.element("Description", details);
-      }
-      // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
-      // so I'm leaving it out entirely for now.
-      /*const motherTongue = (this
+    }
+    // review: this is a to-literal definition of "mother tongue" (which itself has multiple definitions),
+    // so I'm leaving it out entirely for now.
+    /*const motherTongue = (this
         .folderInFocus as Person).properties.getTextStringOrEmpty(
         "mothersLanguage"
       );
@@ -350,8 +354,7 @@ export default class ImdiGenerator {
         lang === motherTongue ? "true" : "false"
       );
 */
-      this.exitGroup();
-    }
+    this.exitGroup();
   }
 
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
@@ -409,6 +412,15 @@ export default class ImdiGenerator {
           !this.keysThatHaveBeenOutput.contains(target.type + "." + key) &&
           blacklist.indexOf(key) < 0
         ) {
+          // don't export if we know it has been migrated
+          const definition = target.properties.getFieldDefinition(key);
+          if (
+            definition &&
+            definition.deprecated &&
+            definition.deprecated.indexOf("migrated") > -1
+          ) {
+            return;
+          }
           const fieldContents = target.properties.getTextStringOrEmpty(key);
           if (fieldContents && fieldContents.length > 0) {
             //https://trello.com/c/Xkq8cdoR/73-already-done-allow-for-more-than-one-topic
@@ -719,17 +731,18 @@ export default class ImdiGenerator {
       this.element("FamilySocialRole", "");
 
       this.startGroup("Languages");
-      this.addActorLanguage(
-        person,
-        "primaryLanguage",
-        person.properties.getTextStringOrEmpty("primaryLanguageLearnedIn"),
-        true
-      );
-      this.keysThatHaveBeenOutput.add("Person." + "primaryLanguageLearnedIn");
+      // this.addActorLanguage(
+      //   person,
+      //   "primaryLanguage",
+      //   person.properties.getTextStringOrEmpty("primaryLanguageLearnedIn"),
+      //   true
+      // );
+      // this.keysThatHaveBeenOutput.add("Person." + "primaryLanguageLearnedIn");
 
-      for (let i = 0; i < maxOtherLanguages; i++) {
-        this.addActorLanguage(person, "otherLanguage" + i);
-      }
+      // for (let i = 0; i < maxOtherLanguages; i++) {
+      //   this.addActorLanguage(person, "otherLanguage" + i);
+      // }
+      person.languages.forEach((l) => this.addActorLanguage(l));
       this.exitGroup(); // </Languages>
       this.requiredField("EthnicGroup", "ethnicGroup", person);
       // Note: age is relative to this session's date.
@@ -870,17 +883,25 @@ export default class ImdiGenerator {
   ) {
     //if they specified a folder, use that, otherwise use the current default
     const f = target ? target : this.folderInFocus;
-    let v = f.properties.getTextStringOrEmpty(fieldName);
+
+    sentryBreadCrumb(
+      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} f:{${stringify(
+        f
+      )}}`
+    );
+
+    let value = f.properties.getTextStringOrEmpty(fieldName);
+
     if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
       // they want "Formulaic Discourse"
       //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
       // Theoretically we could fish out the original English label, but this is quite safe and easy
       // and gives the same result since the keys are directly mappable to the English label via TitleCase.
-      v = titleCase(v);
+      value = titleCase(value);
     }
-    if (projectFallbackFieldName && (!v || v.length === 0)) {
-      v = this.project.properties.getTextStringOrEmpty(
+    if (projectFallbackFieldName && (!value || value.length === 0)) {
+      value = this.project.properties.getTextStringOrEmpty(
         projectFallbackFieldName
       );
     } else {
@@ -891,12 +912,13 @@ export default class ImdiGenerator {
     }
 
     //ELAR wants these capitalized
-    v = v === "unspecified" ? "Unspecified" : v;
+    value = value === "unspecified" ? "Unspecified" : value;
 
-    const text = v && v.length > 0 ? v : defaultValue;
-    if (xmlElementIsRequired || (v && v.length > 0)) {
+    const text = value && value.length > 0 ? value : defaultValue;
+    if (xmlElementIsRequired || (value && value.length > 0)) {
       this.tail = this.tail.element(elementName, text);
       const definition = f.properties.getFieldDefinition(fieldName);
+
       if (definition.imdiRange) {
         this.tail.attribute("Link", definition.imdiRange);
         const type = definition.imdiIsClosedVocabulary
@@ -967,7 +989,7 @@ export default class ImdiGenerator {
     this.tail
       //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())
-      .a("Originator", "lameta " + pkg.version)
+      .a("Originator", "lameta " + require("../package.json").version)
       .a("FormatId", "IMDI 3.0");
     this.mostRecentElement = this.tail;
     return this.tail;

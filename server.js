@@ -9,7 +9,8 @@ const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackHotMiddleware = require("webpack-hot-middleware");
 const { spawn } = require("child_process");
 
-const config = require("./webpack.config.renderer.development");
+// didn't work out. See comment in this file: const config = require("./webpack.for-dev-mode.js");
+const config = require("./webpack.renderer-process.hot-reload.js");
 
 const argv = require("minimist")(process.argv.slice(2));
 

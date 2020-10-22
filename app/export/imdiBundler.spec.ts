@@ -5,7 +5,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../xmlUnitTestUtils";
+} from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import temp from "temp";
 import * as fs from "fs-extra";
@@ -19,7 +19,6 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
 });
 beforeEach(() => {
-  console.log("************************");
   rootDir = temp.mkdirSync("ImdiBundlerTests");
   ImdiBundler.saveImdiBundleToFolder(project, rootDir, true, (f) => true, true);
 });

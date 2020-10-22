@@ -12,6 +12,7 @@ import ffmpeg from "fluent-ffmpeg";
 // import { t } from "@lingui/macro";
 import ExifReader from "exifreader";
 import fs from "fs";
+import * as Path from "path";
 
 //const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
@@ -76,11 +77,15 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
   switch (file.type) {
     case "Image":
       return new Promise((resolve, reject) => {
-        fs.readFile(file.describedFilePath, (error, data) => {
-          if (error) {
-            resolve({ "error reading file": error });
+        try {
+          const ext = Path.extname(file.describedFilePath)
+            .toLowerCase()
+            .replace(/\./g, "");
+          if (ext === "bmp") {
+            resolve({ error: "lameta cannot read metadata of bmp files." });
           }
-          const tags = ExifReader.load(data);
+          const buffer = readSyncEnoughForTags(file.describedFilePath);
+          const tags = ExifReader.load(buffer);
           const y = {};
           Object.keys(tags).forEach((k) => {
             if (tags[k].description) y[k] = tags[k].description;
@@ -90,7 +95,24 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
           // We'll see if we get complaints, and then can figure out how to incorporate this second opinion from imagesize.
           // imagesize(file.describedFilePath);
           resolve(y);
-        });
+        } catch (err) {
+          resolve({ error: err.message });
+        }
+        /*fs.readFile(file.describedFilePath, (error, data) => {
+          if (error) {
+            resolve({ "error reading file": error });
+          }
+          const tags = ExifReader.loadView.load(data);
+          const y = {};
+          Object.keys(tags).forEach((k) => {
+            if (tags[k].description) y[k] = tags[k].description;
+          });
+          //normally this comes in as "Image Height/Width" from ExifReader,
+          //but not always (e.g. if it's from a paint program instead a camera).
+          // We'll see if we get complaints, and then can figure out how to incorporate this second opinion from imagesize.
+          // imagesize(file.describedFilePath);
+          resolve(y);
+        });*/
       });
       break;
 
@@ -165,4 +187,25 @@ function processVideoStream(stream: any, stats: Stats) {
       break;
   }
   return stats;
+}
+
+// ExifReader docs say:
+//In some cases it can make sense to only load the beginning of the image file.
+// It's unfortunately not possible to know how big the meta data will be in an image,
+// but if you limit yourself to regular Exif tags you can most probably get by with
+// In some cases it can make sense to only load the beginning of the image file.
+// It's unfortunately not possible to know how big the meta data will be in an image,
+// but if you limit yourself to regular Exif tags you can most probably get by with only
+// reading the first 128 kB. This may exclude IPTC and XMP metadata though (and possibly
+// Exif too if they come in an irregular order) so please check if this optimization fits
+// your use case. only reading the first 128 kB. This may exclude IPTC and XMP metadata
+// though (and possibly Exif too if they come in an irregular order)
+// so please check if this optimization fits your use case.
+function readSyncEnoughForTags(path) {
+  const kMaxBytes = 1024 * 1024; // (first meg... being conservative)
+  const buf = Buffer.alloc(kMaxBytes);
+  const fd = fs.openSync(path, "r");
+  fs.readSync(fd, buf, 0, kMaxBytes, 0);
+  fs.closeSync(fd);
+  return buf;
 }

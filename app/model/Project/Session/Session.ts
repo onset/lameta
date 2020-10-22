@@ -5,9 +5,9 @@ import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
-import { sanitizeForArchive } from "../../../filenameSanitizer";
+import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
-import userSettingsSingleton from "../../../UserSettings";
+import userSettingsSingleton from "../../../other/UserSettings";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -24,7 +24,7 @@ export class Session extends Folder {
 
   public constructor(
     directory: string,
-    metadataFile: File,
+    metadataFile: FolderMetadataFile,
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
@@ -110,7 +110,7 @@ export class Session extends Folder {
   }
 
   // Old versions of both SayMore and lameta had a "participants" field that didn't give a way to say what
-  // the roles of the participants are. All current versions still can read this in, ans lameta (at least)
+  // the roles of the participants are. All current versions still can read this in, and lameta (at least)
   // still emits it to the xml. But it has been superseded by a normal <contributions> element, just like
   // we had previously for individual files. This method checks the <participants> for any contributions that
   // we might be missing in <contributions>.

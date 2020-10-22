@@ -39,6 +39,7 @@ interface IIndexEntry {
   altNames?: string[];
 }
 
+export let staticLanguageFinder: LanguageFinder;
 export class LanguageFinder {
   private index: TrieSearch;
   private getDefaultLanguage: () => IIndexEntry | undefined;
@@ -60,8 +61,9 @@ export class LanguageFinder {
       "iso639_3",
     ]);
 
-    // add the primary name and two codes
+    // NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
     const index = require("./langindex.json");
+    // add the primary name and two codes
     this.index.addAll(index);
 
     // now add the alternative names
@@ -85,6 +87,8 @@ export class LanguageFinder {
     if (dl.englishName) {
       this.index.map(dl.englishName, dl);
     }*/
+
+    staticLanguageFinder = this;
   }
   private matchesPrefix(
     language,
@@ -112,7 +116,7 @@ export class LanguageFinder {
     name: string,
     codeIfNoMatches: string = "und"
   ): string {
-    const projectContentLanguage = this.getDefaultLanguage();
+    const projectSubjectLanguage = this.getDefaultLanguage();
 
     // handle qaa -- qtx or any other code that we don't have in our index, but the user has
     // set up as the default language
@@ -120,8 +124,20 @@ export class LanguageFinder {
       name.toLowerCase().trim() ===
       this.getDefaultLanguage()?.englishName.toLowerCase().trim()
     ) {
-      return projectContentLanguage?.iso639_3 || "";
+      return projectSubjectLanguage?.iso639_3 || "";
     }
+    /* This may be a good idea but it's not tested yet so I'm commenting it out
+    if (
+      [
+        projectSubjectLanguage?.englishName,
+        projectSubjectLanguage?.localName,
+        projectSubjectLanguage?.iso639_1,
+        projectSubjectLanguage?.iso639_3,
+      ].includes(name.toLowerCase().trim())
+    ) {
+      return projectSubjectLanguage?.iso639_3 || "";
+    }
+  */
 
     // gives us hits on name & codes that start with the prefix
     const matches = this.index.get(name).map((m) => new Language(m));

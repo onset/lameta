@@ -5,7 +5,7 @@ import { Field } from "../../model/field/Field";
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Trans } from "@lingui/react";
-import { translateAccessProtocol } from "../../localization";
+import { translateAccessProtocol } from "../../other/localization";
 const saymore_orange = "#e69664";
 
 export interface IProps {

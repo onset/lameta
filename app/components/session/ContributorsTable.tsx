@@ -3,12 +3,12 @@ import { observer } from "mobx-react";
 import { File, Contribution } from "../../model/file/File";
 import ReactTable from "react-table";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-import RoleChooser from "../../RoleChooser";
+import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
-import { i18n } from "../../localization";
+import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
-import { locate } from "../../crossPlatformUtilities";
+import { locate } from "../../other/crossPlatformUtilities";
 
 export interface IProps {
   file: File;

@@ -28,6 +28,7 @@
       }
       .rt-td {
         border: none;
+        white-space: normal; // I do want these to wrap... sometimes they contain helpful error messages
       }
     }
   }

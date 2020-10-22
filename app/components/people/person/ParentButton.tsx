@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
-import { i18n } from "../../../localization";
+import { i18n } from "../../../other/localization";
 import { t } from "@lingui/macro";
 
 export interface IProps {

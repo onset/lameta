@@ -23,9 +23,12 @@ import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/react";
-import userSettings from "../UserSettings";
+import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
+import { NotifyError } from "./Notify";
+import { locate } from "../other/crossPlatformUtilities";
+import * as URL from "url";
 
 export interface IProps {
   folder: Folder;
@@ -35,6 +38,11 @@ export interface IProps {
   project: Project;
   fileListButtons?: object[];
 }
+
+// avoids a console error every time react-player tries to come up with a preview of the video
+const dummyPreviewImage: string = URL.pathToFileURL(
+  locate(`assets/invisible.png`)
+).toString();
 
 export const FolderPane = observer<
   IProps & React.HTMLAttributes<HTMLDivElement>
@@ -341,10 +349,14 @@ function getTabs(
           </TabList>
           <TabPanel>
             <ReactPlayer
+              //config={{ file: { forceHLS: true } }}
+              // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
+              light={dummyPreviewImage}
+              playing={true} // start playing when the "light" play button is clicked
               url={path}
               controls
               onError={(e) => {
-                console.error("video error:" + e);
+                NotifyError("video error:" + e);
               }}
             />
           </TabPanel>

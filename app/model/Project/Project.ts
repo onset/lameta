@@ -8,17 +8,17 @@ import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import { remote } from "electron";
-import { trash } from "../../crossPlatformUtilities";
+import { remote, ipcRenderer } from "electron";
+import { trash } from "../../other/crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { IChoice } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { i18n } from "../../localization";
+import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
-import { analyticsEvent } from "../../analytics";
-import userSettings from "../../UserSettings";
+import { analyticsEvent } from "../../other/analytics";
+import userSettings from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 import * as Sentry from "@sentry/browser";
 
@@ -26,6 +26,7 @@ const genres = require("./Session/genres.json");
 
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 let sCurrentProject: Project | null = null;
 
@@ -91,7 +92,7 @@ export class Project extends Folder {
 
   private constructor(
     directory: string,
-    metadataFile: File,
+    metadataFile: FolderMetadataFile,
     files: File[],
     descriptionFolder: Folder,
     otherDocsFolder: Folder,
@@ -355,12 +356,11 @@ export class Project extends Folder {
       msg = i18n._(t`There is already a ${folderKind} "${value}".`);
     }
     if (msg.length > 0) {
-      remote.dialog
-        .showMessageBox({
-          title: "lameta",
-          message: msg,
-        })
-        .then(() => {});
+      ShowMessageDialog({
+        title: "Cannot use that name",
+        text: msg,
+        buttonText: "OK",
+      });
       return false;
     } else {
       return true;

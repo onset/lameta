@@ -1,16 +1,17 @@
 import * as React from "react";
 import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
-import TextFieldEdit from "../../TextFieldEdit";
+import { TextFieldEdit } from "../../TextFieldEdit";
 import { FieldSet } from "../../../model/field/FieldSet";
-import { PersonLanguagesEditor } from "./PersonLanguagesEditor";
+import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";
-import MugShot from "./MugShot";
+import { MugShot } from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
 import { Trans } from "@lingui/react";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import { PersonLanguageList } from "./PersonLanguageList";
 
 export interface IProps {
   person: Person;
@@ -53,35 +54,7 @@ export default class PersonForm extends React.Component<IProps> {
             this.props.person.IdMightHaveChanged();
           }}
         />
-        <div className="primary-language">
-          <label className="languageGroup">
-            {
-              this.props.fields.getTextField("primaryLanguage").definition
-                .englishLabel
-            }
-          </label>
 
-          <PersonLanguagesEditor
-            language={this.props.fields.getTextField("primaryLanguage")}
-            fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
-            motherLanguage={this.props.fields.getTextField("mothersLanguage")}
-            languageFinder={this.props.languageFinder}
-          />
-          <TextFieldEdit
-            className="primaryLanguageLearnedIn left-side"
-            field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
-          />
-        </div>
-
-        <div className="other-languages">
-          <label className="languageGroup">
-            <Trans>Other Languages</Trans>
-          </label>
-          <OtherLanguageEdit
-            person={this.props.person}
-            languageFinder={this.props.languageFinder}
-          />
-        </div>
         {/* uncomment for testing that the parent buttons are working
           <TextFieldEdit className={"language-name"} field={mother} />
           <TextFieldEdit className={"language-name"} field={father} /> */}
@@ -123,6 +96,41 @@ export default class PersonForm extends React.Component<IProps> {
           className="description"
         />
         <CustomFieldsTable file={this.props.person.metadataFile!} />
+
+        <PersonLanguageList
+          person={this.props.person}
+          languageFinder={this.props.languageFinder}
+        />
+        {/* 
+        <div className="primary-language">
+          <label className="languageGroup">
+            {
+              this.props.fields.getTextField("primaryLanguage").definition
+                .englishLabel
+            }
+          </label>
+
+          <OldPersonLanguagesEditor
+            language={this.props.fields.getTextField("primaryLanguage")}
+            fatherLanguage={this.props.fields.getTextField("fathersLanguage")}
+            motherLanguage={this.props.fields.getTextField("mothersLanguage")}
+            languageFinder={this.props.languageFinder}
+          />
+          <TextFieldEdit
+            className="primaryLanguageLearnedIn left-side"
+            field={this.props.fields.getTextField("primaryLanguageLearnedIn")}
+          />
+        </div>
+
+        <div className="other-languages">
+          <label className="languageGroup">
+            <Trans>Other Languages</Trans>
+          </label>
+          <OtherLanguageEdit
+            person={this.props.person}
+            languageFinder={this.props.languageFinder}
+          />
+        </div> */}
       </form>
     );
   }

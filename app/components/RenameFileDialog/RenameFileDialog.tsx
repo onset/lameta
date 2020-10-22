@@ -8,8 +8,8 @@ import { File } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
-import { sanitizeForArchive } from "../../filenameSanitizer";
-import userSettingsSingleton from "../../UserSettings";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import userSettingsSingleton from "../../other/UserSettings";
 const sanitizeFilename = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
@@ -202,19 +202,19 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private getValidationProblemsMessage(): string {
-    if (this.getNewFileName() !== sanitizeFilename(this.getNewFileName())) {
+    const pendingNewName = this.getNewFileName();
+    const sanitizedForArchive = sanitizeForArchive(
+      pendingNewName,
+      userSettingsSingleton.IMDIMode
+    );
+    if (pendingNewName !== sanitizeFilename(pendingNewName)) {
       return "Some operating systems would not allow that name.";
     }
-    if (
-      this.getNewFileName() !==
-      sanitizeForArchive(this.getNewFileName(), userSettingsSingleton.IMDIMode)
-    ) {
+
+    if (pendingNewName !== sanitizedForArchive) {
       return "There are characters not allowed by the Archive Settings.";
     }
-    if (
-      this.getNewFileName().indexOf("/") > -1 ||
-      this.getNewFileName().indexOf("\\") > -1
-    ) {
+    if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
       return "Sorry, no slashes are allowed";
     }
     if (fs.existsSync(this.getNewPath())) {

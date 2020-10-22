@@ -7,6 +7,9 @@ import * as fs from "fs";
 import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";
+import { Person } from "../model/Project/Person/Person";
+import { sentryBreadCrumb } from "../other/errorHandling";
+import { NotifyException } from "../components/Notify";
 
 export const kEol: string = require("os").EOL;
 
@@ -52,7 +55,6 @@ export function makeZipFile(
   // 'close' event is fired only when a file descriptor is involved
   output.on("close", () => {});
 
-  // good practice to catch warnings (ie stat failures and other non-blocking errors)
   archive.on("warning", (err) => {
     if (err.code === "ENOENT") {
       console.log("csv makeZipFile Warning: " + err);
@@ -64,8 +66,7 @@ export function makeZipFile(
 
   // good practice to catch this error explicitly
   archive.on("error", (err) => {
-    console.log("csv makeZipFile error: " + err);
-    alert("csv makeZipFile error: " + err);
+    NotifyException(err, "There was an error file making the zip file.");
   });
 
   // pipe archive data to the file
@@ -102,14 +103,30 @@ function getKeys(folders: Folder[]): string[] {
 
 // folders: a set of person folders, or a set of session folders
 function getGenericCsv(folders: Folder[]): string {
+  sentryBreadCrumb(`getGenericCsv()`);
   if (folders.length === 0) {
     // without even one folder (one person, or one session), this code can't even determine the fields, so just bail
     return "";
   }
   currentKnownFields = folders[0].knownFields;
-  const blacklist = ["modifiedDate", "size", "type", "hasConsent"];
+  const blacklist = [
+    "modifiedDate",
+    "size",
+    "type",
+    "hasConsent",
+    "displayName",
+    "filename",
+  ];
   const foundFields = getKeys(folders)
-    .filter((k) => blacklist.indexOf(k) === -1)
+    .filter((k) => {
+      if (blacklist.indexOf(k) > -1) return false;
+      if (folders[0].properties.getValue(k)?.definition.omitExport) {
+        console.log("will not export " + k);
+        return false;
+      }
+      return true;
+    })
+
     .sort(sortFields);
   let header = foundFields.join(",");
   // we have a bit of hassle in that contributions are currently
@@ -124,19 +141,20 @@ function getGenericCsv(folders: Folder[]): string {
         .map((key) => {
           const field = folder.properties.getValue(key);
           if (
-            !field ||
-            (field &&
-              field.definition &&
-              field.definition.personallyIdentifiableInformation)
+            !field
+            // wait no don't make it impossible to export PII || ( field?.definition?.personallyIdentifiableInformation)
           ) {
             return "";
           }
-
-          const value = fieldToCsv(field);
+          let value = "";
+          if (field.type === FieldType.PersonLanguageList) {
+            value = getLanguagesOfPerson(folder as Person);
+          } else {
+            value = fieldToCsv(field);
+          }
           //console.log(`log csv ${key}:fieldValue=${field}:csv=${value}`);
           return csvEncode(value);
         })
-
         .concat(addContributionsIfSession(folder))
         .join(",");
       return line;
@@ -146,6 +164,17 @@ function getGenericCsv(folders: Folder[]): string {
   return header + kEol + lines;
 }
 
+function getLanguagesOfPerson(person: Person): string {
+  return person.languages
+    .map((l) => {
+      let n = l.code;
+      if (l.primary) n = "*" + n;
+      if (l.mother) n = n + " (also mother)";
+      if (l.father) n = n + " (also father)";
+      return n;
+    })
+    .join("|");
+}
 function addContributionsIfSession(folder: Folder): string[] {
   if (!(folder instanceof Session)) {
     return [];

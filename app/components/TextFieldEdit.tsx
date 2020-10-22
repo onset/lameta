@@ -1,103 +1,81 @@
-import * as React from "react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-import { InfoAffordance } from "./InfoAffordance";
 import { FieldLabel } from "./FieldLabel";
+import React, { useState } from "react";
 
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
   hideLabel?: boolean;
-  onBlur?: () => void;
+  attemptFileChanges?: () => boolean;
   onBlurWithValue?: (currentValue: string) => void;
   // this one will prevent the user from moving on
   validate?: (value: string) => boolean;
   tooltip?: string;
 }
-interface IState {
-  invalid: boolean;
-  //validationClass: string;
-}
-// automatically update when the value changes
-@mobx.observer
-// the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export default class TextFieldEdit extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>,
-  IState
-> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = { invalid: false };
-  }
-  private onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
+
+export const TextFieldEdit: React.FunctionComponent<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> = mobx.observer((props) => {
+  const [invalid, setInvalid] = React.useState(false);
+  const [previous, setPrevious] = useState(props.field.text);
+
+  function onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
     // NB: Don't trim here. It is tempting, because at the end of the day we'd
     // like it trimmed, but if you do it here, it's not possible to even
     // type a space.
     // NO: text.text = event.currentTarget.value.trim();
     text.text = event.currentTarget.value;
-    this.setState({ invalid: false });
+    setInvalid(false);
   }
 
-  private static getValue(text: Field): string {
+  function getValue(text: Field): string {
     if (text === undefined) {
       return "Null Text";
     }
     return text.text;
   }
 
-  public render() {
-    const classname = this.state.invalid ? "invalid" : "";
-    return (
-      <div
-        className={
-          "field " + (this.props.className ? this.props.className : "")
-        }
-        title={this.props.tooltip}
-      >
-        {this.props.hideLabel ? (
-          ""
-        ) : (
-          <FieldLabel fieldDef={this.props.field.definition} />
-        )}
+  return (
+    <div
+      className={"field " + (props.className ? props.className : "")}
+      title={props.tooltip}
+    >
+      {props.hideLabel ? "" : <FieldLabel fieldDef={props.field.definition} />}
 
-        <textarea
-          tabIndex={this.props.tabIndex}
-          autoFocus={this.props.autoFocus}
-          className={classname} // + " " + this.state.validationClass}
-          name={this.props.field.definition.englishLabel} //what does this do? Maybe accessibility?
-          value={TextFieldEdit.getValue(this.props.field)}
-          onChange={(event) => this.onChange(event, this.props.field)}
-          onKeyDown={(event) => {
-            if (
-              !this.props.field.definition.multipleLines &&
-              event.keyCode === 13
-            ) {
-              event.preventDefault();
-            }
-          }}
-          onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
-            if (this.props.onBlurWithValue) {
-              this.props.onBlurWithValue(event.currentTarget.value);
-            }
-            if (
-              this.props.validate &&
-              !this.props.validate(event.currentTarget.value)
-            ) {
-              event.preventDefault();
-              const textarea = event.currentTarget;
-              window.setTimeout(() => {
-                textarea.focus();
-                this.setState({ invalid: true });
-              });
-            } else {
-              this.setState({ invalid: false });
-              if (this.props.onBlur) {
-                this.props.onBlur();
+      <textarea
+        tabIndex={props.tabIndex}
+        autoFocus={props.autoFocus}
+        className={invalid ? "invalid" : ""}
+        name={props.field.definition.englishLabel} //what does this do? Maybe accessibility?
+        value={getValue(props.field)}
+        onChange={(event) => onChange(event, props.field)}
+        onKeyDown={(event) => {
+          if (!props.field.definition.multipleLines && event.keyCode === 13) {
+            event.preventDefault();
+          }
+        }}
+        onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
+          if (props.onBlurWithValue) {
+            props.onBlurWithValue(event.currentTarget.value);
+          }
+          if (props.validate && !props.validate(event.currentTarget.value)) {
+            event.preventDefault();
+            const textarea = event.currentTarget;
+            window.setTimeout(() => {
+              textarea.focus();
+              setInvalid(true);
+            });
+          } else {
+            setInvalid(false);
+            if (props.attemptFileChanges) {
+              if (!props.attemptFileChanges()) {
+                props.field.text = previous;
               }
             }
-          }}
-        />
-      </div>
-    );
-  }
-}
+          }
+        }}
+      />
+    </div>
+  );
+});

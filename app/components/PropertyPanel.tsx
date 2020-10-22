@@ -4,7 +4,7 @@ import { File } from "../model/file/File";
 import { MediaStats } from "./MediaStats";
 import "./PropertyPanel.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
-import { i18n } from "../localization";
+import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 
 @observer

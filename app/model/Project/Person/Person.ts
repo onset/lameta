@@ -1,17 +1,23 @@
+import * as mobx from "mobx";
 import { Folder } from "../../Folder/Folder";
-import { File } from "../../file/File";
+import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-import { assertAttribute } from "../../../xmlUnitTestUtils";
-import { sanitizeForArchive } from "../../../filenameSanitizer";
-import userSettingsSingleton from "../../../UserSettings";
-import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { FieldSet } from "../../field/FieldSet";
-import { Field } from "../../field/Field";
-import { Exception } from "@sentry/browser";
+import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
+import userSettingsSingleton from "../../../other/UserSettings";
+import {
+  LanguageFinder,
+  staticLanguageFinder,
+} from "../../../languageFinder/LanguageFinder";
+import { IPersonLanguage } from "../../PersonLanguage";
+import {
+  migrateLegacyPersonLanguagesFromNameToCode,
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+} from "./PersonMigration";
+import xmlbuilder from "xmlbuilder";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -33,22 +39,22 @@ export class Person extends Folder {
     return ".person";
   }
 
-  private get mugshotFile(): File | undefined {
+  private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
       return f.describedFilePath.indexOf("_Photo.") > -1;
     });
   }
 
   public get mugshotPath(): string {
-    const m = this.mugshotFile;
+    const m = this.getMugshotFile();
     return m ? m.describedFilePath : "";
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
-  public set mugshotPath(path: string) {
+  public copyInMugshot(path: string): Promise<null> {
     //console.log("photopath " + path);
 
-    const f = this.mugshotFile;
+    const f = this.getMugshotFile();
     if (f) {
       fs.removeSync(f.describedFilePath);
       this.files.splice(this.files.indexOf(f), 1); //remove that one
@@ -56,7 +62,7 @@ export class Person extends Folder {
 
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
 
-    this.addOneFile(path, renamedPhotoPath);
+    return this.copyInOneFile(path, renamedPhotoPath);
   }
 
   public get displayName(): string {
@@ -71,7 +77,7 @@ export class Person extends Folder {
 
   public constructor(
     directory: string,
-    metadataFile: File,
+    metadataFile: FolderMetadataFile,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,
@@ -86,6 +92,7 @@ export class Person extends Folder {
     }
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
+
     this.safeFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("name"),
       userSettingsSingleton.IMDIMode
@@ -100,87 +107,15 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
-    this.migratePersonLanguages(languageFinder);
+
+    (this.metadataFile! as PersonMetadataFile).migrate(languageFinder);
   }
-  private migratePersonLanguages(languageFinder: LanguageFinder) {
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("primaryLanguage"),
 
-      languageFinder
-    );
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("fathersLanguage"),
-      languageFinder
-    );
-    Person.migrateOnePersonLanguage(
-      this.properties.getTextFieldOrUndefined("mothersLanguage"),
-      languageFinder
-    );
-    for (let i = 0; i < maxOtherLanguages; i++) {
-      Person.migrateOnePersonLanguage(
-        this.properties.getTextFieldOrUndefined("otherLanguage" + i),
-        languageFinder
-      );
-    }
+  public get languages() {
+    return (this.metadataFile! as PersonMetadataFile).languages;
   }
-  // public and static to make it easier to unit test
-  public static migrateOnePersonLanguage(
-    field: Field | undefined,
-    languageFinder: LanguageFinder
-  ) {
-    try {
-      if (!field) return;
-      const nameOrCode = field.text;
-      if (!nameOrCode) {
-        return; // leave it alone
-      }
-      //In SayMore and lameta < 0.8.7, this was stored as a name, rather than a code.
-      const possibleCode = languageFinder.findOne639_3CodeFromName(
-        nameOrCode,
-        undefined
-      );
-
-      if (possibleCode === "und") {
-        // just leave it alone. If we don't recognize a language name, it's better to just not convert it than
-        // to lose it.
-        return;
-      }
-      let code;
-      if (possibleCode === undefined && nameOrCode.length === 3) {
-        code = nameOrCode;
-      }
-      // I don't suppose this would ever happen, but it would be unambiguous
-      else if (
-        possibleCode &&
-        nameOrCode.length === 3 &&
-        possibleCode === nameOrCode
-      ) {
-        code = nameOrCode;
-      }
-      // ambiguous, but a sampling suggests that 3 letter language names are always given a matching 3 letter code.
-      else if (
-        possibleCode &&
-        nameOrCode.length === 3 &&
-        possibleCode !== nameOrCode
-      ) {
-        // let's error on the side of having the correct code already. Could theoretically
-        // give wrong code for some field filled out in a pre-release version of
-        code = nameOrCode;
-      }
-      // otherwise, go with the name to code lookup
-      else {
-        code = possibleCode;
-      }
-      field.setValueFromString(code);
-
-      //console.log(`Migrate person lang ${key}:${nameOrCode} --> ${code}`);
-    } catch (err) {
-      const ex = err as Error;
-      ex.message = `${err} (migrateOnePersonLanguage: nameOrCode = '${
-        field!.text
-      }')`;
-      throw ex;
-    }
+  public set languages(newLanguageArray: IPersonLanguage[]) {
+    this.languages.splice(0, 99, ...newLanguageArray);
   }
 
   public static fromDirectory(
@@ -249,6 +184,10 @@ export class Person extends Folder {
 }
 
 export class PersonMetadataFile extends FolderMetadataFile {
+  // only used for people files
+  @mobx.observable
+  public languages = new Array<IPersonLanguage>();
+
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
       directory,
@@ -258,5 +197,103 @@ export class PersonMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.person,
       customFieldRegistry
     );
+    //console.log("PersonMetadataFile.ctr");
+  }
+
+  public migrate(languageFinder: LanguageFinder) {
+    migrateLegacyPersonLanguagesFromNameToCode(this.properties, languageFinder);
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
+      this.properties,
+      this.languages,
+      languageFinder
+    );
+  }
+
+  // override
+  protected specialLoadingOfField(
+    tag: string,
+    propertiesFromXml: any
+  ): boolean {
+    //console.log("PersonMetadataFile.specialHandlingOfField");
+    if (tag.toLocaleLowerCase() === "languages") {
+      this.loadPersonLanguages(propertiesFromXml[tag]);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  private loadPersonLanguages(xml: any) {
+    ensureArray(xml.language).forEach((lang) => {
+      this.languages.push({
+        code: lang.$.tag,
+        primary: lang.$.primary === "true",
+        mother: lang.$.mother === "true",
+        father: lang.$.father === "true",
+      });
+    });
+  }
+
+  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {
+    const languageElement = root.element("languages", {
+      type: "xml",
+    });
+
+    this.languages.forEach((language) => {
+      if (language.code.trim().length > 0) {
+        const tail = languageElement.element("language");
+        tail.attribute("tag", language.code.trim());
+        this.writeBooleanAttribute(tail, "primary", !!language.primary);
+        this.writeBooleanAttribute(tail, "mother", !!language.mother);
+        this.writeBooleanAttribute(tail, "father", !!language.father);
+      }
+    });
+    // Now output the legacy SayMore format that was used before lameta 0.92, for saymore and older lametas
+    const legacyLanguageFields = [
+      "primaryLanguage",
+      "otherLanguage0",
+      "otherLanguage1",
+      "otherLanguage2",
+      "otherLanguage3",
+      "otherLanguage4",
+      "otherLanguage5",
+    ];
+    let index = 0;
+    let haveFatherLanguage = false;
+    let haveMotherLanguage = false;
+    const kNotice =
+      "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
+    this.languages.forEach((language) => {
+      // the legacy format uses name, not code
+      const name =
+        // if we have qaa-qtz, just output that
+        language.code.toLowerCase() >= "qaa" &&
+        language.code.toLowerCase() <= "qtz"
+          ? language.code
+          : // otherwise look up the name
+            staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+              language.code
+            );
+      if (language.code.trim().length > 0) {
+        root
+          .element(legacyLanguageFields[index], name)
+          .attribute("deprecated", kNotice);
+        ++index;
+        if (!haveFatherLanguage && language.father) {
+          root
+            .element("fathersLanguage", name)
+            .attribute("deprecated", kNotice);
+          haveFatherLanguage = true;
+        }
+        if (!haveMotherLanguage && language.mother) {
+          root
+            .element("mothersLanguage", name)
+            .attribute("deprecated", kNotice);
+          haveMotherLanguage = true;
+        }
+      }
+    });
+  }
+  private writeBooleanAttribute(tail: any, name: string, value: boolean) {
+    tail.attribute(name, value ? "true" : "false");
   }
 }

@@ -8,7 +8,7 @@ const camelcase = require("camelcase");
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
-import { locate } from "../../crossPlatformUtilities";
+import { locate } from "../../other/crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
@@ -16,15 +16,28 @@ import knownFieldDefinitions, {
   isKnownFieldKey,
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
-import { NotifyError, NotifyWarning } from "../../components/Notify";
+import {
+  NotifyError,
+  NotifyException,
+  NotifySuccess,
+  NotifyWarning,
+} from "../../components/Notify";
 
-import { titleCase } from "title-case";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import {
   sentryBreadCrumb,
+  sentryException,
   sentryExceptionBreadCrumb,
-} from "../../errorHandling";
+} from "../../other/errorHandling";
 import compareVersions from "compare-versions";
+import xmlbuilder from "xmlbuilder";
+import { translateMessage, i18n } from "../../other/localization";
+import { PatientFS } from "../../other/PatientFile";
+import { t } from "@lingui/macro";
+
+function getCannotRenameFileMsg() {
+  return i18n._(t`lameta  was not able to rename that file.`);
+}
 
 export class Contribution {
   //review this @mobx.observable
@@ -60,6 +73,12 @@ export /*babel doesn't like this: abstract*/ class File {
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
   @mobx.observable
   public describedFilePath: string;
+
+  @mobx.observable
+  public copyInProgress: boolean;
+
+  @mobx.observable
+  public copyProgress: string;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -290,20 +309,22 @@ export /*babel doesn't like this: abstract*/ class File {
     this.doOutputTypeInXmlTags = doOutputTypeInXmlTags;
     this.fileExtensionForMetadata = fileExtensionForMetadata;
 
+    this.addNotesProperty();
+    this.addTextProperty("filename", "", false);
+    this.setFileNameProperty();
+
     // NB: subclasses should call this (as super()), then read in their definitions, then let us finish by calling finishLoading();
   }
 
-  // call this after loading in your definitions
-  protected finishLoading() {
-    this.addNotesProperty();
+  // call this after loading in your definitions, or, if doing a copy, when the copy is complete.
+  public finishLoading() {
     this.addFieldsUsedInternally();
     this.readMetadataFile();
+    this.copyInProgress = false;
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
   private addFieldsUsedInternally() {
-    this.addTextProperty("filename", "", false);
-    this.setFileNameProperty();
     const stats = fs.statSync(this.describedFilePath);
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
@@ -312,12 +333,19 @@ export /*babel doesn't like this: abstract*/ class File {
       Path.extname(this.describedFilePath);
     this.addTextProperty("type", typeName, false);
   }
-
+  protected specialLoadingOfField(
+    tag: string,
+    propertiesFromXml: any
+  ): boolean {
+    //console.log("Field.specialHandlingOfField");
+    return false;
+  }
   private loadPropertiesFromXml(propertiesFromXml: any) {
     const tags = Object.keys(propertiesFromXml);
-
     for (const tag of tags) {
-      if (tag.toLocaleLowerCase() === "contributions") {
+      if (this.specialLoadingOfField(tag, propertiesFromXml)) {
+        continue;
+      } else if (tag.toLocaleLowerCase() === "contributions") {
         this.loadContributions(propertiesFromXml[tag]);
       }
 
@@ -516,7 +544,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = fs.readFileSync(this.metadataFilePath, "utf8");
+        const xml: string = PatientFS.readFileSync(this.metadataFilePath);
 
         let xmlAsObject: any = {};
         xml2js.parseString(
@@ -545,6 +573,7 @@ export /*babel doesn't like this: abstract*/ class File {
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
         let properties = xmlAsObject[Object.keys(xmlAsObject)[0]];
+
         if (properties === "") {
           // This happen if it finds, e.g. <Session/>. Which is what we get when making a new file.
 
@@ -564,8 +593,10 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
-      NotifyError(`There was a problem reading ${this.metadataFilePath}`);
-      sentryExceptionBreadCrumb(err); // probably not needed
+      NotifyException(
+        err,
+        `There was a problem reading ${this.metadataFilePath}`
+      );
       throw err;
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
@@ -583,6 +614,7 @@ export /*babel doesn't like this: abstract*/ class File {
         this.xmlRootName,
         this.properties,
         this.contributions,
+        this,
         this.doOutputTypeInXmlTags,
         doOutputEmptyCustomFields
       );
@@ -590,10 +622,11 @@ export /*babel doesn't like this: abstract*/ class File {
       this.inGetXml = false;
     }
   }
+  //overridden by person (eventually session)
+  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(forceSave: boolean = false) {
-    // console.log("SAVING DISABLED");
-    // return;
+    sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
     if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
@@ -612,12 +645,12 @@ export /*babel doesn't like this: abstract*/ class File {
     } else {
       try {
         ShowSavingNotifier(Path.basename(this.metadataFilePath));
-        fs.writeFileSync(this.metadataFilePath, xml);
+        PatientFS.writeFileSync(this.metadataFilePath, xml);
         this.clearDirty();
       } catch (error) {
         if (error.code === "EPERM") {
           NotifyError(
-            `Cannot save because file is locked:\r\n${this.metadataFilePath}. Is it open in another program?`
+            `Cannot save because lameta was denied write access:\r\n${this.metadataFilePath}. Is it open in another program? Is it set to read-only or locked? Does the current user have access permissions to this folder?`
           );
         } else {
           NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);
@@ -674,7 +707,7 @@ export /*babel doesn't like this: abstract*/ class File {
       if (!this.areSamePath(newPath, currentFilePath)) {
         newPath = this.getUniqueFilePath(newPath);
       }
-      fs.renameSync(currentFilePath, newPath);
+      PatientFS.renameSync(currentFilePath, newPath);
       return newPath;
     }
     return currentFilePath;
@@ -699,6 +732,15 @@ export /*babel doesn't like this: abstract*/ class File {
   public isOnlyMetadata(): boolean {
     return this.metadataFilePath === this.describedFilePath;
   }
+
+  public throwIfFilesMissing() {
+    if (!fs.existsSync(this.metadataFilePath)) {
+      throw new Error(`${this.metadataFilePath} does not exist.`);
+    }
+    if (!fs.existsSync(this.describedFilePath)) {
+      throw new Error(`${this.describedFilePath} does not exist.`);
+    }
+  }
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
@@ -712,15 +754,33 @@ export /*babel doesn't like this: abstract*/ class File {
         this.metadataFilePath,
         newFolderName
       );
-      this.metadataFilePath = this.updateFolderOnly(
-        this.metadataFilePath,
-        newFolderName
-      );
+      // this.metadataFilePath = this.updateFolderOnly(
+      //   this.metadataFilePath,
+      //   newFolderName
+      // );
     }
     this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
       this.describedFilePath,
       newFolderName
     );
+    // this.describedFilePath = this.updateFolderOnly(
+    //   this.describedFilePath,
+    //   newFolderName
+    // );
+    if (!hasSeparateMetaDataFile) {
+      this.metadataFilePath = this.describedFilePath;
+    }
+    this.setFileNameProperty();
+  }
+  public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
+    const hasSeparateMetaDataFile =
+      this.metadataFilePath !== this.describedFilePath;
+    if (hasSeparateMetaDataFile) {
+      this.metadataFilePath = this.updateFolderOnly(
+        this.metadataFilePath,
+        newFolderName
+      );
+    }
     this.describedFilePath = this.updateFolderOnly(
       this.describedFilePath,
       newFolderName
@@ -728,7 +788,6 @@ export /*babel doesn't like this: abstract*/ class File {
     if (!hasSeparateMetaDataFile) {
       this.metadataFilePath = this.describedFilePath;
     }
-    this.setFileNameProperty();
   }
 
   private setFileNameProperty() {
@@ -804,6 +863,9 @@ export /*babel doesn't like this: abstract*/ class File {
     return directoryName + "_" + roleName;
   }
   private tryToRenameToFunction(roleName: string): boolean {
+    sentryBreadCrumb(
+      `Rename for function ${roleName} (${this.describedFilePath})`
+    );
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
       return true;
     }
@@ -824,33 +886,63 @@ export /*babel doesn't like this: abstract*/ class File {
 
     const newMetadataFilePath = newDescribedFilePath + ".meta";
 
+    const cannotRenameBecauseExists = translateMessage(
+      /*i18n*/ {
+        id: "Renaming failed because there is already a file with that name.",
+      }
+    );
     if (fs.existsSync(newDescribedFilePath)) {
-      NotifyWarning(`Cannot rename: ${newDescribedFilePath} already exists.`);
+      NotifyWarning(`${cannotRenameBecauseExists} (${newDescribedFilePath})`);
       return false;
     }
     if (fs.existsSync(newMetadataFilePath)) {
-      NotifyWarning(`Cannot rename: ${newMetadataFilePath} already exists.`);
+      NotifyWarning(`${cannotRenameBecauseExists} (${newMetadataFilePath})`);
       return false;
     }
 
+    sentryBreadCrumb(
+      `Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`
+    );
+
     try {
-      fs.renameSync(this.metadataFilePath, newMetadataFilePath);
+      PatientFS.renameSync(this.metadataFilePath, newMetadataFilePath);
     } catch (err) {
-      NotifyWarning(`Cannot rename: ${err.message}`);
+      NotifyWarning(`${getCannotRenameFileMsg()} (${err.message})`);
       return false;
     }
+    sentryBreadCrumb(
+      `Attempting rename from ${this.describedFilePath} to ${newDescribedFilePath}`
+    );
+
     try {
-      fs.renameSync(this.describedFilePath, newDescribedFilePath);
+      PatientFS.renameSync(this.describedFilePath, newDescribedFilePath);
     } catch (err) {
       if (err.code === "EBUSY") {
-        NotifyWarning(`Cannot rename: Is the file open in another program?`);
+        if (this.type === "Video" || this.type === "Audio")
+          NotifyError(
+            `${getCannotRenameFileMsg()} ${translateMessage(
+              /*i18n*/ {
+                id:
+                  "Restart lameta and do the rename before playing the video again.",
+              }
+            )}`
+          );
+        else
+          NotifyError(
+            `${getCannotRenameFileMsg()}  ${translateMessage(
+              /*i18n*/ {
+                id:
+                  "Try restarting lameta. If that doesn't do it, restart your computer.",
+              }
+            )}`
+          );
       } else {
-        NotifyWarning(`Cannot rename: ${err.message}`);
+        NotifyError(`${getCannotRenameFileMsg()} ${err.message}`);
       }
 
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
-        fs.renameSync(newMetadataFilePath, this.metadataFilePath);
+        PatientFS.renameSync(newMetadataFilePath, this.metadataFilePath);
       } catch (err) {
         return false;
       }
@@ -873,20 +965,45 @@ export /*babel doesn't like this: abstract*/ class File {
     assert(!this.isLabeledAsConsent());
 
     if (!this.tryToRenameToFunction("Consent")) {
-      NotifyWarning("Sorry, something prevented the rename");
-    } else {
-      console.log("renameForConsent " + this.describedFilePath);
+      NotifyWarning(`${getCannotRenameFileMsg()}`);
     }
-    //this.properties.setValue("hasConsent", true);
   }
 }
 
 export class OtherFile extends File {
-  constructor(path: string, customFieldRegistry?: CustomFieldRegistry) {
+  constructor(
+    path: string,
+    customFieldRegistry: CustomFieldRegistry,
+    partialLoadWhileCopyingInThisFile?: boolean
+  ) {
     super(path, path + ".meta", "Meta", false, ".meta", true);
-    if (customFieldRegistry) {
-      this.customFieldNamesRegistry = customFieldRegistry;
+
+    this.customFieldNamesRegistry = customFieldRegistry;
+
+    if (partialLoadWhileCopyingInThisFile) {
+      this.copyInProgress = true;
+      // caller should call  finishLoading() if the file already exists, or after copying completes
+    } else {
+      this.finishLoading();
     }
-    this.finishLoading();
   }
+}
+
+// for a given attribute the xml parser will give us an object if there is one child, or an array if there are multiple
+// This will give [] if x null or undefined (but not empty string), [x] if x is an object, or x if x is already an array
+export function ensureArray(x: any): any[] {
+  if (x === null || x === undefined) return [];
+  return Array.isArray(x) ? x : [x];
+}
+
+export function getStandardMessageAboutLockedFiles(): string {
+  return (
+    " " + // add space because this will always follow another message
+    translateMessage(
+      /*i18n*/ {
+        id:
+          "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+      }
+    )
+  );
 }

@@ -4,6 +4,8 @@ import { capitalCase } from "capital-case";
 export class FieldDefinition {
   public key: string;
   public englishLabel: string = "";
+  public deprecated?: string;
+  public omitExport?: boolean;
   public tooltip?: string;
   public specialInfo?: string;
   public default?: string;

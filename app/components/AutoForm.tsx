@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import TextFieldEdit from "./TextFieldEdit";
+import { TextFieldEdit } from "./TextFieldEdit";
 import { Field, FieldType, FieldVisibility } from "../model/field/Field";
 import DateFieldEdit from "./DateFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
@@ -17,7 +17,7 @@ import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 import { Contribution } from "../model/file/File";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import { FieldOpenChoiceChooser } from "./session/FieldChoiceChooser";
-import { translateGenre } from "../localization";
+import { translateGenre } from "../other/localization";
 
 export interface IProps {
   folder: Folder;
@@ -27,7 +27,7 @@ export interface IProps {
   authorityLists: AuthorityLists;
   //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
-  fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => void;
+  fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => boolean;
   validateFieldThatControlsFileNames?: (value: string) => boolean;
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
@@ -63,19 +63,6 @@ export default class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
-              tabIndex={field.definition.tabIndex}
-            />
-          );
-        } else if (
-          f.definition.key === "languages" ||
-          f.definition.key === "workingLanguages"
-        ) {
-          return (
-            <MultiLanguageFieldEdit
-              className={field.cssClass}
-              key={field.key}
-              field={field as Field}
-              languageFinder={props.languageFinder}
               tabIndex={field.definition.tabIndex}
             />
           );
@@ -115,14 +102,16 @@ export default class AutoForm extends React.Component<IProps> {
               key={field.key}
               field={field as Field}
               tabIndex={field.definition.tabIndex}
-              onBlur={() =>
-                // for some reason typescript isn't noticing that I have already checked that this isn't null,
-                // so the || console.log is just to pacify it
-                (
-                  this.props.fieldThatControlsFileNamesMightHaveChanged ||
-                  console.log
-                )(this.props.fieldThatControlsFileNames || "")
-              }
+              attemptFileChanges={() => {
+                if (
+                  !this.props.fieldThatControlsFileNamesMightHaveChanged!(
+                    this.props.fieldThatControlsFileNames || ""
+                  )
+                ) {
+                  return false;
+                }
+                return true;
+              }}
               validate={(value) =>
                 !this.props.validateFieldThatControlsFileNames ||
                 this.props.validateFieldThatControlsFileNames(value)
@@ -156,6 +145,17 @@ export default class AutoForm extends React.Component<IProps> {
             field={field}
           />
         );
+      case FieldType.MultiLanguage:
+        return (
+          <MultiLanguageFieldEdit
+            className={field.cssClass}
+            key={field.key}
+            field={field as Field}
+            languageFinder={props.languageFinder}
+            tabIndex={field.definition.tabIndex}
+          />
+        );
+
       default:
         throw Error("unknown type: " + field.type.toString());
     }

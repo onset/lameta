@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Field } from "../../model/field/Field";
 import { Dictionary } from "typescript-collections";
-import TextFieldEdit from "../TextFieldEdit";
+import { TextFieldEdit } from "../TextFieldEdit";
 import { Trans } from "@lingui/react";
 import "./AccessProtocolForm.scss";
 

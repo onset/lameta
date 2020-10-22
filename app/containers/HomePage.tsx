@@ -10,28 +10,29 @@ import * as mobx from "mobx";
 import { observer } from "mobx-react";
 import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
-import * as ncp from "ncp";
 import * as Path from "path";
-import { remote, OpenDialogOptions, powerMonitor } from "electron";
+import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
-import userSettings from "../UserSettings";
+import userSettings from "../other/UserSettings";
 
-import SayLessMenu from "../menu";
-import { locate } from "../crossPlatformUtilities";
+import SayLessMenu from "../other/menu";
+import { locate } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
-import log from "../log";
+import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
 import { Trans } from "@lingui/react";
 import { t } from "@lingui/macro";
-import { i18n } from "../localization";
-import { analyticsEvent } from "../analytics";
+import { i18n } from "../other/localization";
+import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
-  AlertDialog,
-  ShowAlertDialog,
-} from "../components/AlertDialog/AlertDialog";
-import { sentryBreadCrumb } from "../errorHandling";
+  MessageDialog,
+  ShowMessageDialog,
+} from "../components/ShowMessageDialog/MessageDialog";
+import { sentryBreadCrumb } from "../other/errorHandling";
+import { NotifyError, NotifyWarning } from "../components/Notify";
+import { PatientFS } from "../other/PatientFile";
 
 const isDev = require("electron-is-dev");
 
@@ -59,7 +60,19 @@ export default class HomePage extends React.Component<IProps, IState> {
       useSampleProject: false, //enhance: this is a really ugly way to control this behavior
     };
 
-    let previousDirectory = userSettings.PreviousProjectDirectory;
+    let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
+
+    const args = remote.getGlobal("arguments");
+    // const args = [
+    //   "ignore",
+    //   "ignore",
+    //   "C:/Users/hatto/Documents/laMeta/qq/qq.sprj",
+    // ];
+    console.log(`args = ${JSON.stringify(args)}`);
+    if (args && args.length > 1 && (args[1] as string).endsWith(".sprj")) {
+      expectedProjectDirectory = Path.dirname(args[1]);
+    }
+
     // console.log(
     //   "************** process.env.startInStartScreen=" +
     //     process.env.startInStartScreen
@@ -69,14 +82,17 @@ export default class HomePage extends React.Component<IProps, IState> {
     //     process.env.startInStartScreen
     // );
     if (process.env.startInStartScreen === "true") {
-      previousDirectory = null;
+      expectedProjectDirectory = null;
     }
-    if (previousDirectory && fs.existsSync(previousDirectory)) {
-      const project = Project.fromDirectory(previousDirectory);
+    if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
+      const project = Project.fromDirectory(expectedProjectDirectory);
       this.projectHolder.setProject(project);
     } else {
       this.projectHolder.setProject(null);
     }
+
+    // remember this
+    userSettings.PreviousProjectDirectory = expectedProjectDirectory;
 
     this.updateMenu();
     HomePage.homePageForTests = this;
@@ -104,7 +120,7 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
-      ShowAlertDialog({
+      ShowMessageDialog({
         title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
         text: "",
         buttonText: "I understand",
@@ -149,34 +165,30 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.setState({ showModal: false });
     if (directory) {
       fs.ensureDirSync(directory);
-
-      if (useSampleProject) {
-        const sampleSourceDir = locate("sample data/Edolo sample");
-        ncp.ncp(sampleSourceDir, directory, (err) => {
-          console.log("ncp err=" + err);
+      try {
+        if (useSampleProject) {
+          const sampleSourceDir = locate("sample data/Edolo sample");
+          fs.copySync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
-          fs.renameSync(
+          PatientFS.renameSync(
             Path.join(directory, "Edolo sample.sprj"),
             Path.join(directory, projectName + ".sprj")
           );
           this.projectHolder.setProject(Project.fromDirectory(directory));
-        });
-        analyticsEvent("Create Project", "Create Sample Project");
-      } else {
-        this.projectHolder.setProject(Project.fromDirectory(directory));
-        analyticsEvent("Create Project", "Create Custom Project");
+          analyticsEvent("Create Project", "Create Sample Project");
+        } else {
+          this.projectHolder.setProject(Project.fromDirectory(directory));
+          analyticsEvent("Create Project", "Create Custom Project");
+        }
+        userSettings.PreviousProjectDirectory = directory;
+      } catch (err) {
+        NotifyError(
+          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`
+        );
       }
-      userSettings.PreviousProjectDirectory = directory;
     }
   }
-  // private listDir(dir: string) {
-  //   fs.readdir(dir, (err, files) => {
-  //     console.log("listing " + dir);
-  //     files.forEach(file => {
-  //       console.log(file);
-  //     });
-  //   });
-  // }
+
   public render() {
     // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
     // this has been converted to modern react with hooks.
@@ -259,7 +271,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
-        <AlertDialog />
+        <MessageDialog />
       </div>
     );
   }
@@ -283,19 +295,20 @@ export default class HomePage extends React.Component<IProps, IState> {
         },
       ],
     };
-    remote.dialog.showOpenDialog(
-      remote.getCurrentWindow(),
-      options,
-      (paths) => {
-        sentryBreadCrumb("processing callback of open project dialog");
-        if (paths && paths.length > 0 && paths[0].length > 0) {
-          const directory = Path.dirname(paths[0]);
-          this.projectHolder.setProject(
-            Project.fromDirectory(fs.realpathSync(directory))
-          );
-          userSettings.PreviousProjectDirectory = directory;
-        }
+    ipcRenderer.invoke("showOpenDialog", options).then((results) => {
+      sentryBreadCrumb("processing callback of open project dialog");
+      if (
+        results &&
+        results!.filePaths &&
+        results.filePaths!.length > 0 &&
+        results.filePaths![0].length > 0
+      ) {
+        const directory = Path.dirname(results.filePaths[0]);
+        this.projectHolder.setProject(
+          Project.fromDirectory(fs.realpathSync(directory))
+        );
+        userSettings.PreviousProjectDirectory = directory;
       }
-    );
+    });
   }
 }

@@ -2,16 +2,16 @@ We are using Crowdin.com for crowdsourcing translation, and combination of [ling
 
 # Lingui
 
-Lingui is used for all the UI element that are in the code. The idea is that you use macros which lingui can find, so it can put the in the string catalog:
-
-```xml
-<Trans id="project.DescriptionDocuments">Description Documents</Trans>
-```
-
-For some reason, these forms options don't work:
+Lingui is used for all the hard-coded UI elements. The idea is that you use macros which lingui can find, so it can put the in the string catalog:
 
 ```xml
 <Trans>Description Documents</Trans>
+```
+
+or
+
+```xml
+<Trans id="project.DescriptionDocuments">Description Documents</Trans>
 ```
 
 ```ts
@@ -21,6 +21,14 @@ For some reason, these forms options don't work:
     {},
     { defaults: "Description Documents" }
   );
+}
+```
+
+This format uses our own wrapper. Note that you still have to include the comment part for the lingui scanner to find it.
+
+```ts
+{
+  translateMessage(/*i18n*/ { id: "Description Documents" });
 }
 ```
 
@@ -36,7 +44,7 @@ This creates files named `messages.js` in the language folders inside of /locale
 
 # Checking for new strings using pseudo localization
 
-Under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
+Under Help:Registration, make sure you are listed as a "Developer". Next, under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents. Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
 
 # Build the string catalog
 
@@ -46,7 +54,7 @@ That reads .linguirc to know what files to include. This puts json files in ./lo
 
 # Send new strings to Crowdin
 
-Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 # Non-code Lookups in CSV
 

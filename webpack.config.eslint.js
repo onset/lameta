@@ -1,1 +1,1 @@
-module.exports = require("./webpack.config.renderer.development");
+module.exports = require("./webpack.renderer-process.hot-reload.js");

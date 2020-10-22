@@ -72,6 +72,7 @@ label {
   display: block;
   //font-size: $default-font-size;
   font-weight: bold;
+  margin-bottom: 3px;
 }
 .hint {
   font-size: 0.6em;
@@ -81,8 +82,10 @@ label {
 }
 .moreFieldsBlock label + div, // More Fields
 .field label + div, // e.g People chooser
-span + textarea,
-label + textarea,
+// span + textarea,
+// label + textarea,
+textarea
+.languages label + div,
 label + .select {
   margin-top: $label-to-field-sep;
 }
@@ -289,4 +292,12 @@ input {
 
 .notificationTray ul li div div {
   width: 500px !important;
+}
+.bt-toast {
+  .title,
+  .content {
+    font-size: 12pt;
+    line-height: 1.2em;
+    padding-right: 30px;
+  }
 }

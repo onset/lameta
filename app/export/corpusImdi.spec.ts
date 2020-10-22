@@ -5,7 +5,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../xmlUnitTestUtils";
+} from "../other/xmlUnitTestUtils";
 
 let project: Project;
 

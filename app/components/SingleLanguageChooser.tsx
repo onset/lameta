@@ -16,8 +16,11 @@ import { observer } from "mobx-react";
 const saymore_orange = "#e69664";
 
 export interface IProps {
-  field: Field;
+  labelInUILanguage: string;
+  languageTag: string;
+  onChange: (newTag: string) => void;
   languageFinder: LanguageFinder;
+  autoFocus?: boolean;
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
@@ -47,7 +50,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
     }),
   };
 
-  const code = props.field.text ? props.field.text.trim() : undefined;
+  const code = props.languageTag ? props.languageTag.trim() : undefined;
   const currentValue = code
     ? {
         value: code,
@@ -74,7 +77,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
     <div className={"field " + (props.className ? props.className : "")}>
       <AsyncSelect
         tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
-        name={props.field.labelInUILanguage}
+        name={props.labelInUILanguage}
         components={{
           SingleValue: LanguagePill,
           Option: LanguageOption,
@@ -90,8 +93,9 @@ export const SingleLanguageChooser: React.FunctionComponent<
         styles={customStyles}
         onChange={(choice: any) => {
           const v = choice && choice.value ? choice.value : "";
-          props.field.setValueFromString(v);
+          props.onChange(v);
         }}
+        autoFocus={props.autoFocus}
       />
     </div>
   );

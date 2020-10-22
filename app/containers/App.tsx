@@ -6,10 +6,10 @@ import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePic
 import * as ReactModal from "react-modal";
 import RenameFileDialog from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
-import { catalogs, currentUILanguage } from "../localization";
+import { catalogs, currentUILanguage } from "../other/localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";
-import userSettingsSingleton from "../UserSettings";
+import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)

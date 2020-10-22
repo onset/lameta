@@ -2,14 +2,17 @@ import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { Contribution } from "./File";
+import { File, Contribution } from "./File";
 import assert from "assert";
+import { IPersonLanguage } from "../PersonLanguage";
+import { FolderMetadataFile } from "./FolderMetaDataFile";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
   xmlRootName: string,
   properties: FieldSet,
   contributions: Contribution[],
+  file: File,
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
@@ -23,6 +26,7 @@ export default function getSayMoreXml(
   // that is not backwards compatible. And at the point we would need to be concerned about locking
   // people into whatever beta version this was introduced in, because they won't be able to go back
   // to their release version if there is a problem.
+  // 0.9.2 (predicted) switched to new person languages format
   root.attribute("minimum_lameta_version_to_read", "0.0.0");
   const propertiesToPersist = properties
     .values()
@@ -38,7 +42,8 @@ export default function getSayMoreXml(
     root.element("participants", {}, legacyParticipantsList);
   }
 
-  writeContributions(root, contributions);
+  file.writeXmlForComplexFields(root);
+  writeContributions(root, contributions); // enhance: move this a writeXmlForComplexFields() method on Session
 
   // "Additional Fields are labeled "More Fields" in the UI.
   // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
@@ -182,13 +187,12 @@ function writeField(
       field.key.indexOf("date") === -1 || type === "date",
       "SHOULDN'T " + field.key + " BE A DATE?"
     );
+    const attributes: any = {};
+    // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
+    if (doOutputTypeInXmlTags) attributes.type = type;
+    if (field.definition?.deprecated) attributes.deprecated = "true";
     if (doOutputEmptyFields || value.trim().length > 0) {
-      // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
-      if (doOutputTypeInXmlTags) {
-        root.element(tag, { type }, value.trim()).up();
-      } else {
-        root.element(tag, value.trim()).up();
-      }
+      root.element(tag, attributes, value.trim()).up();
     }
   }
 }

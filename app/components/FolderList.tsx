@@ -7,11 +7,11 @@ import * as mobx from "mobx";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
-import { locate } from "../crossPlatformUtilities";
+import { locate } from "../other/crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { i18n } from "../localization";
+import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 

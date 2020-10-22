@@ -4,7 +4,7 @@ import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";
 import { Trans } from "@lingui/react";
-import { translateRole } from "../../localization";
+import { translateRole } from "../../other/localization";
 import { titleCase } from "title-case";
 //import colors from "../../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 const saymore_orange = "#e69664";

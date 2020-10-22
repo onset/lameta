@@ -6,7 +6,7 @@ import {
   xexpect as expect,
   count,
   value,
-} from "../xmlUnitTestUtils";
+} from "../other/xmlUnitTestUtils";
 
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
@@ -16,13 +16,18 @@ let person: Person;
 let generator: ImdiGenerator;
 const pretendSessionDate = new Date("2010-06-06");
 
+const languageFinder = new LanguageFinder(() => ({
+  iso639_3: "",
+  englishName: "",
+}));
+
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
     new CustomFieldRegistry(),
     (oldName, newName) => true,
-    new LanguageFinder(() => undefined)
+    languageFinder
   );
   // const subsetLanguageFinder = new LanguageFinder({
   //   englishName: "Edolo",
@@ -68,6 +73,46 @@ describe("actor imdi export", () => {
       "Actor/Languages/Language[Name[text()='Huli']]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
   });
+
+  it("should output new languages list", () => {
+    person.languages.splice(0, 10);
+    const gen = new ImdiGenerator(person, project);
+    person.languages.push({ code: "spa", father: true, primary: true });
+    person.languages.push({ code: "qaa", mother: true, primary: false });
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:spa");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("español");
+    expect("Actor/Languages/Language[1]/Description").toHaveText(
+      "Also spoken by father."
+    );
+    expect(
+      "Actor/Languages/Language[Name[text()='español']]/PrimaryLanguage[text()='true']"
+    ).toHaveCount(1);
+
+    expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:qaa");
+    expect("Actor/Languages/Language[2]/Name").toHaveText(
+      "Language Not Listed"
+    );
+    expect("Actor/Languages/Language[2]/Description").toHaveText(
+      "Also spoken by mother."
+    );
+    expect(
+      "Actor/Languages/Language[2]/PrimaryLanguage[text()='false']"
+    ).toHaveCount(1);
+  });
+
+  /* we now remove that field, so we cannot test it this way
+  it("should not output migrated language fields", () => {
+    person.languages.splice(0, 10);
+
+    person.properties.setText("primaryLanguage", "xyz");
+    const gen = new ImdiGenerator(person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect('Actor/Keys/Key[@Name="Primary Language"]').toHaveCount(0);
+  });
+  */
 
   it("should calculate age in years given a birth year compared to pretendSessionDate", () => {
     expect("Actor/BirthDate").toMatch("1972");

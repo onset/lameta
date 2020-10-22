@@ -18,9 +18,8 @@ Stack: Typescript, React, mobx, webpack, electron.
 Install node & yarn then
 
 ```bash
-$ yarn
-$ yarn lingui-compile
-$ yarn dev
+yarn
+yarn dev
 ```
 
 ## Packaging
@@ -28,7 +27,7 @@ $ yarn dev
 To package apps for the local platform:
 
 ```bash
-$ yarn package
+yarn package
 ```
 
 More information available in the upstream project:
@@ -37,6 +36,10 @@ More information available in the upstream project:
 ## Troubleshooting
 
 ### unit tests
+
+```bash
+yarn test
+```
 
 When running e2e tests, there is occasionally a mystery error that won't go away, even if you got back to previous commits were unit tests were running. It goes away with a restart, `git clean -dxf && yarn && yarn test`. Make sure everything is committed first!
 

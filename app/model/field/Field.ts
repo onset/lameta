@@ -3,7 +3,10 @@ import TextHolder from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
-import { translateFieldLabel, currentUILanguage } from "../../localization";
+import {
+  translateFieldLabel,
+  currentUILanguage,
+} from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
 import { Folder } from "../Folder/Folder";
 import * as DateFns from "date-fns";
@@ -12,8 +15,8 @@ import * as DateFns from "date-fns";
 export interface IChoice {
   id: string;
   label: string;
-  definition: string;
-  examples: string[];
+  description: string;
+  examples?: string[];
 }
 
 export enum FieldType {
@@ -23,6 +26,7 @@ export enum FieldType {
   // Contributions,
   Language,
   MultiLanguage,
+  PersonLanguageList,
   Function,
   Boolean,
 }
@@ -66,8 +70,11 @@ export class Field {
       case "language":
         type = FieldType.Language;
         break;
-      case "multiLanguage":
+      case "multilanguage":
         type = FieldType.MultiLanguage;
+        break;
+      case "personlanguagelist":
+        type = FieldType.PersonLanguageList;
         break;
       case "function":
         type = FieldType.Function;
@@ -271,6 +278,11 @@ export class Field {
         return { type: "language", value: this.text };
       case FieldType.MultiLanguage:
         return { type: "multiLanguage", value: this.text };
+      case FieldType.PersonLanguageList:
+        return {
+          type: "personLanguageList",
+          value: Field.escapeSpecialChars(this.text),
+        };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
     }

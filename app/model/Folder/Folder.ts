@@ -1,4 +1,8 @@
-import { File, OtherFile } from "../file/File";
+import {
+  File,
+  getStandardMessageAboutLockedFiles,
+  OtherFile,
+} from "../file/File";
 import { observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -6,6 +10,8 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import {
   NotifyMultipleProjectFiles,
   NotifyError,
+  NotifyWarning,
+  NotifyException,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -13,10 +19,17 @@ import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import { trash } from "../../crossPlatformUtilities";
+import { trash } from "../../other/crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import { sanitizeForArchive } from "../../filenameSanitizer";
-import userSettingsSingleton from "../../UserSettings";
+import { CopyManager, getExtension } from "../../other/CopyManager";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import userSettingsSingleton from "../../other/UserSettings";
+import { sentryBreadCrumb } from "../../other/errorHandling";
+import filesize from "filesize";
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/macro";
+import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { PatientFS } from "../../other/PatientFile";
 
 export class IFolderSelection {
   @observable
@@ -37,13 +50,13 @@ export /*babel doesn't like this: abstract*/ class Folder {
   @observable
   public selectedFile: File | null;
 
-  public metadataFile: File | null;
+  public metadataFile: FolderMetadataFile | null;
   protected safeFileNameBase: string;
   protected customFieldRegistry: CustomFieldRegistry;
 
   public constructor(
     directory: string,
-    metadataFile: File | null,
+    metadataFile: FolderMetadataFile | null,
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
@@ -86,26 +99,93 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public addOneFile(path: string, newFileName?: string): File {
-    console.log("copy in " + path);
-    const n = sanitizeForArchive(
-      newFileName ? newFileName : Path.basename(path),
-      userSettingsSingleton.IMDIMode
-    );
-    const dest = Path.join(this.directory, n);
-    fs.copySync(path, dest);
-    const f = new OtherFile(dest, this.customFieldRegistry);
-    this.files.push(f);
-    return f;
-  }
-  public addFiles(files: object[]): File | null {
-    assert.ok(files.length > 0, "addFiles given an empty array of files");
+  public copyInOneFile(path: string, newFileName?: string): Promise<null> {
+    return new Promise((resolve, reject) => {
+      if (
+        ["session", "person", "meta"].includes(
+          getExtension(path)?.toLowerCase()
+        )
+      ) {
+        NotifyWarning(
+          i18n._(t`Cannot add files of that type`) + ` (${getExtension(path)}`
+        );
+        return;
+      }
+      const n = sanitizeForArchive(
+        newFileName ? newFileName : Path.basename(path),
+        userSettingsSingleton.IMDIMode
+      );
+      const dest = Path.join(this.directory, n);
 
-    let lastFile: File | null = null;
-    files.forEach((f: any) => {
-      lastFile = this.addOneFile(f.path);
+      if (fs.existsSync(dest)) {
+        NotifyWarning(
+          i18n._(t`There is already a file here with the name`) + ` (${n})`
+        );
+        return;
+      }
+
+      const f = new OtherFile(dest, this.customFieldRegistry, true);
+      const stats = fs.statSync(path);
+      f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
+      f.copyProgress = i18n._(t`Copy Requested...`);
+      this.files.push(f);
+
+      //throw new Error("testing");
+      // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
+      // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
+
+      window.setTimeout(
+        () =>
+          CopyManager.safeAsyncCopyFileWithErrorNotification(
+            path,
+            dest,
+            (progress: string) => {
+              f.copyProgress = progress;
+            }
+          )
+            .then((successfulDestinationPath) => {
+              const pendingFile = this.files.find(
+                (x) => x.describedFilePath === dest
+              );
+              if (!pendingFile) {
+                NotifyError(
+                  // not translating for now
+                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                );
+                reject();
+                return;
+              }
+              pendingFile!.finishLoading();
+              resolve();
+            })
+            .catch((error) => {
+              console.log(`error ${error}`);
+              const fileIndex = this.files.findIndex(
+                (x) => x.describedFilePath === dest
+              );
+              if (fileIndex < 0) {
+                NotifyException(
+                  error, // not translating for now
+                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                );
+                reject();
+                return;
+              }
+              this.files.splice(fileIndex, 1);
+            }),
+        0
+      );
     });
-    return lastFile;
+  }
+
+  public copyInFiles(paths: string[]) {
+    assert.ok(paths.length > 0, "addFiles given an empty array of files");
+    sentryBreadCrumb(`addFiles ${paths.length} files.`);
+    //let lastFile: File | null = null;
+    paths.forEach((p: string) => {
+      this.copyInOneFile(p);
+      //lastFile = p;
+    });
   }
   get type(): string {
     const x = this.properties.getValue("type") as Field;
@@ -154,21 +234,24 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
   public moveFileToTrash(file: File) {
     ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
+      sentryBreadCrumb(`Moving to trash: ${file.describedFilePath}`);
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.describedFilePath)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
         continueTrashing = trash(file.describedFilePath);
       }
+      if (!continueTrashing) {
+        return;
+      }
       if (
-        continueTrashing && // don't trash metadata if something went wrong trashing "described file"
         file.metadataFilePath &&
         file.metadataFilePath !== file.describedFilePath
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          console.log(`attempting trash of meta: ${file.metadataFilePath}`);
           if (!trash(file.metadataFilePath)) {
             NotifyError(
-              "Failed to trash metadatafile:" + file.metadataFilePath
+              i18n._(t`lameta was not able to put this file in the trash`) +
+                ` (${file.metadataFilePath})`
             );
           }
         }
@@ -181,9 +264,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       file.describedFilePath = "";
       file.properties = new FieldSet();
 
-      if (continueTrashing) {
-        this.forgetFile(file);
-      }
+      this.forgetFile(file);
     });
   }
   public renameChildWithFilenameMinusExtension(
@@ -194,28 +275,101 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
 
   // TODO see https://sentry.io/organizations/meacom/issues/1268125527/events/3243884b36944f418d975dc6f7ebd80c/
-  protected renameFilesAndFolders(newFolderName: string) {
+  protected renameFilesAndFolders(newFolderName: string): boolean {
+    sentryBreadCrumb(`renameFilesAndFolders ${newFolderName}.`);
+    if (this.files.some((f) => f.copyInProgress)) {
+      NotifyWarning(
+        i18n._(
+          t`Please wait until all files are finished copying into this folder`
+        )
+      );
+      return false;
+    }
+    this.saveAllFilesInFolder();
+
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
     if (oldFolderName === newFolderName) {
-      return; // nothing to do
+      return false; // nothing to do
     }
 
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
+    const couldNotRenameDirectory = i18n._(
+      t`lameta could not rename the directory.`
+    );
 
+    // first, we just do a trial run to see if this will work
+    try {
+      PatientFS.renameSync(this.directory, newDirPath);
+      PatientFS.renameSync(newDirPath, this.directory);
+    } catch (err) {
+      NotifyException(
+        err,
+        couldNotRenameDirectory + getStandardMessageAboutLockedFiles(),
+        " [[STEP:Precheck]]"
+      );
+      return false;
+    }
+    try {
+      this.files.forEach((f) => {
+        f.throwIfFilesMissing();
+      });
+    } catch (err) {
+      NotifyException(
+        err,
+        couldNotRenameDirectory +
+          getStandardMessageAboutLockedFiles() +
+          " [[STEP:Files Exist]]"
+      );
+      return false;
+    }
+
+    // ok, that worked, so now have all the folder rename themselves if their name depends on the folder name
     this.files.forEach((f) => {
-      f.updateNameBasedOnNewFolderName(newFolderName);
+      try {
+        f.updateNameBasedOnNewFolderName(newFolderName);
+      } catch (err) {
+        const base = Path.basename(f.metadataFilePath);
+        const msg = i18n._(
+          t`lameta was not able to rename one of the files in the folder.`
+        );
+        NotifyException(
+          err,
+          `${msg} (${base})` +
+            getStandardMessageAboutLockedFiles() +
+            " [[STEP:File names]]"
+        );
+      }
     });
-    fs.renameSync(this.directory, newDirPath);
-    this.directory = newDirPath;
+    // and actually do the rename
+    try {
+      PatientFS.renameSync(this.directory, newDirPath);
+      this.directory = newDirPath;
+    } catch (err) {
+      const msg = i18n._(t`lameta was not able to rename the folder.`);
+      NotifyException(
+        err,
+        `${msg} (${this.displayName}).` +
+          getStandardMessageAboutLockedFiles() +
+          " [[STEP:Actual folder]]"
+      );
+      return false; // don't continue on with telling the folders that they moved.
+    }
+
+    // ok, only after the folder was successfully renamed do we tell the individual files that they have been movd
+    this.files.forEach((f) => {
+      // no file i/o here
+      f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
+    });
+    return true;
   }
 
   protected textValueThatControlsFolderName(): string {
     return "UNUSED-IN-THIS-CLASS";
   }
 
-  public nameMightHaveChanged() {
+  public nameMightHaveChanged(): boolean {
     // Enhance: If something goes wrong here, we're going to have things out of sync. Is there some
     // way to do this atomically (that is, as a transaction), or at least do the most dangerous
     // part first (i.e. the file renaming)?
@@ -230,18 +384,56 @@ export /*babel doesn't like this: abstract*/ class Folder {
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
     // so far gets by with being case sensitive.
     if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
-      this.safeFileNameBase = newFileName;
-      this.renameFilesAndFolders(newFileName);
+      const renameSucceeded = this.renameFilesAndFolders(newFileName);
+      if (renameSucceeded) {
+        this.safeFileNameBase = newFileName;
+      }
+      return renameSucceeded;
     }
+    return true; // review not clear if true or false makes more sense if there was no relevant change?
   }
 
   public saveFolderMetaData() {
     assert.ok(this.metadataFile);
+
     if (this.metadataFile) {
+      this.detectAndRepairMisnamedMetadataFile(
+        this.directory,
+        this.metadataFile.metadataFilePath,
+        this.metadataFileExtensionWithDot
+      );
       this.metadataFile.save();
     }
   }
 
+  public detectAndRepairMisnamedMetadataFile(
+    directory: string,
+    expectedMetadataFilePath: string,
+    metadataFileExtensionWithDot: string
+  ) {
+    if (!fs.existsSync(expectedMetadataFilePath)) {
+      const matchingPaths = this.findZombieMetadataFiles(
+        directory,
+        metadataFileExtensionWithDot
+      );
+      if (matchingPaths.length > 1) {
+        try {
+          PatientFS.renameSync(matchingPaths[0], expectedMetadataFilePath);
+          return;
+        } catch (err) {
+          NotifyException(
+            err,
+            `lameta was not able to fix the name of ${matchingPaths[0]} to fit the folder name.` // intentionally not adding the translation list
+          );
+          // not sure what to do now....
+        }
+      }
+    }
+  }
+  private findZombieMetadataFiles(directory: string, extension: string) {
+    const dir = fs.readdirSync(directory);
+    return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
+  }
   public saveAllFilesInFolder() {
     for (const f of this.files) {
       f.save();

@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import NotificationBar from "./NotificationsBar/NotificationBar";
@@ -12,14 +18,15 @@ import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
-import SayLessMenu from "../menu";
+import SayLessMenu from "../other/menu";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { Trans } from "@lingui/react";
-import { i18n } from "../localization";
+import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
-import { analyticsLocation } from "../analytics";
+import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
+import { CopyingStatus } from "./CopyingStatus";
 
 export interface IProps {
   project: Project;
@@ -143,8 +150,21 @@ export default class Home extends React.Component<IProps> {
         className={styles.container}
         data-tid="container"
       >
+        <div
+          css={css`
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            * {
+              margin: 10px;
+            }
+          `}
+        >
+          <CopyingStatus /> <RegistrationReminder />
+        </div>
         <SaveNotifier />
-        <RegistrationReminder />
+
         <div id="tabContainer">
           <Tabs
             key={tabsKey}

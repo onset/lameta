@@ -20,7 +20,7 @@ export const FieldOpenChoiceChooser = observer<{
 
   const options = choices
     .map((c) => {
-      let tip = c.definition;
+      let tip = c.description;
       if (c.examples && c.examples.length > 0) {
         tip += "\nExamples: " + c.examples;
       }

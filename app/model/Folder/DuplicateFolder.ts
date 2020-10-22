@@ -1,9 +1,10 @@
 import { Folder } from "./Folder";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { ShowAlertDialog } from "../../components/AlertDialog/AlertDialog";
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { assert } from "console";
 import uuid from "uuid";
+import { PatientFS } from "../../other/PatientFile";
 
 // Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,
 // and change the id inside the metadata file.
@@ -47,7 +48,10 @@ export function duplicateFolder(
       nameOfDuplicate + ext
     );
     // rename that file
-    fs.renameSync(duplicateMetadataFilePath, fixedDuplicateMetadataFilePath);
+    PatientFS.renameSync(
+      duplicateMetadataFilePath,
+      fixedDuplicateMetadataFilePath
+    );
 
     assert(
       fs.existsSync(fixedDuplicateMetadataFilePath),
@@ -77,7 +81,7 @@ export function duplicateFolder(
       success: true,
     };
   } catch (err) {
-    ShowAlertDialog({
+    ShowMessageDialog({
       title: `Error`,
       text: `There was an error while duplicating ${folder.directory}: ${err}`,
       buttonText: "OK",
