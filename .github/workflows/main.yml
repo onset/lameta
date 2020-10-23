@@ -33,6 +33,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: samuelmeuli/action-electron-builder@v1
         with:
+          in_github_action: "true"
           mac_certs: ${{ secrets.mac_certs }}
           mac_certs_password: ${{ secrets.mac_certs_password }}
           # GitHub token, automatically provided to the action
