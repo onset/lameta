@@ -9,6 +9,7 @@ could just use the node or web sdk's?
 // initializeSentry();
 
 import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
+import { checkForApplicationUpdate } from "./other/autoUpdate";
 
 (global as any).arguments = process.argv;
 
@@ -176,6 +177,10 @@ app.on("ready", () =>
 
           mainWindow!.webContents.openDevTools();
         }
+      });
+
+      ipcMain.handle("checkForApplicationUpdate", (event, options) => {
+        return checkForApplicationUpdate();
       });
 
       ipcMain.handle("showOpenDialog", (event, options) => {
