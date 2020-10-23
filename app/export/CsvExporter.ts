@@ -121,7 +121,7 @@ function getGenericCsv(folders: Folder[]): string {
     .filter((k) => {
       if (blacklist.indexOf(k) > -1) return false;
       if (folders[0].properties.getValue(k)?.definition.omitExport) {
-        console.log("will not export " + k);
+        //console.log("will not export " + k);
         return false;
       }
       return true;
