@@ -52,8 +52,9 @@ jobs:
       - name: Make new release on Sentry
         env:
             SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          # only need this once per version, not once per operating system
-        if: startsWith(github.ref, 'refs/tags/v') && startsWith(matrix.os, 'windows')
+        # Mac on because we only need this once per version, not once per operating system. 
+        # this curl version doesn't work on windows because it calls `sudo`
+        if: startsWith(github.ref, 'refs/tags/v') && startsWith(matrix.os, 'macos')
         run: |
           curl -sL https://sentry.io/get-cli/ | bash
           ./make-sentry-release.sh

@@ -1,10 +1,12 @@
-Currently using "@sentry/browser" instead of '@sentry/electron' because of bugs long ago, which could be fixed by now.
+Currently using "@sentry/browser" instead of '@sentry/electron' because of bugs long ago, which could be fixed by now. As a result we're only getting errors from the Render process.
 
 Note that "onset" was taken as an org, so our actual org id is "onset-org"
 
-1. Set a SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
+1. curl -sL https://sentry.io/get-cli/ | bash # may need some other install method on windows
 
-2. run `make-sentry-release.sh` in a bash shell
+2. Set a SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
+
+3. run `./make-sentry-release.sh` in a bash shell
 
 Other commands:
 `sentry-cli releases files \$VERSION list`

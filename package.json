@@ -34,6 +34,7 @@
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
     "clean": "node clean.js",
+    "make-sentry-release":"./make-sentry-release.sh",
     "package": "node clean.js && npm run build && electron-builder --publish never",
     "package-win": "npm run build && electron-builder --win --x64",
     "package-linux": "npm run build && electron-builder --linux",
