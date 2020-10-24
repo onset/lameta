@@ -118,7 +118,7 @@ export default class SayLessMenu {
       submenu: [
         {
           label: "&" + i18n._(t`Open Project...`),
-          accelerator: "Ctrl+O",
+          accelerator: "CmdOrCtrl+O",
           click: () => this.homePage.openProject(),
         },
         {
@@ -132,7 +132,7 @@ export default class SayLessMenu {
         { type: "separator" },
         {
           label: "&" + i18n._(t`Export Project...`),
-          accelerator: "Ctrl+E",
+          accelerator: "CmdOrCtrl+E",
           enabled: haveProject,
           click: () => {
             ShowExportDialog();
@@ -257,7 +257,7 @@ export default class SayLessMenu {
       submenu: [
         {
           label: "&Reload",
-          accelerator: "Ctrl+R",
+          accelerator: "CmdOrCtrl+R",
           click() {
             mainWindow.webContents.reload();
           },
@@ -270,7 +270,7 @@ export default class SayLessMenu {
         },
         {
           label: "Toggle &Developer Tools",
-          accelerator: "Alt+Ctrl+I",
+          accelerator: "Alt+CmdOrCtrl+I",
           click() {
             mainWindow.webContents.toggleDevTools();
           },
