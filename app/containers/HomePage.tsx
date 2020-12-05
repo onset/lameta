@@ -33,6 +33,7 @@ import {
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 import { PatientFS } from "../other/PatientFile";
+import { UpdateAvailableDialog } from "../components/UpdateAvailableDialog";
 
 const isDev = require("electron-is-dev");
 
@@ -209,7 +210,8 @@ export default class HomePage extends React.Component<IProps, IState> {
           this.projectHolder.project.displayName
         }  - lameta`
       : "lameta";
-    title += " " + require("../package.json").version + " Alpha";
+    const v = require("../package.json");
+    title += " " + v.version + v.channel;
 
     remote.getCurrentWindow().setTitle(title);
     return (
@@ -272,6 +274,7 @@ export default class HomePage extends React.Component<IProps, IState> {
         )}
         <ExportDialog projectHolder={this.projectHolder} />
         <MessageDialog />
+        <UpdateAvailableDialog />
       </div>
     );
   }

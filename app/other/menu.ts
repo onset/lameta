@@ -348,6 +348,7 @@ export default class SayLessMenu {
         {
           label: i18n._(t`Check for new version`),
           click: () => {
+            // this comes from firebase "dynamic links". It does not allow me to change the project id to lameta.
             shell.openExternal("https://saymorex.page.link/releases");
           },
         },

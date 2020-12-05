@@ -11,6 +11,9 @@ import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { translateMessage } from "../other/localization";
+import { UpdateInfo } from "electron-updater";
+import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
+import { ShowUpdateAvailableDialog } from "./UpdateAvailableDialog";
 
 const electron = require("electron");
 
@@ -79,6 +82,28 @@ export function NotifySuccess(message: string, onClick?: () => void) {
     ),
   });
 }
+export function NotifyUpdateAvailable(info: UpdateInfo, onClick?: () => void) {
+  const current = require("../package.json");
+
+  ButterToast.raise({
+    content: (
+      <Cinnamon.Crisp
+        //title={translateMessage(/*i18n*/ { id: "" })}
+        content={
+          <div>
+            <a
+              onClick={() => {
+                ShowUpdateAvailableDialog(info);
+              }}
+            >{`View Release Notes`}</a>
+          </div>
+        }
+      />
+    ),
+    timeout: 10 * 1000,
+  });
+}
+
 export function NotifyMultipleProjectFiles(
   displayName: string,
   projectType: string,

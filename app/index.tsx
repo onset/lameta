@@ -10,8 +10,13 @@ import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/PatientFile";
-import { checkForApplicationUpdate } from "./other/autoUpdate";
-import { NotifySuccess, NotifyWarning } from "./components/Notify";
+import {
+  NotifyNoBigDeal,
+  NotifySuccess,
+  NotifyUpdateAvailable,
+  NotifyWarning,
+} from "./components/Notify";
+import { UpdateInfo } from "electron-updater";
 
 PatientFS.init();
 //if (!process.env.HOT) {
@@ -53,9 +58,17 @@ render(<App />, document.getElementById("root"));
 
 ipcRenderer
   .invoke("checkForApplicationUpdate")
-  .then((result) => {
-    NotifySuccess("Heard back");
+  .then((updateInfo: UpdateInfo) => {
+    if (updateInfo) {
+      NotifyUpdateAvailable(updateInfo);
+    } else {
+      //NotifyNoBigDeal("No update available");
+    }
   })
   .catch((err) => {
-    NotifyWarning("Updater returned " + JSON.stringify(err));
+    //NotifyWarning("There was an error checking for an application update.");
+    console.error(err);
+    console.error(
+      "See Terminal for more error info on the Application update, coming from the main process."
+    );
   });
