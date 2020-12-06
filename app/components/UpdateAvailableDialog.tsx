@@ -54,21 +54,6 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
   };
   let closeButtonLabel = <Trans>Cancel</Trans>;
 
-  switch (mode) {
-    case "downloading":
-      closeButtonLabel = <Trans>Cancel</Trans>;
-      break;
-    case "release notes":
-      closeButtonLabel = <Trans>Not Now</Trans>;
-      break;
-    case "done":
-      closeButtonLabel = <Trans>Done</Trans>;
-      break;
-    case "error":
-      closeButtonLabel = <Trans>Close</Trans>;
-      break;
-  }
-
   return (
     <CloseOnEscape onEscape={() => setMode("closed")}>
       <ReactModal
@@ -120,6 +105,9 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
         </div>
         <div className={"bottomButtonRow"}>
           <div className={"okCancelGroup"}>
+            <ModeButton visibleInMode="release notes" mode={mode} {...props}>
+              Get from Github
+            </ModeButton>
             <button
               id="download"
               disabled={
@@ -130,14 +118,13 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                   const { promise, cancelFunction } = downloadFunction();
                   promise.catch((err: Error) => {
                     console.error(
-                      "UpdateAvailabeDialog promise catch got " + err.message
+                      "UpdateAvailableDialog promise catch got " + err.message
                     );
                     setMode("error");
                   });
                   promise.finally(() => setMode("done"));
                   setMode("downloading");
                   setCancelDownloadFunction(cancelFunction);
-                  //setIsOpen(false);
                 }
               }}
             >
@@ -147,22 +134,39 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                 <Trans>Download and Install</Trans>
               )}
             </button>
-
-            <button
-              id="close"
+            <ModeButton
+              visibleInMode="done"
+              mode={mode}
+              {...props}
+              onClick={() => {
+                ipcRenderer.invoke("quitAndInstall");
+                setMode("closed");
+              }}
+            >
+              <Trans>Close</Trans>
+            </ModeButton>
+            <ModeButton
+              visibleInMode="downloading"
+              mode={mode}
               onClick={() => {
                 if (mode === "downloading" && cancelDownloadFunction) {
                   console.log("cancelling from ui");
                   cancelDownloadFunction();
                 }
-                if (mode === "done") {
-                  ipcRenderer.invoke("quitAndInstall");
-                }
                 setMode("closed");
               }}
             >
-              {closeButtonLabel}
-            </button>
+              <Trans>Cancel</Trans>
+            </ModeButton>
+            <ModeButton
+              visibleInMode="error"
+              mode={mode}
+              onClick={() => {
+                setMode("closed");
+              }}
+            >
+              <Trans>Close</Trans>
+            </ModeButton>
           </div>
         </div>
       </ReactModal>
@@ -173,3 +177,22 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
 {
   /* <p>{`Your current version is  ${current.version + current.channel}`}</p>; */
 }
+
+const ModeButton: React.FunctionComponent<{
+  mode: Mode;
+  visibleInMode: Mode;
+  [x: string]: any;
+}> = (props) => {
+  return props.mode === props.visibleInMode ? (
+    <button
+      {...props}
+      css={css`
+        ${props.mode !== "release notes" ? "display:none" : ""}
+      `}
+    >
+      {props.children}
+    </button>
+  ) : (
+    <React.Fragment />
+  );
+};
