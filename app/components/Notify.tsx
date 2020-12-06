@@ -10,10 +10,12 @@ import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
-import { translateMessage } from "../other/localization";
+import { i18n, translateMessage } from "../other/localization";
+import { t } from "@lingui/macro";
 import { UpdateInfo } from "electron-updater";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { ShowUpdateAvailableDialog } from "./UpdateAvailableDialog";
+import { DownloadFunction } from "../other/autoUpdate";
 
 const electron = require("electron");
 
@@ -82,20 +84,28 @@ export function NotifySuccess(message: string, onClick?: () => void) {
     ),
   });
 }
-export function NotifyUpdateAvailable(info: UpdateInfo, onClick?: () => void) {
+export function NotifyUpdateAvailable(
+  info: UpdateInfo,
+  download: DownloadFunction
+) {
   const current = require("../package.json");
 
   ButterToast.raise({
     content: (
       <Cinnamon.Crisp
+        title={i18n._(t`Update available`)}
         //title={translateMessage(/*i18n*/ { id: "" })}
         content={
           <div>
+            {/* I would like to dismiss the toast when you click, but the current ButterToast docs don't seem to match what we
+            actually get if we provide an OnClick to raise. At this time, it does not give a dismiss function as claimed. */}
             <a
               onClick={() => {
-                ShowUpdateAvailableDialog(info);
+                ShowUpdateAvailableDialog(info, download);
               }}
-            >{`View Release Notes`}</a>
+            >
+              {i18n._(t`View Release Notes`)}
+            </a>
           </div>
         }
       />

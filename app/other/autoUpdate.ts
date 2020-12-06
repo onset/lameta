@@ -1,17 +1,31 @@
-import { autoUpdater, UpdateInfo } from "electron-updater";
+import { autoUpdater, CancellationToken, UpdateInfo } from "electron-updater";
 import log, { LogMessage, PathVariables } from "electron-log";
-import Path from "path";
 
+export type DownloadFunction = () => {
+  cancelFunction: () => void;
+  promise: Promise<any>;
+};
+export function downloadUpdate(
+  cancellationToken: CancellationToken
+): Promise<any> {
+  return autoUpdater.downloadUpdate(); //cancellationToken);
+}
+export function quitAndInstall() {
+  autoUpdater.quitAndInstall(false, true);
+}
 export function checkForApplicationUpdate(): Promise<any> {
   log.transports.file.level = "debug";
   autoUpdater.logger = log;
+  autoUpdater.autoInstallOnAppQuit = true; // review
+  autoUpdater.fullChangelog = true;
   const current = require("../package.json");
 
   // Currently github only has a concept of prerelease or not; it doesn't have a full channel system.
   // Because of this, electron updater does not allow a full "channels" system when you're serving from github releases.
   // https://github.com/electron-userland/electron-builder/issues/1722
+  // At least we can say that if you aren't in alpha or beta, then we won't show you pre-releases.
   autoUpdater.allowPrerelease =
-    ["alpha", "beta"].indexOf(current.channel.toLowerCase()) > -1;
+    ["alpha", "beta"].indexOf(current.channel?.toLowerCase()) > -1;
 
   return new Promise((succeed, reject) => {
     autoUpdater.on("checking-for-update", () => {

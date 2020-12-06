@@ -9,7 +9,12 @@ could just use the node or web sdk's?
 // initializeSentry();
 
 import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
-import { checkForApplicationUpdate } from "./other/autoUpdate";
+import { CancellationToken } from "electron-updater";
+import {
+  checkForApplicationUpdate,
+  downloadUpdate,
+  quitAndInstall,
+} from "./other/autoUpdate";
 
 (global as any).arguments = process.argv;
 
@@ -181,6 +186,17 @@ app.on("ready", () =>
 
       ipcMain.handle("checkForApplicationUpdate", (event, options) => {
         return checkForApplicationUpdate();
+      });
+      const applicationUpdateCancellationToken = new CancellationToken();
+      ipcMain.handle("downloadUpdate", (event, options) => {
+        return downloadUpdate(applicationUpdateCancellationToken);
+      });
+      ipcMain.handle("cancelUpdate", (event, options) => {
+        console.log("***cancelling from main");
+        applicationUpdateCancellationToken.cancel();
+      });
+      ipcMain.handle("quitAndInstall", (event, options) => {
+        return quitAndInstall();
       });
 
       ipcMain.handle("showOpenDialog", (event, options) => {

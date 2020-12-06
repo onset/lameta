@@ -56,11 +56,20 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
 };
 render(<App />, document.getElementById("root"));
 
+const downloadFunction = () => {
+  return {
+    cancelFunction: () => {
+      ipcRenderer.invoke("cancelUpdate");
+    },
+    promise: ipcRenderer.invoke("downloadUpdate"),
+  };
+};
+
 ipcRenderer
   .invoke("checkForApplicationUpdate")
   .then((updateInfo: UpdateInfo) => {
     if (updateInfo) {
-      NotifyUpdateAvailable(updateInfo);
+      NotifyUpdateAvailable(updateInfo, downloadFunction);
     } else {
       //NotifyNoBigDeal("No update available");
     }
