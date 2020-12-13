@@ -2,7 +2,6 @@
   "name": "lameta",
   "productName": "lameta",
   "version": "0.9.1",
-  "channel": "alpha",
   "description": "File & metadata organization for language documentation projects.",
   "main": "./main-bundle.js",
   "author": {

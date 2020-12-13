@@ -10,8 +10,12 @@ import { Trans } from "@lingui/react";
 import { CancellationToken, UpdateInfo } from "electron-updater";
 import { DownloadFunction } from "../other/autoUpdate";
 import { ipcRenderer } from "electron";
-
-type Mode = "closed" | "release notes" | "downloading" | "done" | "error";
+import useAxios from "axios-hooks";
+const ReactMarkdown = require("react-markdown");
+//const gfm = require("remark-gfm");
+import Semver from "semver";
+import { sentryException } from "../other/errorHandling";
+type Mode = "release notes" | "downloading" | "done" | "error" | "closed";
 
 let staticUpdateAvailableDialog: (
   info: UpdateInfo,
@@ -24,13 +28,16 @@ let downloadFunction: DownloadFunction | undefined;
 export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
   const [mode, setMode] = React.useState<Mode>("closed");
   const [updateInfo, setUpdateInfo] = React.useState<UpdateInfo | undefined>();
-  const [cancellationToken] = React.useState(new CancellationToken());
+  //const [cancellationToken] = React.useState(new CancellationToken());
   // const [downloadFunction, setDownloadFunction] = React.useState<
   //   DownloadFunction | undefined
   // >();
   const [cancelDownloadFunction, setCancelDownloadFunction] = React.useState<
     () => void
   >();
+  const [{ data, loading, error }] = useAxios(
+    "https://api.github.com/repos/onset/lameta/releases"
+  );
 
   //   {
   //     releaseNotes: `Where does it come from?
@@ -52,8 +59,26 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
     //setDownloadFunction(download);
     setMode("release notes");
   };
-  let closeButtonLabel = <Trans>Cancel</Trans>;
 
+  let notesArray = data ? data : [];
+  try {
+    // Here we call "coerce" to make it a bit more tolerant of accidents like an upper-case V or a missing 3rd digit.
+    // But if we really screw up, an get an error here,  just give up on the sorting.
+    notesArray.sort(
+      (a, b) =>
+        Semver.compare(
+          Semver.coerce(a.tag_name) || a.tag_name,
+          Semver.coerce(b.tag_name) || b.tag_name
+        ) * -1
+    );
+  } catch (err) {
+    console.error(
+      "Error while trying to display release notes. Will display unsorted"
+    );
+    console.error(err);
+    sentryException(err);
+  }
+  //const notes = notesArray ? notesArray!.map((n) => n.note).join("<br/>") : "";
   return (
     <CloseOnEscape onEscape={() => setMode("closed")}>
       <ReactModal
@@ -68,17 +93,22 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
           css={css`
             width: 700px;
             //min-height: 200px;
+            display: block !important;
           `}
         >
           <h1
             css={css`
-              margin-bottom: 1em !important;
+              margin-top: 1em;
+              margin-bottom: 0 !important;
+              padding: 0;
+              padding-bottom: 46px;
+              font-size: 20pt !important;
             `}
           >
-            Release notes for lameta version {updateInfo?.version}
+            {/* Release notes for lameta version {updateInfo?.version} */}
+            Release Notes
           </h1>
           <div
-            className="row"
             css={css`
               max-height: 400px;
               min-height: 100px;
@@ -95,20 +125,51 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                 </Trans>
               </div>
             ) : (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: `<div>${updateInfo?.releaseNotes}</div>`,
-                }}
-              ></div>
+              notesArray.map((release) => (
+                <div key={release.name}>
+                  <h1
+                    css={css`
+                      margin-top: 1em !important;
+                      margin-bottom: 10px !important;
+                      background-color: #becde4;
+                      padding: 5px;
+                      padding-bottom: 35px;
+                      font-size: 14pt !important;
+                      padding-left: 10px;
+                    `}
+                  >
+                    {release.name}
+                  </h1>
+
+                  <ReactMarkdown
+                    css={css`
+                      * {
+                        max-width: 100%;
+                      }
+                    `}
+                    // note: the gfm plugin actually did worse that standard... it turned 2nd level bullets into <pre>
+                    children={release.body}
+                  />
+                </div>
+              ))
             )}
           </div>
         </div>
         <div className={"bottomButtonRow"}>
           <div className={"okCancelGroup"}>
-            <ModeButton visibleInMode="release notes" mode={mode} {...props}>
-              Get from Github
+            <ModeButton
+              visibleInMode="release notes"
+              mode={mode}
+              {...props}
+              onClick={() =>
+                require("electron").shell.openExternal(
+                  "http://www.google.com/onset/lameta/releases"
+                )
+              }
+            >
+              <Trans>Get from Github</Trans>
             </ModeButton>
-            <button
+            {/* <button
               id="download"
               disabled={
                 mode === "downloading" || mode === "error" || mode === "done"
@@ -124,16 +185,16 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                   });
                   promise.finally(() => setMode("done"));
                   setMode("downloading");
-                  setCancelDownloadFunction(cancelFunction);
                 }
-              }}
+                  setCancelDownloadFunction(cancelFunction);}
+              }
             >
               {mode === "downloading" ? (
                 <Trans>Downloading...</Trans>
               ) : (
                 <Trans>Download and Install</Trans>
               )}
-            </button>
+            </button> */}
             <ModeButton
               visibleInMode="done"
               mode={mode}
@@ -181,11 +242,11 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
 const ModeButton: React.FunctionComponent<{
   mode: Mode;
   visibleInMode: Mode;
-  [x: string]: any;
+  [other: string]: any;
 }> = (props) => {
   return props.mode === props.visibleInMode ? (
     <button
-      {...props}
+      {...props.other}
       css={css`
         ${props.mode !== "release notes" ? "display:none" : ""}
       `}

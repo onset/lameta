@@ -27,6 +27,9 @@ import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
+import { UpdateInfo } from "electron-updater";
+//const semverParse = require("semver/functions/parse");
+import { valid, clean, compare, SemVer } from "semver";
 
 export interface IProps {
   project: Project;
@@ -43,6 +46,10 @@ export default class Home extends React.Component<IProps> {
   public constructor(props: IProps) {
     super(props);
 
+    // console.log("semver valid " + valid("v0.91-alpha.1"));
+    // const x = new SemVer("V0.92-alpha");
+    // console.log("semver x " + x);
+    // console.log("semver compare " + compare("0.9.1-ALpha", "v0.9.1-Alpha"));
     //review: I'm not sure this is the cleanest way to handle this...
     //at this time, electron doesn't appear to have a way to compute
     //menu enabled-ness at the last moment. So if we add or delete a
