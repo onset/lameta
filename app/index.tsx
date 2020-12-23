@@ -10,13 +10,8 @@ import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/PatientFile";
-import {
-  NotifyNoBigDeal,
-  NotifySuccess,
-  NotifyUpdateAvailable,
-  NotifyWarning,
-} from "./components/Notify";
-import { UpdateInfo } from "electron-updater";
+
+import { startCheckFromRenderProcess } from "./other/autoUpdate";
 
 PatientFS.init();
 //if (!process.env.HOT) {
@@ -65,19 +60,4 @@ const downloadFunction = () => {
   };
 };
 
-ipcRenderer
-  .invoke("checkForApplicationUpdate")
-  .then((updateInfo: UpdateInfo) => {
-    if (updateInfo) {
-      NotifyUpdateAvailable(updateInfo, downloadFunction);
-    } else {
-      //NotifyNoBigDeal("No update available");
-    }
-  })
-  .catch((err) => {
-    //NotifyWarning("There was an error checking for an application update.");
-    console.error(err);
-    console.error(
-      "See Terminal for more error info on the Application update, coming from the main process."
-    );
-  });
+startCheckFromRenderProcess(true);

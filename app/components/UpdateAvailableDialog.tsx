@@ -8,22 +8,38 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
 import { CancellationToken, UpdateInfo } from "electron-updater";
-import { DownloadFunction } from "../other/autoUpdate";
+import { t } from "@lingui/macro";
 import { ipcRenderer } from "electron";
 import useAxios from "axios-hooks";
+import * as _ from "lodash";
+
+const electron = require("electron");
 const ReactMarkdown = require("react-markdown");
-//const gfm = require("remark-gfm");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
+import { i18n } from "@lingui/core";
+import { people_background_color, saymore_orange } from "./colors";
 type Mode = "release notes" | "downloading" | "done" | "error" | "closed";
 
 let staticUpdateAvailableDialog: (
-  info: UpdateInfo,
-  download: DownloadFunction
+  info: UpdateInfo
+  //download: DownloadFunction
 ) => void = () => {};
 export { staticUpdateAvailableDialog as ShowUpdateAvailableDialog };
 
-let downloadFunction: DownloadFunction | undefined;
+//let downloadFunction: DownloadFunction | undefined;
+
+/*
+  ---  What's going on here --- I initially started using electron-updater
+  completely, but kept running into problems with its decision making. In that
+  time, I had the dialog ready to do the actual download & update (all this mode
+  stuff). But I had to abandon it for now because it was just taking too much
+  time (it's very hard to debug and iterate on things that run in the main
+  process). At the moment we're still using it to detect that there is a new
+  release, though that too would be easy to replace
+  and improve on. But then we're doing our own get on the release notes,
+  rendering of the markdown, and providing simple download links to each version.
+*/
 
 export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
   const [mode, setMode] = React.useState<Mode>("closed");
@@ -51,11 +67,11 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
   //   });
 
   staticUpdateAvailableDialog = (
-    info: UpdateInfo,
-    download: DownloadFunction
+    info: UpdateInfo
+    //download: DownloadFunction
   ) => {
     setUpdateInfo(info);
-    downloadFunction = download;
+    //downloadFunction = download;
     //setDownloadFunction(download);
     setMode("release notes");
   };
@@ -106,7 +122,18 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
             `}
           >
             {/* Release notes for lameta version {updateInfo?.version} */}
-            Release Notes
+            <Trans>Release Notes</Trans>
+            <span
+              css={css`
+                float: right;
+                font-size: 16px;
+                color: ${saymore_orange};
+              `}
+            >
+              {i18n._(
+                t`You are running lameta ${require("../package.json").version}`
+              )}
+            </span>
           </h1>
           <div
             css={css`
@@ -131,7 +158,7 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                     css={css`
                       margin-top: 1em !important;
                       margin-bottom: 10px !important;
-                      background-color: #becde4;
+                      background-color: ${people_background_color};
                       padding: 5px;
                       padding-bottom: 35px;
                       font-size: 14pt !important;
@@ -139,6 +166,16 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
                     `}
                   >
                     {release.name}
+                    {getDownloadUrl(release) && (
+                      <a
+                        css={css`
+                          float: right;
+                        `}
+                        href={getDownloadUrl(release)}
+                      >
+                        <Trans>Download</Trans>
+                      </a>
+                    )}
                   </h1>
 
                   <ReactMarkdown
@@ -157,18 +194,22 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
         </div>
         <div className={"bottomButtonRow"}>
           <div className={"okCancelGroup"}>
-            <ModeButton
+            <button onClick={() => setMode("closed")}>
+              <Trans>Close</Trans>
+            </button>
+            {/* <ModeButton
               visibleInMode="release notes"
               mode={mode}
               {...props}
-              onClick={() =>
-                require("electron").shell.openExternal(
-                  "http://www.google.com/onset/lameta/releases"
-                )
-              }
+              onClick={() => {
+                electron.shell.openExternal(
+                  //"https://www.github.com/onset/lameta/releases"
+                  "https://github.com/onset/lameta/releases/download/v0.9.2-alpha/lameta-Windows-Setup-0.9.2.exe"
+                );
+              }}
             >
-              <Trans>Get from Github</Trans>
-            </ModeButton>
+              <Trans>Download from Github with your Web Browser</Trans>
+            </ModeButton> */}
             {/* <button
               id="download"
               disabled={
@@ -235,18 +276,15 @@ export const UpdateAvailableDialog: React.FunctionComponent<{}> = (props) => {
   );
 };
 
-{
-  /* <p>{`Your current version is  ${current.version + current.channel}`}</p>; */
-}
-
 const ModeButton: React.FunctionComponent<{
   mode: Mode;
   visibleInMode: Mode;
   [other: string]: any;
 }> = (props) => {
+  const { visibleInMode, ...buttonProps } = props;
   return props.mode === props.visibleInMode ? (
     <button
-      {...props.other}
+      {...buttonProps}
       css={css`
         ${props.mode !== "release notes" ? "display:none" : ""}
       `}
@@ -257,3 +295,17 @@ const ModeButton: React.FunctionComponent<{
     <React.Fragment />
   );
 };
+
+function getDownloadUrl(release: any) {
+  try {
+    const platformToExtension = { win32: "exe", darwin: "dmg" };
+    const installerExtension = platformToExtension[process.platform];
+    const url = (release.assets as Array<any>).find((a) =>
+      _.endsWith(a.browser_download_url, installerExtension)
+    );
+    return url?.browser_download_url;
+  } catch (error) {
+    sentryException(error);
+    return undefined;
+  }
+}

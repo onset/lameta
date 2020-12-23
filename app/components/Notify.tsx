@@ -85,8 +85,8 @@ export function NotifySuccess(message: string, onClick?: () => void) {
   });
 }
 export function NotifyUpdateAvailable(
-  info: UpdateInfo,
-  download: DownloadFunction
+  info: UpdateInfo
+  //download: DownloadFunction
 ) {
   const current = require("../package.json");
 
@@ -101,7 +101,7 @@ export function NotifyUpdateAvailable(
             actually get if we provide an OnClick to raise. At this time, it does not give a dismiss function as claimed. */}
             <a
               onClick={() => {
-                ShowUpdateAvailableDialog(info, download);
+                ShowUpdateAvailableDialog(info);
               }}
             >
               {i18n._(t`View Release Notes`)}

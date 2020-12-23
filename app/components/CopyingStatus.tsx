@@ -12,8 +12,6 @@ import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
 import { useState } from "react";
 
-const saymore_orange = "#e69664";
-
 // This is in the upper right corner of the screen.
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
   const [message, setMessage] = useState("");

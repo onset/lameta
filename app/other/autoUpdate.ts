@@ -1,5 +1,8 @@
 import { autoUpdater, CancellationToken, UpdateInfo } from "electron-updater";
 import log, { LogMessage, PathVariables } from "electron-log";
+import { ipcRenderer } from "electron";
+import { NotifyNoBigDeal, NotifyUpdateAvailable } from "../components/Notify";
+import { ShowUpdateAvailableDialog } from "../components/UpdateAvailableDialog";
 
 export type DownloadFunction = () => {
   cancelFunction: () => void;
@@ -62,4 +65,27 @@ export function checkForApplicationUpdate(): Promise<any> {
     //autoUpdater.checkForUpdatesAndNotify();
     autoUpdater.checkForUpdates();
   });
+}
+
+export function startCheckFromRenderProcess(quiet: boolean) {
+  ipcRenderer
+    .invoke("checkForApplicationUpdate")
+    .then((updateInfo: UpdateInfo) => {
+      if (updateInfo) {
+        if (quiet) {
+          NotifyUpdateAvailable(updateInfo);
+        } else {
+          ShowUpdateAvailableDialog(updateInfo);
+        }
+      } else {
+        if (!quiet) NotifyNoBigDeal("No update available");
+      }
+    })
+    .catch((err) => {
+      //NotifyWarning("There was an error checking for an application update.");
+      console.error(err);
+      console.error(
+        "See Terminal for more error info on the Application update, coming from the main process."
+      );
+    });
 }
