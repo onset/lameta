@@ -1,0 +1,4 @@
+owner: onset
+repo: lameta
+provider: github
+updaterCacheDirName: lameta-updater

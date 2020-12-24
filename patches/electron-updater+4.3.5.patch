@@ -1,0 +1,25 @@
+diff --git a/node_modules/electron-updater/out/providers/GitHubProvider.js b/node_modules/electron-updater/out/providers/GitHubProvider.js
+index b24859c..922873b 100644
+--- a/node_modules/electron-updater/out/providers/GitHubProvider.js
++++ b/node_modules/electron-updater/out/providers/GitHubProvider.js
+@@ -60,7 +60,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return
+ 
+ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+ 
+-const hrefRegExp = /\/tag\/v?([^/]+)$/;
++const hrefRegExp = /\/tag\/[vV]?([^/]+)$/;
+ 
+ class BaseGitHubProvider extends _main().Provider {
+   constructor(options, defaultHost, runtimeOptions) {
+@@ -204,8 +204,9 @@ function computeReleaseNotes(currentVersion, isFullChangelog, feed, latestReleas
+ 
+   for (const release of feed.getElements("entry")) {
+     // noinspection TypeScriptValidateJSTypes
+-    const versionRelease = release.element("link").attribute("href").match(/\/tag\/v?([^/]+)$/)[1];
+-
++    const fromTag = release.element("link").attribute("href").match(/\/tag\/[vV]?([^/]+)$/)[1];
++    // the above regex allows capital V, and coercing can handle some other problems with legacy tags that aren't strict semver
++    const versionRelease = semver().coerce(fromTag);
+     if (semver().lt(currentVersion, versionRelease)) {
+       releaseNotes.push({
+         version: versionRelease,

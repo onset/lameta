@@ -1,6 +1,6 @@
 import * as React from "react";
 import { render } from "react-dom";
-import { app, ipcRenderer, remote } from "electron";
+import { ipcRenderer, remote } from "electron";
 import "./app.global.scss";
 import App from "./containers/App";
 import { setConfig } from "react-hot-loader";
@@ -12,7 +12,6 @@ import { t } from "@lingui/macro";
 import { PatientFS } from "./other/PatientFile";
 
 PatientFS.init();
-
 //if (!process.env.HOT) {
 // sentry kills hot reloading with react-hot-loader
 // possibly it's trying to report some RHL error... you do see them if you turn on
