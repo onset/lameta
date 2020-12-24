@@ -12,10 +12,6 @@ import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { i18n, translateMessage } from "../other/localization";
 import { t } from "@lingui/macro";
-import { UpdateInfo } from "electron-updater";
-import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
-import { ShowUpdateAvailableDialog } from "./UpdateAvailableDialog";
-import { DownloadFunction } from "../other/autoUpdate";
 
 const electron = require("electron");
 
@@ -85,7 +81,7 @@ export function NotifySuccess(message: string, onClick?: () => void) {
   });
 }
 export function NotifyUpdateAvailable(
-  info: UpdateInfo
+  open: () => void
   //download: DownloadFunction
 ) {
   const current = require("../package.json");
@@ -99,13 +95,7 @@ export function NotifyUpdateAvailable(
           <div>
             {/* I would like to dismiss the toast when you click, but the current ButterToast docs don't seem to match what we
             actually get if we provide an OnClick to raise. At this time, it does not give a dismiss function as claimed. */}
-            <a
-              onClick={() => {
-                ShowUpdateAvailableDialog(info);
-              }}
-            >
-              {i18n._(t`View Release Notes`)}
-            </a>
+            <a onClick={open}>{i18n._(t`View Release Notes`)}</a>
           </div>
         }
       />

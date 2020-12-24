@@ -9,12 +9,6 @@ could just use the node or web sdk's?
 // initializeSentry();
 
 import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
-import { CancellationToken } from "electron-updater";
-import {
-  checkForApplicationUpdate,
-  downloadUpdate,
-  quitAndInstall,
-} from "./other/autoUpdate";
 
 (global as any).arguments = process.argv;
 
@@ -184,21 +178,6 @@ app.on("ready", () =>
         }
       });
 
-      ipcMain.handle("checkForApplicationUpdate", (event, options) => {
-        return checkForApplicationUpdate();
-      });
-      const applicationUpdateCancellationToken = new CancellationToken();
-      ipcMain.handle("downloadUpdate", (event, options) => {
-        return downloadUpdate(applicationUpdateCancellationToken);
-      });
-      ipcMain.handle("cancelUpdate", (event, options) => {
-        console.log("***cancelling from main");
-        applicationUpdateCancellationToken.cancel();
-      });
-      ipcMain.handle("quitAndInstall", (event, options) => {
-        return quitAndInstall();
-      });
-
       ipcMain.handle("showOpenDialog", (event, options) => {
         //returns a promise which is somehow funneled to the caller in the render process
         return dialog.showOpenDialog(mainWindow!, options);
@@ -216,12 +195,6 @@ app.on("ready", () =>
         mainWindow!.webContents.openDevTools();
       });
 
-      ipcMain.handle("showOpenDialog", async (event, options) => {
-        return dialog.showOpenDialog(mainWindow!, options);
-      });
-      ipcMain.handle("showMessageBox", async (event, options) => {
-        return dialog.showMessageBox(mainWindow!, options);
-      });
       // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
       // if (process.env.NODE_ENV === "development") {
       //   console.log(

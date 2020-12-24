@@ -11,6 +11,7 @@ import { CopyManager } from "../other/CopyManager";
 import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
 import { useState } from "react";
+import { saymore_orange } from "./colors";
 
 // This is in the upper right corner of the screen.
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {

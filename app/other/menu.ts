@@ -10,10 +10,7 @@ import { initializeSentry } from "./errorHandling";
 import { ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
-import {
-  checkForApplicationUpdate,
-  startCheckFromRenderProcess,
-} from "./autoUpdate";
+import { ShowReleasesDialog } from "../components/ReleasesDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -350,11 +347,9 @@ export default class SayLessMenu {
           },
         },
         {
-          label: i18n._(t`Check for new version`),
+          label: i18n._(t`Show Release Notes`),
           click: () => {
-            // this comes from firebase "dynamic links". It does not allow me to change the project id to lameta.
-            //shell.openExternal("https://saymorex.page.link/releases");
-            startCheckFromRenderProcess(false);
+            ShowReleasesDialog();
           },
         },
         {

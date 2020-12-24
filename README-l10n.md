@@ -54,11 +54,11 @@ That reads .linguirc to know what files to include. This puts json files in ./lo
 
 # Send new strings to Crowdin
 
-Files in ./locale/ that can then be put on https://crowdin.com/project/lameta. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+Files in ./locale/ that can then be put on https://crowdin.com/project/saymorex. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 # Non-code Lookups in CSV
 
-Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/lameta and then downloaded with the columns filled in from translations.
+Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/saymorex and then downloaded with the columns filled in from translations.
 
 # How to add a language
 

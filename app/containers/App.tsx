@@ -11,6 +11,7 @@ import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
+import { ReleasesDialog } from "../components/ReleasesDialog";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
 export const App: React.FunctionComponent = observer(() => {
@@ -41,6 +42,7 @@ export const App: React.FunctionComponent = observer(() => {
         <LanguagePickerDialog />
         <RenameFileDialog />
         <RegistrationDialog />
+        <ReleasesDialog />
       </I18nProvider>
     </div>
   );

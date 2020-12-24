@@ -27,9 +27,6 @@ import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
-import { UpdateInfo } from "electron-updater";
-//const semverParse = require("semver/functions/parse");
-import { valid, clean, compare, SemVer } from "semver";
 
 export interface IProps {
   project: Project;

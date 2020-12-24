@@ -11,8 +11,6 @@ import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/PatientFile";
 
-import { startCheckFromRenderProcess } from "./other/autoUpdate";
-
 PatientFS.init();
 //if (!process.env.HOT) {
 // sentry kills hot reloading with react-hot-loader
@@ -50,14 +48,3 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
   return; // just quit
 };
 render(<App />, document.getElementById("root"));
-
-const downloadFunction = () => {
-  return {
-    cancelFunction: () => {
-      ipcRenderer.invoke("cancelUpdate");
-    },
-    promise: ipcRenderer.invoke("downloadUpdate"),
-  };
-};
-
-startCheckFromRenderProcess(true);

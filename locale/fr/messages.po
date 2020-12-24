@@ -54,7 +54,7 @@ msgstr ""
 #~ msgid "A zip file with an IMDI file for the project and each session."
 #~ msgstr ""
 
-#: app/index.tsx:27
+#: app/index.tsx:29
 msgid "Abandon files that are still copying"
 msgstr ""
 
@@ -62,7 +62,7 @@ msgstr ""
 msgid "About This Project"
 msgstr "À propos de ce projet"
 
-#: app/other/menu.ts:38
+#: app/other/menu.ts:39
 msgid "About lameta"
 msgstr ""
 
@@ -153,8 +153,8 @@ msgid "Change Name To:"
 msgstr "Changer le nom à :"
 
 #: app/other/menu.ts:335
-msgid "Check for new version"
-msgstr "Vérifier si une nouvelle version existe"
+#~ msgid "Check for new version"
+#~ msgstr "Vérifier si une nouvelle version existe"
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:120
 msgid "Choose Language"
@@ -166,6 +166,10 @@ msgstr "Choisir un dossier d'exportation:"
 
 #: app/components/export/ExportChoices.tsx:56
 msgid "Choose which Sessions to export:"
+msgstr ""
+
+#: app/components/ReleasesDialog.tsx:123
+msgid "Close"
 msgstr ""
 
 #: app/components/PersonContributions.tsx:33
@@ -186,7 +190,7 @@ msgstr "Contributions"
 msgid "Contributors"
 msgstr "Contributeurs"
 
-#: app/other/menu.ts:93
+#: app/other/menu.ts:94
 msgid "Copy"
 msgstr "Copier"
 
@@ -202,11 +206,11 @@ msgstr ""
 msgid "Copying..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:181
+#: app/containers/HomePage.tsx:182
 msgid "Create New Project"
 msgstr "Créer un Nouveau Projet"
 
-#: app/containers/HomePage.tsx:193
+#: app/containers/HomePage.tsx:194
 msgid "Create New Project with Sample Data"
 msgstr ""
 
@@ -218,11 +222,11 @@ msgstr ""
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: app/other/menu.ts:118
+#: app/other/menu.ts:119
 msgid "Create Project..."
 msgstr "Créer projet..."
 
-#: app/other/menu.ts:324
+#: app/other/menu.ts:325
 msgid "Credits"
 msgstr ""
 
@@ -238,7 +242,7 @@ msgstr ""
 #~ msgid "Custom Fields"
 #~ msgstr ""
 
-#: app/other/menu.ts:91
+#: app/other/menu.ts:92
 msgid "Cut"
 msgstr "Couper"
 
@@ -254,11 +258,11 @@ msgstr "Supprimer"
 msgid "Delete File..."
 msgstr "Supprimer le fichier..."
 
-#: app/components/Workspace.tsx:111
+#: app/components/Workspace.tsx:115
 msgid "Delete Person..."
 msgstr "Supprimer une personne..."
 
-#: app/components/Workspace.tsx:77
+#: app/components/Workspace.tsx:81
 msgid "Delete Session..."
 msgstr "Supprimer la session..."
 
@@ -266,7 +270,7 @@ msgstr "Supprimer la session..."
 msgid "Description Documents"
 msgstr "Documents de description"
 
-#: app/index.tsx:27
+#: app/index.tsx:29
 msgid "Do not quit"
 msgstr ""
 
@@ -274,11 +278,15 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: app/components/Workspace.tsx:101
+#: app/components/ReleasesDialog.tsx:95
+msgid "Download"
+msgstr ""
+
+#: app/components/Workspace.tsx:105
 msgid "Duplicate Person"
 msgstr ""
 
-#: app/components/Workspace.tsx:66
+#: app/components/Workspace.tsx:70
 msgid "Duplicate Session"
 msgstr ""
 
@@ -286,7 +294,7 @@ msgstr ""
 #~ msgid "ELAN"
 #~ msgstr ""
 
-#: app/other/menu.ts:78
+#: app/other/menu.ts:79
 msgid "Edit"
 msgstr "Modifier"
 
@@ -298,7 +306,7 @@ msgstr "Adresse de courriel"
 msgid "Enter each choice, separated by commas"
 msgstr "Entrer chaque choix, séparé par des virgules"
 
-#: app/components/Notify.tsx:14
+#: app/components/Notify.tsx:15
 msgid "Error"
 msgstr ""
 
@@ -310,7 +318,7 @@ msgstr "Exporter"
 msgid "Export Project"
 msgstr "Exporter le projet"
 
-#: app/other/menu.ts:127
+#: app/other/menu.ts:128
 msgid "Export Project..."
 msgstr ""
 
@@ -324,7 +332,7 @@ msgid "Field"
 msgstr "Champ"
 
 #: app/components/FolderPane.tsx:259
-#: app/other/menu.ts:110
+#: app/other/menu.ts:111
 msgid "File"
 msgstr "Fichier"
 
@@ -332,7 +340,7 @@ msgstr "Fichier"
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
-#: app/other/menu.ts:144
+#: app/other/menu.ts:145
 msgid "Font Size"
 msgstr ""
 
@@ -369,19 +377,19 @@ msgstr ""
 msgid "Full Name"
 msgstr "Nom complet"
 
-#: app/other/menu.ts:306
+#: app/other/menu.ts:307
 msgid "Help"
 msgstr "Aide"
 
-#: app/other/menu.ts:216
+#: app/other/menu.ts:217
 msgid "Help translate"
 msgstr ""
 
-#: app/other/menu.ts:57
+#: app/other/menu.ts:58
 msgid "Hide Others"
 msgstr "Cacher les autres"
 
-#: app/other/menu.ts:52
+#: app/other/menu.ts:53
 msgid "Hide lameta"
 msgstr ""
 
@@ -402,7 +410,7 @@ msgstr "ID"
 msgid "IMDI + Files"
 msgstr ""
 
-#: app/other/menu.ts:224
+#: app/other/menu.ts:225
 msgid "IMDI Mode"
 msgstr ""
 
@@ -419,7 +427,7 @@ msgstr "Image"
 msgid "Indicates that this is the father or mother's primary language."
 msgstr ""
 
-#: app/other/menu.ts:163
+#: app/other/menu.ts:164
 msgid "Interface Language"
 msgstr ""
 
@@ -431,7 +439,7 @@ msgstr ""
 #~ msgid "Languages"
 #~ msgstr ""
 
-#: app/other/menu.ts:154
+#: app/other/menu.ts:155
 msgid "Larger"
 msgstr ""
 
@@ -475,14 +483,14 @@ msgstr "Champs supplémentaires"
 msgid "Name"
 msgstr "Nom"
 
-#: app/components/Workspace.tsx:92
+#: app/components/Workspace.tsx:96
 #: app/components/people/PeopleTab.tsx:18
 #: app/model/Project/Project.ts:188
 #: app/model/Project/Project.ts:191
 msgid "New Person"
 msgstr "Nouvelle personne"
 
-#: app/components/Workspace.tsx:57
+#: app/components/Workspace.tsx:61
 #: app/components/session/SessionsTab.tsx:16
 #: app/model/Project/Project.ts:151
 msgid "New Session"
@@ -501,7 +509,7 @@ msgstr "Notes"
 msgid "OK"
 msgstr "Bien"
 
-#: app/index.tsx:27
+#: app/index.tsx:29
 msgid "One or more files are still being copied into your project."
 msgstr ""
 
@@ -509,12 +517,12 @@ msgstr ""
 msgid "Open"
 msgstr "Ouvrir"
 
-#: app/containers/HomePage.tsx:186
+#: app/containers/HomePage.tsx:187
 msgid "Open Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:209
-#: app/other/menu.ts:113
+#: app/containers/HomePage.tsx:210
+#: app/other/menu.ts:114
 msgid "Open Project..."
 msgstr "Ouvrir un projet..."
 
@@ -538,7 +546,7 @@ msgstr "Autres documents"
 #~ msgid "Other Languages"
 #~ msgstr "Autres langues"
 
-#: app/other/menu.ts:232
+#: app/other/menu.ts:233
 msgid "PARADISEC Mode"
 msgstr ""
 
@@ -546,12 +554,12 @@ msgstr ""
 msgid "Paradisec CSV"
 msgstr ""
 
-#: app/other/menu.ts:98
+#: app/other/menu.ts:99
 msgid "Paste"
 msgstr "Coller"
 
-#: app/components/Workspace.tsx:89
-#: app/components/Workspace.tsx:168
+#: app/components/Workspace.tsx:93
+#: app/components/Workspace.tsx:172
 #: app/components/session/PeopleChooser.tsx:56
 msgid "People"
 msgstr "Personnes"
@@ -570,7 +578,7 @@ msgstr ""
 msgid "Please wait until all files are finished copying into this folder"
 msgstr ""
 
-#: app/components/Workspace.tsx:156
+#: app/components/Workspace.tsx:160
 #: app/other/localization.ts:63
 msgid "Project"
 msgstr "Projet"
@@ -591,11 +599,11 @@ msgstr "Projet sera créé dans : {path}."
 msgid "Properties"
 msgstr "Propriétés"
 
-#: app/other/menu.ts:69
+#: app/other/menu.ts:70
 msgid "Quit"
 msgstr ""
 
-#: app/other/menu.ts:86
+#: app/other/menu.ts:87
 msgid "Redo"
 msgstr ""
 
@@ -603,8 +611,12 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/other/menu.ts:309
+#: app/other/menu.ts:310
 msgid "Registration..."
+msgstr ""
+
+#: app/components/ReleasesDialog.tsx:66
+msgid "Release Notes"
 msgstr ""
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:102
@@ -628,7 +640,7 @@ msgstr "Renommer..."
 msgid "Renaming failed because there is already a file with that name."
 msgstr ""
 
-#: app/other/menu.ts:315
+#: app/other/menu.ts:316
 msgid "Report a problem"
 msgstr ""
 
@@ -657,28 +669,32 @@ msgstr ""
 #~ msgid "SayMore/SayMore Project Files"
 #~ msgstr ""
 
-#: app/other/menu.ts:103
+#: app/other/menu.ts:104
 msgid "Select All"
 msgstr ""
 
-#: app/other/menu.ts:45
+#: app/other/menu.ts:46
 msgid "Services"
 msgstr ""
 
 #: app/components/FolderPane.tsx:117
 #: app/components/PersonContributions.tsx:21
-#: app/components/Workspace.tsx:54
+#: app/components/Workspace.tsx:58
 #: app/model/Project/Project.ts:251
 #: app/other/localization.ts:65
 msgid "Session"
 msgstr "Session"
 
-#: app/components/Workspace.tsx:162
+#: app/components/Workspace.tsx:166
 msgid "Sessions"
 msgstr "Sessions"
 
-#: app/other/menu.ts:62
+#: app/other/menu.ts:63
 msgid "Show All"
+msgstr ""
+
+#: app/other/menu.ts:336
+msgid "Show Release Notes"
 msgstr ""
 
 #: app/components/export/ExportDialog.tsx:244
@@ -693,15 +709,19 @@ msgstr ""
 msgid "Show in Finder"
 msgstr ""
 
+#: app/components/ReleasesDialog.tsx:119
+msgid "Show more releases"
+msgstr ""
+
 #: app/components/FileList.tsx:72
 msgid "Size"
 msgstr "Taille"
 
-#: app/other/menu.ts:147
+#: app/other/menu.ts:148
 msgid "Smaller"
 msgstr ""
 
-#: app/other/menu.ts:122
+#: app/other/menu.ts:123
 msgid "Start Screen"
 msgstr ""
 
@@ -781,9 +801,13 @@ msgstr ""
 msgid "Type"
 msgstr "Type"
 
-#: app/other/menu.ts:81
+#: app/other/menu.ts:82
 msgid "Undo"
 msgstr "Annuler l'action"
+
+#: app/components/Notify.tsx:56
+msgid "Update available"
+msgstr ""
 
 #: app/components/CustomFieldsTable.tsx:144
 #: app/components/MoreFieldsTable.tsx:47
@@ -799,11 +823,15 @@ msgstr "Vidéo"
 #~ msgid "Video Codec"
 #~ msgstr ""
 
-#: app/other/menu.ts:141
+#: app/other/menu.ts:142
 msgid "View"
 msgstr "Affichage"
 
-#: app/components/Notify.tsx:40
+#: app/components/Notify.tsx:60
+msgid "View Release Notes"
+msgstr ""
+
+#: app/components/Notify.tsx:41
 msgid "Warning"
 msgstr ""
 
@@ -815,6 +843,10 @@ msgstr "Que voulez-vous appeler ce projet ?"
 #: app/components/MediaStats.tsx:53
 #~ msgid "Width"
 #~ msgstr ""
+
+#: app/components/ReleasesDialog.tsx:72
+msgid "You are running lameta {0}"
+msgstr ""
 
 #: app/components/FileList.tsx:85
 msgid "You cannot add files of that type"
@@ -841,7 +873,7 @@ msgstr ""
 #~ msgid "height"
 #~ msgstr ""
 
-#: app/other/menu.ts:35
+#: app/other/menu.ts:36
 msgid "lameta"
 msgstr ""
 
@@ -849,7 +881,7 @@ msgstr ""
 msgid "lameta  was not able to rename that file."
 msgstr ""
 
-#: app/containers/HomePage.tsx:216
+#: app/containers/HomePage.tsx:217
 msgid "lameta and SayMore Project Files"
 msgstr ""
 
