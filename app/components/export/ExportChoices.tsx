@@ -48,8 +48,7 @@ export const ExportChoices: React.FunctionComponent<{
             onChange={(e) => props.setExportFormat(e.target.value)}
           />
           <Trans>Paradisec CSV</Trans>
-          {" (Experimental)"}
-        </label>{" "}
+        </label>
         <p>
           <Trans>
             A single comma-separated file with project information followed by
