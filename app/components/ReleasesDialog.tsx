@@ -125,6 +125,13 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
               overflow-y: scroll;
             `}
           >
+            {!allReleases ||
+              (allReleases.length === 0 && (
+                <p>
+                  Sorry, lameta could not retrieve the release notes from
+                  github.
+                </p>
+              ))}
             {releasesToShow.map((release, index) => (
               <div key={release.name}>
                 <h1
