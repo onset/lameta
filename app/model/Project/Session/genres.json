@@ -4,7 +4,23 @@
     "label": "Drama",
     "definition": "A planned, creative, rendition of discourse involving two or more participants.",
     "comments": "Usually a drama involves mimesis of events, either real or imagined.",
-    "examples": ["Play", "Skit", "Enacted Scene"]
+    "examples": [
+      "Play",
+      "Skit",
+      "Enacted Scene"
+    ]
+  },
+  {
+    "id": "dialog",
+    "label": "Dialog",
+    "definition": "An interactive discourse with two or more participants.",
+    "examples": [
+      "conversations",
+      "interviews",
+      "correspondence",
+      "consultations",
+      "greetings and leave-takings"
+    ]
   },
   {
     "id": "formulaic_discourse",
@@ -43,13 +59,34 @@
     "id": "language_play",
     "label": "Language Play",
     "definition": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
-    "examples": ["Verbal Art", "Joke", "Secret Language", "Speech Disguise"]
+    "examples": [
+      "Verbal Art",
+      "Joke",
+      "Secret Language",
+      "Speech Disguise"
+    ]
+  },
+  {
+    "id": "ludic",
+    "label": "Ludic Discourse",
+    "definition": "Language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+    "examples": [
+      "play languages",
+      "jokes",
+      "secret languages",
+      "speech disguises"
+    ]
   },
   {
     "id": "oratory",
     "label": "Oratory",
     "definition": "Public speaking, or speaking eloquently according to rules or conventions.",
-    "examples": ["Sermon", "Lecture", "Political Speech", "Invocation"]
+    "examples": [
+      "Sermon",
+      "Lecture",
+      "Political Speech",
+      "Invocation"
+    ]
   },
   {
     "id": "narrative",
@@ -69,19 +106,31 @@
     "id": "procedural_discourse",
     "label": "Procedural Discourse",
     "definition": "An explanation or description of a method, process, or situation having ordered steps.",
-    "examples": ["Recipe", "Instructions", "Plan"]
+    "examples": [
+      "Recipe",
+      "Instructions",
+      "Plan"
+    ]
   },
   {
     "id": "report",
     "label": "Report",
     "definition": "A factual account of some event or circumstance.",
-    "examples": ["News Report", "Essay", "Commentary"]
+    "examples": [
+      "News Report",
+      "Essay",
+      "Commentary"
+    ]
   },
   {
     "id": "singing",
     "label": "Singing",
     "definition": "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
-    "examples": ["Chant", "Song", "Chorus"]
+    "examples": [
+      "Chant",
+      "Song",
+      "Chorus"
+    ]
   },
   {
     "id": "translation",
@@ -104,5 +153,145 @@
       "Glossolalia",
       "Singing Syllables (fa-la-la)"
     ]
+  },
+  {
+    "id": "conversation",
+    "label": "Conversation",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "interview",
+    "label": "Interview",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "personal",
+    "label": "Personal",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "oral",
+    "label": "Oral",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "history",
+    "label": "History",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "folk",
+    "label": "Folk",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "tale",
+    "label": "Tale",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "verbal",
+    "label": "Verbal",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "art",
+    "label": "Art",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "mythology",
+    "label": "Mythology",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "text",
+    "label": "Text",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "description",
+    "label": "Description",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "proverb",
+    "label": "Proverb",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "song",
+    "label": "Song",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "ritual",
+    "label": "Ritual",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "elicitation",
+    "label": "Elicitation",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "stimuli",
+    "label": "Stimuli",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "questionnaire",
+    "label": "Questionnaire",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "consent",
+    "label": "Consent",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "notes",
+    "label": "Notes",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "photograph",
+    "label": "Photograph",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "map",
+    "label": "Map",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "community",
+    "label": "Community",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "materials",
+    "label": "Materials",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "academic",
+    "label": "Academic",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "output",
+    "label": "Output",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "dictionary",
+    "label": "Dictionary",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "grammar",
+    "label": "Grammar",
+    "source": "ELAR genres"
   }
 ]
