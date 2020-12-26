@@ -330,7 +330,11 @@ export class Project extends Folder {
 
   private setupGenreDefinition() {
     const genreChoices = genres.map((g: any) => {
-      return g as IChoice;
+      return {
+        ...g,
+        // bit of a mismatch in the naming
+        description: g.definition,
+      };
     });
     console.assert(genreChoices.length > 0);
 
