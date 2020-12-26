@@ -15,6 +15,10 @@ export class FieldDefinition {
   //visibility?: string;
   public cssClass?: string;
   public choices?: string[];
+  //note: this is currently used only for genres, and is also an open list,
+  //where as the user enters new choices we haven't seen before, we add them to
+  //this list. The expanded lists is not persisted anywhere... we just
+  //reconstitute when we load the files again.
   public complexChoices?: IChoice[];
   public multipleLines?: boolean;
   public tabIndex?: number = 99;

@@ -2,9 +2,13 @@ import * as React from "react";
 import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react-lite";
 // tslint:disable-next-line: no-submodule-imports
-import CreateableSelect from "react-select/creatable";
+import CreatableSelect from "react-select/creatable";
 import Tooltip from "react-tooltip-lite";
-const saymore_orange = "#e69664";
+import { Dictionary } from "typescript-collections";
+import { capitalCase } from "capital-case";
+import { saymore_orange } from "../colors";
+
+//const Choices = new Dictionary<string, Array<string>>();
 
 // For fields where there are choices but the user can enter new ones.
 export const FieldOpenChoiceChooser = observer<{
@@ -14,6 +18,11 @@ export const FieldOpenChoiceChooser = observer<{
   translateChoice: (english: string) => string;
 }>((props) => {
   const label = props.field.labelInUILanguage;
+  // enhance: "complex" here means there is more than just a phrase associated with
+  // this. Genres have definitions and examples too. It seems that this code is
+  // conflating "open" with "complex"; we could certainly have a field where you
+  // can add new things but there is no definition or examples. The code here
+  // works because the only "open" chooser at the moment is for genres.
   const choices = props.field.definition.complexChoices
     ? props.field.definition.complexChoices
     : [];
@@ -47,7 +56,7 @@ export const FieldOpenChoiceChooser = observer<{
   return (
     <div className={"field " + props.className}>
       <label>{label}</label>
-      <CreateableSelect
+      <CreatableSelect
         tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
         //classNamePrefix="rs" // causes react-select to show you the parts of the control for styling, e.g. "rs-input"
         value={currentOption}
@@ -95,7 +104,9 @@ export const FieldOpenChoiceChooser = observer<{
           }),
         }}
         onChange={(s: any) => {
-          props.field.text = (s && s.value ? s.value : "") as string;
+          props.field.setValueFromString(
+            capitalCase((s && s.value ? s.value : "") as string)
+          );
         }}
         components={{ Option: CustomOption }}
         options={options}

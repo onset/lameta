@@ -99,7 +99,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
-  public copyInOneFile(path: string, newFileName?: string): Promise<null> {
+  public copyInOneFile(path: string, newFileName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (
         ["session", "person", "meta"].includes(

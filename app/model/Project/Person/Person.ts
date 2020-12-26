@@ -51,7 +51,7 @@ export class Person extends Folder {
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
-  public copyInMugshot(path: string): Promise<null> {
+  public copyInMugshot(path: string): Promise<void> {
     //console.log("photopath " + path);
 
     const f = this.getMugshotFile();

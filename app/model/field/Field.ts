@@ -194,6 +194,10 @@ export class Field {
     } else {
       this.text = s;
     }
+
+    if (this.key === "genre") {
+      this.updateDefinitionIfThisIsANewChoice();
+    }
   }
 
   // public asDate(): Date {
@@ -301,7 +305,28 @@ export class Field {
       .replace(/\\b/g, "\\b")
       .replace(/\\f/g, "\\f");
   }
+
+  private updateDefinitionIfThisIsANewChoice() {
+    // for now we're only implementing this for genre, which has complexChoices
+    // (choices with examples and definitions).
+    console.assert((this.definition.key = "genre"));
+
+    const v = this.text.toLowerCase();
+    if (v) {
+      if (
+        !this.definition.complexChoices?.find((c) => c.id.toLowerCase() === v)
+      ) {
+        const newChoice = {
+          id: v,
+          label: this.text,
+          description: "custom",
+        };
+        this.definition.complexChoices?.push(newChoice);
+      }
+    }
+  }
 }
+
 export class HasConsentField extends Field {
   private person: Person;
   constructor(person: Person) {
