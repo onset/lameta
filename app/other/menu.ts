@@ -340,7 +340,8 @@ export default class SayLessMenu {
           click: () => {
             ShowMessageDialog({
               title: `Credits`,
-              text: "Profile Man & Woman by mikicon from the Noun Project",
+              text:
+                "Illustration 'Profile Man & Woman' by mikicon from the Noun Project",
               buttonText: "OK",
               iconPath: null,
             });

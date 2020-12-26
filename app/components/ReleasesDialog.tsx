@@ -17,10 +17,14 @@ import { i18n } from "@lingui/core";
 import { people_background_color, saymore_orange } from "./colors";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
-type Mode = "querying" | "open" | "closed";
+type Mode =
+  | "querying"
+  | "update-available"
+  | "just-show-release-notes"
+  | "closed";
 
 interface IGithubRelease {
-  assets: Array<{ browser_download_url: string }>;
+  assets: { browser_download_url: string }[];
   body: string;
   created_at: string;
   draft: boolean;
@@ -48,7 +52,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
         const all = sortReleases(result.data);
         setAllReleases(all);
         if (getNewerReleases(all).length) {
-          NotifyUpdateAvailable(() => setMode("open"));
+          NotifyUpdateAvailable(() => setMode("update-available"));
         }
       })
       .catch((error) => {
@@ -61,7 +65,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   React.useEffect(() => {
     showDialogManually = () => {
       setShowNewReleasesOnly(false);
-      setMode("open");
+      setMode("just-show-release-notes");
     };
   });
 
@@ -78,7 +82,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
       <ReactModal
         ariaHideApp={false}
         className="messageDialog"
-        isOpen={mode === "open"}
+        isOpen={
+          mode === "just-show-release-notes" || mode === "update-available"
+        }
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setMode("closed")}
       >
@@ -133,16 +139,18 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                   `}
                 >
                   {release.name}
-                  {index === 0 && getDownloadUrl(release) && (
-                    <a
-                      css={css`
-                        float: right;
-                      `}
-                      href={getDownloadUrl(release)}
-                    >
-                      <Trans>Download</Trans>
-                    </a>
-                  )}
+                  {/* If we're showing the dialog prompting them to upgrade, only give the top option of their current channel for Downloading */}
+                  {(index === 0 || mode === "just-show-release-notes") &&
+                    getDownloadUrl(release) && (
+                      <a
+                        css={css`
+                          float: right;
+                        `}
+                        href={getDownloadUrl(release)}
+                      >
+                        <Trans>Download</Trans>
+                      </a>
+                    )}
                 </h1>
 
                 <ReactMarkdown
@@ -165,21 +173,28 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
           `}
           className={"bottomButtonRow"}
         >
-          <label
+          {mode === "update-available" && (
+            <label
+              css={css`
+                margin-right: auto;
+              `}
+            >
+              <input
+                type="checkbox"
+                checked={!showNewReleasesOnly}
+                onChange={(event) => {
+                  setShowNewReleasesOnly(!event.target.checked);
+                }}
+              ></input>
+              {i18n._(t`Show more releases`)}
+            </label>
+          )}
+          <div
+            className={"okCancelGroup"}
             css={css`
-              margin-right: auto;
+              margin-left: auto;
             `}
           >
-            <input
-              type="checkbox"
-              checked={!showNewReleasesOnly}
-              onChange={(event) => {
-                setShowNewReleasesOnly(!event.target.checked);
-              }}
-            ></input>
-            {i18n._(t`Show more releases`)}
-          </label>
-          <div className={"okCancelGroup"}>
             <button onClick={() => setMode("closed")}>
               <Trans>Close</Trans>
             </button>
