@@ -17,6 +17,7 @@ export interface IChoice {
   label: string;
   description: string;
   examples?: string[];
+  source?: string;
 }
 
 export enum FieldType {
@@ -319,7 +320,8 @@ export class Field {
         const newChoice = {
           id: v,
           label: this.text,
-          description: "custom",
+          description: "",
+          source: "custom",
         };
         this.definition.complexChoices?.push(newChoice);
       }

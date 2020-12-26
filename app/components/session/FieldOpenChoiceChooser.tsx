@@ -29,14 +29,18 @@ export const FieldOpenChoiceChooser = observer<{
 
   const options = choices
     .map((c) => {
-      let tip = c.description;
+      let tip = c.description || "";
       if (c.examples && c.examples.length > 0) {
         tip += "\nExamples: " + c.examples;
+      }
+      if (c.source) {
+        tip += "\nSource: " + c.source;
       }
       return new Object({
         value: c.id,
         label: props.translateChoice(c.label),
         title: tip,
+        source: c.source,
       });
     })
     .sort((a: any, b: any) => (a.label as string).localeCompare(b.label));
@@ -141,6 +145,7 @@ const CustomOption = (optionProps) => {
           ...getStyles("option", optionProps),
           backgroundColor: optionProps.isFocused ? saymore_orange : "white",
           fontWeight: optionProps.isSelected ? "bold" : "normal",
+          fontStyle: optionProps.data.source === "custom" ? "italic" : "",
           color: "black",
         }}
         className={cx(
