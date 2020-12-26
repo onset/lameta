@@ -638,9 +638,10 @@ export /*babel doesn't like this: abstract*/ class File {
     const xml = this.getXml(false);
 
     if (this.describedFilePath.indexOf("sample data") > -1) {
-      NotifyWarning(
-        "Not saving because directory contains the words 'sample data'"
-      );
+      // now warning at project level so that we don't see this repeatedly
+      // NotifyWarning(
+      //   "Not saving because directory contains the words 'sample data'"
+      // );
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {

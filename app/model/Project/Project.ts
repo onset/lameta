@@ -27,6 +27,7 @@ const genres = require("./Session/genres.json");
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
+import { NotifyWarning } from "../../components/Notify";
 
 let sCurrentProject: Project | null = null;
 
@@ -119,6 +120,15 @@ export class Project extends Folder {
     this.languageFinder = new LanguageFinder(() =>
       this.getContentLanguageCodeAndName()
     );
+    if (directory.indexOf("sample data") > -1) {
+      window.setTimeout(
+        () =>
+          NotifyWarning(
+            "Not saving because directory contains the words 'sample data'"
+          ),
+        2000 // delay so that the UI is up enough to show this
+      );
+    }
   }
 
   public static fromDirectory(directory: string): Project {
