@@ -14,7 +14,12 @@ commitSHA=$(sentry-cli releases propose-version)
 VERSION=$(grep version app/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
 
 sentry-cli releases new -p lameta $VERSION
-sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
+# This is what we want, but can't do yet (waiting on github/sentry app from
+# keyman.sentry)
+#sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
+# so for now we are just using the "origin" repo that is present in
+# keyman.sentry
+sentry-cli releases set-commits $VERSION --commit "origin"@$commitSHA
 
 # We need render-bundle.js, render-bundle.js.map, and all source code:
 
