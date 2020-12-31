@@ -22,7 +22,9 @@ import { trash } from "../../other/crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
-import userSettingsSingleton from "../../other/UserSettings";
+import userSettingsSingleton, {
+  MediaFolderOrEmpty,
+} from "../../other/UserSettings";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
 import { i18n } from "@lingui/core";
@@ -139,7 +141,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
         newFileName ? newFileName : Path.basename(path),
         userSettingsSingleton.IMDIMode
       );
-      const dest = Path.join(this.directory, n);
+      const stats = fs.statSync(path);
+      let dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
         NotifyWarning(
@@ -147,58 +150,64 @@ export /*babel doesn't like this: abstract*/ class Folder {
         );
         return;
       }
-
       const f = new OtherFile(dest, this.customFieldRegistry, true);
-      const stats = fs.statSync(path);
+
       f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-      f.copyProgress = i18n._(t`Copy Requested...`);
+
+      if (
+        MediaFolderOrEmpty() !== undefined &&
+        isSubDirectory(MediaFolderOrEmpty() as string, path)
+      ) {
+        const pathRelativeToRoot = Path.relative(MediaFolderOrEmpty()!, path);
+        dest += ".ref";
+        fs.writeFileSync(dest, pathRelativeToRoot, "utf-8");
+        f.copyInProgress = false;
+      } else {
+        f.copyProgress = i18n._(t`Copy Requested...`);
+        window.setTimeout(
+          () =>
+            CopyManager.safeAsyncCopyFileWithErrorNotification(
+              path,
+              dest,
+              (progress: string) => {
+                f.copyProgress = progress;
+              }
+            )
+              .then((successfulDestinationPath) => {
+                const pendingFile = this.files.find(
+                  (x) => x.describedFilePath === dest
+                );
+                if (!pendingFile) {
+                  NotifyError(
+                    // not translating for now
+                    `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                  );
+                  reject();
+                  return;
+                }
+                pendingFile!.finishLoading();
+                resolve();
+              })
+              .catch((error) => {
+                console.log(`error ${error}`);
+                const fileIndex = this.files.findIndex(
+                  (x) => x.describedFilePath === dest
+                );
+                if (fileIndex < 0) {
+                  NotifyException(
+                    error, // not translating for now
+                    `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                  );
+                  reject();
+                  return;
+                }
+                this.files.splice(fileIndex, 1);
+              }),
+          0
+        );
+      }
+
       this.files.push(f);
-
-      //throw new Error("testing");
-      // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
-      // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
-
-      window.setTimeout(
-        () =>
-          CopyManager.safeAsyncCopyFileWithErrorNotification(
-            path,
-            dest,
-            (progress: string) => {
-              f.copyProgress = progress;
-            }
-          )
-            .then((successfulDestinationPath) => {
-              const pendingFile = this.files.find(
-                (x) => x.describedFilePath === dest
-              );
-              if (!pendingFile) {
-                NotifyError(
-                  // not translating for now
-                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
-                );
-                reject();
-                return;
-              }
-              pendingFile!.finishLoading();
-              resolve();
-            })
-            .catch((error) => {
-              console.log(`error ${error}`);
-              const fileIndex = this.files.findIndex(
-                (x) => x.describedFilePath === dest
-              );
-              if (fileIndex < 0) {
-                NotifyException(
-                  error, // not translating for now
-                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
-                );
-                reject();
-                return;
-              }
-              this.files.splice(fileIndex, 1);
-            }),
-        0
-      );
     });
   }
 
@@ -517,4 +526,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
       }
     }
   }
+}
+function isSubDirectory(root: string, path: string) {
+  const relative = Path.relative(root, path);
+  return relative && !relative.startsWith("..") && !Path.isAbsolute(relative);
 }

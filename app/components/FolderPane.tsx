@@ -94,11 +94,12 @@ function getTabs(
   setSelectedContribution: (c: Contribution | undefined) => void
 ) {
   const path: string = props.folder.selectedFile
-    ? Path.join(
-        props.folder.directory,
-        props.folder.selectedFile.getTextProperty("filename")
-      )
-    : "";
+    ? props.folder.selectedFile.getActualFilePath()
+    : // ? Path.join(
+      //     props.folder.directory,
+      //     props.folder.selectedFile.getTextProperty("filename")
+      //   )
+      "";
   const directoryObject = props.folder;
   const file = directoryObject.selectedFile;
   //console.log("getTabs:" + path);
@@ -198,7 +199,21 @@ function getTabs(
   // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
-  switch (file.type) {
+  const { missing, info: missingFileInfo } = file.getStatusOfThisFile();
+
+  if (missing) {
+    return (
+      <div>
+        <img src={locate("assets/warning.png")} />
+        <p>{missingFileInfo}</p>
+      </div>
+    );
+  }
+  let t = file.type;
+  let ext = Path.extname(file.getActualFilePath());
+  if ([".txt", ".md"].includes(ext)) t = "Text";
+
+  switch (t) {
     case "Session":
       return (
         <Tabs
@@ -404,7 +419,9 @@ function getTabs(
             <a
               onClick={() => {
                 // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openExternal("file://" + file.describedFilePath);
+                electron.shell.openExternal(
+                  "file://" + file.getActualFilePath()
+                );
               }}
             >
               <Trans>Open in ELAN</Trans>
@@ -428,7 +445,7 @@ function getTabs(
               onClick={(e) => {
                 e.preventDefault(); // don't try to follow the link
                 // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openExternal("file://" + file.describedFilePath);
+                electron.shell.openPath("file://" + file.getActualFilePath());
               }}
             >
               Open in program associated with this file type

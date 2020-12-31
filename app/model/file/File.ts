@@ -25,7 +25,7 @@ import {
   NotifySuccess,
   NotifyWarning,
 } from "../../components/Notify";
-
+import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import {
   sentryBreadCrumb,
@@ -37,6 +37,7 @@ import xmlbuilder from "xmlbuilder";
 import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 import { t } from "@lingui/macro";
+import { MediaFolderOrEmpty as getMediaFolderOrEmpty } from "../../other/UserSettings";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 export class Contribution {
@@ -323,14 +324,59 @@ export /*babel doesn't like this: abstract*/ class File {
     this.copyInProgress = false;
   }
 
+  public isExternalFileReference(): boolean {
+    return this.describedFilePath.endsWith(".ref");
+  }
+  public getFilenameToShowInList(): string {
+    return _.trimEnd(this.getTextProperty("filename"), ".ref");
+  }
+  public getActualFileExists(): boolean {
+    return fs.existsSync(this.getActualFilePath());
+  }
+  public getStatusOfThisFile(): { missing: boolean; info: string } {
+    if (this.copyInProgress) {
+      return { missing: false, info: this.copyProgress };
+    }
+    if (this.getActualFileExists()) return { missing: false, info: "" };
+    if (!getMediaFolderOrEmpty())
+      return {
+        missing: true,
+        info: `The file is missing from ${this.getActualFilePath()}`,
+      };
+    if (!fs.existsSync(getMediaFolderOrEmpty()))
+      return {
+        missing: true,
+        info: `lameta cannot find the Media Folder '${getMediaFolderOrEmpty()}'`,
+      };
+    const subpath = fs.readFileSync(this.describedFilePath, "utf-8");
+    return {
+      missing: true,
+      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${subpath}`,
+    };
+  }
+
+  public getActualFilePath(): string {
+    if (this.isExternalFileReference()) {
+      const subpath = fs.readFileSync(this.describedFilePath, "utf-8");
+      const path = Path.join(getMediaFolderOrEmpty(), subpath);
+      return path;
+    } else {
+      return this.describedFilePath;
+    }
+  }
   // These are fields that are computed and which we don't save, but which show up in the UI.
   private addFieldsUsedInternally() {
-    const stats = fs.statSync(this.describedFilePath);
+    if (!fs.existsSync(this.getActualFilePath())) {
+      return;
+    }
+
+    const stats = fs.statSync(this.getActualFilePath());
+
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
     const typeName =
-      GetFileFormatInfoForPath(this.describedFilePath)?.type ??
-      Path.extname(this.describedFilePath);
+      GetFileFormatInfoForPath(this.getActualFilePath())?.type ??
+      Path.extname(this.getActualFilePath());
     this.addTextProperty("type", typeName, false);
   }
   protected specialLoadingOfField(

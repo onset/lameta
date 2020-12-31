@@ -227,7 +227,7 @@ export default class SayLessMenu {
             {
               label: i18n._(t`Help translate`),
               click: () => {
-                shell.openExternal("https://crowdin.com/project/lameta");
+                shell.openPath("https://crowdin.com/project/lameta");
               },
             },
           ],
@@ -330,7 +330,7 @@ export default class SayLessMenu {
         {
           label: i18n._(t`Report a problem`),
           click: () => {
-            shell.openExternal("https://saymorex.page.link/problem");
+            shell.openPath("https://saymorex.page.link/problem");
           },
         },
         {

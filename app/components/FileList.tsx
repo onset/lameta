@@ -51,7 +51,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         Header: i18n._(t`Name`),
         accessor: (d: any) => {
           const f: File = d;
-          return f.getTextProperty("filename");
+          return f.getFilenameToShowInList();
         },
       },
       {
@@ -71,7 +71,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
 
           return f.copyInProgress
             ? f.copyProgress
-            : d.properties.getValueOrThrow("modifiedDate").asISODateString();
+            : d.properties.getValue("modifiedDate")?.asISODateString();
         },
       },
       {
@@ -176,6 +176,11 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
+            const {
+              missing,
+              info: missingFileInfo,
+            } = rowInfo.original.getStatusOfThisFile();
+
             return {
               onContextMenu: (e: any) => {
                 e.preventDefault();
@@ -212,8 +217,12 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
               },
               className:
                 (rowInfo.original.copyInProgress ? "copyPending " : "") +
+                (rowInfo.original.isExternalFileReference()
+                  ? "externalFileReference "
+                  : "") +
+                (missing ? " missing " : "") +
                 (rowInfo && rowInfo.original === props.folder.selectedFile
-                  ? "selected"
+                  ? " selected "
                   : ""),
             };
           }}
@@ -236,6 +245,7 @@ function showFileMenu(
     return;
   }
   const showDevOnlyItems = userSettings.DeveloperMode;
+  const missing = file.getStatusOfThisFile().missing;
 
   let items = [
     {
@@ -244,15 +254,17 @@ function showFileMenu(
           ? i18n._(t`Show in Finder`)
           : i18n._(t`Show in File Explorer`),
       click: () => {
-        showInExplorer(file.describedFilePath);
+        showInExplorer(file.getActualFilePath());
       },
+      enabled: !missing,
     },
     {
       label: i18n._(t`Open in program associated with this file type`),
       click: () => {
         // the "file://" prefix is required on mac, works fine on windows
-        electron.shell.openExternal("file://" + file.describedFilePath);
+        electron.shell.openPath("file://" + file.getActualFilePath());
       },
+      enabled: !missing,
       visible: !isSpecialSayMoreFile || showDevOnlyItems,
     },
     {
@@ -260,11 +272,14 @@ function showFileMenu(
       click: () => {
         RenameFileDialog.show(file, folder);
       },
+      enabled: !missing,
       visible: contextMenu && !isSpecialSayMoreFile,
     },
     { type: "separator", visible: !contextMenu },
     {
-      label: i18n._(t`Delete File...`),
+      label: file.isExternalFileReference()
+        ? i18n._(t`Delete link to file...`)
+        : i18n._(t`Delete File...`),
       enabled: file.canDelete,
       click: () => {
         folder.moveFileToTrash(file);

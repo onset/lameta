@@ -64,3 +64,9 @@
   //background-color: aqua;
   color: $project--color;
 }
+.missing {
+  color: red !important;
+}
+.externalFileReference {
+  font-style: italic;
+}
