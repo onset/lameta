@@ -134,8 +134,11 @@ export class UserSettings {
     this.store.set("uiFontZoom", this.uiFontZoom.toString());
   }
 
-  public MediaFolder(): string | undefined {
-    return "D:/temp";
+  public get MediaFolder(): string | undefined {
+    return this.store.get("mediaFolder");
+  }
+  public set MediaFolder(path: string | undefined) {
+    this.store.set("mediaFolder", path);
   }
 }
 
@@ -143,5 +146,5 @@ const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 
 export function MediaFolderOrEmpty() {
-  return userSettingsSingleton.MediaFolder() || "";
+  return userSettingsSingleton.MediaFolder || "";
 }

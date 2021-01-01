@@ -11,6 +11,7 @@ import { ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog
 import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
+import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 
 export default class SayLessMenu {
@@ -138,6 +139,13 @@ export default class SayLessMenu {
           enabled: haveProject,
           click: () => {
             ShowExportDialog();
+          },
+        },
+        {
+          label: "&" + i18n._(t`Media Folder Settings...`),
+          enabled: haveProject,
+          click: () => {
+            ShowMediaFolderDialog();
           },
         },
       ],

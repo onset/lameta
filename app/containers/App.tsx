@@ -12,6 +12,7 @@ import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
+import { MediaFolderDialog } from "../components/MediaFolderDialog";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
 export const App: React.FunctionComponent = observer(() => {
@@ -43,6 +44,7 @@ export const App: React.FunctionComponent = observer(() => {
         <RenameFileDialog />
         <RegistrationDialog />
         <ReleasesDialog />
+        <MediaFolderDialog />
       </I18nProvider>
     </div>
   );
