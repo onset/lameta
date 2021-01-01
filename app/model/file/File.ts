@@ -339,7 +339,7 @@ export /*babel doesn't like this: abstract*/ class File {
     return this.describedFilePath.endsWith(kLinkExtensionWithFullStop);
   }
   public getFilenameToShowInList(): string {
-    return _.trimEnd(
+    return trimSuffix(
       this.getTextProperty("filename"),
       kLinkExtensionWithFullStop
     );
@@ -365,7 +365,10 @@ export /*babel doesn't like this: abstract*/ class File {
     const subpath = fs.readFileSync(this.describedFilePath, "utf-8");
     return {
       missing: true,
-      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${subpath}`,
+      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${Path.join(
+        getMediaFolderOrEmpty(),
+        subpath
+      )}.`,
     };
   }
 
@@ -373,7 +376,7 @@ export /*babel doesn't like this: abstract*/ class File {
     if (this.isExternalFileReference()) {
       // use the name shown in the list, which may have been renamed or sanitized
       // or whatever, rather than the original name that we are linking to
-      return _.trimEnd(this.describedFilePath, kLinkExtensionWithFullStop);
+      return trimSuffix(this.describedFilePath, kLinkExtensionWithFullStop);
     }
     return this.describedFilePath;
   }
@@ -1086,4 +1089,29 @@ export class OtherFile extends File {
 export function ensureArray(x: any): any[] {
   if (x === null || x === undefined) return [];
   return Array.isArray(x) ? x : [x];
+}
+
+export function getStandardMessageAboutLockedFiles(): string {
+  return (
+    " " + // add space because this will always follow another message
+    translateMessage(
+      /*i18n*/ {
+        id:
+          "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+      }
+    )
+  );
+}
+
+/// Note _.trimEnd means something different! (it matches from a list of chars,
+/// not a whole string). https://github.com/lodash/lodash/issues/2578
+function trimSuffix(toTrim: string, trim: string): string {
+  if (!toTrim || !trim) {
+    return toTrim;
+  }
+  const index = toTrim.lastIndexOf(trim);
+  if (index === -1 || index + trim.length !== toTrim.length) {
+    return toTrim;
+  }
+  return toTrim.substring(0, index);
 }
