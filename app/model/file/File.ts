@@ -373,12 +373,12 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   public getNameToUseWhenExportingUsingTheActualFile(): string {
-    if (this.isExternalFileReference()) {
-      // use the name shown in the list, which may have been renamed or sanitized
-      // or whatever, rather than the original name that we are linking to
-      return trimSuffix(this.describedFilePath, kLinkExtensionWithFullStop);
-    }
-    return this.describedFilePath;
+    // For links, use the name shown in the list, which may have been renamed or sanitized
+    // or whatever, rather than the original name that we are linking to
+    const filename = this.isExternalFileReference()
+      ? trimSuffix(this.describedFilePath, kLinkExtensionWithFullStop)
+      : this.describedFilePath;
+    return Path.basename(filename);
   }
 
   public getActualFilePath(): string {

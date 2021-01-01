@@ -22,6 +22,7 @@ import { values } from "mobx";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
+import { NotifyWarning } from "../components/Notify";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -490,19 +491,20 @@ export default class ImdiGenerator {
 
     // schema requires that we group all the media files first, not intersperse them with written resources
     folder.files.forEach((f: File) => {
-      if (
-        ImdiGenerator.shouldIncludeFile(f.getActualFilePath()) &&
-        this.isMediaFile(f)
-      ) {
-        this.mediaFile(f);
-      }
-    });
-    folder.files.forEach((f: File) => {
-      if (
-        ImdiGenerator.shouldIncludeFile(f.getActualFilePath()) &&
-        !this.isMediaFile(f)
-      ) {
-        this.writtenResource(f);
+      if (f.getStatusOfThisFile().missing) {
+        // At the moment we're not even exporting metadata if the file is
+        // missing. With some work to avoid some errors, it would be possible.
+        NotifyWarning(f.getStatusOfThisFile().info);
+      } else {
+        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+          if (this.isMediaFile(f)) {
+            this.mediaFile(f);
+          }
+
+          if (!this.isMediaFile(f)) {
+            this.writtenResource(f);
+          }
+        }
       }
     });
 
