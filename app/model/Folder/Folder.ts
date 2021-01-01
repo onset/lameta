@@ -1,4 +1,9 @@
-import { File, OtherFile } from "../file/File";
+import {
+  File,
+  getStandardMessageAboutLockedFiles,
+  kLinkExtensionWithFullStop,
+  OtherFile,
+} from "../file/File";
 import { observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -159,7 +164,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         isSubDirectory(MediaFolderOrEmpty() as string, path)
       ) {
         const pathRelativeToRoot = Path.relative(MediaFolderOrEmpty()!, path);
-        dest += ".ref";
+        dest += kLinkExtensionWithFullStop;
         fs.writeFileSync(dest, pathRelativeToRoot, "utf-8");
         f.copyInProgress = false;
       } else {
@@ -175,7 +180,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
             )
               .then((successfulDestinationPath) => {
                 const pendingFile = this.files.find(
-                  (x) => x.describedFilePath === dest
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
                 );
                 if (!pendingFile) {
                   NotifyError(
@@ -191,7 +196,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
               .catch((error) => {
                 console.log(`error ${error}`);
                 const fileIndex = this.files.findIndex(
-                  (x) => x.describedFilePath === dest
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
                 );
                 if (fileIndex < 0) {
                   NotifyException(
@@ -298,39 +303,42 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
 
   public moveFileToTrash(file: File) {
-    ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
-      sentryBreadCrumb(`Moving to trash: ${file.describedFilePath}`);
-      let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
-      if (fs.existsSync(file.describedFilePath)) {
-        // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = trash(file.describedFilePath);
-      }
-      if (!continueTrashing) {
-        return;
-      }
-      if (
-        file.metadataFilePath &&
-        file.metadataFilePath !== file.describedFilePath
-      ) {
-        if (fs.existsSync(file.metadataFilePath)) {
-          if (!trash(file.metadataFilePath)) {
-            NotifyError(
-              i18n._(t`lameta was not able to put this file in the trash`) +
-                ` (${file.metadataFilePath})`
-            );
+    ConfirmDeleteDialog.show(
+      file.pathInFolderToLinkFileOrLocalCopy,
+      (path: string) => {
+        sentryBreadCrumb(
+          `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
+        );
+        let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
+        if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
+          // electron.shell.showItemInFolder(file.describedFilePath);
+          continueTrashing = trash(file.pathInFolderToLinkFileOrLocalCopy);
+        }
+        if (!continueTrashing) {
+          return;
+        }
+        if (
+          file.metadataFilePath &&
+          file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
+        ) {
+          if (fs.existsSync(file.metadataFilePath)) {
+            if (!trash(file.metadataFilePath)) {
+              NotifyError(
+                i18n._(t`lameta was not able to put this file in the trash`) +
+                  ` (${file.metadataFilePath})`
+              );
+            }
           }
         }
-      }
-      if (this.selectedFile === file) {
-        this.selectedFile = this.files.length > 0 ? this.files[0] : null;
-      }
-      // there was a bug at one time with something still holding a reference to this.
-      file.metadataFilePath = "error: this file was previously put in trash";
-      file.describedFilePath = "";
-      file.properties = new FieldSet();
+        if (this.selectedFile === file) {
+          this.selectedFile = this.files.length > 0 ? this.files[0] : null;
+        }
+        file.wasDeleted();
+        file.properties = new FieldSet();
 
-      this.forgetFile(file);
-    });
+        this.forgetFile(file);
+      }
+    );
   }
   public renameChildWithFilenameMinusExtension(
     childFile: File,

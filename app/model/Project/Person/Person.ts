@@ -41,13 +41,13 @@ export class Person extends Folder {
 
   private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
-      return f.describedFilePath.indexOf("_Photo.") > -1;
+      return f.pathInFolderToLinkFileOrLocalCopy.indexOf("_Photo.") > -1;
     });
   }
 
   public get mugshotPath(): string {
     const m = this.getMugshotFile();
-    return m ? m.describedFilePath : "";
+    return m ? m.getActualFilePath() : "";
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
@@ -56,7 +56,7 @@ export class Person extends Folder {
 
     const f = this.getMugshotFile();
     if (f) {
-      fs.removeSync(f.describedFilePath);
+      fs.removeSync(f.pathInFolderToLinkFileOrLocalCopy);
       this.files.splice(this.files.indexOf(f), 1); //remove that one
     }
 

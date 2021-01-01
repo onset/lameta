@@ -40,6 +40,8 @@ import { t } from "@lingui/macro";
 import { MediaFolderOrEmpty as getMediaFolderOrEmpty } from "../../other/UserSettings";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
+export const kLinkExtensionWithFullStop = ".link";
+
 export class Contribution {
   //review this @mobx.observable
   @mobx.observable
@@ -73,7 +75,11 @@ export /*babel doesn't like this: abstract*/ class File {
   // and so describedFilePath === metadataPath.
   // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
   @mobx.observable
-  public describedFilePath: string;
+  private describedFilePath: string;
+
+  public get pathInFolderToLinkFileOrLocalCopy() {
+    return this.describedFilePath;
+  }
 
   @mobx.observable
   public copyInProgress: boolean;
@@ -114,6 +120,11 @@ export /*babel doesn't like this: abstract*/ class File {
       const b = typeof value;
       assert.ok(a === b, `Cannot change type of ${key} from ${a} to ${b}`);
     }
+  }
+  public wasDeleted() {
+    // there was a bug at one time with something still holding a reference to this.
+    this.metadataFilePath = "error: this file was previously put in trash";
+    this.describedFilePath = "";
   }
   protected addDatePropertyFromString(key: string, dateString: string) {
     // Note: I am finding it rather hard to not mess up dates, because in javascript
@@ -325,10 +336,13 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   public isExternalFileReference(): boolean {
-    return this.describedFilePath.endsWith(".ref");
+    return this.describedFilePath.endsWith(kLinkExtensionWithFullStop);
   }
   public getFilenameToShowInList(): string {
-    return _.trimEnd(this.getTextProperty("filename"), ".ref");
+    return _.trimEnd(
+      this.getTextProperty("filename"),
+      kLinkExtensionWithFullStop
+    );
   }
   public getActualFileExists(): boolean {
     return fs.existsSync(this.getActualFilePath());
@@ -353,6 +367,15 @@ export /*babel doesn't like this: abstract*/ class File {
       missing: true,
       info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${subpath}`,
     };
+  }
+
+  public getNameToUseWhenExportingUsingTheActualFile(): string {
+    if (this.isExternalFileReference()) {
+      // use the name shown in the list, which may have been renamed or sanitized
+      // or whatever, rather than the original name that we are linking to
+      return _.trimEnd(this.describedFilePath, kLinkExtensionWithFullStop);
+    }
+    return this.describedFilePath;
   }
 
   public getActualFilePath(): string {

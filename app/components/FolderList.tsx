@@ -58,7 +58,9 @@ export class FolderList extends React.Component<IProps> {
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
       if (folder instanceof Person) {
-        folder.files.forEach((child) => child.describedFilePath);
+        folder.files.forEach(
+          (child) => child.pathInFolderToLinkFileOrLocalCopy
+        );
       }
       // The Session status also needs to be immediately updated in the table view.
       if (folder instanceof Session) {

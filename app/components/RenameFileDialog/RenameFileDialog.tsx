@@ -55,9 +55,12 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   public static async show(file: File, folder: Folder) {
     RenameFileDialog.singleton.setState({
       file,
-      filename: Path.basename(file.describedFilePath),
+      filename: Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
       folder,
-      core: this.getCore(file.describedFilePath, folder.filePrefix),
+      core: this.getCore(
+        file.pathInFolderToLinkFileOrLocalCopy,
+        folder.filePrefix
+      ),
       isOpen: true,
     });
   }
@@ -68,7 +71,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     const haveValidPath = this.getValidationProblemsMessage() === ""; // review: could do this when state changes
     const pathUnchanged =
       Path.normalize(this.getNewPath()) ===
-      Path.normalize(this.state.file!.describedFilePath);
+      Path.normalize(this.state.file!.pathInFolderToLinkFileOrLocalCopy);
     const canRenameNow = !pathUnchanged && haveValidPath;
     return (
       <CloseOnEscape
@@ -188,14 +191,14 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
       _.trimEnd(pfx + this.state.core, "_") +
       (includeExtension
         ? RenameFileDialog.getUneditableSuffix(
-            this.state.file!.describedFilePath
+            this.state.file!.pathInFolderToLinkFileOrLocalCopy
           )
         : "")
     );
   }
   private getNewPath(): string {
     return Path.join(
-      Path.dirname(this.state.file!.describedFilePath),
+      Path.dirname(this.state.file!.pathInFolderToLinkFileOrLocalCopy),
 
       this.getNewFileName()
     );

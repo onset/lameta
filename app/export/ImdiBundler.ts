@@ -161,19 +161,26 @@ export default class ImdiBundler {
     let count = 0;
     let failed = 0;
     files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
         count++;
         try {
           CopyManager.safeAsyncCopyFileWithErrorNotification(
-            f.describedFilePath,
+            f.getActualFilePath(),
             Path.join(
               targetDirectory,
-              sanitizeForArchive(Path.basename(f.describedFilePath), true)
+              // TODO: should use the local file name minus the ".link" part, so
+              // that renames that change the link name are used.
+              sanitizeForArchive(
+                f.getNameToUseWhenExportingUsingTheActualFile(),
+                true
+              )
             ),
             (progressMessage) => {}
           );
         } catch (error) {
-          errors = errors + `Problem copying ${f.describedFilePath}+\r\n`;
+          errors =
+            errors +
+            `Problem copying ${f.getNameToUseWhenExportingUsingTheActualFile()}+\r\n`;
           log(error);
           failed++;
         }

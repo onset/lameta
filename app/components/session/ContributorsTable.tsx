@@ -31,7 +31,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     this.ensureOneBlankRow(nextProps);
   }
   private ensureOneBlankRow(propToUse: IProps) {
-    console.log("ensureOnBlankRow(): " + propToUse.file.describedFilePath);
     let i = propToUse.file.contributions.length;
     while (i--) {
       const c = propToUse.file.contributions[i];

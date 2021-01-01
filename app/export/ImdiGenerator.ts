@@ -491,7 +491,7 @@ export default class ImdiGenerator {
     // schema requires that we group all the media files first, not intersperse them with written resources
     folder.files.forEach((f: File) => {
       if (
-        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
+        ImdiGenerator.shouldIncludeFile(f.getActualFilePath()) &&
         this.isMediaFile(f)
       ) {
         this.mediaFile(f);
@@ -499,7 +499,7 @@ export default class ImdiGenerator {
     });
     folder.files.forEach((f: File) => {
       if (
-        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
+        ImdiGenerator.shouldIncludeFile(f.getActualFilePath()) &&
         !this.isMediaFile(f)
       ) {
         this.writtenResource(f);
@@ -549,7 +549,7 @@ export default class ImdiGenerator {
   }
 
   private isMediaFile(f: File): boolean {
-    const g = GetFileFormatInfoForPath(f.describedFilePath);
+    const g = GetFileFormatInfoForPath(f.getActualFilePath());
     return !!g?.isMediaType;
   }
 
@@ -571,7 +571,9 @@ export default class ImdiGenerator {
     return this.group("MediaFile", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(
+          f.getNameToUseWhenExportingUsingTheActualFile()
+        )
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -583,7 +585,7 @@ export default class ImdiGenerator {
       );
 
       this.formatElement(
-        f.describedFilePath,
+        f.getNameToUseWhenExportingUsingTheActualFile(),
         "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
       this.requiredField("Size", "size", f);
@@ -614,7 +616,9 @@ export default class ImdiGenerator {
     return this.group("WrittenResource", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(
+          f.getNameToUseWhenExportingUsingTheActualFile()
+        )
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -631,7 +635,9 @@ export default class ImdiGenerator {
       this.group("MediaResourceLink", () => {});
 
       this.element("Date", "");
-      const imdiResourceType = getImdiResourceTypeForPath(f.describedFilePath);
+      const imdiResourceType = getImdiResourceTypeForPath(
+        f.getNameToUseWhenExportingUsingTheActualFile()
+      );
 
       this.element(
         "Type",
@@ -642,7 +648,7 @@ export default class ImdiGenerator {
       this.element("SubType", "");
       // "format" here is really mime type. See https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml
       this.formatElement(
-        f.describedFilePath,
+        f.getNameToUseWhenExportingUsingTheActualFile(),
         "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml"
       );
       this.requiredField("Size", "size", f);

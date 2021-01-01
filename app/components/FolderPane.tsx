@@ -246,7 +246,7 @@ function getTabs(
           <TabPanel>
             <SMErrorBoundary
               context={`${directoryObject.displayName} ${
-                directoryObject.metadataFile!.describedFilePath
+                directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } Session AutoForm`}
             >
               <AutoForm
@@ -304,7 +304,7 @@ function getTabs(
           <TabPanel>
             <SMErrorBoundary
               context={`${directoryObject.displayName} ${
-                directoryObject.metadataFile!.describedFilePath
+                directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } PersonForm`}
             >
               <PersonForm
