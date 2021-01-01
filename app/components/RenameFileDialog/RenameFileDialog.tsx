@@ -129,7 +129,16 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
             <div className="validationMessage">
               {pathUnchanged ? "" : this.getValidationProblemsMessage()}
             </div>
+            {this.state.file?.isExternalFileReference && (
+              <p>
+                Note that this is a link to a file in your Media Files
+                directory. Here, you are renaming this link, not the original
+                file that it points to. If you later create an export that
+                includes this file, the export will use this name.
+              </p>
+            )}
           </div>
+
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>
               {/* List as default last (in the corner). */}
