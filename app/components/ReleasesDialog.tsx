@@ -98,48 +98,44 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
     <CloseOnEscape onEscape={() => setMode("closed")}>
       <ReactModal
         ariaHideApp={false}
-        className="messageDialog"
+        className="releaseDialog" // this cannot be empty, even if you don't use it, else the dialog is shoved to the upper left
         isOpen={
           mode === "just-show-release-notes" || mode === "update-available"
         }
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setMode("closed")}
       >
+        <div className={"dialogTitle "}>
+          <div>
+            <Trans>Release Notes</Trans>
+          </div>
+          <div
+            css={css`
+              float: right;
+              font-size: 16px;
+              color: ${saymore_orange};
+              margin-bottom: auto;
+              margin-top: auto;
+            `}
+          >
+            {i18n._(
+              t`You are running lameta ${require("../package.json").version}`
+            )}
+          </div>
+        </div>
         <div
           className="dialogContent"
           css={css`
             width: 700px;
+            height: 600px;
+            max-height: 600px;
             display: block !important;
           `}
         >
-          <h1
-            css={css`
-              margin-top: 1em;
-              margin-bottom: 0 !important;
-              padding: 0;
-              padding-bottom: 46px;
-              font-size: 20pt !important;
-            `}
-          >
-            <Trans>Release Notes</Trans>
-            <span
-              css={css`
-                float: right;
-                font-size: 16px;
-                color: ${saymore_orange};
-              `}
-            >
-              {i18n._(
-                t`You are running lameta ${require("../package.json").version}`
-              )}
-            </span>
-          </h1>
           <div
             css={css`
-              max-height: 400px;
               min-height: 100px;
-              padding-right: 10px;
-              overflow-y: scroll;
+              overflow: hidden;
             `}
           >
             {!allReleases ||
@@ -150,10 +146,16 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                 </p>
               ))}
             {releasesToShow.map((release, index) => (
-              <div key={release.name}>
+              <div
+                key={release.name}
+                css={css`
+                  &:not(:first-child) {
+                  margin-top: sem !important;
+                  
+                `}
+              >
                 <h1
                   css={css`
-                    margin-top: 1em !important;
                     margin-bottom: 10px !important;
                     background-color: ${people_background_color};
                     padding: 5px;
