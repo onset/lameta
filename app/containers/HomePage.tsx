@@ -121,8 +121,10 @@ export default class HomePage extends React.Component<IProps, IState> {
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
-        title: `Warning: this is a beta test version, so make sure you have a backup of your work.`,
-        text: "",
+        title: `Warning`,
+        text:
+          "This is a beta test version, so make sure you have a backup of your work.",
+        width: "300px",
         buttonText: "I understand",
       });
     }

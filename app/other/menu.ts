@@ -11,6 +11,7 @@ import { ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog
 import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
+import { ShowCreditsDialog } from "./CreditsDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -337,21 +338,11 @@ export default class SayLessMenu {
         },
         {
           label: i18n._(t`Credits`),
-          click: () => {
-            ShowMessageDialog({
-              title: `Credits`,
-              text:
-                "Illustration 'Profile Man & Woman' by mikicon from the Noun Project",
-              buttonText: "OK",
-              iconPath: null,
-            });
-          },
+          click: () => ShowCreditsDialog(),
         },
         {
           label: i18n._(t`Show Release Notes`),
-          click: () => {
-            ShowReleasesDialog();
-          },
+          click: () => ShowReleasesDialog(),
         },
         {
           label: "lameta " + require("../package.json").version,

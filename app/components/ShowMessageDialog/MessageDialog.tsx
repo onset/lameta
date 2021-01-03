@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import ReactModal from "react-modal";
 import "./MessageDialog.scss";
@@ -7,9 +13,11 @@ import { Trans } from "@lingui/react";
 
 interface IConfig {
   title: string;
-  text: string;
-  buttonText: string;
+  text?: string;
+  buttonText?: string;
   iconPath?: string | undefined | /* alert */ null /* none */;
+  content?: React.ReactNode;
+  width?: string;
 }
 
 let staticShowMessageDialog: (config: IConfig) => void = () => {};
@@ -21,6 +29,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     title: "",
     text: "",
     buttonText: "",
+    width: "",
   });
   staticShowMessageDialog = (c) => {
     setConfig(c);
@@ -35,16 +44,35 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setIsOpen(false)}
       >
-        <div className="dialogContent">
-          <div className="row">
+        <div className={"dialogTitle "}>
+          <div
+            css={css`
+              display: flex;
+            `}
+          >
             {config.iconPath !== null && (
-              <img src={locate(config.iconPath || "assets/warning.png")} />
+              <img
+                css={css`
+                  height: 32px;
+                  margin-top: auto;
+                  margin-bottom: auto;
+                  margin-right: 10px;
+                `}
+                src={locate(config.iconPath || "assets/warning.png")}
+              />
             )}
-            <h1>{config.title}</h1>
+            <div>{config.title}</div>
           </div>
-          <div className="row">
-            <div>{config.text}</div>
-          </div>
+        </div>
+        <div
+          className="dialogContent"
+          css={css`
+            width: ${config.width || "400px"};
+          `}
+        >
+          {config.text && <div>{config.text}</div>}
+
+          {config.content}
         </div>
         <div className={"bottomButtonRow"}>
           <div className={"okCancelGroup"}>
