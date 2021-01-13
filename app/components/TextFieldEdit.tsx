@@ -59,6 +59,9 @@ export const TextFieldEdit: React.FunctionComponent<
           if (props.onBlurWithValue) {
             props.onBlurWithValue(event.currentTarget.value);
           }
+          if (props.onBlur) {
+            props.onBlur(event as any);
+          }
           if (props.validate && !props.validate(event.currentTarget.value)) {
             event.preventDefault();
             const textarea = event.currentTarget;
