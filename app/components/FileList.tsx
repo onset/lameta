@@ -43,7 +43,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         width: 30,
         accessor: (d: any) => {
           const f: File = d;
-          return f.getIconName();
+          return f.getIconPath();
         },
         Cell: (p) => <img src={p.value} />,
       },

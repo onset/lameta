@@ -717,7 +717,8 @@ export /*babel doesn't like this: abstract*/ class File {
         this.contributions,
         this,
         this.doOutputTypeInXmlTags,
-        doOutputEmptyCustomFields
+        doOutputEmptyCustomFields,
+        getRootAttributes
       );
     } finally {
       this.inGetXml = false;
@@ -951,7 +952,10 @@ export /*babel doesn't like this: abstract*/ class File {
     );
   }
 
-  public getIconName(): string {
+  public getIconPath(): string {
+    if (this.getStatusOfThisFile().missing) {
+      return locate("assets/warning.png");
+    }
     const type = this.getTextProperty("type", "unknowntype");
     return locate(`assets/file-icons/${type}.png`);
   }
