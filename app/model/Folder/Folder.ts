@@ -130,23 +130,24 @@ export /*babel doesn't like this: abstract*/ class Folder {
     this.files.push(destFile);
   }
 
-  public copyInOneFile(path: string, newFileName?: string): Promise<void> {
+  public copyInOneFile(pathToOriginalFile: string, newFileName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (
         ["session", "person", "meta"].includes(
-          getExtension(path)?.toLowerCase()
+          getExtension(pathToOriginalFile)?.toLowerCase()
         )
       ) {
         NotifyWarning(
-          i18n._(t`Cannot add files of that type`) + ` (${getExtension(path)}`
+          i18n._(t`Cannot add files of that type`) +
+            ` (${getExtension(pathToOriginalFile)}`
         );
         return;
       }
       const n = sanitizeForArchive(
-        newFileName ? newFileName : Path.basename(path),
+        newFileName ? newFileName : Path.basename(pathToOriginalFile),
         userSettingsSingleton.IMDIMode
       );
-      const stats = fs.statSync(path);
+      const stats = fs.statSync(pathToOriginalFile);
       let dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
@@ -155,24 +156,25 @@ export /*babel doesn't like this: abstract*/ class Folder {
         );
         return;
       }
-      const f = new OtherFile(dest, this.customFieldRegistry, true);
-
-      f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-
-      if (
+      const linkInsteadOfCopy =
         MediaFolderOrEmpty() !== undefined &&
-        isSubDirectory(MediaFolderOrEmpty() as string, path)
-      ) {
-        const pathRelativeToRoot = Path.relative(MediaFolderOrEmpty()!, path);
-        dest += kLinkExtensionWithFullStop;
-        fs.writeFileSync(dest, pathRelativeToRoot, "utf-8");
-        f.copyInProgress = false;
+        isSubDirectory(MediaFolderOrEmpty() as string, pathToOriginalFile);
+
+      if (linkInsteadOfCopy) {
+        const f = OtherFile.CreateLinkFile(
+          pathToOriginalFile,
+          this.customFieldRegistry
+        );
+
+        this.files.push(f);
       } else {
+        const f = new OtherFile(dest, this.customFieldRegistry, true);
+        f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
         f.copyProgress = i18n._(t`Copy Requested...`);
         window.setTimeout(
           () =>
             CopyManager.safeAsyncCopyFileWithErrorNotification(
-              path,
+              pathToOriginalFile,
               dest,
               (progress: string) => {
                 f.copyProgress = progress;
@@ -185,7 +187,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
                 if (!pendingFile) {
                   NotifyError(
                     // not translating for now
-                    `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
                   );
                   reject();
                   return;
@@ -201,7 +203,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
                 if (fileIndex < 0) {
                   NotifyException(
                     error, // not translating for now
-                    `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
                   );
                   reject();
                   return;
@@ -210,9 +212,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
               }),
           0
         );
-      }
 
-      this.files.push(f);
+        this.files.push(f);
+      }
     });
   }
 

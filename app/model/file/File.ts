@@ -27,17 +27,17 @@ import {
 } from "../../components/Notify";
 import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
-import {
-  sentryBreadCrumb,
-  sentryException,
-  sentryExceptionBreadCrumb,
-} from "../../other/errorHandling";
+import { sentryBreadCrumb } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
 import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 import { t } from "@lingui/macro";
-import { MediaFolderOrEmpty as getMediaFolderOrEmpty } from "../../other/UserSettings";
+import {
+  MediaFolderOrEmpty as getMediaFolderOrEmpty,
+  MediaFolderOrEmpty,
+} from "../../other/UserSettings";
+import { Debug } from "@sentry/integrations";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 export const kLinkExtensionWithFullStop = ".link";
@@ -73,12 +73,14 @@ export /*babel doesn't like this: abstract*/ class File {
 
   // In the case of folder objects (project, session, people) this will just be the metadata file,
   // and so describedFilePath === metadataPath.
-  // In all other cases (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
+  // It may be a .link file file, which will contain as its contents the subpath starting from the the media
+  // folder.
+  // Otherwise, (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
   @mobx.observable
-  private describedFilePath: string;
+  private describedFileOrLinkFilePath: string;
 
   public get pathInFolderToLinkFileOrLocalCopy() {
-    return this.describedFilePath;
+    return this.describedFileOrLinkFilePath;
   }
 
   @mobx.observable
@@ -124,7 +126,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public wasDeleted() {
     // there was a bug at one time with something still holding a reference to this.
     this.metadataFilePath = "error: this file was previously put in trash";
-    this.describedFilePath = "";
+    this.describedFileOrLinkFilePath = "";
   }
   protected addDatePropertyFromString(key: string, dateString: string) {
     // Note: I am finding it rather hard to not mess up dates, because in javascript
@@ -315,7 +317,7 @@ export /*babel doesn't like this: abstract*/ class File {
     canDelete: boolean
   ) {
     this.canDelete = canDelete;
-    this.describedFilePath = describedFilePath;
+    this.describedFileOrLinkFilePath = describedFilePath;
     this.metadataFilePath = metadataFilePath;
     this.xmlRootName = xmlRootName;
     this.doOutputTypeInXmlTags = doOutputTypeInXmlTags;
@@ -335,8 +337,10 @@ export /*babel doesn't like this: abstract*/ class File {
     this.copyInProgress = false;
   }
 
-  public isExternalFileReference(): boolean {
-    return this.describedFilePath.endsWith(kLinkExtensionWithFullStop);
+  public isLinkFile(): boolean {
+    return this.describedFileOrLinkFilePath.endsWith(
+      kLinkExtensionWithFullStop
+    );
   }
   public getFilenameToShowInList(): string {
     return trimSuffix(
@@ -351,7 +355,14 @@ export /*babel doesn't like this: abstract*/ class File {
     if (this.copyInProgress) {
       return { missing: false, info: this.copyProgress };
     }
-    if (this.getActualFileExists()) return { missing: false, info: "" };
+    if (this.getActualFileExists()) {
+      if (this.isLinkFile())
+        return {
+          missing: false,
+          info: `Linked to ${this.getActualFilePath()}`,
+        };
+      else return { missing: false, info: `${this.getActualFilePath()}` };
+    }
     if (!getMediaFolderOrEmpty())
       return {
         missing: true,
@@ -362,7 +373,12 @@ export /*babel doesn't like this: abstract*/ class File {
         missing: true,
         info: `lameta cannot find the Media Folder '${getMediaFolderOrEmpty()}'`,
       };
-    const subpath = fs.readFileSync(this.describedFilePath, "utf-8");
+    if (!fs.existsSync(this.describedFileOrLinkFilePath))
+      return {
+        missing: true,
+        info: `lameta expected to find a .link file at '${this.describedFileOrLinkFilePath}'`,
+      };
+    const subpath = fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
     return {
       missing: true,
       info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${Path.join(
@@ -375,19 +391,22 @@ export /*babel doesn't like this: abstract*/ class File {
   public getNameToUseWhenExportingUsingTheActualFile(): string {
     // For links, use the name shown in the list, which may have been renamed or sanitized
     // or whatever, rather than the original name that we are linking to
-    const filename = this.isExternalFileReference()
-      ? trimSuffix(this.describedFilePath, kLinkExtensionWithFullStop)
-      : this.describedFilePath;
+    const filename = this.isLinkFile()
+      ? trimSuffix(this.describedFileOrLinkFilePath, kLinkExtensionWithFullStop)
+      : this.describedFileOrLinkFilePath;
     return Path.basename(filename);
   }
 
   public getActualFilePath(): string {
-    if (this.isExternalFileReference()) {
-      const subpath = fs.readFileSync(this.describedFilePath, "utf-8");
+    if (this.isLinkFile()) {
+      const subpath = fs.readFileSync(
+        this.describedFileOrLinkFilePath,
+        "utf-8"
+      );
       const path = Path.join(getMediaFolderOrEmpty(), subpath);
       return path;
     } else {
-      return this.describedFilePath;
+      return this.describedFileOrLinkFilePath;
     }
   }
   // These are fields that are computed and which we don't save, but which show up in the UI.
@@ -719,7 +738,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     const xml = this.getXml(false);
 
-    if (this.describedFilePath.indexOf("sample data") > -1) {
+    if (this.describedFileOrLinkFilePath.indexOf("sample data") > -1) {
       // now warning at project level so that we don't see this repeatedly
       // NotifyWarning(
       //   "Not saving because directory contains the words 'sample data'"
@@ -819,22 +838,22 @@ export /*babel doesn't like this: abstract*/ class File {
     return Path.join(parentDirectoryPortion, newFolderName, filePortion);
   }
   public isOnlyMetadata(): boolean {
-    return this.metadataFilePath === this.describedFilePath;
+    return this.metadataFilePath === this.describedFileOrLinkFilePath;
   }
 
   public throwIfFilesMissing() {
     if (!fs.existsSync(this.metadataFilePath)) {
       throw new Error(`${this.metadataFilePath} does not exist.`);
     }
-    if (!fs.existsSync(this.describedFilePath)) {
-      throw new Error(`${this.describedFilePath} does not exist.`);
+    if (!fs.existsSync(this.describedFileOrLinkFilePath)) {
+      throw new Error(`${this.describedFileOrLinkFilePath} does not exist.`);
     }
   }
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
     const hasSeparateMetaDataFile =
-      this.metadataFilePath !== this.describedFilePath;
+      this.metadataFilePath !== this.describedFileOrLinkFilePath;
     //was: if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)),
     // but the file might not have been saved yet... we still need to change the
     // path so that it points to somewhere in the newly renamed folder.
@@ -848,8 +867,8 @@ export /*babel doesn't like this: abstract*/ class File {
       //   newFolderName
       // );
     }
-    this.describedFilePath = this.internalUpdateNameBasedOnNewFolderName(
-      this.describedFilePath,
+    this.describedFileOrLinkFilePath = this.internalUpdateNameBasedOnNewFolderName(
+      this.describedFileOrLinkFilePath,
       newFolderName
     );
     // this.describedFilePath = this.updateFolderOnly(
@@ -857,30 +876,33 @@ export /*babel doesn't like this: abstract*/ class File {
     //   newFolderName
     // );
     if (!hasSeparateMetaDataFile) {
-      this.metadataFilePath = this.describedFilePath;
+      this.metadataFilePath = this.describedFileOrLinkFilePath;
     }
     this.setFileNameProperty();
   }
   public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
     const hasSeparateMetaDataFile =
-      this.metadataFilePath !== this.describedFilePath;
+      this.metadataFilePath !== this.describedFileOrLinkFilePath;
     if (hasSeparateMetaDataFile) {
       this.metadataFilePath = this.updateFolderOnly(
         this.metadataFilePath,
         newFolderName
       );
     }
-    this.describedFilePath = this.updateFolderOnly(
-      this.describedFilePath,
+    this.describedFileOrLinkFilePath = this.updateFolderOnly(
+      this.describedFileOrLinkFilePath,
       newFolderName
     );
     if (!hasSeparateMetaDataFile) {
-      this.metadataFilePath = this.describedFilePath;
+      this.metadataFilePath = this.describedFileOrLinkFilePath;
     }
   }
 
   private setFileNameProperty() {
-    this.properties.setText("filename", Path.basename(this.describedFilePath));
+    this.properties.setText(
+      "filename",
+      Path.basename(this.describedFileOrLinkFilePath)
+    );
   }
   /* ----------- Change Detection -----------
     Enhance: move to its own class
@@ -936,8 +958,8 @@ export /*babel doesn't like this: abstract*/ class File {
 
   // We're defining "core name" to be the file name (no directory) minus the extension
   private getCoreName(): string {
-    return Path.basename(this.describedFilePath).replace(
-      Path.extname(this.describedFilePath),
+    return Path.basename(this.describedFileOrLinkFilePath).replace(
+      Path.extname(this.describedFileOrLinkFilePath),
       ""
     );
   }
@@ -953,7 +975,7 @@ export /*babel doesn't like this: abstract*/ class File {
   }
   private tryToRenameToFunction(roleName: string): boolean {
     sentryBreadCrumb(
-      `Rename for function ${roleName} (${this.describedFilePath})`
+      `Rename for function ${roleName} (${this.describedFileOrLinkFilePath})`
     );
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
       return true;
@@ -963,14 +985,14 @@ export /*babel doesn't like this: abstract*/ class File {
 
   public tryToRenameBothFiles(newCoreName: string): boolean {
     assert(
-      this.metadataFilePath !== this.describedFilePath,
+      this.metadataFilePath !== this.describedFileOrLinkFilePath,
       "this method is not for renaming the person or session files"
     );
 
     this.save();
     const newDescribedFilePath = Path.join(
-      Path.dirname(this.describedFilePath),
-      newCoreName + Path.extname(this.describedFilePath)
+      Path.dirname(this.describedFileOrLinkFilePath),
+      newCoreName + Path.extname(this.describedFileOrLinkFilePath)
     );
 
     const newMetadataFilePath = newDescribedFilePath + ".meta";
@@ -1002,7 +1024,7 @@ export /*babel doesn't like this: abstract*/ class File {
       return false;
     }
     sentryBreadCrumb(
-      `Attempting rename from ${this.describedFilePath} to ${newDescribedFilePath}`
+      `Attempting rename from ${this.describedFileOrLinkFilePath} to ${newDescribedFilePath}`
     );
 
     try {
@@ -1042,15 +1064,14 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       return false;
     }
-
-    this.describedFilePath = newDescribedFilePath;
+    this.describedFileOrLinkFilePath = newDescribedFilePath;
     this.metadataFilePath = newMetadataFilePath;
     this.setFileNameProperty();
     return true;
   }
 
   public isLabeledAsConsent(): boolean {
-    return this.describedFilePath.indexOf("Consent") > -1;
+    return this.describedFileOrLinkFilePath.indexOf("Consent") > -1;
   }
   public canRenameForConsent(): boolean {
     return !(this.isLabeledAsConsent() || this.isOnlyMetadata());
@@ -1081,6 +1102,27 @@ export class OtherFile extends File {
     } else {
       this.finishLoading();
     }
+  }
+
+  public static CreateLinkFile(
+    pathToOriginalFile: string,
+    customFileRegistry: CustomFieldRegistry
+  ) {
+    if (!MediaFolderOrEmpty())
+      throw new Error(
+        "CreateLinkFile called but there is no known MediaFolder"
+      );
+    if (!fs.existsSync(MediaFolderOrEmpty()))
+      throw new Error(
+        `CreateLinkFile called but there the MediaFolder "${MediaFolderOrEmpty()}" does not exist.`
+      );
+    const pathRelativeToRoot = Path.relative(
+      MediaFolderOrEmpty()!,
+      pathToOriginalFile
+    );
+    const pathToLinkFile = pathToOriginalFile + kLinkExtensionWithFullStop;
+    fs.writeFileSync(pathToLinkFile, pathRelativeToRoot, "utf-8");
+    return new OtherFile(pathToLinkFile, customFileRegistry, false);
   }
 }
 

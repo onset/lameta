@@ -16,6 +16,7 @@ import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react-lite";
 import { NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
+import { getExtension } from "../other/CopyManager";
 const electron = require("electron");
 
 export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
@@ -53,6 +54,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           const f: File = d;
           return f.getFilenameToShowInList();
         },
+        className: "filename",
       },
       {
         id: "type",
@@ -94,22 +96,9 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         activeClassName={"drop-active"}
         className={"fileList"}
         onDrop={(accepted, rejected) => {
-          if (
-            accepted.some((f) => ["session", "person", "meta"].includes(f.type))
-          ) {
-            NotifyWarning(i18n._(t`You cannot add files of that type`));
-            return;
-          }
-          if (accepted.some((f) => fs.lstatSync(f.path).isDirectory())) {
-            NotifyWarning(i18n._(t`You cannot add folders.`));
-            return;
-          }
-          props.folder.copyInFiles(
-            accepted
-              .filter((f) => {
-                return f.type !== "session";
-              })
-              .map((f) => f.path)
+          addFiles(
+            props.folder,
+            accepted.map((f) => f.path)
           );
         }}
         disableClick
@@ -159,7 +148,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={() => addFiles(props.folder)}
+            onClick={() => showAddFilesDialog(props.folder)}
           >
             <Trans> Add Files</Trans>
           </button>
@@ -176,12 +165,10 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-            const {
-              missing,
-              info: missingFileInfo,
-            } = rowInfo.original.getStatusOfThisFile();
+            const { missing, info } = rowInfo.original.getStatusOfThisFile();
 
             return {
+              title: info,
               onContextMenu: (e: any) => {
                 e.preventDefault();
                 //First select the row
@@ -217,9 +204,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
               },
               className:
                 (rowInfo.original.copyInProgress ? "copyPending " : "") +
-                (rowInfo.original.isExternalFileReference()
-                  ? "externalFileReference "
-                  : "") +
+                ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
                 (missing ? " missing " : "") +
                 (rowInfo && rowInfo.original === props.folder.selectedFile
                   ? " selected "
@@ -277,7 +262,7 @@ function showFileMenu(
     },
     { type: "separator", visible: !contextMenu },
     {
-      label: file.isExternalFileReference()
+      label: file.isLinkFile()
         ? i18n._(t`Delete link to file...`)
         : i18n._(t`Delete File...`),
       enabled: file.canDelete,
@@ -304,14 +289,30 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function addFiles(folder: Folder) {
+function showAddFilesDialog(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
       //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
-      folder.copyInFiles(result.filePaths);
+      addFiles(folder, result.filePaths);
     }
   });
+}
+
+function addFiles(folder: Folder, paths: string[]) {
+  if (
+    paths.some((path) =>
+      ["session", "person", "meta"].includes(getExtension(path))
+    )
+  ) {
+    NotifyWarning(i18n._(t`You cannot add files of that type`));
+    return;
+  }
+  if (paths.some((path) => fs.lstatSync(path).isDirectory())) {
+    NotifyWarning(i18n._(t`You cannot add folders.`));
+    return;
+  }
+  folder.copyInFiles(paths);
 }
