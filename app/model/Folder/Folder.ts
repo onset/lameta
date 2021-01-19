@@ -27,15 +27,14 @@ import { trash } from "../../other/crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
-import userSettingsSingleton, {
-  MediaFolderOrEmpty,
-} from "../../other/UserSettings";
+import userSettingsSingleton from "../../other/UserSettings";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
 import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/PatientFile";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
 export class IFolderSelection {
   @observable
@@ -148,7 +147,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         userSettingsSingleton.IMDIMode
       );
       const stats = fs.statSync(pathToOriginalFile);
-      let dest = Path.join(this.directory, n);
+      const dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
         NotifyWarning(
@@ -156,9 +155,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         );
         return;
       }
+      const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
       const linkInsteadOfCopy =
-        MediaFolderOrEmpty() !== undefined &&
-        isSubDirectory(MediaFolderOrEmpty() as string, pathToOriginalFile);
+        !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
 
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(

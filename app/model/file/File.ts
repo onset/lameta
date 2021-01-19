@@ -40,6 +40,12 @@ import {
 import { Debug } from "@sentry/integrations";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
+
+function getCannotRenameFileMsg() {
+  return i18n._(t`lameta  was not able to rename that file.`);
+}
+
 export const kLinkExtensionWithFullStop = ".link";
 
 export class Contribution {
@@ -363,15 +369,17 @@ export /*babel doesn't like this: abstract*/ class File {
         };
       else return { missing: false, info: `${this.getActualFilePath()}` };
     }
-    if (!getMediaFolderOrEmpty())
+    const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
+
+    if (!mediaFolder)
       return {
         missing: true,
         info: `The file is missing from ${this.getActualFilePath()}`,
       };
-    if (!fs.existsSync(getMediaFolderOrEmpty()))
+    if (!fs.existsSync(mediaFolder))
       return {
         missing: true,
-        info: `lameta cannot find the Media Folder '${getMediaFolderOrEmpty()}'`,
+        info: `lameta cannot find the Media Folder '${mediaFolder}'`,
       };
     if (!fs.existsSync(this.describedFileOrLinkFilePath))
       return {
@@ -381,8 +389,8 @@ export /*babel doesn't like this: abstract*/ class File {
     const subpath = fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
     return {
       missing: true,
-      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${getMediaFolderOrEmpty()} and this file is supposed to be at ${Path.join(
-        getMediaFolderOrEmpty(),
+      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${mediaFolder} and this file is supposed to be at ${Path.join(
+        getMediaFolderOrEmptyForThisProjectAndMachine(),
         subpath
       )}.`,
     };
@@ -403,7 +411,10 @@ export /*babel doesn't like this: abstract*/ class File {
         this.describedFileOrLinkFilePath,
         "utf-8"
       );
-      const path = Path.join(getMediaFolderOrEmpty(), subpath);
+      const path = Path.join(
+        getMediaFolderOrEmptyForThisProjectAndMachine(),
+        subpath
+      );
       return path;
     } else {
       return this.describedFileOrLinkFilePath;
@@ -717,8 +728,7 @@ export /*babel doesn't like this: abstract*/ class File {
         this.contributions,
         this,
         this.doOutputTypeInXmlTags,
-        doOutputEmptyCustomFields,
-        getRootAttributes
+        doOutputEmptyCustomFields
       );
     } finally {
       this.inGetXml = false;
@@ -1112,18 +1122,16 @@ export class OtherFile extends File {
     pathToOriginalFile: string,
     customFileRegistry: CustomFieldRegistry
   ) {
-    if (!MediaFolderOrEmpty())
+    const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
+    if (!mediaFolder)
       throw new Error(
         "CreateLinkFile called but there is no known MediaFolder"
       );
-    if (!fs.existsSync(MediaFolderOrEmpty()))
+    if (!fs.existsSync(mediaFolder))
       throw new Error(
-        `CreateLinkFile called but there the MediaFolder "${MediaFolderOrEmpty()}" does not exist.`
+        `CreateLinkFile called but there the MediaFolder "${mediaFolder}" does not exist.`
       );
-    const pathRelativeToRoot = Path.relative(
-      MediaFolderOrEmpty()!,
-      pathToOriginalFile
-    );
+    const pathRelativeToRoot = Path.relative(mediaFolder!, pathToOriginalFile);
     const pathToLinkFile = pathToOriginalFile + kLinkExtensionWithFullStop;
     fs.writeFileSync(pathToLinkFile, pathRelativeToRoot, "utf-8");
     return new OtherFile(pathToLinkFile, customFileRegistry, false);

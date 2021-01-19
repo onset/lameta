@@ -18,7 +18,10 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
-import userSettings from "../../other/UserSettings";
+import userSettings, {
+  getMediaFolderOrEmptyForProjectAndMachine,
+  setMediaFolderOrEmptyForProjectAndMachine,
+} from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 import * as Sentry from "@sentry/browser";
 
@@ -28,6 +31,7 @@ import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { NotifyWarning } from "../../components/Notify";
+import { setCurrentProjectId } from "./MediaFolderAccess";
 
 let sCurrentProject: Project | null = null;
 
@@ -104,6 +108,12 @@ export class Project extends Folder {
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
     }
+
+    // Note, we'd rather have an id that cannot change, but don't have one to
+    // work with at the moment.
+    //TODO WHAT IF THIS CHANGES?
+    setCurrentProjectId(this.properties.getTextStringOrEmpty("title"));
+
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
@@ -422,6 +432,7 @@ export class Project extends Folder {
       f.saveAllFilesInFolder();
     }
   }
+
   public countOfMarkedSessions(): number {
     return this.sessions.filter((s) => s.checked).length;
   }
@@ -553,3 +564,42 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     this.finishLoading();
   }
 }
+
+// // We store the media folder in a way that is unique to the title of the
+// // project and the machine we are on.
+// export function getMediaFolderOrEmptyForThisProjectAndMachine() {
+//   if (sCurrentProject === null) {
+//     throw new Error(
+//       "getMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null"
+//     );
+//   }
+//   // Note, we'd rather have an id that cannot change, but don't have one to
+//   // work with at the moment.
+//   const id = sCurrentProject.properties.getTextStringOrEmpty("title");
+//   if (!id) {
+//     NotifyWarning("The title for this project is empty.");
+//     return "";
+//   }
+//   return getMediaFolderOrEmptyForProjectAndMachine(id);
+// }
+// export function setMediaFolderOrEmptyForThisProjectAndMachine(path: string) {
+//   if (sCurrentProject === null) {
+//     throw new Error(
+//       "setMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null"
+//     );
+//   }
+//   if (!path) {
+//     throw new Error(
+//       "setMediaFolderOrEmptyForThisProjectAndMachine() called with empty path"
+//     );
+//   }
+
+//   // Note, we'd rather have an id that cannot change, but don't have one to
+//   // work with at the moment.
+//   const id = sCurrentProject.properties.getTextStringOrEmpty("title");
+//   if (!id) {
+//     NotifyWarning("The title for this project is empty.");
+//     return "";
+//   }
+//   return setMediaFolderOrEmptyForProjectAndMachine(id, path);
+// }

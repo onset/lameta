@@ -11,14 +11,17 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
 import { ipcRenderer, OpenDialogOptions } from "electron";
-import userSettingsSingleton from "../other/UserSettings";
+import {
+  getMediaFolderOrEmptyForThisProjectAndMachine,
+  setMediaFolderOrEmptyForThisProjectAndMachine,
+} from "../model/Project/MediaFolderAccess";
 
 let staticShowMediaFolderDialog: () => void = () => {};
 export { staticShowMediaFolderDialog as ShowMediaFolderDialog };
 
 export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
   const [path, setPath] = useState<string>(
-    userSettingsSingleton.MediaFolder || "(not set)"
+    getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)"
   );
   const [open, setOpen] = useState(false);
   staticShowMediaFolderDialog = () => {
@@ -147,7 +150,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
             <button
               id="okButton"
               onClick={() => {
-                userSettingsSingleton.MediaFolder = path;
+                setMediaFolderOrEmptyForThisProjectAndMachine(path);
                 setOpen(false);
               }}
             >

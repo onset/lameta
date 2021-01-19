@@ -134,17 +134,28 @@ export class UserSettings {
     this.store.set("uiFontZoom", this.uiFontZoom.toString());
   }
 
-  public get MediaFolder(): string | undefined {
-    return this.store.get("mediaFolder");
+  public GetMediaFolder(projectId: string): string | undefined {
+    const projectToFolder = this.store.get("mediaFolders") || {};
+    return projectToFolder[projectId];
   }
-  public set MediaFolder(path: string | undefined) {
-    this.store.set("mediaFolder", path);
+  public SetMediaFolder(projectId: string, path: string | undefined) {
+    if (projectId) {
+      const projectToFolder = this.store.get("mediaFolders") || {};
+      projectToFolder[projectId] = path;
+      this.store.set("mediaFolders", projectToFolder);
+    }
   }
 }
 
 const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 
-export function MediaFolderOrEmpty() {
-  return userSettingsSingleton.MediaFolder || "";
+export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
+  return userSettingsSingleton.GetMediaFolder(projectId) || "";
+}
+export function setMediaFolderOrEmptyForProjectAndMachine(
+  projectId: string,
+  path: string
+) {
+  return userSettingsSingleton.SetMediaFolder(projectId, path);
 }
