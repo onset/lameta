@@ -116,13 +116,21 @@ export const PersonLanguageList: React.FunctionComponent<{
         axis={"y"}
         lockAxis={"y"}
         useDragHandle
-        onSortEnd={({ oldIndex, newIndex }) => {
-          //setLangElements(arrayMove(langElements, oldIndex, newIndex));
-          props.person.languages = arrayMove(
-            props.person.languages,
-            oldIndex,
-            newIndex
-          );
+        onSortEnd={({ oldIndex, newIndex }, event) => {
+          // don't allow drag of an empty box
+          if (
+            oldIndex >= props.person.languages.length ||
+            !props.person.languages[oldIndex].code
+          ) {
+            event.preventDefault();
+          } else {
+            //setLangElements(arrayMove(langElements, oldIndex, newIndex));
+            props.person.languages = arrayMove(
+              props.person.languages,
+              oldIndex,
+              newIndex
+            );
+          }
         }}
       />
       {/* Show a new language link if there is not already an empty slot */}
