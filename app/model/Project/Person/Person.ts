@@ -256,6 +256,11 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "otherLanguage3",
       "otherLanguage4",
       "otherLanguage5",
+      "otherLanguage6",
+      "otherLanguage7",
+      "otherLanguage8",
+      "otherLanguage9",
+      "otherLanguage10",
     ];
     let index = 0;
     let haveFatherLanguage = false;
