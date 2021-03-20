@@ -4,11 +4,7 @@
     "label": "Drama",
     "definition": "A planned, creative, rendition of discourse involving two or more participants.",
     "comments": "Usually a drama involves mimesis of events, either real or imagined.",
-    "examples": [
-      "Play",
-      "Skit",
-      "Enacted Scene"
-    ]
+    "examples": ["Play", "Skit", "Enacted Scene"]
   },
   {
     "id": "dialog",
@@ -59,12 +55,7 @@
     "id": "language_play",
     "label": "Language Play",
     "definition": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
-    "examples": [
-      "Verbal Art",
-      "Joke",
-      "Secret Language",
-      "Speech Disguise"
-    ]
+    "examples": ["Verbal Art", "Joke", "Secret Language", "Speech Disguise"]
   },
   {
     "id": "ludic",
@@ -81,12 +72,7 @@
     "id": "oratory",
     "label": "Oratory",
     "definition": "Public speaking, or speaking eloquently according to rules or conventions.",
-    "examples": [
-      "Sermon",
-      "Lecture",
-      "Political Speech",
-      "Invocation"
-    ]
+    "examples": ["Sermon", "Lecture", "Political Speech", "Invocation"]
   },
   {
     "id": "narrative",
@@ -106,31 +92,19 @@
     "id": "procedural_discourse",
     "label": "Procedural Discourse",
     "definition": "An explanation or description of a method, process, or situation having ordered steps.",
-    "examples": [
-      "Recipe",
-      "Instructions",
-      "Plan"
-    ]
+    "examples": ["Recipe", "Instructions", "Plan"]
   },
   {
     "id": "report",
     "label": "Report",
     "definition": "A factual account of some event or circumstance.",
-    "examples": [
-      "News Report",
-      "Essay",
-      "Commentary"
-    ]
+    "examples": ["News Report", "Essay", "Commentary"]
   },
   {
     "id": "singing",
     "label": "Singing",
     "definition": "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
-    "examples": [
-      "Chant",
-      "Song",
-      "Chorus"
-    ]
+    "examples": ["Chant", "Song", "Chorus"]
   },
   {
     "id": "translation",
@@ -227,11 +201,6 @@
   {
     "id": "ritual",
     "label": "Ritual",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "elicitation",
-    "label": "Elicitation",
     "source": "ELAR genres"
   },
   {
