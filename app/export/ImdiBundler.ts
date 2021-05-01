@@ -13,7 +13,7 @@ import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
-temp.track();
+temp.track(true);
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -25,7 +25,7 @@ export default class ImdiBundler {
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
-  ): Promise<string> {
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       sentryBreadCrumb("Starting saveImdiBundleToFolder");
       try {

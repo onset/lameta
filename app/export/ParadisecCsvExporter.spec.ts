@@ -18,11 +18,13 @@ let sessionMatrix: any;
 let projectCsv: string;
 let sessionCsv: string;
 const kEol: string = require("os").EOL;
-project = Project.fromDirectory("sample data/Edolo sample");
-beforeAll(() => {});
+
 describe("Paradisec project csv export", () => {
-  projectCsv = makeParadisecProjectFieldsCsv(project);
-  projectMatrix = parseSync(projectCsv);
+  beforeAll(() => {
+    project = Project.fromDirectory("sample data/Edolo sample");
+    projectCsv = makeParadisecProjectFieldsCsv(project);
+    projectMatrix = parseSync(projectCsv);
+  });
   it("should contain right number of rows", () => {
     expect(projectMatrix.length).toBe(5);
   });
@@ -41,15 +43,20 @@ describe("Paradisec project csv export", () => {
     });
   });
 });
+
 describe("Paradisec session csv export", () => {
-  sessionCsv = makeParadisecSessionCsv(project, (f) => true);
-  //console.log(sessionCsv);
-  sessionMatrix = parseSync(sessionCsv, { relax_column_count: true });
+  beforeAll(() => {
+    project = Project.fromDirectory("sample data/Edolo sample");
+    sessionCsv = makeParadisecSessionCsv(project, (f) => true);
+    //console.log(sessionCsv);
+    sessionMatrix = parseSync(sessionCsv, { relax_column_count: true });
+  });
   it("should contain right number of rows", () => {
     expect(sessionMatrix.length).toBe(
       1 /* for header */ + project.sessions.length
     );
   });
+
   it("should contain contributions", () => {
     const first = sessionMatrix[1] as string[];
     const baseColumnsPerSession = 14;
