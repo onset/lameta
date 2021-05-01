@@ -47,3 +47,5 @@ dist
 locale/*/*.js
 locale/_build
 \.nyc_output/
+
+app/languageFinder/langtags-master.json

@@ -13,5 +13,6 @@
     "lameta",
     "omitexport",
     "scripthost"
-  ]
+  ],
+  "cSpell.diagnosticLevel": "Hint"
 }

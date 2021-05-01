@@ -27,6 +27,7 @@ describe("Person Languages Read", () => {
   afterEach(async () => {
     temp.cleanupSync();
   });
+  /* MAY 201: all these pass with jest, but several fail with wallabjs. Grrrr */
   it("can read two languages and keeps them in the order given", () => {
     const p = GetPersonFileWithOneTag(
       "languages",
@@ -120,7 +121,7 @@ describe("Person Languages Read", () => {
       father: true, // but we should only output the first one
       primary: true, // but we should only output the first one
     });
-    const x = f.getXml(); /* ? */
+    const x = f.getXml();
     setResultXml(x);
     expect("Person/primaryLanguage").toHaveCount(1); // we should only output the first one
     expect("Person/mothersLanguage").toHaveCount(1); // we should only output the first one
@@ -171,7 +172,8 @@ function GetPersonFileWithOneTag(
     `<?xml version="1.0" encoding="utf-8"?>
   <Person><${tag}>${content}</${tag}></Person>`
   );
-  return new PersonMetadataFile(personDirectory, new CustomFieldRegistry());
+  const r = new CustomFieldRegistry();
+  return new PersonMetadataFile(personDirectory, r);
 }
 function GetPersonFileWithContents(content: string): PersonMetadataFile {
   fs.writeFileSync(

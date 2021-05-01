@@ -550,5 +550,6 @@ export class ProjectMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.project,
       customFieldRegistry
     );
+    this.finishLoading();
   }
 }

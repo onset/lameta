@@ -186,7 +186,7 @@ export class Person extends Folder {
 export class PersonMetadataFile extends FolderMetadataFile {
   // only used for people files
   @mobx.observable
-  public languages = new Array<IPersonLanguage>();
+  public languages: IPersonLanguage[] = [];
 
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
     super(
@@ -197,6 +197,8 @@ export class PersonMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.person,
       customFieldRegistry
     );
+
+    this.finishLoading();
     //console.log("PersonMetadataFile.ctr");
   }
 
@@ -214,6 +216,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
     tag: string,
     propertiesFromXml: any
   ): boolean {
+    const l = this.languages;
     //console.log("PersonMetadataFile.specialHandlingOfField");
     if (tag.toLocaleLowerCase() === "languages") {
       this.loadPersonLanguages(propertiesFromXml[tag]);
@@ -223,7 +226,9 @@ export class PersonMetadataFile extends FolderMetadataFile {
     }
   }
   private loadPersonLanguages(xml: any) {
-    ensureArray(xml.language).forEach((lang) => {
+    const a = ensureArray(xml.language);
+
+    a.forEach((lang) => {
       this.languages.push({
         code: lang.$.tag,
         primary: lang.$.primary === "true",

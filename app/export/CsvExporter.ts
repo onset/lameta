@@ -104,7 +104,7 @@ function getKeys(folders: Folder[]): string[] {
 // folders: a set of person folders, or a set of session folders
 function getGenericCsv(folders: Folder[]): string {
   sentryBreadCrumb(`getGenericCsv()`);
-  if (folders.length === 0) {
+  if (!folders || folders.length === 0) {
     // without even one folder (one person, or one session), this code can't even determine the fields, so just bail
     return "";
   }

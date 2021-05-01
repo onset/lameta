@@ -34,7 +34,19 @@ export class FolderMetadataFile extends File {
     this.customFieldNamesRegistry = customFieldRegistry;
     this.readDefinitionsFromJson(rawKnownFieldsFromJson);
 
+    /* NB: don't do this within the constructor. subclass fields are not initialized until after super(): 
     this.finishLoading();
+
+    Bizarrly, the only place this problem showed up is with Wallabyjs, when something downstream of finishLoading() was trying to access PersonMetadtaFile.languages,
+    but it was undefined. Cost me hours trying to figure out. But according to the rules, it should *not* work:
+    
+    https://www.typescriptlang.org/docs/handbook/2/classes.html#initialization-order
+
+    The base class initialized properties are initialized
+    The base class constructor runs
+    The derived class initialized properties are initialized
+    The derived class constructor runs
+    */
   }
 
   private readDefinitionsFromJson(rawKnownFieldsFromJson: FieldDefinition[]) {

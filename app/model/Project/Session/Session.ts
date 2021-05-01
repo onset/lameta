@@ -269,6 +269,7 @@ export class SessionMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.session,
       customFieldRegistry
     );
+    this.finishLoading();
     /* I'm not needing it now, but here is an example of how to see what is changing
     a property. Set a breakpoint where the console.log is, look at the call stack,
     and you're done.
