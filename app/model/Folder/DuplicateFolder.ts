@@ -5,6 +5,7 @@ import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDia
 import { assert } from "console";
 import uuid from "uuid";
 import { PatientFS } from "../../other/PatientFile";
+import { NotifyRenameProblem } from "../../components/Notify";
 
 // Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,
 // and change the id inside the metadata file.
@@ -48,7 +49,8 @@ export function duplicateFolder(
       nameOfDuplicate + ext
     );
     // rename that file
-    PatientFS.renameSync(
+
+    PatientFS.renameSyncWithNotifyAndRethrow(
       duplicateMetadataFilePath,
       fixedDuplicateMetadataFilePath
     );

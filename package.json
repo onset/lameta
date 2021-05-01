@@ -292,7 +292,7 @@
     "assert": "^1.4.1",
     "axios": "^0.21.1",
     "axios-hooks": "^2.2.0",
-    "butter-toast": "^3.3.3",
+    "butter-toast": "^3.3.5",
     "camelcase": "^5.0.0",
     "capital-case": "^1.0.3",
     "change-case": "^4.1.1",
