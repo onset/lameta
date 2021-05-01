@@ -31,20 +31,20 @@ export class Language {
     return [this.englishName, this.localName, ...this.altNames];
   }
 }
-interface IIndexEntry {
+export interface ILangIndexEntry {
   iso639_1?: string;
   iso639_3: string;
   englishName: string;
-  localName?: string;
+  localName?: string; // enhance: langtags now has this as an array of names
   altNames?: string[];
 }
 
 export let staticLanguageFinder: LanguageFinder;
 export class LanguageFinder {
   private index: TrieSearch;
-  private getDefaultLanguage: () => IIndexEntry | undefined;
+  private getDefaultLanguage: () => ILangIndexEntry | undefined;
 
-  constructor(getDefaultLanguage: () => IIndexEntry | undefined) {
+  constructor(getDefaultLanguage: () => ILangIndexEntry | undefined) {
     this.getDefaultLanguage = getDefaultLanguage;
 
     // currently this uses a trie, which is overkill for this number of items,
@@ -170,7 +170,7 @@ export class LanguageFinder {
     }));
   }
 
-  private lookupInIndexAndCustomLanguages(s: string): IIndexEntry[] {
+  private lookupInIndexAndCustomLanguages(s: string): ILangIndexEntry[] {
     // gives us hits on name & codes that start with the prefix
     // Enhance: in order to do search without stripDiacritics,
     // we would probably have to strip them off before adding to TrieSearch.
@@ -186,7 +186,7 @@ export class LanguageFinder {
         .toLowerCase()
         .startsWith(s.toLowerCase().trim())
     ) {
-      langs.push(projectContentLanguage);
+      langs.push(projectContentLanguage!);
     }
     return langs;
   }
