@@ -126,11 +126,11 @@ describe("Person Languages Read", () => {
     expect("Person/primaryLanguage").toHaveCount(1); // we should only output the first one
     expect("Person/mothersLanguage").toHaveCount(1); // we should only output the first one
     expect("Person/fathersLanguage").toHaveCount(1); // we should only output the first one
-    expect('Person/primaryLanguage[text()="français"]').toHaveCount(1);
-    expect('Person/fathersLanguage[text()="français"]').toHaveCount(1);
-    expect('Person/mothersLanguage[text()="español"]').toHaveCount(1);
+    expect('Person/primaryLanguage[text()="French"]').toHaveCount(1);
+    expect('Person/fathersLanguage[text()="French"]').toHaveCount(1);
+    expect('Person/mothersLanguage[text()="Spanish"]').toHaveCount(1);
     expect('Person/mothersLanguage[text()="qaa"]').toHaveCount(0); // we should only output the first one
-    expect('Person/otherLanguage0[text()="español"]').toHaveCount(1);
+    expect('Person/otherLanguage0[text()="Spanish"]').toHaveCount(1);
     expect('Person/otherLanguage1[text()="qaa"]').toHaveCount(1);
   });
 
