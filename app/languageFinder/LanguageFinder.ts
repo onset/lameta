@@ -2,7 +2,7 @@ import TrieSearch from "trie-search";
 
 export class Language {
   public englishName: string;
-  public localName: string;
+  //public localName: string;
   public altNames: string[];
   // tslint:disable-next-line:variable-name
   public iso639_3: string;
@@ -11,7 +11,7 @@ export class Language {
 
   constructor(jsonFromIndex: any) {
     this.englishName = jsonFromIndex.englishName;
-    this.localName = jsonFromIndex.localName;
+    //this.localName = jsonFromIndex.localName;
     this.altNames = jsonFromIndex.altNames || [];
     this.iso639_3 = jsonFromIndex.iso639_3;
     //note, most languages do not have this code, which is the 2 letter code for major languages
@@ -28,14 +28,14 @@ export class Language {
     return foundAtLeastOne;
   }
   public allNames(): string[] {
-    return [this.englishName, this.localName, ...this.altNames];
+    return [this.englishName, ...this.altNames];
   }
 }
 export interface ILangIndexEntry {
   iso639_1?: string;
   iso639_3: string;
   englishName: string;
-  localName?: string; // enhance: langtags now has this as an array of names
+  //localName?: string; // enhance: langtags now has this as an array of names
   altNames?: string[];
 }
 
@@ -62,12 +62,12 @@ export class LanguageFinder {
     ]);
 
     // NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
-    const index = require("./langindex.json");
+    const langIndex = require("./langindex.json");
     // add the primary name and two codes
-    this.index.addAll(index);
+    this.index.addAll(langIndex);
 
     // now add the alternative names
-    index.forEach((indexEntry) => {
+    langIndex.forEach((indexEntry) => {
       if (indexEntry.altNames && indexEntry.altNames.length > 0) {
         indexEntry.altNames.forEach((alternativeName) => {
           this.index.map(alternativeName, indexEntry);

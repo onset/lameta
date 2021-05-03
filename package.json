@@ -43,7 +43,8 @@
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "lingui-add": "lingui add-locale",
     "lingui-extract": "lingui extract",
-    "lingui-compile": "lingui compile"
+    "lingui-compile": "lingui compile",
+    "make-langindex": "ts-node --dir app/languageFinder --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" make-langindex"
   },
   "jest": {
     "globals": {

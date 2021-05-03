@@ -82,18 +82,17 @@ describe("actor imdi export", () => {
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:spa");
-    expect("Actor/Languages/Language[1]/Name").toHaveText("español");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Spanish");
     expect("Actor/Languages/Language[1]/Description").toHaveText(
       "Also spoken by father."
     );
+
     expect(
-      "Actor/Languages/Language[Name[text()='español']]/PrimaryLanguage[text()='true']"
+      "Actor/Languages/Language[Name[text()='Spanish']]/PrimaryLanguage[text()='true']"
     ).toHaveCount(1);
 
     expect("Actor/Languages/Language[2]/Id").toHaveText("ISO639-3:qaa");
-    expect("Actor/Languages/Language[2]/Name").toHaveText(
-      "Language Not Listed"
-    );
+    expect("Actor/Languages/Language[2]/Name").toHaveText("Unlisted Language");
     expect("Actor/Languages/Language[2]/Description").toHaveText(
       "Also spoken by mother."
     );
