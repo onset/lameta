@@ -18,6 +18,8 @@ beforeAll(() => {
     "sample data/Edolo sample/Sessions/ETR009",
     new CustomFieldRegistry()
   );
+  // a set of tests below rely on this value
+  session.properties.setText("accessDescription", "just because");
   setResultXml(
     ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
   );
@@ -104,12 +106,20 @@ it("should contain MediaFiles", () => {
   ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
 });
 
+it("should make separate keys for each topic separated by a comma", () => {
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[1]").toMatch(
+    "Incoming"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[2]").toMatch(
+    "Fishing"
+  );
+  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[3]").toMatch(
+    "Poison"
+  );
+});
+
 //https://trello.com/c/GcNAmcOb/107-imdi-category-for-accessdescription-missing-from-imdi-export
 it("should have an Access Description if filled in", () => {
-  session.properties.setText("accessDescription", "just because");
-  setResultXml(
-    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
-  );
   // each media file will have one of these, hence 4
   expect(
     count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
@@ -118,6 +128,8 @@ it("should have an Access Description if filled in", () => {
     "METATRANSCRIPT/Session/Resources/MediaFile/Access/Description"
   ).toMatch("just because");
 });
+
+/* ------- Notice, this one re-generates the session (which is expensive, like 1.5 seconds) ------------- */
 
 it("should have an empty Access Description if description is missing", () => {
   session.properties.setText("accessDescription", "");
@@ -128,20 +140,4 @@ it("should have an empty Access Description if description is missing", () => {
   expect(
     count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
   ).toBe(4);
-});
-
-it("should make separate keys for each topic separated by a comma", () => {
-  session.properties.setText("accessDescription", "");
-  setResultXml(
-    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[1]").toMatch(
-    "Incoming"
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[2]").toMatch(
-    "Fishing"
-  );
-  expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[3]").toMatch(
-    "Poison"
-  );
 });

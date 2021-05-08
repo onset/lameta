@@ -198,7 +198,9 @@ export class LanguageFinder {
     const langs: Language[] = matches.map((m) => new Language(m));
 
     const kMaxMatchesToSpendTimeOne = 100;
-    const spendTimeThinking = langs.length <= kMaxMatchesToSpendTimeOne;
+    const spendTimeThinking =
+      langs.length <= kMaxMatchesToSpendTimeOne && langs.length > 1;
+
     // For languages that will be typed in often, it is awkward to see, for example
     // "en of Vietnam" suggested ahead of "English" when the user types in "en".
     const commonLanguages = [
