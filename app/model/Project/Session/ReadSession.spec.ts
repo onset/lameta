@@ -65,6 +65,20 @@ describe("Session Read", () => {
     );
   });
 
+  it("should read in a single language", () => {
+    const f = GetSessionFileWithOneField("languages", "fra", "multiLanguage");
+    expect(f.properties.getTextStringOrEmpty("languages")).toBe("fra");
+  });
+
+  it("should read in a multiple languages", () => {
+    const f = GetSessionFileWithOneField(
+      "languages",
+      "fra;spa",
+      "multiLanguage"
+    );
+    expect(f.properties.getTextStringOrEmpty("languages")).toBe("fra;spa");
+  });
+
   // in many cases, the key used internally to this version of SayMore
   // does not match the element name. This is especially true in the
   // AdditionalFields area. Here, the xml tag is Location_Country, but our
@@ -95,12 +109,14 @@ describe("Session Read", () => {
 
 function GetSessionFileWithOneField(
   tag: string,
-  content: string
+  content: string,
+  type?: string
 ): SessionMetadataFile {
+  const typeText = type ? `type="${type}"` : "";
   fs.writeFileSync(
     Path.join(sessionDirectory, sessionName + ".session"),
     `<?xml version="1.0" encoding="utf-8"?>
-  <Session><${tag}>${content}</${tag}></Session>`
+  <Session><${tag} ${typeText}>${content}</${tag}></Session>`
   );
   return new SessionMetadataFile(sessionDirectory, new CustomFieldRegistry());
 }

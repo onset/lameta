@@ -408,6 +408,13 @@ export /*babel doesn't like this: abstract*/ class File {
       value = "";
     }
 
+    const typesWeStoreAsStrings = [
+      "string",
+      "date",
+      "multiLanguage",
+      "language",
+    ];
+
     // console.log("loadProperties key: " + key);
     // console.log(JSON.stringify(value));
     if (value === undefined) {
@@ -416,7 +423,7 @@ export /*babel doesn't like this: abstract*/ class File {
       if (
         value.$ &&
         value.$.type &&
-        (value.$.type === "string" || value.$.type === "date")
+        typesWeStoreAsStrings.includes(value.$.type)
       ) {
         value = value._;
       }

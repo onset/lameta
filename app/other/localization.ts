@@ -69,7 +69,10 @@ const tips = require("../../locale/tips.csv"); // tooltips and specialinfo
 // call to this must have the comment /*18n*/ in order for the lingui scanner to find it
 // e.g. translationMessage(/*18n*/{id: "foobar"})
 export function translateMessage(arg: { id: string }): string {
-  return i18n._(arg.id);
+  if (i18n) {
+    return i18n._(arg.id);
+  } // unit testing
+  else return arg.id;
 }
 
 export function translateFileType(englishTypeName: string): string {
