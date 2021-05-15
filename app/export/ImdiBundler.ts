@@ -256,7 +256,7 @@ export default class ImdiBundler {
     // If this is false, we're just making the IMDI files.
     // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
     copyInProjectFiles: boolean,
-    folderFilter: (f: Folder) => boolean,
+    sessionFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
   ) {
     const dir = temp.mkdirSync("imdiConsentBundle");
@@ -268,16 +268,19 @@ export default class ImdiBundler {
     // simpler: for each person, for each document, if it is marked as consent,
     //   copy it in for now, we're simply finding all files with the right
     //   pattern and copying them in, where ever they are.
-    const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
 
-    filePaths.forEach((path) => {
-      const dest = Path.join(dir, Path.basename(path));
-      // this should be rare, but someone might place a consent file with the name in more than one place in the project
-      // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
-      if (!fs.existsSync(dest)) {
-        fs.copyFileSync(path, dest);
-      }
-    });
+    // TODO: this doesn't take the folderFilter into consideration. Can we do it in addDummyFileForConsentActors() where
+    // we are already doint that filtering?
+    // const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
+
+    // filePaths.forEach((path) => {
+    //   const dest = Path.join(dir, Path.basename(path));
+    //   // this should be rare, but someone might place a consent file with the name in more than one place in the project
+    //   // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
+    //   if (!fs.existsSync(dest)) {
+    //     fs.copyFileSync(path, dest);
+    //   }
+    // });
 
     const dummySession = Session.fromDirectory(dir, new CustomFieldRegistry());
 
@@ -302,7 +305,12 @@ export default class ImdiBundler {
     dummySession.properties.setText("genre", "Secondary document");
     dummySession.properties.setText("subgenre", "Consent forms");
 
-    ImdiBundler.addDummyFileForConsentActors(project, dummySession);
+    ImdiBundler.addDummyFileForConsentActors(
+      project,
+      sessionFilter,
+      dummySession,
+      dir
+    );
 
     const imdiXml = ImdiGenerator.generateSession(
       dummySession,
@@ -331,7 +339,9 @@ export default class ImdiBundler {
   // That will mean walking through every session of the project, using session.getAllContributionsToAllFiles().
   private static addDummyFileForConsentActors(
     project: Project,
-    dummySession: Session
+    sessionFilter: (f: Folder) => boolean,
+    dummySession: Session,
+    outputFolder: string
   ) {
     // Session is a *folder*, but only *files* have contributions. So we add this dummy file. The ".skip" extension
     // will cause it to not be listed in the IMDI
@@ -343,18 +353,32 @@ export default class ImdiBundler {
       "dummy",
       false
     );
-    project.sessions.forEach((session) => {
+    project.sessions.filter(sessionFilter).forEach((session) => {
       session.getAllContributionsToAllFiles().forEach((contribution) => {
         const p = project.findPerson(contribution.personReference);
-        // only add if it has at least one consent file
-        if (p && p.files.find((f) => f.isLabeledAsConsent())) {
-          // only add each person once (or once for each unique role?)
-          if (
-            !dummyFileForActors.contributions.find(
-              (c) => c.personReference === contribution.personReference
-            )
-          ) {
-            dummyFileForActors.contributions.push(contribution);
+        if (p) {
+          const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
+          // only add if it has at least one consent file
+          if (consentFiles) {
+            // only add each person once (or once for each unique role?)
+            if (
+              !dummyFileForActors.contributions.find(
+                (c) => c.personReference === contribution.personReference
+              )
+            ) {
+              // add the contribution, so that the <Actors> section gets what it needs
+              dummyFileForActors.contributions.push(contribution);
+
+              // copy over the actual consent files
+              consentFiles.forEach((file) => {
+                // this should be rare, but someone might place a consent file with the name in more than one place in the project
+                // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
+                dummySession.copyInOneProjectFileIfNotThereAlready(
+                  file,
+                  outputFolder
+                );
+              });
+            }
           }
         }
       });

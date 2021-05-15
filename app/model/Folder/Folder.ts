@@ -99,6 +99,31 @@ export /*babel doesn't like this: abstract*/ class Folder {
       return new FieldSet(); //review... property document folders don't have properties
     }
   }
+
+  // This is a stripped-down version of copyInOneFile. It takes File object instead
+  // of a path, because the file is already a project File object. This might be a useful function
+  // for a future "copy" user function, but
+  // 1) we'd need to copy over all the meta data
+  // 2) it is currently synchronous. If we change that, it will break tests so something would have to be done.
+  public copyInOneProjectFileIfNotThereAlready(
+    sourceFile: File,
+    destDirectory: string
+  ) {
+    const destPath = Path.join(
+      destDirectory,
+      Path.basename(sourceFile.describedFilePath)
+    );
+    if (fs.existsSync(destPath)) {
+      return;
+    }
+    // note, I can't think of how the .meta file of the consent could be helpful, so
+    // I'm not bothering to get it copied, or its contents preserved, except for size.
+    fs.copyFileSync(sourceFile.describedFilePath, destPath);
+    const destFile = new OtherFile(destPath, this.customFieldRegistry, true);
+    destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
+    this.files.push(destFile);
+  }
+
   public copyInOneFile(path: string, newFileName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (

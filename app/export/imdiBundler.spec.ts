@@ -77,6 +77,8 @@ describe("Consent Form Inclusion", () => {
     ).toBeTruthy();
   });
 
+  // TODO: add tests of the session filter. Should limit what is in the IMDI and what files make it in
+
   it("should have a date", () => {
     // should match today
     expect("METATRANSCRIPT/Session/Date").toMatch(/20..-..-../);
