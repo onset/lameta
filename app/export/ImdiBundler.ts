@@ -13,6 +13,7 @@ import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import * as glob from "glob";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
+import moment from "moment";
 temp.track(true);
 
 // This class handles making/copying all the files for an IMDI archive.
@@ -198,10 +199,8 @@ export default class ImdiBundler {
   ): void {
     if (folder.files.length > 0) {
       const generator = new ImdiGenerator(folder, project);
-      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
-        name,
-        folder
-      );
+      const projectDocumentsImdi =
+        generator.makePseudoSessionImdiForOtherFolder(name, folder);
 
       ImdiBundler.WritePseudoSession(
         rootDirectory,
@@ -272,6 +271,10 @@ export default class ImdiBundler {
     });
 
     const dummySession = Session.fromDirectory(dir, new CustomFieldRegistry());
+    dummySession.properties.setText(
+      "Date",
+      moment(new Date()).format("YYYY-MM-DD")
+    );
     dummySession.properties.setText(
       "id",
       project.displayName + " consent documents"

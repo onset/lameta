@@ -72,7 +72,7 @@ export const xexpect = expect as any;
 // This overrides an existing expect function in order to have a convenient
 // check using an xpath and an expected value.
 expect.extend({
-  toMatch(xpath, expectedValue) {
+  toMatch(xpath: string, expectedValue: string | RegExp) {
     const hits = select(xpath);
     if (!hits || hits.length === 0) {
       //console.log(resultXml);
@@ -82,7 +82,10 @@ expect.extend({
         pass: false,
       };
     }
-    const pass = value(xpath) === expectedValue;
+    let pass;
+    if (expectedValue instanceof RegExp)
+      pass = value(xpath).match(expectedValue);
+    else pass = value(xpath) === expectedValue;
     if (pass) {
       return {
         message: () => `expected ${xpath} to be '${expectedValue}'`,

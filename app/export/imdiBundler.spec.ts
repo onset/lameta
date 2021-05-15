@@ -72,4 +72,9 @@ describe("Consent Form Inclusion", () => {
       )
     ).toBeTruthy();
   });
+
+  it("should have a date", () => {
+    // should match today
+    expect("METATRANSCRIPT/Session/Date").toMatch(/20..-..-../);
+  });
 });
