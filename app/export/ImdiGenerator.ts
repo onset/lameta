@@ -228,24 +228,26 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
-            this.addSessionLanguage(code, langName, "Content Language");
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
+            this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
           this.addMissingSessionLanguage(
             "vernacularIso3CodeAndName",
-            "Content Language"
+            "Subject Language"
           );
         }
         this.keysThatHaveBeenOutput.add("Session.languages");
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -660,9 +662,8 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
-      "access"
-    );
+    const accessCode =
+      this.folderInFocus.properties.getTextStringOrEmpty("access");
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
