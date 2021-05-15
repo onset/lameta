@@ -58,6 +58,10 @@ describe("Consent Form Inclusion", () => {
       "Consent Forms"
     );
   });
+  it("should contain Actors", () => {
+    // should have one entry for Awi, one for Ilawi. Should not include Hatton, because we do not have consent for him.
+    expect(count("METATRANSCRIPT/Session/MDGroup/Actors/Actor")).toBe(2);
+  });
 
   it("There should be 2 consent files in the ConsentDocuments folder", () => {
     expect(

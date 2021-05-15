@@ -1,7 +1,7 @@
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
-import { File } from "../model/file/File";
+import { Contribution, File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator from "./ImdiGenerator";
@@ -261,19 +261,29 @@ export default class ImdiBundler {
   ) {
     const dir = temp.mkdirSync("imdiConsentBundle");
 
-    // complex: for each session, find each involved person, copy in their consent.
-    // simpler: for each person, for each document, if it is marked as consent, copy it in
-    // for now, we're simply finding all files with the right pattern and copying them in, where ever they are.
+    // complex: for each session, find each involved person, copy in their
+    //   consent. (note, we do go through all these people below, in
+    //   addDummyFileForConsentActors)
+
+    // simpler: for each person, for each document, if it is marked as consent,
+    //   copy it in for now, we're simply finding all files with the right
+    //   pattern and copying them in, where ever they are.
     const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
 
     filePaths.forEach((path) => {
-      fs.copyFileSync(path, Path.join(dir, Path.basename(path)));
+      const dest = Path.join(dir, Path.basename(path));
+      // this should be rare, but someone might place a consent file with the name in more than one place in the project
+      // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
+      if (!fs.existsSync(dest)) {
+        fs.copyFileSync(path, dest);
+      }
     });
 
     const dummySession = Session.fromDirectory(dir, new CustomFieldRegistry());
+
     dummySession.properties.setText(
-      "Date",
-      moment(new Date()).format("YYYY-MM-DD")
+      "date",
+      moment(new Date()).format("YYYY-MM-DD") // date is the date exported, i.e., today
     );
     dummySession.properties.setText(
       "id",
@@ -291,14 +301,15 @@ export default class ImdiBundler {
     );
     dummySession.properties.setText("genre", "Secondary document");
     dummySession.properties.setText("subgenre", "Consent forms");
-    //dummySession.files.forEach(consentFile=>consentFile.setTextProperty("",""))
+
+    ImdiBundler.addDummyFileForConsentActors(project, dummySession);
 
     const imdiXml = ImdiGenerator.generateSession(
       dummySession,
       project,
       omitNamespaces
     );
-    const imdiFileName = `${dummySession.filePrefix}.imdi`;
+    //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
     ImdiBundler.WritePseudoSession(
       rootDirectory,
@@ -309,5 +320,45 @@ export default class ImdiBundler {
       copyInProjectFiles,
       dummySession
     );
+    // we're done with this dummy directory now
+    fs.emptyDir(dir);
+    fs.remove(dir);
+  }
+
+  // We need to have all the consenting people described in the <Actors> portion of the IMDI.
+  // So we need this dummy session to contain all the contributions to all sessions in the whole project
+  // for which the person has a consent artifcat.
+  // That will mean walking through every session of the project, using session.getAllContributionsToAllFiles().
+  private static addDummyFileForConsentActors(
+    project: Project,
+    dummySession: Session
+  ) {
+    // Session is a *folder*, but only *files* have contributions. So we add this dummy file. The ".skip" extension
+    // will cause it to not be listed in the IMDI
+    const dummyFileForActors = new File(
+      "dummyForAllSessionConsent.skip",
+      "dummyForAllSessionConsent.skip",
+      "dummy",
+      false,
+      "dummy",
+      false
+    );
+    project.sessions.forEach((session) => {
+      session.getAllContributionsToAllFiles().forEach((contribution) => {
+        const p = project.findPerson(contribution.personReference);
+        // only add if it has at least one consent file
+        if (p && p.files.find((f) => f.isLabeledAsConsent())) {
+          // only add each person once (or once for each unique role?)
+          if (
+            !dummyFileForActors.contributions.find(
+              (c) => c.personReference === contribution.personReference
+            )
+          ) {
+            dummyFileForActors.contributions.push(contribution);
+          }
+        }
+      });
+    });
+    dummySession.files.push(dummyFileForActors);
   }
 }

@@ -519,7 +519,7 @@ export default class ImdiGenerator {
   }
   public static shouldIncludeFile(path: string): boolean {
     // skip these, on advice of ELAR
-    return [".sprj", ".session", ".person"].indexOf(Path.extname(path)) === -1;
+    return [".sprj", ".session", ".person",".skip"].indexOf(Path.extname(path)) === -1;
   }
 
   // when testing/developing, it has proved helpful to generate small portions
