@@ -17,25 +17,32 @@ temp.track(); // cleanup on exit: doesn't work
 /* April 2021 this needs work. It relies on a file, ConsentDocuments.imdi being in the Edolo Sample, but that
   wouldn't normally have that file since imdi's don't come with the sample, they need to be generated.*/
 
-/*
-let project: Project;
-let rootDir = "";
-beforeAll(() => {
-  project = Project.fromDirectory("sample data/Edolo sample");
-  const xml = fs.readFileSync(
-    Path.join(rootDir, "Edolo sample", "ConsentDocuments.imdi"),
-    "utf8"
-  );
-  expect(xml).toBeTruthy();
-  setResultXml(xml);
-});
-beforeEach(() => {
-  rootDir = temp.mkdirSync("ImdiBundlerTests");
-  ImdiBundler.saveImdiBundleToFolder(project, rootDir, true, (f) => true, true);
-});
-
+let rootDirectory: string;
 describe("Consent Form Inclusion", () => {
-  beforeAll(() => {});
+  afterAll(() => {
+    fs.emptyDirSync(rootDirectory);
+    fs.rmdirSync(rootDirectory, { recursive: true });
+  });
+  beforeAll(() => {
+    const project = Project.fromDirectory("sample data/Edolo sample");
+    // including "fssync" in the path tells our file copy thing to just do the copy synchronously
+    rootDirectory = temp.mkdirSync("ImdiBundlerTest-fssync");
+    ImdiBundler.addConsentBundle(
+      project,
+      rootDirectory,
+      "",
+      [],
+      true, //<-- copy in files
+      (f) => true,
+      true
+    );
+    const xml = fs.readFileSync(
+      Path.join(rootDirectory, "ConsentDocuments.imdi"),
+      "utf8"
+    );
+    expect(xml).toBeTruthy();
+    setResultXml(xml);
+  });
   it("The consent form dummy session to look reasonable", () => {
     expect(count("METATRANSCRIPT")).toBe(1);
     expect("METATRANSCRIPT/Session/Name").toMatch(
@@ -52,13 +59,17 @@ describe("Consent Form Inclusion", () => {
     );
   });
 
-  it("There should be some consent files int the Consent folder", () => {
-    const paths = glob.sync(Path.join(rootDir, "**SLASH ConsentDocuments; SLASH*.*"));  change the SLASH to / when uncommented
-    expect(paths.length).toBe(2);
-  });
-});
-*/
+  it("There should be 2 consent files in the ConsentDocuments folder", () => {
+    expect(
+      fs.existsSync(
+        Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG")
+      )
+    ).toBeTruthy();
 
-describe("pacify jest", () => {
-  it("should be fine", () => {});
+    expect(
+      fs.existsSync(
+        Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
+      )
+    ).toBeTruthy();
+  });
 });

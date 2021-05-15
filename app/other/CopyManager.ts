@@ -64,6 +64,15 @@ export class CopyManager {
     destPath: string,
     progress?: (msg: string) => void
   ): Promise<string> {
+    // it's too hard to write tests with the async copying happening (see the test "There should be 2 consent files in the ConsentDocuments folder")
+    if (
+      process.env.JEST_WORKER_ID !== undefined &&
+      destPath.indexOf("fssync") > -1
+    ) {
+      fs.copyFileSync(sourcePath, destPath);
+      return Promise.resolve(destPath);
+    }
+
     const size: string = filesize(fs.statSync(sourcePath).size);
     sentryBreadCrumb(`starting ${sourcePath} to  ${destPath}, ${size}`);
 

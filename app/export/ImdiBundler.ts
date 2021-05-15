@@ -249,7 +249,7 @@ export default class ImdiBundler {
 
   // IMDI doesn't have a place for consent files, so we have to create this
   // dummy Session to contain them.
-  private static addConsentBundle(
+  public static addConsentBundle(
     project: Project,
     rootDirectory: string,
     secondLevel: string,
