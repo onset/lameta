@@ -519,7 +519,10 @@ export default class ImdiGenerator {
   }
   public static shouldIncludeFile(path: string): boolean {
     // skip these, on advice of ELAR
-    return [".sprj", ".session", ".person",".skip"].indexOf(Path.extname(path)) === -1;
+    return (
+      [".sprj", ".session", ".person", ".skip"].indexOf(Path.extname(path)) ===
+      -1
+    );
   }
 
   // when testing/developing, it has proved helpful to generate small portions
@@ -574,7 +577,7 @@ export default class ImdiGenerator {
 
       this.element(
         "Type",
-        f.type.toLowerCase(),
+        titleCase(f.type), // while https://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml shows these should be lower case, this is apparently an OpenVocabulary and ELAR's system requires upper case
         false,
         "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml"
       );
@@ -982,7 +985,7 @@ export default class ImdiGenerator {
       this.tail.a("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
       this.tail.a(
         "xsi:schemaLocation",
-        "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd"
+        "http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd"
       );
       this.tail.a("Type", typeAttribute);
       this.tail.a("Version", "0");

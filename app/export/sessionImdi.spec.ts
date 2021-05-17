@@ -104,6 +104,8 @@ it("should contain MediaFiles", () => {
   expect(
     "METATRANSCRIPT/Session/Resources/WrittenResource/ResourceLink"
   ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
+
+  expect("METATRANSCRIPT/Session/Resources/MediaFile/Type").toMatch("Audio"); // ELAR needs upper case
 });
 
 it("should make separate keys for each topic separated by a comma", () => {
