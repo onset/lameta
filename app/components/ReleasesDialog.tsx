@@ -45,7 +45,12 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   const [mode, setMode] = React.useState<Mode>("querying");
   const [allReleases, setAllReleases] = React.useState<IGithubRelease[]>([]);
   const [showNewReleasesOnly, setShowNewReleasesOnly] = React.useState(true);
-
+  const [version, setVersion] = React.useState("");
+  React.useEffect(() => {
+    const pkg = require("../package.json");
+    setVersion(pkg.version);
+  }, []);
+  console.log("Version = " + version);
   const channelsToRecommend = getChannelsToRecommend();
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {
@@ -118,9 +123,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
               margin-top: auto;
             `}
           >
-            {i18n._(
-              t`You are running lameta ${require("../package.json").version}`
-            )}
+            {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
+            {i18n._(t`You are running lameta version: `)}&nbsp;{version}
           </div>
         </div>
         <div

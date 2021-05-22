@@ -8,7 +8,7 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2020-09-13 21:13\n"
+"PO-Revision-Date: 2021-05-22 14:03\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
@@ -22,11 +22,11 @@ msgstr ""
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
 
-#: app/components/export/ExportChoices.tsx:48
+#: app/components/export/ExportChoices.tsx:47
 msgid "A folder containing both the IMDI files and all the project's archivable files."
 msgstr ""
 
-#: app/components/export/ExportChoices.tsx:39
+#: app/components/export/ExportChoices.tsx:38
 msgid "A folder with an IMDI file for the project and each session."
 msgstr ""
 
@@ -34,7 +34,7 @@ msgstr ""
 #~ msgid "A single ISLE Meta Data Initiative XML file."
 #~ msgstr ""
 
-#: app/components/export/ExportChoices.tsx:28
+#: app/components/export/ExportChoices.tsx:27
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr ""
 
@@ -62,7 +62,7 @@ msgstr ""
 msgid "About This Project"
 msgstr "Об этом проекте"
 
-#: app/other/menu.ts:39
+#: app/other/menu.ts:40
 msgid "About lameta"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgstr "Протокол доступа"
 msgid "Add Files"
 msgstr "Добавление файлов"
 
-#: app/components/people/person/PersonLanguageList.tsx:76
+#: app/components/people/person/PersonLanguageList.tsx:83
 msgid "Add Language"
 msgstr ""
 
@@ -90,7 +90,7 @@ msgstr ""
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
-#: app/components/export/ExportChoices.tsx:62
+#: app/components/export/ExportChoices.tsx:61
 msgid "All Sessions"
 msgstr ""
 
@@ -111,7 +111,7 @@ msgid "As a trainer"
 msgstr ""
 
 #: app/components/FolderPane.tsx:183
-#: app/other/localization.ts:73
+#: app/other/localization.ts:77
 msgid "Audio"
 msgstr "Аудио"
 
@@ -144,7 +144,7 @@ msgstr "Аудио"
 msgid "Cancel"
 msgstr "Отмена"
 
-#: app/model/Folder/Folder.ts:78
+#: app/model/Folder/Folder.ts:95
 msgid "Cannot add files of that type"
 msgstr ""
 
@@ -164,11 +164,11 @@ msgstr ""
 msgid "Choose an export format:"
 msgstr ""
 
-#: app/components/export/ExportChoices.tsx:56
+#: app/components/export/ExportChoices.tsx:55
 msgid "Choose which Sessions to export:"
 msgstr ""
 
-#: app/components/ReleasesDialog.tsx:123
+#: app/components/ReleasesDialog.tsx:155
 msgid "Close"
 msgstr ""
 
@@ -190,11 +190,11 @@ msgstr "Участники"
 msgid "Contributors"
 msgstr "Составители"
 
-#: app/other/menu.ts:94
+#: app/other/menu.ts:95
 msgid "Copy"
 msgstr "Копия"
 
-#: app/model/Folder/Folder.ts:90
+#: app/model/Folder/Folder.ts:107
 msgid "Copy Requested..."
 msgstr ""
 
@@ -206,11 +206,11 @@ msgstr ""
 msgid "Copying..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:182
+#: app/containers/HomePage.tsx:183
 msgid "Create New Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:194
+#: app/containers/HomePage.tsx:195
 msgid "Create New Project with Sample Data"
 msgstr ""
 
@@ -222,11 +222,11 @@ msgstr ""
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: app/other/menu.ts:119
+#: app/other/menu.ts:120
 msgid "Create Project..."
 msgstr ""
 
-#: app/other/menu.ts:325
+#: app/other/menu.ts:326
 msgid "Credits"
 msgstr ""
 
@@ -242,7 +242,7 @@ msgstr ""
 #~ msgid "Custom Fields"
 #~ msgstr ""
 
-#: app/other/menu.ts:92
+#: app/other/menu.ts:93
 msgid "Cut"
 msgstr ""
 
@@ -278,7 +278,7 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: app/components/ReleasesDialog.tsx:95
+#: app/components/ReleasesDialog.tsx:125
 msgid "Download"
 msgstr ""
 
@@ -294,7 +294,7 @@ msgstr ""
 #~ msgid "ELAN"
 #~ msgstr ""
 
-#: app/other/menu.ts:79
+#: app/other/menu.ts:80
 msgid "Edit"
 msgstr ""
 
@@ -318,7 +318,7 @@ msgstr "Экспортировать"
 msgid "Export Project"
 msgstr ""
 
-#: app/other/menu.ts:128
+#: app/other/menu.ts:129
 msgid "Export Project..."
 msgstr ""
 
@@ -332,15 +332,15 @@ msgid "Field"
 msgstr "Поле"
 
 #: app/components/FolderPane.tsx:259
-#: app/other/menu.ts:111
+#: app/other/menu.ts:112
 msgid "File"
 msgstr ""
 
-#: app/model/file/File.ts:771
+#: app/model/file/File.ts:780
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
-#: app/other/menu.ts:145
+#: app/other/menu.ts:146
 msgid "Font Size"
 msgstr ""
 
@@ -373,23 +373,23 @@ msgstr ""
 #~ msgid "Frame rate"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:254
+#: app/model/Project/Project.ts:261
 msgid "Full Name"
 msgstr ""
 
-#: app/other/menu.ts:307
+#: app/other/menu.ts:308
 msgid "Help"
 msgstr "Справка"
 
-#: app/other/menu.ts:217
+#: app/other/menu.ts:218
 msgid "Help translate"
 msgstr ""
 
-#: app/other/menu.ts:58
+#: app/other/menu.ts:59
 msgid "Hide Others"
 msgstr ""
 
-#: app/other/menu.ts:53
+#: app/other/menu.ts:54
 msgid "Hide lameta"
 msgstr ""
 
@@ -397,7 +397,7 @@ msgstr ""
 msgid "How are you using lameta?"
 msgstr ""
 
-#: app/model/Project/Project.ts:251
+#: app/model/Project/Project.ts:258
 msgid "ID"
 msgstr ""
 
@@ -406,20 +406,20 @@ msgstr ""
 #~ msgid "IMDI"
 #~ msgstr ""
 
-#: app/components/export/ExportChoices.tsx:45
+#: app/components/export/ExportChoices.tsx:44
 msgid "IMDI + Files"
 msgstr ""
 
-#: app/other/menu.ts:225
+#: app/other/menu.ts:226
 msgid "IMDI Mode"
 msgstr ""
 
-#: app/components/export/ExportChoices.tsx:36
+#: app/components/export/ExportChoices.tsx:35
 msgid "IMDI Only"
 msgstr ""
 
 #: app/components/FolderPane.tsx:217
-#: app/other/localization.ts:71
+#: app/other/localization.ts:75
 msgid "Image"
 msgstr "Изображение"
 
@@ -427,7 +427,7 @@ msgstr "Изображение"
 msgid "Indicates that this is the father or mother's primary language."
 msgstr ""
 
-#: app/other/menu.ts:164
+#: app/other/menu.ts:165
 msgid "Interface Language"
 msgstr ""
 
@@ -439,7 +439,7 @@ msgstr ""
 #~ msgid "Languages"
 #~ msgstr ""
 
-#: app/other/menu.ts:155
+#: app/other/menu.ts:156
 msgid "Larger"
 msgstr ""
 
@@ -485,14 +485,14 @@ msgstr "Имя"
 
 #: app/components/Workspace.tsx:96
 #: app/components/people/PeopleTab.tsx:18
-#: app/model/Project/Project.ts:188
-#: app/model/Project/Project.ts:191
+#: app/model/Project/Project.ts:193
+#: app/model/Project/Project.ts:196
 msgid "New Person"
 msgstr "Новое лицо"
 
 #: app/components/Workspace.tsx:61
 #: app/components/session/SessionsTab.tsx:16
-#: app/model/Project/Project.ts:151
+#: app/model/Project/Project.ts:156
 msgid "New Session"
 msgstr "Новое событие"
 
@@ -503,7 +503,7 @@ msgid "Notes"
 msgstr "Примечания"
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:139
-#: app/components/ShowMessageDialog/MessageDialog.tsx:34
+#: app/components/ShowMessageDialog/MessageDialog.tsx:49
 #: app/components/project/CreateProjectDialog.tsx:64
 #: app/components/registration/RegistrationDialog.tsx:99
 msgid "OK"
@@ -517,12 +517,12 @@ msgstr ""
 msgid "Open"
 msgstr "Открыть"
 
-#: app/containers/HomePage.tsx:187
+#: app/containers/HomePage.tsx:188
 msgid "Open Project"
 msgstr ""
 
-#: app/containers/HomePage.tsx:210
-#: app/other/menu.ts:114
+#: app/containers/HomePage.tsx:211
+#: app/other/menu.ts:115
 msgid "Open Project..."
 msgstr ""
 
@@ -546,7 +546,7 @@ msgstr "Другие документы"
 #~ msgid "Other Languages"
 #~ msgstr ""
 
-#: app/other/menu.ts:233
+#: app/other/menu.ts:234
 msgid "PARADISEC Mode"
 msgstr ""
 
@@ -554,7 +554,7 @@ msgstr ""
 msgid "Paradisec CSV"
 msgstr ""
 
-#: app/other/menu.ts:99
+#: app/other/menu.ts:100
 msgid "Paste"
 msgstr ""
 
@@ -565,8 +565,8 @@ msgid "People"
 msgstr "Люди"
 
 #: app/components/FolderPane.tsx:154
-#: app/model/Project/Project.ts:254
-#: app/other/localization.ts:67
+#: app/model/Project/Project.ts:261
+#: app/other/localization.ts:71
 msgid "Person"
 msgstr "Лицо"
 
@@ -574,12 +574,12 @@ msgstr "Лицо"
 msgid "Please Register"
 msgstr ""
 
-#: app/model/Folder/Folder.ts:202
+#: app/model/Folder/Folder.ts:219
 msgid "Please wait until all files are finished copying into this folder"
 msgstr ""
 
 #: app/components/Workspace.tsx:160
-#: app/other/localization.ts:63
+#: app/other/localization.ts:67
 msgid "Project"
 msgstr "Проект"
 
@@ -599,11 +599,11 @@ msgstr "Проект будет создан в: {path}."
 msgid "Properties"
 msgstr "Свойства"
 
-#: app/other/menu.ts:70
+#: app/other/menu.ts:71
 msgid "Quit"
 msgstr ""
 
-#: app/other/menu.ts:87
+#: app/other/menu.ts:88
 msgid "Redo"
 msgstr ""
 
@@ -611,11 +611,11 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: app/other/menu.ts:310
+#: app/other/menu.ts:311
 msgid "Registration..."
 msgstr ""
 
-#: app/components/ReleasesDialog.tsx:66
+#: app/components/ReleasesDialog.tsx:78
 msgid "Release Notes"
 msgstr ""
 
@@ -636,11 +636,11 @@ msgstr ""
 msgid "Rename..."
 msgstr "Переименовать"
 
-#: app/model/file/File.ts:666
+#: app/model/file/File.ts:675
 msgid "Renaming failed because there is already a file with that name."
 msgstr ""
 
-#: app/other/menu.ts:316
+#: app/other/menu.ts:317
 msgid "Report a problem"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr ""
 #~ msgid "Resolution"
 #~ msgstr ""
 
-#: app/model/file/File.ts:693
+#: app/model/file/File.ts:702
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
@@ -669,19 +669,19 @@ msgstr ""
 #~ msgid "SayMore/SayMore Project Files"
 #~ msgstr ""
 
-#: app/other/menu.ts:104
+#: app/other/menu.ts:105
 msgid "Select All"
 msgstr ""
 
-#: app/other/menu.ts:46
+#: app/other/menu.ts:47
 msgid "Services"
 msgstr ""
 
 #: app/components/FolderPane.tsx:117
 #: app/components/PersonContributions.tsx:21
 #: app/components/Workspace.tsx:58
-#: app/model/Project/Project.ts:251
-#: app/other/localization.ts:65
+#: app/model/Project/Project.ts:258
+#: app/other/localization.ts:69
 msgid "Session"
 msgstr "Событие"
 
@@ -689,11 +689,11 @@ msgstr "Событие"
 msgid "Sessions"
 msgstr "Элементы проекта"
 
-#: app/other/menu.ts:63
+#: app/other/menu.ts:64
 msgid "Show All"
 msgstr ""
 
-#: app/other/menu.ts:336
+#: app/other/menu.ts:330
 msgid "Show Release Notes"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 msgid "Show in Finder"
 msgstr ""
 
-#: app/components/ReleasesDialog.tsx:119
+#: app/components/ReleasesDialog.tsx:149
 msgid "Show more releases"
 msgstr ""
 
@@ -717,11 +717,11 @@ msgstr ""
 msgid "Size"
 msgstr "Размер"
 
-#: app/other/menu.ts:148
+#: app/other/menu.ts:149
 msgid "Smaller"
 msgstr ""
 
-#: app/other/menu.ts:123
+#: app/other/menu.ts:124
 msgid "Start Screen"
 msgstr ""
 
@@ -733,7 +733,7 @@ msgstr "Статус"
 msgid "Text"
 msgstr ""
 
-#: app/model/Project/Project.ts:231
+#: app/model/Project/Project.ts:238
 msgid "That name would lead to an empty filename."
 msgstr ""
 
@@ -741,7 +741,7 @@ msgstr ""
 #~ msgid "That would lead to an empty filename"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:228
+#: app/model/Project/Project.ts:235
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
@@ -749,11 +749,11 @@ msgstr ""
 #~ msgid "There is already a Person with that name or code"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:262
+#: app/model/Project/Project.ts:269
 msgid "There is already a Person with that name or code."
 msgstr ""
 
-#: app/model/Folder/Folder.ts:84
+#: app/model/Folder/Folder.ts:101
 msgid "There is already a file here with the name"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "There is already a project at: {path}."
 msgstr ""
 
-#: app/model/Project/Project.ts:236
+#: app/model/Project/Project.ts:243
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr ""
 
@@ -793,7 +793,7 @@ msgstr ""
 msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
 msgstr ""
 
-#: app/model/file/File.ts:698
+#: app/model/file/File.ts:707
 msgid "Try restarting lameta. If that doesn't do it, restart your computer."
 msgstr ""
 
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Type"
 msgstr "Тип"
 
-#: app/other/menu.ts:82
+#: app/other/menu.ts:83
 msgid "Undo"
 msgstr "Отменить"
 
@@ -815,7 +815,7 @@ msgid "Value"
 msgstr "Значение"
 
 #: app/components/FolderPane.tsx:198
-#: app/other/localization.ts:69
+#: app/other/localization.ts:73
 msgid "Video"
 msgstr "Видео"
 
@@ -823,7 +823,7 @@ msgstr "Видео"
 #~ msgid "Video Codec"
 #~ msgstr ""
 
-#: app/other/menu.ts:142
+#: app/other/menu.ts:143
 msgid "View"
 msgstr "Вид"
 
@@ -844,9 +844,17 @@ msgstr "Как назвать этот проект?"
 #~ msgid "Width"
 #~ msgstr ""
 
-#: app/components/ReleasesDialog.tsx:72
-msgid "You are running lameta {0}"
+#: app/components/ReleasesDialog.tsx:88
+msgid "You are running lameta version:"
 msgstr ""
+
+#: app/components/ReleasesDialog.tsx:72
+#~ msgid "You are running lameta {0}"
+#~ msgstr ""
+
+#: app/components/ReleasesDialog.tsx:87
+#~ msgid "You are running lameta {version}"
+#~ msgstr ""
 
 #: app/components/FileList.tsx:85
 msgid "You cannot add files of that type"
@@ -873,7 +881,7 @@ msgstr ""
 #~ msgid "height"
 #~ msgstr ""
 
-#: app/other/menu.ts:36
+#: app/other/menu.ts:37
 msgid "lameta"
 msgstr ""
 
@@ -881,7 +889,7 @@ msgstr ""
 msgid "lameta  was not able to rename that file."
 msgstr ""
 
-#: app/containers/HomePage.tsx:217
+#: app/containers/HomePage.tsx:218
 msgid "lameta and SayMore Project Files"
 msgstr ""
 
@@ -889,7 +897,7 @@ msgstr ""
 msgid "lameta cannot export files while files are still being copied in."
 msgstr ""
 
-#: app/model/Folder/Folder.ts:213
+#: app/model/Folder/Folder.ts:230
 msgid "lameta could not rename the directory."
 msgstr ""
 
@@ -897,11 +905,11 @@ msgstr ""
 msgid "lameta was not able to delete the file."
 msgstr ""
 
-#: app/model/Folder/Folder.ts:180
+#: app/model/Folder/Folder.ts:197
 msgid "lameta was not able to put this file in the trash"
 msgstr ""
 
-#: app/model/Folder/Folder.ts:241
+#: app/model/Folder/Folder.ts:258
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr ""
 
@@ -909,7 +917,7 @@ msgstr ""
 #~ msgid "lameta was not able to rename that file."
 #~ msgstr ""
 
-#: app/model/Folder/Folder.ts:253
+#: app/model/Folder/Folder.ts:270
 msgid "lameta was not able to rename the folder."
 msgstr ""
 
@@ -922,7 +930,7 @@ msgstr ""
 #~ msgid "{0}"
 #~ msgstr ""
 
-#: app/components/export/ExportChoices.tsx:65
+#: app/components/export/ExportChoices.tsx:64
 msgid "{0} Marked Sessions"
 msgstr ""
 

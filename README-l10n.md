@@ -34,7 +34,7 @@ This format uses our own wrapper. Note that you still have to include the commen
 
 # Getting translations from Crowdin
 
-Under lameta Settings, there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
+In Crowdin [lameta Settings](https://crowdin.com/project/saymorex/settings#translations), there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
 
 At runtime, lingui uses javascript file, which you get by running
 
@@ -54,7 +54,7 @@ That reads .linguirc to know what files to include. This puts json files in ./lo
 
 # Send new strings to Crowdin
 
-Files in ./locale/ that can then be put on https://crowdin.com/project/saymorex. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
+To https://crowdin.com/project/saymorex, update the top level files in .locale and also ./locale/en/messages.po. Currently this is done manually, but in theory Crowdin could suck these in from github and then produce Pull Requests when new strings have been translated.
 
 # Non-code Lookups in CSV
 
