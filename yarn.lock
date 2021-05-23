@@ -3756,7 +3756,7 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha1-y5T662HIaWRR2zZTThQi+U8K7og=
 
-butter-toast@^3.3.3:
+butter-toast@^3.3.5:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/butter-toast/-/butter-toast-3.3.5.tgz#3a40883c7b2162eda10ff05cae01d2537f27182c"
   integrity sha512-6TZkT5lGcX4jvucK26X156wnw79Lo137yelHPvHUnpVgz7ZiyJGYNCXFY/twE0dLDQpVDlnUWOBhNKLt5gcl2w==

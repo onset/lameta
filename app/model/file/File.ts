@@ -17,8 +17,11 @@ import knownFieldDefinitions, {
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
+  getCannotRenameFileMsg,
   NotifyError,
   NotifyException,
+  NotifyFileAccessProblem,
+  NotifyRenameProblem,
   NotifySuccess,
   NotifyWarning,
 } from "../../components/Notify";
@@ -34,10 +37,7 @@ import xmlbuilder from "xmlbuilder";
 import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 import { t } from "@lingui/macro";
-
-function getCannotRenameFileMsg() {
-  return i18n._(t`lameta  was not able to rename that file.`);
-}
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 export class Contribution {
   //review this @mobx.observable
@@ -460,14 +460,15 @@ export /*babel doesn't like this: abstract*/ class File {
       // Since we do not expect any new versions of SayMore Classic,
       // (which could theoretically introduce such a situation),
       // I'm living with that risk.
-      Object.keys(knownFieldDefinitions).some((
-        area // e.g. project, session, person
-      ) =>
-        knownFieldDefinitions[area].find(
-          (d: any) =>
-            d.key.toLowerCase() === xmlTag.toLowerCase() ||
-            d.tagInSayMoreClassic === xmlTag
-        )
+      Object.keys(knownFieldDefinitions).some(
+        (
+          area // e.g. project, session, person
+        ) =>
+          knownFieldDefinitions[area].find(
+            (d: any) =>
+              d.key.toLowerCase() === xmlTag.toLowerCase() ||
+              d.tagInSayMoreClassic === xmlTag
+          )
       )
     ) {
       fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
@@ -551,7 +552,9 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = PatientFS.readFileSync(this.metadataFilePath);
+        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
+          this.metadataFilePath
+        );
 
         let xmlAsObject: any = {};
         xml2js.parseString(
@@ -653,12 +656,16 @@ export /*babel doesn't like this: abstract*/ class File {
     } else {
       try {
         ShowSavingNotifier(Path.basename(this.metadataFilePath));
-        PatientFS.writeFileSync(this.metadataFilePath, xml);
+        PatientFS.writeFileSyncWithNotifyThenRethrow(
+          this.metadataFilePath,
+          xml
+        );
         this.clearDirty();
       } catch (error) {
         if (error.code === "EPERM") {
-          NotifyError(
-            `Cannot save because lameta was denied write access:\r\n${this.metadataFilePath}. Is it open in another program? Is it set to read-only or locked? Does the current user have access permissions to this folder?`
+          NotifyFileAccessProblem(
+            `Cannot save because lameta was denied write access to ${this.metadataFilePath}.`,
+            error
           );
         } else {
           NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);
@@ -715,7 +722,9 @@ export /*babel doesn't like this: abstract*/ class File {
       if (!this.areSamePath(newPath, currentFilePath)) {
         newPath = this.getUniqueFilePath(newPath);
       }
-      PatientFS.renameSync(currentFilePath, newPath);
+
+      PatientFS.renameSyncWithNotifyAndRethrow(currentFilePath, newPath);
+
       return newPath;
     }
     return currentFilePath;
@@ -913,9 +922,11 @@ export /*babel doesn't like this: abstract*/ class File {
     );
 
     try {
-      PatientFS.renameSync(this.metadataFilePath, newMetadataFilePath);
+      PatientFS.renameSyncWithNotifyAndRethrow(
+        this.metadataFilePath,
+        newMetadataFilePath
+      );
     } catch (err) {
-      NotifyWarning(`${getCannotRenameFileMsg()} (${err.message})`);
       return false;
     }
     sentryBreadCrumb(
@@ -923,39 +934,43 @@ export /*babel doesn't like this: abstract*/ class File {
     );
 
     try {
-      PatientFS.renameSync(this.describedFilePath, newDescribedFilePath);
+      PatientFS.renameSyncWithNotifyAndRethrow(
+        this.describedFilePath,
+        newDescribedFilePath,
+        this.type
+      );
     } catch (err) {
-      if (err.code === "EBUSY") {
-        if (this.type === "Video" || this.type === "Audio")
-          NotifyError(
-            `${getCannotRenameFileMsg()} ${translateMessage(
-              /*i18n*/ {
-                id:
-                  "Restart lameta and do the rename before playing the video again.",
-              }
-            )}`
-          );
-        else
-          NotifyError(
-            `${getCannotRenameFileMsg()}  ${translateMessage(
-              /*i18n*/ {
-                id:
-                  "Try restarting lameta. If that doesn't do it, restart your computer.",
-              }
-            )}`
-          );
-      } else {
-        NotifyError(`${getCannotRenameFileMsg()} ${err.message}`);
-      }
-
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
-        PatientFS.renameSync(newMetadataFilePath, this.metadataFilePath);
+        PatientFS.renameSyncWithNotifyAndRethrow(
+          newMetadataFilePath,
+          this.metadataFilePath
+        );
       } catch (err) {
-        return false;
+        // oh boy. in danger of losing this data, especially since something might want to come along and clean up because it looks like a zombie file now
+        // that its name does not match a core file.
+        // try and just copy it over
+        try {
+          PatientFS.copyFileSync(newMetadataFilePath, this.metadataFilePath);
+        } catch (err) {
+          try {
+            PatientFS.copyFileSync(
+              newMetadataFilePath,
+              Path.join(this.metadataFilePath, ".maybeLostInfoHere")
+            );
+          } catch (e) {
+            // ok this is getting stupid. just fall through.
+          }
+          ShowMessageDialog({
+            title: `Error`,
+            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `,
+            buttonText: "OK",
+          });
+        }
       }
       return false;
     }
+
     this.describedFilePath = newDescribedFilePath;
     this.metadataFilePath = newMetadataFilePath;
     this.setFileNameProperty();
@@ -1002,16 +1017,4 @@ export class OtherFile extends File {
 export function ensureArray(x: any): any[] {
   if (x === null || x === undefined) return [];
   return Array.isArray(x) ? x : [x];
-}
-
-export function getStandardMessageAboutLockedFiles(): string {
-  return (
-    " " + // add space because this will always follow another message
-    translateMessage(
-      /*i18n*/ {
-        id:
-          "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
-      }
-    )
-  );
 }

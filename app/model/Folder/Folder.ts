@@ -1,8 +1,4 @@
-import {
-  File,
-  getStandardMessageAboutLockedFiles,
-  OtherFile,
-} from "../file/File";
+import { File, OtherFile } from "../file/File";
 import { observable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -12,6 +8,9 @@ import {
   NotifyError,
   NotifyWarning,
   NotifyException,
+  NotifyFileAccessProblem,
+  NotifySuccess,
+  NotifyNoBigDeal,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -222,12 +221,44 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
   public knownFields: FieldDefinition[];
 
+  // renaming failures can lead to ____.meta files that don't match anything, they just gum up the works
+
+  private static cleanupZombieMetaFiles(directory: string) {
+    /*** this is ready to go but I'm afraid to pull the trigger
+     
+    const metaFilePaths = glob.sync(Path.join(directory, "*.meta"));
+    metaFilePaths.forEach((metaFilePath) => {
+      const basename = Path.basename(metaFilePath, Path.extname(metaFilePath));
+      const filePathThatWouldMatchTheMetaFileName = Path.join(
+        Path.dirname(metaFilePath),
+        basename
+      );
+      if (!fs.existsSync(filePathThatWouldMatchTheMetaFileName)) {
+        console.log("Removing zombie meta file" + metaFilePath);
+        if (!trash(metaFilePath)) {
+          NotifyWarning(
+            `lameta was not able to put this file in the trash (${metaFilePath})`
+          );
+        } else {
+          NotifyNoBigDeal(
+            `Moved unused lameta meta file to trash because there is no matching file to annotate. ${Path.basename(
+              metaFilePath
+            )}`
+          );
+        }
+      }
+    });
+
+    ****/
+  }
+
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
     customFieldRegistry: CustomFieldRegistry
   ): File[] {
+    Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
 
     files.push(folderMetaDataFile);
@@ -329,10 +360,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
       PatientFS.renameSync(this.directory, newDirPath);
       PatientFS.renameSync(newDirPath, this.directory);
     } catch (err) {
-      NotifyException(
-        err,
-        couldNotRenameDirectory + getStandardMessageAboutLockedFiles(),
-        " [[STEP:Precheck]]"
+      NotifyFileAccessProblem(
+        couldNotRenameDirectory + " [[STEP:Precheck]]",
+        err
       );
       return false;
     }
@@ -341,11 +371,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         f.throwIfFilesMissing();
       });
     } catch (err) {
-      NotifyException(
-        err,
-        couldNotRenameDirectory +
-          getStandardMessageAboutLockedFiles() +
-          " [[STEP:Files Exist]]"
+      NotifyFileAccessProblem(
+        couldNotRenameDirectory + " [[STEP:Files Exist]]",
+        err
       );
       return false;
     }
@@ -359,11 +387,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         const msg = i18n._(
           t`lameta was not able to rename one of the files in the folder.`
         );
-        NotifyException(
-          err,
-          `${msg} (${base})` +
-            getStandardMessageAboutLockedFiles() +
-            " [[STEP:File names]]"
+        NotifyFileAccessProblem(
+          `${msg} (${base})` + " [[STEP:File names]]",
+          err
         );
       }
     });
@@ -373,11 +399,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
       this.directory = newDirPath;
     } catch (err) {
       const msg = i18n._(t`lameta was not able to rename the folder.`);
-      NotifyException(
-        err,
-        `${msg} (${this.displayName}).` +
-          getStandardMessageAboutLockedFiles() +
-          " [[STEP:Actual folder]]"
+      NotifyFileAccessProblem(
+        `${msg} (${this.displayName}).` + " [[STEP:Actual folder]]",
+        err
       );
       return false; // don't continue on with telling the folders that they moved.
     }

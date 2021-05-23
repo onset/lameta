@@ -31,7 +31,11 @@ import {
   ShowMessageDialog,
 } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { NotifyError, NotifyWarning } from "../components/Notify";
+import {
+  NotifyError,
+  NotifyRenameProblem,
+  NotifyWarning,
+} from "../components/Notify";
 import { PatientFS } from "../other/PatientFile";
 
 const isDev = require("electron-is-dev");
@@ -172,10 +176,13 @@ export default class HomePage extends React.Component<IProps, IState> {
           const sampleSourceDir = locate("sample data/Edolo sample");
           fs.copySync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
-          PatientFS.renameSync(
-            Path.join(directory, "Edolo sample.sprj"),
+          const srcPath = Path.join(directory, "Edolo sample.sprj");
+
+          PatientFS.renameSyncWithNotifyAndRethrow(
+            srcPath,
             Path.join(directory, projectName + ".sprj")
           );
+
           this.projectHolder.setProject(Project.fromDirectory(directory));
           analyticsEvent("Create Project", "Create Sample Project");
         } else {

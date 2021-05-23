@@ -4,6 +4,8 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import { NotifyError } from "../components/Notify";
 import { translateMessage } from "./localization";
+import { PatientFS } from "./PatientFile";
+import { i18n } from "@lingui/core";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -18,25 +20,19 @@ export function trash(path: string): boolean {
   // So convert to backslashes as needed:
   const fixedPath = Path.normalize(path).replace("/", Path.sep);
 
+  const msg = translateMessage(
+    /*i18n*/ { id: "lameta was not able to delete the file." }
+  );
+
+  PatientFS.assertWritePermissionWithNotification(fixedPath, msg);
   // NB: if the file is locked (at least on windows), electron 10 wrongly returns true for success, so
   // we verify that it is now not there.
   // To test this manually, try to trash a video while it is playing.
   const success =
     electron.shell.moveItemToTrash(fixedPath) && !fs.existsSync(fixedPath);
 
-  if (!success) {
-    NotifyError(
-      `${translateMessage(
-        /*i18n*/ { id: "lameta was not able to delete the file." }
-      )} (${fixedPath})  ${translateMessage(
-        /*i18n*/ {
-          id:
-            "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer.",
-        }
-      )}`
-    );
-  }
-
+  // enhance: this is lopsided because above we give an nice helpful message if certain problems occur.
+  // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.
   return success;
 }
 
