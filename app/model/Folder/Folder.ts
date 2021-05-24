@@ -116,20 +116,23 @@ export /*babel doesn't like this: abstract*/ class Folder {
   ) {
     const destPath = Path.join(
       destDirectory,
-      Path.basename(sourceFile.describedFilePath)
+      Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy)
     );
     if (fs.existsSync(destPath)) {
       return;
     }
     // note, I can't think of how the .meta file of the consent could be helpful, so
     // I'm not bothering to get it copied, or its contents preserved, except for size.
-    fs.copyFileSync(sourceFile.describedFilePath, destPath);
+    fs.copyFileSync(sourceFile.pathInFolderToLinkFileOrLocalCopy, destPath);
     const destFile = new OtherFile(destPath, this.customFieldRegistry, true);
     destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
     this.files.push(destFile);
   }
 
-  public copyInOneFile(pathToOriginalFile: string, newFileName?: string): Promise<void> {
+  public copyInOneFile(
+    pathToOriginalFile: string,
+    newFileName?: string
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (
         ["session", "person", "meta"].includes(

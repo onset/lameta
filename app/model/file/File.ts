@@ -17,7 +17,6 @@ import knownFieldDefinitions, {
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
-  getCannotRenameFileMsg,
   NotifyError,
   NotifyException,
   NotifyFileAccessProblem,
@@ -33,11 +32,6 @@ import xmlbuilder from "xmlbuilder";
 import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 import { t } from "@lingui/macro";
-import {
-  MediaFolderOrEmpty as getMediaFolderOrEmpty,
-  MediaFolderOrEmpty,
-} from "../../other/UserSettings";
-import { Debug } from "@sentry/integrations";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
@@ -878,10 +872,11 @@ export /*babel doesn't like this: abstract*/ class File {
       //   newFolderName
       // );
     }
-    this.describedFileOrLinkFilePath = this.internalUpdateNameBasedOnNewFolderName(
-      this.describedFileOrLinkFilePath,
-      newFolderName
-    );
+    this.describedFileOrLinkFilePath =
+      this.internalUpdateNameBasedOnNewFolderName(
+        this.describedFileOrLinkFilePath,
+        newFolderName
+      );
     // this.describedFilePath = this.updateFolderOnly(
     //   this.describedFilePath,
     //   newFolderName
@@ -1043,7 +1038,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     try {
       PatientFS.renameSyncWithNotifyAndRethrow(
-        this.describedFilePath,
+        this.describedFileOrLinkFilePath,
         newDescribedFilePath,
         this.type
       );
@@ -1150,8 +1145,7 @@ export function getStandardMessageAboutLockedFiles(): string {
     " " + // add space because this will always follow another message
     translateMessage(
       /*i18n*/ {
-        id:
-          "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+        id: "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
       }
     )
   );
