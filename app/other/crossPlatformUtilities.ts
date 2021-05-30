@@ -112,3 +112,8 @@ export function locate(relativePath: string): string {
     return "";
   }
 }
+
+// normalize both in terms of resolving things like ".." but also going to posix path separators
+export function normalizePath(path: string): string {
+  return Path.normalize(path).replace(/\\/g, "/");
+}

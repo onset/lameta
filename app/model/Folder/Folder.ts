@@ -165,7 +165,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(
           pathToOriginalFile,
-          this.customFieldRegistry
+          this.customFieldRegistry,
+          this.directory
         );
 
         this.files.push(f);

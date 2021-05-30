@@ -4,10 +4,14 @@ import uuid from "uuid";
 import { observable, computed } from "mobx";
 
 class FakeStore {
+  private values = {};
   public get(s: string, def: any = ""): any {
-    return def;
+    return this.values[s] || def;
   }
-  public set(key: string, value: any): void {}
+
+  public set(key: string, value: any): void {
+    this.values[key] = value;
+  }
   public path: string = "fake path";
 }
 const kFontZoomStepSize = 0.2;
@@ -26,7 +30,6 @@ export class UserSettings {
   @observable
   private sendErrors: boolean;
 
-  private email: string;
   private clientId: string;
 
   constructor() {
@@ -39,7 +42,6 @@ export class UserSettings {
     this.imdiMode = this.store.get("imdiMode") || false;
     this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
-    this.email = this.store.get("email", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
     this.store.set("lastVersion", require("../package.json").version);
@@ -56,7 +58,7 @@ export class UserSettings {
   }
 
   public get IMDIMode() {
-    return this.imdiMode;
+    return this.store.get("imdiMode", false);
   }
   public set IMDIMode(show: boolean) {
     this.imdiMode = show;
@@ -104,7 +106,7 @@ export class UserSettings {
     return this.howUsing === "developer";
   }
   public get Email() {
-    return this.email;
+    return this.store.get("email", "");
   }
   public set Email(v: string) {
     this.store.set("email", v);
@@ -136,6 +138,9 @@ export class UserSettings {
 
   public GetMediaFolder(projectId: string): string | undefined {
     const projectToFolder = this.store.get("mediaFolders") || {};
+    // console.log(
+    //   `GetMediaFolder(${projectId}) = ${JSON.stringify(projectToFolder)}`
+    // );
     return projectToFolder[projectId];
   }
   public SetMediaFolder(projectId: string, path: string | undefined) {
@@ -157,5 +162,5 @@ export function setMediaFolderOrEmptyForProjectAndMachine(
   projectId: string,
   path: string
 ) {
-  return userSettingsSingleton.SetMediaFolder(projectId, path);
+  userSettingsSingleton.SetMediaFolder(projectId, path);
 }

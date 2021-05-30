@@ -4,7 +4,7 @@ import * as Path from "path";
 import ReactModal from "react-modal";
 import "./RenameFileDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { File } from "../../model/file/File";
+import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
 import { Trans } from "@lingui/react";
 import _ from "lodash";
@@ -129,7 +129,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
             <div className="validationMessage">
               {pathUnchanged ? "" : this.getValidationProblemsMessage()}
             </div>
-            {this.state.file?.isLinkFile && (
+            {this.state.file?.isLinkFile() && (
               <p>
                 Note that this is a link to a file in your Media Files
                 directory. Here, you are renaming this link, not the original
@@ -179,8 +179,17 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
   }
 
   private static getUneditableSuffix(path: string): string {
+    let p = path;
+    const isLink = path.endsWith(kLinkExtensionWithFullStop);
+    if (isLink) {
+      p = p.replace(kLinkExtensionWithFullStop, "");
+    }
+
     const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
-    return RenameFileDialog.stringMatchOrEmptyString(path, matchExtension);
+    // if it's a link file, this will give us ".link"
+    const sfx = RenameFileDialog.stringMatchOrEmptyString(p, matchExtension);
+
+    return isLink ? sfx + kLinkExtensionWithFullStop : sfx;
   }
 
   private static getCore(filePath: string, folderId: string): string {

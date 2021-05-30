@@ -8,7 +8,7 @@ const camelcase = require("camelcase");
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
-import { locate } from "../../other/crossPlatformUtilities";
+import { locate, normalizePath } from "../../other/crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
@@ -390,6 +390,14 @@ export /*babel doesn't like this: abstract*/ class File {
     };
   }
 
+  public getRelativePathForExportingTheActualFile(): string {
+    return Path.join(
+      // folder name, e.g. "ETR009/"
+      Path.basename(Path.dirname(this.pathInFolderToLinkFileOrLocalCopy)),
+      // file name
+      this.getNameToUseWhenExportingUsingTheActualFile()
+    ).replace(/\\/g, "/");
+  }
   public getNameToUseWhenExportingUsingTheActualFile(): string {
     // For links, use the name shown in the list, which may have been renamed or sanitized
     // or whatever, rather than the original name that we are linking to
@@ -398,18 +406,16 @@ export /*babel doesn't like this: abstract*/ class File {
       : this.describedFileOrLinkFilePath;
     return Path.basename(filename);
   }
-
   public getActualFilePath(): string {
     if (this.isLinkFile()) {
       const subpath = fs.readFileSync(
         this.describedFileOrLinkFilePath,
         "utf-8"
       );
-      const path = Path.join(
+      return Path.join(
         getMediaFolderOrEmptyForThisProjectAndMachine(),
         subpath
       );
-      return path;
     } else {
       return this.describedFileOrLinkFilePath;
     }
@@ -965,13 +971,6 @@ export /*babel doesn't like this: abstract*/ class File {
     return locate(`assets/file-icons/${type}.png`);
   }
 
-  // We're defining "core name" to be the file name (no directory) minus the extension
-  private getCoreName(): string {
-    return Path.basename(this.describedFileOrLinkFilePath).replace(
-      Path.extname(this.describedFileOrLinkFilePath),
-      ""
-    );
-  }
   /**
    * Return core name of the file modified to indicate the given role
    *
@@ -992,6 +991,11 @@ export /*babel doesn't like this: abstract*/ class File {
     return false;
   }
 
+  public static getNameWithoutLinkExtension(path: string) {
+    //remove the link extension if it's there
+    return trimSuffix(path, kLinkExtensionWithFullStop);
+  }
+
   public tryToRenameBothFiles(newCoreName: string): boolean {
     assert(
       this.metadataFilePath !== this.describedFileOrLinkFilePath,
@@ -999,12 +1003,21 @@ export /*babel doesn't like this: abstract*/ class File {
     );
 
     this.save();
+    const possibleLinkExtension = this.isLinkFile()
+      ? kLinkExtensionWithFullStop
+      : "";
+    const originalFileName = this.describedFileOrLinkFilePath.replace(
+      kLinkExtensionWithFullStop,
+      ""
+    );
+    const originalFileExtension = Path.extname(originalFileName);
     const newDescribedFilePath = Path.join(
       Path.dirname(this.describedFileOrLinkFilePath),
-      newCoreName + Path.extname(this.describedFileOrLinkFilePath)
+      newCoreName + originalFileExtension + possibleLinkExtension
     );
 
-    const newMetadataFilePath = newDescribedFilePath + ".meta";
+    const newMetadataFilePath =
+      newDescribedFilePath.replace(kLinkExtensionWithFullStop, "") + ".meta";
 
     const cannotRenameBecauseExists = translateMessage(
       /*i18n*/ {
@@ -1101,7 +1114,9 @@ export class OtherFile extends File {
     customFieldRegistry: CustomFieldRegistry,
     partialLoadWhileCopyingInThisFile?: boolean
   ) {
-    super(path, path + ".meta", "Meta", false, ".meta", true);
+    // we want "foo.mp3.meta", not "foo.mp3.link.meta"
+    const r = path.replace(kLinkExtensionWithFullStop, "");
+    super(path, r + ".meta", "Meta", false, ".meta", true);
 
     this.customFieldNamesRegistry = customFieldRegistry;
 
@@ -1115,19 +1130,26 @@ export class OtherFile extends File {
 
   public static CreateLinkFile(
     pathToOriginalFile: string,
-    customFileRegistry: CustomFieldRegistry
+    customFileRegistry: CustomFieldRegistry,
+    destinationFolderPath: string
   ) {
-    const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
-    if (!mediaFolder)
+    const mediaFolderPath = getMediaFolderOrEmptyForThisProjectAndMachine();
+    if (!mediaFolderPath)
       throw new Error(
         "CreateLinkFile called but there is no known MediaFolder"
       );
-    if (!fs.existsSync(mediaFolder))
+    if (!fs.existsSync(mediaFolderPath))
       throw new Error(
-        `CreateLinkFile called but there the MediaFolder "${mediaFolder}" does not exist.`
+        `CreateLinkFile called but the MediaFolder "${mediaFolderPath}" does not exist.`
       );
-    const pathRelativeToRoot = Path.relative(mediaFolder!, pathToOriginalFile);
-    const pathToLinkFile = pathToOriginalFile + kLinkExtensionWithFullStop;
+    const pathRelativeToRoot = Path.relative(
+      mediaFolderPath!,
+      pathToOriginalFile
+    );
+    const pathToLinkFile = Path.posix.join(
+      destinationFolderPath,
+      Path.basename(pathToOriginalFile + kLinkExtensionWithFullStop)
+    );
     fs.writeFileSync(pathToLinkFile, pathRelativeToRoot, "utf-8");
     return new OtherFile(pathToLinkFile, customFileRegistry, false);
   }
