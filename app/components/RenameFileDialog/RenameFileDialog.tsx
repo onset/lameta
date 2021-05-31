@@ -15,6 +15,7 @@ import { Trans } from "@lingui/react";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
+import { error_color } from "../colors";
 const sanitizeFilename = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
@@ -106,7 +107,7 @@ export class RenameFileDialog extends React.Component<IProps, IState> {
                 height: 2em;
               }
               .validationMessage {
-                color: red;
+                color: ${error_color};
               }
               .row {
                 margin-top: 1em;

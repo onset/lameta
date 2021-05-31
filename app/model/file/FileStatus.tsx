@@ -1,8 +1,16 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
+import * as React from "react";
 import { File } from "./File";
 import * as fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { locate } from "../../other/crossPlatformUtilities";
+import { error_color, saymore_orange } from "../../components/colors";
 
 export function getStatusOfFile(f: File): {
   missing: boolean;
@@ -83,3 +91,46 @@ export function getLinkStatusIconPath(f: File): string {
       return "";
   }
 }
+
+export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
+  props
+) => {
+  const fileStatus = getStatusOfFile(props.file);
+
+  const color =
+    fileStatus.status === "noMediaFolderConnection"
+      ? saymore_orange
+      : error_color;
+
+  return fileStatus.missing ? (
+    <div
+      css={css`
+        display: flex;
+        margin: 10px;
+        margin-left: 0;
+        padding: 20px;
+        border-radius: 4px;
+        background-color: ${color};
+        color: white;
+      `}
+    >
+      {/* <img
+        css={css`
+          height: 20px;
+          width: auto;
+          margin-right: 10px;
+        `}
+        src={getLinkStatusIconPath(props.file)}
+      /> */}
+      <p
+        css={css`
+          margin-block-start: 0;
+          margin-block-end: 0;
+          font-size: 16px;
+        `}
+      >
+        {fileStatus.info}
+      </p>
+    </div>
+  ) : null;
+};

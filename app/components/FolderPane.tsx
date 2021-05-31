@@ -31,6 +31,7 @@ import { locate } from "../other/crossPlatformUtilities";
 import * as URL from "url";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import {
+  FileStatusBlock,
   getLinkStatusIconPath,
   getStatusOfFile,
 } from "../model/file/FileStatus";
@@ -85,7 +86,14 @@ export const FolderPane = observer<
         onChange={(size: any) => localStorage.setItem(splitterKey, size)}
       >
         <FileList folder={props.folder} extraButtons={props.fileListButtons} />
-        {tabs}
+        <div>
+          {props.folder.selectedFile && (
+            <>
+              <FileStatusBlock file={props.folder.selectedFile} />
+              {tabs}
+            </>
+          )}
+        </div>
       </SplitPane>
     </div>
   );
@@ -203,17 +211,6 @@ function getTabs(
 
   // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
-
-  const statusIcon = getLinkStatusIconPath(file);
-  if (statusIcon) {
-    const { info: missingFileInfo } = getStatusOfFile(file);
-    return (
-      <div>
-        <img src={statusIcon} />
-        <p>{missingFileInfo}</p>
-      </div>
-    );
-  }
 
   let t = file.type;
   let ext = Path.extname(file.getActualFilePath());
