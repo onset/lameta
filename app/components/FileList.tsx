@@ -6,7 +6,7 @@ import Dropzone, { ImageFile } from "react-dropzone";
 import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
-import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
+import { RenameFileDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t } from "@lingui/macro";
 import { Trans } from "@lingui/react";

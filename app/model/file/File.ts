@@ -390,6 +390,12 @@ export /*babel doesn't like this: abstract*/ class File {
     };
   }
 
+  /*ideas from last coding session:
+  1) it seems I'm constantly taking what might be links and stripping off the .link part. Maybe I need a File.getNameToUseWhenExportingUsingTheActualFile() more}
+  2) The rename dialog is prone to bugginess, and has a bug at the moment where if the folder is "foo" and the file is "foo.mp3", then you get suggested "foo_foo.mpe".
+  I think I should move this spliting logic (prefix, main, suffix) into File and then surround with unit tests. 
+  */
+
   public getRelativePathForExportingTheActualFile(): string {
     return Path.join(
       // folder name, e.g. "ETR009/"
