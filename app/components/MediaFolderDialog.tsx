@@ -10,7 +10,7 @@ import { useState } from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { Trans } from "@lingui/react";
-import { ipcRenderer, OpenDialogOptions } from "electron";
+import { ipcRenderer, OpenDialogOptions, remote } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
   setMediaFolderOrEmptyForThisProjectAndMachine,
@@ -152,6 +152,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
               onClick={() => {
                 setMediaFolderOrEmptyForThisProjectAndMachine(path);
                 setOpen(false);
+                remote.getCurrentWindow().reload();
               }}
             >
               <Trans>OK</Trans>

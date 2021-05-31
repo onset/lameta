@@ -29,6 +29,11 @@ import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 import { locate } from "../other/crossPlatformUtilities";
 import * as URL from "url";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
+import {
+  getLinkStatusIconPath,
+  getStatusOfFile,
+} from "../model/file/FileStatus";
 
 export interface IProps {
   folder: Folder;
@@ -48,9 +53,8 @@ export const FolderPane = observer<
   IProps & React.HTMLAttributes<HTMLDivElement>
 >((props: IProps) => {
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [selectedContribution, setSelectedContribution] = React.useState<
-    Contribution | undefined
-  >(undefined);
+  const [selectedContribution, setSelectedContribution] =
+    React.useState<Contribution | undefined>(undefined);
 
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
@@ -63,6 +67,7 @@ export const FolderPane = observer<
     selectedContribution,
     setSelectedContribution
   );
+
   const splitterKey = props.folderTypeStyleClass + "HorizontalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
@@ -199,16 +204,17 @@ function getTabs(
   // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
-  const { missing, info: missingFileInfo } = file.getStatusOfThisFile();
-
-  if (missing) {
+  const statusIcon = getLinkStatusIconPath(file);
+  if (statusIcon) {
+    const { info: missingFileInfo } = getStatusOfFile(file);
     return (
       <div>
-        <img src={locate("assets/warning.png")} />
+        <img src={statusIcon} />
         <p>{missingFileInfo}</p>
       </div>
     );
   }
+
   let t = file.type;
   let ext = Path.extname(file.getActualFilePath());
   if ([".txt", ".md"].includes(ext)) t = "Text";

@@ -351,50 +351,6 @@ export /*babel doesn't like this: abstract*/ class File {
   public getActualFileExists(): boolean {
     return fs.existsSync(this.getActualFilePath());
   }
-  public getStatusOfThisFile(): { missing: boolean; info: string } {
-    if (this.copyInProgress) {
-      return { missing: false, info: this.copyProgress };
-    }
-    if (this.getActualFileExists()) {
-      if (this.isLinkFile())
-        return {
-          missing: false,
-          info: `Linked to ${this.getActualFilePath()}`,
-        };
-      else return { missing: false, info: `${this.getActualFilePath()}` };
-    }
-    const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
-
-    if (!mediaFolder)
-      return {
-        missing: true,
-        info: `The file is missing from ${this.getActualFilePath()}`,
-      };
-    if (!fs.existsSync(mediaFolder))
-      return {
-        missing: true,
-        info: `lameta cannot find the Media Folder '${mediaFolder}'`,
-      };
-    if (!fs.existsSync(this.describedFileOrLinkFilePath))
-      return {
-        missing: true,
-        info: `lameta expected to find a .link file at '${this.describedFileOrLinkFilePath}'`,
-      };
-    const subpath = fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
-    return {
-      missing: true,
-      info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${mediaFolder} and this file is supposed to be at ${Path.join(
-        getMediaFolderOrEmptyForThisProjectAndMachine(),
-        subpath
-      )}.`,
-    };
-  }
-
-  /*ideas from last coding session:
-  1) it seems I'm constantly taking what might be links and stripping off the .link part. Maybe I need a File.getNameToUseWhenExportingUsingTheActualFile() more}
-  2) The rename dialog is prone to bugginess, and has a bug at the moment where if the folder is "foo" and the file is "foo.mp3", then you get suggested "foo_foo.mpe".
-  I think I should move this spliting logic (prefix, main, suffix) into File and then surround with unit tests. 
-  */
 
   public getRelativePathForExportingTheActualFile(): string {
     return Path.join(
@@ -970,9 +926,9 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   public getIconPath(): string {
-    if (this.getStatusOfThisFile().missing) {
-      return locate("assets/warning.png");
-    }
+    // if (this.getStatusOfThisFile().missing) {
+    //   return locate("assets/warning.png");
+    // }
     const type = this.getTextProperty("type", "unknowntype");
     return locate(`assets/file-icons/${type}.png`);
   }

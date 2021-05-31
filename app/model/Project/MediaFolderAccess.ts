@@ -30,13 +30,13 @@ export function getMediaFolderOrEmptyForThisProjectAndMachine() {
 }
 
 export function setMediaFolderOrEmptyForThisProjectAndMachine(path: string) {
-  if (!path) {
-    throw new Error(
-      "setMediaFolderOrEmptyForThisProjectAndMachine() called with empty path"
-    );
-  }
+  // if (!path) {
+  //   throw new Error(
+  //     "setMediaFolderOrEmptyForThisProjectAndMachine() called with empty path"
+  //   );
+  // }
 
-  if (!sCurrentProjectId) {
+  if (path && !sCurrentProjectId) {
     NotifyWarning("The title for this project is empty.");
   }
   setMediaFolderOrEmptyForProjectAndMachine(sCurrentProjectId, path);

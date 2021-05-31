@@ -17,12 +17,19 @@ import { observer } from "mobx-react-lite";
 import { NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
 import { getExtension } from "../other/CopyManager";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
+import {
+  getLinkStatusIconPath,
+  getStatusOfFile,
+} from "../model/file/FileStatus";
 const electron = require("electron");
 
 export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
   (props) => {
     const [selectedFile, setSelectedFile] = React.useState(undefined);
-
+    const [haveMediaFolder] = React.useState(
+      getMediaFolderOrEmptyForThisProjectAndMachine()
+    );
     // What this mobxDummy is about:
     // What happens inside the component tabeles cells are invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
@@ -55,6 +62,16 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           return f.getFilenameToShowInList();
         },
         className: "filename",
+      },
+      {
+        id: "linkStatus",
+        Header: "",
+        width: 30,
+        accessor: (d: any) => {
+          const f: File = d;
+          return getLinkStatusIconPath(f);
+        },
+        Cell: (p) => <img src={p.value} />,
       },
       {
         id: "type",
@@ -165,7 +182,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-            const { missing, info } = rowInfo.original.getStatusOfThisFile();
+            const { missing, status, info } = getStatusOfFile(rowInfo.original);
 
             return {
               title: info,
@@ -205,7 +222,8 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
               className:
                 (rowInfo.original.copyInProgress ? "copyPending " : "") +
                 ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
-                (missing ? " missing " : "") +
+                status +
+                " " +
                 (rowInfo && rowInfo.original === props.folder.selectedFile
                   ? " selected "
                   : ""),
@@ -230,7 +248,7 @@ function showFileMenu(
     return;
   }
   const showDevOnlyItems = userSettings.DeveloperMode;
-  const missing = file.getStatusOfThisFile().missing;
+  const missing = getStatusOfFile(file).missing;
 
   let items = [
     {
