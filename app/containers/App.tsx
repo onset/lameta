@@ -5,8 +5,9 @@ import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDelete
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialog";
-import { I18nProvider } from "@lingui/macro";
-import { catalogs, currentUILanguage } from "../other/localization";
+import { I18nProvider } from "@lingui/react";
+///import { i18n } from "../other/localization";
+import { i18n } from "@lingui/core";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
@@ -36,7 +37,7 @@ export const App: React.FunctionComponent = observer(() => {
         }
       }}
     >
-      <I18nProvider language={currentUILanguage} catalogs={catalogs}>
+      <I18nProvider i18n={i18n}>
         <HomePage />
         <ButterToast className={"notificationTray"} />
         <ConfirmDeleteDialog />

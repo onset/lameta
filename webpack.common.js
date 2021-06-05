@@ -66,7 +66,6 @@ module.exports = {
                 //"@babel/preset-env",
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                "@lingui/babel-preset-react",
 
                 [
                   "@babel/preset-env",

@@ -1,21 +1,26 @@
 /* --------------------------------------------------------------------
   Set up the stuff handled by lingui
   ---------------------------------------------------------------------*/
-import { setupI18n, I18n } from "@lingui/core";
+import { i18n as i18nFromLinguiCore } from "@lingui/core";
 import userSettings from "./UserSettings";
 import { remote } from "electron";
 import { t } from "@lingui/macro";
+// tslint:disable-next-line: no-submodule-imports
+import * as allPlurals from "make-plural/plurals"; // this is from lingui.
+
 import moment from "moment";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
-import { string } from "prop-types";
 import pupa from "pupa";
 
 const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
 export let currentUILanguage: string;
-export let i18n: I18n;
+// in the past we had to have our own version, with the upgrade to lingui 3
+// this could probably go away.
+export const i18n = i18nFromLinguiCore;
+
 let olacRoles: IChoice[];
 
 export function initializeLocalization() {
@@ -57,6 +62,10 @@ export function initializeLocalization() {
 export function setUILanguage(code: string, reload: boolean = true): void {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
+
+  // we don't actually use this plural function but without it, we get console errors if we don't set this.
+  const pluralFn = allPlurals[code] || allPlurals["en"];
+  i18n.loadLocaleData(code, { plurals: pluralFn });
   i18n.load(
     currentUILanguage,
     require(`../../locale/${currentUILanguage}/messages.js`)

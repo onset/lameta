@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FileList } from "./FileList";
 import { observer } from "mobx-react-lite";

@@ -62,11 +62,11 @@ Currently we have lingui v2, and it does not have a way of extracting strings fr
 
 # How to add a language
 
-In Crowdin:settings:translations:Target Languages, add the language.
+1. In Crowdin:settings:translations:Target Languages, add the language. That will make it available for translation.
 
-`yarn lingui-add xyz`
+1. To .linguirc, add the code to `locales`
 
-`yarn lingui-extract` (note: this will fail if the program is running, including JEST. So in vscode ctrl-shift-p, "Jest: Stop Runner")
+1. `yarn lingui-extract` (note: this will fail if the program is running, including JEST. So in vscode ctrl-shift-p, "Jest: Stop Runner")
 
 ## CSVs
 

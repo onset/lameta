@@ -1,5 +1,4 @@
 import React from "react";
-import { Trans } from "@lingui/macro";
 import Tooltip from "react-tooltip-lite";
 import { Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
