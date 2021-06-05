@@ -22,7 +22,7 @@ const electron = require("electron");
 import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";

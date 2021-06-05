@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
 import * as _ from "lodash";
 

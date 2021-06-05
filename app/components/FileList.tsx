@@ -9,7 +9,7 @@ import { showInExplorer } from "../other/crossPlatformUtilities";
 import { RenameFileDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t } from "@lingui/macro";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";

@@ -11,7 +11,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";

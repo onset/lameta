@@ -1,5 +1,4 @@
 {
-
       "localeDir": "locale/",
       "srcPathDirs": ["app/"],
       "format": "po",
@@ -14,5 +13,10 @@
       "extractBabelOptions": {
             "plugins": ["@babel/plugin-syntax-dynamic-import", "macros"],
               "presets": [ "@babel/preset-env","@babel/preset-react", "@lingui/babel-preset-react"]
+      },
+      "compilerBabelOptions": {
+            "jsescOption": {
+                  "minimal": false
+            }
       }
 }

@@ -5,7 +5,7 @@ import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDelete
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialog";
-import { I18nProvider } from "@lingui/react";
+import { I18nProvider } from "@lingui/macro";
 import { catalogs, currentUILanguage } from "../other/localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";

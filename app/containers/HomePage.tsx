@@ -21,7 +21,7 @@ import { locate } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
 import { i18n } from "../other/localization";
 import { analyticsEvent } from "../other/analytics";
@@ -126,8 +126,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
         title: `Warning`,
-        text:
-          "This is a beta test version, so make sure you have a backup of your work.",
+        text: "This is a beta test version, so make sure you have a backup of your work.",
         width: "300px",
         buttonText: "I understand",
       });

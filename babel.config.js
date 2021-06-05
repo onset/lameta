@@ -9,7 +9,6 @@ module.exports = function (api) {
     presets: [
       "@babel/preset-typescript",
       "@babel/preset-react",
-      "@lingui/babel-preset-react",
       [
         // allow ES2015, ES2016 stuff like import
         "@babel/preset-env",
@@ -26,6 +25,7 @@ module.exports = function (api) {
       "@babel/plugin-transform-modules-commonjs", //https://github.com/facebook/jest/issues/6913#issuecomment-421618932
       ["@babel/plugin-proposal-decorators", { legacy: true }],
       ["@babel/plugin-proposal-class-properties", { loose: true }],
+      "macros", // lingui. Couldn't they have named this "lingui-macro"???
     ],
   };
 };

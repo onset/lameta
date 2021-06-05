@@ -9,7 +9,7 @@ import * as React from "react";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { ipcRenderer, OpenDialogOptions, remote } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,

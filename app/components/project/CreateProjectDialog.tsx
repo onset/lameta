@@ -7,7 +7,7 @@ import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
 import { t } from "@lingui/macro";
 import { i18n } from "../../other/localization";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { analyticsLocation } from "../../other/analytics";
 
 interface IProps {

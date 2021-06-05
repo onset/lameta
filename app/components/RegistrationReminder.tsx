@@ -5,7 +5,7 @@ import RegistrationDialog from "./registration/RegistrationDialog";
 import * as mobx from "mobx-react";
 import { t } from "@lingui/macro";
 import { i18n } from "../other/localization";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 
 // This is in the upper right corner of the screen. It shows either
 // * A button asking you to register, or

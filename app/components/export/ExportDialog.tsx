@@ -14,7 +14,7 @@ import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
 import { remote } from "electron";
 import * as Path from "path";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";

@@ -9,7 +9,7 @@ import ReactModal from "react-modal";
 import "./MessageDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 
 interface IConfig {
   title: string;

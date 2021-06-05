@@ -9,7 +9,7 @@ import {
   FileListButtons,
 } from "../componentTab/ComponentTab";
 import "./PeopleTab.scss";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 interface IProps {

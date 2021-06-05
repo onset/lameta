@@ -22,7 +22,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
 import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { observer } from "mobx-react";
 import { FieldLabel } from "../../FieldLabel";
@@ -77,14 +77,13 @@ export const PersonLanguageList: React.FunctionComponent<{
     () => props.person.properties.getFieldDefinition("languages"),
     []
   );
-  const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
-    IPersonLanguage | undefined
-  >(undefined);
+  const [newLanguagePlaceholder, setNewLanguagePlaceholder] =
+    useState<IPersonLanguage | undefined>(undefined);
   const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {
     if (props.person.languages.length === 0)
-      setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
+      setNewLanguagePlaceholder({} as any as IPersonLanguage);
     setFocusOnPlaceholder(false);
   }, [props.person.languages]);
 
@@ -137,7 +136,7 @@ export const PersonLanguageList: React.FunctionComponent<{
       {!!newLanguagePlaceholder || (
         <a
           onClick={(x) => {
-            setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
+            setNewLanguagePlaceholder({} as any as IPersonLanguage);
             setFocusOnPlaceholder(true);
           }}
         >

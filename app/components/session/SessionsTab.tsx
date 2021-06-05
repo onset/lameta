@@ -4,7 +4,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { Project } from "../../model/Project/Project";
 import { ComponentTab } from "../componentTab/ComponentTab";
 import "./SessionsTab.scss";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 
 interface IProps {
   project: Project;

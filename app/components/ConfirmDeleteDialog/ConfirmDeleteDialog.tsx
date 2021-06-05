@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}

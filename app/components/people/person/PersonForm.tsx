@@ -8,7 +8,7 @@ import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import { MugShot } from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { PersonLanguageList } from "./PersonLanguageList";

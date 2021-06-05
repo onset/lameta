@@ -2,7 +2,7 @@ import * as React from "react";
 import ReactModal from "react-modal";
 //import "./RegistrationDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import * as isEmail from "isemail";
 import userSettings from "../../other/UserSettings";
 import "./RegistrationDialog.scss";

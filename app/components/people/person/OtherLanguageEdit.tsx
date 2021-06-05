@@ -4,7 +4,7 @@ import {
   maxOtherLanguages,
 } from "../../../model/Project/Person/Person";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
 export const OtherLanguageEdit: React.FunctionComponent<{
