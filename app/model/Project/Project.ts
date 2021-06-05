@@ -13,15 +13,12 @@ import { trash } from "../../other/crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
-import { IChoice } from "../field/Field";
+import { Field, FieldType, IChoice } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
-import userSettings, {
-  getMediaFolderOrEmptyForProjectAndMachine,
-  setMediaFolderOrEmptyForProjectAndMachine,
-} from "../../other/UserSettings";
+import userSettings from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 import * as Sentry from "@sentry/browser";
 
@@ -105,14 +102,18 @@ export class Project extends Folder {
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
 
+    if (this.properties.getTextStringOrEmpty("guid").length === 0) {
+      console.log("***adding guid");
+      this.properties.addTextProperty("guid", NewGuid());
+      this.wasChangeThatMobxDoesNotNotice();
+    }
+
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
     }
-
     // Note, we'd rather have an id that cannot change, but don't have one to
     // work with at the moment.
-    //TODO WHAT IF THIS CHANGES?
-    setCurrentProjectId(this.properties.getTextStringOrEmpty("title"));
+    setCurrentProjectId(this.properties.getTextStringOrEmpty("guid"));
 
     this.selectedSession = new IFolderSelection();
     this.selectedPerson = new IFolderSelection();
@@ -326,9 +327,8 @@ export class Project extends Folder {
     this.properties
       .getValueOrThrow("customAccessChoices")
       .textHolder.map.intercept((change) => {
-        const currentProtocol = this.properties.getTextStringOrEmpty(
-          "accessProtocol"
-        );
+        const currentProtocol =
+          this.properties.getTextStringOrEmpty("accessProtocol");
         // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(
           currentProtocol,
@@ -525,9 +525,8 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
-      "vernacularIso3CodeAndName"
-    );
+    const projectDefaultContentLanguage: string =
+      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project
@@ -563,6 +562,14 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     );
     this.finishLoading();
   }
+}
+
+function NewGuid() {
+  let sGuid = "";
+  for (let i = 0; i < 32; i++) {
+    sGuid += Math.floor(Math.random() * 0xf).toString(0xf);
+  }
+  return sGuid;
 }
 
 // // We store the media folder in a way that is unique to the title of the

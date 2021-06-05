@@ -25,6 +25,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
   );
   const [open, setOpen] = useState(false);
   staticShowMediaFolderDialog = () => {
+    setPath(getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)");
     setOpen(true);
   };
 

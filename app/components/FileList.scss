@@ -73,7 +73,7 @@
   color: $project--color;
 }
 .missing {
-  color: red !important;
+  color: $error-color !important;
 }
 .noMediaFolderConnection {
   color: $project-color !important;

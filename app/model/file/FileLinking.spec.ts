@@ -1,4 +1,5 @@
 import { OtherFile } from "./File";
+import { getStatusOfFile } from "./FileStatus";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
@@ -92,7 +93,7 @@ describe("Linked file", () => {
 
     fs.removeSync(mp3InChildDirectory);
     expect(f.getActualFileExists()).toBe(false);
-    expect(f.getStatusOfThisFile().missing).toBe(true);
+    expect(getStatusOfFile(f).missing).toBe(true);
   });
 });
 
@@ -116,7 +117,7 @@ function commonTests(f: OtherFile, fileName: string) {
   expect(f.isLinkFile()).toBe(true);
 
   expect(f.getActualFileExists()).toBe(true);
-  expect(f.getStatusOfThisFile().missing).toBe(false);
+  expect(getStatusOfFile(f).missing).toBe(false);
 
   expect(f.getNameToUseWhenExportingUsingTheActualFile()).toBe(fileName);
 

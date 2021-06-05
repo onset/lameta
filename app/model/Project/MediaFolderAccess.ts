@@ -6,9 +6,11 @@ import {
 
 let sCurrentProjectId: string = "";
 export function getCurrentProjectId(): string {
+  console.log("get project id = " + sCurrentProjectId);
   return sCurrentProjectId;
 }
 export function setCurrentProjectId(projectId: string) {
+  console.log("set project id = " + projectId);
   sCurrentProjectId = projectId;
 }
 // We store the media folder in a way that is unique to the title of the
@@ -23,7 +25,7 @@ export function getMediaFolderOrEmptyForThisProjectAndMachine() {
   // work with at the moment.
 
   if (!sCurrentProjectId) {
-    NotifyWarning("The title for this project is empty.");
+    NotifyWarning("The Id for this project is empty.");
     return "";
   }
   return getMediaFolderOrEmptyForProjectAndMachine(sCurrentProjectId);
@@ -37,7 +39,7 @@ export function setMediaFolderOrEmptyForThisProjectAndMachine(path: string) {
   // }
 
   if (path && !sCurrentProjectId) {
-    NotifyWarning("The title for this project is empty.");
+    NotifyWarning("The Id for this project is empty.");
   }
   setMediaFolderOrEmptyForProjectAndMachine(sCurrentProjectId, path);
 }

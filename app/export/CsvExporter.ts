@@ -10,6 +10,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyException } from "../components/Notify";
+import { debug } from "winston";
 
 export const kEol: string = require("os").EOL;
 
@@ -120,13 +121,14 @@ function getGenericCsv(folders: Folder[]): string {
   const foundFields = getKeys(folders)
     .filter((k) => {
       if (blacklist.indexOf(k) > -1) return false;
-      if (folders[0].properties.getValue(k)?.definition.omitExport) {
+      const def = folders[0].properties.getValue(k)?.definition;
+
+      if (def?.omitExport) {
         //console.log("will not export " + k);
         return false;
       }
       return true;
     })
-
     .sort(sortFields);
   let header = foundFields.join(",");
   // we have a bit of hassle in that contributions are currently

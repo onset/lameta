@@ -1,11 +1,8 @@
 import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
-import { Field, FieldType } from "../field/Field";
-import { FieldDefinition } from "../field/FieldDefinition";
+import { Field } from "../field/Field";
 import { File, Contribution } from "./File";
 import assert from "assert";
-import { IPersonLanguage } from "../PersonLanguage";
-import { FolderMetadataFile } from "./FolderMetaDataFile";
 import { NotifyException } from "../../components/Notify";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files

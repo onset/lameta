@@ -14,5 +14,7 @@
     "omitexport",
     "scripthost"
   ],
-  "cSpell.diagnosticLevel": "Hint"
+  "cSpell.diagnosticLevel": "Hint",
+  "wallaby.alwaysOpenLocalWallabyAppUrl": true,
+  "wallaby.codeLensFeature.runTest": true
 }
