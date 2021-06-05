@@ -11,6 +11,7 @@ import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { locate } from "../../other/crossPlatformUtilities";
 import { error_color, saymore_orange } from "../../components/colors";
+import { translateMessage } from "../../other/localization";
 
 export function getStatusOfFile(f: File): {
   missing: boolean;
@@ -30,13 +31,19 @@ export function getStatusOfFile(f: File): {
     };
   }
   if (f.getActualFileExists()) {
-    if (f.isLinkFile())
+    if (f.isLinkFile()) {
+      const info = translateMessage(
+        /*i18n*/ {
+          id: "Linked to {p}",
+          values: { p: f.getActualFilePath() },
+        }
+      );
       return {
         missing: false,
         status: "goodLink",
-        info: `Linked to ${f.getActualFilePath()}`,
+        info,
       };
-    else
+    } else
       return {
         missing: false,
         status: "normalFile",
@@ -49,32 +56,55 @@ export function getStatusOfFile(f: File): {
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info: `This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.`,
+      info: translateMessage(
+        /*i18n*/ {
+          id: "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.",
+        }
+      ),
     };
-  if (!fs.existsSync(mediaFolder))
+  if (!fs.existsSync(mediaFolder)) {
+    const info = translateMessage(
+      /*i18n*/ {
+        id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+        values: { m: mediaFolder },
+      }
+    );
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info: `lameta cannot find the Media Folder '${mediaFolder}'. See the File:Media Folder Settings.`,
+      info,
     };
+  }
 
   //review: what is this scenario??
   if (!fs.existsSync(f.pathInFolderToLinkFileOrLocalCopy))
     return {
       missing: true,
       status: "missing",
-      info: `lameta expected to find a .link file at '${f.pathInFolderToLinkFileOrLocalCopy}'`,
+      info: translateMessage(
+        /*i18n*/ {
+          id: `lameta expected to find a .link file at {e}`,
+          values: { e: f.pathInFolderToLinkFileOrLocalCopy },
+        }
+      ),
     };
 
   // we have the link file. We have the media folder. But we cannot find the file itself.
   const subpath = fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf-8");
+  const expected = Path.join(
+    getMediaFolderOrEmptyForThisProjectAndMachine(),
+    subpath
+  );
+  const info = translateMessage(
+    /*i18n*/ {
+      id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+      values: { m: mediaFolder, e: expected },
+    }
+  );
   return {
     missing: true,
     status: "missing",
-    info: `The file is missing from its expected location in the Media Folder. The Media Folder is set to ${mediaFolder} and this file is supposed to be at ${Path.join(
-      getMediaFolderOrEmptyForThisProjectAndMachine(),
-      subpath
-    )}.`,
+    info,
   };
 }
 

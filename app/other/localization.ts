@@ -9,6 +9,8 @@ import moment from "moment";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
+import { string } from "prop-types";
+import pupa from "pupa";
 
 const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
@@ -66,13 +68,17 @@ const genres = require("../../locale/genres.csv");
 const accessProtocols = require("../../locale/accessProtocols.csv");
 const tips = require("../../locale/tips.csv"); // tooltips and specialinfo
 
+// This is our own wrapper that is more unit-test friendly.
 // call to this must have the comment /*18n*/ in order for the lingui scanner to find it
 // e.g. translationMessage(/*18n*/{id: "foobar"})
-export function translateMessage(arg: { id: string }): string {
+export function translateMessage(arg: { id: string; values?: object }): string {
   if (i18n) {
-    return i18n._(arg.id);
-  } // unit testing
-  else return arg.id;
+    return i18n._(arg.id, arg.values);
+  } else {
+    // when unit testing, we just fill in the template
+    if (arg.values) return pupa(arg.id, arg.values);
+    else return arg.id;
+  }
 }
 
 export function translateFileType(englishTypeName: string): string {
