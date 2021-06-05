@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Trans } from "@lingui/macro";
 import {
   Person,
   maxOtherLanguages,
 } from "../../../model/Project/Person/Person";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
-import { Trans } from "@lingui/macro";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
 export const OtherLanguageEdit: React.FunctionComponent<{

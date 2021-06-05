@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { Project } from "../../model/Project/Project";
 //import { DocumentsPane } from "./DocumentsPane";
@@ -9,7 +10,6 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { AccessProtocolForm } from "./AccessProtocolForm";
 import ImdiView from "../ImdiView";
 import "./ProjectTab.scss";
-import { Trans } from "@lingui/macro";
 import userSettings from "../../other/UserSettings";
 import { ParadisecView } from "../ParadisecView";
 

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import * as fs from "fs";
 import * as Path from "path";
 import ReactModal from "react-modal";

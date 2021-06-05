@@ -32,9 +32,7 @@ export default class ParentButton extends React.Component<
             this.props.childLanguage.text.length === 0 ? "hidden" : "visible",
         }}
         className={"state " + (matching ? " on" : "")}
-        title={i18n._(
-          t`Indicates that this is the father or mother's primary language.`
-        )}
+        title={t`Indicates that this is the father or mother's primary language.`}
         onClick={() => {
           if (matching) {
             this.props.parentLanguage.setValueFromString("");

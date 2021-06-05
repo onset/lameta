@@ -1,5 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
+import { Trans } from "@lingui/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -22,7 +23,6 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
 import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
-import { Trans } from "@lingui/macro";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { observer } from "mobx-react";
 import { FieldLabel } from "../../FieldLabel";

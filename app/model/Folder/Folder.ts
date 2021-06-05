@@ -140,7 +140,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         )
       ) {
         NotifyWarning(
-          i18n._(t`Cannot add files of that type`) +
+          t`Cannot add files of that type` +
             ` (${getExtension(pathToOriginalFile)}`
         );
         return;
@@ -154,7 +154,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
       if (fs.existsSync(dest)) {
         NotifyWarning(
-          i18n._(t`There is already a file here with the name`) + ` (${n})`
+          t`There is already a file here with the name` + ` (${n})`
         );
         return;
       }
@@ -173,7 +173,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       } else {
         const f = new OtherFile(dest, this.customFieldRegistry, true);
         f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-        f.copyProgress = i18n._(t`Copy Requested...`);
+        f.copyProgress = t`Copy Requested...`;
         window.setTimeout(
           () =>
             CopyManager.safeAsyncCopyFileWithErrorNotification(
@@ -329,7 +329,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
           if (fs.existsSync(file.metadataFilePath)) {
             if (!trash(file.metadataFilePath)) {
               NotifyError(
-                i18n._(t`lameta was not able to put this file in the trash`) +
+                t`lameta was not able to put this file in the trash` +
                   ` (${file.metadataFilePath})`
               );
             }
@@ -357,9 +357,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
     sentryBreadCrumb(`renameFilesAndFolders ${newFolderName}.`);
     if (this.files.some((f) => f.copyInProgress)) {
       NotifyWarning(
-        i18n._(
-          t`Please wait until all files are finished copying into this folder`
-        )
+        t`Please wait until all files are finished copying into this folder`
       );
       return false;
     }
@@ -373,9 +371,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
-    const couldNotRenameDirectory = i18n._(
-      t`lameta could not rename the directory.`
-    );
+    const couldNotRenameDirectory = t`lameta could not rename the directory.`;
 
     // first, we just do a trial run to see if this will work
     try {
@@ -406,9 +402,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         f.updateNameBasedOnNewFolderName(newFolderName);
       } catch (err) {
         const base = Path.basename(f.metadataFilePath);
-        const msg = i18n._(
-          t`lameta was not able to rename one of the files in the folder.`
-        );
+        const msg = t`lameta was not able to rename one of the files in the folder.`;
         NotifyFileAccessProblem(
           `${msg} (${base})` + " [[STEP:File names]]",
           err
@@ -420,7 +414,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
     } catch (err) {
-      const msg = i18n._(t`lameta was not able to rename the folder.`);
+      const msg = t`lameta was not able to rename the folder.`;
       NotifyFileAccessProblem(
         `${msg} (${this.displayName}).` + " [[STEP:Actual folder]]",
         err

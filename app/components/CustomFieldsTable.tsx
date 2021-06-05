@@ -156,7 +156,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
         id: "name",
         Header: this.props.firstColumnHeaderText
           ? this.props.firstColumnHeaderText
-          : i18n._(t`Field`),
+          : t`Field`,
         maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
@@ -173,7 +173,7 @@ export default class CustomFieldsTable extends React.Component<IProps> {
       },
       {
         id: "value",
-        Header: i18n._(t`Value`),
+        Header: t`Value`,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return (

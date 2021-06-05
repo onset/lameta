@@ -23,20 +23,20 @@ export class PersonContributions extends React.Component<IProps> {
     const columns = [
       {
         id: "name",
-        Header: i18n._(t`Session`),
+        Header: t`Session`,
         width: 300,
         accessor: (row: Contribution) => row.sessionName,
       },
       {
         id: "role",
-        Header: i18n._(t`Role`),
+        Header: t`Role`,
         width: 100,
         accessor: (row: Contribution) =>
           row && row.role ? translateRole(row.role) : "",
       },
       {
         id: "comments",
-        Header: i18n._(t`Comments`),
+        Header: t`Comments`,
         //width: 200,
         accessor: (row: Contribution) => row.comments,
       },

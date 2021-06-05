@@ -17,7 +17,7 @@ import { saymore_orange } from "./colors";
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
   const [message, setMessage] = useState("");
   useInterval(() => {
-    setMessage(CopyManager.filesAreStillCopying() ? i18n._(t`Copying...`) : "");
+    setMessage(CopyManager.filesAreStillCopying() ? t`Copying...` : "");
     if (CopyManager.filesAreStillCopying()) {
       ipcRenderer.send("copyInProgress");
     } else {

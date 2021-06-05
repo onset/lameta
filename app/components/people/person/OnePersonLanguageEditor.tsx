@@ -46,7 +46,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
       `}
     >
       <ToggleIconButton
-        title={i18n._(t`Mark as a primary language.`)}
+        title={t`Mark as a primary language.`}
         onImagePath={"assets/star-selected.svg"}
         offImagePath={"assets/star-unselected.svg"}
         isOn={!!props.language.primary}
@@ -62,14 +62,14 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         autoFocus={props.autoFocus}
       />
       <ToggleIconButton
-        title={i18n._(t`Mark as a primary language of the mother.`)}
+        title={t`Mark as a primary language of the mother.`}
         onImagePath={"assets/mother-selected.svg"}
         offImagePath={"assets/mother-unselected.svg"}
         isOn={!!props.language.mother}
         onChange={(isOn) => (props.language.mother = isOn)}
       />
       <ToggleIconButton
-        title={i18n._(t`Mark as primary language of the father.`)}
+        title={t`Mark as primary language of the father.`}
         onImagePath={"assets/father-selected.svg"}
         offImagePath={"assets/father-unselected.svg"}
         isOn={!!props.language.father}

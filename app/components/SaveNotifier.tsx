@@ -1,6 +1,6 @@
 import "./SaveNotifier.scss";
-import * as React from "react";
 import { Trans } from "@lingui/macro";
+import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState, useEffect } from "react";
 

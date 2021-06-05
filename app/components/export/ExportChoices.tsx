@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import { Trans } from "@lingui/macro";
 
@@ -113,14 +113,14 @@ export const ExportChoices: React.FunctionComponent<{
           }}
         >
           <option key={"all"} value={"all"}>
-            {i18n._(t`All Sessions`)}
+            {t`All Sessions`}
           </option>
           <option
             key={"marked"}
             value={"marked"}
             disabled={props.countOfMarkedSessions === 0}
           >
-            {i18n._(t`${props.countOfMarkedSessions} Marked Sessions`)}
+            {t`${props.countOfMarkedSessions} Marked Sessions`}
           </option>
         </select>
       </div>

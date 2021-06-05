@@ -72,7 +72,7 @@ export class FolderList extends React.Component<IProps> {
       const header =
         key === "checked" ? (
           <input
-            title={i18n._(t`Mark for Export`)}
+            title={t`Mark for Export`}
             type="checkbox"
             onChange={(e) => {
               e.stopPropagation(); // don't select the folder of row
@@ -110,7 +110,7 @@ export class FolderList extends React.Component<IProps> {
             return (
               <input
                 type="checkbox"
-                title={i18n._(t`Mark for Export`)}
+                title={t`Mark for Export`}
                 checked={f.checked}
                 onChange={(e) => {
                   e.stopPropagation(); // don't select the folder of row
@@ -140,16 +140,14 @@ export class FolderList extends React.Component<IProps> {
               return (
                 <img
                   src={this.hasConsentPath}
-                  title={i18n._(t`Found file with a name containing 'Consent'`)}
+                  title={t`Found file with a name containing 'Consent'`}
                 />
               );
             } else {
               return (
                 <img
                   src={this.noConsentPath}
-                  title={i18n._(
-                    t`Found no file with a name containing 'Consent'`
-                  )}
+                  title={t`Found no file with a name containing 'Consent'`}
                 />
               );
             }

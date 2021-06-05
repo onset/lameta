@@ -41,41 +41,41 @@ export default class SayLessMenu {
     // );
     const mainWindow = remote.getCurrentWindow();
     const macMenu = {
-      label: i18n._(t`lameta`),
+      label: t`lameta`,
       submenu: [
         {
-          label: i18n._(t`About lameta`),
+          label: t`About lameta`,
           selector: "orderFrontStandardAboutPanel:",
         },
         {
           type: "separator",
         },
         {
-          label: i18n._(t`Services`),
+          label: t`Services`,
           submenu: [],
         },
         {
           type: "separator",
         },
         {
-          label: i18n._(t`Hide lameta`),
+          label: t`Hide lameta`,
           accelerator: "Command+H",
           selector: "hide:",
         },
         {
-          label: i18n._(t`Hide Others`),
+          label: t`Hide Others`,
           accelerator: "Command+Shift+H",
           selector: "hideOtherApplications:",
         },
         {
-          label: i18n._(t`Show All`),
+          label: t`Show All`,
           selector: "unhideAllApplications:",
         },
         {
           type: "separator",
         },
         {
-          label: i18n._(t`Quit`),
+          label: t`Quit`,
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
@@ -84,32 +84,32 @@ export default class SayLessMenu {
       ],
     };
     const editMenu = {
-      label: i18n._(t`Edit`),
+      label: t`Edit`,
       submenu: [
         {
-          label: i18n._(t`Undo`),
+          label: t`Undo`,
           accelerator: "CmdOrCtrl+Z",
           selector: "undo:",
         },
         {
-          label: i18n._(t`Redo`),
+          label: t`Redo`,
           accelerator: "Shift+CmdOrCtrl+Z",
           selector: "redo:",
         },
         { type: "separator" },
-        { label: i18n._(t`Cut`), accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: t`Cut`, accelerator: "CmdOrCtrl+X", selector: "cut:" },
         {
-          label: i18n._(t`Copy`),
+          label: t`Copy`,
           accelerator: "CmdOrCtrl+C",
           selector: "copy:",
         },
         {
-          label: i18n._(t`Paste`),
+          label: t`Paste`,
           accelerator: "CmdOrCtrl+V",
           selector: "paste:",
         },
         {
-          label: i18n._(t`Select All`),
+          label: t`Select All`,
           accelerator: "CmdOrCtrl+A",
           selector: "selectAll:",
         },
@@ -117,24 +117,24 @@ export default class SayLessMenu {
     };
 
     const fileMenu = {
-      label: "&" + i18n._(t`File`),
+      label: "&" + t`File`,
       submenu: [
         {
-          label: "&" + i18n._(t`Open Project...`),
+          label: "&" + t`Open Project...`,
           accelerator: "CmdOrCtrl+O",
           click: () => this.homePage.openProject(),
         },
         {
-          label: "&" + i18n._(t`Create Project...`),
+          label: "&" + t`Create Project...`,
           click: () => this.homePage.createProject(false),
         },
         {
-          label: "&" + i18n._(t`Start Screen`),
+          label: "&" + t`Start Screen`,
           click: () => this.homePage.projectHolder.setProject(null),
         },
         { type: "separator" },
         {
-          label: "&" + i18n._(t`Export Project...`),
+          label: "&" + t`Export Project...`,
           accelerator: "CmdOrCtrl+E",
           enabled: haveProject,
           click: () => {
@@ -142,7 +142,7 @@ export default class SayLessMenu {
           },
         },
         {
-          label: "&" + i18n._(t`Media Folder Settings...`),
+          label: "&" + t`Media Folder Settings...`,
           enabled: haveProject,
           click: () => {
             ShowMediaFolderDialog();
@@ -156,21 +156,21 @@ export default class SayLessMenu {
     }
 
     const viewMenu = {
-      label: "&" + i18n._(t`View`),
+      label: "&" + t`View`,
       submenu: [
         {
-          label: i18n._(t`Font Size`),
+          label: t`Font Size`,
 
           submenu: [
             {
-              label: i18n._(t`Smaller`),
+              label: t`Smaller`,
               accelerator: "CmdOrCtrl+-",
               click: () => {
                 userSettingsSingleton.ZoomFont(-1);
               },
             },
             {
-              label: i18n._(t`Larger`),
+              label: t`Larger`,
               accelerator: "CmdOrCtrl+=",
               click: () => {
                 userSettingsSingleton.ZoomFont(1);
@@ -179,7 +179,7 @@ export default class SayLessMenu {
           ],
         },
         {
-          label: i18n._(t`Interface Language`),
+          label: t`Interface Language`,
 
           submenu: [
             {
@@ -233,7 +233,7 @@ export default class SayLessMenu {
                 }
               : { type: "separator" },
             {
-              label: i18n._(t`Help translate`),
+              label: t`Help translate`,
               click: () => {
                 shell.openPath("https://crowdin.com/project/lameta");
               },
@@ -241,7 +241,7 @@ export default class SayLessMenu {
           ],
         },
         {
-          label: i18n._(t`IMDI Mode`),
+          label: t`IMDI Mode`,
           // tooltip only works in macos
           tooltip:
             "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
@@ -250,7 +250,7 @@ export default class SayLessMenu {
           click: () => (userSettings.IMDIMode = !userSettings.IMDIMode),
         },
         {
-          label: i18n._(t`PARADISEC Mode`),
+          label: t`PARADISEC Mode`,
           // tooltip only works in macos
           tooltip: "Show PARADISEC output preview panels",
           type: "checkbox",
@@ -327,16 +327,16 @@ export default class SayLessMenu {
       ],
     };
     const helpMenu = {
-      label: i18n._(t`Help`),
+      label: t`Help`,
       submenu: [
         {
-          label: i18n._(t`Registration...`),
+          label: t`Registration...`,
           click: () => {
             RegistrationDialog.show();
           },
         },
         {
-          label: i18n._(t`Report a problem`),
+          label: t`Report a problem`,
           click: () => {
             shell.openPath("https://saymorex.page.link/problem");
           },
@@ -345,11 +345,11 @@ export default class SayLessMenu {
           type: "separator",
         },
         {
-          label: i18n._(t`Credits`),
+          label: t`Credits`,
           click: () => ShowCreditsDialog(),
         },
         {
-          label: i18n._(t`Show Release Notes`),
+          label: t`Show Release Notes`,
           click: () => ShowReleasesDialog(),
         },
         {

@@ -1,5 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
+import { Trans } from "@lingui/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -9,7 +10,6 @@ import * as React from "react";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/macro";
 import { ipcRenderer, OpenDialogOptions, remote } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,

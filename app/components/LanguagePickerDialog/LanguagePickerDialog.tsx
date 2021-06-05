@@ -1,10 +1,10 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import ReactModal from "react-modal";
 import "./LanguagePickerDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import Autosuggest from "react-autosuggest";
 import { Field } from "../../model/field/Field";
-import { Trans } from "@lingui/macro";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}

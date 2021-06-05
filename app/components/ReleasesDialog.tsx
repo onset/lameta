@@ -6,8 +6,7 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/macro";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import * as _ from "lodash";
 
 const ReactMarkdown = require("react-markdown");
@@ -124,7 +123,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             `}
           >
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
-            {i18n._(t`You are running lameta version: `)}&nbsp;{version}
+            {t`You are running lameta version: `}&nbsp;{version}
           </div>
         </div>
         <div
@@ -216,7 +215,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                   setShowNewReleasesOnly(!event.target.checked);
                 }}
               ></input>
-              {i18n._(t`Show more releases`)}
+              {t`Show more releases`}
             </label>
           )}
           <div

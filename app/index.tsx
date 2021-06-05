@@ -33,9 +33,9 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
     ipcRenderer
       .invoke(
         "confirm-quit",
-        i18n._(t`One or more files are still being copied into your project.`),
-        i18n._(t`Do not quit`),
-        i18n._(t`Abandon files that are still copying`)
+        t`One or more files are still being copied into your project.`,
+        t`Do not quit`,
+        t`Abandon files that are still copying`
       )
       .then((result) => {
         if (result.response === 1) {

@@ -109,12 +109,12 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     const contributors = this.props.file.contributions;
     const columns = [
       {
-        Header: i18n._(t`Name`),
+        Header: t`Name`,
         accessor: "name",
         Cell: (cellInfo: any) => this.renderPerson(cellInfo),
       },
       {
-        Header: i18n._(t`Role`),
+        Header: t`Role`,
         accessor: "role",
         Cell: (cellInfo: any) => this.renderRole(cellInfo),
       },
@@ -125,7 +125,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
       },*/
       {
-        Header: i18n._(t`Comments`),
+        Header: t`Comments`,
         accessor: "comments",
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
       },

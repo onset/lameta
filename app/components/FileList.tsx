@@ -8,8 +8,7 @@ import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
 import { RenameFileDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
-import { t } from "@lingui/macro";
-import { Trans } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
@@ -56,7 +55,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       },
       {
         id: "name",
-        Header: i18n._(t`Name`),
+        Header: t`Name`,
         accessor: (d: any) => {
           const f: File = d;
           return f.getFilenameToShowInList();
@@ -75,7 +74,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       },
       {
         id: "type",
-        Header: i18n._(t`Type`),
+        Header: t`Type`,
         width: 72,
         accessor: (d: any) => {
           const f: File = d;
@@ -84,7 +83,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       },
       {
         id: "modifiedDate",
-        Header: i18n._(t`Modified`),
+        Header: t`Modified`,
         accessor: (d: any) => {
           const f: File = d;
 
@@ -95,7 +94,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       },
       {
         id: "size",
-        Header: i18n._(t`Size`),
+        Header: t`Size`,
         width: 75,
         style: { textAlign: "right" },
         accessor: (d: any) => {
@@ -254,15 +253,15 @@ function showFileMenu(
     {
       label:
         process.platform === "darwin"
-          ? i18n._(t`Show in Finder`)
-          : i18n._(t`Show in File Explorer`),
+          ? t`Show in Finder`
+          : t`Show in File Explorer`,
       click: () => {
         showInExplorer(file.getActualFilePath());
       },
       enabled: !missing,
     },
     {
-      label: i18n._(t`Open in program associated with this file type`),
+      label: t`Open in program associated with this file type`,
       click: () => {
         // the "file://" prefix is required on mac, works fine on windows
         electron.shell.openPath("file://" + file.getActualFilePath());
@@ -271,7 +270,7 @@ function showFileMenu(
       visible: !isSpecialSayMoreFile || showDevOnlyItems,
     },
     {
-      label: i18n._(t`Rename...`),
+      label: t`Rename...`,
       click: () => {
         RenameFileDialog.show(file, folder);
       },
@@ -281,8 +280,8 @@ function showFileMenu(
     { type: "separator", visible: !contextMenu },
     {
       label: file.isLinkFile()
-        ? i18n._(t`Delete link to file...`)
-        : i18n._(t`Delete File...`),
+        ? t`Delete link to file...`
+        : t`Delete File...`,
       enabled: file.canDelete,
       click: () => {
         folder.moveFileToTrash(file);
@@ -325,11 +324,11 @@ function addFiles(folder: Folder, paths: string[]) {
       ["session", "person", "meta"].includes(getExtension(path))
     )
   ) {
-    NotifyWarning(i18n._(t`You cannot add files of that type`));
+    NotifyWarning(t`You cannot add files of that type`);
     return;
   }
   if (paths.some((path) => fs.lstatSync(path).isDirectory())) {
-    NotifyWarning(i18n._(t`You cannot add folders.`));
+    NotifyWarning(t`You cannot add folders.`);
     return;
   }
   folder.copyInFiles(paths);

@@ -46,7 +46,7 @@ export function NotifyError(message: string, details?: string) {
   );
 }
 export function getCannotRenameFileMsg() {
-  return i18n._(t`lameta  was not able to rename that file.`);
+  return t`lameta  was not able to rename that file.`;
 }
 export function NotifyRenameProblem(err: any, path: string) {
   const msg = getCannotRenameFileMsg();
@@ -213,13 +213,13 @@ export function NotifyUpdateAvailable(
     ButterToast.raise({
       content: (
         <Cinnamon.Crisp
-          title={i18n._(t`Update available`)}
+          title={t`Update available`}
           //title={translateMessage(/*i18n*/ { id: "" })}
           content={
             <div>
               {/* I would like to dismiss the toast when you click, but the current ButterToast docs don't seem to match what we
             actually get if we provide an OnClick to raise. At this time, it does not give a dismiss function as claimed. */}
-              <a onClick={open}>{i18n._(t`View Release Notes`)}</a>
+              <a onClick={open}>{t`View Release Notes`}</a>
             </div>
           }
         />

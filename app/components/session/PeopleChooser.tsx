@@ -1,9 +1,9 @@
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelect from "react-select";
+import { Trans } from "@lingui/macro";
 import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";
-import { Trans } from "@lingui/macro";
 import { translateRole } from "../../other/localization";
 import { titleCase } from "title-case";
 //import colors from "../../colors.scss"; // this will fail if you've touched the scss since last full webpack build

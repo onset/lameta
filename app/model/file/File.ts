@@ -37,7 +37,7 @@ import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDia
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
 function getCannotRenameFileMsg() {
-  return i18n._(t`lameta  was not able to rename that file.`);
+  return t`lameta  was not able to rename that file.`;
 }
 
 export const kLinkExtensionWithFullStop = ".link";

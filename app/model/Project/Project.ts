@@ -249,7 +249,7 @@ export class Project extends Folder {
   public addSession() {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-      i18n._(t`New Session`)
+      t`New Session`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customFieldRegistry);
@@ -297,11 +297,11 @@ export class Project extends Folder {
   public addPerson() {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "People"), // we don't localize the directory name.
-      i18n._(t`New Person`)
+      t`New Person`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
-    person.properties.setText("name", i18n._(t`New Person`));
+    person.properties.setText("name", t`New Person`);
     this.persons.push(person);
     this.selectedPerson.index = this.persons.length - 1;
     analyticsEvent("Create", "Create Person");
@@ -366,9 +366,9 @@ export class Project extends Folder {
     const wouldBeFolderName = sanitize(value);
 
     if (value.trim().length === 0) {
-      msg = i18n._(t`The ${fieldNameInUiLanguage} cannot be empty`);
+      msg = t`The ${fieldNameInUiLanguage} cannot be empty`;
     } else if (wouldBeFolderName.trim().length === 0) {
-      msg = i18n._(t`That name would lead to an empty filename.`);
+      msg = t`That name would lead to an empty filename.`;
     } else if (
       folderArray.some(
         (f) =>
@@ -377,7 +377,7 @@ export class Project extends Folder {
             f.wouldCollideWithIdFields(value))
       )
     ) {
-      msg = i18n._(t`There is already a ${folderKind} "${value}".`);
+      msg = t`There is already a ${folderKind} "${value}".`;
     }
     if (msg.length > 0) {
       ShowMessageDialog({
@@ -395,8 +395,8 @@ export class Project extends Folder {
       this.sessions,
       session,
       id,
-      i18n._(t`ID`),
-      i18n._(t`Session`)
+      t`ID`,
+      t`Session`
     );
   }
   public validatePersonFullName(person: Person, name: string): boolean {
@@ -404,8 +404,8 @@ export class Project extends Folder {
       this.persons,
       person,
       name,
-      i18n._(t`Full Name`),
-      i18n._(t`Person`)
+      t`Full Name`,
+      t`Person`
     );
   }
   public validatePersonCode(person: Person, code: string): boolean {
@@ -416,7 +416,7 @@ export class Project extends Folder {
       remote.dialog
         .showMessageBox({
           title: "lameta",
-          message: i18n._(t`There is already a Person with that name or code.`),
+          message: t`There is already a Person with that name or code.`,
         })
         .then(() => {});
       return false;

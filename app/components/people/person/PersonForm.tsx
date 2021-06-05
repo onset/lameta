@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
 import { TextFieldEdit } from "../../TextFieldEdit";
@@ -8,7 +9,6 @@ import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import { MugShot } from "./MugShot";
 import "./PersonForm.scss";
 import CustomFieldsTable from "../../CustomFieldsTable";
-import { Trans } from "@lingui/macro";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { PersonLanguageList } from "./PersonLanguageList";

@@ -9,8 +9,7 @@ import {
   FileListButtons,
 } from "../componentTab/ComponentTab";
 import "./PeopleTab.scss";
-import { Trans } from "@lingui/macro";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 interface IProps {
   project: Project;
@@ -28,7 +27,7 @@ export class PeopleTab extends React.Component<IProps> {
     );
     const fileListButtons = [
       {
-        label: i18n._(t`Rename for Consent`),
+        label: t`Rename for Consent`,
         enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
         onClick: (f) => {
           (f as File).renameForConsent();

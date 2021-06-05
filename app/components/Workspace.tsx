@@ -20,9 +20,8 @@ import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../other/menu";
 import SMErrorBoundary from "./SMErrorBoundary";
-import { Trans } from "@lingui/macro";
 import { i18n } from "../other/localization";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
@@ -68,10 +67,10 @@ export default class Home extends React.Component<IProps> {
   private UpdateMenus(currentTabIndex: number) {
     let enableMenu = currentTabIndex === 1;
     const sessionMenu = {
-      label: "&" + i18n._(t`Session`),
+      label: "&" + t`Session`,
       submenu: [
         {
-          label: i18n._(t`New Session`),
+          label: t`New Session`,
           enabled: enableMenu,
           click: () => {
             if (this.props.project) {
@@ -80,7 +79,7 @@ export default class Home extends React.Component<IProps> {
           },
         },
         {
-          label: i18n._(t`Duplicate Session`),
+          label: t`Duplicate Session`,
           enabled: enableMenu && this.props.project.haveSelectedSession(),
           accelerator: "Ctrl+D",
           click: () => {
@@ -91,7 +90,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: i18n._(t`Delete Session...`),
+          label: t`Delete Session...`,
           enabled: enableMenu && this.props.project.haveSelectedSession(),
           click: () => {
             if (this.props.project) {
@@ -103,10 +102,10 @@ export default class Home extends React.Component<IProps> {
     };
     enableMenu = currentTabIndex === 2;
     const peopleMenu = {
-      label: "&" + i18n._(t`People`),
+      label: "&" + t`People`,
       submenu: [
         {
-          label: i18n._(t`New Person`),
+          label: t`New Person`,
           enabled: enableMenu,
           click: () => {
             if (this.props.project) {
@@ -115,7 +114,7 @@ export default class Home extends React.Component<IProps> {
           },
         },
         {
-          label: i18n._(t`Duplicate Person`),
+          label: t`Duplicate Person`,
           enabled: enableMenu && this.props.project.haveSelectedPerson(),
           click: () => {
             if (this.props.project) {
@@ -125,7 +124,7 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: i18n._(t`Delete Person...`),
+          label: t`Delete Person...`,
           enabled: enableMenu && this.props.project.haveSelectedPerson(),
           click: () => {
             if (this.props.project) {
