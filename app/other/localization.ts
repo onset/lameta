@@ -66,11 +66,10 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   // we don't actually use this plural function but without it, we get console errors if we don't set this.
   const pluralFn = allPlurals[code] || allPlurals["en"];
   i18n.loadLocaleData(code, { plurals: pluralFn });
-  i18n.load(
-    currentUILanguage,
-    require(`../../locale/${currentUILanguage}/messages.js`)
-  );
+  i18n.load(code, require(`../../locale/${code}/messages.js`).messages);
   i18n.activate(code);
+
+
   userSettings.UILanguage = code;
 
   if (reload) remote.getCurrentWindow().reload();
