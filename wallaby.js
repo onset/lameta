@@ -1,4 +1,4 @@
-module.exports = function (w) {
+module.exports = function (wallaby) {
   return {
     files: [
       "app/**/*.{ts,tsx,xml,json,json5}",
@@ -15,5 +15,8 @@ module.exports = function (w) {
       },
     },
     testFramework: "jest",
+    compilers: {
+      "**/*.ts?(x)": wallaby.compilers.babel(),
+    },
   };
 };
