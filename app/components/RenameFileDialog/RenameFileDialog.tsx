@@ -1,6 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
-import { Trans } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -157,10 +157,12 @@ export class RenameFileDialog extends React.Component<IProps, IState> {
             </div>
             {this.state.file?.isLinkFile() && (
               <p>
-                Note that this is a link to a file in your Media Files
-                directory. Here, you are renaming this link, not the original
-                file that it points to. If you later create an export that
-                includes this file, the export will use this name.
+                <Trans>
+                  Note that this is a link to a file in your Media Files
+                  directory. Here, you are renaming this link, not the original
+                  file that it points to. If you later create an export that
+                  includes this file, the export will use this name.
+                </Trans>
               </p>
             )}
           </div>
@@ -221,17 +223,17 @@ export class RenameFileDialog extends React.Component<IProps, IState> {
       userSettingsSingleton.IMDIMode
     );
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {
-      return "Some operating systems would not allow that name.";
+      return t`Some operating systems would not allow that name.`;
     }
 
     if (pendingNewName !== sanitizedForArchive) {
-      return "There are characters not allowed by the Archive Settings.";
+      return t`Please remove characters that not allowed by the Archive Settings.`;
     }
     if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
-      return "Sorry, no slashes are allowed";
+      return t`Sorry, no slashes are allowed`;
     }
     if (fs.existsSync(this.getNewPath())) {
-      return "A file with the same name already exists at that location.";
+      return t`A file with the same name already exists at that location.`;
     }
     return "";
   }

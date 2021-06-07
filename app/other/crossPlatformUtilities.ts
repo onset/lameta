@@ -2,10 +2,8 @@ const electron = require("electron");
 import { remote } from "electron";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { NotifyError } from "../components/Notify";
-import { translateMessage } from "./localization";
 import { PatientFS } from "./PatientFile";
-import { i18n } from "@lingui/core";
+import { t } from "@lingui/macro";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -20,9 +18,7 @@ export function trash(path: string): boolean {
   // So convert to backslashes as needed:
   const fixedPath = Path.normalize(path).replace("/", Path.sep);
 
-  const msg = translateMessage(
-    /*i18n*/ { id: "lameta was not able to delete the file." }
-  );
+  const msg = t`lameta was not able to delete the file.`;
 
   PatientFS.assertWritePermissionWithNotification(fixedPath, msg);
   // NB: if the file is locked (at least on windows), electron 10 wrongly returns true for success, so

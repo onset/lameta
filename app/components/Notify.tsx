@@ -10,7 +10,6 @@ import * as React from "react";
 import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
-import { i18n, translateMessage } from "../other/localization";
 import { t } from "@lingui/macro";
 
 const electron = require("electron");
@@ -23,7 +22,7 @@ export function NotifyError(message: string, details?: string) {
         content: (
           // expand to fit the insides
           <Cinnamon.Crunch
-            title={translateMessage(/*i18n*/ { id: "Error" })}
+            title={t`"Error"`}
             content={
               <React.Fragment>
                 <div>{message}</div>
@@ -116,7 +115,7 @@ export function NotifyFileAccessProblem(message: string, err: any) {
       ButterToast.raise({
         content: (
           <Cinnamon.Crunch
-            title={translateMessage(/*i18n*/ { id: "Error" })}
+            title={t`Error`}
             css={css``}
             content={
               <div>
@@ -177,7 +176,7 @@ export function NotifyWarning(message: string, onClick?: () => void) {
         onClick,
         content: (
           <Cinnamon.Crunch
-            title={translateMessage(/*i18n*/ { id: "Warning" })}
+            title={t`Warning`}
             content={message}
             scheme={Cinnamon.Crunch.SCHEME_ORANGE}
           />

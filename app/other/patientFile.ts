@@ -8,7 +8,7 @@ import {
   NotifyRenameProblem,
   NotifyWarning,
 } from "../components/Notify";
-import { translateMessage } from "./localization";
+import { t } from "@lingui/macro";
 
 /* Do what we can to co-exist with things like Dropbox that can temporarily lock files.
     To torture test this stuff, use https://github.com/hatton/filemeddler
@@ -87,11 +87,8 @@ export class PatientFS {
       ) {
         // this is a special case we've seen before.
         NotifyError(
-          `${getCannotRenameFileMsg()} ${translateMessage(
-            /*i18n*/ {
-              id: "Restart lameta and do the rename before playing the video again.",
-            }
-          )}`
+          `${getCannotRenameFileMsg()} ` +
+            t`Restart lameta and do the rename before playing the video again.`
         );
       } else {
         NotifyRenameProblem(err, from);

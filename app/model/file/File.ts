@@ -29,7 +29,6 @@ import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
-import { translateMessage, i18n } from "../../other/localization";
 import { PatientFS } from "../../other/PatientFile";
 import { t } from "@lingui/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
@@ -981,11 +980,8 @@ export /*babel doesn't like this: abstract*/ class File {
     const newMetadataFilePath =
       newDescribedFilePath.replace(kLinkExtensionWithFullStop, "") + ".meta";
 
-    const cannotRenameBecauseExists = translateMessage(
-      /*i18n*/ {
-        id: "Renaming failed because there is already a file with that name.",
-      }
-    );
+    const cannotRenameBecauseExists = t`Renaming failed because there is already a file with that name.`;
+
     if (fs.existsSync(newDescribedFilePath)) {
       NotifyWarning(`${cannotRenameBecauseExists} (${newDescribedFilePath})`);
       return false;
@@ -1127,11 +1123,7 @@ export function ensureArray(x: any): any[] {
 export function getStandardMessageAboutLockedFiles(): string {
   return (
     " " + // add space because this will always follow another message
-    translateMessage(
-      /*i18n*/ {
-        id: "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
-      }
-    )
+    t`File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.`
   );
 }
 

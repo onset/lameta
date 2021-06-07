@@ -69,6 +69,7 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   i18n.load(code, require(`../../locale/${code}/messages.js`).messages);
   i18n.activate(code);
 
+  console.warn("Localization: Project = " + i18n._("Project"));
 
   userSettings.UILanguage = code;
 
@@ -89,19 +90,6 @@ const roles = require("../../locale/roles.csv");
 const genres = require("../../locale/genres.csv");
 const accessProtocols = require("../../locale/accessProtocols.csv");
 const tips = require("../../locale/tips.csv"); // tooltips and specialinfo
-
-// This is our own wrapper that is more unit-test friendly.
-// call to this must have the comment /*18n*/ in order for the lingui scanner to find it
-// e.g. translationMessage(/*18n*/{id: "foobar"})
-export function translateMessage(arg: { id: string; values?: object }): string {
-  if (i18n) {
-    return i18n._(arg.id, arg.values);
-  } else {
-    // when unit testing, we just fill in the template
-    if (arg.values) return pupa(arg.id, arg.values);
-    else return arg.id;
-  }
-}
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {

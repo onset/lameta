@@ -20,7 +20,6 @@ import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../other/menu";
 import SMErrorBoundary from "./SMErrorBoundary";
-import { i18n } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
