@@ -744,6 +744,15 @@ export /*babel doesn't like this: abstract*/ class File {
       throw Error(
         `Please report error: getUniqueFilePath("${intendedPath}") did not expect that it was actually possible to have to come up with a unique name.`
       );
+
+      //     In Sentry, someone using 0.9.2, got
+
+      //     Error: Please report error: getUniqueFilePath("D:\lameta\Limassa\Sessions\Forest_scavanging_2\BME_BW_AlMi_A_001.session") did not expect that it was actually possible to have to come up with a unique name.
+      // at getUniqueFilePath (./app/model/file/File.ts:666:13)
+      // at internalUpdateNameBasedOnNewFolderName (./app/model/file/File.ts:708:24)
+      // at updateNameBasedOnNewFolderName (./app/model/file/File.ts:762:35)
+      // at call (./app/model/Folder/Folder.ts:331:11)
+      // at Array.forEach (~/>)
     }
     return intendedPath;
     // this was in-progress when I decided I don't need it

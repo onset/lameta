@@ -6,8 +6,7 @@ import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePic
 import * as ReactModal from "react-modal";
 import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialog";
 import { I18nProvider } from "@lingui/react";
-///import { i18n } from "../other/localization";
-import { i18n } from "@lingui/core";
+import { i18n } from "../other/localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";

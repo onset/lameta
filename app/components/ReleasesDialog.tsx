@@ -12,7 +12,7 @@ import * as _ from "lodash";
 const ReactMarkdown = require("react-markdown");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
-import { i18n } from "@lingui/core";
+import { i18n } from "../other/localization";
 import { people_background_color, saymore_orange } from "./colors";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";

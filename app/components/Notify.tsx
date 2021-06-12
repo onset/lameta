@@ -101,12 +101,18 @@ function getEACCESProblemsTips(): JSX.Element {
 //     }
 
 export function NotifyFileAccessProblem(message: string, err: any) {
+  const x = [];
+  x["EACCESS"] = getEACCESProblemsTips();
+  x["EPERM"] = getEACCESProblemsTips();
+  x["EBUSY"] = getEBUSYProblemsTips();
   const tips = (
     <div>
       <div>Troubleshooting tips:</div>
-      {(err.code === "EACCES" || err.code === "EPERM") &&
-        getEACCESProblemsTips()}
-      {err.code === "EBUSY" && getEBUSYProblemsTips()}
+      {x[err.code]
+        ? x[err.code]
+        : t`We don't have specific tips for this error. If you cannot solve it by
+          restarting your computer, please report the problem to
+          https://github.com/onset/lameta/issues.`}
     </div>
   );
   // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
@@ -238,17 +244,17 @@ export function NotifyMultipleProjectFiles(
   window.setTimeout(
     () =>
       NotifyWarning(
-        `There is a problem with ${displayName}. Click for more information.`,
+        t`There is a problem with ${displayName}. Click for more information.`,
         () => {
           electron.ipcRenderer
             .invoke("showMessageBox", {
-              buttons: ["Cancel", "Let me fix this"],
-              title: "Something is wrong here...",
-              message: `There are more than one files of type ${projectType} in this folder.`,
-              detail: `lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
+              buttons: [t`Cancel`, t`Show me the folder with the problem`],
+              title: t`Something is wrong here...`,
+              message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
+              detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
             })
             .then((response) => {
-              if (response.response > 0) {
+              if (response > 0) {
                 showInExplorer(folder);
                 if (!userSettings.DeveloperMode) {
                   window.setTimeout(() => electron.remote.app.quit(), 1000);
