@@ -121,7 +121,7 @@ export function NotifyMultipleProjectFiles(
           detail: `lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
         })
         .then((response) => {
-          if (response.response > 0) {
+          if (response > 0) {
             showInExplorer(folder);
             if (!userSettings.DeveloperMode) {
               window.setTimeout(() => electron.remote.app.quit(), 1000);
