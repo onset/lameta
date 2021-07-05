@@ -27,7 +27,7 @@ const genres = require("./Session/genres.json");
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
-import { NotifyWarning } from "../../components/Notify";
+import { NotifyException, NotifyWarning } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
 
 let sCurrentProject: Project | null = null;
@@ -227,6 +227,10 @@ export class Project extends Folder {
     }
   }
 
+  public selectSession(session: Session) {
+    this.selectedSession.index = this.sessions.findIndex((s) => s === session);
+  }
+
   public get displayName(): string {
     return this.properties.getTextStringOrEmpty("title");
   }
@@ -244,6 +248,23 @@ export class Project extends Folder {
     // make the folder dir and the  metadata file
     fs.mkdirSync(dir);
     return dir;
+  }
+  public makeSessionForImport(): Session {
+    const dir = this.getUniqueFolder(
+      Path.join(this.directory, "Sessions"), // we don't localize the directory name.
+      t`New Session`
+    );
+    //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
+    const session = Session.fromDirectory(dir, this.customFieldRegistry);
+    session.properties.setText("id", Path.basename(dir));
+    // no, not yet this.sessions.push(session);
+    // no, not yet this.selectedSession.index = this.sessions.length - 1;
+    analyticsEvent("Create", "Create Session From Import");
+    return session;
+  }
+  public finishSessionImport(session: Session) {
+    this.sessions.push(session);
+    //no: wait until we have imported them all. Importer will then select one. // this.selectedSession.index = this.sessions.length - 1;
   }
 
   public addSession() {
@@ -327,8 +348,9 @@ export class Project extends Folder {
     this.properties
       .getValueOrThrow("customAccessChoices")
       .textHolder.map.intercept((change) => {
-        const currentProtocol =
-          this.properties.getTextStringOrEmpty("accessProtocol");
+        const currentProtocol = this.properties.getTextStringOrEmpty(
+          "accessProtocol"
+        );
         // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(
           currentProtocol,
@@ -446,21 +468,47 @@ export class Project extends Folder {
   public deleteCurrentSession() {
     const session = this.sessions[this.selectedSession.index];
     ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
-      if (trash(session.directory)) {
-        this.sessions.splice(this.selectedSession.index, 1);
-        this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
-      }
+      this.deleteSession(this.sessions[this.selectedSession.index]);
     });
   }
+  public deleteSession(session: Session) {
+    try {
+      if (trash(session.directory)) {
+        const index = this.sessions.findIndex((s) => s === session);
+        // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+        // in case we had the last one selected and now there won't be a selection at that index.
+        const countAfterWeRemoveThisOne = this.sessions.length - 1;
+        this.selectedSession.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+        this.sessions.splice(index, 1);
+      } else throw Error("Failed to trash session.");
+    } catch (e) {
+      NotifyException(e, "Error trying to trash session.");
+    }
+  }
+
+  // public deleteCurrentPerson() {
+  //   const person = this.persons[this.selectedPerson.index];
+  //   ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
+  //     if (trash(person.directory)) {
+  //       this.persons.splice(this.selectedPerson.index, 1);
+  //       this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
+  //     }
+  //   });
+  // }
   public deleteCurrentPerson() {
     const person = this.persons[this.selectedPerson.index];
     ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
       if (trash(person.directory)) {
-        this.persons.splice(this.selectedPerson.index, 1);
-        this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
+        // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+        // in case we had the last one selected and now there won't be a selection at that index.
+        const countAfterWeRemoveThisOne = this.persons.length - 1;
+        const indexToDelete = this.selectedPerson.index;
+        this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+        this.persons.splice(indexToDelete, 1);
       }
     });
   }
+
   public findPerson(name: string): Person | undefined {
     return this.persons.find((p) => {
       return p.referenceIdMatches(name);
@@ -525,8 +573,9 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string =
-      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
+    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
+      "vernacularIso3CodeAndName"
+    );
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project

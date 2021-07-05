@@ -557,7 +557,7 @@ export default class ImdiGenerator {
   }
 
   private sanitizedPathRelativeToProjectRoot(path: string): string {
-    const x = path; /* ? */
+    const x = path;
     // If the project has the right setting, then this path is probably already sanitized (though there may be corner
     // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of

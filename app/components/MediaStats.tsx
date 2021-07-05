@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { default as React, useState, useEffect } from "react";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
 // import { i18n } from "../localization";
@@ -62,7 +62,7 @@ export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
         showPagination={false}
         defaultPageSize={10000}
         data={Object.keys(stats)}
-        sorted={[{ id: "key", asc: true }]}
+        sorted={[{ id: "key", desc: false }]}
         columns={columns}
         minRows={0}
       />

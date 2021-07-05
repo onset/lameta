@@ -156,11 +156,11 @@ const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 
 export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
-  console.log(
-    `media folder for ${projectId} is ${
-      userSettingsSingleton.GetMediaFolder(projectId) || ""
-    }`
-  );
+  // console.log(
+  //   `media folder for ${projectId} is ${
+  //     userSettingsSingleton.GetMediaFolder(projectId) || ""
+  //   }`
+  // );
   return userSettingsSingleton.GetMediaFolder(projectId) || "";
 }
 export function setMediaFolderOrEmptyForProjectAndMachine(

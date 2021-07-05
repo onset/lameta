@@ -21,6 +21,9 @@ export class Session extends Folder {
       "unknown"
     );
   }
+  public get id(): string {
+    return this.properties.getTextStringOrEmpty("id");
+  }
 
   public constructor(
     directory: string,

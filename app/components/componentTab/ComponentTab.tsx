@@ -33,6 +33,12 @@ export class ComponentTab extends React.Component<IProps> {
       this.props.folderTypeStyleClass + "VerticalSplitPosition";
     const splitterposition = localStorage.getItem(splitterKey) || "300";
     const sp = parseInt(splitterposition, 10);
+    // console.log(`selectedFolder.index = ${this.props.selectedFolder.index}`);
+    // console.log(`sessions.length = ${this.props.project.sessions.length}`);
+    if (this.props.selectedFolder.index >= this.props.project.sessions.length)
+      throw Error(
+        `sessions.length = ${this.props.project.sessions.length} but selectedFolder.index = ${this.props.selectedFolder.index}`
+      );
 
     return (
       <div className={"componentTab " + this.props.folderTypeStyleClass}>

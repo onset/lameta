@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { i18n, translateRole } from "../other/localization";
 import { t } from "@lingui/macro";
 import Tooltip from "react-tooltip-lite";

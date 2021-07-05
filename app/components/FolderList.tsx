@@ -1,5 +1,5 @@
 import * as React from "react";
-import { default as ReactTable, Resize } from "react-table";
+import { default as ReactTable, Resize } from "react-table-6";
 
 import { Folder, IFolderSelection } from "../model/Folder/Folder";
 import * as mobxReact from "mobx-react";

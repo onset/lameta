@@ -5,7 +5,7 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { File } from "../model/file/File";
 import "./session/SessionForm.scss";
 import "./Form.scss";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
 import { t } from "@lingui/macro";

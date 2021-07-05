@@ -13,6 +13,7 @@ import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
+import { importSpreadsheet } from "../import/SpreadsheetImport";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -133,6 +134,17 @@ export default class SayLessMenu {
           click: () => this.homePage.projectHolder.setProject(null),
         },
         { type: "separator" },
+        {
+          label: "&" + t`Import Spreadsheet...`,
+          accelerator: "CmdOrCtrl+I",
+          enabled: haveProject,
+          click: () => {
+            importSpreadsheet(
+              this.homePage.projectHolder.project!,
+              "c:/dev/lameta/sample data/LingMetaX.xlsx"
+            );
+          },
+        },
         {
           label: "&" + t`Export Project...`,
           accelerator: "CmdOrCtrl+E",
@@ -280,7 +292,7 @@ export default class SayLessMenu {
         },
         {
           label: "Toggle &Developer Tools",
-          accelerator: "Alt+CmdOrCtrl+I",
+          accelerator: "Alt+CmdOrCtrl+T",
           click() {
             mainWindow.webContents.toggleDevTools();
           },

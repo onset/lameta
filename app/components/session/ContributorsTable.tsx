@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { File, Contribution } from "../../model/file/File";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";

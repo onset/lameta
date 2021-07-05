@@ -1,5 +1,5 @@
 import * as React from "react";
-import { default as ReactTable, RowInfo } from "react-table";
+import { default as ReactTable, RowInfo } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone, { ImageFile } from "react-dropzone";
@@ -279,9 +279,7 @@ function showFileMenu(
     },
     { type: "separator", visible: !contextMenu },
     {
-      label: file.isLinkFile()
-        ? t`Delete link to file...`
-        : t`Delete File...`,
+      label: file.isLinkFile() ? t`Delete link to file...` : t`Delete File...`,
       enabled: file.canDelete,
       click: () => {
         folder.moveFileToTrash(file);
