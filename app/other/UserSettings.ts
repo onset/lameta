@@ -150,11 +150,23 @@ export class UserSettings {
       this.store.set("mediaFolders", projectToFolder);
     }
   }
+  public Get(name: string, defaultValue: string) {
+    return this.store.get(name) ?? defaultValue;
+  }
+  public Set(name: string, value: string) {
+    this.store.set(name, value);
+  }
 }
 
 const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 
+export function useUserSetting(name: string, defaultValue: string) {
+  return [
+    userSettingsSingleton.Get(name, defaultValue),
+    (value: string) => userSettingsSingleton.Set(name, value),
+  ];
+}
 export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
   // console.log(
   //   `media folder for ${projectId} is ${

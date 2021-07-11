@@ -1,8 +1,8 @@
-import { Project } from "../model/Project/Project";
+import { Project } from "../../model/Project/Project";
 import * as Path from "path";
 import * as temp from "temp";
 import * as XLSX from "xlsx";
-import { Session } from "../model/Project/Session/Session";
+import { Session } from "../../model/Project/Session/Session";
 import * as fs from "fs";
 
 import {
@@ -11,7 +11,7 @@ import {
   addSessionToProject,
   importSpreadsheet,
 } from "./SpreadsheetImport";
-import { initializeAnalytics } from "../other/analytics";
+import { initializeAnalytics } from "../../other/analytics";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");

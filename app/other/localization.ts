@@ -12,7 +12,6 @@ import moment from "moment";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
-import pupa from "pupa";
 
 const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};

@@ -30,7 +30,6 @@ import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
-import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/PatientFile";

@@ -13,7 +13,8 @@ import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
-import { importSpreadsheet } from "../import/SpreadsheetImport";
+import { importSpreadsheet } from "../components/import/SpreadsheetImport";
+import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -139,10 +140,11 @@ export default class SayLessMenu {
           accelerator: "CmdOrCtrl+I",
           enabled: haveProject,
           click: () => {
-            importSpreadsheet(
-              this.homePage.projectHolder.project!,
-              "c:/dev/lameta/sample data/LingMetaX.xlsx"
-            );
+            showSpreadsheetImportDialog();
+            // importSpreadsheet(
+            //   this.homePage.projectHolder.project!,
+            //   "c:/dev/lameta/sample data/LingMetaX.xlsx"
+            // );
           },
         },
         {

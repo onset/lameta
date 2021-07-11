@@ -34,14 +34,14 @@ import * as XLSX from "xlsx";
 export const lingmetaxSessionMap = require("./LingMetaXMap.json5");
 import knownFieldDefinitions, {
   getFieldDefinition,
-} from "../model/field/KnownFieldDefinitions";
-import { FieldDefinition } from "../model/field/FieldDefinition";
-import { Session } from "../model/Project/Session/Session";
-import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
-import { Field, FieldType } from "../model/field/Field";
-import { Project } from "../model/Project/Project";
+} from "../../model/field/KnownFieldDefinitions";
+import { FieldDefinition } from "../../model/field/FieldDefinition";
+import { Session } from "../../model/Project/Session/Session";
+import { CustomFieldRegistry } from "../../model/Project/CustomFieldRegistry";
+import { Field, FieldType } from "../../model/field/Field";
+import { Project } from "../../model/Project/Project";
 import moment from "moment";
-import { Contribution } from "../model/file/File";
+import { Contribution } from "../../model/file/File";
 
 export function importSpreadsheet(project: Project, path: string) {
   const workbook = XLSX.readFile(path, {

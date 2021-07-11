@@ -36,6 +36,7 @@ import {
   NotifyWarning,
 } from "../components/Notify";
 import { PatientFS } from "../other/PatientFile";
+import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 
 const isDev = require("electron-is-dev");
 
@@ -125,7 +126,8 @@ export default class HomePage extends React.Component<IProps, IState> {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
         title: `Warning`,
-        text: "This is a beta test version, so make sure you have a backup of your work.",
+        text:
+          "This is a beta test version, so make sure you have a backup of your work.",
         width: "300px",
         buttonText: "I understand",
       });
@@ -279,6 +281,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
+        <SpreadsheetImportDialog />
         <MessageDialog />
       </div>
     );

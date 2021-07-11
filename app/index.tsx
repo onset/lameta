@@ -10,6 +10,7 @@ import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/PatientFile";
+import * as ReactModal from "react-modal";
 
 PatientFS.init();
 //if (!process.env.HOT) {
@@ -47,4 +48,6 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
   }
   return; // just quit
 };
-render(<App />, document.getElementById("root"));
+const container = document.getElementById("root");
+render(<App />, container);
+ReactModal.default.setAppElement(container!);
