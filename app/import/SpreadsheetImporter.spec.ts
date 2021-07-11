@@ -3,31 +3,36 @@ import * as Path from "path";
 import * as temp from "temp";
 import * as XLSX from "xlsx";
 import { Session } from "../model/Project/Session/Session";
+import * as fs from "fs";
 
 import {
   mapSpreadsheetRecord,
   lingmetaxSessionMap,
   addSessionToProject,
+  importSpreadsheet,
 } from "./SpreadsheetImport";
+import { initializeAnalytics } from "../other/analytics";
 
+let project: Project;
+let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
+
+// Really, this should be just "" but this causes wallabyjs to give "TypeError: Cannot read property '0' of undefined"
+// about half the time. Todo: how can we figure out the actual pat at runtime?
+const lingMetaPath = "c:/dev/lameta/sample data/LingMetaX.xlsx";
+
+initializeAnalytics();
 beforeAll(() => {
-  //project = Project.fromDirectory("sample data/Edolo sample");
+  //  project = Project.fromDirectory("sample data/Edolo sample");
+  project = Project.fromDirectory(projectDir);
+});
+afterAll(() => {
+  project = undefined;
+  fs.rmdirSync(projectDir, { recursive: true });
 });
 
 describe("csv importer", () => {
-  it("handles lingMetaX", () => {
-    const workbook = XLSX.readFile("c:/dev/lameta/sample data/LingMetaX.xlsx", {
-      cellDates: true,
-      // dateNF: "YYYY-MM-DD", doesn't do anything
-    });
-    const rows: any[] = XLSX.utils.sheet_to_json(
-      workbook.Sheets[workbook.SheetNames[0]]
-      // header:1 make it give us a matrix
-      //{ header: 1 }
-    );
-
-    expect(rows).toBe("");
-    expect(rows[0].title).toBe("Take California");
+  beforeEach(() => {
+    project.sessions = [];
   });
 
   it("handles case where the dest field doesn't exist", () => {});
@@ -85,11 +90,67 @@ describe("csv importer", () => {
       custom: { myCustomColor: "red" },
     };
 
-    const projectDir = temp.mkdirSync("-spreadsheetImporterSpec");
-    const session = addSessionToProject(projectDir, lametaSessionRecord);
+    const session = addSessionToProject(project, lametaSessionRecord);
     expect(session.properties.getTextStringOrEmpty("title")).toBe("foo");
     expect(session.properties.getTextStringOrEmpty("myCustomColor")).toBe(
       "red"
     );
   });
+
+  it("Full SpreadSheet Import: big main fields", () => {
+    importSpreadsheet(project, lingMetaPath);
+
+    expect(project.sessions.length).toBe(4);
+
+    // Row 2, the first session, is just all normal
+    expect(fieldOfRow(2, "title")).toBe("Normal");
+    expect(fieldOfRow(2, "id")).toBe("take.mp3");
+    expect(
+      sessionOfRow(2).properties.getDateField("date").asISODateString()
+    ).toBe("2021-06-10");
+
+    // Row 3, "without" date
+    expect(
+      sessionOfRow(3).properties.getDateField("date").asISODateString()
+    ).toBe("");
+
+    // Row 4 has no "filename"
+    expect(fieldOfRow(4, "id")).toBe("New Session");
+
+    // Row 5 has no title
+    expect(fieldOfRow(5, "title")).toBe("");
+  });
+  it("Full SpreadSheet Import: Contributions", () => {
+    importSpreadsheet(project, lingMetaPath);
+
+    // Row 2, the first session, has all five role filled in
+    expect(sessionOfRow(2).metadataFile.contributions.length).toBe(5);
+    expect(sessionOfRow(2).metadataFile.contributions[0].personReference).toBe(
+      "Joe Strummer"
+    );
+    expect(sessionOfRow(2).metadataFile.contributions[0].role).toBe("Recorder");
+
+    //
+    expect(sessionOfRow(3).metadataFile.contributions.length).toBe(1);
+    expect(sessionOfRow(3).metadataFile.contributions[0].personReference).toBe(
+      "Vince White"
+    );
+    // the role for Vince White is missing in the spreadsheet
+    expect(sessionOfRow(3).metadataFile.contributions[0].role).toBe("");
+
+    expect(sessionOfRow(4).metadataFile.contributions[0].personReference).toBe(
+      "Mick Jones"
+    );
+    expect(sessionOfRow(4).metadataFile.contributions[0].role).toBe("Author");
+
+    // row 5 has a particpant but no role, should just not make a contribution
+    expect(sessionOfRow(5).metadataFile.contributions.length).toBe(0);
+  });
 });
+
+function sessionOfRow(row: number) {
+  return project.sessions[row - 2];
+}
+function fieldOfRow(row: number, field: string): string {
+  return sessionOfRow(row).properties.getTextStringOrEmpty(field);
+}

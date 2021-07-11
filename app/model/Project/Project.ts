@@ -486,15 +486,6 @@ export class Project extends Folder {
     }
   }
 
-  // public deleteCurrentPerson() {
-  //   const person = this.persons[this.selectedPerson.index];
-  //   ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
-  //     if (trash(person.directory)) {
-  //       this.persons.splice(this.selectedPerson.index, 1);
-  //       this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
-  //     }
-  //   });
-  // }
   public deleteCurrentPerson() {
     const person = this.persons[this.selectedPerson.index];
     ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {

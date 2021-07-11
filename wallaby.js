@@ -4,7 +4,8 @@ module.exports = function (wallaby) {
       "app/**/*.{ts,tsx,xml,json,json5}",
       "!app/**/*.spec.ts",
       "locale/**/*.csv",
-      "sample data/**/*.*",
+      "sample data/**/*.*", 
+      {pattern: 'package.json', load: false, instrument: false},
     ],
 
     tests: ["app/**/*spec.ts"],

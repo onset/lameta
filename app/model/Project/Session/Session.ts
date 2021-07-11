@@ -121,7 +121,8 @@ export class Session extends Folder {
     const legacyParticipantNames = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
-      .map((s) => s.trim());
+      .map((s) => s.trim())
+      .filter((s) => s);
     legacyParticipantNames.forEach((name: string) => {
       if (
         !this.metadataFile!.contributions.find(

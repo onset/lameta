@@ -34,9 +34,14 @@
   //other_equipment: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
   //recording_conditions: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
 
-  // these go 1 to 5. We'll need something that just adds them to our array
-  participant_1_full_name: { lameta: "" },
-  participant_1_role: { lameta: "" },
-  participant_2_full_name: { lameta: "" },
-  participant_2_role: { lameta: "" },
+  participant_1_full_name: { lameta: "contribution.name" },
+  participant_1_role: { lameta: "contribution.role" },
+  participant_2_full_name: { lameta: "contribution.name" },
+  participant_2_role: { lameta: "contribution.role" },
+  participant_3_full_name: { lameta: "contribution.name" },
+  participant_3_role: { lameta: "contribution.role" },
+  participant_4_full_name: { lameta: "contribution.name" },
+  participant_4_role: { lameta: "contribution.role" },
+  participant_5_full_name: { lameta: "contribution.name" },
+  participant_5_role: { lameta: "contribution.role" },
 }

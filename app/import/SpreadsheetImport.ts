@@ -41,6 +41,7 @@ import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { Field, FieldType } from "../model/field/Field";
 import { Project } from "../model/Project/Project";
 import moment from "moment";
+import { Contribution } from "../model/file/File";
 
 export function importSpreadsheet(project: Project, path: string) {
   const workbook = XLSX.readFile(path, {
@@ -67,24 +68,69 @@ export function importSpreadsheet(project: Project, path: string) {
   if (firstSession) project.selectSession(firstSession);
 }
 
+interface ILametaMapping {
+  lameta: string;
+}
+
+interface ICont {
+  name: string;
+  role: string;
+}
 export function mapSpreadsheetRecord(
   // rowFromSpreadsheet is an object where the keys are from the header column and the values are the cell contents
   rowFromSpreadsheet: object,
   // mapping is an object like lingmetaxSessionMap where the keys map the column headers of the import format, and the values are ILametaImportDestination
   mapping: object
 ) {
-  const simpleLametaSessionJson: any = {};
+  const simpleLametaSessionJson: any = { contributions: [], custom: [] };
   Object.keys(rowFromSpreadsheet).forEach((keyOfImport) => {
-    const k = mapping[keyOfImport];
+    const mappingInfoForOneKey: ILametaMapping = mapping[keyOfImport];
     const value = rowFromSpreadsheet[keyOfImport];
-    if (k === undefined) {
-      if (!simpleLametaSessionJson["custom"]) {
-        simpleLametaSessionJson.custom = {};
-      }
+    if (mappingInfoForOneKey === undefined) {
       simpleLametaSessionJson.custom[keyOfImport] = value;
+    } else if (!mappingInfoForOneKey.lameta) {
+      // for now we're just dropping these
+      console.warn(
+        `"${keyOfImport}" resolved to nothing. This indicates that the mapping json had an entry for ${keyOfImport}, but he value was empty`
+      );
     } else {
-      simpleLametaSessionJson[mapping[keyOfImport].lameta] =
-        rowFromSpreadsheet[keyOfImport];
+      // can be simple like "title" or two-leveled, like "contribution.name"
+      const parts = mappingInfoForOneKey.lameta.split(".");
+      if (parts.length === 1) {
+        simpleLametaSessionJson[parts[0]] = value;
+      } else if (parts.length === 2) {
+        switch (parts[0]) {
+          case "contribution":
+            const c = simpleLametaSessionJson.contributions as Array<{
+              name: string;
+              role: string;
+            }>;
+            switch (parts[1]) {
+              case "name":
+                c.push({ name: value, role: "" });
+                break;
+              case "role":
+                if (c.length === 0) {
+                  console.warn("Had a role without a participant");
+                } else {
+                  c[c.length - 1].role = value;
+                }
+                break;
+            }
+            break;
+          case "role":
+            break;
+            break;
+          default:
+            throw Error(
+              `lameta import does not understand the destination ${mappingInfoForOneKey.lameta}`
+            );
+        }
+      } else {
+        throw Error(
+          `lameta import does not understand the destination ${mappingInfoForOneKey.lameta}`
+        );
+      }
     }
   });
   return simpleLametaSessionJson;
@@ -100,6 +146,7 @@ export function addSessionToProject(
   // load it will all the properties of the row
   Object.keys(lametaSessionRecord)
     .filter((k) => k !== "custom")
+    .filter((k) => k !== "contributions")
     .forEach((key) => {
       const value = lametaSessionRecord[key];
       if (key.toLowerCase().indexOf("date") > -1) {
@@ -108,13 +155,25 @@ export function addSessionToProject(
         const dateField = session.properties.getValueOrThrow("date");
         dateField.setValueFromString(dateString);
       } else {
-        session.properties.setText(key, value);
+        session.properties.setText(key /* ? */, value);
       }
     });
   if (lametaSessionRecord.custom) {
     Object.keys(lametaSessionRecord.custom).forEach((key) => {
       session.properties.addCustomProperty(
         makeCustomField(key, lametaSessionRecord.custom[key])
+      );
+    });
+  }
+  if (lametaSessionRecord.contributions) {
+    lametaSessionRecord.contributions.forEach((contribution: ICont) => {
+      session.metadataFile!.contributions.push(
+        new Contribution(
+          contribution.name,
+          contribution.role ?? "participant",
+          "",
+          ""
+        )
       );
     });
   }
