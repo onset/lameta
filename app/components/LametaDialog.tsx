@@ -52,6 +52,7 @@ export const LametaDialog: React.FunctionComponent<{
         css={css`
           //  background-color: red;
         `}
+        {...props} // get css styling given to us by parent
       >
         {inner}
       </ReactModal>
@@ -80,7 +81,7 @@ export const DialogTitle: React.FunctionComponent<{
 
         padding-left: ${kDialogTopPadding};
         padding-right: ${kDialogTopPadding};
-        padding-top: ${titleTopPadding};
+        //padding-top: ${titleTopPadding};
         padding-bottom: ${kDialogPadding};
         margin-left: -${kDialogTopPadding};
         margin-right: -${kDialogTopPadding};
@@ -105,6 +106,7 @@ export const DialogTitle: React.FunctionComponent<{
         css={css`
           margin-top: auto;
           margin-bottom: auto;
+          font-size: 24px;
         `}
       >
         {props.title}

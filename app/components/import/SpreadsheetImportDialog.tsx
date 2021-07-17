@@ -28,7 +28,14 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
   showSpreadsheetImportDialog = showDialog;
 
   return (
-    <LametaDialog open={currentlyOpen} onClose={closeDialog}>
+    <LametaDialog
+      open={currentlyOpen}
+      onClose={closeDialog}
+      css={css`
+        width: calc(100% - 100px);
+        height: calc(100% - 100px);
+      `}
+    >
       <DialogTitle title={i18n._(t`Import Spreadsheet`)}></DialogTitle>
       <DialogMiddle>
         <div id="whichSessions">
@@ -36,6 +43,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
             <Trans>Choose Spreadsheet Mapping:</Trans>
           </label>
           <select
+            css={css`
+              margin-left: 0;
+              border-radius: 3px; // without this it is cutting off the top border
+            `}
             name={"Spreadsheet Mapping"}
             value={mapping}
             onChange={(event) => {

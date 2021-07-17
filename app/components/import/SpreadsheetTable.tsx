@@ -53,11 +53,18 @@ export const SpreadsheetTable: React.FunctionComponent<{}> = () => {
     prepareRow,
   } = tableInstance;
 
+  const cellstyle = css`
+    background-color: white;
+    padding: 0px 4px 0px 2px;
+    border: 1px solid #d0d7e5;
+    border-width: 0px 1px 1px 0px;
+  `;
+
   return (
     <div
       css={css`
         overflow-x: scroll;
-        max-width: 800px;
+        //max-width: 800px;
         margin-top: 20px;
       `}
     >
@@ -80,6 +87,7 @@ export const SpreadsheetTable: React.FunctionComponent<{}> = () => {
             border: 1px solid #9eb6ce;
             border-width: 0px 1px 1px 0px;
             height: 17px;
+            background-color: #e6e6e6;
           `}
         >
           {
@@ -87,6 +95,8 @@ export const SpreadsheetTable: React.FunctionComponent<{}> = () => {
             headerGroups.map((headerGroup) => (
               // Apply the header row props
               <tr {...headerGroup.getHeaderGroupProps()}>
+                {/* column for row number */}
+                <th></th>
                 {
                   // Loop over the headers in each row
                   headerGroup.headers.map((column) => (
@@ -118,6 +128,14 @@ export const SpreadsheetTable: React.FunctionComponent<{}> = () => {
               return (
                 // Apply the row props
                 <tr {...row.getRowProps()}>
+                  <td
+                    css={css`
+                      ${cellstyle};
+                      background-color: #e6e6e6;
+                    `}
+                  >
+                    {row.index + 1}
+                  </td>
                   {
                     // Loop over the rows cells
                     row.cells.map((cell) => {
@@ -125,18 +143,23 @@ export const SpreadsheetTable: React.FunctionComponent<{}> = () => {
                       return (
                         <td
                           css={css`
-                            background-color: white;
-                            padding: 0px 4px 0px 2px;
-                            border: 1px solid #d0d7e5;
-                            border-width: 0px 1px 1px 0px;
+                            ${cellstyle};
                             font-weight: ${cell.row.index === 0 ? "bold" : ""};
                           `}
                           {...cell.getCellProps()}
                         >
-                          {
-                            // Render the cell contents
-                            cell.render("Cell")
-                          }
+                          <div
+                            css={css`
+                              width: max-content;
+                              max-width: 201px;
+                              overflow-wrap: break-word;
+                            `}
+                          >
+                            {
+                              // Render the cell contents
+                              cell.render("Cell")
+                            }
+                          </div>
                         </td>
                       );
                     })
