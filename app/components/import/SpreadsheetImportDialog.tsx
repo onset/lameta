@@ -17,6 +17,7 @@ import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { SpreadsheetTable } from "./SpreadsheetTable";
+import { SpreadsheetGrid } from "./SpreadsheetGrid";
 
 export let showSpreadsheetImportDialog = () => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
@@ -60,7 +61,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
             ))}
           </select>
         </div>
-        <SpreadsheetTable />
+        <SpreadsheetGrid />
       </DialogMiddle>
       <DialogBottomButtons>
         <DialogCancelButton onClick={() => closeDialog} />
