@@ -32,7 +32,7 @@ import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
-import { PatientFS } from "../../other/PatientFile";
+import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
 export class IFolderSelection {

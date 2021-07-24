@@ -44,28 +44,27 @@ import moment from "moment";
 import { Contribution } from "../../model/file/File";
 
 export function importSpreadsheet(project: Project, path: string) {
+  let firstSession: Session | undefined;
+  const rows = loadAndMapSpreadsheet(project, path);
+  rows.forEach((r) => {
+    const session = addSessionToProject(project, r);
+    if (!firstSession) firstSession = session;
+  });
+  if (firstSession) project.selectSession(firstSession);
+}
+
+export function loadAndMapSpreadsheet(project: Project, path: string): any[] {
   const workbook = XLSX.readFile(path, {
     cellDates: true,
     // dateNF: "YYYY-MM-DD", doesn't do anything
   });
   const rows: any[] = XLSX.utils.sheet_to_json(
-    workbook.Sheets[workbook.SheetNames[0]],
-    // header:1 make it give us a matrix
-    //{ header: 1 }
-    {
-      //raw: true,
-      // dateNF: "yyy/mm/dd"
-      //cellText:true
-    }
+    workbook.Sheets[workbook.SheetNames[0]]
   );
-  let firstSession: Session | undefined;
 
-  rows.forEach((r) => {
-    const lametaRow = mapSpreadsheetRecord(r, lingmetaxSessionMap);
-    const session = addSessionToProject(project, lametaRow);
-    if (!firstSession) firstSession = session;
+  return rows.map((r) => {
+    return mapSpreadsheetRecord(r, lingmetaxSessionMap);
   });
-  if (firstSession) project.selectSession(firstSession);
 }
 
 interface ILametaMapping {
@@ -205,4 +204,105 @@ function makeCustomField(key: string, value: string): Field {
   const customField = Field.fromFieldDefinition(definition);
   customField.setValueFromString(value);
   return customField;
+}
+
+export interface IMappedCell {
+  v: string;
+  status: "OK" | "Error" | "Ignored"; // review: are we really ignoring anything?
+}
+export interface IMappedColumnInfo {
+  incomingLabel: string;
+  lametaProperty: string;
+  // might add column status here?
+}
+export type IMappedRow = IMappedCell[];
+export interface IMappedMatrix {
+  columnInfos: IMappedColumnInfo[];
+  // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
+  dataRows: IMappedRow[];
+}
+
+export function makeImportMatrixFromWorksheet(
+  worksheet: XLSX.WorkSheet
+): IMappedMatrix {
+  // return {
+  //   columnInfos: [
+  //     { incomingLabel: "myid", lametaProperty: "ID" },
+  //     { incomingLabel: "mydate", lametaProperty: "Date" },
+  //   ],
+  //   dataRows: [
+  //     [
+  //       { status: "OK", v: "uno" },
+  //       { status: "Error", v: "dos" },
+  //     ],
+  //   ],
+  // };
+
+  // make an array of array of values
+  const arrayOfArrays = worksheetToSimpleMatrix(worksheet);
+
+  // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
+  const matrix: IMappedMatrix = arrayOfArraysToImportMatrix(arrayOfArrays);
+
+  addMapping(matrix);
+  addValidationInfo(matrix);
+  return matrix;
+}
+
+function addMapping(matrix: IMappedMatrix) {
+  // todo: look up each incoming column label and then add the corresponding target lameta property
+  matrix.columnInfos.forEach((info) => {
+    info.lametaProperty = "TBD";
+  });
+}
+
+function addValidationInfo(matrix: IMappedMatrix) {
+  matrix.dataRows.forEach((row) => {
+    row.forEach((cell) => {
+      // todo: look at each cell and validate it
+      cell.status = "OK";
+    });
+  });
+}
+
+function arrayOfArraysToImportMatrix(arrayOfArrays: any[][]) {
+  const firstRow = arrayOfArrays[0];
+  const columns: IMappedColumnInfo[] = firstRow.map((value) => {
+    const c: IMappedColumnInfo = {
+      incomingLabel: value,
+      lametaProperty: "not yet", // todo: do a mapping
+    };
+    return c;
+  });
+
+  const rows: IMappedRow[] = arrayOfArrays.map((row) =>
+    row.map((cell) => {
+      const c: IMappedCell = {
+        v: cell?.w || "--no cell--",
+        status: "OK",
+      };
+      return c;
+    })
+  );
+
+  return {
+    columnInfos: columns,
+    dataRows: rows,
+  };
+}
+
+function worksheetToSimpleMatrix(worksheet: XLSX.WorkSheet) {
+  const matrix: any[][] = [];
+
+  var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
+  for (var R = range.s.r; R <= range.e.r; ++R) {
+    const row: any[] = [];
+    matrix.push(row);
+    for (var C = range.s.c; C <= range.e.c; ++C) {
+      var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
+      var cell = worksheet[cellref];
+      row.push(cell?.w || "???");
+    }
+  }
+  return matrix;
 }

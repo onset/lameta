@@ -9,7 +9,7 @@ import { initializeSentry as initializeErrorReporting } from "./other/errorHandl
 import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
-import { PatientFS } from "./other/PatientFile";
+import { PatientFS } from "./other/patientFile";
 import * as ReactModal from "react-modal";
 
 PatientFS.init();

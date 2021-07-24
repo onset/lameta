@@ -4,7 +4,7 @@ import * as Path from "path";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { assert } from "console";
 import uuid from "uuid";
-import { PatientFS } from "../../other/PatientFile";
+import { PatientFS } from "../../other/patientFile";
 import { NotifyRenameProblem } from "../../components/Notify";
 
 // Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,

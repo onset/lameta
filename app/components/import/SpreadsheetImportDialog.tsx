@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   DialogBottomButtons,
   DialogCancelButton,
@@ -18,15 +18,32 @@ import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { SpreadsheetTable } from "./SpreadsheetTable";
 import { SpreadsheetGrid } from "./SpreadsheetGrid";
+import { loadAndMapSpreadsheet } from "./SpreadsheetImport";
+import { Project, ProjectHolder } from "../../model/Project/Project";
+import * as XLSX from "xlsx";
 
 export let showSpreadsheetImportDialog = () => {};
-export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
+export const SpreadsheetImportDialog: React.FunctionComponent<{
+  projectHolder: ProjectHolder;
+}> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
   const [mapping, setMapping] = useUserSetting(
     "spreadsheetImport.mapping",
     "LingMetaXMap"
   );
   showSpreadsheetImportDialog = showDialog;
+  const [path] = useState("c:/dev/lameta/sample data/LingMetaX.xlsx");
+  const [rows, setRows] = useState<any[]>([]);
+  useEffect(() => {
+    setRows(loadAndMapSpreadsheet(props.projectHolder.project!, path));
+  }, [path, props.projectHolder.project]);
+
+  const worksheet = useMemo(() => {
+    const workbook = XLSX.readFile("c:/dev/lameta/sample data/LingMetaX.xlsx", {
+      cellDates: false,
+    });
+    return workbook.Sheets[workbook.SheetNames[0]];
+  }, []);
 
   return (
     <LametaDialog
@@ -61,7 +78,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = () => {
             ))}
           </select>
         </div>
-        <SpreadsheetGrid />
+        <SpreadsheetGrid worksheet={worksheet} />
       </DialogMiddle>
       <DialogBottomButtons>
         <DialogCancelButton onClick={() => closeDialog} />

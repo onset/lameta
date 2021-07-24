@@ -16,6 +16,10 @@ import React, { useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 import { withStyles } from "@material-ui/core/styles";
+import {
+  IMappedCell,
+  makeImportMatrixFromWorksheet,
+} from "./SpreadsheetImport";
 const styles = (theme) => ({
   tableStriped: {
     "& tbody tr:nth-of-type(odd)": {
@@ -36,7 +40,9 @@ const TableComponent = withStyles(styles, { name: "TableComponent" })(
   TableComponentBase
 );
 
-export const SpreadsheetGrid: React.FunctionComponent<{}> = () => {
+export const SpreadsheetGrid: React.FunctionComponent<{
+  worksheet: XLSX.WorkSheet;
+}> = (props) => {
   const [tableColumnExtensions] = useState([
     { columnName: "checkbox_and_row_number", width: 30 },
   ]);
@@ -46,62 +52,102 @@ export const SpreadsheetGrid: React.FunctionComponent<{}> = () => {
   ]);
 
   const [tableRows, tableColumns] = useMemo(() => {
-    const workbook = XLSX.readFile("c:/dev/lameta/sample data/LingMetaX.xlsx", {
-      cellDates: false,
+    const matrix = makeImportMatrixFromWorksheet(props.worksheet);
+    const rowObjects: Array<object> = matrix.dataRows.map((r) => {
+      return r;
     });
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    let columnsCount = 0;
-    const rowObjects: Array<object> = [];
+
     const columnObjects: any[] = [
-      //{ name: "import_select", title: "Import" },
+      // first column is for check boxes
       { name: "checkbox_and_row_number", title: " " },
+
+      // followed by the columns of the spreadsheet
+      ...matrix.columnInfos.map((columnInfo, columnIndex) => {
+        return {
+          name: columnInfo.incomingLabel, // review: not clear how this is used. Should it just be "A, B, C, ..."?
+          title: (
+            <div>
+              <div>{getLetterIndexForColumn(columnIndex + 1)}</div>
+              <div>{columnInfo.incomingLabel}</div>
+              <div>{`lameta: ${columnInfo.lametaProperty}`}</div>
+            </div>
+          ),
+          getCellValue: (row) => {
+            const cell: IMappedCell = row[columnIndex];
+            return (
+              <div
+                css={
+                  cell.status === "Error"
+                    ? css`
+                        color: white;
+                        background-color: red;
+                        padding: 3px;
+                      `
+                    : ""
+                }
+              >
+                {row[columnIndex].v}
+              </div>
+            );
+          },
+        };
+      }),
     ];
-    const kOneColumnForSelectAndRowNumber = 1;
-    var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
-    for (var R = range.s.r; R <= range.e.r; ++R) {
-      const row = { checkbox_and_row_number: R + 1 };
-      for (var C = range.s.c; C <= range.e.c; ++C) {
-        var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
-        var cell = worksheet[cellref];
-        const value = cell ? cell.w : "";
-        const columnProperty = `col${C + 1}`;
-        row[columnProperty] = value;
-        //console.log(`C:${C} R:${R} row[${columnProperty}]=${value}`);
-        if (columnObjects.length - kOneColumnForSelectAndRowNumber <= C) {
-          //console.log(`Adding Column col${C + 1} title:${value}`);
-          const n = `col${C + 1}`;
-          columnObjects.push({
-            name: n,
-            title: value,
-            getCellValue: (r) => {
-              switch (value) {
-                case "genre":
-                  return (
-                    <div
-                      css={
-                        r[n] === "Bogus"
-                          ? css`
-                              color: white;
-                              background-color: red;
-                              padding: 3px;
-                            `
-                          : ""
-                      }
-                    >
-                      {r[n]}
-                    </div>
-                  );
-                  break;
-                default:
-                  return r[n];
-              }
-            },
-          });
-        }
-        columnsCount = Math.max(columnsCount, C + 1);
-      }
-      if (R > 0) rowObjects.push(row); // first row is the header and the grid will show it based on our column definitions
-    }
+
+    // let columnsCount = 0;
+    // const rowObjects: Array<object> = rows.map((r) => {
+    //   return {};
+    // });
+    // const columnObjects: any[] = [
+    //   //{ name: "import_select", title: "Import" },
+    //   { name: "checkbox_and_row_number", title: " " },
+    // ];
+    // const kOneColumnForSelectAndRowNumber = 1;
+    // var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
+    // for (var R = range.s.r; R <= range.e.r; ++R) {
+    //   const row = { checkbox_and_row_number: R + 1 };
+    //   for (var C = range.s.c; C <= range.e.c; ++C) {
+    //     var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
+    //     var cell = worksheet[cellref];
+    //     const colName = cell ? cell.w : "";
+    //     const columnProperty = `col${C + 1}`;
+    //     row[columnProperty] = colName;
+    //     //console.log(`C:${C} R:${R} row[${columnProperty}]=${value}`);
+    //     if (columnObjects.length - kOneColumnForSelectAndRowNumber <= C) {
+    //       //console.log(`Adding Column col${C + 1} title:${value}`);
+    //       const n = `col${C + 1}`;
+    //       columnObjects.push({
+    //         name: n,
+    //         title: colName,
+    //         getCellValue: (r) => {
+    //           switch (colName) {
+    //             case "genre":
+    //               return (
+    //                 <div
+    //                   css={
+    //                     r[n] === "Bogus"
+    //                       ? css`
+    //                           color: white;
+    //                           background-color: red;
+    //                           padding: 3px;
+    //                         `
+    //                       : ""
+    //                   }
+    //                 >
+    //                   {r[n]}
+    //                 </div>
+    //               );
+    //               break;
+    //             default:
+    //               return r[n];
+    //           }
+    //         },
+    //       });
+    //     }
+    //     columnsCount = Math.max(columnsCount, C + 1);
+    //   }
+    //   if (R > 0) rowObjects.push(row); // first row is the header and the grid will show it based on our column definitions
+    // }
     return [rowObjects, columnObjects];
   }, []);
 
@@ -137,7 +183,7 @@ export const SpreadsheetGrid: React.FunctionComponent<{}> = () => {
   );
 };
 
-function toExcelHeader(num: number): string {
+function getLetterIndexForColumn(num: number): string {
   if (num <= 0) {
     return "";
   }

@@ -35,7 +35,7 @@ import {
   NotifyRenameProblem,
   NotifyWarning,
 } from "../components/Notify";
-import { PatientFS } from "../other/PatientFile";
+import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 
 const isDev = require("electron-is-dev");
@@ -281,7 +281,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
-        <SpreadsheetImportDialog />
+        <SpreadsheetImportDialog projectHolder={this.projectHolder} />
         <MessageDialog />
       </div>
     );

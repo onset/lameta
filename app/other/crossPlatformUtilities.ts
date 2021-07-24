@@ -2,7 +2,7 @@ const electron = require("electron");
 import { remote } from "electron";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { PatientFS } from "./PatientFile";
+import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 
 export function showInExplorer(path: string) {
