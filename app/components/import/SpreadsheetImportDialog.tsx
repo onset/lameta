@@ -16,34 +16,30 @@ import {
 import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
-import { SpreadsheetTable } from "./SpreadsheetTable";
 import { SpreadsheetGrid } from "./SpreadsheetGrid";
-import { loadAndMapSpreadsheet } from "./SpreadsheetImport";
-import { Project, ProjectHolder } from "../../model/Project/Project";
 import * as XLSX from "xlsx";
+import { makeImportMatrixFromWorksheet } from "./SpreadsheetImport";
+const lingmetaxSessionMap = require("./LingMetaXMap.json5");
 
 export let showSpreadsheetImportDialog = () => {};
-export const SpreadsheetImportDialog: React.FunctionComponent<{
-  projectHolder: ProjectHolder;
-}> = (props) => {
+export const SpreadsheetImportDialog: React.FunctionComponent<{}> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
+  const [path, setPath] = useState("c:/dev/lameta/sample data/LingMetaX.xlsx");
   const [mapping, setMapping] = useUserSetting(
-    "spreadsheetImport.mapping",
+    "spreadsheetImport.sessions.mappingName", // todo: people
     "LingMetaXMap"
   );
-  showSpreadsheetImportDialog = showDialog;
-  const [path] = useState("c:/dev/lameta/sample data/LingMetaX.xlsx");
-  const [rows, setRows] = useState<any[]>([]);
-  useEffect(() => {
-    setRows(loadAndMapSpreadsheet(props.projectHolder.project!, path));
-  }, [path, props.projectHolder.project]);
 
-  const worksheet = useMemo(() => {
-    const workbook = XLSX.readFile("c:/dev/lameta/sample data/LingMetaX.xlsx", {
+  showSpreadsheetImportDialog = showDialog;
+
+  const matrix = useMemo(() => {
+    const workbook = XLSX.readFile(path, {
       cellDates: false,
     });
-    return workbook.Sheets[workbook.SheetNames[0]];
-  }, []);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    // todo: actually load the mapping they asked for (when we can handle different ones)
+    return makeImportMatrixFromWorksheet(worksheet, lingmetaxSessionMap);
+  }, [path, mapping]);
 
   return (
     <LametaDialog
@@ -56,13 +52,17 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     >
       <DialogTitle title={i18n._(t`Import Spreadsheet`)}></DialogTitle>
       <DialogMiddle>
-        <div id="whichSessions">
+        <div
+          css={css`
+            display: flex;
+          `}
+        >
           <label>
             <Trans>Choose Spreadsheet Mapping:</Trans>
           </label>
           <select
             css={css`
-              margin-left: 0;
+              margin-left: 10px;
               border-radius: 3px; // without this it is cutting off the top border
             `}
             name={"Spreadsheet Mapping"}
@@ -78,7 +78,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             ))}
           </select>
         </div>
-        <SpreadsheetGrid worksheet={worksheet} />
+        <SpreadsheetGrid matrix={matrix} />
       </DialogMiddle>
       <DialogBottomButtons>
         <DialogCancelButton onClick={() => closeDialog} />

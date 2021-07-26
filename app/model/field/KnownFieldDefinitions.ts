@@ -1,9 +1,10 @@
+import { CellImportStatus } from "../../components/import/SpreadsheetImport";
 import { FieldType } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 
 const knownFieldDefinitions = require("./fields.json5");
 export function getFieldDefinition(
-  folderType: string,
+  folderType: "project" | "session" | "person",
   key: string
 ): FieldDefinition {
   return knownFieldDefinitions[folderType].find(
@@ -22,6 +23,7 @@ export function isKnownFieldKey(key: string): boolean {
     )
   );
 }
+
 const countries = [
   "unspecified",
   "Afghanistan",

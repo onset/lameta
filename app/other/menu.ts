@@ -13,7 +13,6 @@ import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
-import { importSpreadsheet } from "../components/import/SpreadsheetImport";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 
 export default class SayLessMenu {

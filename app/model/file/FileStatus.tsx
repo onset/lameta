@@ -10,10 +10,13 @@ import * as fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { locate } from "../../other/crossPlatformUtilities";
-import { error_color, saymore_orange } from "../../components/colors";
-import { t } from "@lingui/macro";
 
-export function getStatusOfFile(f: File): {
+import { t } from "@lingui/macro";
+import { error_color, lameta_orange } from "../../containers/theme";
+
+export function getStatusOfFile(
+  f: File
+): {
   missing: boolean;
   status:
     | "normalFile"
@@ -58,7 +61,8 @@ export function getStatusOfFile(f: File): {
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
-      id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+      id:
+        "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
       values: { m: mediaFolder },
     });
     return {
@@ -86,7 +90,8 @@ export function getStatusOfFile(f: File): {
     subpath
   );
   const info = t({
-    id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+    id:
+      "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
     values: { m: mediaFolder, e: expected },
   });
   return {
@@ -117,7 +122,7 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
 
   const color =
     fileStatus.status === "noMediaFolderConnection"
-      ? saymore_orange
+      ? lameta_orange
       : error_color;
 
   return fileStatus.missing ? (

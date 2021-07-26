@@ -13,9 +13,9 @@ const ReactMarkdown = require("react-markdown");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
 import { i18n } from "../other/localization";
-import { people_background_color, saymore_orange } from "./colors";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
+import { lameta_blue, lameta_orange } from "../containers/theme";
 type Mode =
   | "querying"
   | "update-available"
@@ -117,7 +117,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             css={css`
               float: right;
               font-size: 16px;
-              color: ${saymore_orange};
+              color: ${lameta_orange};
               margin-bottom: auto;
               margin-top: auto;
             `}
@@ -165,7 +165,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                 <h1
                   css={css`
                     margin-bottom: 10px !important;
-                    background-color: ${people_background_color};
+                    background-color: ${lameta_blue};
                     padding: 5px;
                     padding-bottom: 35px;
                     font-size: 14pt !important;

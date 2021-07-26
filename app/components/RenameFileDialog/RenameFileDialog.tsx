@@ -15,7 +15,7 @@ import { Folder } from "../../model/Folder/Folder";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
-import { error_color } from "../colors";
+import { error_color } from "../../containers/theme";
 const sanitizeFilename = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
@@ -261,10 +261,8 @@ export class RenameFileDialog extends React.Component<IProps, IState> {
   private static getCore(fileName: string, folderId: string): string {
     const prefix = RenameFileDialog.getUneditablePrefix(fileName, folderId);
     const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
-    const suffixLength = RenameFileDialog.getUneditableSuffix(
-      fileName,
-      false
-    ).length;
+    const suffixLength = RenameFileDialog.getUneditableSuffix(fileName, false)
+      .length;
     return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
   }
 

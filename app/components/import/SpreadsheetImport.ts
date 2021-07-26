@@ -42,30 +42,63 @@ import { Field, FieldType } from "../../model/field/Field";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { Contribution } from "../../model/file/File";
+import { debug } from "winston";
 
-export function importSpreadsheet(project: Project, path: string) {
-  let firstSession: Session | undefined;
-  const rows = loadAndMapSpreadsheet(project, path);
-  rows.forEach((r) => {
-    const session = addSessionToProject(project, r);
-    if (!firstSession) firstSession = session;
-  });
-  if (firstSession) project.selectSession(firstSession);
+export interface IMappedCell {
+  value: string;
+  importStatus: CellImportStatus;
+}
+export enum CellImportStatus {
+  OK,
+  /* will be added to an open list */ Addition,
+  NotInClosedVocabulary,
+  ProgramError,
 }
 
-export function loadAndMapSpreadsheet(project: Project, path: string): any[] {
-  const workbook = XLSX.readFile(path, {
-    cellDates: true,
-    // dateNF: "YYYY-MM-DD", doesn't do anything
-  });
-  const rows: any[] = XLSX.utils.sheet_to_json(
-    workbook.Sheets[workbook.SheetNames[0]]
-  );
-
-  return rows.map((r) => {
-    return mapSpreadsheetRecord(r, lingmetaxSessionMap);
-  });
+export interface IMappedColumnInfo {
+  incomingLabel: string;
+  lametaProperty: string;
+  mappingStatus: "Identity" | "Matched" | "Unmatched" | "MissingIncomingLabel";
 }
+export enum RowImportStatus {
+  Yes,
+  No,
+  NotAllowed,
+}
+export type IMappedRow = {
+  importStatus: RowImportStatus;
+  cells: IMappedCell[];
+  index: number;
+};
+export interface IMappedMatrix {
+  columnInfos: IMappedColumnInfo[];
+  // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
+  rows: IMappedRow[];
+}
+
+// export function importSpreadsheet(project: Project, path: string) {
+//   let firstSession: Session | undefined;
+//   const rows = loadAndMapSpreadsheet(project, path);
+//   rows.forEach((r) => {
+//     const session = addSessionToProject(project, r);
+//     if (!firstSession) firstSession = session;
+//   });
+//   if (firstSession) project.selectSession(firstSession);
+// }
+
+// export function loadAndMapSpreadsheet(project: Project, path: string): any[] {
+//   const workbook = XLSX.readFile(path, {
+//     cellDates: true,
+//     // dateNF: "YYYY-MM-DD", doesn't do anything
+//   });
+//   const rows: any[] = XLSX.utils.sheet_to_json(
+//     workbook.Sheets[workbook.SheetNames[0]]
+//   );
+
+//   return rows.map((r) => {
+//     return mapSpreadsheetRecord(r, lingmetaxSessionMap);
+//   });
+// }
 
 interface ILametaMapping {
   lameta: string;
@@ -206,24 +239,9 @@ function makeCustomField(key: string, value: string): Field {
   return customField;
 }
 
-export interface IMappedCell {
-  v: string;
-  status: "OK" | "Error" | "Ignored"; // review: are we really ignoring anything?
-}
-export interface IMappedColumnInfo {
-  incomingLabel: string;
-  lametaProperty: string;
-  // might add column status here?
-}
-export type IMappedRow = IMappedCell[];
-export interface IMappedMatrix {
-  columnInfos: IMappedColumnInfo[];
-  // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
-  dataRows: IMappedRow[];
-}
-
 export function makeImportMatrixFromWorksheet(
-  worksheet: XLSX.WorkSheet
+  worksheet: XLSX.WorkSheet,
+  mapping: object
 ): IMappedMatrix {
   // return {
   //   columnInfos: [
@@ -244,53 +262,119 @@ export function makeImportMatrixFromWorksheet(
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: IMappedMatrix = arrayOfArraysToImportMatrix(arrayOfArrays);
 
-  addMapping(matrix);
+  addMapping(matrix, mapping);
   addValidationInfo(matrix);
+  setInitialRowImportStatus(matrix);
+
   return matrix;
 }
-
-function addMapping(matrix: IMappedMatrix) {
-  // todo: look up each incoming column label and then add the corresponding target lameta property
-  matrix.columnInfos.forEach((info) => {
-    info.lametaProperty = "TBD";
+function setInitialRowImportStatus(matrix: IMappedMatrix) {
+  matrix.rows.forEach((r) => {
+    if (r.cells.find((c) => c.importStatus === CellImportStatus.ProgramError)) {
+      r.importStatus = RowImportStatus.NotAllowed;
+    } else if (
+      r.cells.find(
+        (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
+      )
+    ) {
+      // const x = r.cells.find(
+      //   (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
+      // );
+      // console.log(`row ${r.index} ${JSON.stringify(x)}`);
+      r.importStatus = RowImportStatus.NotAllowed;
+    } else {
+      r.importStatus = RowImportStatus.Yes;
+    }
   });
+  console.log(matrix);
+}
+function addMapping(matrix: IMappedMatrix, mappingConfig: object) {
+  // todo: look up each incoming column label and then add the corresponding target lameta property
+  matrix.columnInfos.forEach((info, index) => {
+    setMappingForOnColumn(info, mappingConfig);
+  });
+}
+function setMappingForOnColumn(info: IMappedColumnInfo, mappingConfig: object) {
+  if (!info.incomingLabel || info.incomingLabel.trim() === "") {
+    info.mappingStatus = "MissingIncomingLabel";
+    return;
+  }
+  info.lametaProperty = mappingConfig[info.incomingLabel]?.lameta || "custom";
+  if (info.lametaProperty.toLowerCase() == info.incomingLabel.toLowerCase()) {
+    info.mappingStatus = "Identity";
+  } else if (info.lametaProperty === "custom") {
+    info.mappingStatus = "Unmatched";
+  } else {
+    info.mappingStatus = "Matched";
+  }
+  return;
 }
 
 function addValidationInfo(matrix: IMappedMatrix) {
-  matrix.dataRows.forEach((row) => {
-    row.forEach((cell) => {
-      // todo: look at each cell and validate it
-      cell.status = "OK";
+  matrix.rows.forEach((row) => {
+    row.cells.forEach((cell, index) => {
+      const columnInfo = matrix.columnInfos[index];
+      if (
+        columnInfo.mappingStatus != "Unmatched" &&
+        columnInfo.mappingStatus != "MissingIncomingLabel"
+      ) {
+        const [primary, secondary] = columnInfo.lametaProperty.split(".");
+        if (primary === "contribution") {
+          cell.importStatus = CellImportStatus.OK; // will be set later in the process
+        } else {
+          const def = getFieldDefinition("session", primary);
+          if (!def) {
+            cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
+          } else {
+            cell.importStatus = getImportSituationForValue(def, cell.value);
+          }
+        }
+      } else {
+        cell.importStatus = CellImportStatus.OK;
+      }
     });
   });
 }
 
 function arrayOfArraysToImportMatrix(arrayOfArrays: any[][]) {
-  const firstRow = arrayOfArrays[0];
+  const [firstRow, ...dataRows] = arrayOfArrays;
   const columns: IMappedColumnInfo[] = firstRow.map((value) => {
     const c: IMappedColumnInfo = {
       incomingLabel: value,
-      lametaProperty: "not yet", // todo: do a mapping
+      lametaProperty: "not yet",
+      mappingStatus: "Unmatched",
     };
     return c;
   });
 
-  const rows: IMappedRow[] = arrayOfArrays.map((row) =>
-    row.map((cell) => {
+  const rows: IMappedRow[] = [];
+
+  dataRows.forEach((row, index) => {
+    const cells = row.map((cell) => {
       const c: IMappedCell = {
-        v: cell?.w || "--no cell--",
-        status: "OK",
+        value: cell,
+        importStatus: CellImportStatus.OK,
       };
       return c;
-    })
-  );
+    });
+    rows.push({
+      cells,
+      importStatus: RowImportStatus.No /* will get replaced */,
+      index,
+    });
+  });
 
   return {
     columnInfos: columns,
-    dataRows: rows,
+    rows,
   };
 }
-
+function getRowImportStatus(
+  row: IMappedRow,
+  index: number
+): "New" | "Replace" | "Error" {
+  return "Error";
+}
 function worksheetToSimpleMatrix(worksheet: XLSX.WorkSheet) {
   const matrix: any[][] = [];
 
@@ -301,8 +385,39 @@ function worksheetToSimpleMatrix(worksheet: XLSX.WorkSheet) {
     for (var C = range.s.c; C <= range.e.c; ++C) {
       var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
       var cell = worksheet[cellref];
-      row.push(cell?.w || "???");
+      row.push(cell?.w || "");
     }
   }
   return matrix;
+}
+
+function getImportSituationForValue(
+  def: FieldDefinition,
+  value: string
+): CellImportStatus {
+  if (!value) {
+    // TODO: are there any fields that are required?
+    return CellImportStatus.OK;
+  }
+  const v = value.toLowerCase();
+  if (def.complexChoices) {
+    if (!def.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
+      return CellImportStatus.Addition;
+    }
+    return CellImportStatus.OK;
+  }
+  if (def.choices) {
+    if (def.choices.find((c) => c.toLowerCase() == v))
+      return CellImportStatus.OK;
+
+    // it's not at all obvious that we should limit people to IMDI, but for now...
+    if (def.imdiIsClosedVocabulary) {
+      return CellImportStatus.NotInClosedVocabulary;
+    }
+    return CellImportStatus.Addition;
+  }
+
+  // TODO: check archive access
+
+  return CellImportStatus.OK;
 }

@@ -13,6 +13,8 @@ import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
 import { MediaFolderDialog } from "../components/MediaFolderDialog";
+import theme from "./theme";
+import { ThemeProvider } from "@material-ui/core";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
 export const App: React.FunctionComponent = observer(() => {
@@ -37,14 +39,16 @@ export const App: React.FunctionComponent = observer(() => {
       }}
     >
       <I18nProvider i18n={i18n}>
-        <HomePage />
-        <ButterToast className={"notificationTray"} />
-        <ConfirmDeleteDialog />
-        <LanguagePickerDialog />
-        <RenameFileDialog />
-        <RegistrationDialog />
-        <ReleasesDialog />
-        <MediaFolderDialog />
+        <ThemeProvider theme={theme}>
+          <HomePage />
+          <ButterToast className={"notificationTray"} />
+          <ConfirmDeleteDialog />
+          <LanguagePickerDialog />
+          <RenameFileDialog />
+          <RegistrationDialog />
+          <ReleasesDialog />
+          <MediaFolderDialog />
+        </ThemeProvider>
       </I18nProvider>
     </div>
   );

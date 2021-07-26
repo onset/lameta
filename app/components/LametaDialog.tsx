@@ -35,6 +35,7 @@ export const LametaDialog: React.FunctionComponent<{
         padding-left: ${kDialogSidePadding};
         padding-right: ${kDialogSidePadding};
         padding-bottom: ${kDialogBottomPadding};
+        height: 100%;
       `}
     >
       {props.children}

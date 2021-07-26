@@ -281,7 +281,9 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
-        <SpreadsheetImportDialog projectHolder={this.projectHolder} />
+        <SpreadsheetImportDialog
+        //projectHolder={this.projectHolder}
+        />
         <MessageDialog />
       </div>
     );
