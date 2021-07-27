@@ -1,4 +1,3 @@
-import { CellImportStatus } from "../../components/import/SpreadsheetImport";
 import { FieldType } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 

@@ -1,20 +1,75 @@
 import { Project } from "../../model/Project/Project";
-import * as Path from "path";
 import * as temp from "temp";
-import * as XLSX from "xlsx";
 import { Session } from "../../model/Project/Session/Session";
-import * as fs from "fs";
-
+import { addSessionToProject } from "./MatrixImporter";
 import {
-  mapSpreadsheetRecord,
-  lingmetaxSessionMap,
-  addSessionToProject,
-  importSpreadsheet,
-} from "./SpreadsheetImport";
-import { initializeAnalytics } from "../../other/analytics";
+  MappedMatrix,
+  CellImportStatus,
+  RowImportStatus,
+  IMappedColumnInfo,
+  MappedRow,
+  IMappedCell,
+} from "./MappedMatrix";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
+
+describe("addSessionToProject", () => {
+  beforeAll(() => {
+    //  project = Project.fromDirectory("sample data/Edolo sample");
+    project = Project.fromDirectory(projectDir);
+  });
+  beforeEach(() => {
+    project.sessions = [];
+  });
+  it("Can import one row with just id column", () => {
+    const session = makeMatrixAndImportThenGetSession({ id: "foo" });
+    expect(project.sessions.length).toBe(1);
+    expect(session.id).toBe("foo");
+  });
+
+  it("Can import one normal row", () => {
+    const session = makeMatrixAndImportThenGetSession({
+      id: "foo",
+      title: "London Calling",
+      date: "7/27/2021",
+      genre: "drama",
+      subgenre: "play",
+    });
+    expect(session.id).toBe("foo");
+    expect(session.properties.getDateField("date").asISODateString()).toBe(
+      "2021-07-27"
+    );
+    expect(session.properties.getTextStringOrEmpty("title")).toBe(
+      "London Calling"
+    );
+    expect(session.properties.getTextStringOrEmpty("genre")).toBe("drama");
+    expect(session.properties.getTextStringOrEmpty("subgenre")).toBe("play");
+  });
+  it("Can import one participant", () => {
+    const session = makeMatrixAndImportThenGetSession({
+      id: "foo",
+      "contribution.name": "Joe Strummer",
+      "contribution.role": "Singer",
+      "contribution.comments": "vocals",
+    });
+    expect(session.metadataFile.contributions.length).toBe(1);
+    expect(session.metadataFile.contributions[0].personReference).toBe(
+      "Joe Strummer"
+    );
+    expect(session.metadataFile.contributions[0].role).toBe("Singer");
+    expect(session.metadataFile.contributions[0].comments).toBe("vocals");
+  });
+});
+
+/*
+import {
+  mapSpreadsheetRecord,
+  lingmetaxSessionMap,
+} from "./SpreadsheetToMatrix";
+
+
+
 
 // Really, this should be just "" but this causes wallabyjs to give "TypeError: Cannot read property '0' of undefined"
 // about half the time. Todo: how can we figure out the actual pat at runtime?
@@ -153,4 +208,32 @@ function sessionOfRow(row: number) {
 }
 function fieldOfRow(row: number, field: string): string {
   return sessionOfRow(row).properties.getTextStringOrEmpty(field);
+}
+*/
+
+function simpleColumn(key: string): IMappedColumnInfo {
+  return {
+    incomingLabel: key,
+    lametaProperty: key,
+    mappingStatus: "Identity",
+  };
+}
+function simpleCell(property: string, value: string): IMappedCell {
+  return {
+    column: simpleColumn(property),
+    value,
+    importStatus: CellImportStatus.OK,
+  };
+}
+function makeRow(values: any): MappedRow {
+  const row: MappedRow = new MappedRow();
+  Object.keys(values).forEach((key) =>
+    row.cells.push(simpleCell(key, values[key]))
+  );
+  return row;
+}
+function makeMatrixAndImportThenGetSession(values: any): Session {
+  const row = makeRow(values);
+  addSessionToProject(project, row);
+  return project.sessions[0];
 }

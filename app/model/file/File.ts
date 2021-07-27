@@ -48,20 +48,12 @@ export class Contribution {
   @mobx.observable
   public role: string;
   @mobx.observable
-  public date: string;
-  @mobx.observable
   public comments: string;
   public sessionName: string; // not persisted; just used by the UI when listing contributions for a person
 
-  public constructor(
-    personReference: string,
-    role: string,
-    date: string,
-    comments: string
-  ) {
+  public constructor(personReference: string, role: string, comments: string) {
     this.personReference = personReference;
     this.role = role;
-    this.date = date;
     this.comments = comments;
   }
 }
@@ -593,7 +585,7 @@ export /*babel doesn't like this: abstract*/ class File {
     const n = new Contribution(
       contributionFromXml.name,
       role,
-      this.normalizeIncomingDateString(contributionFromXml.date),
+      //this.normalizeIncomingDateString(contributionFromXml.date),
       contributionFromXml.comments
     );
     this.contributions.push(n);

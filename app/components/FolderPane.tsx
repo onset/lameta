@@ -54,8 +54,9 @@ export const FolderPane = observer<
   IProps & React.HTMLAttributes<HTMLDivElement>
 >((props: IProps) => {
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [selectedContribution, setSelectedContribution] =
-    React.useState<Contribution | undefined>(undefined);
+  const [selectedContribution, setSelectedContribution] = React.useState<
+    Contribution | undefined
+  >(undefined);
 
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
@@ -86,7 +87,7 @@ export const FolderPane = observer<
         onChange={(size: any) => localStorage.setItem(splitterKey, size)}
       >
         <FileList folder={props.folder} extraButtons={props.fileListButtons} />
-        <div>
+        <div className="folder-bottom-pane">
           {props.folder.selectedFile && (
             <>
               <FileStatusBlock file={props.folder.selectedFile} />

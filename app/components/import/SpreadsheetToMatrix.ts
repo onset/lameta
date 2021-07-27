@@ -1,80 +1,23 @@
-/*
-  Strategy here is to separate import into multiple stages:
-  
-  1) PARSER: Read the file, give a matrix of some sort that represents what was in the file
-  2) MAPPER: Transform that json into json that matches our model... roughly what we'd have if we didn't have xml.
-  3) Validator: date, closed vocabularies
-  4) UI that lets the user interact with the mapping/validator and chose which records to import
-  5) CREATOR: Make the objects
-  6) SAVER: Save out the files?  Separated from CREATOR if it makes it easier to unit test
-  
-  largely to facilitate easy unit testing and
-  making it cheap to experiment with and (in future) utilize different approaches at the actual read/parse stage.
-  E.g., we might use read-excel-file now, but add papa parse (csv) or xlsx-import (which has a more 2D capability) later.
+/* The functions here:
+  1) Read an excel spreadsheet into our IMappedMatrix.
+  2) Using the provided "mapping", assign a lameta property to each column.
+  3) Add validation info to the various cells according to the lameta definition of the column.
 
-  So we might have:
-  PARSER + MAPPER implemented by xlsx-import(File) read-excel-file --> json matching lameta
-
-  or
-
-  PARSER: papa-parse(csv File) --> raw json
-  MAPPER: our own mapper(raw json) --> json matching lameta
-
-  CREATOR: Expect that we only need one. Could be
-
-  * createObject(json matching lameta) --> object
-  
-  or maybe
-  * jsonToLametaXml(json matching lameta) --> xml,  followed by normal xml import.
-
+  Elsewhere, this IMappedMatrix is then handed to the UI to show to the user, and then handed to functions in MatrixImporter
+  to actually import.
 */
-import * as fs from "fs-extra";
-import * as Path from "path";
 import * as XLSX from "xlsx";
 export const lingmetaxSessionMap = require("./LingMetaXMap.json5");
-import knownFieldDefinitions, {
-  getFieldDefinition,
-} from "../../model/field/KnownFieldDefinitions";
+import { getFieldDefinition } from "../../model/field/KnownFieldDefinitions";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
-import { Session } from "../../model/Project/Session/Session";
-import { CustomFieldRegistry } from "../../model/Project/CustomFieldRegistry";
-import { Field, FieldType } from "../../model/field/Field";
-import { Project } from "../../model/Project/Project";
-import moment from "moment";
-import { Contribution } from "../../model/file/File";
-import { debug } from "winston";
-
-export interface IMappedCell {
-  value: string;
-  importStatus: CellImportStatus;
-}
-export enum CellImportStatus {
-  OK,
-  /* will be added to an open list */ Addition,
-  NotInClosedVocabulary,
-  ProgramError,
-}
-
-export interface IMappedColumnInfo {
-  incomingLabel: string;
-  lametaProperty: string;
-  mappingStatus: "Identity" | "Matched" | "Unmatched" | "MissingIncomingLabel";
-}
-export enum RowImportStatus {
-  Yes,
-  No,
-  NotAllowed,
-}
-export type IMappedRow = {
-  importStatus: RowImportStatus;
-  cells: IMappedCell[];
-  index: number;
-};
-export interface IMappedMatrix {
-  columnInfos: IMappedColumnInfo[];
-  // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
-  rows: IMappedRow[];
-}
+import {
+  MappedMatrix,
+  CellImportStatus,
+  RowImportStatus,
+  IMappedColumnInfo,
+  MappedRow,
+  IMappedCell,
+} from "./MappedMatrix";
 
 // export function importSpreadsheet(project: Project, path: string) {
 //   let firstSession: Session | undefined;
@@ -104,11 +47,7 @@ interface ILametaMapping {
   lameta: string;
 }
 
-interface ICont {
-  name: string;
-  role: string;
-}
-export function mapSpreadsheetRecord(
+/*export function mapSpreadsheetRecord(
   // rowFromSpreadsheet is an object where the keys are from the header column and the values are the cell contents
   rowFromSpreadsheet: object,
   // mapping is an object like lingmetaxSessionMap where the keys map the column headers of the import format, and the values are ILametaImportDestination
@@ -166,83 +105,12 @@ export function mapSpreadsheetRecord(
     }
   });
   return simpleLametaSessionJson;
-}
+}*/
 
-export function addSessionToProject(
-  //projectDir: string,
-  project: Project,
-  lametaSessionRecord: any
-): Session {
-  const session = project.makeSessionForImport();
-
-  // load it will all the properties of the row
-  Object.keys(lametaSessionRecord)
-    .filter((k) => k !== "custom")
-    .filter((k) => k !== "contributions")
-    .forEach((key) => {
-      const value = lametaSessionRecord[key];
-      if (key.toLowerCase().indexOf("date") > -1) {
-        // REVIEW: this is assuming we were given a date, which surely won't always work.
-        const dateString: string = moment(value).format("YYYY-MM-DD");
-        const dateField = session.properties.getValueOrThrow("date");
-        dateField.setValueFromString(dateString);
-      } else {
-        session.properties.setText(key /* ? */, value);
-      }
-    });
-  if (lametaSessionRecord.custom) {
-    Object.keys(lametaSessionRecord.custom).forEach((key) => {
-      session.properties.addCustomProperty(
-        makeCustomField(key, lametaSessionRecord.custom[key])
-      );
-    });
-  }
-  if (lametaSessionRecord.contributions) {
-    lametaSessionRecord.contributions.forEach((contribution: ICont) => {
-      session.metadataFile!.contributions.push(
-        new Contribution(
-          contribution.name,
-          contribution.role ?? "participant",
-          "",
-          ""
-        )
-      );
-    });
-  }
-  // if we got this far and we are replacing an existing session, move it to the bin
-
-  const previousSessionWithThisId = project.sessions.find(
-    (s) => s.id === lametaSessionRecord.id
-  );
-  if (previousSessionWithThisId) {
-    project.deleteSession(previousSessionWithThisId);
-  }
-  // change the file name from "NewSession" or whatever to the actual id
-  session.nameMightHaveChanged();
-  project.finishSessionImport(session);
-  session.saveAllFilesInFolder();
-  return session;
-}
-
-function makeCustomField(key: string, value: string): Field {
-  const definition: FieldDefinition = {
-    key,
-    englishLabel: key,
-    persist: true,
-    type: "Text",
-    tabIndex: 0,
-    isCustom: true,
-    showOnAutoForm: false, // we do show it, but in the custom table
-  };
-  const customField = Field.fromFieldDefinition(definition);
-  customField.setValueFromString(value);
-  return customField;
-}
-
-export function makeImportMatrixFromWorksheet(
+export function makeMappedMatrixFromWorksheet(
   worksheet: XLSX.WorkSheet,
   mapping: object
-): IMappedMatrix {
+): MappedMatrix {
   // return {
   //   columnInfos: [
   //     { incomingLabel: "myid", lametaProperty: "ID" },
@@ -257,10 +125,10 @@ export function makeImportMatrixFromWorksheet(
   // };
 
   // make an array of array of values
-  const arrayOfArrays = worksheetToSimpleMatrix(worksheet);
+  const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
 
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
-  const matrix: IMappedMatrix = arrayOfArraysToImportMatrix(arrayOfArrays);
+  const matrix: MappedMatrix = arrayOfArraysToMappedMatrix(arrayOfArrays);
 
   addMapping(matrix, mapping);
   addValidationInfo(matrix);
@@ -268,27 +136,29 @@ export function makeImportMatrixFromWorksheet(
 
   return matrix;
 }
-function setInitialRowImportStatus(matrix: IMappedMatrix) {
-  matrix.rows.forEach((r) => {
+
+function setInitialRowImportStatus(matrix: MappedMatrix) {
+  const getStatus = (r: MappedRow) => {
+    if (!r.asObjectByLametaProperties().id) {
+      return RowImportStatus.NotAllowed;
+    }
     if (r.cells.find((c) => c.importStatus === CellImportStatus.ProgramError)) {
-      r.importStatus = RowImportStatus.NotAllowed;
+      return RowImportStatus.NotAllowed;
     } else if (
       r.cells.find(
         (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
       )
     ) {
-      // const x = r.cells.find(
-      //   (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
-      // );
-      // console.log(`row ${r.index} ${JSON.stringify(x)}`);
-      r.importStatus = RowImportStatus.NotAllowed;
-    } else {
-      r.importStatus = RowImportStatus.Yes;
+      return RowImportStatus.NotAllowed;
     }
+
+    return RowImportStatus.Yes;
+  };
+  matrix.rows.forEach((r) => {
+    r.importStatus = getStatus(r);
   });
-  console.log(matrix);
 }
-function addMapping(matrix: IMappedMatrix, mappingConfig: object) {
+function addMapping(matrix: MappedMatrix, mappingConfig: object) {
   // todo: look up each incoming column label and then add the corresponding target lameta property
   matrix.columnInfos.forEach((info, index) => {
     setMappingForOnColumn(info, mappingConfig);
@@ -310,7 +180,7 @@ function setMappingForOnColumn(info: IMappedColumnInfo, mappingConfig: object) {
   return;
 }
 
-function addValidationInfo(matrix: IMappedMatrix) {
+function addValidationInfo(matrix: MappedMatrix) {
   matrix.rows.forEach((row) => {
     row.cells.forEach((cell, index) => {
       const columnInfo = matrix.columnInfos[index];
@@ -336,32 +206,36 @@ function addValidationInfo(matrix: IMappedMatrix) {
   });
 }
 
-function arrayOfArraysToImportMatrix(arrayOfArrays: any[][]) {
+function arrayOfArraysToMappedMatrix(arrayOfArrays: any[][]) {
   const [firstRow, ...dataRows] = arrayOfArrays;
   const columns: IMappedColumnInfo[] = firstRow.map((value) => {
     const c: IMappedColumnInfo = {
       incomingLabel: value,
+      //validationType: "unknown",
       lametaProperty: "not yet",
       mappingStatus: "Unmatched",
     };
     return c;
   });
 
-  const rows: IMappedRow[] = [];
+  const rows: MappedRow[] = [];
 
   dataRows.forEach((row, index) => {
-    const cells = row.map((cell) => {
+    const cells = row.map((cell, columnIndex) => {
       const c: IMappedCell = {
+        column: columns[columnIndex],
         value: cell,
         importStatus: CellImportStatus.OK,
       };
       return c;
     });
-    rows.push({
-      cells,
-      importStatus: RowImportStatus.No /* will get replaced */,
-      index,
-    });
+    rows.push(
+      Object.assign(new MappedRow(), {
+        cells,
+        importStatus: RowImportStatus.No /* will get replaced */,
+        index,
+      })
+    );
   });
 
   return {
@@ -369,13 +243,8 @@ function arrayOfArraysToImportMatrix(arrayOfArrays: any[][]) {
     rows,
   };
 }
-function getRowImportStatus(
-  row: IMappedRow,
-  index: number
-): "New" | "Replace" | "Error" {
-  return "Error";
-}
-function worksheetToSimpleMatrix(worksheet: XLSX.WorkSheet) {
+
+function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
   const matrix: any[][] = [];
 
   var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range

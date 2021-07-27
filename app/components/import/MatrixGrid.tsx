@@ -20,11 +20,10 @@ import {
   CellImportStatus,
   IMappedCell,
   IMappedColumnInfo,
-  IMappedMatrix,
-  IMappedRow,
-  makeImportMatrixFromWorksheet,
+  MappedMatrix,
+  MappedRow,
   RowImportStatus,
-} from "./SpreadsheetImport";
+} from "./MappedMatrix";
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
 const styles = (theme: Theme) => ({
   tableStriped: {
@@ -46,8 +45,8 @@ const TableComponent = withStyles(styles, { name: "TableComponent" })(
   TableComponentBase
 );
 
-export const SpreadsheetGrid: React.FunctionComponent<{
-  matrix: IMappedMatrix;
+export const MatrixGrid: React.FunctionComponent<{
+  matrix: MappedMatrix;
 }> = (props) => {
   const [tableColumnExtensions] = useState([
     { columnName: "checkbox_and_row_number", width: 30 },
@@ -72,7 +71,7 @@ export const SpreadsheetGrid: React.FunctionComponent<{
       {
         name: "checkbox_and_row_number",
         title: " ",
-        getCellValue: (row: IMappedRow) => (
+        getCellValue: (row: MappedRow) => (
           <div css={getRowHeaderStyling(row)}>{1 + row.index}</div>
         ),
       },
@@ -94,7 +93,7 @@ export const SpreadsheetGrid: React.FunctionComponent<{
               {getMappingStatusComponents(columnInfo)}
             </div>
           ),
-          getCellValue: (row: IMappedRow) => {
+          getCellValue: (row: MappedRow) => {
             return getCellComponent(row.cells[columnIndex]);
           },
         };
@@ -231,7 +230,7 @@ function getCellComponent(cell?: IMappedCell) {
   );
 }
 
-function getRowHeaderStyling(row: IMappedRow) {
+function getRowHeaderStyling(row: MappedRow) {
   if (
     row.cells.find(
       (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary

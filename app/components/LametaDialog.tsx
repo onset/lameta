@@ -49,7 +49,7 @@ export const LametaDialog: React.FunctionComponent<{
       }}
     >
       <ReactModal
-        isOpen={true /*props.open*/}
+        isOpen={props.open}
         css={css`
           //  background-color: red;
         `}

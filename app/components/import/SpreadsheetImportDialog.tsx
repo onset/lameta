@@ -16,13 +16,17 @@ import {
 import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
-import { SpreadsheetGrid } from "./SpreadsheetGrid";
+import { MatrixGrid } from "./MatrixGrid";
 import * as XLSX from "xlsx";
-import { makeImportMatrixFromWorksheet } from "./SpreadsheetImport";
+import { makeMappedMatrixFromWorksheet } from "./SpreadsheetToMatrix";
+import { ProjectHolder } from "../../model/Project/Project";
+import { MappedMatrix } from "./MappedMatrix";
 const lingmetaxSessionMap = require("./LingMetaXMap.json5");
 
 export let showSpreadsheetImportDialog = () => {};
-export const SpreadsheetImportDialog: React.FunctionComponent<{}> = (props) => {
+export const SpreadsheetImportDialog: React.FunctionComponent<{
+  projectHolder: ProjectHolder;
+}> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
   const [path, setPath] = useState("c:/dev/lameta/sample data/LingMetaX.xlsx");
   const [mapping, setMapping] = useUserSetting(
@@ -38,7 +42,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = (props) => {
     });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     // todo: actually load the mapping they asked for (when we can handle different ones)
-    return makeImportMatrixFromWorksheet(worksheet, lingmetaxSessionMap);
+    return makeMappedMatrixFromWorksheet(worksheet, lingmetaxSessionMap);
   }, [path, mapping]);
 
   return (
@@ -78,11 +82,20 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{}> = (props) => {
             ))}
           </select>
         </div>
-        <SpreadsheetGrid matrix={matrix} />
+        <MatrixGrid matrix={matrix} />
       </DialogMiddle>
       <DialogBottomButtons>
-        <DialogCancelButton onClick={() => closeDialog} />
+        <button
+          onClick={() => {
+            doImport(matrix, props.projectHolder);
+            closeDialog();
+          }}
+        >
+          <Trans>OK</Trans>
+        </button>
+        <DialogCancelButton onClick={() => closeDialog()} />
       </DialogBottomButtons>
     </LametaDialog>
   );
 };
+function doImport(matrix: MappedMatrix, projectHolder: ProjectHolder) {}
