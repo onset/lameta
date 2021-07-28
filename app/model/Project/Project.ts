@@ -315,17 +315,20 @@ export class Project extends Folder {
     );
   }
 
-  public addPerson() {
+  public addPerson(name?: string): Person {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "People"), // we don't localize the directory name.
       t`New Person`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
-    person.properties.setText("name", t`New Person`);
+    person.properties.setText("name", name ?? t`New Person`);
     this.persons.push(person);
+    person.nameMightHaveChanged();
+    person.saveFolderMetaData;
     this.selectedPerson.index = this.persons.length - 1;
     analyticsEvent("Create", "Create Person");
+    return person;
   }
 
   private setupProtocolChoices() {
@@ -489,6 +492,21 @@ export class Project extends Folder {
       }
     );
   }
+  public getOrCreatePerson(name: string): Person {
+    if (!name || !name.trim()) {
+      throw new Error("getOrCreatePerson() given an empty name");
+    }
+    const lcName = name.trim().toLowerCase();
+    const found = this.persons.find(
+      (p) =>
+        p.properties.getTextStringOrEmpty("name").toLowerCase() === lcName ||
+        p.properties.getTextStringOrEmpty("code").toLowerCase() === lcName
+    );
+    if (found) return found;
+    else {
+      return this.addPerson(name.trim());
+    }
+  }
   public deleteSession(session: Session) {
     try {
       if (trash(session.directory)) {
@@ -498,6 +516,10 @@ export class Project extends Folder {
         const countAfterWeRemoveThisOne = this.sessions.length - 1;
         this.selectedSession.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         this.sessions.splice(index, 1);
+        console.log(
+          `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
+        );
+        this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
       } else throw Error("Failed to trash session.");
     } catch (e) {
       NotifyException(e, "Error trying to trash session.");

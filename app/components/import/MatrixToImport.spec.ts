@@ -212,11 +212,11 @@ function fieldOfRow(row: number, field: string): string {
 */
 
 function simpleColumn(key: string): IMappedColumnInfo {
-  return {
+  return Object.assign(new IMappedColumnInfo(), {
     incomingLabel: key,
     lametaProperty: key,
     mappingStatus: "Identity",
-  };
+  });
 }
 function simpleCell(property: string, value: string): IMappedCell {
   return {

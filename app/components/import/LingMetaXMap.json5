@@ -34,14 +34,14 @@
   //other_equipment: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
   //recording_conditions: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
 
-  participant_1_full_name: { lameta: "contribution.person" },
+  participant_1_full_name: { lameta: "contribution.name" },
   participant_1_role: { lameta: "contribution.role" },
-  participant_2_full_name: { lameta: "contribution.person" },
+  participant_2_full_name: { lameta: "contribution.name" },
   participant_2_role: { lameta: "contribution.role" },
-  participant_3_full_name: { lameta: "contribution.person" },
+  participant_3_full_name: { lameta: "contribution.name" },
   participant_3_role: { lameta: "contribution.role" },
-  participant_4_full_name: { lameta: "contribution.person" },
+  participant_4_full_name: { lameta: "contribution.name" },
   participant_4_role: { lameta: "contribution.role" },
-  participant_5_full_name: { lameta: "contribution.person" },
+  participant_5_full_name: { lameta: "contribution.name" },
   participant_5_role: { lameta: "contribution.role" },
 }

@@ -35,9 +35,9 @@ export class ComponentTab extends React.Component<IProps> {
     const sp = parseInt(splitterposition, 10);
     // console.log(`selectedFolder.index = ${this.props.selectedFolder.index}`);
     // console.log(`sessions.length = ${this.props.project.sessions.length}`);
-    if (this.props.selectedFolder.index >= this.props.project.sessions.length)
+    if (this.props.selectedFolder.index >= this.props.folders.length)
       throw Error(
-        `sessions.length = ${this.props.project.sessions.length} but selectedFolder.index = ${this.props.selectedFolder.index}`
+        `folders.length = ${this.props.folders.length} but selected index is ${this.props.selectedFolder.index}`
       );
 
     return (

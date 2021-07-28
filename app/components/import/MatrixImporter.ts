@@ -50,10 +50,11 @@ export function addSessionToProject(project: Project, row: MappedRow): Session {
           break;
         case "contribution.comments":
           break;
-        case "contribution.person":
+        case "contribution.name":
+          const person = project.getOrCreatePerson(cell.value);
           session.metadataFile!.contributions.push(
             new Contribution(
-              cell.value,
+              person.getIdToUseForReferences(),
               lookAheadForValue(row, cellIndex, "contribution.role") ??
                 "participant",
               lookAheadForValue(row, cellIndex, "contribution.comments") ?? ""
