@@ -17,8 +17,7 @@ import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
-import * as XLSX from "xlsx";
-import { makeMappedMatrixFromWorksheet } from "./SpreadsheetToMatrix";
+import { makeMappedMatrixFromExcel } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import { addSessionMatrixToProject } from "./MatrixImporter";
@@ -40,12 +39,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
 
   const matrix = useMemo(() => {
     if (!currentlyOpen) return undefined;
-    const workbook = XLSX.readFile(path, {
-      cellDates: false,
-    });
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
     // todo: actually load the mapping they asked for (when we can handle different ones)
-    return makeMappedMatrixFromWorksheet(worksheet, lingmetaxSessionMap);
+    return makeMappedMatrixFromExcel(path, lingmetaxSessionMap);
   }, [path, mapping, currentlyOpen]);
 
   return (

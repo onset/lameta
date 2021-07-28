@@ -4,10 +4,10 @@ export interface IMappedCell {
   importStatus: CellImportStatus;
 }
 export enum CellImportStatus {
-  OK,
-  /* will be added to an open list */ Addition,
-  NotInClosedVocabulary,
-  ProgramError,
+  OK = "OK",
+  /* will be added to an open list */ Addition = "Addition",
+  NotInClosedVocabulary = "NotInClosedVocabulary",
+  ProgramError = "ProgramError",
 }
 
 export class IMappedColumnInfo {
