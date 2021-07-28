@@ -11,7 +11,7 @@ import { Trans } from "@lingui/macro";
 interface IProps {}
 interface IState {
   isOpen: boolean;
-  path?: string;
+  descriptionOfWhatWillBeDeleted?: string;
   deleteAction?: (path: string) => void;
 }
 
@@ -27,8 +27,12 @@ export default class ConfirmDeleteDialog extends React.Component<
     ConfirmDeleteDialog.singleton = this;
   }
   private handleCloseModal(doDelete: boolean) {
-    if (doDelete && this.state.deleteAction && this.state.path) {
-      this.state.deleteAction(this.state.path);
+    if (
+      doDelete &&
+      this.state.deleteAction &&
+      this.state.descriptionOfWhatWillBeDeleted
+    ) {
+      this.state.deleteAction(this.state.descriptionOfWhatWillBeDeleted);
     }
     this.setState({ isOpen: false, deleteAction: () => {} });
   }
@@ -36,7 +40,7 @@ export default class ConfirmDeleteDialog extends React.Component<
   public static async show(path: string, deleteAction: (path: string) => void) {
     const fileName = Path.basename(path);
     ConfirmDeleteDialog.singleton.setState({
-      path: fileName,
+      descriptionOfWhatWillBeDeleted: fileName,
       isOpen: true,
       deleteAction,
     });
@@ -63,7 +67,10 @@ export default class ConfirmDeleteDialog extends React.Component<
             <div className="row">
               <img src={locate("assets/trash.png")} />
               <h1>
-                <Trans>{this.state.path} will be moved to the Trash</Trans>
+                <Trans>
+                  {this.state.descriptionOfWhatWillBeDeleted} will be moved to
+                  the Trash
+                </Trans>
               </h1>
             </div>
           </div>

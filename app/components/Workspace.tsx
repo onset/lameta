@@ -25,6 +25,7 @@ import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
+import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 
 export interface IProps {
   project: Project;
@@ -94,6 +95,23 @@ export default class Home extends React.Component<IProps> {
           click: () => {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
+            }
+          },
+        },
+        {
+          // this doesn't work because the count falls out of date (these menus cannot be updated on the fly)
+          //label: t`Delete ${this.props.project.countOfMarkedSessions()} Marked Sessions...`,
+          label: t`Delete All Marked Sessions...`,
+          enabled: enableMenu, // doesn't work (see explanation above): && this.props.project.countOfMarkedSessions() > 0,
+          click: () => {
+            if (this.props.project) {
+              if (this.props.project.countOfMarkedSessions() === 0) {
+                ShowMessageDialog({
+                  title: ``,
+                  text: `To select the items that you want to delete, first tick one or more boxes.`,
+                  buttonText: "Close",
+                });
+              } else this.props.project.deleteMarkedSessions();
             }
           },
         },

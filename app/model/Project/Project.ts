@@ -454,13 +454,18 @@ export class Project extends Folder {
       f.saveAllFilesInFolder();
     }
   }
-
+  public unMarkAllSessions() {
+    this.sessions.forEach((s) => {
+      s.marked = false;
+    });
+  }
   public countOfMarkedSessions(): number {
-    return this.sessions.filter((s) => s.checked).length;
+    return this.sessions.filter((s) => s.marked).length;
   }
   public haveSelectedSession(): boolean {
     return this.selectedSession.index >= 0;
   }
+
   public haveSelectedPerson(): boolean {
     return this.selectedPerson.index >= 0;
   }
@@ -470,6 +475,19 @@ export class Project extends Folder {
     ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
       this.deleteSession(this.sessions[this.selectedSession.index]);
     });
+  }
+  public deleteMarkedSessions() {
+    const session = this.sessions[this.selectedSession.index];
+    ConfirmDeleteDialog.show(
+      `${this.countOfMarkedSessions()} Sessions`,
+      (path: string) => {
+        this.sessions
+          .filter((s) => s.marked)
+          .forEach((session) => {
+            this.deleteSession(session);
+          });
+      }
+    );
   }
   public deleteSession(session: Session) {
     try {
