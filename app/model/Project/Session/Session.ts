@@ -130,7 +130,7 @@ export class Session extends Folder {
         )
       ) {
         this.metadataFile!.contributions.push(
-          new Contribution(name, "participant", "", "")
+          new Contribution(name, "participant", "")
         );
       }
     });

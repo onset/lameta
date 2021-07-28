@@ -51,7 +51,7 @@ export class FolderList extends React.Component<IProps> {
       const dummy = folder.displayName;
       if (folder instanceof Session) {
         const dummyId = folder.properties.getTextStringOrEmpty("id");
-        const dummyChecked = folder.checked;
+        const dummyChecked = folder.marked;
       }
 
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
@@ -77,7 +77,7 @@ export class FolderList extends React.Component<IProps> {
             onChange={(e) => {
               e.stopPropagation(); // don't select the folder of row
               this.props.folders.forEach((f) => {
-                f.checked = e.target.checked;
+                f.marked = e.target.checked;
               });
             }}
           /> // Don't give a header for the checkbox column
@@ -111,11 +111,11 @@ export class FolderList extends React.Component<IProps> {
               <input
                 type="checkbox"
                 title={t`Mark for Export`}
-                checked={f.checked}
+                checked={f.marked}
                 onChange={(e) => {
                   e.stopPropagation(); // don't select the folder of row
                   //(field as SelectionField).toggle();
-                  f.checked = !f.checked;
+                  f.marked = !f.marked;
                 }}
               />
             );

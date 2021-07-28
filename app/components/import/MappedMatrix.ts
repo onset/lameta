@@ -10,12 +10,27 @@ export enum CellImportStatus {
   ProgramError,
 }
 
-export interface IMappedColumnInfo {
-  incomingLabel: string;
-  lametaProperty: string;
+export class IMappedColumnInfo {
+  public incomingLabel: string;
+  public lametaProperty: string;
   //validationType: "unknown"|"string" | "date";
-  mappingStatus: "Identity" | "Matched" | "Unmatched" | "MissingIncomingLabel";
+  public mappingStatus:
+    | "Identity"
+    | "Matched"
+    | "Skip"
+    | "Custom"
+    | "MissingIncomingLabel";
+
+  // review: not clear if this is good
+  // what about "unmatched"? Shouldn't that have  been sent to "custom"?
+  public get doImport(): boolean {
+    return (
+      this.mappingStatus !== "MissingIncomingLabel" &&
+      this.mappingStatus !== "Skip"
+    );
+  }
 }
+
 export enum RowImportStatus {
   Yes,
   No,

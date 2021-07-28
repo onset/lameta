@@ -17,55 +17,59 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 
-function lookAheadForValue(
-  row: MappedRow,
-  lookToRightOfCellIndex: number,
-  key: string
-): string | undefined {
-  lookToRightOfCellIndex++;
-  for (var i = lookToRightOfCellIndex; i < row.cells.length; i++) {
-    if (row.cells[i].column.lametaProperty == key) return row.cells[i].value;
-  }
-  return undefined;
+export function addSessionMatrixToProject(
+  project: Project,
+  matrix: MappedMatrix
+) {
+  project.unMarkAllSessions(); // new ones will be marked
+  matrix.rows
+    .filter((row) => row.importStatus === RowImportStatus.Yes)
+    .forEach((row) => {
+      addSessionToProject(project, row);
+    });
 }
+
 export function addSessionToProject(project: Project, row: MappedRow): Session {
   const session = project.makeSessionForImport();
+  session.marked = true; // help user find the newly imported session
 
-  row.cells.forEach((cell, cellIndex) => {
-    const lametaKey = cell.column.lametaProperty;
-    switch (lametaKey) {
-      case "custom":
-        session.properties.addCustomProperty(
-          makeCustomField(cell.column.incomingLabel, cell.value)
-        );
+  row.cells
+    .filter((cell) => cell.column.doImport && cell.value)
+    .forEach((cell, cellIndex) => {
+      const lametaKey = cell.column.lametaProperty;
+      switch (lametaKey) {
+        case "custom":
+          session.properties.addCustomProperty(
+            makeCustomField(cell.column.incomingLabel, cell.value)
+          );
 
-        break;
-      case "contribution.role":
-        break;
-      case "contribution.date":
-        break;
-      case "contribution.comments":
-        break;
-      case "contribution.name":
-        session.metadataFile!.contributions.push(
-          new Contribution(
-            cell.value,
-            lookAheadForValue(row, cellIndex, "contribution.role") ??
-              "participant",
-            lookAheadForValue(row, cellIndex, "contribution.comments") ?? ""
-          )
-        );
-        // TODO: have to group up to 3 consecutive cells into a single contribution record
-        break;
-      case "date":
-        const dateString: string = moment(cell.value).format("YYYY-MM-DD");
-        const dateField = session.properties.getValueOrThrow("date");
-        dateField.setValueFromString(dateString);
-        break;
-      default:
-        session.properties.setText(lametaKey /* ? */, cell.value);
-    }
-  });
+          break;
+        case "contribution.role":
+          break;
+        case "contribution.date":
+          break;
+        case "contribution.comments":
+          break;
+        case "contribution.person":
+          session.metadataFile!.contributions.push(
+            new Contribution(
+              cell.value,
+              lookAheadForValue(row, cellIndex, "contribution.role") ??
+                "participant",
+              lookAheadForValue(row, cellIndex, "contribution.comments") ?? ""
+            )
+          );
+          // TODO: have to group up to 3 consecutive cells into a single contribution record
+          break;
+        case "date":
+          const dateString: string = moment(cell.value).format("YYYY-MM-DD");
+          const dateField = session.properties.getValueOrThrow("date");
+          dateField.setValueFromString(dateString);
+          break;
+        default:
+          session.properties.setText(lametaKey /* ? */, cell.value);
+      }
+    });
 
   // if we got this far and we are replacing an existing session, move it to the bin
 
@@ -95,4 +99,16 @@ function makeCustomField(key: string, value: string): Field {
   const customField = Field.fromFieldDefinition(definition);
   customField.setValueFromString(value);
   return customField;
+}
+
+function lookAheadForValue(
+  row: MappedRow,
+  lookToRightOfCellIndex: number,
+  key: string
+): string | undefined {
+  lookToRightOfCellIndex++;
+  for (var i = lookToRightOfCellIndex; i < row.cells.length; i++) {
+    if (row.cells[i].column.lametaProperty == key) return row.cells[i].value;
+  }
+  return undefined;
 }

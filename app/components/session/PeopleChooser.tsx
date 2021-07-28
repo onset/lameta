@@ -57,7 +57,7 @@ export const PeopleChooser: React.FunctionComponent<
   const choices = props.getPeopleNames().map((name, index) => {
     return new Object({
       value: "choice" + index, // only function of this is as a unique key
-      contribution: new Contribution(name, "participant", "", ""),
+      contribution: new Contribution(name, "participant", ""),
       label: name,
     });
   });

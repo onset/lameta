@@ -200,7 +200,7 @@ export const ExportDialog: React.FunctionComponent<{
     const folderFilter =
       whichSessionsOption === "all"
         ? (f: Folder) => true
-        : (f: Folder) => f.checked;
+        : (f: Folder) => f.marked;
 
     if (path) {
       switch (exportFormat) {

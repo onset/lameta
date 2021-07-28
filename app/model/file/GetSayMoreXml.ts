@@ -157,13 +157,9 @@ function writeContributions(
         tail = tail.element("smxrole", "unspecified").up();
       }
 
-      if (contribution.date) {
-        writeDate(tail, "date", contribution.date);
-      } else {
-        // SayMore classic will crash if there is no date.
-        // It also uses 0001-01-01 in this situation
-        writeDate(tail, "date", "0001-01-01");
-      }
+      // SayMore classic will crash if there is no date.
+      // It also uses 0001-01-01 in this situation
+      writeDate(tail, "date", "0001-01-01");
 
       if (contribution.comments && contribution.comments.trim().length > 0) {
         tail = tail.element("comments", contribution.comments).up();

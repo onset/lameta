@@ -11,6 +11,7 @@ import { useState } from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { t, Trans } from "@lingui/macro";
+import { Button } from "@material-ui/core";
 
 // const saymore_orange = "#e69664";
 // const { app } = require("electron").remote;
@@ -27,6 +28,9 @@ export const LametaDialog: React.FunctionComponent<{
   open: boolean;
   onClose: () => void;
 }> = (props) => {
+  if (!open) {
+    return <React.Fragment />;
+  }
   const inner = (
     <div
       css={css`
@@ -199,9 +203,12 @@ export const DialogCancelButton: React.FunctionComponent<{
   onClick: () => void;
   default?: boolean;
 }> = (props) => (
-  <button onClick={props.onClick}>
+  <Button
+    variant={props.default ? "contained" : "outlined"}
+    onClick={props.onClick}
+  >
     <Trans>Cancel</Trans>
-  </button>
+  </Button>
 );
 export const DialogOKButton: React.FunctionComponent<{
   onClick: () => void;

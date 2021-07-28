@@ -44,7 +44,7 @@ export class IFolderSelection {
 export /*babel doesn't like this: abstract*/ class Folder {
   // Is the folder's checkbox ticked?
   @observable
-  public checked: boolean = false;
+  public marked: boolean = false;
 
   public directory: string = "";
   @observable

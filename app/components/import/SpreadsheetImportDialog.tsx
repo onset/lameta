@@ -21,6 +21,8 @@ import * as XLSX from "xlsx";
 import { makeMappedMatrixFromWorksheet } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
+import { addSessionMatrixToProject } from "./MatrixImporter";
+import { Button } from "@material-ui/core";
 const lingmetaxSessionMap = require("./LingMetaXMap.json5");
 
 export let showSpreadsheetImportDialog = () => {};
@@ -37,13 +39,14 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   showSpreadsheetImportDialog = showDialog;
 
   const matrix = useMemo(() => {
+    if (!currentlyOpen) return undefined;
     const workbook = XLSX.readFile(path, {
       cellDates: false,
     });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     // todo: actually load the mapping they asked for (when we can handle different ones)
     return makeMappedMatrixFromWorksheet(worksheet, lingmetaxSessionMap);
-  }, [path, mapping]);
+  }, [path, mapping, currentlyOpen]);
 
   return (
     <LametaDialog
@@ -82,20 +85,24 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             ))}
           </select>
         </div>
-        <MatrixGrid matrix={matrix} />
+        {matrix && <MatrixGrid matrix={matrix} />}
       </DialogMiddle>
       <DialogBottomButtons>
-        <button
+        <Button
+          variant="contained"
+          color="secondary"
           onClick={() => {
-            doImport(matrix, props.projectHolder);
+            addSessionMatrixToProject(props.projectHolder.project!, matrix!);
             closeDialog();
           }}
+          css={css`
+            min-width: 50px;
+          `}
         >
-          <Trans>OK</Trans>
-        </button>
+          <Trans>Import</Trans>
+        </Button>
         <DialogCancelButton onClick={() => closeDialog()} />
       </DialogBottomButtons>
     </LametaDialog>
   );
 };
-function doImport(matrix: MappedMatrix, projectHolder: ProjectHolder) {}

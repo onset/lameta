@@ -133,18 +133,20 @@ export const MatrixGrid: React.FunctionComponent<{
           <SelectionState
             selection={selectedIndices}
             onSelectionChange={(rowsTheControlWantsSelected) => {
-              setSelectedIndices(
-                props.matrix.rows
-                  .filter((r) => {
-                    // if the UI wants it selected
-                    return (
-                      rowsTheControlWantsSelected.includes(r.index) &&
-                      // and it is allowed to be selected
-                      r.importStatus != RowImportStatus.NotAllowed
-                    );
-                  })
-                  .map((r) => r.index)
-              );
+              props.matrix.rows.forEach((row) => {
+                if (row.importStatus !== RowImportStatus.NotAllowed) {
+                  row.importStatus = rowsTheControlWantsSelected.includes(
+                    row.index
+                  )
+                    ? RowImportStatus.Yes
+                    : RowImportStatus.No;
+                }
+              });
+
+              const selectedRowIndices = props.matrix.rows
+                .filter((r) => r.importStatus === RowImportStatus.Yes)
+                .map((r) => r.index);
+              setSelectedIndices(selectedRowIndices);
             }}
           />
           <IntegratedSelection />
@@ -202,7 +204,7 @@ function getMappingStatusComponents(column: IMappedColumnInfo) {
       return <div>🡒{column.lametaProperty}</div>;
     case "MissingIncomingLabel":
       return <div></div>;
-    case "Unmatched":
+    case "Custom":
       return (
         <div
           css={css`
@@ -210,6 +212,16 @@ function getMappingStatusComponents(column: IMappedColumnInfo) {
           `}
         >
           🡒Custom
+        </div>
+      );
+    case "Skip":
+      return (
+        <div
+          css={css`
+            color: red;
+          `}
+        >
+          SKIP
         </div>
       );
   }

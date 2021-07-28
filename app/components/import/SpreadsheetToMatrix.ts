@@ -167,16 +167,18 @@ function addMapping(matrix: MappedMatrix, mappingConfig: object) {
 function setMappingForOnColumn(info: IMappedColumnInfo, mappingConfig: object) {
   if (!info.incomingLabel || info.incomingLabel.trim() === "") {
     info.mappingStatus = "MissingIncomingLabel";
+    info.lametaProperty = "skip";
     return;
   }
   info.lametaProperty = mappingConfig[info.incomingLabel]?.lameta || "custom";
   if (info.lametaProperty.toLowerCase() == info.incomingLabel.toLowerCase()) {
     info.mappingStatus = "Identity";
   } else if (info.lametaProperty === "custom") {
-    info.mappingStatus = "Unmatched";
+    info.mappingStatus = "Custom";
   } else {
     info.mappingStatus = "Matched";
   }
+  // Currently we don't provide the user a way of skipping a column
   return;
 }
 
@@ -185,8 +187,9 @@ function addValidationInfo(matrix: MappedMatrix) {
     row.cells.forEach((cell, index) => {
       const columnInfo = matrix.columnInfos[index];
       if (
-        columnInfo.mappingStatus != "Unmatched" &&
-        columnInfo.mappingStatus != "MissingIncomingLabel"
+        columnInfo.mappingStatus != "Skip" &&
+        columnInfo.mappingStatus != "MissingIncomingLabel" &&
+        columnInfo.mappingStatus != "Custom"
       ) {
         const [primary, secondary] = columnInfo.lametaProperty.split(".");
         if (primary === "contribution") {
@@ -209,12 +212,12 @@ function addValidationInfo(matrix: MappedMatrix) {
 function arrayOfArraysToMappedMatrix(arrayOfArrays: any[][]) {
   const [firstRow, ...dataRows] = arrayOfArrays;
   const columns: IMappedColumnInfo[] = firstRow.map((value) => {
-    const c: IMappedColumnInfo = {
+    const c: IMappedColumnInfo = Object.assign(new IMappedColumnInfo(), {
       incomingLabel: value,
       //validationType: "unknown",
       lametaProperty: "not yet",
       mappingStatus: "Unmatched",
-    };
+    });
     return c;
   });
 
