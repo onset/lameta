@@ -13,7 +13,7 @@ import {
   MappedMatrix,
   CellImportStatus,
   RowImportStatus,
-  IMappedColumnInfo,
+  MappedColumnInfo,
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
@@ -66,8 +66,8 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]) {
   const nonEmptyRows = followingRows.filter((r) =>
     r.find((cellText: string) => cellText.trim().length > 0)
   );
-  const columns: IMappedColumnInfo[] = firstRow.map((value) => {
-    const c: IMappedColumnInfo = Object.assign(new IMappedColumnInfo(), {
+  const columns: MappedColumnInfo[] = firstRow.map((value) => {
+    const c: MappedColumnInfo = Object.assign(new MappedColumnInfo(), {
       incomingLabel: value,
       //validationType: "unknown",
       lametaProperty: "not yet",
@@ -108,25 +108,38 @@ function addMapping(matrix: MappedMatrix, mappingConfig: object) {
     setMappingForOnColumn(info, mappingConfig);
   });
 }
-function setMappingForOnColumn(info: IMappedColumnInfo, mappingConfig: object) {
-  if (!info.incomingLabel || info.incomingLabel.trim() === "") {
-    info.mappingStatus = "MissingIncomingLabel";
-    info.lametaProperty = "skip";
+function setMappingForOnColumn(
+  column: MappedColumnInfo,
+  mappingConfig: object
+) {
+  if (!column.incomingLabel || column.incomingLabel.trim() === "") {
+    column.mappingStatus = "MissingIncomingLabel";
+    column.lametaProperty = "skip";
     return;
   }
-  info.lametaProperty = mappingConfig[info.incomingLabel]?.lameta || "custom";
-  if (info.lametaProperty.toLowerCase() == info.incomingLabel.toLowerCase()) {
-    info.mappingStatus = "Identity";
-  } else if (info.lametaProperty === "custom") {
-    info.mappingStatus = "Custom";
+  column.lametaProperty =
+    mappingConfig[column.incomingLabel]?.lameta || "custom";
+  if (
+    column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()
+  ) {
+    column.mappingStatus = "Identity";
+  } else if (column.lametaProperty === "custom") {
+    column.mappingStatus = "Custom";
   } else {
-    info.mappingStatus = "Matched";
+    column.mappingStatus = "Matched";
   }
+
   // Currently we don't provide the user a way of skipping a column
   return;
 }
 
 function addValidationInfo(matrix: MappedMatrix) {
+  matrix.columnInfos.forEach((column) => {
+    const def = getFieldDefinition("session", column.lametaProperty);
+    if (def && def.imdiIsClosedVocabulary) {
+      column.validChoices = def.choices || [];
+    }
+  });
   matrix.rows.forEach((row) => {
     row.cells.forEach((cell, index) => {
       const columnInfo = matrix.columnInfos[index];

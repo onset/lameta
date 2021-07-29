@@ -12,7 +12,7 @@ import {
   MappedMatrix,
   CellImportStatus,
   RowImportStatus,
-  IMappedColumnInfo,
+  MappedColumnInfo,
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";

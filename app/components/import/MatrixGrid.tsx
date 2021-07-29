@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-
+import styled from "@emotion/styled";
 import {
   Grid,
   Table,
@@ -19,12 +19,13 @@ import { Theme, withStyles } from "@material-ui/core/styles";
 import {
   CellImportStatus,
   IMappedCell,
-  IMappedColumnInfo,
+  MappedColumnInfo,
   MappedMatrix,
   MappedRow,
   RowImportStatus,
 } from "./MappedMatrix";
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
+import Tooltip from "react-tooltip-lite";
 const styles = (theme: Theme) => ({
   tableStriped: {
     "& tbody tr:nth-of-type(odd)": {
@@ -113,6 +114,9 @@ export const MatrixGrid: React.FunctionComponent<{
           }
           background-color: #f5f5f5;
         }
+        * {
+          cursor: pointer;
+        }
       `}
     >
       <Paper
@@ -196,7 +200,7 @@ function getLetterIndexForColumn(num: number): string {
   return chars.join("");
 }
 
-function getMappingStatusComponents(column: IMappedColumnInfo) {
+function getMappingStatusComponents(column: MappedColumnInfo) {
   switch (column.mappingStatus) {
     case "Identity":
       return <div>✔</div>;
@@ -227,20 +231,20 @@ function getMappingStatusComponents(column: IMappedColumnInfo) {
   }
 }
 
-function getCellComponent(cell?: IMappedCell) {
-  const specialFormatting = getCellStyling(cell);
-  return (
-    <div
-      css={css`
-        overflow-wrap: break-word;
-        white-space: break-spaces;
-        ${specialFormatting}
-      `}
-    >
-      {cell?.value}
-    </div>
-  );
-}
+// function getCellComponent(cell?: IMappedCell) {
+//   const specialFormatting = getCellStyling(cell);
+//   return (
+//     <div
+//       css={css`
+//         overflow-wrap: break-word;
+//         white-space: break-spaces;
+//         ${specialFormatting}
+//       `}
+//     >
+//       {cell?.value}
+//     </div>
+//   );
+// }
 
 function getRowHeaderStyling(row: MappedRow) {
   if (
@@ -269,30 +273,60 @@ function getRowHeaderStyling(row: MappedRow) {
   return css``;
 }
 
-function getCellStyling(cell?: IMappedCell) {
-  if (!cell) {
-    return css`
-      color: white;
-      background-color: blue;
-    `;
+function getCellComponent(cell?: IMappedCell) {
+  const defaultStyling = css`
+    overflow-wrap: break-word;
+    white-space: break-spaces;
+  `;
+
+  if (!cell || cell.importStatus === "ProgramError") {
+    return (
+      <div
+        css={css`
+          color: white;
+          background-color: blue;
+        `}
+      >
+        PROGRAM ERROR
+      </div>
+    );
   }
   switch (cell.importStatus) {
     case CellImportStatus.OK:
-      return css``;
+      return <div css={defaultStyling}>{cell?.value}</div>;
+
     case CellImportStatus.NotInClosedVocabulary:
-      return css`
-        color: white;
-        background-color: red;
-        padding: 3px;
-      `;
+      return (
+        <Tooltip
+          content={
+            <div>
+              <div>These are the permitted values for this field:</div>
+              <div>{cell.column.validChoices.join(", ")}</div>
+            </div>
+          }
+          background={"red"}
+          color={"white"}
+        >
+          <div
+            css={css`
+              ${defaultStyling}
+              text-decoration: line-through red;
+            `}
+          >
+            {cell?.value}
+          </div>
+        </Tooltip>
+      );
     case CellImportStatus.Addition:
-      return css`
-        background-color: lightgoldenrodyellow;
-      `;
-    case CellImportStatus.ProgramError:
-      return css`
-        color: white;
-        background-color: purple;
-      `;
+      return (
+        <div
+          css={css`
+            ${defaultStyling} color: white;
+            background-color: lightgoldenrodyellow;
+          `}
+        >
+          {cell?.value}
+        </div>
+      );
   }
 }

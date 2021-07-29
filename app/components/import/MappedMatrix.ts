@@ -1,6 +1,6 @@
 export interface IMappedCell {
   value: string;
-  column: IMappedColumnInfo;
+  column: MappedColumnInfo;
   importStatus: CellImportStatus;
 }
 export enum CellImportStatus {
@@ -10,7 +10,7 @@ export enum CellImportStatus {
   ProgramError = "ProgramError",
 }
 
-export class IMappedColumnInfo {
+export class MappedColumnInfo {
   public incomingLabel: string;
   public lametaProperty: string;
   //validationType: "unknown"|"string" | "date";
@@ -21,6 +21,7 @@ export class IMappedColumnInfo {
     | "Custom"
     | "MissingIncomingLabel";
 
+  public validChoices: string[];
   // review: not clear if this is good
   // what about "unmatched"? Shouldn't that have  been sent to "custom"?
   public get doImport(): boolean {
@@ -50,7 +51,7 @@ export class MappedRow {
   }
 }
 export class MappedMatrix {
-  columnInfos: IMappedColumnInfo[];
+  columnInfos: MappedColumnInfo[];
   // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
   rows: MappedRow[];
 }
