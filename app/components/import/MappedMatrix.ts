@@ -2,6 +2,7 @@ export interface IMappedCell {
   value: string;
   column: MappedColumnInfo;
   importStatus: CellImportStatus;
+  problemDescription?: string;
 }
 export enum CellImportStatus {
   OK = "OK",
@@ -41,6 +42,7 @@ export class MappedRow {
   public importStatus: RowImportStatus;
   public cells: IMappedCell[] = [];
   public index: number;
+  public problemDescriptions: string[] = [];
 
   public asObjectByLametaProperties(): any {
     const o = {};
@@ -48,6 +50,9 @@ export class MappedRow {
       o[c.column.lametaProperty] = c.value;
     });
     return o;
+  }
+  public addProblemDescription(problem: string) {
+    this.problemDescriptions.push(problem);
   }
 }
 export class MappedMatrix {

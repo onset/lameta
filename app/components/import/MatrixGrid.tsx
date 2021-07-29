@@ -27,11 +27,11 @@ import {
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
 const styles = (theme: Theme) => ({
-  tableStriped: {
-    "& tbody tr:nth-of-type(odd)": {
-      backgroundColor: "#effdda57",
-    },
-  },
+  // tableStriped: {
+  //   "& tbody tr:nth-of-type(odd)": {
+  //     backgroundColor: "#effdda57",
+  //   },
+  // },
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
     "&:last-child": {
@@ -45,17 +45,11 @@ const TableComponentBase = ({ classes, ...restProps }) => (
 const TableComponent = withStyles(styles, { name: "TableComponent" })(
   TableComponentBase
 );
-
+const tableColumnExtensions = [{ columnName: "row_header", width: 45 }];
 export const MatrixGrid: React.FunctionComponent<{
   matrix: MappedMatrix;
 }> = (props) => {
-  const [tableColumnExtensions] = useState([
-    { columnName: "checkbox_and_row_number", width: 30 },
-  ]);
-  const [leftColumns] = useState([
-    TableSelection.COLUMN_TYPE,
-    "checkbox_and_row_number",
-  ]);
+  const [leftColumns] = useState([TableSelection.COLUMN_TYPE, "row_header"]);
 
   const [selectedIndices, setSelectedIndices] = useState<number[]>(() =>
     props.matrix.rows
@@ -65,18 +59,51 @@ export const MatrixGrid: React.FunctionComponent<{
 
   const tableRows = props.matrix.rows;
 
+  // <div css={getRowHeaderStyling(row)}>{1 + row.index}</div>
+
   const tableColumns = useMemo(() => {
     const columnObjects: any[] = [
       // first column is for check boxes, we don't seem to have access to that here.
       // The second is for our row number:
       {
-        name: "checkbox_and_row_number",
+        name: "row_header",
         title: " ",
-        getCellValue: (row: MappedRow) => (
-          <div css={getRowHeaderStyling(row)}>{1 + row.index}</div>
-        ),
+        getCellValue: (row: MappedRow) => {
+          return (
+            <span
+              css={css`
+                display: flex;
+              `}
+            >
+              <span css={css``}>{1 + row.index}</span>
+              {row.importStatus === RowImportStatus.NotAllowed && (
+                <span
+                  css={css`
+                    color: red;
+                    margin-left: auto;
+                  `}
+                >
+                  <Tooltip
+                    content={
+                      <div>
+                        {row.problemDescriptions.join(". ")}
+                        {row.cells
+                          .filter((c) => c.problemDescription)
+                          .map((c) => c.problemDescription)
+                          .join(",")}
+                      </div>
+                    }
+                    background={"red"}
+                    color={"white"}
+                  >
+                    ⚠
+                  </Tooltip>
+                </span>
+              )}
+            </span>
+          );
+        },
       },
-
       // followed by the columns of the spreadsheet
       ...props.matrix.columnInfos.map((columnInfo, columnIndex) => {
         return {
@@ -86,6 +113,7 @@ export const MatrixGrid: React.FunctionComponent<{
               <div
                 css={css`
                   text-align: center;
+                  font-weight: normal;
                 `}
               >
                 {getLetterIndexForColumn(columnIndex + 1)}
@@ -298,35 +326,57 @@ function getCellComponent(cell?: IMappedCell) {
     case CellImportStatus.NotInClosedVocabulary:
       return (
         <Tooltip
-          content={
-            <div>
-              <div>These are the permitted values for this field:</div>
-              <div>{cell.column.validChoices.join(", ")}</div>
-            </div>
-          }
+          content={cell.problemDescription}
           background={"red"}
           color={"white"}
         >
           <div
             css={css`
               ${defaultStyling}
-              text-decoration: line-through red;
+              //text-decoration: line-through red;
+              color:red;
+              border: solid red 1px;
+              text-align: center;
             `}
           >
+            <span
+              css={css`
+                font-size: large;
+                margin-right: 5px;
+              `}
+            >
+              ⚠
+            </span>
             {cell?.value}
           </div>
         </Tooltip>
       );
     case CellImportStatus.Addition:
       return (
-        <div
-          css={css`
-            ${defaultStyling} color: white;
-            background-color: lightgoldenrodyellow;
-          `}
+        <Tooltip
+          content={"This will be a new choice for this field."}
+          background={lameta_dark_green}
+          color={"white"}
         >
-          {cell?.value}
-        </div>
+          <div
+            css={css`
+              display: flex;
+              align-items: center;
+            `}
+          >
+            <span
+              css={css`
+                margin-right: 5px;
+                font-weight: bold;
+                color: ${lameta_dark_green};
+                font-size: x-large;
+              `}
+            >
+              +
+            </span>
+            {cell?.value}
+          </div>
+        </Tooltip>
       );
   }
 }

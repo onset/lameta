@@ -135,6 +135,7 @@ function setMappingForOnColumn(
 
 function addValidationInfo(matrix: MappedMatrix) {
   matrix.columnInfos.forEach((column) => {
+    // used by the grid to give some hints to the user
     const def = getFieldDefinition("session", column.lametaProperty);
     if (def && def.imdiIsClosedVocabulary) {
       column.validChoices = def.choices || [];
@@ -156,7 +157,7 @@ function addValidationInfo(matrix: MappedMatrix) {
           if (!def) {
             cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
           } else {
-            cell.importStatus = getImportSituationForValue(def, cell.value);
+            getImportSituationForValue(def, cell);
           }
         }
       } else {
@@ -185,32 +186,41 @@ function setInitialRowImportStatus(matrix: MappedMatrix) {
   };
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
+    if (!r.asObjectByLametaProperties().id) {
+      r.addProblemDescription("Missing ID");
+    }
   });
 }
-function getImportSituationForValue(
-  def: FieldDefinition,
-  value: string
-): CellImportStatus {
-  if (!value) {
+function getImportSituationForValue(def: FieldDefinition, cell: IMappedCell) {
+  if (!cell.value) {
     // TODO: are there any fields that are required?
-    return CellImportStatus.OK;
+    cell.importStatus = CellImportStatus.OK;
+    return;
   }
-  const v = value.toLowerCase();
+  const v = cell.value.toLowerCase();
   if (def.complexChoices) {
     if (!def.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
-      return CellImportStatus.Addition;
+      cell.importStatus = CellImportStatus.Addition;
+      return;
     }
-    return CellImportStatus.OK;
+    cell.importStatus = CellImportStatus.OK;
+    return;
   }
   if (def.choices) {
-    if (def.choices.find((c) => c.toLowerCase() == v))
-      return CellImportStatus.OK;
-
+    if (def.choices.find((c) => c.toLowerCase() == v)) {
+      cell.importStatus = CellImportStatus.OK;
+      return;
+    }
     // it's not at all obvious that we should limit people to IMDI, but for now...
     if (def.imdiIsClosedVocabulary) {
-      return CellImportStatus.NotInClosedVocabulary;
+      cell.importStatus = CellImportStatus.NotInClosedVocabulary;
+      cell.problemDescription = `The the permitted values for ${
+        cell.column.lametaProperty
+      } are: ${cell.column.validChoices.join(", ")}`;
+      return;
     }
-    return CellImportStatus.Addition;
+    cell.importStatus = CellImportStatus.Addition;
+    return;
   }
 
   // TODO: check archive access

@@ -72,61 +72,97 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             display: flex;
             flex-direction: column;
             width: fit-content;
+            margin-bottom: 20px;
           `}
         >
-          <div>{path}</div>
-          <Button
-            color="secondary"
-            onClick={() => {
-              let dir = app.getPath("documents");
-              // prefer to open in the same directory as the current one, if it's there
-              if (path && fs.existsSync(Path.dirname(path))) {
-                dir = Path.dirname(path);
-              }
-              const options: OpenDialogOptions = {
-                properties: ["openFile"],
-                filters: [
-                  {
-                    name: "Spreadsheet Files",
-                    extensions: ["csv", "xlsx", "xls", "ods"],
-                  },
-                ],
-                defaultPath: dir,
-              };
+          <div
+            css={css`
+              display: flex;
+              align-items: center;
+            `}
+          >
+            <label
+              css={css`
+                margin-right: 10px;
+              `}
+            >
+              <Trans>File to Import:</Trans>
+            </label>
 
-              ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                if (result && result.filePaths && result.filePaths.length > 0) {
-                  setPath(result.filePaths[0]);
+            <div
+              css={css`
+                margin-right: 10px;
+              `}
+            >
+              {path}
+            </div>
+            <Button
+              color="secondary"
+              onClick={() => {
+                let dir = app.getPath("documents");
+                // prefer to open in the same directory as the current one, if it's there
+                if (path && fs.existsSync(Path.dirname(path))) {
+                  dir = Path.dirname(path);
                 }
-              });
-            }}
-            css={css`
-              min-width: 50px;
-            `}
-          >
-            <Trans>Choose File</Trans>
-          </Button>
+                const options: OpenDialogOptions = {
+                  properties: ["openFile"],
+                  filters: [
+                    {
+                      name: "Spreadsheet Files",
+                      extensions: ["csv", "xlsx", "xls", "ods"],
+                    },
+                  ],
+                  defaultPath: dir,
+                };
 
-          <label>
-            <Trans>Choose Spreadsheet Mapping:</Trans>
-          </label>
-          <select
+                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
+                  if (
+                    result &&
+                    result.filePaths &&
+                    result.filePaths.length > 0
+                  ) {
+                    setPath(result.filePaths[0]);
+                  }
+                });
+              }}
+              css={css`
+                min-width: 50px;
+              `}
+            >
+              <Trans>Choose File</Trans>
+            </Button>
+          </div>{" "}
+          <div
             css={css`
-              margin-left: 10px;
-              border-radius: 3px; // without this it is cutting off the top border
+              display: flex;
+              align-items: center;
             `}
-            name={"Spreadsheet Mapping"}
-            value={mappingName}
-            onChange={(event) => {
-              setMappingName(event.target.value);
-            }}
           >
-            {["LingMetaX"].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
+            <label
+              css={css`
+                margin-right: 10px;
+              `}
+            >
+              <Trans>Choose Spreadsheet Mapping:</Trans>
+            </label>
+            <select
+              css={css`
+                margin-left: 10px;
+                border-radius: 3px; // without this it is cutting off the top border
+              `}
+              name={"Spreadsheet Mapping"}
+              value={mappingName}
+              onChange={(event) => {
+                setMappingName(event.target.value);
+              }}
+            >
+              {["LingMetaX"].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         {matrix && <MatrixGrid matrix={matrix} />}
       </DialogMiddle>
