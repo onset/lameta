@@ -17,6 +17,10 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 
+export const availableSpreadsheetMappings = {
+  LingMetaXMap: require("./LingMetaXMap.json5"),
+};
+
 export function addSessionMatrixToProject(
   project: Project,
   matrix: MappedMatrix

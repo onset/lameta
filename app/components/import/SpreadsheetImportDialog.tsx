@@ -20,29 +20,41 @@ import { MatrixGrid } from "./MatrixGrid";
 import { makeMappedMatrixFromExcel } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
-import { addSessionMatrixToProject } from "./MatrixImporter";
+import {
+  addSessionMatrixToProject,
+  availableSpreadsheetMappings,
+} from "./MatrixImporter";
+import * as Path from "path";
+import * as fs from "fs";
 import { Button } from "@material-ui/core";
-const lingmetaxSessionMap = require("./LingMetaXMap.json5");
+import { ipcRenderer, OpenDialogOptions } from "electron";
+const { app } = require("electron").remote;
 
 export let showSpreadsheetImportDialog = () => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
-  const [path, setPath] = useState("c:/dev/lameta/sample data/LingMetaX.xlsx");
-  const [mapping, setMapping] = useUserSetting(
+
+  const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.sessions.mappingName", // todo: people
     "LingMetaXMap"
   );
 
   showSpreadsheetImportDialog = showDialog;
-
-  const matrix = useMemo(() => {
-    if (!currentlyOpen) return undefined;
-
-    // todo: actually load the mapping they asked for (when we can handle different ones)
-    return makeMappedMatrixFromExcel(path, lingmetaxSessionMap);
-  }, [path, mapping, currentlyOpen]);
+  const [path, setPath] = useUserSetting("importPath", "");
+  const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
+  useEffect(() => {
+    if (currentlyOpen && path) {
+      // todo: actually load the mapping they asked for (when we can handle different ones)
+      setMatrix(
+        makeMappedMatrixFromExcel(
+          path,
+          availableSpreadsheetMappings[mappingName]
+        )
+      );
+    }
+  }, [path, mappingName, currentlyOpen]);
 
   return (
     <LametaDialog
@@ -58,8 +70,43 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <div
           css={css`
             display: flex;
+            flex-direction: column;
+            width: fit-content;
           `}
         >
+          <div>{path}</div>
+          <Button
+            color="secondary"
+            onClick={() => {
+              let dir = app.getPath("documents");
+              // prefer to open in the same directory as the current one, if it's there
+              if (path && fs.existsSync(Path.dirname(path))) {
+                dir = Path.dirname(path);
+              }
+              const options: OpenDialogOptions = {
+                properties: ["openFile"],
+                filters: [
+                  {
+                    name: "Spreadsheet Files",
+                    extensions: ["csv", "xlsx", "xls", "ods"],
+                  },
+                ],
+                defaultPath: dir,
+              };
+
+              ipcRenderer.invoke("showOpenDialog", options).then((result) => {
+                if (result && result.filePaths && result.filePaths.length > 0) {
+                  setPath(result.filePaths[0]);
+                }
+              });
+            }}
+            css={css`
+              min-width: 50px;
+            `}
+          >
+            <Trans>Choose File</Trans>
+          </Button>
+
           <label>
             <Trans>Choose Spreadsheet Mapping:</Trans>
           </label>
@@ -69,9 +116,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
               border-radius: 3px; // without this it is cutting off the top border
             `}
             name={"Spreadsheet Mapping"}
-            value={mapping}
+            value={mappingName}
             onChange={(event) => {
-              setMapping(event.target.value);
+              setMappingName(event.target.value);
             }}
           >
             {["LingMetaX"].map((n) => (
@@ -87,6 +134,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <Button
           variant="contained"
           color="secondary"
+          disabled={!path}
           onClick={() => {
             addSessionMatrixToProject(props.projectHolder.project!, matrix!);
             closeDialog();

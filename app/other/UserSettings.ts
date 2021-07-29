@@ -2,6 +2,7 @@ import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
 import { observable, computed } from "mobx";
+import React from "react";
 
 class FakeStore {
   private values = {};
@@ -162,9 +163,14 @@ const userSettingsSingleton: UserSettings = new UserSettings();
 export default userSettingsSingleton;
 
 export function useUserSetting(name: string, defaultValue: string) {
+  const v = userSettingsSingleton.Get(name, defaultValue);
+  const [x, setX] = React.useState(v);
   return [
-    userSettingsSingleton.Get(name, defaultValue),
-    (value: string) => userSettingsSingleton.Set(name, value),
+    x,
+    (value: string) => {
+      userSettingsSingleton.Set(name, value);
+      setX(value);
+    },
   ];
 }
 export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
