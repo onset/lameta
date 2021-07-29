@@ -6,6 +6,7 @@ module.exports = function (wallaby) {
       "locale/**/*.csv",
       "sample data/**/*.*", 
       {pattern: 'package.json', load: false, instrument: false},
+      {pattern: "sample data/LingMetaX.xlsx", binary:true}
     ],
 
     tests: ["app/**/*spec.ts"],

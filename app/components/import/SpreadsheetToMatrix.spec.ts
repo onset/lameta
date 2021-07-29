@@ -12,12 +12,13 @@ import {
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
+import * as Path from "path";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 const lingmetaxSessionMap = require("./LingMetaXMap.json5");
-const lingMetaXlsxPath = "c:/dev/lameta/sample data/LingMetaX.xlsx";
-const lingMetaCsvPath = "c:/dev/lameta/sample data/LingMetaX.csv";
+const lingMetaXlsxPath = "sample data/LingMetaX.xlsx";
+const lingMetaCsvPath = "sample data/LingMetaX.csv";
 
 describe("SpreadsheetToMatrix", () => {
   beforeAll(() => {
@@ -25,6 +26,7 @@ describe("SpreadsheetToMatrix", () => {
   });
   beforeEach(() => {
     project.sessions = [];
+    Path.resolve;
   });
   it("Can read in xslx", () => {
     const matrix = makeMappedMatrixFromExcel(
@@ -34,7 +36,7 @@ describe("SpreadsheetToMatrix", () => {
     smokeTest(matrix);
   });
   it("Can read in csv", () => {
-    const matrix = makeMappedMatrixFromCSV(
+    const matrix = makeMappedMatrixFromExcel(
       lingMetaCsvPath,
       lingmetaxSessionMap
     );
