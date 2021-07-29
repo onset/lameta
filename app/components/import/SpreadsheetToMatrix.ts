@@ -17,17 +17,6 @@ import {
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
-import * as fs from "fs";
-import * as Papa from "papaparse";
-
-export function makeMappedMatrixFromCSV(
-  path: string,
-  mapping: object
-): MappedMatrix {
-  const csv = fs.readFileSync(path, "utf8");
-  const arrayOfArrays = Papa.parse(csv).data;
-  return makeMappedMatrix(arrayOfArrays, mapping);
-}
 
 export function makeMappedMatrixFromExcel(
   path: string,
@@ -35,6 +24,7 @@ export function makeMappedMatrixFromExcel(
 ): MappedMatrix {
   const workbook = XLSX.readFile(path, {
     cellDates: false,
+    codepage: 65001 /* utf-8 */,
   });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
@@ -45,12 +35,17 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
   const arrayOfArrays: any[][] = [];
 
   var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
+
   for (var R = range.s.r; R <= range.e.r; ++R) {
     const row: any[] = [];
+    //console.log("range.c: " + range.e.c);
     for (var C = range.s.c; C <= range.e.c; ++C) {
       var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
       var cell = worksheet[cellref];
-      row.push(cell?.w || "");
+      // .w is fine for xslx, but .v is needed to aslo handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
+      const value = (cell?.v || "").toString();
+      //console.log(typeof value);
+      row.push(value);
     }
     arrayOfArrays.push(row);
   }
