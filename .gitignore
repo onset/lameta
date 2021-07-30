@@ -49,3 +49,12 @@ locale/_build
 \.nyc_output/
 
 app/languageFinder/langtags-master.json
+
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
