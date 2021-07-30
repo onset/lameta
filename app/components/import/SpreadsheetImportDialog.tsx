@@ -27,6 +27,7 @@ import {
 import * as Path from "path";
 import * as fs from "fs";
 import { Button } from "@material-ui/core";
+const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 const { app } = require("electron").remote;
 
@@ -34,8 +35,12 @@ export let showSpreadsheetImportDialog = () => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
-  const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
-
+  const {
+    currentlyOpen: xxx,
+    showDialog,
+    closeDialog,
+  } = useSetupLametaDialog();
+  const currentlyOpen = true;
   const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.sessions.mappingName", // todo: people
     "LingMetaXMap"
@@ -44,17 +49,30 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   showSpreadsheetImportDialog = showDialog;
   const [path, setPath] = useUserSetting("importPath", "");
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
+  const chosenMapping = availableSpreadsheetMappings[mappingName];
   useEffect(() => {
-    if (currentlyOpen && path) {
+    if (currentlyOpen && path && props.projectHolder.project) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
       setMatrix(
         makeMappedMatrixFromExcel(
           path,
-          availableSpreadsheetMappings[mappingName]
+          chosenMapping,
+          props.projectHolder.project
         )
       );
     }
   }, [path, mappingName, currentlyOpen]);
+
+  const [chosenCount, setChosenCount] = useState(0);
+  function countChosenRows() {
+    if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
+  }
+
+  useEffect(() => countChosenRows(), [
+    props.projectHolder.project,
+    path,
+    matrix,
+  ]);
 
   return (
     <LametaDialog
@@ -135,7 +153,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           <div
             css={css`
               display: flex;
-              align-items: center;
+              align-items: top;
             `}
           >
             <label
@@ -145,32 +163,54 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             >
               <Trans>Choose Spreadsheet Mapping:</Trans>
             </label>
-            <select
+            <div
               css={css`
+                display: flex;
+                flex-direction: column;
                 margin-left: 10px;
-                border-radius: 3px; // without this it is cutting off the top border
               `}
-              name={"Spreadsheet Mapping"}
-              value={mappingName}
-              onChange={(event) => {
-                setMappingName(event.target.value);
-              }}
             >
-              {["LingMetaX"].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
+              <select
+                css={css`
+                  border-radius: 3px; // without this it is cutting off the top border
+                `}
+                name={"Spreadsheet Mapping"}
+                value={mappingName}
+                onChange={(event) => {
+                  setMappingName(event.target.value);
+                }}
+              >
+                {["LingMetaX"].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+
+              <ReactMarkdown
+                // note: the gfm plugin actually did worse that standard... it turned 2nd level bullets into <pre>
+                css={css`
+                  * {
+                    max-width: 100%;
+                  }
+                `}
+                children={chosenMapping?.mapping_description}
+              />
+            </div>
           </div>
         </div>
-        {matrix && <MatrixGrid matrix={matrix} />}
+        {matrix && (
+          <MatrixGrid
+            matrix={matrix}
+            chosenRowsCountChanged={countChosenRows}
+          />
+        )}
       </DialogMiddle>
       <DialogBottomButtons>
         <Button
           variant="contained"
           color="secondary"
-          disabled={!path}
+          disabled={!path || (matrix && !matrix.getCountOfChosenRows())}
           onClick={() => {
             addSessionMatrixToProject(props.projectHolder.project!, matrix!);
             closeDialog();
@@ -179,7 +219,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             min-width: 50px;
           `}
         >
-          <Trans>Import</Trans>
+          <Trans>{`Import ${chosenCount} Sessions`}</Trans>
         </Button>
         <DialogCancelButton onClick={() => closeDialog()} />
       </DialogBottomButtons>

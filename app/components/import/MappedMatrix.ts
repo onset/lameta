@@ -43,6 +43,7 @@ export class MappedRow {
   public cells: IMappedCell[] = [];
   public index: number;
   public problemDescriptions: string[] = [];
+  public matchesExistingRecord: boolean = false;
 
   public asObjectByLametaProperties(): any {
     const o = {};
@@ -54,9 +55,19 @@ export class MappedRow {
   public addProblemDescription(problem: string) {
     this.problemDescriptions.push(problem);
   }
+  public toggleImportStatus() {
+    if (this.importStatus === RowImportStatus.No)
+      this.importStatus = RowImportStatus.Yes;
+    else this.importStatus = RowImportStatus.No;
+  }
 }
 export class MappedMatrix {
   columnInfos: MappedColumnInfo[];
   // these rows don't include the incoming column labels, the lameta labels, or the column indexes (A, B, C, ...)
   rows: MappedRow[];
+
+  public getCountOfChosenRows(): number {
+    return this.rows.filter((r) => r.importStatus === RowImportStatus.Yes)
+      .length;
+  }
 }

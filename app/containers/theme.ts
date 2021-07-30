@@ -14,6 +14,7 @@ const theme: Theme = createTheme({
       // NB: if you change this to lameta_green, then we have to figure out how
       // to get the import checkboxes to go to a darker shade
       main: lameta_dark_green,
+      contrastText: "white",
     },
     warning: { main: "#F3AA18" },
     info: { main: "#FFFF00" /* todo */ },

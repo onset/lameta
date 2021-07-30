@@ -3,19 +3,17 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import styled from "@emotion/styled";
 import {
   Grid,
   Table,
   TableFixedColumns,
   TableHeaderRow,
-  TableSelection,
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@material-ui/core/Paper";
-import React, { useMemo, useState } from "react";
-import * as XLSX from "xlsx";
-import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
+import React, { useCallback, useMemo, useState } from "react";
 import { Theme, withStyles } from "@material-ui/core/styles";
+import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
+import ErrorRoundedIcon from "@material-ui/icons/ErrorRounded";
 import {
   CellImportStatus,
   IMappedCell,
@@ -26,12 +24,8 @@ import {
 } from "./MappedMatrix";
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
+import { Checkbox } from "@material-ui/core";
 const styles = (theme: Theme) => ({
-  // tableStriped: {
-  //   "& tbody tr:nth-of-type(odd)": {
-  //     backgroundColor: "#effdda57",
-  //   },
-  // },
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
     "&:last-child": {
@@ -45,22 +39,11 @@ const TableComponentBase = ({ classes, ...restProps }) => (
 const TableComponent = withStyles(styles, { name: "TableComponent" })(
   TableComponentBase
 );
-const tableColumnExtensions = [{ columnName: "row_header", width: 45 }];
+const tableColumnExtensions = [{ columnName: "row_header", width: 78 }];
 export const MatrixGrid: React.FunctionComponent<{
   matrix: MappedMatrix;
+  chosenRowsCountChanged: () => void;
 }> = (props) => {
-  const [leftColumns] = useState([TableSelection.COLUMN_TYPE, "row_header"]);
-
-  const [selectedIndices, setSelectedIndices] = useState<number[]>(() =>
-    props.matrix.rows
-      .filter((r) => r.importStatus === RowImportStatus.Yes)
-      .map((r) => r.index)
-  );
-
-  const tableRows = props.matrix.rows;
-
-  // <div css={getRowHeaderStyling(row)}>{1 + row.index}</div>
-
   const tableColumns = useMemo(() => {
     const columnObjects: any[] = [
       // first column is for check boxes, we don't seem to have access to that here.
@@ -70,17 +53,18 @@ export const MatrixGrid: React.FunctionComponent<{
         title: " ",
         getCellValue: (row: MappedRow) => {
           return (
-            <span
+            <div
               css={css`
                 display: flex;
+                align-items: center;
               `}
             >
-              <span css={css``}>{1 + row.index}</span>
-              {row.importStatus === RowImportStatus.NotAllowed && (
+              {row.importStatus === RowImportStatus.NotAllowed ? (
                 <span
                   css={css`
                     color: red;
-                    margin-left: auto;
+                    padding-left: 14px;
+                    font-size: large;
                   `}
                 >
                   <Tooltip
@@ -96,11 +80,53 @@ export const MatrixGrid: React.FunctionComponent<{
                     background={"red"}
                     color={"white"}
                   >
-                    ⚠
+                    <ErrorRoundedIcon
+                      css={css`
+                        //margin-left: -5px; // align under check box
+                        margin-left: 20px;
+                        display: flex;
+                        margin-bottom: -6px;
+                      `}
+                    />
                   </Tooltip>
                 </span>
+              ) : (
+                <Checkbox
+                  checked={row.importStatus === RowImportStatus.Yes}
+                  onChange={(checked) => {
+                    row.toggleImportStatus();
+                    //Now updates because this count changes in the parent //forceUpdate();
+                    props.chosenRowsCountChanged();
+                  }}
+                  color="secondary"
+                />
               )}
-            </span>
+              {row.matchesExistingRecord && (
+                <Tooltip
+                  content={
+                    "This project already has a record with this ID. Tick the box to the left to replace it with this row."
+                  }
+                  background={lameta_dark_green}
+                  color={"white"}
+                >
+                  <WarningRoundedIcon
+                    color="secondary"
+                    //fontSize="small"
+                    css={css`
+                      margin-left: -8px;
+                      margin-bottom: -6px;
+                    `}
+                  />
+                </Tooltip>
+              )}
+              <span
+                css={css`
+                  margin-left: auto;
+                `}
+              >
+                {1 + row.index}
+              </span>
+            </div>
           );
         },
       },
@@ -149,8 +175,12 @@ export const MatrixGrid: React.FunctionComponent<{
     >
       <Paper
         css={css`
+          td:first-child {
+            padding-left: 0 !important;
+          }
           td {
             padding-top: 0 !important;
+
             padding-bottom: 2px !important;
           }
           th {
@@ -161,34 +191,14 @@ export const MatrixGrid: React.FunctionComponent<{
       >
         {/* Documentation on this material thing is hard to find. See https://github.com/DevExpress/devextreme-reactive/tree/master/packages/dx-react-grid-material-ui
          */}
-        <Grid rows={tableRows} columns={tableColumns}>
-          <SelectionState
-            selection={selectedIndices}
-            onSelectionChange={(rowsTheControlWantsSelected) => {
-              props.matrix.rows.forEach((row) => {
-                if (row.importStatus !== RowImportStatus.NotAllowed) {
-                  row.importStatus = rowsTheControlWantsSelected.includes(
-                    row.index
-                  )
-                    ? RowImportStatus.Yes
-                    : RowImportStatus.No;
-                }
-              });
-
-              const selectedRowIndices = props.matrix.rows
-                .filter((r) => r.importStatus === RowImportStatus.Yes)
-                .map((r) => r.index);
-              setSelectedIndices(selectedRowIndices);
-            }}
-          />
-          <IntegratedSelection />
+        <Grid rows={props.matrix.rows} columns={tableColumns}>
           <Table
             columnExtensions={tableColumnExtensions}
             tableComponent={TableComponent}
           />
           <TableHeaderRow />
-          <TableSelection />
-          <TableFixedColumns leftColumns={leftColumns} />
+          {/* <TableSelection /> */}
+          <TableFixedColumns leftColumns={["row_header"]} />
         </Grid>
       </Paper>
     </div>
@@ -274,33 +284,6 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
 //   );
 // }
 
-function getRowHeaderStyling(row: MappedRow) {
-  if (
-    row.cells.find(
-      (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
-    )
-  ) {
-    return css`
-      color: white;
-      background-color: red;
-      padding: 3px;
-    `;
-  }
-
-  if (
-    row.cells.find(
-      (c, index) => c.importStatus === CellImportStatus.ProgramError
-    )
-  ) {
-    return css`
-      color: white;
-      background-color: purple;
-      padding: 3px;
-    `;
-  }
-  return css``;
-}
-
 function getCellComponent(cell?: IMappedCell) {
   const defaultStyling = css`
     overflow-wrap: break-word;
@@ -337,16 +320,15 @@ function getCellComponent(cell?: IMappedCell) {
               color:red;
               border: solid red 1px;
               text-align: center;
+              display: flex;
             `}
           >
-            <span
+            <ErrorRoundedIcon
+              fontSize="small"
               css={css`
-                font-size: large;
                 margin-right: 5px;
               `}
-            >
-              ⚠
-            </span>
+            />
             {cell?.value}
           </div>
         </Tooltip>
@@ -380,3 +362,11 @@ function getCellComponent(cell?: IMappedCell) {
       );
   }
 }
+
+// export function useForceUpdate() {
+//   const [, setTick] = useState(0);
+//   const update = useCallback(() => {
+//     setTick((tick) => tick + 1);
+//   }, []);
+//   return update;
+// }

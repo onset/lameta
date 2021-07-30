@@ -17,10 +17,13 @@ import {
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
+import { Project } from "../../model/Project/Project";
+import { object } from "prop-types";
 
 export function makeMappedMatrixFromExcel(
   path: string,
-  mapping: object
+  mapping: object,
+  project: Project
 ): MappedMatrix {
   const workbook = XLSX.readFile(path, {
     cellDates: false,
@@ -28,7 +31,7 @@ export function makeMappedMatrixFromExcel(
   });
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
-  return makeMappedMatrix(arrayOfArrays, mapping);
+  return makeMappedMatrix(arrayOfArrays, mapping, project);
 }
 
 function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
@@ -42,8 +45,8 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
     for (var C = range.s.c; C <= range.e.c; ++C) {
       var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
       var cell = worksheet[cellref];
-      // .w is fine for xslx, but .v is needed to aslo handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
-      const value = (cell?.v || "").toString();
+      // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
+      const value = (cell?.w || cell?.v || "").toString();
       //console.log(typeof value);
       row.push(value);
     }
@@ -52,16 +55,20 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
   return arrayOfArrays;
 }
 
-function makeMappedMatrix(arrayOfArrays: any[][], mapping: object) {
+function makeMappedMatrix(
+  arrayOfArrays: any[][],
+  mapping: object,
+  project: Project
+) {
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
   addMapping(matrix, mapping);
   addValidationInfo(matrix);
-  setInitialRowImportStatus(matrix);
+  setInitialRowImportStatus(matrix, project);
   return matrix;
 }
 
-function makeUnmappedMatrix(arrayOfArrays: any[][]) {
+function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
   let [firstRow, ...followingRows] = arrayOfArrays;
   const nonEmptyRows = followingRows.filter((r) =>
     r.find((cellText: string) => cellText.trim().length > 0)
@@ -96,10 +103,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]) {
     );
   });
 
-  return {
-    columnInfos: columns,
-    rows,
-  };
+  return Object.assign(new MappedMatrix(), { columnInfos: columns, rows });
 }
 
 function addMapping(matrix: MappedMatrix, mappingConfig: object) {
@@ -167,7 +171,7 @@ function addValidationInfo(matrix: MappedMatrix) {
   });
 }
 
-function setInitialRowImportStatus(matrix: MappedMatrix) {
+function setInitialRowImportStatus(matrix: MappedMatrix, project: Project) {
   const getStatus = (r: MappedRow) => {
     if (!r.asObjectByLametaProperties().id) {
       return RowImportStatus.NotAllowed;
@@ -186,8 +190,12 @@ function setInitialRowImportStatus(matrix: MappedMatrix) {
   };
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
-    if (!r.asObjectByLametaProperties().id) {
+    const id = r.asObjectByLametaProperties().id;
+    if (!id) {
       r.addProblemDescription("Missing ID");
+    } else if (project.sessions.find((s) => s.id === id)) {
+      r.matchesExistingRecord = true;
+      r.importStatus = RowImportStatus.No; // allowed, but off by default
     }
   });
 }

@@ -1,5 +1,6 @@
 // from https://github.com/rgriscom/LingMetaX/blob/main/Templates/Sessions.csv
 {
+  mapping_description: "Uses the column names from in [LingMetaX](https://github.com/rgriscom/LingMetaX).",
   date: { lameta: "date" },
   title: { lameta: "title" },
   // Review: should we add an id, or use the filename?
