@@ -18,6 +18,7 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
+import moment from "moment";
 
 export function makeMappedMatrixFromExcel(
   path: string,
@@ -61,8 +62,8 @@ function makeMappedMatrix(
 ) {
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
-  addMapping(matrix, mapping);
-  addValidationInfo(matrix, project);
+  addMappingAndValidatationInfoToColumns(matrix, mapping, project);
+  validateCells(matrix, project);
   setInitialRowImportStatus(matrix, project);
   return matrix;
 }
@@ -105,40 +106,30 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
   return Object.assign(new MappedMatrix(), { columnInfos: columns, rows });
 }
 
-function addMapping(matrix: MappedMatrix, mappingConfig: object) {
-  // todo: look up each incoming column label and then add the corresponding target lameta property
-  matrix.columnInfos.forEach((info, index) => {
-    setMappingForOnColumn(info, mappingConfig);
-  });
-}
-function setMappingForOnColumn(
-  column: MappedColumnInfo,
-  mappingConfig: object
+function addMappingAndValidatationInfoToColumns(
+  matrix: MappedMatrix,
+  mappingConfig: object,
+  project: Project
 ) {
-  if (!column.incomingLabel || column.incomingLabel.trim() === "") {
-    column.mappingStatus = "MissingIncomingLabel";
-    column.lametaProperty = "skip";
-    return;
-  }
-  column.lametaProperty =
-    mappingConfig[column.incomingLabel]?.lameta || "custom";
-  if (
-    column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()
-  ) {
-    column.mappingStatus = "Identity";
-  } else if (column.lametaProperty === "custom") {
-    column.mappingStatus = "Custom";
-  } else {
-    column.mappingStatus = "Matched";
-  }
-
-  // Currently we don't provide the user a way of skipping a column
-  return;
-}
-
-function addValidationInfo(matrix: MappedMatrix, project: Project) {
+  // todo: look up each incoming column label and then add the corresponding target lameta property
   matrix.columnInfos.forEach((column) => {
-    // used by the grid to give some hints to the user
+    if (!column.incomingLabel || column.incomingLabel.trim() === "") {
+      column.mappingStatus = "MissingIncomingLabel";
+      column.lametaProperty = "skip";
+      return;
+    }
+    column.lametaProperty =
+      mappingConfig[column.incomingLabel]?.lameta || "custom";
+    if (
+      column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()
+    ) {
+      column.mappingStatus = "Identity";
+    } else if (column.lametaProperty === "custom") {
+      column.mappingStatus = "Custom";
+    } else {
+      column.mappingStatus = "Matched";
+    }
+
     const def = getFieldDefinition("session", column.lametaProperty);
     if (column.lametaProperty === "access") {
       const protocol = column.incomingLabel.replace("access_", "");
@@ -155,6 +146,11 @@ function addValidationInfo(matrix: MappedMatrix, project: Project) {
       column.closedList = !!def.imdiIsClosedVocabulary;
     }
   });
+  // Currently we don't provide the user a way of skipping a column
+  return;
+}
+
+function validateCells(matrix: MappedMatrix, project: Project) {
   matrix.rows.forEach((row) => {
     row.cells.forEach((cell, index) => {
       const columnInfo = matrix.columnInfos[index];
@@ -168,13 +164,21 @@ function addValidationInfo(matrix: MappedMatrix, project: Project) {
           case "contribution":
             cell.importStatus = CellImportStatus.OK; // will be set later in the process
             break;
+          case "date":
+            if (!cell.value || moment(cell.value).isValid()) {
+              cell.importStatus = CellImportStatus.OK;
+            } else {
+              cell.importStatus = CellImportStatus.NotInClosedVocabulary;
+              cell.problemDescription = "lameta cannot understand this date.";
+            }
 
+            break;
           default:
             const def = getFieldDefinition("session", primary);
             if (!def) {
               cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
             } else {
-              getImportSituationForValue(def, cell, project);
+              getImportSituationForValue(cell);
             }
         }
       } else {
@@ -208,15 +212,13 @@ function setInitialRowImportStatus(matrix: MappedMatrix, project: Project) {
       r.addProblemDescription("Missing ID");
     } else if (project.sessions.find((s) => s.id === id)) {
       r.matchesExistingRecord = true;
-      r.importStatus = RowImportStatus.No; // allowed, but off by default
+      // if the other checkes passed and the only problem is this overwrite issue
+      if (r.importStatus === RowImportStatus.Yes)
+        r.importStatus = RowImportStatus.No; // allowed, but off by default
     }
   });
 }
-function getImportSituationForValue(
-  def: FieldDefinition,
-  cell: IMappedCell,
-  project: Project
-) {
+function getImportSituationForValue(cell: IMappedCell) {
   if (!cell.value) {
     // TODO: are there any fields that are required?
     cell.importStatus = CellImportStatus.OK;
@@ -240,41 +242,6 @@ function getImportSituationForValue(
   } else {
     return CellImportStatus.Addition;
   }
-
-  // if (def.complexChoices) {
-  //   if (!def.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
-  //     cell.importStatus = CellImportStatus.Addition;
-  //     return;
-  //   }
-  //   cell.importStatus = CellImportStatus.OK;
-  //   return;
-  // }
-  // if (def.choices) {
-  //   if (def.choices.find((c) => c.toLowerCase() == v)) {
-  //     cell.importStatus = CellImportStatus.OK;
-  //     return;
-  //   }
-  //   // it's not at all obvious that we should limit people to IMDI, but for now...
-  //   if (def.imdiIsClosedVocabulary) {
-  //     invalidChoice(cell, cell.column.validChoices);
-  //     return;
-  //   }
-  //   cell.importStatus = CellImportStatus.Addition;
-  //   return;
-  // }
-
-  // if (cell.column.doImport && cell.column.lametaProperty === "access") {
-  //   const foundMatch = !!project.authorityLists.accessChoices.find(
-  //     (c) => c.label.toLowerCase() === cell.value.toLowerCase()
-  //   );
-  //   if (!foundMatch) {
-  //     invalidChoice(
-  //       cell
-  //     );
-  //   }
-  // }
-
-  //  return CellImportStatus.OK;
 }
 
 function invalidChoice(cell: IMappedCell) {

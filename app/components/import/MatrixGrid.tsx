@@ -101,24 +101,25 @@ export const MatrixGrid: React.FunctionComponent<{
                   color="secondary"
                 />
               )}
-              {row.matchesExistingRecord && (
-                <Tooltip
-                  content={
-                    "This project already has a record with this ID. Tick the box to the left to replace it with this row."
-                  }
-                  background={lameta_dark_green}
-                  color={"white"}
-                >
-                  <WarningRoundedIcon
-                    color="secondary"
-                    //fontSize="small"
-                    css={css`
-                      margin-left: -8px;
-                      margin-bottom: -6px;
-                    `}
-                  />
-                </Tooltip>
-              )}
+              {row.matchesExistingRecord &&
+                row.importStatus !== RowImportStatus.NotAllowed && (
+                  <Tooltip
+                    content={
+                      "This project already has a record with this ID. Tick the box to the left to replace it with this row."
+                    }
+                    background={lameta_dark_green}
+                    color={"white"}
+                  >
+                    <WarningRoundedIcon
+                      color="secondary"
+                      //fontSize="small"
+                      css={css`
+                        margin-left: -8px;
+                        margin-bottom: -6px;
+                      `}
+                    />
+                  </Tooltip>
+                )}
               <span
                 css={css`
                   margin-left: auto;
