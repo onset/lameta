@@ -22,7 +22,10 @@ export class MappedColumnInfo {
     | "Custom"
     | "MissingIncomingLabel";
 
-  public validChoices: string[];
+  public closedList: boolean;
+  // choices can be from an open or closed list
+  public choices: string[];
+
   // review: not clear if this is good
   // what about "unmatched"? Shouldn't that have  been sent to "custom"?
   public get doImport(): boolean {

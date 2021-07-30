@@ -18,7 +18,6 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
-import { object } from "prop-types";
 
 export function makeMappedMatrixFromExcel(
   path: string,
@@ -63,7 +62,7 @@ function makeMappedMatrix(
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
   addMapping(matrix, mapping);
-  addValidationInfo(matrix);
+  addValidationInfo(matrix, project);
   setInitialRowImportStatus(matrix, project);
   return matrix;
 }
@@ -137,12 +136,23 @@ function setMappingForOnColumn(
   return;
 }
 
-function addValidationInfo(matrix: MappedMatrix) {
+function addValidationInfo(matrix: MappedMatrix, project: Project) {
   matrix.columnInfos.forEach((column) => {
     // used by the grid to give some hints to the user
     const def = getFieldDefinition("session", column.lametaProperty);
-    if (def && def.imdiIsClosedVocabulary) {
-      column.validChoices = def.choices || [];
+    if (column.lametaProperty === "access") {
+      const protocol = column.incomingLabel.replace("access_", "");
+      if (protocol !== project.accessProtocol) {
+        column.mappingStatus = "Skip";
+      } else {
+        column.choices = project.authorityLists.accessChoices.map(
+          (c) => c.label
+        );
+        column.closedList = true; // review what if it's the "Custom" list?
+      }
+    } else if (def) {
+      column.choices = def.choices || [];
+      column.closedList = !!def.imdiIsClosedVocabulary;
     }
   });
   matrix.rows.forEach((row) => {
@@ -154,15 +164,18 @@ function addValidationInfo(matrix: MappedMatrix) {
         columnInfo.mappingStatus != "Custom"
       ) {
         const [primary, secondary] = columnInfo.lametaProperty.split(".");
-        if (primary === "contribution") {
-          cell.importStatus = CellImportStatus.OK; // will be set later in the process
-        } else {
-          const def = getFieldDefinition("session", primary);
-          if (!def) {
-            cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
-          } else {
-            getImportSituationForValue(def, cell);
-          }
+        switch (primary) {
+          case "contribution":
+            cell.importStatus = CellImportStatus.OK; // will be set later in the process
+            break;
+
+          default:
+            const def = getFieldDefinition("session", primary);
+            if (!def) {
+              cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
+            } else {
+              getImportSituationForValue(def, cell, project);
+            }
         }
       } else {
         cell.importStatus = CellImportStatus.OK;
@@ -199,39 +212,75 @@ function setInitialRowImportStatus(matrix: MappedMatrix, project: Project) {
     }
   });
 }
-function getImportSituationForValue(def: FieldDefinition, cell: IMappedCell) {
+function getImportSituationForValue(
+  def: FieldDefinition,
+  cell: IMappedCell,
+  project: Project
+) {
   if (!cell.value) {
     // TODO: are there any fields that are required?
     cell.importStatus = CellImportStatus.OK;
     return;
   }
-  const v = cell.value.toLowerCase();
-  if (def.complexChoices) {
-    if (!def.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
-      cell.importStatus = CellImportStatus.Addition;
-      return;
-    }
-    cell.importStatus = CellImportStatus.OK;
-    return;
+  // no list (open or closed)
+  if (!cell.column.choices) return CellImportStatus.OK;
+
+  const lowerCaseOfCellValue = cell.value.toLowerCase();
+  const match = cell.column.choices?.find(
+    (c) => c.toLowerCase() === lowerCaseOfCellValue
+  );
+  if (match) {
+    // fix upper/lower case
+    cell.value = match;
+    return CellImportStatus.OK;
   }
-  if (def.choices) {
-    if (def.choices.find((c) => c.toLowerCase() == v)) {
-      cell.importStatus = CellImportStatus.OK;
-      return;
-    }
-    // it's not at all obvious that we should limit people to IMDI, but for now...
-    if (def.imdiIsClosedVocabulary) {
-      cell.importStatus = CellImportStatus.NotInClosedVocabulary;
-      cell.problemDescription = `The the permitted values for ${
-        cell.column.lametaProperty
-      } are: ${cell.column.validChoices.join(", ")}`;
-      return;
-    }
-    cell.importStatus = CellImportStatus.Addition;
-    return;
+  if (cell.column.closedList) {
+    invalidChoice(cell);
+    return CellImportStatus.NotInClosedVocabulary;
+  } else {
+    return CellImportStatus.Addition;
   }
 
-  // TODO: check archive access
+  // if (def.complexChoices) {
+  //   if (!def.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
+  //     cell.importStatus = CellImportStatus.Addition;
+  //     return;
+  //   }
+  //   cell.importStatus = CellImportStatus.OK;
+  //   return;
+  // }
+  // if (def.choices) {
+  //   if (def.choices.find((c) => c.toLowerCase() == v)) {
+  //     cell.importStatus = CellImportStatus.OK;
+  //     return;
+  //   }
+  //   // it's not at all obvious that we should limit people to IMDI, but for now...
+  //   if (def.imdiIsClosedVocabulary) {
+  //     invalidChoice(cell, cell.column.validChoices);
+  //     return;
+  //   }
+  //   cell.importStatus = CellImportStatus.Addition;
+  //   return;
+  // }
 
-  return CellImportStatus.OK;
+  // if (cell.column.doImport && cell.column.lametaProperty === "access") {
+  //   const foundMatch = !!project.authorityLists.accessChoices.find(
+  //     (c) => c.label.toLowerCase() === cell.value.toLowerCase()
+  //   );
+  //   if (!foundMatch) {
+  //     invalidChoice(
+  //       cell
+  //     );
+  //   }
+  // }
+
+  //  return CellImportStatus.OK;
+}
+
+function invalidChoice(cell: IMappedCell) {
+  cell.importStatus = CellImportStatus.NotInClosedVocabulary;
+  const s = `The the permitted values for ${
+    cell.column.lametaProperty
+  } are: ${cell.column.choices.map((x) => `"${x}"`).join(", ")}. `;
+  cell.problemDescription = (cell.problemDescription || "") + s;
 }

@@ -141,7 +141,9 @@ export class Project extends Folder {
       );
     }
   }
-
+  public get accessProtocol(): string {
+    return this.properties.getTextStringOrEmpty("accessProtocol");
+  }
   public static fromDirectory(directory: string): Project {
     try {
       const customFieldRegistry = new CustomFieldRegistry();

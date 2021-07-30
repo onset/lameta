@@ -40,13 +40,16 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     showDialog,
     closeDialog,
   } = useSetupLametaDialog();
-  const currentlyOpen = true;
+  const [currentlyOpen, setCurrentlyOpenTestingOnly] = useState(true);
   const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.sessions.mappingName", // todo: people
     "LingMetaXMap"
   );
 
-  showSpreadsheetImportDialog = showDialog;
+  showSpreadsheetImportDialog = () => {
+    showDialog();
+    setCurrentlyOpenTestingOnly(true);
+  };
   const [path, setPath] = useUserSetting("importPath", "");
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
   const chosenMapping = availableSpreadsheetMappings[mappingName];
@@ -214,6 +217,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           onClick={() => {
             addSessionMatrixToProject(props.projectHolder.project!, matrix!);
             closeDialog();
+            setCurrentlyOpenTestingOnly(false);
           }}
           css={css`
             min-width: 50px;
@@ -221,7 +225,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         >
           <Trans>{`Import ${chosenCount} Sessions`}</Trans>
         </Button>
-        <DialogCancelButton onClick={() => closeDialog()} />
+        <DialogCancelButton
+          onClick={() => {
+            closeDialog();
+            setCurrentlyOpenTestingOnly(false);
+          }}
+        />
       </DialogBottomButtons>
     </LametaDialog>
   );

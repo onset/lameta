@@ -3,14 +3,13 @@
   mapping_description: "Uses the column names from in [LingMetaX](https://github.com/rgriscom/LingMetaX).",
   date: { lameta: "date" },
   title: { lameta: "title" },
-  // Review: should we add an id, or use the filename?
+  //  LingMetaX's code uses this for the folder and session name
   filename: { lameta: "id" },
   description: { lameta: "description" },
   location_region: { lameta: "locationRegion" },
   location_continent: { lameta: "locationContinent" },
   location_country: { lameta: "locationCountry" },
   location_local: { lameta: "location" },
-  archive_repository: { lameta: "" },
   genre: { lameta: "genre" },
   subgenre: { lameta: "subgenre" },
   topic: { lameta: "topic" },
@@ -20,20 +19,25 @@
   social_context: { lameta: "socialContext" },
   subject_languages: { lameta: "languages" }, // CHECK
   working_languages: { lameta: "workingLanguages" }, // CHECK
-  access_AILCA: { lameta: "" },
-  access_AILLA: { lameta: "" },
-  access_ANLA: { lameta: "" },
-  access_ELAR: { lameta: "" },
-  access_PARADISEC: { lameta: "" },
-  access_TLA: { lameta: "" },
-  access_REAP: { lameta: "" },
-  access_custom: { lameta: "" },
+  // LingMetaX's code looks at this archive_repository column and then uses it to look up one of the other columns, and use that permissions.
+  // I'm unclear how this works in practice, since lameta currently only supports one artchive per lameta project.
+  //archive_repository: { lameta: "" },
+  access_AILCA: { lameta: "access" },
+  access_AILLA: { lameta: "access" },
+  access_ANLA: { lameta: "access" },
+  access_ELAR: { lameta: "access" },
+  access_PARADISEC: { lameta: "access" },
+  access_TLA: { lameta: "access" },
+  access_REAP: { lameta: "access" },
+  access_custom: { lameta: "access" },
+  // NB: I could not see in the LingMetaX code that this was used
   access_explanation: { lameta: "accessDescription" },
-  //video: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
-  //microphone: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
-  //audio: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
-  //other_equipment: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
-  //recording_conditions: { lameta: "" }, // TODO: I don't see where LingMetaX handles this?
+  // The LingMetaX code doesn't do anything special with these. We let them go to CUSTOM
+  //video: { lameta: "" },
+  //microphone: { lameta: "" },
+  //audio: { lameta: "" },
+  //other_equipment: { lameta: "" },
+  //recording_conditions: { lameta: "" },
 
   participant_1_full_name: { lameta: "contribution.name" },
   participant_1_role: { lameta: "contribution.role" },
