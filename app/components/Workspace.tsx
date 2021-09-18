@@ -26,7 +26,7 @@ import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
-
+import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -86,6 +86,15 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentSession();
             }
+          },
+        },
+        { type: "separator" },
+        {
+          label: "&" + t`Import Spreadsheet...`,
+          accelerator: "CmdOrCtrl+I",
+          enabled: this.props.project,
+          click: () => {
+            showSpreadsheetImportDialog();
           },
         },
         { type: "separator" },
