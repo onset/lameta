@@ -6,7 +6,7 @@ import {
   MappedMatrix,
   CellImportStatus,
   RowImportStatus,
-  IMappedColumnInfo,
+  MappedColumnInfo,
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
@@ -211,8 +211,8 @@ function fieldOfRow(row: number, field: string): string {
 }
 */
 
-function simpleColumn(key: string): IMappedColumnInfo {
-  return Object.assign(new IMappedColumnInfo(), {
+function simpleColumn(key: string): MappedColumnInfo {
+  return Object.assign(new MappedColumnInfo(), {
     incomingLabel: key,
     lametaProperty: key,
     mappingStatus: "Identity",

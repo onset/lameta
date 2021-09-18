@@ -31,14 +31,16 @@ describe("SpreadsheetToMatrix", () => {
   it("Can read in xslx", () => {
     const matrix = makeMappedMatrixFromExcel(
       lingMetaXlsxPath,
-      lingmetaxSessionMap
+      lingmetaxSessionMap,
+      project
     );
     smokeTest(matrix);
   });
   it("Can read in csv", () => {
     const matrix = makeMappedMatrixFromExcel(
       lingMetaCsvPath,
-      lingmetaxSessionMap
+      lingmetaxSessionMap,
+      project
     );
     smokeTest(matrix);
   });
@@ -46,7 +48,7 @@ describe("SpreadsheetToMatrix", () => {
 
 // if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
 function smokeTest(matrix: MappedMatrix) {
-  expect(matrix.rows.length).toBe(5);
+  expect(matrix.rows.length).toBe(6);
   expect(matrix.columnInfos.length).toBe(43);
 
   const kDateColumn = 0;
@@ -58,7 +60,7 @@ function smokeTest(matrix: MappedMatrix) {
   expect(matrix.columnInfos[kIdColumn].incomingLabel).toBe("filename");
   expect(matrix.columnInfos[kIdColumn].lametaProperty).toBe("id");
 
-  const kContinentColumn = 6;
+  const kContinentColumn = 15;
   expect(matrix.columnInfos[kContinentColumn].incomingLabel).toBe(
     "location_continent"
   );
@@ -71,7 +73,7 @@ function smokeTest(matrix: MappedMatrix) {
     CellImportStatus.OK
   );
   // column 7, row 3 has "Australasia"
-  expect(matrix.rows[1].cells[kContinentColumn].value).toBe("Australasia");
+  expect(matrix.rows[1].cells[kContinentColumn].value).toBe("Gondwana");
   expect(matrix.rows[1].cells[kContinentColumn].importStatus).toBe(
     CellImportStatus.NotInClosedVocabulary
   );

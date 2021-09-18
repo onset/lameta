@@ -29,7 +29,9 @@ export function makeMappedMatrixFromExcel(
     cellDates: false,
     codepage: 65001 /* utf-8 */,
   });
+  expect(workbook).toBeTruthy();
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  expect(worksheet).toBeTruthy();
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
   return makeMappedMatrix(arrayOfArrays, mapping, project);
 }
