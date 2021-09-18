@@ -35,12 +35,8 @@ export let showSpreadsheetImportDialog = () => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
-  const {
-    currentlyOpen: xxx,
-    showDialog,
-    closeDialog,
-  } = useSetupLametaDialog();
-  const [currentlyOpen, setCurrentlyOpenTestingOnly] = useState(true);
+  const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
+  const [currentlyOpenX, setCurrentlyOpenTestingOnly] = useState(true);
   const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.sessions.mappingName", // todo: people
     "LingMetaXMap"

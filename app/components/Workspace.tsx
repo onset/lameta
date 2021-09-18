@@ -92,7 +92,7 @@ export default class Home extends React.Component<IProps> {
         {
           label: "&" + t`Import Spreadsheet...`,
           accelerator: "CmdOrCtrl+I",
-          enabled: this.props.project,
+          enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog();
           },

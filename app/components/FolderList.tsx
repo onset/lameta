@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import { default as ReactTable, Resize } from "react-table-6";
 
@@ -72,8 +78,11 @@ export class FolderList extends React.Component<IProps> {
       const header =
         key === "checked" ? (
           <input
-            title={t`Mark for Export`}
+            title={t`Mark for Deletion or Export`}
             type="checkbox"
+            // css={css`
+            //   accent-color: orange; // not yet
+            // `}
             onChange={(e) => {
               e.stopPropagation(); // don't select the folder of row
               this.props.folders.forEach((f) => {
