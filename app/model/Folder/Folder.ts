@@ -40,8 +40,10 @@ export class IFolderSelection {
   public index: number;
 }
 
+export type IFolderType = "project" | "session" | "person";
+
 // Project, Session, or Person
-export /*babel doesn't like this: abstract*/ class Folder {
+export /*babel doesn't like this: abstract*/ abstract class Folder {
   // Is the folder's checkbox ticked?
   @observable
   public marked: boolean = false;
@@ -91,6 +93,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
   public get hasCustomFieldsTable(): boolean {
     return false;
   }
+
+  public abstract importIdMatchesThisFolder(id: string): boolean;
+
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural
   // to think of these properties as belonging to the (Project/Session/Person) itself.

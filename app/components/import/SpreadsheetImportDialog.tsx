@@ -17,7 +17,7 @@ import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
-import { makeMappedMatrixFromExcel } from "./SpreadsheetToMatrix";
+import { makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
@@ -53,10 +53,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (currentlyOpen && path && props.projectHolder.project) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
       setMatrix(
-        makeMappedMatrixFromExcel(
+        makeMappedMatrixFromSpreadsheet(
           path,
           chosenMapping,
-          props.projectHolder.project
+          props.projectHolder.project,
+          props.projectHolder.project.sessions,
+          "session"
         )
       );
     }

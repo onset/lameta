@@ -35,4 +35,10 @@ export class ProjectDocuments extends Folder {
     });
     return new ProjectDocuments(directory, files, customFieldRegistry);
   }
+
+  public importIdMatchesThisFolder(id: string): boolean {
+    throw new Error(
+      "Did not expect matchesId to be called on ProjectDocuments"
+    );
+  }
 }

@@ -1,17 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
-import {
-  makeMappedMatrixFromCSV,
-  makeMappedMatrixFromExcel,
-} from "./SpreadsheetToMatrix";
-import {
-  MappedMatrix,
-  CellImportStatus,
-  RowImportStatus,
-  IMappedColumnInfo,
-  MappedRow,
-  IMappedCell,
-} from "./MappedMatrix";
+import { makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
+import { MappedMatrix, CellImportStatus } from "./MappedMatrix";
 import * as Path from "path";
 
 let project: Project;
@@ -29,18 +19,22 @@ describe("SpreadsheetToMatrix", () => {
     Path.resolve;
   });
   it("Can read in xslx", () => {
-    const matrix = makeMappedMatrixFromExcel(
+    const matrix = makeMappedMatrixFromSpreadsheet(
       lingMetaXlsxPath,
       lingmetaxSessionMap,
-      project
+      project,
+      project.sessions,
+      "session"
     );
     smokeTest(matrix);
   });
   it("Can read in csv", () => {
-    const matrix = makeMappedMatrixFromExcel(
+    const matrix = makeMappedMatrixFromSpreadsheet(
       lingMetaCsvPath,
       lingmetaxSessionMap,
-      project
+      project,
+      project.sessions,
+      "session"
     );
     smokeTest(matrix);
   });

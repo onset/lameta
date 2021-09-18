@@ -92,6 +92,10 @@ export class Project extends Folder {
     return codeAndName.split(":")[0].trim();
   }
 
+  public importIdMatchesThisFolder(id: string): boolean {
+    throw new Error("Did not expect matchesId on Project");
+  }
+
   private constructor(
     directory: string,
     metadataFile: FolderMetadataFile,

@@ -24,6 +24,9 @@ export class Session extends Folder {
   public get id(): string {
     return this.properties.getTextStringOrEmpty("id");
   }
+  public importIdMatchesThisFolder(id: string): boolean {
+    return this.id === id;
+  }
 
   public constructor(
     directory: string,

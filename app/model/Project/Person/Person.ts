@@ -38,6 +38,9 @@ export class Person extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
     return ".person";
   }
+  public importIdMatchesThisFolder(id: string): boolean {
+    return this.referenceIdMatches(id);
+  }
 
   private getMugshotFile(): File | undefined {
     return this.files.find((f) => {

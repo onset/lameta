@@ -8,7 +8,6 @@
 */
 import * as XLSX from "xlsx";
 import { getFieldDefinition } from "../../model/field/KnownFieldDefinitions";
-import { FieldDefinition } from "../../model/field/FieldDefinition";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -19,21 +18,22 @@ import {
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
+import { Folder, IFolderType } from "../../model/Folder/Folder";
 
-export function makeMappedMatrixFromExcel(
+export function makeMappedMatrixFromSpreadsheet(
   path: string,
   mapping: object,
-  project: Project
+  project: Project,
+  folders: Folder[],
+  folderType: IFolderType
 ): MappedMatrix {
   const workbook = XLSX.readFile(path, {
     cellDates: false,
     codepage: 65001 /* utf-8 */,
   });
-  expect(workbook).toBeTruthy();
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  expect(worksheet).toBeTruthy();
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
-  return makeMappedMatrix(arrayOfArrays, mapping, project);
+  return makeMappedMatrix(arrayOfArrays, mapping, project, folders, folderType);
 }
 
 function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
@@ -60,13 +60,15 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
 function makeMappedMatrix(
   arrayOfArrays: any[][],
   mapping: object,
-  project: Project
+  project: Project,
+  folders: Folder[],
+  folderType: IFolderType
 ) {
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
-  addMappingAndValidatationInfoToColumns(matrix, mapping, project);
-  validateCells(matrix, project);
-  setInitialRowImportStatus(matrix, project);
+  addMappingAndValidatationInfoToColumns(matrix, mapping, project, folderType);
+  validateCells(matrix, folderType);
+  setInitialRowImportStatus(matrix, folders);
   return matrix;
 }
 
@@ -111,7 +113,8 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
 function addMappingAndValidatationInfoToColumns(
   matrix: MappedMatrix,
   mappingConfig: object,
-  project: Project
+  project: Project,
+  folderType: IFolderType
 ) {
   // todo: look up each incoming column label and then add the corresponding target lameta property
   matrix.columnInfos.forEach((column) => {
@@ -132,7 +135,7 @@ function addMappingAndValidatationInfoToColumns(
       column.mappingStatus = "Matched";
     }
 
-    const def = getFieldDefinition("session", column.lametaProperty);
+    const def = getFieldDefinition(folderType, column.lametaProperty);
     if (column.lametaProperty === "access") {
       const protocol = column.incomingLabel.replace("access_", "");
       if (protocol !== project.accessProtocol) {
@@ -152,7 +155,7 @@ function addMappingAndValidatationInfoToColumns(
   return;
 }
 
-function validateCells(matrix: MappedMatrix, project: Project) {
+function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
   matrix.rows.forEach((row) => {
     row.cells.forEach((cell, index) => {
       const columnInfo = matrix.columnInfos[index];
@@ -176,7 +179,7 @@ function validateCells(matrix: MappedMatrix, project: Project) {
 
             break;
           default:
-            const def = getFieldDefinition("session", primary);
+            const def = getFieldDefinition(folderType, primary);
             if (!def) {
               cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
             } else {
@@ -190,7 +193,10 @@ function validateCells(matrix: MappedMatrix, project: Project) {
   });
 }
 
-function setInitialRowImportStatus(matrix: MappedMatrix, project: Project) {
+function setInitialRowImportStatus(
+  matrix: MappedMatrix,
+  folders: Folder[] /* either project.sessions or project.people */
+) {
   const getStatus = (r: MappedRow) => {
     if (!r.asObjectByLametaProperties().id) {
       return RowImportStatus.NotAllowed;
@@ -212,9 +218,9 @@ function setInitialRowImportStatus(matrix: MappedMatrix, project: Project) {
     const id = r.asObjectByLametaProperties().id;
     if (!id) {
       r.addProblemDescription("Missing ID");
-    } else if (project.sessions.find((s) => s.id === id)) {
+    } else if (folders.find((s) => s.importIdMatchesThisFolder(id))) {
       r.matchesExistingRecord = true;
-      // if the other checkes passed and the only problem is this overwrite issue
+      // if the other checks passed and the only problem is this overwrite issue
       if (r.importStatus === RowImportStatus.Yes)
         r.importStatus = RowImportStatus.No; // allowed, but off by default
     }
