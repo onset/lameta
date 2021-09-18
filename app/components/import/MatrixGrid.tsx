@@ -176,7 +176,7 @@ export const MatrixGrid: React.FunctionComponent<{
     >
       <Paper
         css={css`
-          td:first-child {
+          td:first-of-type {
             padding-left: 0 !important;
           }
           td {

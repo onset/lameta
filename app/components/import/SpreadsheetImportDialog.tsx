@@ -148,6 +148,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
               }}
               css={css`
                 min-width: 50px;
+                span {
+                  font-weight: bold;
+                }
               `}
             >
               <Trans>Choose File</Trans>

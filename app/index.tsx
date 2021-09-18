@@ -49,5 +49,5 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
   return; // just quit
 };
 const container = document.getElementById("root");
-render(<App />, container);
 ReactModal.default.setAppElement(container!);
+render(<App />, container);
