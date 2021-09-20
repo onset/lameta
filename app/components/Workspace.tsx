@@ -27,6 +27,7 @@ import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
+import { IFolderType } from "../model/Folder/Folder";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -52,10 +53,10 @@ export default class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.selectedSession, (change) => {
+    mobx.observe(this.props.project.sessions.selected, (change) => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.selectedPerson, (change) => {
+    mobx.observe(this.props.project.persons.selected, (change) => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
   }
@@ -107,23 +108,11 @@ export default class Home extends React.Component<IProps> {
             }
           },
         },
-        {
-          // this doesn't work because the count falls out of date (these menus cannot be updated on the fly)
-          //label: t`Delete ${this.props.project.countOfMarkedSessions()} Marked Sessions...`,
-          label: t`Delete All Marked Sessions...`,
-          enabled: enableMenu, // doesn't work (see explanation above): && this.props.project.countOfMarkedSessions() > 0,
-          click: () => {
-            if (this.props.project) {
-              if (this.props.project.countOfMarkedSessions() === 0) {
-                ShowMessageDialog({
-                  title: ``,
-                  text: `To select the items that you want to delete, first tick one or more boxes.`,
-                  buttonText: "Close",
-                });
-              } else this.props.project.deleteMarkedSessions();
-            }
-          },
-        },
+        this.getDeleteMarkedMenuItem(
+          "session",
+          t`Delete All Marked Sessions...`,
+          enableMenu
+        ),
       ],
     };
     enableMenu = currentTabIndex === 2;
@@ -151,7 +140,7 @@ export default class Home extends React.Component<IProps> {
         { type: "separator" },
         {
           label: "&" + t`Import Spreadsheet of People` + "...",
-          accelerator: "CmdOrCtrl+I",
+          accelerator: "CmdOrCtrl+Alt+I",
           enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog("person");
@@ -167,9 +156,41 @@ export default class Home extends React.Component<IProps> {
             }
           },
         },
+        this.getDeleteMarkedMenuItem(
+          "person",
+          t`Delete All Marked People...`,
+          enableMenu
+        ),
       ],
     };
     this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
+  }
+  private getDeleteMarkedMenuItem(
+    folderType: IFolderType,
+    label: string,
+    enabled: boolean
+  ): object {
+    return {
+      // this doesn't work because the count falls out of date (these menus cannot be updated on the fly)
+      //label: t`Delete ${this.props.project.countOfMarkedSessions()} Marked Sessions...`,
+      label: label,
+      enabled: enabled, // doesn't work (see explanation above): && this.props.project.countOfMarkedSessions() > 0,
+      click: () => {
+        if (this.props.project) {
+          if (
+            (this.props.project.getFolderArrayFromType(
+              folderType
+            ) as any).countOfMarkedFolders() === 0
+          ) {
+            ShowMessageDialog({
+              title: ``,
+              text: `To select the items that you want to delete, first tick one or more boxes.`,
+              buttonText: "Close",
+            });
+          } else this.props.project.deleteMarkedFolders(folderType);
+        }
+      },
+    };
   }
 
   // just makes the sessions or person menu initially enabled if we are

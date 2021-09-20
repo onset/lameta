@@ -10,6 +10,7 @@ module.exports = function (wallaby) {
       // but then sometimes the reading of the xlsx would fail
       // anyways for some file, as if the cached version was corrupt.
       // For now, this essentially stops wallaby from caching.
+      // Later... problem came back, so maybe this wasn't really the answer?
       {pattern: "sample data/*.xlsx", load: false, instrument: false, binary:true}
 
     ],

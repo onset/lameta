@@ -28,12 +28,14 @@ export function addImportMatrixToProject(
   matrix: MappedMatrix,
   folderType: IFolderType
 ) {
-  project.unMarkAllSessions(); // new ones will be marked
+  const folders = project.getFolderArrayFromType(folderType);
+  folders.unMarkAll(); // new ones will be marked
   matrix.rows
     .filter((row) => row.importStatus === RowImportStatus.Yes)
     .forEach((row) => {
       addFolderToProject(project, row, folderType);
     });
+  folders.selectFirstMarkedFolder();
 }
 
 export function addPersonToProject(project: Project, row: MappedRow): Person {
@@ -131,9 +133,7 @@ export function addFolderToProject(
     throw new Error(
       `Missing ${folder.propertyForCheckingId} on cell: ${JSON.stringify(row)}`
     );
-  const previousFolderWithThisId = project
-    .getFolderArrayFromType(folderType)
-    .find((f) => f.importIdMatchesThisFolder(id));
+  const previousFolderWithThisId = project.findFolderById(folderType, id);
   if (previousFolderWithThisId) {
     project.deleteFolder(previousFolderWithThisId);
   }

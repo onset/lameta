@@ -58,8 +58,10 @@ export class FolderList extends React.Component<IProps> {
       if (folder instanceof Session) {
         const dummyId = folder.properties.getTextStringOrEmpty("id");
         const dummyChecked = folder.marked;
+      } else if (folder instanceof Person) {
+        const dummyId = folder.properties.getTextStringOrEmpty("name");
+        const dummyChecked = folder.marked;
       }
-
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
@@ -119,7 +121,7 @@ export class FolderList extends React.Component<IProps> {
             return (
               <input
                 type="checkbox"
-                title={t`Mark for Export`}
+                title={t`Mark for Export or Deletion`}
                 checked={f.marked}
                 onChange={(e) => {
                   e.stopPropagation(); // don't select the folder of row

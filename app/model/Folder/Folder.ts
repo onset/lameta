@@ -39,6 +39,29 @@ export class IFolderSelection {
   @observable
   public index: number;
 }
+export class FolderArray<T extends Folder> extends Array<T> {
+  constructor() {
+    super();
+    this.selected = new IFolderSelection();
+  }
+  @observable
+  //public selectedItem?: T;
+  public selected: IFolderSelection;
+
+  public selectFirstMarkedFolder() {
+    const foundIndex = this.findIndex((f) => f.marked);
+    if (foundIndex) this.selected.index = foundIndex;
+  }
+
+  public unMarkAll() {
+    this.forEach((f) => {
+      f.marked = false;
+    });
+  }
+  public countOfMarkedFolders(): number {
+    return this.filter((f) => f.marked).length;
+  }
+}
 
 export type IFolderType =
   | "project"
@@ -47,7 +70,7 @@ export type IFolderType =
   | "project documents";
 
 // Project, Session, or Person
-export /*babel doesn't like this: abstract*/ abstract class Folder {
+export abstract class Folder {
   // Is the folder's checkbox ticked?
   @observable
   public marked: boolean = false;

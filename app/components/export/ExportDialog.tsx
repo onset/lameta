@@ -59,7 +59,7 @@ export const ExportDialog: React.FunctionComponent<{
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
     if (props.projectHolder && props.projectHolder.project) {
-      const count = props.projectHolder!.project!.countOfMarkedSessions();
+      const count = props.projectHolder!.project!.sessions.countOfMarkedFolders();
       setCountOfMarkedSessions(count);
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");

@@ -156,7 +156,7 @@ export const MatrixGrid: React.FunctionComponent<{
       }),
     ];
     return columnObjects;
-  }, []);
+  }, [props.matrix]);
 
   return (
     <div

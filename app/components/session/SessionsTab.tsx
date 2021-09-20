@@ -29,7 +29,7 @@ export class SessionsTab extends React.Component<IProps> {
         nameForPersistingUsersTableConfiguration="sessions"
         project={this.props.project}
         folders={this.props.project.sessions}
-        selectedFolder={this.props.project.selectedSession}
+        selectedFolder={this.props.project.sessions.selected}
         folderTypeStyleClass="sessions"
         columns={["checked", "id", "title", "status", "date"]}
         columnWidths={[10 /*checkbox*/, 60, 150, 60, 90]}

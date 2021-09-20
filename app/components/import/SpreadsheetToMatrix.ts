@@ -19,7 +19,7 @@ import {
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
-import { Folder, IFolderType } from "../../model/Folder/Folder";
+import { IFolderType } from "../../model/Folder/Folder";
 import * as fs from "fs";
 
 export interface IImportMapping {
@@ -36,10 +36,15 @@ export function makeMappedMatrixFromSpreadsheet(
   if (!fs.existsSync(path)) {
     throw new Error("Cannot find a workbook at " + path);
   }
-  const workbook = XLSX.readFile(path, {
-    cellDates: false,
-    codepage: 65001 /* utf-8 */,
-  });
+  var workbook;
+  try {
+    workbook = XLSX.readFile(path, {
+      cellDates: false,
+      codepage: 65001 /* utf-8 */,
+    });
+  } catch (error) {
+    throw new Error(`lameta was not able to read ${path}. ${error}`);
+  }
   if (!workbook) {
     // *********** IMPORTANT **************
     // When using Wallaby JS, we have to configure it to know that any excel
@@ -242,14 +247,14 @@ function setInitialRowImportStatus(
 
     return RowImportStatus.Yes;
   };
-  const folders = project.getFolderArrayFromType(folderType);
+
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
     const uniqueIdentifierProperty = folderType === "session" ? "id" : "name";
     const id = r.asObjectByLametaProperties()[uniqueIdentifierProperty]; // review: or code?
     if (!id) {
       r.addProblemDescription("Missing " + uniqueIdentifierProperty);
-    } else if (folders.find((f) => f.importIdMatchesThisFolder(id))) {
+    } else if (!!project.findFolderById(folderType, id)) {
       r.matchesExistingRecord = true;
       // if the other checks passed and the only problem is this overwrite issue
       if (r.importStatus === RowImportStatus.Yes)

@@ -67,14 +67,13 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (currentlyOpen && path && props.projectHolder.project) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
       try {
-        setMatrix(
-          makeMappedMatrixFromSpreadsheet(
-            path,
-            chosenMapping,
-            props.projectHolder.project,
-            folderType
-          )
+        const x = makeMappedMatrixFromSpreadsheet(
+          path,
+          chosenMapping,
+          props.projectHolder.project,
+          folderType
         );
+        setMatrix(x);
       } catch (err) {
         NotifyException(err);
       }

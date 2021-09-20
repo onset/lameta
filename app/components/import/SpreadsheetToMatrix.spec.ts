@@ -23,12 +23,13 @@ describe("SpreadsheetToMatrix", () => {
     project = Project.fromDirectory(projectDir);
   });
   beforeEach(() => {
-    project.sessions = [];
+    project.sessions.splice(0, 1000);
+    project.persons.splice(0, 1000);
     Path.resolve;
   });
   it("Can read in people xlsx with no people", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
-      "sample data/LingMetaX_People_NoPeople.xlsx",
+      "./sample data/LingMetaX_People_NoPeople.xlsx",
       lingMetaX_ImportMap,
       project,
       "person"
@@ -37,7 +38,7 @@ describe("SpreadsheetToMatrix", () => {
   });
   it("Can read in people xslx", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
-      "sample data/LingMetaX_People.xlsx",
+      "./sample data/LingMetaX_People.xlsx",
       lingMetaX_ImportMap,
       project,
       "person"
