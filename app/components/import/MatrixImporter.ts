@@ -122,13 +122,18 @@ export function addFolderToProject(
       }
     });
 
-  // if we got this far and we are replacing an existing session, move it to the bin
+  // if we got this far and we are replacing an existing session or person, move it to the bin
 
   const id = row.cells.find(
     (c) => c.column.lametaProperty === folder.propertyForCheckingId
   )?.value;
-  if (!id) throw new Error("Missing ID on cell: " + JSON.stringify(row));
-  const previousFolderWithThisId = project.sessions.find((s) => s.id === id!);
+  if (!id)
+    throw new Error(
+      `Missing ${folder.propertyForCheckingId} on cell: ${JSON.stringify(row)}`
+    );
+  const previousFolderWithThisId = project
+    .getFolderArrayFromType(folderType)
+    .find((f) => f.importIdMatchesThisFolder(id));
   if (previousFolderWithThisId) {
     project.deleteFolder(previousFolderWithThisId);
   }

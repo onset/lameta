@@ -95,7 +95,7 @@ function makeMappedMatrix(
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
   addMappingAndValidatationInfoToColumns(matrix, mapping, project, folderType);
   validateCells(matrix, folderType);
-  setInitialRowImportStatus(matrix, project.getFolderArrayFromType(folderType));
+  setInitialRowImportStatus(matrix, project, folderType);
   return matrix;
 }
 
@@ -222,10 +222,12 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
 
 function setInitialRowImportStatus(
   matrix: MappedMatrix,
-  folders: Folder[] /* either project.sessions or project.people */
+  project: Project,
+  folderType: IFolderType
 ) {
   const getStatus = (r: MappedRow) => {
-    if (!r.asObjectByLametaProperties().id) {
+    const uniqueIdentifierProperty = folderType === "session" ? "id" : "name";
+    if (!r.asObjectByLametaProperties()[uniqueIdentifierProperty]) {
       return RowImportStatus.NotAllowed;
     }
     if (r.cells.find((c) => c.importStatus === CellImportStatus.ProgramError)) {
@@ -240,12 +242,14 @@ function setInitialRowImportStatus(
 
     return RowImportStatus.Yes;
   };
+  const folders = project.getFolderArrayFromType(folderType);
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
-    const id = r.asObjectByLametaProperties().id;
+    const uniqueIdentifierProperty = folderType === "session" ? "id" : "name";
+    const id = r.asObjectByLametaProperties()[uniqueIdentifierProperty]; // review: or code?
     if (!id) {
-      r.addProblemDescription("Missing ID");
-    } else if (folders.find((s) => s.importIdMatchesThisFolder(id))) {
+      r.addProblemDescription("Missing " + uniqueIdentifierProperty);
+    } else if (folders.find((f) => f.importIdMatchesThisFolder(id))) {
       r.matchesExistingRecord = true;
       // if the other checks passed and the only problem is this overwrite issue
       if (r.importStatus === RowImportStatus.Yes)
