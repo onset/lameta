@@ -3,8 +3,7 @@
 
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { Session } from "../../model/Project/Session/Session";
-import { CustomFieldRegistry } from "../../model/Project/CustomFieldRegistry";
-import { Field, FieldType } from "../../model/field/Field";
+import { Field } from "../../model/field/Field";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { Contribution } from "../../model/file/File";
@@ -16,6 +15,7 @@ import {
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
+import { Person } from "../../model/Project/Person/Person";
 
 export const availableSpreadsheetMappings = {
   LingMetaXMap: require("./LingMetaXMap.json5"),
@@ -31,6 +31,43 @@ export function addSessionMatrixToProject(
     .forEach((row) => {
       addSessionToProject(project, row);
     });
+}
+
+export function addPersonToProject(project: Project, row: MappedRow): Person {
+  const person = project.makePersonForImport();
+  //const person = project.getOrCreatePerson(cell.value);
+  person.marked = true; // help user find the newly imported person
+
+  row.cells
+    .filter((cell) => cell.column.doImport && cell.value)
+    .forEach((cell, cellIndex) => {
+      const lametaKey = cell.column.lametaProperty;
+      switch (lametaKey) {
+        case "custom":
+          person.properties.addCustomProperty(
+            makeCustomField(cell.column.incomingLabel, cell.value)
+          );
+
+          break;
+        default:
+          person.properties.setText(lametaKey /* ? */, cell.value);
+      }
+    });
+
+  // if we got this far and we are replacing an existing person, move it to the bin
+  const name = row.cells.find((c) => c.column.lametaProperty === "name")?.value;
+  if (!name) throw new Error("Missing Name on cell: " + JSON.stringify(row));
+  const existingMatchingPerson = project.persons.find((p) =>
+    p.importIdMatchesThisFolder(name)
+  );
+  if (existingMatchingPerson) {
+    project.deletePerson(existingMatchingPerson);
+  }
+  // change the file name from "New Person" or whatever to the actual id
+  person.nameMightHaveChanged();
+  project.finishPersonImport(person);
+  person.saveAllFilesInFolder();
+  return person;
 }
 
 export function addSessionToProject(project: Project, row: MappedRow): Session {

@@ -233,6 +233,16 @@ export class Project extends Folder {
     }
   }
 
+  private makePersonFromDirectory(dir: string): Person {
+    return Person.fromDirectory(
+      dir,
+      this.customFieldRegistry,
+      // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
+      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
+      this.languageFinder
+    );
+  }
+
   public selectSession(session: Session) {
     this.selectedSession.index = this.sessions.findIndex((s) => s === session);
   }
@@ -268,9 +278,23 @@ export class Project extends Folder {
     analyticsEvent("Create", "Create Session From Import");
     return session;
   }
+  public makePersonForImport(): Person {
+    const dir = this.getUniqueFolder(
+      Path.join(this.directory, "People"), // we don't localize the directory name.
+      t`New Person`
+    );
+    const person = this.makePersonFromDirectory(dir);
+    person.properties.setText("name", Path.basename(dir));
+    analyticsEvent("Create", "Create Person From Import");
+    return person;
+  }
+
   public finishSessionImport(session: Session) {
     this.sessions.push(session);
     //no: wait until we have imported them all. Importer will then select one. // this.selectedSession.index = this.sessions.length - 1;
+  }
+  public finishPersonImport(person: Person) {
+    this.persons.push(person);
   }
 
   public addSession() {
@@ -482,7 +506,7 @@ export class Project extends Folder {
   public deleteCurrentSession() {
     const session = this.sessions[this.selectedSession.index];
     ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
-      this.deleteSession(this.sessions[this.selectedSession.index]);
+      this.deleteSession(session);
     });
   }
   public deleteMarkedSessions() {
@@ -522,27 +546,45 @@ export class Project extends Folder {
         const countAfterWeRemoveThisOne = this.sessions.length - 1;
         this.selectedSession.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         this.sessions.splice(index, 1);
-        console.log(
-          `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
-        );
-        this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
-      } else throw Error("Failed to trash session.");
+        // console.log(
+        //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
+        // );
+        //this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
+      } else throw Error("Failed to delete session.");
     } catch (e) {
-      NotifyException(e, "Error trying to trash session.");
+      NotifyException(e, "Error trying to delete session.");
     }
   }
-
-  public deleteCurrentPerson() {
-    const person = this.persons[this.selectedPerson.index];
-    ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
+  public deletePerson(person: Person) {
+    try {
       if (trash(person.directory)) {
+        const index = this.persons.findIndex((s) => s === person);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
         // in case we had the last one selected and now there won't be a selection at that index.
         const countAfterWeRemoveThisOne = this.persons.length - 1;
-        const indexToDelete = this.selectedPerson.index;
         this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-        this.persons.splice(indexToDelete, 1);
-      }
+        this.persons.splice(index, 1);
+        // console.log(
+        //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
+        // );
+        //this.persons.forEach((s) => console.log(`remaining person ${s.id}`));
+      } else throw Error("Failed to delete session.");
+    } catch (e) {
+      NotifyException(e, "Error trying to delete person.");
+    }
+  }
+  public deleteCurrentPerson() {
+    const person = this.persons[this.selectedPerson.index];
+    ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
+      // if (trash(person.directory)) {
+      //   // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+      //   // in case we had the last one selected and now there won't be a selection at that index.
+      //   const countAfterWeRemoveThisOne = this.persons.length - 1;
+      //   const indexToDelete = this.selectedPerson.index;
+      //   this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+      //   this.persons.splice(indexToDelete, 1);
+      // }
+      this.deletePerson(person);
     });
   }
 

@@ -379,7 +379,7 @@
     "uuid": "^3.3.2",
     "webpack-dev-middleware": "^3.4.0",
     "winston": "^3.0.0",
-    "xlsx": "^0.17.0",
+    "xlsx": "^0.17.2",
     "xml-name-validator": "^3.0.0",
     "xml2js": "^0.4.19",
     "xmlbuilder": "^10.1.1",

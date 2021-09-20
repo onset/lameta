@@ -29,6 +29,7 @@ import * as fs from "fs";
 import { Button } from "@material-ui/core";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
+import { NotifyException } from "../Notify";
 const { app } = require("electron").remote;
 
 export let showSpreadsheetImportDialog = () => {};
@@ -52,15 +53,19 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   useEffect(() => {
     if (currentlyOpen && path && props.projectHolder.project) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
-      setMatrix(
-        makeMappedMatrixFromSpreadsheet(
-          path,
-          chosenMapping,
-          props.projectHolder.project,
-          props.projectHolder.project.sessions,
-          "session"
-        )
-      );
+      try {
+        setMatrix(
+          makeMappedMatrixFromSpreadsheet(
+            path,
+            chosenMapping.session,
+            props.projectHolder.project,
+            props.projectHolder.project.sessions,
+            "session"
+          )
+        );
+      } catch (err) {
+        NotifyException(err);
+      }
     }
   }, [path, mappingName, currentlyOpen]);
 

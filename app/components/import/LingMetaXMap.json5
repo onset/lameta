@@ -1,52 +1,71 @@
 // from https://github.com/rgriscom/LingMetaX/blob/main/Templates/Sessions.csv
 {
-  mapping_description: "Uses the column names from in [LingMetaX](https://github.com/rgriscom/LingMetaX).",
-  date: { lameta: "date" },
-  title: { lameta: "title" },
-  //  LingMetaX's code uses this for the folder and session name
-  filename: { lameta: "id" },
-  description: { lameta: "description" },
-  location_region: { lameta: "locationRegion" },
-  location_continent: { lameta: "locationContinent" },
-  location_country: { lameta: "locationCountry" },
-  location_local: { lameta: "location" },
-  genre: { lameta: "genre" },
-  subgenre: { lameta: "subgenre" },
-  topic: { lameta: "topic" },
-  keywords: { lameta: "keyword" }, // note, not plural in lameta for some reason
-  involvement: { lameta: "involvement" },
-  planning: { lameta: "planningType" },
-  social_context: { lameta: "socialContext" },
-  subject_languages: { lameta: "languages" }, // CHECK
-  working_languages: { lameta: "workingLanguages" }, // CHECK
-  // LingMetaX's code looks at this archive_repository column and then uses it to look up one of the other columns, and use that permissions.
-  // I'm unclear how this works in practice, since lameta currently only supports one artchive per lameta project.
-  //archive_repository: { lameta: "" },
-  access_AILCA: { lameta: "access" },
-  access_AILLA: { lameta: "access" },
-  access_ANLA: { lameta: "access" },
-  access_ELAR: { lameta: "access" },
-  access_PARADISEC: { lameta: "access" },
-  access_TLA: { lameta: "access" },
-  access_REAP: { lameta: "access" },
-  access_custom: { lameta: "access" },
-  // NB: I could not see in the LingMetaX code that this was used
-  access_explanation: { lameta: "accessDescription" },
-  // The LingMetaX code doesn't do anything special with these. We let them go to CUSTOM
-  //video: { lameta: "" },
-  //microphone: { lameta: "" },
-  //audio: { lameta: "" },
-  //other_equipment: { lameta: "" },
-  //recording_conditions: { lameta: "" },
+  session: {
+    mapping_description: "Uses the column names from in [LingMetaX](https://github.com/rgriscom/LingMetaX).",
+    date: { lameta: "date" },
+    title: { lameta: "title" },
+    //  LingMetaX's code uses this for the folder and session name
+    filename: { lameta: "id" },
+    description: { lameta: "description" },
+    location_region: { lameta: "locationRegion" },
+    location_continent: { lameta: "locationContinent" },
+    location_country: { lameta: "locationCountry" },
+    location_local: { lameta: "location" },
+    genre: { lameta: "genre" },
+    subgenre: { lameta: "subgenre" },
+    topic: { lameta: "topic" },
+    keywords: { lameta: "keyword" }, // note, not plural in lameta for some reason
+    involvement: { lameta: "involvement" },
+    planning: { lameta: "planningType" },
+    social_context: { lameta: "socialContext" },
+    subject_languages: { lameta: "languages" }, // CHECK
+    working_languages: { lameta: "workingLanguages" }, // CHECK
+    // LingMetaX's code looks at this archive_repository column and then uses it to look up one of the other columns, and use that permissions.
+    // I'm unclear how this works in practice, since lameta currently only supports one artchive per lameta project.
+    //archive_repository: { lameta: "" },
+    access_AILCA: { lameta: "access" },
+    access_AILLA: { lameta: "access" },
+    access_ANLA: { lameta: "access" },
+    access_ELAR: { lameta: "access" },
+    access_PARADISEC: { lameta: "access" },
+    access_TLA: { lameta: "access" },
+    access_REAP: { lameta: "access" },
+    access_custom: { lameta: "access" },
+    // NB: I could not see in the LingMetaX code that this was used
+    access_explanation: { lameta: "accessDescription" },
+    // The LingMetaX code doesn't do anything special with these. We let them go to CUSTOM
+    //video: { lameta: "" },
+    //microphone: { lameta: "" },
+    //audio: { lameta: "" },
+    //other_equipment: { lameta: "" },
+    //recording_conditions: { lameta: "" },
 
-  participant_1_full_name: { lameta: "contribution.name" },
-  participant_1_role: { lameta: "contribution.role" },
-  participant_2_full_name: { lameta: "contribution.name" },
-  participant_2_role: { lameta: "contribution.role" },
-  participant_3_full_name: { lameta: "contribution.name" },
-  participant_3_role: { lameta: "contribution.role" },
-  participant_4_full_name: { lameta: "contribution.name" },
-  participant_4_role: { lameta: "contribution.role" },
-  participant_5_full_name: { lameta: "contribution.name" },
-  participant_5_role: { lameta: "contribution.role" },
+    participant_1_full_name: { lameta: "contribution.name" },
+    participant_1_role: { lameta: "contribution.role" },
+    participant_2_full_name: { lameta: "contribution.name" },
+    participant_2_role: { lameta: "contribution.role" },
+    participant_3_full_name: { lameta: "contribution.name" },
+    participant_3_role: { lameta: "contribution.role" },
+    participant_4_full_name: { lameta: "contribution.name" },
+    participant_4_role: { lameta: "contribution.role" },
+    participant_5_full_name: { lameta: "contribution.name" },
+    participant_5_role: { lameta: "contribution.role" },
+  },
+  person: {
+    full_name: { lameta: "name" },
+    nickname: { lameta: "nickname" },
+    code: { lameta: "code" },
+    gender: { lameta: "gender" },
+    birth_year: { lameta: "birthYear" },
+    education: { lameta: "education" },
+    ethnic_group: { lameta: "ethnicGroup" },
+    primary_occupation: { lameta: "primaryOccupation" },
+    description: { lameta: "description" },
+    // TODO: migrate these to current model
+    // primary_language: { lameta: "primaryLanguage" },
+    // primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
+    // other_languages: { lameta: "otherLanguage0" },
+    // mother_language: { lameta: "" },
+    // father_language: { lameta: "" },
+  },
 }

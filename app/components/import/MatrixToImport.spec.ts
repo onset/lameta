@@ -1,7 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { addSessionToProject } from "./MatrixImporter";
+import { addPersonToProject, addSessionToProject } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -10,6 +10,7 @@ import {
   MappedRow,
   IMappedCell,
 } from "./MappedMatrix";
+import { Person } from "../../model/Project/Person/Person";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
@@ -28,7 +29,18 @@ describe("addSessionToProject", () => {
     expect(session.id).toBe("foo");
   });
 
-  it("Can import one normal row", () => {
+  it("Can import one normal person row", () => {
+    const person = makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryOccupation: "Musician",
+    });
+    expect(person.displayName).toBe("Joe Strummer");
+    expect(person.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
+      "Musician"
+    );
+  });
+
+  it("Can import one normal session row", () => {
     const session = makeMatrixAndImportThenGetSession({
       id: "foo",
       title: "London Calling",
@@ -46,7 +58,7 @@ describe("addSessionToProject", () => {
     expect(session.properties.getTextStringOrEmpty("genre")).toBe("drama");
     expect(session.properties.getTextStringOrEmpty("subgenre")).toBe("play");
   });
-  it("Can import one participant", () => {
+  it("Can import one contribution", () => {
     const session = makeMatrixAndImportThenGetSession({
       id: "foo",
       "contribution.name": "Joe Strummer",
@@ -236,4 +248,9 @@ function makeMatrixAndImportThenGetSession(values: any): Session {
   const row = makeRow(values);
   addSessionToProject(project, row);
   return project.sessions[0];
+}
+function makeMatrixAndImportThenGetPerson(values: any): Person {
+  const row = makeRow(values);
+  addPersonToProject(project, row);
+  return project.persons[0];
 }

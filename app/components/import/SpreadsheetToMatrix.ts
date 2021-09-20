@@ -1,10 +1,11 @@
 /* The functions here:
   1) Read a csv file or excel spreadsheet into our IMappedMatrix.
   2) Using the provided "mapping", assign a lameta property to each column.
-  3) Add validation info to the various cells according to the lameta definition of the column.
+  3) Add validation info to the various cells according to the lameta definition
+     of the column.
 
-  Elsewhere, this IMappedMatrix is then handed to the UI to show to the user, and then handed to functions in MatrixImporter
-  to actually import.
+  Elsewhere, this IMappedMatrix is then handed to the UI to show to the user,
+  and then handed to functions in MatrixImporter to actually import.
 */
 import * as XLSX from "xlsx";
 import { getFieldDefinition } from "../../model/field/KnownFieldDefinitions";
@@ -19,6 +20,7 @@ import {
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
+import * as fs from "fs";
 
 export function makeMappedMatrixFromSpreadsheet(
   path: string,
@@ -27,11 +29,33 @@ export function makeMappedMatrixFromSpreadsheet(
   folders: Folder[],
   folderType: IFolderType
 ): MappedMatrix {
+  if (!fs.existsSync(path)) {
+    throw new Error("Cannot find a workbook at " + path);
+  }
   const workbook = XLSX.readFile(path, {
     cellDates: false,
     codepage: 65001 /* utf-8 */,
   });
-  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  if (!workbook) {
+    // *********** IMPORTANT **************
+    // When using Wallaby JS, we have to configure it to know that any excel
+    // files we use are binary. See wallaby.js. If this isn't done, you
+    // will get this error.
+    throw new Error(
+      `Found the workbook at ${path} but could not open it with the library.`
+    );
+  }
+  if (workbook.SheetNames.length === 0) {
+    throw new Error(
+      "Apparently, we opened the workbook but Sheets[] is empty."
+    );
+  }
+  const worksheet = workbook /* ? */.Sheets[workbook.SheetNames[0]];
+  if (!worksheet) {
+    throw new Error(
+      "Apparently, we opened the workbook but could not open the first sheet."
+    );
+  }
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
   return makeMappedMatrix(arrayOfArrays, mapping, project, folders, folderType);
 }

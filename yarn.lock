@@ -5965,6 +5965,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"adler-32@npm:~1.3.0":
+  version: 1.3.0
+  resolution: "adler-32@npm:1.3.0"
+  dependencies:
+    printj: ~1.2.2
+  checksum: 91c3155198c89f1bdf87141844dcec1c463474797dbb85a04e9729a0a20047dbef35550cf6b36dc09742c612cf37437e62656a6197409b349ee457dfe712ce4d
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:4, agent-base@npm:^4.3.0":
   version: 4.3.0
   resolution: "agent-base@npm:4.3.0"
@@ -8583,6 +8592,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cfb@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "cfb@npm:1.2.1"
+  dependencies:
+    adler-32: ~1.3.0
+    crc-32: ~1.2.0
+    printj: ~1.3.0
+  checksum: 6d21a58c07d3315a5a253a7acdd4b0238771881f42faee2c0ff6a793d5b59c7304388b3ff2c8d45da2aa9d7a87cfc5ab4f5a54bedfe3152a5ac6f63029da4efd
+  languageName: node
+  linkType: hard
+
 "chai-webdriverio@npm:^0.4.3":
   version: 0.4.3
   resolution: "chai-webdriverio@npm:0.4.3"
@@ -9173,15 +9193,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codepage@npm:~1.14.0":
-  version: 1.14.0
-  resolution: "codepage@npm:1.14.0"
-  dependencies:
-    commander: ~2.14.1
-    exit-on-epipe: ~1.0.1
-  bin:
-    codepage: ./bin/codepage.njs
-  checksum: ea06cbb7b646029d4e252b143b09048f1dee466d80be9e68cc4da05981f982a02f1199db0ea27d5e05a026bfa77b91e3ae8e0d3ed9665bd77ba54911bf2b82b7
+"codepage@npm:~1.15.0":
+  version: 1.15.0
+  resolution: "codepage@npm:1.15.0"
+  checksum: 86bdfd8f8fd4d78ace6ddab02a1621cbb4a833686fe886984b4155d99cd0287581d69495774b816ab2f571c4dc851c1595e1dbb8d69bd6dbb5a631ebf317fab0
   languageName: node
   linkType: hard
 
@@ -9357,13 +9372,6 @@ __metadata:
   version: 6.2.1
   resolution: "commander@npm:6.2.1"
   checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
-  languageName: node
-  linkType: hard
-
-"commander@npm:~2.14.1":
-  version: 2.14.1
-  resolution: "commander@npm:2.14.1"
-  checksum: 26bd49febeac8efabb7488fb5a4a2480b04bc4c4eef3c50da93eead72959f7a5232d003deda5b9761937205721274e80108f6d1d2b45ae7a8387cfb92031084e
   languageName: node
   linkType: hard
 
@@ -20724,6 +20732,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"printj@npm:~1.2.2":
+  version: 1.2.3
+  resolution: "printj@npm:1.2.3"
+  bin:
+    printj: bin/printj.njs
+  checksum: ba0bc4c0879dfdb836f6e3f61617c5823d822305784c455fae75a4e83c645839ba73f8fd2eab1621ece4d682ac089fee3ae55aca6945df94a9cb36797de5f150
+  languageName: node
+  linkType: hard
+
+"printj@npm:~1.3.0":
+  version: 1.3.0
+  resolution: "printj@npm:1.3.0"
+  bin:
+    printj: bin/printj.njs
+  checksum: dad3e6fb19fa7805b594a9ca39eeb9c46213c99f4c4eb824a0ef26788f07ef4ea680b646b56d583ad3d8a30d90cca60dbd452a2d85d5f2c7f5f5c16f3ea7fe9b
+  languageName: node
+  linkType: hard
+
 "prismjs@npm:^1.21.0, prismjs@npm:~1.23.0":
   version: 1.23.0
   resolution: "prismjs@npm:1.23.0"
@@ -23075,7 +23101,7 @@ __metadata:
     webpack-hot-middleware: ^2.24.3
     webpack-merge: ^4.1.4
     winston: ^3.0.0
-    xlsx: ^0.17.0
+    xlsx: ^0.17.2
     xml-name-validator: ^3.0.0
     xml2js: ^0.4.19
     xmlbuilder: ^10.1.1
@@ -26781,10 +26807,13 @@ typescript@^4.0.2:
   languageName: node
   linkType: hard
 
-"word@npm:~0.3.0":
-  version: 0.3.0
-  resolution: "word@npm:0.3.0"
-  checksum: f84e7061883380c1bcb0d98bd183b7f2b281688011924af7a96d3ed3ee20aeb12cc59a0451b66e5e57520338a056725ff8e0c07b358c0afecf5488a9557c19fe
+"word@npm:~0.4.0":
+  version: 0.4.0
+  resolution: "word@npm:0.4.0"
+  dependencies:
+    cfb: ^1.2.0
+    jsdom: ^16.2.2
+  checksum: 65cd23b80621a528aa6b617c6573f91f456066a3662d636809bfbd4fd8d3f49be8133fcaff7072bbd4e7d0534bf84638c95926229f245edeb2b78e03f0bc1f3f
   languageName: node
   linkType: hard
 
@@ -26924,23 +26953,23 @@ typescript@^4.0.2:
   languageName: node
   linkType: hard
 
-"xlsx@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "xlsx@npm:0.17.0"
+"xlsx@npm:^0.17.2":
+  version: 0.17.2
+  resolution: "xlsx@npm:0.17.2"
   dependencies:
     adler-32: ~1.2.0
     cfb: ^1.1.4
-    codepage: ~1.14.0
+    codepage: ~1.15.0
     commander: ~2.17.1
     crc-32: ~1.2.0
     exit-on-epipe: ~1.0.1
     fflate: ^0.3.8
     ssf: ~0.11.2
     wmf: ~1.0.1
-    word: ~0.3.0
+    word: ~0.4.0
   bin:
     xlsx: bin/xlsx.njs
-  checksum: 64e44eba53b64b989667b11655b88ef59a695aa07cce2415f9edff64ef6a48d936ed33208d98db3654e31769d79c42fd50e96d983d55e0850cb54a591b28960e
+  checksum: 38b501cb17bcf748dacd669ee0da02996fba47f9a980af6d64a2fe545805c47b5f4942f8b48f8423bab8e059b6d2a50680603d65dd4fb5671b3ab70d51881da4
   languageName: node
   linkType: hard
 

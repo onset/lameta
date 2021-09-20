@@ -6,10 +6,14 @@ import * as Path from "path";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
-const lingmetaxSessionMap = require("./LingMetaXMap.json5");
-const lingMetaXlsxPath = "sample data/LingMetaX.xlsx";
-const lingMetaCsvPath = "sample data/LingMetaX.csv";
+const lingMetaX_ImportMap = require("./LingMetaXMap.json5");
+const lingMetaX_Xlsx_SessionsPath = "sample data/LingMetaX_Sessions.xlsx";
+const lingMetaX_Xlsx_PeoplePath = "sample data/LingMetaX_People.xlsx";
+const lingMetaX_Csv_SessionsPath = "sample data/LingMetaX_Sessions.csv";
 
+// *********** IMPORTANT **************
+// When using Wallaby JS, we have to configure it to know that any excel
+// files we use are binary. See wallaby.js
 describe("SpreadsheetToMatrix", () => {
   beforeAll(() => {
     project = Project.fromDirectory(projectDir);
@@ -18,30 +22,51 @@ describe("SpreadsheetToMatrix", () => {
     project.sessions = [];
     Path.resolve;
   });
-  it("Can read in xslx", () => {
+  it("Can read in people xlsx with no people", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
-      lingMetaXlsxPath,
-      lingmetaxSessionMap,
+      "sample data/LingMetaX_People_NoPeople.xlsx",
+      lingMetaX_ImportMap.person,
+      project,
+      project.persons,
+      "person"
+    );
+    expect(matrix.rows.length).toBe(0);
+  });
+  it("Can read in people xslx", () => {
+    const matrix = makeMappedMatrixFromSpreadsheet(
+      "sample data/LingMetaX_People.xlsx",
+      lingMetaX_ImportMap.person,
+      project,
+      project.persons,
+      "person"
+    );
+    personSmokeTest(matrix);
+  });
+
+  it("Can read in session xslx", () => {
+    const matrix = makeMappedMatrixFromSpreadsheet(
+      lingMetaX_Xlsx_SessionsPath,
+      lingMetaX_ImportMap.session,
       project,
       project.sessions,
       "session"
     );
-    smokeTest(matrix);
+    sessionSmokeTest(matrix);
   });
   it("Can read in csv", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
-      lingMetaCsvPath,
-      lingmetaxSessionMap,
+      lingMetaX_Csv_SessionsPath,
+      lingMetaX_ImportMap.session,
       project,
       project.sessions,
       "session"
     );
-    smokeTest(matrix);
+    sessionSmokeTest(matrix);
   });
 });
 
 // if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
-function smokeTest(matrix: MappedMatrix) {
+function sessionSmokeTest(matrix: MappedMatrix) {
   expect(matrix.rows.length).toBe(6);
   expect(matrix.columnInfos.length).toBe(43);
 
@@ -75,4 +100,9 @@ function smokeTest(matrix: MappedMatrix) {
   expect(matrix.columnInfos[42].incomingLabel).toBe("participant_5_role");
   expect(matrix.columnInfos[42].lametaProperty).toBe("contribution.role");
   expect(matrix.columnInfos[42].mappingStatus).toBe("Matched");
+}
+// if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
+function personSmokeTest(matrix: MappedMatrix) {
+  expect(matrix.rows.length).toBe(1);
+  expect(matrix.columnInfos.length).toBe(14);
 }
