@@ -22,11 +22,15 @@ import moment from "moment";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
 import * as fs from "fs";
 
+export interface IImportMapping {
+  mapping_description: string;
+  person: object;
+  session: object;
+}
 export function makeMappedMatrixFromSpreadsheet(
   path: string,
-  mapping: object,
+  mapping: IImportMapping,
   project: Project,
-  folders: Folder[],
   folderType: IFolderType
 ): MappedMatrix {
   if (!fs.existsSync(path)) {
@@ -57,7 +61,7 @@ export function makeMappedMatrixFromSpreadsheet(
     );
   }
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
-  return makeMappedMatrix(arrayOfArrays, mapping, project, folders, folderType);
+  return makeMappedMatrix(arrayOfArrays, mapping, project, folderType);
 }
 
 function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
@@ -83,16 +87,15 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
 
 function makeMappedMatrix(
   arrayOfArrays: any[][],
-  mapping: object,
+  mapping: IImportMapping,
   project: Project,
-  folders: Folder[],
   folderType: IFolderType
 ) {
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
   addMappingAndValidatationInfoToColumns(matrix, mapping, project, folderType);
   validateCells(matrix, folderType);
-  setInitialRowImportStatus(matrix, folders);
+  setInitialRowImportStatus(matrix, project.getFolderArrayFromType(folderType));
   return matrix;
 }
 
@@ -136,7 +139,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
 
 function addMappingAndValidatationInfoToColumns(
   matrix: MappedMatrix,
-  mappingConfig: object,
+  mapping: IImportMapping,
   project: Project,
   folderType: IFolderType
 ) {
@@ -148,7 +151,7 @@ function addMappingAndValidatationInfoToColumns(
       return;
     }
     column.lametaProperty =
-      mappingConfig[column.incomingLabel]?.lameta || "custom";
+      mapping[folderType][column.incomingLabel]?.lameta || "custom";
     if (
       column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()
     ) {

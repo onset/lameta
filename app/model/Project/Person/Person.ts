@@ -1,5 +1,5 @@
 import * as mobx from "mobx";
-import { Folder } from "../../Folder/Folder";
+import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
@@ -38,10 +38,16 @@ export class Person extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
     return ".person";
   }
+  public get folderType(): IFolderType {
+    return "person";
+  }
+
   public importIdMatchesThisFolder(id: string): boolean {
     return this.referenceIdMatches(id);
   }
-
+  public get propertyForCheckingId(): string {
+    return "name";
+  }
   private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
       return f.pathInFolderToLinkFileOrLocalCopy.indexOf("_Photo.") > -1;

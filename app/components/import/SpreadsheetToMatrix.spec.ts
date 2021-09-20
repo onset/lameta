@@ -1,7 +1,11 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
-import { MappedMatrix, CellImportStatus } from "./MappedMatrix";
+import {
+  MappedMatrix,
+  CellImportStatus,
+  RowImportStatus,
+} from "./MappedMatrix";
 import * as Path from "path";
 
 let project: Project;
@@ -25,9 +29,8 @@ describe("SpreadsheetToMatrix", () => {
   it("Can read in people xlsx with no people", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
       "sample data/LingMetaX_People_NoPeople.xlsx",
-      lingMetaX_ImportMap.person,
+      lingMetaX_ImportMap,
       project,
-      project.persons,
       "person"
     );
     expect(matrix.rows.length).toBe(0);
@@ -35,9 +38,8 @@ describe("SpreadsheetToMatrix", () => {
   it("Can read in people xslx", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
       "sample data/LingMetaX_People.xlsx",
-      lingMetaX_ImportMap.person,
+      lingMetaX_ImportMap,
       project,
-      project.persons,
       "person"
     );
     personSmokeTest(matrix);
@@ -46,9 +48,8 @@ describe("SpreadsheetToMatrix", () => {
   it("Can read in session xslx", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
       lingMetaX_Xlsx_SessionsPath,
-      lingMetaX_ImportMap.session,
+      lingMetaX_ImportMap,
       project,
-      project.sessions,
       "session"
     );
     sessionSmokeTest(matrix);
@@ -56,9 +57,8 @@ describe("SpreadsheetToMatrix", () => {
   it("Can read in csv", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
       lingMetaX_Csv_SessionsPath,
-      lingMetaX_ImportMap.session,
+      lingMetaX_ImportMap,
       project,
-      project.sessions,
       "session"
     );
     sessionSmokeTest(matrix);
@@ -105,4 +105,5 @@ function sessionSmokeTest(matrix: MappedMatrix) {
 function personSmokeTest(matrix: MappedMatrix) {
   expect(matrix.rows.length).toBe(1);
   expect(matrix.columnInfos.length).toBe(14);
+  expect(matrix.rows[0].importStatus).toBe(RowImportStatus.Yes);
 }

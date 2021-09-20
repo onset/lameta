@@ -2,7 +2,7 @@ import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
-import { IFolderSelection, Folder } from "../Folder/Folder";
+import { IFolderSelection, Folder, IFolderType } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
@@ -71,6 +71,10 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
 
+  public get folderType(): IFolderType {
+    return "project";
+  }
+
   public static getDefaultContentLanguageCode() {
     const codeAndName =
       sCurrentProject === null
@@ -81,6 +85,11 @@ export class Project extends Folder {
 
     return codeAndName.split(":")[0].trim();
   }
+
+  public getFolderArrayFromType(folderType: string): Folder[] {
+    return this[folderType + "s"];
+  }
+
   public static getDefaultWorkingLanguageCode() {
     const codeAndName =
       sCurrentProject === null
@@ -95,7 +104,11 @@ export class Project extends Folder {
   public importIdMatchesThisFolder(id: string): boolean {
     throw new Error("Did not expect matchesId on Project");
   }
-
+  public get propertyForCheckingId(): string {
+    throw new Error(
+      "Did not expect propertyForCheckingId to be called on Project"
+    );
+  }
   private constructor(
     directory: string,
     metadataFile: FolderMetadataFile,
@@ -265,36 +278,41 @@ export class Project extends Folder {
     fs.mkdirSync(dir);
     return dir;
   }
-  public makeSessionForImport(): Session {
-    const dir = this.getUniqueFolder(
-      Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-      t`New Session`
-    );
-    //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
-    const session = Session.fromDirectory(dir, this.customFieldRegistry);
-    session.properties.setText("id", Path.basename(dir));
-    // no, not yet this.sessions.push(session);
-    // no, not yet this.selectedSession.index = this.sessions.length - 1;
-    analyticsEvent("Create", "Create Session From Import");
-    return session;
-  }
-  public makePersonForImport(): Person {
-    const dir = this.getUniqueFolder(
-      Path.join(this.directory, "People"), // we don't localize the directory name.
-      t`New Person`
-    );
-    const person = this.makePersonFromDirectory(dir);
-    person.properties.setText("name", Path.basename(dir));
-    analyticsEvent("Create", "Create Person From Import");
-    return person;
+  public makeFolderForImport(folderType: IFolderType): Folder {
+    switch (folderType) {
+      case "session":
+        var dir = this.getUniqueFolder(
+          Path.join(this.directory, "Sessions"), // we don't localize the directory name.
+          t`New Session`
+        );
+        //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
+        const session = Session.fromDirectory(dir, this.customFieldRegistry);
+        session.properties.setText("id", Path.basename(dir));
+        // no, not yet this.sessions.push(session);
+        // no, not yet this.selectedSession.index = this.sessions.length - 1;
+        analyticsEvent("Create", "Create Session From Import");
+        return session;
+        break;
+      case "person":
+        dir = this.getUniqueFolder(
+          Path.join(this.directory, "People"), // we don't localize the directory name.
+          t`New Person`
+        );
+        const person = this.makePersonFromDirectory(dir);
+        person.properties.setText("name", Path.basename(dir));
+        analyticsEvent("Create", "Create Person From Import");
+        return person;
+        break;
+      default:
+        throw Error(
+          "Unexpected folderType on makeFolderForImport: " + folderType
+        );
+    }
   }
 
-  public finishSessionImport(session: Session) {
-    this.sessions.push(session);
+  public finishFolderImport(folder: Folder) {
+    this.getFolderArrayFromType(folder.folderType).push(folder);
     //no: wait until we have imported them all. Importer will then select one. // this.selectedSession.index = this.sessions.length - 1;
-  }
-  public finishPersonImport(person: Person) {
-    this.persons.push(person);
   }
 
   public addSession() {
@@ -506,7 +524,7 @@ export class Project extends Folder {
   public deleteCurrentSession() {
     const session = this.sessions[this.selectedSession.index];
     ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
-      this.deleteSession(session);
+      this.deleteFolder(session);
     });
   }
   public deleteMarkedSessions() {
@@ -517,7 +535,7 @@ export class Project extends Folder {
         this.sessions
           .filter((s) => s.marked)
           .forEach((session) => {
-            this.deleteSession(session);
+            this.deleteFolder(session);
           });
       }
     );
@@ -537,42 +555,63 @@ export class Project extends Folder {
       return this.addPerson(name.trim());
     }
   }
-  public deleteSession(session: Session) {
+  public deleteFolder(folder: Folder) {
     try {
-      if (trash(session.directory)) {
-        const index = this.sessions.findIndex((s) => s === session);
+      if (trash(folder.directory)) {
+        const folders = this.getFolderArrayFromType(folder.folderType);
+        const index = folders.findIndex((f) => f === folder);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
         // in case we had the last one selected and now there won't be a selection at that index.
-        const countAfterWeRemoveThisOne = this.sessions.length - 1;
+
+        const countAfterWeRemoveThisOne = folders.length - 1;
         this.selectedSession.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-        this.sessions.splice(index, 1);
+        folders.splice(index, 1);
         // console.log(
         //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
         // );
         //this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
-      } else throw Error("Failed to delete session.");
+      } else throw Error("Failed to delete folder.");
     } catch (e) {
-      NotifyException(e, "Error trying to delete session.");
+      NotifyException(e, "Error trying to delete folder.");
     }
   }
-  public deletePerson(person: Person) {
-    try {
-      if (trash(person.directory)) {
-        const index = this.persons.findIndex((s) => s === person);
-        // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
-        // in case we had the last one selected and now there won't be a selection at that index.
-        const countAfterWeRemoveThisOne = this.persons.length - 1;
-        this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-        this.persons.splice(index, 1);
-        // console.log(
-        //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
-        // );
-        //this.persons.forEach((s) => console.log(`remaining person ${s.id}`));
-      } else throw Error("Failed to delete session.");
-    } catch (e) {
-      NotifyException(e, "Error trying to delete person.");
-    }
-  }
+
+  // public deleteSession(session: Session) {
+  //   try {
+  //     if (trash(session.directory)) {
+  //       const index = this.sessions.findIndex((s) => s === session);
+  //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+  //       // in case we had the last one selected and now there won't be a selection at that index.
+  //       const countAfterWeRemoveThisOne = this.sessions.length - 1;
+  //       this.selectedSession.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+  //       this.sessions.splice(index, 1);
+  //       // console.log(
+  //       //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
+  //       // );
+  //       //this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
+  //     } else throw Error("Failed to delete session.");
+  //   } catch (e) {
+  //     NotifyException(e, "Error trying to delete session.");
+  //   }
+  // }
+  // public deletePerson(person: Person) {
+  //   try {
+  //     if (trash(person.directory)) {
+  //       const index = this.persons.findIndex((s) => s === person);
+  //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+  //       // in case we had the last one selected and now there won't be a selection at that index.
+  //       const countAfterWeRemoveThisOne = this.persons.length - 1;
+  //       this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+  //       this.persons.splice(index, 1);
+  //       // console.log(
+  //       //   `Deleting session index:${index}. selectedSession.index:${this.selectedSession.index}`
+  //       // );
+  //       //this.persons.forEach((s) => console.log(`remaining person ${s.id}`));
+  //     } else throw Error("Failed to delete session.");
+  //   } catch (e) {
+  //     NotifyException(e, "Error trying to delete person.");
+  //   }
+  // }
   public deleteCurrentPerson() {
     const person = this.persons[this.selectedPerson.index];
     ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
@@ -584,7 +623,7 @@ export class Project extends Folder {
       //   this.selectedPerson.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
       //   this.persons.splice(indexToDelete, 1);
       // }
-      this.deletePerson(person);
+      this.deleteFolder(person);
     });
   }
 

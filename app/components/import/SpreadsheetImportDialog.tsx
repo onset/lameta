@@ -17,11 +17,14 @@ import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
-import { makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
+import {
+  IImportMapping,
+  makeMappedMatrixFromSpreadsheet,
+} from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
-  addSessionMatrixToProject,
+  addImportMatrixToProject,
   availableSpreadsheetMappings,
 } from "./MatrixImporter";
 import * as Path from "path";
@@ -30,26 +33,36 @@ import { Button } from "@material-ui/core";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
+import { IFolderType } from "../../model/Folder/Folder";
 const { app } = require("electron").remote;
 
-export let showSpreadsheetImportDialog = () => {};
+export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
   const [currentlyOpenX, setCurrentlyOpenTestingOnly] = useState(true);
+  const [folderType, setFolderType] = useState<IFolderType>("person");
   const [mappingName, setMappingName] = useUserSetting(
-    "spreadsheetImport.sessions.mappingName", // todo: people
+    "spreadsheetImport.mappingName",
     "LingMetaXMap"
   );
 
-  showSpreadsheetImportDialog = () => {
+  showSpreadsheetImportDialog = (folderType: IFolderType) => {
+    setFolderType(folderType);
     showDialog();
     setCurrentlyOpenTestingOnly(true);
   };
-  const [path, setPath] = useUserSetting("importPath", "");
+  const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
+  console.log("****pathsString=" + pathsString);
+  const paths = JSON.parse(pathsString);
+  const path = paths[folderType];
+
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
-  const chosenMapping = availableSpreadsheetMappings[mappingName];
+  const chosenMapping = availableSpreadsheetMappings[
+    mappingName
+  ] as IImportMapping;
+
   useEffect(() => {
     if (currentlyOpen && path && props.projectHolder.project) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
@@ -57,10 +70,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         setMatrix(
           makeMappedMatrixFromSpreadsheet(
             path,
-            chosenMapping.session,
+            chosenMapping,
             props.projectHolder.project,
-            props.projectHolder.project.sessions,
-            "session"
+            folderType
           )
         );
       } catch (err) {
@@ -80,6 +92,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     matrix,
   ]);
 
+  const title =
+    folderType === "session"
+      ? t`Import Spreadsheet of Sessions`
+      : t`Import Spreadsheet of People`;
   return (
     <LametaDialog
       open={currentlyOpen}
@@ -89,7 +105,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         height: calc(100% - 100px);
       `}
     >
-      <DialogTitle title={i18n._(t`Import Spreadsheet`)}></DialogTitle>
+      <DialogTitle title={title}></DialogTitle>
       <DialogMiddle>
         <div
           css={css`
@@ -145,7 +161,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                     result.filePaths &&
                     result.filePaths.length > 0
                   ) {
-                    setPath(result.filePaths[0]);
+                    const newPaths = paths;
+                    paths[folderType] = result.filePaths[0];
+                    setPaths(JSON.stringify(newPaths));
                   }
                 });
               }}
@@ -221,7 +239,11 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           color="secondary"
           disabled={!path || (matrix && !matrix.getCountOfChosenRows())}
           onClick={() => {
-            addSessionMatrixToProject(props.projectHolder.project!, matrix!);
+            addImportMatrixToProject(
+              props.projectHolder.project!,
+              matrix!,
+              folderType
+            );
             closeDialog();
             setCurrentlyOpenTestingOnly(false);
           }}
@@ -229,7 +251,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             min-width: 50px;
           `}
         >
-          <Trans>{`Import ${chosenCount} Sessions`}</Trans>
+          {folderType === "session" && (
+            <Trans>{`Import ${chosenCount} Sessions`}</Trans>
+          )}
+          {folderType === "person" && (
+            <Trans>{`Import ${chosenCount} People`}</Trans>
+          )}
         </Button>
         <DialogCancelButton
           onClick={() => {

@@ -16,25 +16,28 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
+import { IImportMapping } from "./SpreadsheetToMatrix";
+import { Folder, IFolderType } from "../../model/Folder/Folder";
 
 export const availableSpreadsheetMappings = {
-  LingMetaXMap: require("./LingMetaXMap.json5"),
+  LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
 };
 
-export function addSessionMatrixToProject(
+export function addImportMatrixToProject(
   project: Project,
-  matrix: MappedMatrix
+  matrix: MappedMatrix,
+  folderType: IFolderType
 ) {
   project.unMarkAllSessions(); // new ones will be marked
   matrix.rows
     .filter((row) => row.importStatus === RowImportStatus.Yes)
     .forEach((row) => {
-      addSessionToProject(project, row);
+      addFolderToProject(project, row, folderType);
     });
 }
 
 export function addPersonToProject(project: Project, row: MappedRow): Person {
-  const person = project.makePersonForImport();
+  const person = project.makeFolderForImport("person") as Person;
   //const person = project.getOrCreatePerson(cell.value);
   person.marked = true; // help user find the newly imported person
 
@@ -61,18 +64,22 @@ export function addPersonToProject(project: Project, row: MappedRow): Person {
     p.importIdMatchesThisFolder(name)
   );
   if (existingMatchingPerson) {
-    project.deletePerson(existingMatchingPerson);
+    project.deleteFolder(existingMatchingPerson);
   }
   // change the file name from "New Person" or whatever to the actual id
   person.nameMightHaveChanged();
-  project.finishPersonImport(person);
+  project.finishFolderImport(person);
   person.saveAllFilesInFolder();
   return person;
 }
 
-export function addSessionToProject(project: Project, row: MappedRow): Session {
-  const session = project.makeSessionForImport();
-  session.marked = true; // help user find the newly imported session
+export function addFolderToProject(
+  project: Project,
+  row: MappedRow,
+  folderType: IFolderType
+): Folder {
+  const folder = project.makeFolderForImport(folderType);
+  folder.marked = true; // help user find the newly imported session
 
   row.cells
     .filter((cell) => cell.column.doImport && cell.value)
@@ -80,11 +87,13 @@ export function addSessionToProject(project: Project, row: MappedRow): Session {
       const lametaKey = cell.column.lametaProperty;
       switch (lametaKey) {
         case "custom":
-          session.properties.addCustomProperty(
+          folder.properties.addCustomProperty(
             makeCustomField(cell.column.incomingLabel, cell.value)
           );
 
           break;
+
+        /* --- Session keys that require special handling --- */
         case "contribution.role":
           break;
         case "contribution.date":
@@ -93,7 +102,7 @@ export function addSessionToProject(project: Project, row: MappedRow): Session {
           break;
         case "contribution.name":
           const person = project.getOrCreatePerson(cell.value);
-          session.metadataFile!.contributions.push(
+          folder.metadataFile!.contributions.push(
             new Contribution(
               person.getIdToUseForReferences(),
               lookAheadForValue(row, cellIndex, "contribution.role") ??
@@ -105,27 +114,29 @@ export function addSessionToProject(project: Project, row: MappedRow): Session {
           break;
         case "date":
           const dateString: string = moment(cell.value).format("YYYY-MM-DD");
-          const dateField = session.properties.getValueOrThrow("date");
+          const dateField = folder.properties.getValueOrThrow("date");
           dateField.setValueFromString(dateString);
           break;
         default:
-          session.properties.setText(lametaKey /* ? */, cell.value);
+          folder.properties.setText(lametaKey /* ? */, cell.value);
       }
     });
 
   // if we got this far and we are replacing an existing session, move it to the bin
 
-  const id = row.cells.find((c) => c.column.lametaProperty === "id")?.value;
+  const id = row.cells.find(
+    (c) => c.column.lametaProperty === folder.propertyForCheckingId
+  )?.value;
   if (!id) throw new Error("Missing ID on cell: " + JSON.stringify(row));
-  const previousSessionWithThisId = project.sessions.find((s) => s.id === id!);
-  if (previousSessionWithThisId) {
-    project.deleteSession(previousSessionWithThisId);
+  const previousFolderWithThisId = project.sessions.find((s) => s.id === id!);
+  if (previousFolderWithThisId) {
+    project.deleteFolder(previousFolderWithThisId);
   }
   // change the file name from "NewSession" or whatever to the actual id
-  session.nameMightHaveChanged();
-  project.finishSessionImport(session);
-  session.saveAllFilesInFolder();
-  return session;
+  folder.nameMightHaveChanged();
+  project.finishFolderImport(folder);
+  folder.saveAllFilesInFolder();
+  return folder;
 }
 
 function makeCustomField(key: string, value: string): Field {

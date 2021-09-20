@@ -1,7 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { addPersonToProject, addSessionToProject } from "./MatrixImporter";
+import { addPersonToProject, addFolderToProject } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -246,11 +246,11 @@ function makeRow(values: any): MappedRow {
 }
 function makeMatrixAndImportThenGetSession(values: any): Session {
   const row = makeRow(values);
-  addSessionToProject(project, row);
+  addFolderToProject(project, row, "session");
   return project.sessions[0];
 }
 function makeMatrixAndImportThenGetPerson(values: any): Person {
   const row = makeRow(values);
-  addPersonToProject(project, row);
+  addFolderToProject(project, row, "person");
   return project.persons[0];
 }

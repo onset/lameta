@@ -1,4 +1,4 @@
-import { Folder } from "../Folder/Folder";
+import { Folder, IFolderType } from "../Folder/Folder";
 import { File, OtherFile } from "../file/File";
 import * as Path from "path";
 import * as glob from "glob";
@@ -18,6 +18,10 @@ export class ProjectDocuments extends Folder {
     super(directory, null, files, customFieldRegistry);
   }
 
+  public get folderType(): IFolderType {
+    return "project documents";
+  }
+
   public static fromDirectory(
     rootDirectory: string,
     subDirectory: string,
@@ -35,7 +39,11 @@ export class ProjectDocuments extends Folder {
     });
     return new ProjectDocuments(directory, files, customFieldRegistry);
   }
-
+  public get propertyForCheckingId(): string {
+    throw new Error(
+      "Did not expect propertyForCheckingId to be called on ProjectDocuments"
+    );
+  }
   public importIdMatchesThisFolder(id: string): boolean {
     throw new Error(
       "Did not expect matchesId to be called on ProjectDocuments"

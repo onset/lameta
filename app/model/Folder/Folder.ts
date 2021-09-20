@@ -40,7 +40,11 @@ export class IFolderSelection {
   public index: number;
 }
 
-export type IFolderType = "project" | "session" | "person";
+export type IFolderType =
+  | "project"
+  | "session"
+  | "person"
+  | "project documents";
 
 // Project, Session, or Person
 export /*babel doesn't like this: abstract*/ abstract class Folder {
@@ -95,6 +99,8 @@ export /*babel doesn't like this: abstract*/ abstract class Folder {
   }
 
   public abstract importIdMatchesThisFolder(id: string): boolean;
+  public abstract get folderType(): IFolderType;
+  public abstract get propertyForCheckingId(): string;
 
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural

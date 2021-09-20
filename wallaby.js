@@ -6,7 +6,12 @@ module.exports = function (wallaby) {
       "locale/**/*.csv",
       "sample data/**/*.*", 
       {pattern: 'package.json', load: false, instrument: false},
-      {pattern: "sample data/*.xlsx", binary:true}
+      // Most of the time, just saying binary:true was enough
+      // but then sometimes the reading of the xlsx would fail
+      // anyways for some file, as if the cached version was corrupt.
+      // For now, this essentially stops wallaby from caching.
+      {pattern: "sample data/*.xlsx", load: false, instrument: false, binary:true}
+
     ],
 
     tests: ["app/**/*spec.ts"],

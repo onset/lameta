@@ -90,11 +90,11 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: "&" + t`Import Spreadsheet...`,
+          label: "&" + t`Import Spreadsheet of Sessions` + "...",
           accelerator: "CmdOrCtrl+I",
           enabled: enableMenu,
           click: () => {
-            showSpreadsheetImportDialog();
+            showSpreadsheetImportDialog("session");
           },
         },
         { type: "separator" },
@@ -146,6 +146,15 @@ export default class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentPerson();
             }
+          },
+        },
+        { type: "separator" },
+        {
+          label: "&" + t`Import Spreadsheet of People` + "...",
+          accelerator: "CmdOrCtrl+I",
+          enabled: enableMenu,
+          click: () => {
+            showSpreadsheetImportDialog("person");
           },
         },
         { type: "separator" },

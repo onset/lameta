@@ -1,4 +1,4 @@
-import { Folder } from "../../Folder/Folder";
+import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
@@ -26,6 +26,12 @@ export class Session extends Folder {
   }
   public importIdMatchesThisFolder(id: string): boolean {
     return this.id === id;
+  }
+  public get propertyForCheckingId(): string {
+    return "id";
+  }
+  public get folderType(): IFolderType {
+    return "session";
   }
 
   public constructor(
