@@ -174,6 +174,7 @@ function writeField(
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyFields: boolean = false
 ) {
+  if (field.definition.omitSave) return;
   const { type, value } = field.typeAndValueEscapedForXml();
 
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization...

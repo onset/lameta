@@ -134,12 +134,14 @@ export function migrateOnePersonLanguageFromNameToCode(
   }
 }
 
+// with spreadsheet import, we have this special field that can take a list of one or more langs separated by comma or semicolon,
+// contiaining language names or codes
 export function getCodesFromLanguageListField(
-  languageImportListContents: string
+  languageImportList: string
 ): IPersonLanguage[] {
   const languages: IPersonLanguage[] = [];
-  if (languageImportListContents) {
-    const languagesInEitherNameOrCode = languageImportListContents
+  if (languageImportList) {
+    const languagesInEitherNameOrCode = languageImportList
       .split(";")
       .join(",")
       .split(",")

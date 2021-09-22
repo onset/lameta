@@ -74,7 +74,7 @@ export const MatrixGrid: React.FunctionComponent<{
                         {row.cells
                           .filter((c) => c.problemDescription)
                           .map((c) => c.problemDescription)
-                          .join(",")}
+                          .join(". ")}
                       </div>
                     }
                     background={"red"}

@@ -278,41 +278,23 @@ export class PersonMetadataFile extends FolderMetadataFile {
       }
     });
     // Now output the legacy SayMore format that was used before lameta 0.92, for saymore and older lametas
-    const legacyLanguageFields = [
-      "primaryLanguage",
-      "otherLanguage0",
-      "otherLanguage1",
-      "otherLanguage2",
-      "otherLanguage3",
-      "otherLanguage4",
-      "otherLanguage5",
-      "otherLanguage6",
-      "otherLanguage7",
-      "otherLanguage8",
-      "otherLanguage9",
-      "otherLanguage10",
-    ];
-    let index = 0;
+    let fieldNameIndex = 0;
     let haveFatherLanguage = false;
     let haveMotherLanguage = false;
     const kNotice =
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name =
-        // if we have qaa-qtz, just output that
-        language.code.toLowerCase() >= "qaa" &&
-        language.code.toLowerCase() <= "qtz"
-          ? language.code
-          : // otherwise look up the name
-            staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-              language.code
-            );
+      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+        language.code
+      );
       if (language.code.trim().length > 0) {
-        root
-          .element(legacyLanguageFields[index], name)
-          .attribute("deprecated", kNotice);
-        ++index;
+        const fieldName =
+          fieldNameIndex === 0
+            ? "primaryLanguage"
+            : "otherLanguage" + fieldNameIndex.toString();
+        ++fieldNameIndex;
+        root.element(fieldName, name).attribute("deprecated", kNotice);
         if (!haveFatherLanguage && language.father) {
           root
             .element("fathersLanguage", name)

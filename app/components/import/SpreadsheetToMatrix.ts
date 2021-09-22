@@ -22,6 +22,7 @@ import moment from "moment";
 import { IFolderType } from "../../model/Folder/Folder";
 import * as fs from "fs";
 import * as Path from "path";
+import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 
 export interface IImportMapping {
   mapping_description: string;
@@ -214,11 +215,23 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
             break;
           default:
             const def = getFieldDefinition(folderType, primary);
-            if (!def) {
-              cell.importStatus = CellImportStatus.MissingKeyDef; // how can we have a lametaProperty but couldn't find the definition?
-              cell.problemDescription = `lameta does not have a definitions matching the key "${primary}"`;
+            if (def.importType === "languageCodeOrName") {
+              const problems = getProblemsFromLanguageImportListField(
+                cell.value
+              );
+              if (problems.length > 0) {
+                cell.importStatus = CellImportStatus.NotInClosedVocabulary;
+                cell.problemDescription = `lameta does not recognize these language names or codes: ${problems.map(p=>"\""+p+"\"").join(
+                  ","
+                )}`;
+              }
             } else {
-              getImportSituationForValue(cell);
+              if (!def) {
+                cell.importStatus = CellImportStatus.MissingKeyDef; // how can we have a lametaProperty but couldn't find the definition?
+                cell.problemDescription = `lameta does not have a definitions matching the key "${primary}"`;
+              } else {
+                getImportSituationForValue(cell);
+              }
             }
         }
       } else {
@@ -226,6 +239,26 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
       }
     });
   });
+}
+
+// with spreadsheet import, we have this special languageImportList field that can take a list of one or more langs separated by comma or semicolon,
+// contiaining language names or codes
+function getProblemsFromLanguageImportListField(
+  languageImportList: string
+): string[] {
+  const problems: string[] = [];
+  if (languageImportList) {
+    const languagesInEitherNameOrCode = languageImportList
+      .split(";")
+      .join(",")
+      .split(",")
+      .map((s) => s.trim());
+    languagesInEitherNameOrCode.forEach((l) => {
+      if ("und" === staticLanguageFinder.findCodeFromCodeOrLanguageName(l))
+        problems.push(l);
+    });
+  }
+  return problems;
 }
 
 function setInitialRowImportStatus(
