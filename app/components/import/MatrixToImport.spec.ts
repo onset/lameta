@@ -21,7 +21,8 @@ describe("addSessionToProject", () => {
     project = Project.fromDirectory(projectDir);
   });
   beforeEach(() => {
-    project.sessions = [];
+    project.sessions.splice(0, 1000);
+    project.persons.splice(0, 1000);
   });
   it("Can import one row with just id column", () => {
     const session = makeMatrixAndImportThenGetSession({ id: "foo" });
@@ -33,11 +34,15 @@ describe("addSessionToProject", () => {
     const person = makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Musician",
+      fathersLanguage: "Spanish",
     });
     expect(person.displayName).toBe("Joe Strummer");
     expect(person.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
       "Musician"
     );
+    // did it migrate languages?
+    expect(person.properties.getTextStringOrEmpty("fathersLanguage")).toBe("");
+    expect(person.properties.getTextStringOrEmpty("languages")).toBe("es");
   });
 
   it("Can import one normal session row", () => {

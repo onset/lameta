@@ -16,6 +16,7 @@ import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+  getCodesFromLanguageListField,
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 
@@ -116,8 +117,11 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
+    this.migrateFromPreviousVersions();
+  }
 
-    (this.metadataFile! as PersonMetadataFile).migrate(languageFinder);
+  public migrateFromPreviousVersions() {
+    (this.metadataFile! as PersonMetadataFile).migrateFromPreviousVersions();
   }
 
   public get languages() {
@@ -211,13 +215,25 @@ export class PersonMetadataFile extends FolderMetadataFile {
     //console.log("PersonMetadataFile.ctr");
   }
 
-  public migrate(languageFinder: LanguageFinder) {
-    migrateLegacyPersonLanguagesFromNameToCode(this.properties, languageFinder);
+  public migrateFromPreviousVersions() {
+    var x = this.properties.keys().forEach((k) => {
+      return this.properties.getTextStringOrEmpty(k);
+    }); //?
+
+    migrateLegacyPersonLanguagesFromNameToCode(this.properties);
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       this.properties,
-      this.languages,
-      languageFinder
+      this.languages
     );
+
+    const languageImportListContents = this.properties.getTextFieldOrUndefined(
+      "languageImportList"
+    );
+    const value = languageImportListContents?.text;
+    if (value) {
+      // TODO: consolidate so we don't have duplicates?
+      this.languages.push(...getCodesFromLanguageListField(value));
+    }
   }
 
   // override

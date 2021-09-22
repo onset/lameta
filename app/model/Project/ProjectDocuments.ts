@@ -49,4 +49,7 @@ export class ProjectDocuments extends Folder {
       "Did not expect matchesId to be called on ProjectDocuments"
     );
   }
+  public migrateFromPreviousVersions(): void {
+    //nothing to do, yet
+  }
 }

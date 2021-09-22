@@ -104,7 +104,7 @@ function sessionSmokeTest(matrix: MappedMatrix) {
 }
 // if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
 function personSmokeTest(matrix: MappedMatrix) {
-  expect(matrix.rows.length).toBe(1);
+  expect(matrix.rows.length).toBe(2);
   expect(matrix.columnInfos.length).toBe(14);
   expect(matrix.rows[0].importStatus).toBe(RowImportStatus.Yes);
 }

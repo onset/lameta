@@ -97,7 +97,9 @@ export class Project extends Folder {
     // kinda hacky here. "session"-->"sessions", "person"-->"persons"
     return this[folderType + "s"];
   }
-
+  public migrateFromPreviousVersions(): void {
+    //nothing to do, yet
+  }
   public findFolderById(
     folderType: IFolderType,
     id: string
@@ -327,6 +329,7 @@ export class Project extends Folder {
   }
 
   public finishFolderImport(folder: Folder) {
+    folder.migrateFromPreviousVersions();
     this.getFolderArrayFromType(folder.folderType).push(folder as any);
     //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.length - 1;
   }

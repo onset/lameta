@@ -120,7 +120,11 @@ export function addFolderToProject(
           dateField.setValueFromString(dateString);
           break;
         default:
-          folder.properties.setText(lametaKey /* ? */, cell.value);
+          //review: which of these 3 is correct? setText() was fine until
+          // I tried to use the deprecated "fathersLanguage"
+          folder.metadataFile!.addTextProperty(lametaKey, cell.value);
+        //folder.properties.addTextProperty(lametaKey, cell.value);
+        //folder.properties.setText(lametaKey /* ? */, cell.value);
       }
     });
 

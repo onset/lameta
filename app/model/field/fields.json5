@@ -415,6 +415,11 @@
       deprecated: "migrated to languages by lameta",
     },
     {
+      key: "languageImportList",
+      omitExport: "true",
+      deprecated: "not actually deprecated, but this is used in spreadsheet import only",
+    },
+    {
       key: "education",
     },
     {

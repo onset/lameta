@@ -68,12 +68,12 @@ export class Session extends Folder {
         Project.getDefaultWorkingLanguageCode()
       );
     }
-    this.migrateDeprecatedFields();
+    this.migrateFromPreviousVersions();
   }
 
   // There are 2 fields that ELAR wanted removed. These work as part of the description,
   // so we just append them to the description.
-  private migrateDeprecatedFields() {
+  public migrateFromPreviousVersions() {
     this.migrateOneField("situation", "description");
     this.migrateOneField("setting", "description");
   }

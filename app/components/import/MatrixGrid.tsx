@@ -291,7 +291,7 @@ function getCellComponent(cell?: IMappedCell) {
     white-space: break-spaces;
   `;
 
-  if (!cell || cell.importStatus === "ProgramError") {
+  if (!cell || cell.importStatus === "MissingKeyDef") {
     return (
       <div
         css={css`
@@ -299,7 +299,7 @@ function getCellComponent(cell?: IMappedCell) {
           background-color: blue;
         `}
       >
-        PROGRAM ERROR
+        KeyDef?
       </div>
     );
   }

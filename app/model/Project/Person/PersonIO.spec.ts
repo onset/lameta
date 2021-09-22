@@ -3,7 +3,10 @@ import fs from "fs";
 import Path from "path";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { PersonMetadataFile } from "./Person";
-import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import {
+  LanguageFinder,
+  setupLanguageFinderForTests,
+} from "../../../languageFinder/LanguageFinder";
 
 import {
   setResultXml,
@@ -20,6 +23,9 @@ const languageFinder = new LanguageFinder(() => ({
 }));
 
 describe("Person Languages Read", () => {
+  beforeAll(() => {
+    setupLanguageFinderForTests();
+  });
   beforeEach(async () => {
     personDirectory = temp.mkdirSync("test2");
     personId = Path.basename(personDirectory);
@@ -45,7 +51,7 @@ describe("Person Languages Read", () => {
 
   it("does migration if there are no languages", () => {
     const p = GetPersonFileWithOneTag("primaryLanguage", "etr");
-    p.migrate(languageFinder);
+    p.migrateFromPreviousVersions();
     expect(p.languages.length).toBe(1);
     expect(p.languages[0].code).toBe("etr");
     expect(p.languages[0].primary).toBe(true);

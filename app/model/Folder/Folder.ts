@@ -124,6 +124,7 @@ export abstract class Folder {
   public abstract importIdMatchesThisFolder(id: string): boolean;
   public abstract get folderType(): IFolderType;
   public abstract get propertyForCheckingId(): string;
+  public abstract migrateFromPreviousVersions(): void;
 
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural

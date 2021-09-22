@@ -1,6 +1,6 @@
 // from https://github.com/rgriscom/LingMetaX/blob/main/Templates/Sessions.csv
 {
-  mapping_description: "Uses the column names from in [LingMetaX](https://github.com/rgriscom/LingMetaX).",
+  mapping_description: "This mapping uses the column names from Richard Griscom's [LingMetaX](https://github.com/rgriscom/LingMetaX) format.",
   session: {
     date: { lameta: "date" },
     title: { lameta: "title" },
@@ -62,10 +62,10 @@
     primary_occupation: { lameta: "primaryOccupation" },
     description: { lameta: "description" },
     // TODO: migrate these to current model
-    // primary_language: { lameta: "primaryLanguage" },
-    // primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
-    // other_languages: { lameta: "otherLanguage0" },
-    // mother_language: { lameta: "" },
-    // father_language: { lameta: "" },
+    primary_language: { lameta: "primaryLanguage" },
+    primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
+    other_languages: { lameta: "languageImportList" },
+    mother_language: { lameta: "mothersLanguage" },
+    father_language: { lameta: "fathersLanguage" },
   },
 }

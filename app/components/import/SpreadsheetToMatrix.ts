@@ -21,6 +21,7 @@ import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { IFolderType } from "../../model/Folder/Folder";
 import * as fs from "fs";
+import * as Path from "path";
 
 export interface IImportMapping {
   mapping_description: string;
@@ -37,13 +38,14 @@ export function makeMappedMatrixFromSpreadsheet(
     throw new Error("Cannot find a workbook at " + path);
   }
   var workbook;
+  const fullPath = Path.resolve(path);
   try {
-    workbook = XLSX.readFile(path, {
+    workbook = XLSX.readFile(fullPath, {
       cellDates: false,
       codepage: 65001 /* utf-8 */,
     });
   } catch (error) {
-    throw new Error(`lameta was not able to read ${path}. ${error}`);
+    throw new Error(`lameta was not able to read ${fullPath}. ${error}`);
   }
   if (!workbook) {
     // *********** IMPORTANT **************
@@ -51,7 +53,7 @@ export function makeMappedMatrixFromSpreadsheet(
     // files we use are binary. See wallaby.js. If this isn't done, you
     // will get this error.
     throw new Error(
-      `Found the workbook at ${path} but could not open it with the library.`
+      `Found the workbook at ${fullPath} but could not open it with the library.`
     );
   }
   if (workbook.SheetNames.length === 0) {
@@ -213,7 +215,8 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
           default:
             const def = getFieldDefinition(folderType, primary);
             if (!def) {
-              cell.importStatus = CellImportStatus.ProgramError; // how can we have a lametaProperty but couldn't find the definition?
+              cell.importStatus = CellImportStatus.MissingKeyDef; // how can we have a lametaProperty but couldn't find the definition?
+              cell.problemDescription = `lameta does not have a definitions matching the key "${primary}"`;
             } else {
               getImportSituationForValue(cell);
             }
@@ -235,7 +238,9 @@ function setInitialRowImportStatus(
     if (!r.asObjectByLametaProperties()[uniqueIdentifierProperty]) {
       return RowImportStatus.NotAllowed;
     }
-    if (r.cells.find((c) => c.importStatus === CellImportStatus.ProgramError)) {
+    if (
+      r.cells.find((c) => c.importStatus === CellImportStatus.MissingKeyDef)
+    ) {
       return RowImportStatus.NotAllowed;
     } else if (
       r.cells.find(
