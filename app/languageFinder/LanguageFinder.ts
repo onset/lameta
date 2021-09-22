@@ -273,7 +273,7 @@ export class LanguageFinder {
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.lookupInIndexAndCustomLanguages(trimmedCode);
     const x = matches.filter((m) => {
-      return m.iso639_3 === trimmedCode;
+      return m.iso639_3 === trimmedCode || m.iso639_1 === trimmedCode;
     });
     // TODO unfortunately lang tags gives multiple hits for a given code if (x.length === 1) {
     if (x.length >= 1) {

@@ -1,5 +1,6 @@
 [
     {
+        "iso639_1": "aa",
         "iso639_3": "aar",
         "englishName": "Afar",
         "altNames": [
@@ -204,6 +205,7 @@
         ]
     },
     {
+        "iso639_1": "ab",
         "iso639_3": "abk",
         "englishName": "Abkhaz",
         "altNames": [
@@ -976,6 +978,7 @@
         ]
     },
     {
+        "iso639_1": "ae",
         "iso639_3": "ave",
         "englishName": "Avestan",
         "altNames": [
@@ -1132,6 +1135,7 @@
         ]
     },
     {
+        "iso639_1": "af",
         "iso639_3": "afr",
         "englishName": "Afrikaans",
         "altNames": [
@@ -1952,6 +1956,7 @@
         ]
     },
     {
+        "iso639_1": "ak",
         "iso639_3": "aka",
         "englishName": "Akan",
         "altNames": [
@@ -2412,6 +2417,7 @@
         ]
     },
     {
+        "iso639_1": "am",
         "iso639_3": "amh",
         "englishName": "Amharic",
         "altNames": [
@@ -2703,6 +2709,7 @@
         ]
     },
     {
+        "iso639_1": "an",
         "iso639_3": "arg",
         "englishName": "Aragonese",
         "altNames": [
@@ -3484,6 +3491,7 @@
         ]
     },
     {
+        "iso639_1": "ar",
         "iso639_3": "ara",
         "englishName": "Arabic",
         "altNames": [
@@ -3796,6 +3804,7 @@
         ]
     },
     {
+        "iso639_1": "as",
         "iso639_3": "asm",
         "englishName": "Assamese",
         "altNames": [
@@ -4543,6 +4552,7 @@
         ]
     },
     {
+        "iso639_1": "av",
         "iso639_3": "ava",
         "englishName": "Avar",
         "altNames": [
@@ -4979,6 +4989,7 @@
         ]
     },
     {
+        "iso639_1": "ay",
         "iso639_3": "aym",
         "englishName": "Aymara, Central",
         "altNames": [
@@ -5202,6 +5213,7 @@
         ]
     },
     {
+        "iso639_1": "az",
         "iso639_3": "aze",
         "englishName": "Azerbaijani, North",
         "altNames": [
@@ -5338,6 +5350,7 @@
         ]
     },
     {
+        "iso639_1": "ba",
         "iso639_3": "bak",
         "englishName": "Bashkort",
         "altNames": [
@@ -6419,6 +6432,7 @@
         ]
     },
     {
+        "iso639_1": "be",
         "iso639_3": "bel",
         "englishName": "Belarusian",
         "altNames": [
@@ -6970,6 +6984,7 @@
         ]
     },
     {
+        "iso639_1": "bg",
         "iso639_3": "bul",
         "englishName": "Bulgarian",
         "altNames": [
@@ -7508,6 +7523,7 @@
         ]
     },
     {
+        "iso639_1": "bi",
         "iso639_3": "bis",
         "englishName": "Bislama",
         "altNames": [
@@ -8510,6 +8526,7 @@
         ]
     },
     {
+        "iso639_1": "bm",
         "iso639_3": "bam",
         "englishName": "Bamanankan",
         "altNames": [
@@ -8767,6 +8784,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "bn",
         "iso639_3": "ben",
         "englishName": "Bengali",
         "altNames": [
@@ -8997,6 +9015,7 @@
         ]
     },
     {
+        "iso639_1": "bo",
         "iso639_3": "bod",
         "englishName": "Tibetan, Central",
         "altNames": [
@@ -9715,6 +9734,7 @@
         ]
     },
     {
+        "iso639_1": "br",
         "iso639_3": "bre",
         "englishName": "Breton",
         "altNames": [
@@ -9992,6 +10012,7 @@
         ]
     },
     {
+        "iso639_1": "bs",
         "iso639_3": "bos",
         "englishName": "Bosnian",
         "altNames": [
@@ -11937,6 +11958,7 @@
         ]
     },
     {
+        "iso639_1": "ca",
         "iso639_3": "cat",
         "englishName": "Catalan",
         "altNames": [
@@ -12692,6 +12714,7 @@
         ]
     },
     {
+        "iso639_1": "ce",
         "iso639_3": "che",
         "englishName": "Chechen",
         "altNames": [
@@ -12890,6 +12913,7 @@
         ]
     },
     {
+        "iso639_1": "ch",
         "iso639_3": "cha",
         "englishName": "Chamorro",
         "altNames": [
@@ -13951,6 +13975,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "co",
         "iso639_3": "cos",
         "englishName": "Corsican",
         "altNames": [
@@ -14344,6 +14369,7 @@
         ]
     },
     {
+        "iso639_1": "cr",
         "iso639_3": "cre",
         "englishName": "Cree, Woods",
         "altNames": [
@@ -14603,6 +14629,7 @@
         ]
     },
     {
+        "iso639_1": "cs",
         "iso639_3": "ces",
         "englishName": "Czech",
         "altNames": [
@@ -15035,6 +15062,7 @@
         ]
     },
     {
+        "iso639_1": "cu",
         "iso639_3": "chu",
         "englishName": "Slavonic, Church",
         "altNames": [
@@ -15251,6 +15279,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "cv",
         "iso639_3": "chv",
         "englishName": "Chuvash",
         "altNames": [
@@ -15334,6 +15363,7 @@
         ]
     },
     {
+        "iso639_1": "cy",
         "iso639_3": "cym",
         "englishName": "Welsh",
         "altNames": [
@@ -15419,6 +15449,7 @@
         ]
     },
     {
+        "iso639_1": "da",
         "iso639_3": "dan",
         "englishName": "Danish",
         "altNames": [
@@ -15939,6 +15970,7 @@
         ]
     },
     {
+        "iso639_1": "de",
         "iso639_3": "deu",
         "englishName": "German, Standard",
         "altNames": [
@@ -18129,6 +18161,7 @@
         ]
     },
     {
+        "iso639_1": "dv",
         "iso639_3": "div",
         "englishName": "Maldivian",
         "altNames": [
@@ -18358,6 +18391,7 @@
         ]
     },
     {
+        "iso639_1": "dz",
         "iso639_3": "dzo",
         "englishName": "Dzongkha",
         "altNames": [
@@ -18520,6 +18554,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ee",
         "iso639_3": "ewe",
         "englishName": "Éwé",
         "altNames": [
@@ -18769,6 +18804,7 @@
         ]
     },
     {
+        "iso639_1": "el",
         "iso639_3": "ell",
         "englishName": "Greek",
         "altNames": [
@@ -19020,6 +19056,7 @@
         ]
     },
     {
+        "iso639_1": "en",
         "iso639_3": "eng",
         "englishName": "English",
         "altNames": [
@@ -19195,6 +19232,7 @@
         ]
     },
     {
+        "iso639_1": "eo",
         "iso639_3": "epo",
         "englishName": "Esperanto",
         "altNames": [
@@ -19341,6 +19379,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "es",
         "iso639_3": "spa",
         "englishName": "Spanish",
         "altNames": [
@@ -19491,6 +19530,7 @@
         ]
     },
     {
+        "iso639_1": "et",
         "iso639_3": "est",
         "englishName": "Estonian, Standard",
         "altNames": [
@@ -19594,6 +19634,7 @@
         ]
     },
     {
+        "iso639_1": "eu",
         "iso639_3": "eus",
         "englishName": "Basque",
         "altNames": [
@@ -19701,6 +19742,7 @@
         ]
     },
     {
+        "iso639_1": "fa",
         "iso639_3": "fas",
         "englishName": "Persian, Iranian",
         "altNames": [
@@ -19908,6 +19950,7 @@
         ]
     },
     {
+        "iso639_1": "ff",
         "iso639_3": "ful",
         "englishName": "Pulaar",
         "altNames": [
@@ -19958,6 +20001,7 @@
         ]
     },
     {
+        "iso639_1": "fi",
         "iso639_3": "fin",
         "englishName": "Finnish",
         "altNames": [
@@ -20046,6 +20090,7 @@
         ]
     },
     {
+        "iso639_1": "fj",
         "iso639_3": "fij",
         "englishName": "Fijian",
         "altNames": [
@@ -20230,6 +20275,7 @@
         ]
     },
     {
+        "iso639_1": "fo",
         "iso639_3": "fao",
         "englishName": "Faroese",
         "altNames": [
@@ -20321,6 +20367,7 @@
         ]
     },
     {
+        "iso639_1": "fr",
         "iso639_3": "fra",
         "englishName": "French",
         "altNames": [
@@ -20721,6 +20768,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "fy",
         "iso639_3": "fry",
         "englishName": "Frisian",
         "altNames": [
@@ -20731,6 +20779,7 @@
         ]
     },
     {
+        "iso639_1": "ga",
         "iso639_3": "gle",
         "englishName": "Irish",
         "altNames": [
@@ -21352,6 +21401,7 @@
         ]
     },
     {
+        "iso639_1": "gd",
         "iso639_3": "gla",
         "englishName": "Scottish Gaelic",
         "altNames": [
@@ -22378,6 +22428,7 @@
         ]
     },
     {
+        "iso639_1": "gl",
         "iso639_3": "glg",
         "englishName": "Galician",
         "altNames": [
@@ -22621,6 +22672,7 @@
         ]
     },
     {
+        "iso639_1": "gn",
         "iso639_3": "grn",
         "englishName": "Guaraní, Paraguayan",
         "altNames": [
@@ -23432,6 +23484,7 @@
         ]
     },
     {
+        "iso639_1": "gu",
         "iso639_3": "guj",
         "englishName": "Gujarati",
         "altNames": [
@@ -23711,6 +23764,7 @@
         ]
     },
     {
+        "iso639_1": "gv",
         "iso639_3": "glv",
         "englishName": "Manx",
         "altNames": [
@@ -24229,6 +24283,7 @@
         ]
     },
     {
+        "iso639_1": "ha",
         "iso639_3": "hau",
         "englishName": "Hausa",
         "altNames": [
@@ -24565,6 +24620,7 @@
         ]
     },
     {
+        "iso639_1": "he",
         "iso639_3": "heb",
         "englishName": "Hebrew",
         "altNames": [
@@ -24675,6 +24731,7 @@
         ]
     },
     {
+        "iso639_1": "hi",
         "iso639_3": "hin",
         "englishName": "Hindi",
         "altNames": [
@@ -25386,6 +25443,7 @@
         ]
     },
     {
+        "iso639_1": "ho",
         "iso639_3": "hmo",
         "englishName": "Motu, Hiri",
         "altNames": [
@@ -25589,6 +25647,7 @@
         ]
     },
     {
+        "iso639_1": "hr",
         "iso639_3": "hrv",
         "englishName": "Croatian",
         "altNames": [
@@ -25782,6 +25841,7 @@
         ]
     },
     {
+        "iso639_1": "ht",
         "iso639_3": "hat",
         "englishName": "Haitian Creole",
         "altNames": [
@@ -25845,6 +25905,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "hu",
         "iso639_3": "hun",
         "englishName": "Hungarian",
         "altNames": [
@@ -26188,6 +26249,7 @@
         ]
     },
     {
+        "iso639_1": "hy",
         "iso639_3": "hye",
         "englishName": "Armenian",
         "altNames": [
@@ -26226,6 +26288,7 @@
         ]
     },
     {
+        "iso639_1": "hz",
         "iso639_3": "her",
         "englishName": "Herero",
         "altNames": [
@@ -26238,6 +26301,7 @@
         ]
     },
     {
+        "iso639_1": "ia",
         "iso639_3": "ina",
         "englishName": "Interlingua (International Auxiliary Language",
         "altNames": []
@@ -26422,6 +26486,7 @@
         ]
     },
     {
+        "iso639_1": "id",
         "iso639_3": "ind",
         "englishName": "Indonesian",
         "altNames": [
@@ -26509,6 +26574,7 @@
         ]
     },
     {
+        "iso639_1": "ie",
         "iso639_3": "ile",
         "englishName": "Interlingue",
         "altNames": [
@@ -26604,6 +26670,7 @@
         ]
     },
     {
+        "iso639_1": "ig",
         "iso639_3": "ibo",
         "englishName": "Igbo",
         "altNames": [
@@ -26712,6 +26779,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ii",
         "iso639_3": "iii",
         "englishName": "Nuosu",
         "altNames": [
@@ -26800,6 +26868,7 @@
         ]
     },
     {
+        "iso639_1": "ik",
         "iso639_3": "ipk",
         "englishName": "Inupiatun, Northwest Alaska",
         "altNames": [
@@ -27211,6 +27280,7 @@
         ]
     },
     {
+        "iso639_1": "io",
         "iso639_3": "ido",
         "englishName": "Ido",
         "altNames": []
@@ -27383,6 +27453,7 @@
         ]
     },
     {
+        "iso639_1": "is",
         "iso639_3": "isl",
         "englishName": "Icelandic",
         "altNames": [
@@ -27503,6 +27574,7 @@
         ]
     },
     {
+        "iso639_1": "it",
         "iso639_3": "ita",
         "englishName": "Italian",
         "altNames": [
@@ -27695,6 +27767,7 @@
         ]
     },
     {
+        "iso639_1": "iu",
         "iso639_3": "iku",
         "englishName": "Inuktitut, Eastern Canadian",
         "altNames": [
@@ -27880,6 +27953,7 @@
         ]
     },
     {
+        "iso639_1": "ja",
         "iso639_3": "jpn",
         "englishName": "Japanese",
         "altNames": []
@@ -29266,6 +29340,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "jv",
         "iso639_3": "jav",
         "englishName": "Javanese",
         "altNames": [
@@ -29328,6 +29403,7 @@
         ]
     },
     {
+        "iso639_1": "ka",
         "iso639_3": "kat",
         "englishName": "Georgian",
         "altNames": [
@@ -30971,6 +31047,7 @@
         ]
     },
     {
+        "iso639_1": "kg",
         "iso639_3": "kon",
         "englishName": "Koongo",
         "altNames": [
@@ -31461,6 +31538,7 @@
         ]
     },
     {
+        "iso639_1": "ki",
         "iso639_3": "kik",
         "englishName": "Gikuyu",
         "altNames": [
@@ -31710,6 +31788,7 @@
         ]
     },
     {
+        "iso639_1": "kj",
         "iso639_3": "kua",
         "englishName": "Kwanyama",
         "altNames": [
@@ -32018,6 +32097,7 @@
         ]
     },
     {
+        "iso639_1": "kk",
         "iso639_3": "kaz",
         "englishName": "Kazakh",
         "altNames": [
@@ -32317,6 +32397,7 @@
         ]
     },
     {
+        "iso639_1": "kl",
         "iso639_3": "kal",
         "englishName": "Greenlandic",
         "altNames": [
@@ -32564,6 +32645,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "km",
         "iso639_3": "khm",
         "englishName": "Khmer",
         "altNames": [
@@ -32821,6 +32903,7 @@
         ]
     },
     {
+        "iso639_1": "kn",
         "iso639_3": "kan",
         "englishName": "Kannada",
         "altNames": [
@@ -33107,6 +33190,7 @@
         ]
     },
     {
+        "iso639_1": "ko",
         "iso639_3": "kor",
         "englishName": "Korean",
         "altNames": [
@@ -33831,6 +33915,7 @@
         ]
     },
     {
+        "iso639_1": "kr",
         "iso639_3": "kau",
         "englishName": "Kanuri, Yerwa",
         "altNames": [
@@ -34121,6 +34206,7 @@
         ]
     },
     {
+        "iso639_1": "ks",
         "iso639_3": "kas",
         "englishName": "Kashmiri",
         "altNames": [
@@ -34652,6 +34738,7 @@
         ]
     },
     {
+        "iso639_1": "ku",
         "iso639_3": "kur",
         "englishName": "Kurdish, Northern",
         "altNames": [
@@ -34962,6 +35049,7 @@
         ]
     },
     {
+        "iso639_1": "kv",
         "iso639_3": "kom",
         "englishName": "Komi-Zyrian",
         "altNames": [
@@ -35219,6 +35307,7 @@
         ]
     },
     {
+        "iso639_1": "kw",
         "iso639_3": "cor",
         "englishName": "Cornish",
         "altNames": [
@@ -35700,6 +35789,7 @@
         ]
     },
     {
+        "iso639_1": "ky",
         "iso639_3": "kir",
         "englishName": "Kyrgyz",
         "altNames": [
@@ -36173,6 +36263,7 @@
         ]
     },
     {
+        "iso639_1": "la",
         "iso639_3": "lat",
         "englishName": "Latin",
         "altNames": [
@@ -36505,6 +36596,7 @@
         ]
     },
     {
+        "iso639_1": "lb",
         "iso639_3": "ltz",
         "englishName": "Luxembourgish",
         "altNames": [
@@ -37276,6 +37368,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "lg",
         "iso639_3": "lug",
         "englishName": "Ganda",
         "altNames": [
@@ -37540,6 +37633,7 @@
         ]
     },
     {
+        "iso639_1": "li",
         "iso639_3": "lim",
         "englishName": "Limburgish",
         "altNames": [
@@ -38428,6 +38522,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ln",
         "iso639_3": "lin",
         "englishName": "Lingala",
         "altNames": [
@@ -38583,6 +38678,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "lo",
         "iso639_3": "lao",
         "englishName": "Lao",
         "altNames": [
@@ -39192,6 +39288,7 @@
         ]
     },
     {
+        "iso639_1": "lt",
         "iso639_3": "lit",
         "englishName": "Lithuanian",
         "altNames": [
@@ -39266,6 +39363,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "lu",
         "iso639_3": "lub",
         "englishName": "Luba-Katanga",
         "altNames": [
@@ -39503,6 +39601,7 @@
         ]
     },
     {
+        "iso639_1": "lv",
         "iso639_3": "lav",
         "englishName": "Latvian, Standard",
         "altNames": [
@@ -41382,6 +41481,7 @@
         ]
     },
     {
+        "iso639_1": "mg",
         "iso639_3": "mlg",
         "englishName": "Malagasy, Southern Betsimisaraka",
         "altNames": [
@@ -41657,6 +41757,7 @@
         ]
     },
     {
+        "iso639_1": "mh",
         "iso639_3": "mah",
         "englishName": "Marshallese",
         "altNames": [
@@ -41913,6 +42014,7 @@
         ]
     },
     {
+        "iso639_1": "mi",
         "iso639_3": "mri",
         "englishName": "Maori",
         "altNames": [
@@ -42471,6 +42573,7 @@
         ]
     },
     {
+        "iso639_1": "mk",
         "iso639_3": "mkd",
         "englishName": "Macedonian",
         "altNames": [
@@ -42734,6 +42837,7 @@
         ]
     },
     {
+        "iso639_1": "ml",
         "iso639_3": "mal",
         "englishName": "Malayalam",
         "altNames": [
@@ -43208,6 +43312,7 @@
         ]
     },
     {
+        "iso639_1": "mn",
         "iso639_3": "mon",
         "englishName": "Mongolian, Halh",
         "altNames": [
@@ -44113,6 +44218,7 @@
         ]
     },
     {
+        "iso639_1": "mr",
         "iso639_3": "mar",
         "englishName": "Marathi",
         "altNames": [
@@ -44378,6 +44484,7 @@
         ]
     },
     {
+        "iso639_1": "ms",
         "iso639_3": "msa",
         "englishName": "Malay, Standard",
         "altNames": [
@@ -44644,6 +44751,7 @@
         ]
     },
     {
+        "iso639_1": "mt",
         "iso639_3": "mlt",
         "englishName": "Maltese",
         "altNames": [
@@ -45795,6 +45903,7 @@
         ]
     },
     {
+        "iso639_1": "my",
         "iso639_3": "mya",
         "englishName": "Burmese",
         "altNames": [
@@ -46261,6 +46370,7 @@
         ]
     },
     {
+        "iso639_1": "na",
         "iso639_3": "nau",
         "englishName": "Nauruan",
         "altNames": [
@@ -46486,6 +46596,7 @@
         ]
     },
     {
+        "iso639_1": "nb",
         "iso639_3": "nob",
         "englishName": "Norwegian Bokmål",
         "altNames": []
@@ -46939,6 +47050,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "nd",
         "iso639_3": "nde",
         "englishName": "Ndebele",
         "altNames": [
@@ -47192,6 +47304,7 @@
         ]
     },
     {
+        "iso639_1": "ne",
         "iso639_3": "nep",
         "englishName": "Nepali",
         "altNames": [
@@ -47477,6 +47590,7 @@
         ]
     },
     {
+        "iso639_1": "ng",
         "iso639_3": "ndo",
         "englishName": "Ndonga",
         "altNames": [
@@ -48690,6 +48804,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "nl",
         "iso639_3": "nld",
         "englishName": "Dutch",
         "altNames": [
@@ -49152,6 +49267,7 @@
         ]
     },
     {
+        "iso639_1": "nn",
         "iso639_3": "nno",
         "englishName": "Norwegian Nynorsk",
         "altNames": []
@@ -49409,6 +49525,7 @@
         ]
     },
     {
+        "iso639_1": "no",
         "iso639_3": "nor",
         "englishName": "Norwegian",
         "altNames": [
@@ -49800,6 +49917,7 @@
         ]
     },
     {
+        "iso639_1": "nr",
         "iso639_3": "nbl",
         "englishName": "Ndebele",
         "altNames": [
@@ -50605,6 +50723,7 @@
         ]
     },
     {
+        "iso639_1": "nv",
         "iso639_3": "nav",
         "englishName": "Navajo",
         "altNames": [
@@ -50852,6 +50971,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ny",
         "iso639_3": "nya",
         "englishName": "Chichewa",
         "altNames": [
@@ -51340,6 +51460,7 @@
         ]
     },
     {
+        "iso639_1": "oc",
         "iso639_3": "oci",
         "englishName": "Occitan",
         "altNames": [
@@ -51512,6 +51633,7 @@
         ]
     },
     {
+        "iso639_1": "oj",
         "iso639_3": "oji",
         "englishName": "Ojibwa, Eastern",
         "altNames": [
@@ -51844,6 +51966,7 @@
         ]
     },
     {
+        "iso639_1": "om",
         "iso639_3": "orm",
         "englishName": "Oromo, West Central",
         "altNames": [
@@ -52215,6 +52338,7 @@
         ]
     },
     {
+        "iso639_1": "or",
         "iso639_3": "ori",
         "englishName": "Odia",
         "altNames": [
@@ -52378,6 +52502,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "os",
         "iso639_3": "oss",
         "englishName": "Ossetic",
         "altNames": [
@@ -52757,6 +52882,7 @@
         ]
     },
     {
+        "iso639_1": "pa",
         "iso639_3": "pan",
         "englishName": "Punjabi, Eastern",
         "altNames": [
@@ -54356,6 +54482,7 @@
         ]
     },
     {
+        "iso639_1": "pl",
         "iso639_3": "pol",
         "englishName": "Polish",
         "altNames": [
@@ -55563,6 +55690,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ps",
         "iso639_3": "pus",
         "englishName": "Pashto, Northern",
         "altNames": [
@@ -55758,6 +55886,7 @@
         ]
     },
     {
+        "iso639_1": "pt",
         "iso639_3": "por",
         "englishName": "Portuguese",
         "altNames": [
@@ -56274,6 +56403,7 @@
         ]
     },
     {
+        "iso639_1": "qu",
         "iso639_3": "que",
         "englishName": "Quechua, Cusco",
         "altNames": [
@@ -57643,6 +57773,7 @@
         ]
     },
     {
+        "iso639_1": "rm",
         "iso639_3": "roh",
         "englishName": "Romansh",
         "altNames": [
@@ -57919,6 +58050,7 @@
         ]
     },
     {
+        "iso639_1": "rn",
         "iso639_3": "run",
         "englishName": "Rundi",
         "altNames": [
@@ -58013,6 +58145,7 @@
         ]
     },
     {
+        "iso639_1": "ro",
         "iso639_3": "ron",
         "englishName": "Romanian",
         "altNames": [
@@ -58297,6 +58430,7 @@
         ]
     },
     {
+        "iso639_1": "ru",
         "iso639_3": "rus",
         "englishName": "Russian",
         "altNames": [
@@ -58492,6 +58626,7 @@
         ]
     },
     {
+        "iso639_1": "rw",
         "iso639_3": "kin",
         "englishName": "Kinyarwanda",
         "altNames": [
@@ -58668,6 +58803,7 @@
         ]
     },
     {
+        "iso639_1": "sa",
         "iso639_3": "san",
         "englishName": "Sanskrit",
         "altNames": [
@@ -59142,6 +59278,7 @@
         ]
     },
     {
+        "iso639_1": "sc",
         "iso639_3": "srd",
         "englishName": "Sardinian, Logudorese",
         "altNames": [
@@ -59343,6 +59480,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "sd",
         "iso639_3": "snd",
         "englishName": "Sindhi",
         "altNames": [
@@ -59549,6 +59687,7 @@
         ]
     },
     {
+        "iso639_1": "se",
         "iso639_3": "sme",
         "englishName": "Saami, North",
         "altNames": [
@@ -59873,6 +60012,7 @@
         ]
     },
     {
+        "iso639_1": "sg",
         "iso639_3": "sag",
         "englishName": "Sango",
         "altNames": [
@@ -60086,6 +60226,7 @@
         ]
     },
     {
+        "iso639_1": "sh",
         "iso639_3": "hbs",
         "englishName": "Serbo-Croatian",
         "altNames": []
@@ -60367,6 +60508,7 @@
         ]
     },
     {
+        "iso639_1": "si",
         "iso639_3": "sin",
         "englishName": "Sinhala",
         "altNames": [
@@ -60798,6 +60940,7 @@
         ]
     },
     {
+        "iso639_1": "sk",
         "iso639_3": "slk",
         "englishName": "Slovak",
         "altNames": [
@@ -61053,6 +61196,7 @@
         ]
     },
     {
+        "iso639_1": "sl",
         "iso639_3": "slv",
         "englishName": "Slovene",
         "altNames": [
@@ -61247,6 +61391,7 @@
         ]
     },
     {
+        "iso639_1": "sm",
         "iso639_3": "smo",
         "englishName": "Samoan",
         "altNames": [
@@ -61476,6 +61621,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "sn",
         "iso639_3": "sna",
         "englishName": "Shona",
         "altNames": [
@@ -61732,6 +61878,7 @@
         ]
     },
     {
+        "iso639_1": "so",
         "iso639_3": "som",
         "englishName": "Somali",
         "altNames": [
@@ -62121,6 +62268,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "sq",
         "iso639_3": "sqi",
         "englishName": "Albanian, Tosk",
         "altNames": [
@@ -62231,6 +62379,7 @@
         ]
     },
     {
+        "iso639_1": "sr",
         "iso639_3": "srp",
         "englishName": "Serbian",
         "altNames": [
@@ -62453,6 +62602,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ss",
         "iso639_3": "ssw",
         "englishName": "Swati",
         "altNames": [
@@ -62724,6 +62874,7 @@
         ]
     },
     {
+        "iso639_1": "st",
         "iso639_3": "sot",
         "englishName": "Sotho, Southern",
         "altNames": [
@@ -62969,6 +63120,7 @@
         ]
     },
     {
+        "iso639_1": "su",
         "iso639_3": "sun",
         "englishName": "Sunda",
         "altNames": [
@@ -63137,6 +63289,7 @@
         ]
     },
     {
+        "iso639_1": "sv",
         "iso639_3": "swe",
         "englishName": "Swedish",
         "altNames": [
@@ -63212,6 +63365,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "sw",
         "iso639_3": "swa",
         "englishName": "Swahili",
         "altNames": [
@@ -63832,6 +63986,7 @@
         ]
     },
     {
+        "iso639_1": "ta",
         "iso639_3": "tam",
         "englishName": "Tamil",
         "altNames": [
@@ -64820,6 +64975,7 @@
         ]
     },
     {
+        "iso639_1": "te",
         "iso639_3": "tel",
         "englishName": "Telugu",
         "altNames": [
@@ -65126,6 +65282,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "tg",
         "iso639_3": "tgk",
         "englishName": "Tajik",
         "altNames": [
@@ -65335,6 +65492,7 @@
         ]
     },
     {
+        "iso639_1": "th",
         "iso639_3": "tha",
         "englishName": "Thai",
         "altNames": [
@@ -65555,6 +65713,7 @@
         ]
     },
     {
+        "iso639_1": "ti",
         "iso639_3": "tir",
         "englishName": "Tigrigna",
         "altNames": [
@@ -65889,6 +66048,7 @@
         ]
     },
     {
+        "iso639_1": "tk",
         "iso639_3": "tuk",
         "englishName": "Turkmen",
         "altNames": [
@@ -66075,6 +66235,7 @@
         ]
     },
     {
+        "iso639_1": "tl",
         "iso639_3": "tgl",
         "englishName": "Tagalog",
         "altNames": [
@@ -66556,6 +66717,7 @@
         ]
     },
     {
+        "iso639_1": "tn",
         "iso639_3": "tsn",
         "englishName": "Setswana",
         "altNames": [
@@ -66797,6 +66959,7 @@
         ]
     },
     {
+        "iso639_1": "to",
         "iso639_3": "ton",
         "englishName": "Tongan",
         "altNames": [
@@ -67325,6 +67488,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "tr",
         "iso639_3": "tur",
         "englishName": "Turkish",
         "altNames": [
@@ -67604,6 +67768,7 @@
         ]
     },
     {
+        "iso639_1": "ts",
         "iso639_3": "tso",
         "englishName": "Tsonga",
         "altNames": [
@@ -67889,6 +68054,7 @@
         ]
     },
     {
+        "iso639_1": "tt",
         "iso639_3": "tat",
         "englishName": "Tatar",
         "altNames": [
@@ -68848,6 +69014,7 @@
         ]
     },
     {
+        "iso639_1": "ty",
         "iso639_3": "tah",
         "englishName": "Tahitian",
         "altNames": [
@@ -69328,6 +69495,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "ug",
         "iso639_3": "uig",
         "englishName": "Uyghur",
         "altNames": [
@@ -69435,6 +69603,7 @@
         ]
     },
     {
+        "iso639_1": "uk",
         "iso639_3": "ukr",
         "englishName": "Ukrainian",
         "altNames": [
@@ -69914,6 +70083,7 @@
         ]
     },
     {
+        "iso639_1": "ur",
         "iso639_3": "urd",
         "englishName": "Urdu",
         "altNames": [
@@ -70346,6 +70516,7 @@
         ]
     },
     {
+        "iso639_1": "uz",
         "iso639_3": "uzb",
         "englishName": "Uzbek, Northern",
         "altNames": [
@@ -70580,6 +70751,7 @@
         ]
     },
     {
+        "iso639_1": "ve",
         "iso639_3": "ven",
         "englishName": "Venda",
         "altNames": [
@@ -70672,6 +70844,7 @@
         ]
     },
     {
+        "iso639_1": "vi",
         "iso639_3": "vie",
         "englishName": "Vietnamese",
         "altNames": [
@@ -71150,6 +71323,7 @@
         "altNames": []
     },
     {
+        "iso639_1": "vo",
         "iso639_3": "vol",
         "englishName": "Volapük",
         "altNames": []
@@ -71312,6 +71486,7 @@
         ]
     },
     {
+        "iso639_1": "wa",
         "iso639_3": "wln",
         "englishName": "Walloon",
         "altNames": [
@@ -72865,6 +73040,7 @@
         ]
     },
     {
+        "iso639_1": "wo",
         "iso639_3": "wol",
         "englishName": "Wolof",
         "altNames": [
@@ -74395,6 +74571,7 @@
         ]
     },
     {
+        "iso639_1": "xh",
         "iso639_3": "xho",
         "englishName": "Xhosa",
         "altNames": [
@@ -77330,6 +77507,7 @@
         ]
     },
     {
+        "iso639_1": "yi",
         "iso639_3": "yid",
         "englishName": "Yiddish, Eastern",
         "altNames": [
@@ -78052,6 +78230,7 @@
         ]
     },
     {
+        "iso639_1": "yo",
         "iso639_3": "yor",
         "englishName": "Yoruba",
         "altNames": [
@@ -79117,6 +79296,7 @@
         ]
     },
     {
+        "iso639_1": "za",
         "iso639_3": "zha",
         "englishName": "Zhuang, Yongbei",
         "altNames": [
@@ -80785,6 +80965,7 @@
         ]
     },
     {
+        "iso639_1": "zu",
         "iso639_3": "zul",
         "englishName": "Zulu",
         "altNames": [
