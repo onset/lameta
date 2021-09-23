@@ -216,10 +216,6 @@ export class PersonMetadataFile extends FolderMetadataFile {
   }
 
   public migrateFromPreviousVersions() {
-    var x = this.properties.keys().forEach((k) => {
-      return this.properties.getTextStringOrEmpty(k);
-    }); //?
-
     migrateLegacyPersonLanguagesFromNameToCode(this.properties);
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       this.properties,

@@ -14,35 +14,61 @@ import { t } from "@lingui/macro";
 
 const electron = require("electron");
 
+const activeToasts: string[] = [];
+const autoCloseTicks = 60 * 1000;
 export function NotifyError(message: string, details?: string) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      ButterToast.raise({
-        content: (
-          // expand to fit the insides
-          <Cinnamon.Crunch
-            title={t`"Error"`}
-            content={
-              <React.Fragment>
-                <div>{message}</div>
-                <div
-                  css={css`
-                    font-size: 8pt;
-                    margin-top: 1em;
-                  `}
-                >
-                  {details}
-                </div>
-              </React.Fragment>
+  const key = message + details;
+
+  // don't show a message again if it's still showing
+  if (activeToasts.indexOf(key) < 0) {
+    activeToasts.push(key);
+    // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
+    window.setTimeout(
+      () =>
+        ButterToast.raise({
+          content: (
+            // expand to fit the insides
+            <Cinnamon.Crunch
+              title={t`"Error"`}
+              content={
+                <React.Fragment>
+                  <div>{message}</div>
+                  <div
+                    css={css`
+                      font-size: 8pt;
+                      margin-top: 1em;
+                    `}
+                  >
+                    {details}
+                  </div>
+                </React.Fragment>
+              }
+              scheme={Cinnamon.Crunch.SCHEME_RED}
+            />
+          ),
+          onclick: () => {
+            try {
+              const index = activeToasts.indexOf(message);
+              if (index > -1) activeToasts.splice(index, 1);
+            } catch (err) {
+              //swallow
             }
-            scheme={Cinnamon.Crunch.SCHEME_RED}
-          />
-        ),
-        timeout: 60 * 1000,
-      }),
-    0
-  );
+          },
+          timeout: autoCloseTicks,
+        }),
+      0
+    );
+    // we don't have a callback from butter-toast, but we know when we told it to hide.
+
+    window.setTimeout(() => {
+      try {
+        const index = activeToasts.indexOf(key);
+        if (index > -1) activeToasts.splice(index, 1);
+      } catch (err) {
+        console.error(err);
+      }
+    }, autoCloseTicks);
+  }
 }
 export function getCannotRenameFileMsg() {
   return t`lameta  was not able to rename that file.`;

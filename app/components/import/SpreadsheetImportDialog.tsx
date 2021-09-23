@@ -54,7 +54,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     setCurrentlyOpenTestingOnly(true);
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
-  console.log("****pathsString=" + pathsString);
+
   const paths = JSON.parse(pathsString);
   const path = paths[folderType];
 

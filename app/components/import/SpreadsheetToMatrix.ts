@@ -38,12 +38,16 @@ export function makeMappedMatrixFromSpreadsheet(
   if (!fs.existsSync(path)) {
     throw new Error("Cannot find a workbook at " + path);
   }
+
   var workbook;
   const fullPath = Path.resolve(path);
   try {
     workbook = XLSX.readFile(fullPath, {
       cellDates: false,
-      codepage: 65001 /* utf-8 */,
+      // for csv files I ran into a case where an acii file had a non-breaking space (\u00A0)
+      // which looked fine in excel but was changed to � on import.
+      // So far, it seems like leaving things to auto-detect works better?
+      // codepage: 65001 /* utf-8 */,
     });
   } catch (error) {
     throw new Error(`lameta was not able to read ${fullPath}. ${error}`);
@@ -62,7 +66,7 @@ export function makeMappedMatrixFromSpreadsheet(
       "Apparently, we opened the workbook but Sheets[] is empty."
     );
   }
-  const worksheet = workbook /* ? */.Sheets[workbook.SheetNames[0]];
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!worksheet) {
     throw new Error(
       "Apparently, we opened the workbook but could not open the first sheet."
@@ -83,9 +87,12 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
     for (var C = range.s.c; C <= range.e.c; ++C) {
       var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
       var cell = worksheet[cellref];
+
       // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
-      const value = (cell?.w || cell?.v || "").toString();
-      //console.log(typeof value);
+      const value = (cell?.w || cell?.v || "")
+        .toString()
+        .replace(/\u00A0/g, " "); // remove non-breaking spaces (not critical, but I had a bunch in a sample file and there it didn't make sense)
+
       row.push(value);
     }
     arrayOfArrays.push(row);
@@ -221,9 +228,9 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
               );
               if (problems.length > 0) {
                 cell.importStatus = CellImportStatus.NotInClosedVocabulary;
-                cell.problemDescription = `lameta does not recognize these language names or codes: ${problems.map(p=>"\""+p+"\"").join(
-                  ","
-                )}`;
+                cell.problemDescription = `lameta does not recognize these language names or codes: ${problems
+                  .map((p) => '"' + p + '"')
+                  .join(",")}`;
               }
             } else {
               if (!def) {

@@ -21,7 +21,6 @@ export class FieldSet extends Dictionary<string, Field> {
   // the dictionary implementation has a signature that includes undefined, which makes
   // it *really* annoying to use, as TS will force you to check the return value every time
   public getValueOrThrow(key: string): Field {
-    const x = this.keys; //??
     const f = super.getValue(key);
     if (f === undefined) {
       throw Error("This FieldSet has no value with key: " + key);
