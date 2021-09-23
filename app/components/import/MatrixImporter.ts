@@ -62,7 +62,7 @@ export function addPersonToProject(project: Project, row: MappedRow): Person {
   // if we got this far and we are replacing an existing person, move it to the bin
   const name = row.cells.find((c) => c.column.lametaProperty === "name")?.value;
   if (!name) throw new Error("Missing Name on cell: " + JSON.stringify(row));
-  const existingMatchingPerson = project.persons.find((p) =>
+  const existingMatchingPerson = project.persons.items.find((p) =>
     p.importIdMatchesThisFolder(name)
   );
   if (existingMatchingPerson) {
@@ -104,6 +104,7 @@ export function addFolderToProject(
           break;
         case "contribution.name":
           const person = project.getOrCreatePerson(cell.value);
+          person.marked = true;
           folder.metadataFile!.contributions.push(
             new Contribution(
               person.getIdToUseForReferences(),

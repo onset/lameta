@@ -5,6 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
+import userSettings from "../other/UserSettings";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
@@ -37,8 +38,6 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 0;
-  private notificationBar: NotificationBar | null;
-  // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {
     super(props);
@@ -53,10 +52,10 @@ export default class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.sessions.selected, (change) => {
+    mobx.observe(this.props.project.sessions, (change) => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.persons.selected, (change) => {
+    mobx.observe(this.props.project.persons, (change) => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
   }
@@ -101,10 +100,28 @@ export default class Home extends React.Component<IProps> {
         { type: "separator" },
         {
           label: t`Delete Session...`,
+
           enabled: enableMenu && this.props.project.haveSelectedSession(),
           click: () => {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
+            }
+          },
+        },
+        {
+          label: t`Delete Session`,
+          accelerator: "Ctrl+Alt+K",
+          enabled:
+            enableMenu &&
+            this.props.project.haveSelectedSession() &&
+            userSettings.DeveloperMode,
+          click: () => {
+            if (this.props.project) {
+              this.props.project.deleteFolder(
+                this.props.project.sessions.items[
+                  this.props.project.sessions.selectedIndex
+                ]
+              );
             }
           },
         },

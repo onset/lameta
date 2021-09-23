@@ -53,7 +53,7 @@ describe("Paradisec session csv export", () => {
   });
   it("should contain right number of rows", () => {
     expect(sessionMatrix.length).toBe(
-      1 /* for header */ + project.sessions.length
+      1 /* for header */ + project.sessions.items.length
     );
   });
 

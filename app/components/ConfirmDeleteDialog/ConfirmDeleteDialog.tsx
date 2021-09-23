@@ -6,13 +6,15 @@ import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
 import { Trans } from "@lingui/macro";
+import { t } from "@lingui/macro";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
   isOpen: boolean;
+  isDeleting: boolean;
   descriptionOfWhatWillBeDeleted?: string;
-  deleteAction?: (path: string) => void;
+  deleteAction?: () => void;
 }
 
 export default class ConfirmDeleteDialog extends React.Component<
@@ -23,7 +25,7 @@ export default class ConfirmDeleteDialog extends React.Component<
 
   constructor(props: IProps) {
     super(props);
-    this.state = { isOpen: false };
+    this.state = { isOpen: false, isDeleting: false };
     ConfirmDeleteDialog.singleton = this;
   }
   private handleCloseModal(doDelete: boolean) {
@@ -32,15 +34,24 @@ export default class ConfirmDeleteDialog extends React.Component<
       this.state.deleteAction &&
       this.state.descriptionOfWhatWillBeDeleted
     ) {
-      this.state.deleteAction(this.state.descriptionOfWhatWillBeDeleted);
+      const action = this.state.deleteAction;
+      this.setState({ isDeleting: true });
+      window.setTimeout(() => {
+        try {
+          action();
+          this.setState({
+            isDeleting: false,
+            isOpen: false,
+            deleteAction: () => {},
+          });
+        } catch (error) {}
+      }, 10);
     }
-    this.setState({ isOpen: false, deleteAction: () => {} });
   }
 
-  public static async show(path: string, deleteAction: (path: string) => void) {
-    const fileName = Path.basename(path);
+  public static async show(name: string, deleteAction: () => void) {
     ConfirmDeleteDialog.singleton.setState({
-      descriptionOfWhatWillBeDeleted: fileName,
+      descriptionOfWhatWillBeDeleted: name,
       isOpen: true,
       deleteAction,
     });
@@ -75,19 +86,23 @@ export default class ConfirmDeleteDialog extends React.Component<
             </div>
           </div>
           <div className={"bottomButtonRow"}>
-            <div className={"okCancelGroup"}>
-              {}
-              {}
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
-              <button
-                id="deleteButton"
-                onClick={() => this.handleCloseModal(true)}
-              >
-                <Trans>Delete</Trans>
-              </button>
-            </div>
+            {this.state.isDeleting ? (
+              t`Deleting...`
+            ) : (
+              <div className={"okCancelGroup"}>
+                {}
+                {}
+                <button onClick={() => this.handleCloseModal(false)}>
+                  <Trans>Cancel</Trans>
+                </button>
+                <button
+                  id="deleteButton"
+                  onClick={() => this.handleCloseModal(true)}
+                >
+                  <Trans>Delete</Trans>
+                </button>
+              </div>
+            )}
           </div>
         </ReactModal>
       </CloseOnEscape>

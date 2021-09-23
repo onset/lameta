@@ -14,8 +14,6 @@ import {
   NotifyWarning,
   NotifyException,
   NotifyFileAccessProblem,
-  NotifySuccess,
-  NotifyNoBigDeal,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -35,31 +33,32 @@ import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
-export class IFolderSelection {
+export class FolderGroup {
+  //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
+  // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
   @observable
-  public index: number;
-}
-export class FolderArray<T extends Folder> extends Array<T> {
+  public items: Folder[];
+
+  @observable
+  public selectedIndex: number;
+
   constructor() {
-    super();
-    this.selected = new IFolderSelection();
+    this.items = new Array<Folder>();
+    this.selectedIndex = -1;
   }
-  @observable
-  //public selectedItem?: T;
-  public selected: IFolderSelection;
 
   public selectFirstMarkedFolder() {
-    const foundIndex = this.findIndex((f) => f.marked);
-    if (foundIndex) this.selected.index = foundIndex;
+    const foundIndex = this.items.findIndex((f) => f.marked);
+    if (foundIndex) this.selectedIndex = foundIndex;
   }
 
   public unMarkAll() {
-    this.forEach((f) => {
+    this.items.forEach((f) => {
       f.marked = false;
     });
   }
   public countOfMarkedFolders(): number {
-    return this.filter((f) => f.marked).length;
+    return this.items.filter((f) => f.marked).length;
   }
 }
 
@@ -71,6 +70,9 @@ export type IFolderType =
 
 // Project, Session, or Person
 export abstract class Folder {
+  // help with a hard to track down bug where folders are deleted but later something tries to save them.
+  public wasDeleted = false;
+
   // Is the folder's checkbox ticked?
   @observable
   public marked: boolean = false;
@@ -342,42 +344,39 @@ export abstract class Folder {
   }
 
   public moveFileToTrash(file: File) {
-    ConfirmDeleteDialog.show(
-      file.pathInFolderToLinkFileOrLocalCopy,
-      (path: string) => {
-        sentryBreadCrumb(
-          `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
-        );
-        let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
-        if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
-          // electron.shell.showItemInFolder(file.describedFilePath);
-          continueTrashing = trash(file.pathInFolderToLinkFileOrLocalCopy);
-        }
-        if (!continueTrashing) {
-          return;
-        }
-        if (
-          file.metadataFilePath &&
-          file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
-        ) {
-          if (fs.existsSync(file.metadataFilePath)) {
-            if (!trash(file.metadataFilePath)) {
-              NotifyError(
-                t`lameta was not able to put this file in the trash` +
-                  ` (${file.metadataFilePath})`
-              );
-            }
+    ConfirmDeleteDialog.show(file.pathInFolderToLinkFileOrLocalCopy, () => {
+      sentryBreadCrumb(
+        `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
+      );
+      let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
+      if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
+        // electron.shell.showItemInFolder(file.describedFilePath);
+        continueTrashing = trash(file.pathInFolderToLinkFileOrLocalCopy);
+      }
+      if (!continueTrashing) {
+        return;
+      }
+      if (
+        file.metadataFilePath &&
+        file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
+      ) {
+        if (fs.existsSync(file.metadataFilePath)) {
+          if (!trash(file.metadataFilePath)) {
+            NotifyError(
+              t`lameta was not able to put this file in the trash` +
+                ` (${file.metadataFilePath})`
+            );
           }
         }
-        if (this.selectedFile === file) {
-          this.selectedFile = this.files.length > 0 ? this.files[0] : null;
-        }
-        file.wasDeleted();
-        file.properties = new FieldSet();
-
-        this.forgetFile(file);
       }
-    );
+      if (this.selectedFile === file) {
+        this.selectedFile = this.files.length > 0 ? this.files[0] : null;
+      }
+      file.wasDeleted();
+      file.properties = new FieldSet();
+
+      this.forgetFile(file);
+    });
   }
   public renameChildWithFilenameMinusExtension(
     childFile: File,
@@ -407,6 +406,13 @@ export abstract class Folder {
     const newDirPath = Path.join(parentPath, newFolderName);
     const couldNotRenameDirectory = t`lameta could not rename the directory.`;
 
+    if (fs.pathExistsSync(newDirPath)) {
+      // this could almost just be silent. To see it, create several new people in a row
+      NotifyWarning(
+        t`lameta tried to rename the folder "${oldFolderName}" to "${newFolderName}", but there is already a folder with that name.`
+      );
+      return false;
+    }
     // first, we just do a trial run to see if this will work
     try {
       PatientFS.renameSync(this.directory, newDirPath);
@@ -534,6 +540,15 @@ export abstract class Folder {
     return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
   }
   public saveAllFilesInFolder() {
+    // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
+    // either the folder or something in the folder.
+    if (this.wasDeleted) {
+      debugger;
+      console.error(
+        ` called on ${this.displayName} which was already deleted.`
+      );
+      return;
+    }
     for (const f of this.files) {
       f.save();
     }

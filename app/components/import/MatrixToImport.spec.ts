@@ -21,12 +21,12 @@ describe("addSessionToProject", () => {
     project = Project.fromDirectory(projectDir);
   });
   beforeEach(() => {
-    project.sessions.splice(0, 1000);
-    project.persons.splice(0, 1000);
+    project.sessions.items.splice(0, 1000);
+    project.persons.items.splice(0, 1000);
   });
   it("Can import one row with just id column", () => {
     const session = makeMatrixAndImportThenGetSession({ id: "foo" });
-    expect(project.sessions.length).toBe(1);
+    expect(project.sessions.items.length).toBe(1);
     expect(session.id).toBe("foo");
   });
 
@@ -172,7 +172,7 @@ describe("csv importer", () => {
   it("Full SpreadSheet Import: big main fields", () => {
     importSpreadsheet(project, lingMetaPath);
 
-    expect(project.sessions.length).toBe(4);
+    expect(project.sessions.items.length).toBe(4);
 
     // Row 2, the first session, is just all normal
     expect(fieldOfRow(2, "title")).toBe("Normal");
@@ -221,7 +221,7 @@ describe("csv importer", () => {
 });
 
 function sessionOfRow(row: number) {
-  return project.sessions[row - 2];
+  return project.sessions.items[row - 2];
 }
 function fieldOfRow(row: number, field: string): string {
   return sessionOfRow(row).properties.getTextStringOrEmpty(field);
@@ -252,10 +252,10 @@ function makeRow(values: any): MappedRow {
 function makeMatrixAndImportThenGetSession(values: any): Session {
   const row = makeRow(values);
   addFolderToProject(project, row, "session");
-  return project.sessions[0];
+  return project.sessions.items[0];
 }
 function makeMatrixAndImportThenGetPerson(values: any): Person {
   const row = makeRow(values);
   addFolderToProject(project, row, "person");
-  return project.persons[0];
+  return project.persons.items[0];
 }

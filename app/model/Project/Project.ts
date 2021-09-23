@@ -2,12 +2,7 @@ import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
-import {
-  IFolderSelection,
-  Folder,
-  IFolderType,
-  FolderArray,
-} from "../Folder/Folder";
+import { Folder, IFolderType, FolderGroup } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
@@ -67,9 +62,9 @@ export class Project extends Folder {
   // @mobx.observable
   // public persons.selected: IFolderSelection;
   @mobx.observable
-  public sessions: FolderArray<Session> = new FolderArray<Session>();
+  public sessions: FolderGroup = new FolderGroup();
   @mobx.observable
-  public persons: FolderArray<Person> = new FolderArray<Person>();
+  public persons: FolderGroup = new FolderGroup();
 
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
@@ -91,9 +86,7 @@ export class Project extends Folder {
     return codeAndName.split(":")[0].trim();
   }
 
-  public getFolderArrayFromType(
-    folderType: string
-  ): FolderArray<Session> | FolderArray<Person> {
+  public getFolderArrayFromType(folderType: string): FolderGroup {
     // kinda hacky here. "session"-->"sessions", "person"-->"persons"
     return this[folderType + "s"];
   }
@@ -105,7 +98,7 @@ export class Project extends Folder {
     id: string
   ): Folder | undefined {
     const folders = this.getFolderArrayFromType(folderType);
-    return (folders as any).find((f) => f.importIdMatchesThisFolder(id));
+    return (folders as any).items.find((f) => f.importIdMatchesThisFolder(id));
   }
 
   public static getDefaultWorkingLanguageCode() {
@@ -155,7 +148,7 @@ export class Project extends Folder {
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
     this.authorityLists = new AuthorityLists(() =>
-      this.persons.map((p) => p.displayName)
+      this.persons.items.map((p) => p.displayName)
     );
 
     this.setupProtocolChoices();
@@ -227,7 +220,7 @@ export class Project extends Folder {
             dir,
             project.customFieldRegistry
           );
-          project.sessions.push(session);
+          project.sessions.items.push(session);
         }
         // else ignore it
       });
@@ -245,13 +238,14 @@ export class Project extends Folder {
               project.updateSessionReferencesToPersonWhenIdChanges(o, n),
             project.languageFinder
           );
-          project.persons.push(person);
+          project.persons.items.push(person);
         }
         // else ignore it
       });
 
-      project.sessions.selected.index = project.sessions.length > 0 ? 0 : -1;
-      project.persons.selected.index = project.persons.length > 0 ? 0 : -1;
+      project.sessions.selectedIndex =
+        project.sessions.items.length > 0 ? 0 : -1;
+      project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
 
       //project.files[0].save();
       // tslint:disable-next-line:no-unused-expression
@@ -275,7 +269,9 @@ export class Project extends Folder {
   }
 
   public selectFolder(folder: Folder) {
-    this.sessions.selected.index = this.sessions.findIndex((s) => s === folder);
+    this.sessions.selectedIndex = this.sessions.items.findIndex(
+      (s) => s === folder
+    );
   }
 
   public get displayName(): string {
@@ -306,8 +302,8 @@ export class Project extends Folder {
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
         const session = Session.fromDirectory(dir, this.customFieldRegistry);
         session.properties.setText("id", Path.basename(dir));
-        // no, not yet this.sessions.push(session);
-        // no, not yet this.sessions.selected.index = this.sessions.length - 1;
+        // no, not yet this.sessions.items.push(session);
+        // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
         return session;
         break;
@@ -330,8 +326,8 @@ export class Project extends Folder {
 
   public finishFolderImport(folder: Folder) {
     folder.migrateFromPreviousVersions();
-    this.getFolderArrayFromType(folder.folderType).push(folder as any);
-    //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.length - 1;
+    this.getFolderArrayFromType(folder.folderType).items.push(folder as any);
+    //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.items.length - 1;
   }
 
   public addSession() {
@@ -342,12 +338,12 @@ export class Project extends Folder {
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customFieldRegistry);
     session.properties.setText("id", Path.basename(dir));
-    this.sessions.push(session);
-    this.sessions.selected.index = this.sessions.length - 1;
+    this.sessions.items.push(session);
+    this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
   }
   public duplicateCurrentSession() {
-    const session = this.sessions[this.sessions.selected.index];
+    const session = this.sessions.items[this.sessions.selectedIndex];
     const { success, metadataFilePath, directory } = duplicateFolder(session);
     if (success) {
       const newSession = Session.fromDirectory(
@@ -355,19 +351,19 @@ export class Project extends Folder {
         this.customFieldRegistry
       );
       newSession.properties.setText("id", Path.basename(directory));
-      this.sessions.push(newSession);
-      this.sessions.selected.index = this.sessions.length - 1;
+      this.sessions.items.push(newSession);
+      this.sessions.selectedIndex = this.sessions.items.length - 1;
       analyticsEvent("Duplicate", "Duplicate Session");
     }
   }
   public duplicateCurrentPerson() {
-    const person = this.persons[this.persons.selected.index];
+    const person = this.persons.items[this.persons.selectedIndex];
     const { success, metadataFilePath, directory } = duplicateFolder(person);
     if (success) {
       const newPerson = this.setupPerson(directory);
       newPerson.properties.setText("name", Path.basename(directory));
-      this.persons.push(newPerson);
-      this.persons.selected.index = this.persons.length - 1;
+      this.persons.items.push(newPerson);
+      this.persons.selectedIndex = this.persons.items.length - 1;
       analyticsEvent("Duplicate", "Duplicate person");
     }
   }
@@ -390,10 +386,10 @@ export class Project extends Folder {
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
     person.properties.setText("name", name ?? t`New Person`);
-    this.persons.push(person);
+    this.persons.items.push(person);
     person.nameMightHaveChanged();
     person.saveFolderMetaData;
-    this.persons.selected.index = this.persons.length - 1;
+    this.persons.selectedIndex = this.persons.items.length - 1;
     analyticsEvent("Create", "Create Person");
     return person;
   }
@@ -484,7 +480,7 @@ export class Project extends Folder {
   }
   public validateSessionId(session: Session, id: string): boolean {
     return this.validateFieldThatControlsFolderName(
-      this.sessions,
+      this.sessions.items,
       session,
       id,
       t`ID`,
@@ -493,7 +489,7 @@ export class Project extends Folder {
   }
   public validatePersonFullName(person: Person, name: string): boolean {
     return this.validateFieldThatControlsFolderName(
-      this.persons,
+      this.persons.items,
       person,
       name,
       t`Full Name`,
@@ -503,7 +499,9 @@ export class Project extends Folder {
   public validatePersonCode(person: Person, code: string): boolean {
     if (
       code.trim().length > 0 &&
-      this.persons.some((p) => p !== person && p.wouldCollideWithIdFields(code))
+      this.persons.items.some(
+        (p) => p !== person && p.wouldCollideWithIdFields(code)
+      )
     ) {
       remote.dialog
         .showMessageBox({
@@ -517,51 +515,49 @@ export class Project extends Folder {
   }
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
-    for (const f of this.sessions) {
+    for (const f of this.sessions.items) {
       f.saveAllFilesInFolder();
     }
-    for (const f of this.persons) {
+    for (const f of this.persons.items) {
       f.saveAllFilesInFolder();
     }
   }
 
   public haveSelectedSession(): boolean {
-    return this.sessions.selected.index >= 0;
+    return this.sessions.selectedIndex >= 0;
   }
 
   public haveSelectedPerson(): boolean {
-    return this.persons.selected.index >= 0;
+    return this.persons.selectedIndex >= 0;
   }
 
   public deleteCurrentSession() {
-    const session = this.sessions[this.sessions.selected.index];
-    ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
+    const session = this.sessions.items[this.sessions.selectedIndex] as Session;
+    ConfirmDeleteDialog.show(`"${session.id}""`, () => {
+      NotifyWarning("deleting");
       this.deleteFolder(session);
     });
   }
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
-    ConfirmDeleteDialog.show(
-      `${folders.countOfMarkedFolders()} Items`,
-      (unusedPath: string) => {
-        (folders as any)
-          .filter((s) => s.marked)
-          .forEach((folder) => {
-            this.deleteFolder(folder);
-          });
-      }
-    );
+    ConfirmDeleteDialog.show(`${folders.countOfMarkedFolders()} Items`, () => {
+      folders.items
+        .filter((s) => s.marked)
+        .forEach((folder) => {
+          this.deleteFolder(folder);
+        });
+    });
   }
   public getOrCreatePerson(name: string): Person {
     if (!name || !name.trim()) {
       throw new Error("getOrCreatePerson() given an empty name");
     }
     const lcName = name.trim().toLowerCase();
-    const found = this.persons.find(
+    const found = this.persons.items.find(
       (p) =>
         p.properties.getTextStringOrEmpty("name").toLowerCase() === lcName ||
         p.properties.getTextStringOrEmpty("code").toLowerCase() === lcName
-    );
+    ) as Person;
     if (found) return found;
     else {
       return this.addPerson(name.trim());
@@ -571,17 +567,20 @@ export class Project extends Folder {
     try {
       if (trash(folder.directory)) {
         const folders = this.getFolderArrayFromType(folder.folderType);
-        const index = folders.findIndex((f) => f === folder);
+        const index = folders.items.findIndex((f) => f === folder);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
         // in case we had the last one selected and now there won't be a selection at that index.
 
-        const countAfterWeRemoveThisOne = folders.length - 1;
-        folders.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-        folders.splice(index, 1);
-        // console.log(
-        //   `Deleting session index:${index}. sessions.selected.index:${this.sessions.selected.index}`
-        // );
-        //this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
+        const countAfterWeRemoveThisOne = folders.items.length - 1;
+        folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+        folders.items.splice(index, 1);
+        folder.wasDeleted = true;
+        console.log(
+          `Deleting folder index:${index}. selectedIndex:${this.sessions.selectedIndex}`
+        );
+        this.sessions.items.forEach((s) =>
+          console.log(`remaining folder ${s.displayName}`)
+        );
       } else throw Error("Failed to delete folder.");
     } catch (e) {
       NotifyException(e, "Error trying to delete folder.");
@@ -591,12 +590,12 @@ export class Project extends Folder {
   // public deleteSession(session: Session) {
   //   try {
   //     if (trash(session.directory)) {
-  //       const index = this.sessions.findIndex((s) => s === session);
+  //       const index = this.sessions.items.findIndex((s) => s === session);
   //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
   //       // in case we had the last one selected and now there won't be a selection at that index.
-  //       const countAfterWeRemoveThisOne = this.sessions.length - 1;
+  //       const countAfterWeRemoveThisOne = this.sessions.items.length - 1;
   //       this.sessions.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-  //       this.sessions.splice(index, 1);
+  //       this.sessions.items.splice(index, 1);
   //       // console.log(
   //       //   `Deleting session index:${index}. sessions.selected.index:${this.sessions.selected.index}`
   //       // );
@@ -609,12 +608,12 @@ export class Project extends Folder {
   // public deletePerson(person: Person) {
   //   try {
   //     if (trash(person.directory)) {
-  //       const index = this.persons.findIndex((s) => s === person);
+  //       const index = this.persons.items.findIndex((s) => s === person);
   //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
   //       // in case we had the last one selected and now there won't be a selection at that index.
-  //       const countAfterWeRemoveThisOne = this.persons.length - 1;
+  //       const countAfterWeRemoveThisOne = this.persons.items.length - 1;
   //       this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-  //       this.persons.splice(index, 1);
+  //       this.persons.items.splice(index, 1);
   //       // console.log(
   //       //   `Deleting session index:${index}. sessions.selected.index:${this.sessions.selected.index}`
   //       // );
@@ -625,22 +624,24 @@ export class Project extends Folder {
   //   }
   // }
   public deleteCurrentPerson() {
-    const person = this.persons[this.persons.selected.index];
-    ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
+    const person = this.persons.items[this.persons.selectedIndex];
+    ConfirmDeleteDialog.show(`"${person.displayName}"`, () => {
       // if (trash(person.directory)) {
       //   // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
       //   // in case we had the last one selected and now there won't be a selection at that index.
-      //   const countAfterWeRemoveThisOne = this.persons.length - 1;
+      //   const countAfterWeRemoveThisOne = this.persons.items.length - 1;
       //   const indexToDelete = this.persons.selected.index;
       //   this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
-      //   this.persons.splice(indexToDelete, 1);
+      //   this.persons.items.splice(indexToDelete, 1);
       // }
       this.deleteFolder(person);
     });
   }
 
   public findPerson(name: string): Person | undefined {
-    return this.persons.find((p) => p.referenceIdMatches(name));
+    return this.persons.items.find((p: Person) =>
+      p.referenceIdMatches(name)
+    ) as Person;
   }
 
   // called by Person when name or code changes
@@ -649,28 +650,30 @@ export class Project extends Folder {
     oldId: string,
     newId: string
   ): void {
-    this.sessions.forEach((session) =>
+    this.sessions.items.forEach((session: Session) =>
       session.updateSessionReferencesToPersonWhenIdChanges(oldId, newId)
     );
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
     const lowerCaseName = id.toLocaleLowerCase();
-    const arraysOfMatchingContributions = this.sessions.map((session) => {
-      return session
-        .getAllContributionsToAllFiles()
-        .map((contribution) => {
-          if (contribution.personReference.toLowerCase() === lowerCaseName) {
-            // the session name isn't normally part of the contribution because it is owned
-            // by the session. But we stick it in here for display purposes. Alternatively,
-            // we could stick in the session itself; might be useful for linking back to it.
-            contribution.sessionName = session.displayName;
-            return contribution;
-          }
-          return undefined;
-        })
-        .filter((c) => c); // remove the undefined's;
-    });
+    const arraysOfMatchingContributions = this.sessions.items.map(
+      (session: Session) => {
+        return session
+          .getAllContributionsToAllFiles()
+          .map((contribution) => {
+            if (contribution.personReference.toLowerCase() === lowerCaseName) {
+              // the session name isn't normally part of the contribution because it is owned
+              // by the session. But we stick it in here for display purposes. Alternatively,
+              // we could stick in the session itself; might be useful for linking back to it.
+              contribution.sessionName = session.displayName;
+              return contribution;
+            }
+            return undefined;
+          })
+          .filter((c) => c); // remove the undefined's;
+      }
+    );
 
     //flatten
     return [].concat.apply([], arraysOfMatchingContributions);
@@ -678,7 +681,7 @@ export class Project extends Folder {
 
   // public getSessionPeopleMatchingPersonName(personName: string): Session[] {
   //   const lowerCaseName = personName.toLocaleLowerCase();
-  //   return this.sessions.filter(session =>
+  //   return this.sessions.items.filter(session =>
   //     session
   //       .getParticipantNames()
   //       .some(name => name.toLowerCase() === lowerCaseName)

@@ -23,8 +23,8 @@ describe("SpreadsheetToMatrix", () => {
     project = Project.fromDirectory(projectDir);
   });
   beforeEach(() => {
-    project.sessions.splice(0, 1000);
-    project.persons.splice(0, 1000);
+    project.sessions.items.splice(0, 1000);
+    project.persons.items.splice(0, 1000);
     Path.resolve;
   });
   it("Can read in people xlsx with no people", () => {

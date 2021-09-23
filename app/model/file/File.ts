@@ -690,12 +690,15 @@ export /*babel doesn't like this: abstract*/ class File {
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(forceSave: boolean = false) {
-    sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
+    console.log(`Might save ${this.metadataFilePath}`);
 
     if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
+    console.log(`Will save ${this.metadataFilePath}`);
+
+    sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
     //    console.log(`Saving ${this.metadataFilePath}`);
 

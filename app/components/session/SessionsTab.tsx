@@ -24,12 +24,14 @@ export class SessionsTab extends React.Component<IProps> {
         <Trans>New Session</Trans>
       </button>
     );
+    // console.log(
+    //   `SessionTab render length:${this.props.project.sessions.items.length} selected:${this.props.project.sessions.selected.index}`
+    // );
     return (
       <ComponentTab
         nameForPersistingUsersTableConfiguration="sessions"
         project={this.props.project}
         folders={this.props.project.sessions}
-        selectedFolder={this.props.project.sessions.selected}
         folderTypeStyleClass="sessions"
         columns={["checked", "id", "title", "status", "date"]}
         columnWidths={[10 /*checkbox*/, 60, 150, 60, 90]}

@@ -40,7 +40,6 @@ export class PeopleTab extends React.Component<IProps> {
         nameForPersistingUsersTableConfiguration="people"
         project={this.props.project}
         folders={this.props.project.persons}
-        selectedFolder={this.props.project.persons.selected}
         folderTypeStyleClass="people"
         columns={["checked", "displayName", "hasConsent"]}
         columnWidths={[200, 100]}

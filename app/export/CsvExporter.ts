@@ -244,12 +244,12 @@ export function makeCsvForProject(project: Project): string {
   return getGenericCsv([project]);
 }
 export function makeCsvForPeople(project: Project): string {
-  return getGenericCsv(project.persons);
+  return getGenericCsv(project.persons.items);
 }
 
 export function makeCsvForSessions(
   project: Project,
   folderFilter: (f: Folder) => boolean
 ): string {
-  return getGenericCsv(project.sessions.filter(folderFilter));
+  return getGenericCsv(project.sessions.items.filter(folderFilter));
 }
