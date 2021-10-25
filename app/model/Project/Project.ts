@@ -27,7 +27,11 @@ const genres = require("./Session/genres.json");
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
-import { NotifyException, NotifyWarning } from "../../components/Notify";
+import {
+  NotifyException,
+  NotifyNoBigDeal,
+  NotifyWarning,
+} from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
 
 let sCurrentProject: Project | null = null;
@@ -534,7 +538,7 @@ export class Project extends Folder {
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
     ConfirmDeleteDialog.show(`"${session.id}""`, () => {
-      NotifyWarning("deleting");
+      NotifyNoBigDeal("Deleting...");
       this.deleteFolder(session);
     });
   }
@@ -564,6 +568,8 @@ export class Project extends Folder {
     }
   }
   public deleteFolder(folder: Folder) {
+    const folderType = folder.folderType;
+    folderType;
     try {
       if (trash(folder.directory)) {
         const folders = this.getFolderArrayFromType(folder.folderType);
@@ -576,10 +582,14 @@ export class Project extends Folder {
         folders.items.splice(index, 1);
         folder.wasDeleted = true;
         console.log(
-          `Deleting folder index:${index}. selectedIndex:${this.sessions.selectedIndex}`
+          `Deleting folder index:${index}. selectedIndex:${
+            this.getFolderArrayFromType(folderType).selectedIndex
+          }`
         );
-        this.sessions.items.forEach((s) =>
-          console.log(`remaining folder ${s.displayName}`)
+        this.getFolderArrayFromType(folderType).items.forEach((s) =>
+          console.log(
+            `after folder deletion, this folder remains ${s.displayName}`
+          )
         );
       } else throw Error("Failed to delete folder.");
     } catch (e) {
