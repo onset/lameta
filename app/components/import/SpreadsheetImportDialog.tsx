@@ -236,7 +236,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <Button
           variant="contained"
           color="secondary"
-          disabled={!path || (matrix && !matrix.getCountOfChosenRows())}
+          disabled={!path || !chosenCount}
           onClick={() => {
             addImportMatrixToProject(
               props.projectHolder.project!,
