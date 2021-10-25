@@ -28,6 +28,7 @@ import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import {
+  NotifyError,
   NotifyException,
   NotifyNoBigDeal,
   NotifyWarning,
@@ -537,8 +538,7 @@ export class Project extends Folder {
 
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
-    ConfirmDeleteDialog.show(`"${session.id}""`, () => {
-      NotifyNoBigDeal("Deleting...");
+    ConfirmDeleteDialog.show(`"${session.id}"`, () => {
       this.deleteFolder(session);
     });
   }

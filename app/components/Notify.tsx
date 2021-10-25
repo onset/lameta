@@ -37,6 +37,10 @@ export function NotifyError(message: string, details?: string) {
                     css={css`
                       font-size: 8pt;
                       margin-top: 1em;
+                      overflow-wrap: anywhere;
+                      * {
+                        overflow-wrap: anywhere;
+                      }
                     `}
                   >
                     {details}
