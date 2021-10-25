@@ -46,6 +46,12 @@ export default class ConfirmDeleteDialog extends React.Component<
           });
         } catch (error) {}
       }, 10);
+    } else {
+      this.setState({
+        isDeleting: false,
+        isOpen: false,
+        deleteAction: () => {},
+      });
     }
   }
 
