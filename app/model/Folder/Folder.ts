@@ -394,7 +394,7 @@ export abstract class Folder {
       );
       return false;
     }
-    this.saveAllFilesInFolder();
+    this.saveAllFilesInFolder(true);
 
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
@@ -507,7 +507,7 @@ export abstract class Folder {
         this.metadataFile.metadataFilePath,
         this.metadataFileExtensionWithDot
       );
-      this.metadataFile.save();
+      this.metadataFile.save(false);
     }
   }
 
@@ -539,7 +539,7 @@ export abstract class Folder {
     const dir = fs.readdirSync(directory);
     return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
   }
-  public saveAllFilesInFolder() {
+  public saveAllFilesInFolder(beforeRename: boolean) {
     // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
     // either the folder or something in the folder.
     if (this.wasDeleted) {
@@ -550,7 +550,7 @@ export abstract class Folder {
       return;
     }
     for (const f of this.files) {
-      f.save();
+      f.save(beforeRename);
     }
   }
 

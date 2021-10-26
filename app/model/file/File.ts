@@ -689,7 +689,7 @@ export /*babel doesn't like this: abstract*/ class File {
   //overridden by person (eventually session)
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
-  public save(forceSave: boolean = false) {
+  public save(beforeRename: boolean, forceSave: boolean = false) {
     console.log(`Might save ${this.metadataFilePath}`);
 
     if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
@@ -712,7 +712,8 @@ export /*babel doesn't like this: abstract*/ class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {
-        ShowSavingNotifier(Path.basename(this.metadataFilePath));
+        console.log(`Saving ${this.metadataFilePath}`);
+        ShowSavingNotifier(Path.basename(this.metadataFilePath), beforeRename);
         PatientFS.writeFileSyncWithNotifyThenRethrow(
           this.metadataFilePath,
           xml

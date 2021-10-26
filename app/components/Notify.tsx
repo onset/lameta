@@ -29,7 +29,7 @@ export function NotifyError(message: string, details?: string) {
           content: (
             // expand to fit the insides
             <Cinnamon.Crunch
-              title={t`"Error"`}
+              title={t`Error`}
               content={
                 <React.Fragment>
                   <div>{message}</div>
