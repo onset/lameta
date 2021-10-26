@@ -35,14 +35,19 @@ describe("addSessionToProject", () => {
       name: "Joe Strummer",
       primaryOccupation: "Musician",
       fathersLanguage: "Spanish",
+      mothersLanguage: "Español",
+      primaryLanguage: "Thai",
     });
     expect(person.displayName).toBe("Joe Strummer");
     expect(person.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
       "Musician"
     );
     // did it migrate languages?
-    expect(person.properties.getTextStringOrEmpty("fathersLanguage")).toBe("");
-    expect(person.properties.getTextStringOrEmpty("languages")).toBe("es");
+    expect(person.properties.getTextStringOrEmpty("fathersLanguage")).toBe(""); // should remove after migrating
+    expect(person.languages[0].code).toBe("tha");
+    expect(person.languages[1].code).toBe("spa");
+    expect(person.languages[1].father).toBe(true);
+    expect(person.languages[1].mother).toBe(true);
   });
 
   it("Can import one normal session row", () => {

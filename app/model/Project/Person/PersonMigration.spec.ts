@@ -18,36 +18,36 @@ describe("migrateOnePersonLanguageFromNameToCode", () => {
   it("should convert Tok Pisin to tpi", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("Tok Pisin");
-    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field);
     expect(field.text).toBe("tpi");
   });
   it("should leave tpi as tpi", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("tpi");
-    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field);
     expect(field.text).toBe("tpi");
   });
   it("should leave qax as qax", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("qax");
-    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field);
     expect(field.text).toBe("qax");
   });
   it("should leave an unrecognized language alone, else we'll loose it", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("foobar lives");
-    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field);
     expect(field.text).toBe("foobar lives");
   });
   it("should leave empty string as empty string", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
     field.setValueFromString("");
-    migrateOnePersonLanguageFromNameToCode(field, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(field);
     expect(field.text).toBe("");
   });
   it("should take undefined and just leave that alone", () => {
     const field = new Field("doesn't matter what this is", FieldType.Text);
-    migrateOnePersonLanguageFromNameToCode(undefined, languageFinder);
+    migrateOnePersonLanguageFromNameToCode(undefined);
   });
 });
 
@@ -62,8 +62,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
 
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       fields,
-      languages,
-      languageFinder
+      languages
     );
     expect(languages.length).toBe(1);
     expect(languages[0]).toStrictEqual({
@@ -84,8 +83,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
 
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       fields,
-      languages,
-      languageFinder
+      languages
     );
     expect(languages.length).toBe(5);
     expect(languages[0]).toStrictEqual({
@@ -132,8 +130,7 @@ it("should not import legacy fields if there is already a modern languages list"
 
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
     fields,
-    languages,
-    languageFinder
+    languages
   );
   expect(languages.length).toBe(1);
   expect(languages[0].code).toBe("foo");
@@ -149,8 +146,7 @@ it("should store the primary language detail text in the description", () => {
 
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
     fields,
-    languages,
-    languageFinder
+    languages
   );
   expect(languages.length).toBe(1);
   expect(fields.getTextStringOrEmpty("description")).toContain("Lorem Ipsum");

@@ -122,7 +122,8 @@ export function migrateOnePersonLanguageFromNameToCode(
     const foundCode = staticLanguageFinder.findCodeFromCodeOrLanguageName(
       nameOrCode
     );
-    return field.setValueFromString(foundCode);
+    const valueToUse = foundCode === "und" ? nameOrCode : foundCode;
+    return field.setValueFromString(valueToUse);
 
     //console.log(`Migrate person lang ${key}:${nameOrCode} --> ${code}`);
   } catch (err) {

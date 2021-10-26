@@ -288,7 +288,8 @@ export class PersonMetadataFile extends FolderMetadataFile {
         const fieldName =
           fieldNameIndex === 0
             ? "primaryLanguage"
-            : "otherLanguage" + fieldNameIndex.toString();
+            : // when index is 1, we want `otherLanguage0`
+              "otherLanguage" + (fieldNameIndex - 1).toString();
         ++fieldNameIndex;
         root.element(fieldName, name).attribute("deprecated", kNotice);
         if (!haveFatherLanguage && language.father) {
