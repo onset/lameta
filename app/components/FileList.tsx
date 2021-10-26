@@ -212,7 +212,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
                 if (!file.copyInProgress) {
                   if (props.folder.selectedFile != null) {
                     // will only save if it thinks it is dirty
-                    props.folder.selectedFile.save(false);
+                    props.folder.selectedFile.save();
                   }
                   props.folder.selectedFile = rowInfo.original;
                   setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect

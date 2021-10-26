@@ -153,6 +153,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       try {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
         remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
+          console.log("HomePage blur");
           if (this.projectHolder.project) {
             this.projectHolder.project.saveAllFilesInFolder();
           }

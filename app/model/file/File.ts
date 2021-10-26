@@ -689,8 +689,8 @@ export /*babel doesn't like this: abstract*/ class File {
   //overridden by person (eventually session)
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
 
-  public save(beforeRename: boolean, forceSave: boolean = false) {
-    console.log(`Might save ${this.metadataFilePath}`);
+  public save(beforeRename: boolean = false, forceSave: boolean = false) {
+    //console.log(`Might save ${this.metadataFilePath}`);
 
     if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);

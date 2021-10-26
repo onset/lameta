@@ -521,10 +521,10 @@ export class Project extends Folder {
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
     for (const f of this.sessions.items) {
-      f.saveAllFilesInFolder();
+      f.saveAllFilesInFolder(false);
     }
     for (const f of this.persons.items) {
-      f.saveAllFilesInFolder();
+      f.saveAllFilesInFolder(false);
     }
   }
 

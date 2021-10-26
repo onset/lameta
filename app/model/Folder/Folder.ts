@@ -467,6 +467,10 @@ export abstract class Folder {
       // no file i/o here
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
     });
+
+    console.log(
+      `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
+    );
     return true;
   }
 
@@ -539,7 +543,7 @@ export abstract class Folder {
     const dir = fs.readdirSync(directory);
     return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
   }
-  public saveAllFilesInFolder(beforeRename: boolean) {
+  public saveAllFilesInFolder(beforeRename: boolean = false) {
     // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
     // either the folder or something in the folder.
     if (this.wasDeleted) {
