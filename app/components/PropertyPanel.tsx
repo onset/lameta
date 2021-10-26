@@ -19,7 +19,7 @@ export default class PropertyPanel extends React.Component<{
         </div>
         <div className="propertiesColumn customPropertiesColumn">
           <CustomFieldsTable
-            firstColumnHeaderText={i18n._(t`Custom Field`)}
+            firstColumnHeaderText={t`Custom Field`}
             file={this.props.file}
           />
         </div>

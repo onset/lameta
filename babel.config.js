@@ -8,8 +8,7 @@ module.exports = function (api) {
   return {
     presets: [
       "@babel/preset-typescript",
-      "@babel/preset-react",
-      "@lingui/babel-preset-react",
+
       [
         // allow ES2015, ES2016 stuff like import
         "@babel/preset-env",
@@ -20,6 +19,7 @@ module.exports = function (api) {
           },
         },
       ],
+      "@babel/preset-react",
     ],
     plugins: [
       "babel-plugin-macros",

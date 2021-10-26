@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { i18n, translateRole } from "../other/localization";
 import { t } from "@lingui/macro";
 import Tooltip from "react-tooltip-lite";
@@ -23,20 +23,20 @@ export class PersonContributions extends React.Component<IProps> {
     const columns = [
       {
         id: "name",
-        Header: i18n._(t`Session`),
+        Header: t`Session`,
         width: 300,
         accessor: (row: Contribution) => row.sessionName,
       },
       {
         id: "role",
-        Header: i18n._(t`Role`),
+        Header: t`Role`,
         width: 100,
         accessor: (row: Contribution) =>
           row && row.role ? translateRole(row.role) : "",
       },
       {
         id: "comments",
-        Header: i18n._(t`Comments`),
+        Header: t`Comments`,
         //width: 200,
         accessor: (row: Contribution) => row.comments,
       },

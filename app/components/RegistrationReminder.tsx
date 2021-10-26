@@ -3,9 +3,8 @@ import userSettings from "../other/UserSettings";
 import "./RegistrationReminder.scss";
 import RegistrationDialog from "./registration/RegistrationDialog";
 import * as mobx from "mobx-react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../other/localization";
-import { Trans } from "@lingui/react";
 
 // This is in the upper right corner of the screen. It shows either
 // * A button asking you to register, or
@@ -18,7 +17,7 @@ export default class RegistrationReminder extends React.Component {
     let passiveText = <></>;
     switch (userSettings.HowUsing) {
       case "":
-        buttonText = i18n._(t`Please Register`);
+        buttonText = t`Please Register`;
         break;
       // the student/workskhop participant may eventually start using it for research, so we want to show
       // the student status so-as to provide an incentive for them to change their registration

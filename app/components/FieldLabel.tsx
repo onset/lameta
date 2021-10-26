@@ -11,7 +11,7 @@ import {
   translateTooltip,
   translateTooltipNotice,
 } from "../other/localization";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 
 export const FieldLabel: React.FunctionComponent<{

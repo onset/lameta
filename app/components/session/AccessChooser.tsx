@@ -1,10 +1,10 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-import { Trans } from "@lingui/react";
 import { translateAccessProtocol } from "../../other/localization";
 const saymore_orange = "#e69664";
 

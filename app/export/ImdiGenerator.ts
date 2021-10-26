@@ -22,6 +22,8 @@ import { values } from "mobx";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
+import { NotifyWarning } from "../components/Notify";
+import { getStatusOfFile } from "../model/file/FileStatus";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -490,19 +492,20 @@ export default class ImdiGenerator {
 
     // schema requires that we group all the media files first, not intersperse them with written resources
     folder.files.forEach((f: File) => {
-      if (
-        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
-        this.isMediaFile(f)
-      ) {
-        this.mediaFile(f);
-      }
-    });
-    folder.files.forEach((f: File) => {
-      if (
-        ImdiGenerator.shouldIncludeFile(f.describedFilePath) &&
-        !this.isMediaFile(f)
-      ) {
-        this.writtenResource(f);
+      if (getStatusOfFile(f).missing) {
+        // At the moment we're not even exporting metadata if the file is
+        // missing. With some work to avoid some errors, it would be possible.
+        NotifyWarning(getStatusOfFile(f).info);
+      } else {
+        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+          if (this.isMediaFile(f)) {
+            this.mediaFile(f);
+          }
+
+          if (!this.isMediaFile(f)) {
+            this.writtenResource(f);
+          }
+        }
       }
     });
 
@@ -549,21 +552,22 @@ export default class ImdiGenerator {
   }
 
   private isMediaFile(f: File): boolean {
-    const g = GetFileFormatInfoForPath(f.describedFilePath);
+    const g = GetFileFormatInfoForPath(f.getActualFilePath());
     return !!g?.isMediaType;
   }
 
   private sanitizedPathRelativeToProjectRoot(path: string): string {
+    const x = path;
     // If the project has the right setting, then this path is probably already sanitized (though there may be corner
     // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
     // that to the file name we use for it in the xml.
     const basename = sanitizeForArchive(Path.basename(path), true);
-    // Intentionally not using the OS's path separator here, because it's going to XML
-    // that could then be read on any OS. (That could be wrong, and we
-    // can fix it, but it's intentional to not use Path.join())
-    const p = [Path.basename(Path.dirname(path)), basename].join("/");
+
+    const p = Path.join(Path.basename(Path.dirname(path)), basename)
+      // get a path that works accros platforms.
+      .replace(/\\/g, "/");
 
     return p;
   }
@@ -571,7 +575,9 @@ export default class ImdiGenerator {
     return this.group("MediaFile", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(
+          f.getRelativePathForExportingTheActualFile()
+        )
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -583,7 +589,7 @@ export default class ImdiGenerator {
       );
 
       this.formatElement(
-        f.describedFilePath,
+        f.getRelativePathForExportingTheActualFile(),
         "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml"
       );
       this.requiredField("Size", "size", f);
@@ -614,7 +620,9 @@ export default class ImdiGenerator {
     return this.group("WrittenResource", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(f.describedFilePath)
+        this.sanitizedPathRelativeToProjectRoot(
+          f.getRelativePathForExportingTheActualFile()
+        )
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -631,7 +639,9 @@ export default class ImdiGenerator {
       this.group("MediaResourceLink", () => {});
 
       this.element("Date", "");
-      const imdiResourceType = getImdiResourceTypeForPath(f.describedFilePath);
+      const imdiResourceType = getImdiResourceTypeForPath(
+        f.getRelativePathForExportingTheActualFile()
+      );
 
       this.element(
         "Type",
@@ -642,7 +652,7 @@ export default class ImdiGenerator {
       this.element("SubType", "");
       // "format" here is really mime type. See https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml
       this.formatElement(
-        f.describedFilePath,
+        f.getRelativePathForExportingTheActualFile(),
         "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml"
       );
       this.requiredField("Size", "size", f);

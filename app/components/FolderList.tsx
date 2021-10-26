@@ -1,9 +1,14 @@
-import * as React from "react";
-import { default as ReactTable, Resize } from "react-table";
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 
-import { Folder, IFolderSelection } from "../model/Folder/Folder";
+import * as React from "react";
+import { default as ReactTable, Resize } from "react-table-6";
+
+import { Folder, FolderGroup } from "../model/Folder/Folder";
 import * as mobxReact from "mobx-react";
-import * as mobx from "mobx";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
@@ -17,8 +22,7 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
-  folders: Folder[];
-  selectedFolder: IFolderSelection;
+  folders: FolderGroup;
   columns: string[];
   columnWidths: number[];
 }
@@ -38,27 +42,34 @@ export class FolderList extends React.Component<IProps> {
 
   public render() {
     // it's important that we access this at this level so that mobx will know to re-render us when this changes.
-    const selectedFolderIndex = this.props.selectedFolder.index;
+    const selectedFolderIndex = this.props.folders.selectedIndex;
+    // console.log(
+    //   `FolderList render length:${this.props.folders.items.length} selected:${this.props.folders.selected.index}`
+    // );
 
     // Because the class has the mobxReact.observer decorator, mobx is watching the render function.
     // But what happens inside the table's cells is invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
     // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
     // However the <Observer> wrapper suggested by that link messes up the display of the table.
-    this.props.folders.map((folder) => {
+    this.props.folders.items.map((folder) => {
       // Access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
       // when the user does something that causes a rename.
       const dummy = folder.displayName;
       if (folder instanceof Session) {
         const dummyId = folder.properties.getTextStringOrEmpty("id");
-        const dummyChecked = folder.checked;
+        const dummyChecked = folder.marked;
+      } else if (folder instanceof Person) {
+        const dummyId = folder.properties.getTextStringOrEmpty("name");
+        const dummyChecked = folder.marked;
       }
-
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
       if (folder instanceof Person) {
-        folder.files.forEach((child) => child.describedFilePath);
+        folder.files.forEach(
+          (child) => child.pathInFolderToLinkFileOrLocalCopy
+        );
       }
       // The Session status also needs to be immediately updated in the table view.
       if (folder instanceof Session) {
@@ -70,17 +81,20 @@ export class FolderList extends React.Component<IProps> {
       const header =
         key === "checked" ? (
           <input
-            title={i18n._(t`Mark for Export`)}
+            title={t`Mark for Deletion or Export`}
             type="checkbox"
+            // css={css`
+            //   accent-color: orange; // not yet
+            // `}
             onChange={(e) => {
               e.stopPropagation(); // don't select the folder of row
-              this.props.folders.forEach((f) => {
-                f.checked = e.target.checked;
+              this.props.folders.items.forEach((f) => {
+                f.marked = e.target.checked;
               });
             }}
           /> // Don't give a header for the checkbox column
-        ) : this.props.folders.length > 0 ? (
-          this.props.folders[0].properties.getValueOrThrow(key)
+        ) : this.props.folders.items.length > 0 ? (
+          this.props.folders.items[0].properties.getValueOrThrow(key)
             .labelInUILanguage
         ) : (
           // Enhance: This is a design flaw. If we don't have any items in the folder list, then the above
@@ -108,12 +122,12 @@ export class FolderList extends React.Component<IProps> {
             return (
               <input
                 type="checkbox"
-                title={i18n._(t`Mark for Export`)}
-                checked={f.checked}
+                title={t`Mark for Export or Deletion`}
+                checked={f.marked}
                 onChange={(e) => {
                   e.stopPropagation(); // don't select the folder of row
                   //(field as SelectionField).toggle();
-                  f.checked = !f.checked;
+                  f.marked = !f.marked;
                 }}
               />
             );
@@ -138,16 +152,14 @@ export class FolderList extends React.Component<IProps> {
               return (
                 <img
                   src={this.hasConsentPath}
-                  title={i18n._(t`Found file with a name containing 'Consent'`)}
+                  title={t`Found file with a name containing 'Consent'`}
                 />
               );
             } else {
               return (
                 <img
                   src={this.noConsentPath}
-                  title={i18n._(
-                    t`Found no file with a name containing 'Consent'`
-                  )}
+                  title={t`Found no file with a name containing 'Consent'`}
                 />
               );
             }
@@ -166,13 +178,13 @@ export class FolderList extends React.Component<IProps> {
       <div className={"folderList"}>
         <ReactTable
           showPagination={false}
-          data={this.props.folders}
+          data={this.props.folders.items}
           columns={columns}
           onResizedChange={(resizedState: Resize[]) =>
             this.columnWidthManager.handleResizedChange(resizedState)
           }
           onFetchData={() => scrollSelectedIntoView("folderList")}
-          pageSize={this.props.folders.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
+          pageSize={this.props.folders.items.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
@@ -180,12 +192,15 @@ export class FolderList extends React.Component<IProps> {
                 // console.log(
                 //   "row " + JSON.stringify(rowInfo.original.directory)
                 // );
-                if (this.props.selectedFolder && selectedFolderIndex > -1) {
-                  this.props.folders[
+                if (
+                  this.props.folders.selectedIndex &&
+                  selectedFolderIndex > -1
+                ) {
+                  this.props.folders.items[
                     selectedFolderIndex
                   ].saveAllFilesInFolder();
                 }
-                this.props.selectedFolder.index = rowInfo.index;
+                this.props.folders.selectedIndex = rowInfo.index;
                 this.setState({}); // trigger re-render so that the following style: takes effect
               },
               className:

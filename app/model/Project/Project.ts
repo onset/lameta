@@ -2,7 +2,7 @@ import * as fs from "fs-extra";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
-import { IFolderSelection, Folder } from "../Folder/Folder";
+import { Folder, IFolderType, FolderGroup } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
@@ -13,7 +13,7 @@ import { trash } from "../../other/crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
-import { IChoice } from "../field/Field";
+import { Field, FieldType, IChoice } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
@@ -27,7 +27,13 @@ const genres = require("./Session/genres.json");
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
-import { NotifyWarning } from "../../components/Notify";
+import {
+  NotifyError,
+  NotifyException,
+  NotifyNoBigDeal,
+  NotifyWarning,
+} from "../../components/Notify";
+import { setCurrentProjectId } from "./MediaFolderAccess";
 
 let sCurrentProject: Project | null = null;
 
@@ -56,19 +62,23 @@ export class ProjectHolder {
 export class Project extends Folder {
   public loadingError: string;
 
+  // @mobx.observable
+  // public sessions.selected: IFolderSelection;
+  // @mobx.observable
+  // public persons.selected: IFolderSelection;
   @mobx.observable
-  public selectedSession: IFolderSelection;
+  public sessions: FolderGroup = new FolderGroup();
   @mobx.observable
-  public selectedPerson: IFolderSelection;
-  @mobx.observable
-  public sessions: Session[] = [];
-  @mobx.observable
-  public persons: Person[] = [];
+  public persons: FolderGroup = new FolderGroup();
 
   public descriptionFolder: Folder;
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
+
+  public get folderType(): IFolderType {
+    return "project";
+  }
 
   public static getDefaultContentLanguageCode() {
     const codeAndName =
@@ -80,6 +90,22 @@ export class Project extends Folder {
 
     return codeAndName.split(":")[0].trim();
   }
+
+  public getFolderArrayFromType(folderType: string): FolderGroup {
+    // kinda hacky here. "session"-->"sessions", "person"-->"persons"
+    return this[folderType + "s"];
+  }
+  public migrateFromPreviousVersions(): void {
+    //nothing to do, yet
+  }
+  public findFolderById(
+    folderType: IFolderType,
+    id: string
+  ): Folder | undefined {
+    const folders = this.getFolderArrayFromType(folderType);
+    return (folders as any).items.find((f) => f.importIdMatchesThisFolder(id));
+  }
+
   public static getDefaultWorkingLanguageCode() {
     const codeAndName =
       sCurrentProject === null
@@ -91,6 +117,14 @@ export class Project extends Folder {
     return codeAndName.split(":")[0].trim();
   }
 
+  public importIdMatchesThisFolder(id: string): boolean {
+    throw new Error("Did not expect matchesId on Project");
+  }
+  public get propertyForCheckingId(): string {
+    throw new Error(
+      "Did not expect propertyForCheckingId to be called on Project"
+    );
+  }
   private constructor(
     directory: string,
     metadataFile: FolderMetadataFile,
@@ -101,15 +135,25 @@ export class Project extends Folder {
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
 
+    if (this.properties.getTextStringOrEmpty("guid").length === 0) {
+      console.log("***adding guid");
+      this.properties.addTextProperty("guid", NewGuid());
+      this.wasChangeThatMobxDoesNotNotice();
+    }
+
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
       this.properties.setText("title", Path.basename(directory));
     }
-    this.selectedSession = new IFolderSelection();
-    this.selectedPerson = new IFolderSelection();
+    // Note, we'd rather have an id that cannot change, but don't have one to
+    // work with at the moment.
+    setCurrentProjectId(this.properties.getTextStringOrEmpty("guid"));
+
+    // this.sessions.selected = new IFolderSelection();
+    // this.persons.selected = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
     this.authorityLists = new AuthorityLists(() =>
-      this.persons.map((p) => p.displayName)
+      this.persons.items.map((p) => p.displayName)
     );
 
     this.setupProtocolChoices();
@@ -130,7 +174,9 @@ export class Project extends Folder {
       );
     }
   }
-
+  public get accessProtocol(): string {
+    return this.properties.getTextStringOrEmpty("accessProtocol");
+  }
   public static fromDirectory(directory: string): Project {
     try {
       const customFieldRegistry = new CustomFieldRegistry();
@@ -179,7 +225,7 @@ export class Project extends Folder {
             dir,
             project.customFieldRegistry
           );
-          project.sessions.push(session);
+          project.sessions.items.push(session);
         }
         // else ignore it
       });
@@ -197,13 +243,14 @@ export class Project extends Folder {
               project.updateSessionReferencesToPersonWhenIdChanges(o, n),
             project.languageFinder
           );
-          project.persons.push(person);
+          project.persons.items.push(person);
         }
         // else ignore it
       });
 
-      project.selectedSession.index = project.sessions.length > 0 ? 0 : -1;
-      project.selectedPerson.index = project.persons.length > 0 ? 0 : -1;
+      project.sessions.selectedIndex =
+        project.sessions.items.length > 0 ? 0 : -1;
+      project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
 
       //project.files[0].save();
       // tslint:disable-next-line:no-unused-expression
@@ -214,6 +261,22 @@ export class Project extends Folder {
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;
     }
+  }
+
+  private makePersonFromDirectory(dir: string): Person {
+    return Person.fromDirectory(
+      dir,
+      this.customFieldRegistry,
+      // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
+      (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
+      this.languageFinder
+    );
+  }
+
+  public selectFolder(folder: Folder) {
+    this.sessions.selectedIndex = this.sessions.items.findIndex(
+      (s) => s === folder
+    );
   }
 
   public get displayName(): string {
@@ -234,21 +297,58 @@ export class Project extends Folder {
     fs.mkdirSync(dir);
     return dir;
   }
+  public makeFolderForImport(folderType: IFolderType): Folder {
+    switch (folderType) {
+      case "session":
+        var dir = this.getUniqueFolder(
+          Path.join(this.directory, "Sessions"), // we don't localize the directory name.
+          t`New Session`
+        );
+        //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
+        const session = Session.fromDirectory(dir, this.customFieldRegistry);
+        session.properties.setText("id", Path.basename(dir));
+        // no, not yet this.sessions.items.push(session);
+        // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
+        analyticsEvent("Create", "Create Session From Import");
+        return session;
+        break;
+      case "person":
+        dir = this.getUniqueFolder(
+          Path.join(this.directory, "People"), // we don't localize the directory name.
+          t`New Person`
+        );
+        const person = this.makePersonFromDirectory(dir);
+        person.properties.setText("name", Path.basename(dir));
+        analyticsEvent("Create", "Create Person From Import");
+        return person;
+        break;
+      default:
+        throw Error(
+          "Unexpected folderType on makeFolderForImport: " + folderType
+        );
+    }
+  }
+
+  public finishFolderImport(folder: Folder) {
+    folder.migrateFromPreviousVersions();
+    this.getFolderArrayFromType(folder.folderType).items.push(folder as any);
+    //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.items.length - 1;
+  }
 
   public addSession() {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-      i18n._(t`New Session`)
+      t`New Session`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customFieldRegistry);
     session.properties.setText("id", Path.basename(dir));
-    this.sessions.push(session);
-    this.selectedSession.index = this.sessions.length - 1;
+    this.sessions.items.push(session);
+    this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
   }
   public duplicateCurrentSession() {
-    const session = this.sessions[this.selectedSession.index];
+    const session = this.sessions.items[this.sessions.selectedIndex];
     const { success, metadataFilePath, directory } = duplicateFolder(session);
     if (success) {
       const newSession = Session.fromDirectory(
@@ -256,19 +356,19 @@ export class Project extends Folder {
         this.customFieldRegistry
       );
       newSession.properties.setText("id", Path.basename(directory));
-      this.sessions.push(newSession);
-      this.selectedSession.index = this.sessions.length - 1;
+      this.sessions.items.push(newSession);
+      this.sessions.selectedIndex = this.sessions.items.length - 1;
       analyticsEvent("Duplicate", "Duplicate Session");
     }
   }
   public duplicateCurrentPerson() {
-    const person = this.persons[this.selectedPerson.index];
+    const person = this.persons.items[this.persons.selectedIndex];
     const { success, metadataFilePath, directory } = duplicateFolder(person);
     if (success) {
       const newPerson = this.setupPerson(directory);
       newPerson.properties.setText("name", Path.basename(directory));
-      this.persons.push(newPerson);
-      this.selectedPerson.index = this.persons.length - 1;
+      this.persons.items.push(newPerson);
+      this.persons.selectedIndex = this.persons.items.length - 1;
       analyticsEvent("Duplicate", "Duplicate person");
     }
   }
@@ -283,17 +383,20 @@ export class Project extends Folder {
     );
   }
 
-  public addPerson() {
+  public addPerson(name?: string): Person {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "People"), // we don't localize the directory name.
-      i18n._(t`New Person`)
+      t`New Person`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
-    person.properties.setText("name", i18n._(t`New Person`));
-    this.persons.push(person);
-    this.selectedPerson.index = this.persons.length - 1;
+    person.properties.setText("name", name ?? t`New Person`);
+    this.persons.items.push(person);
+    person.nameMightHaveChanged();
+    person.saveFolderMetaData;
+    this.persons.selectedIndex = this.persons.items.length - 1;
     analyticsEvent("Create", "Create Person");
+    return person;
   }
 
   private setupProtocolChoices() {
@@ -356,9 +459,9 @@ export class Project extends Folder {
     const wouldBeFolderName = sanitize(value);
 
     if (value.trim().length === 0) {
-      msg = i18n._(t`The ${fieldNameInUiLanguage} cannot be empty`);
+      msg = t`The ${fieldNameInUiLanguage} cannot be empty`;
     } else if (wouldBeFolderName.trim().length === 0) {
-      msg = i18n._(t`That name would lead to an empty filename.`);
+      msg = t`That name would lead to an empty filename.`;
     } else if (
       folderArray.some(
         (f) =>
@@ -367,7 +470,7 @@ export class Project extends Folder {
             f.wouldCollideWithIdFields(value))
       )
     ) {
-      msg = i18n._(t`There is already a ${folderKind} "${value}".`);
+      msg = t`There is already a ${folderKind} "${value}".`;
     }
     if (msg.length > 0) {
       ShowMessageDialog({
@@ -382,31 +485,33 @@ export class Project extends Folder {
   }
   public validateSessionId(session: Session, id: string): boolean {
     return this.validateFieldThatControlsFolderName(
-      this.sessions,
+      this.sessions.items,
       session,
       id,
-      i18n._(t`ID`),
-      i18n._(t`Session`)
+      t`ID`,
+      t`Session`
     );
   }
   public validatePersonFullName(person: Person, name: string): boolean {
     return this.validateFieldThatControlsFolderName(
-      this.persons,
+      this.persons.items,
       person,
       name,
-      i18n._(t`Full Name`),
-      i18n._(t`Person`)
+      t`Full Name`,
+      t`Person`
     );
   }
   public validatePersonCode(person: Person, code: string): boolean {
     if (
       code.trim().length > 0 &&
-      this.persons.some((p) => p !== person && p.wouldCollideWithIdFields(code))
+      this.persons.items.some(
+        (p) => p !== person && p.wouldCollideWithIdFields(code)
+      )
     ) {
       remote.dialog
         .showMessageBox({
           title: "lameta",
-          message: i18n._(t`There is already a Person with that name or code.`),
+          message: t`There is already a Person with that name or code.`,
         })
         .then(() => {});
       return false;
@@ -415,45 +520,138 @@ export class Project extends Folder {
   }
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
-    for (const f of this.sessions) {
-      f.saveAllFilesInFolder();
+    for (const f of this.sessions.items) {
+      f.saveAllFilesInFolder(false);
     }
-    for (const f of this.persons) {
-      f.saveAllFilesInFolder();
+    for (const f of this.persons.items) {
+      f.saveAllFilesInFolder(false);
     }
   }
-  public countOfMarkedSessions(): number {
-    return this.sessions.filter((s) => s.checked).length;
-  }
+
   public haveSelectedSession(): boolean {
-    return this.selectedSession.index >= 0;
+    return this.sessions.selectedIndex >= 0;
   }
+
   public haveSelectedPerson(): boolean {
-    return this.selectedPerson.index >= 0;
+    return this.persons.selectedIndex >= 0;
   }
 
   public deleteCurrentSession() {
-    const session = this.sessions[this.selectedSession.index];
-    ConfirmDeleteDialog.show(`${session.displayName}`, (path: string) => {
-      if (trash(session.directory)) {
-        this.sessions.splice(this.selectedSession.index, 1);
-        this.selectedSession.index = this.sessions.length > 0 ? 0 : -1;
-      }
+    const session = this.sessions.items[this.sessions.selectedIndex] as Session;
+    ConfirmDeleteDialog.show(`"${session.id}"`, () => {
+      this.deleteFolder(session);
     });
   }
+  public deleteMarkedFolders(folderType: IFolderType) {
+    const folders = this.getFolderArrayFromType(folderType);
+    ConfirmDeleteDialog.show(`${folders.countOfMarkedFolders()} Items`, () => {
+      folders.items
+        .filter((s) => s.marked)
+        .forEach((folder) => {
+          this.deleteFolder(folder);
+        });
+    });
+  }
+  public getOrCreatePerson(name: string): Person {
+    if (!name || !name.trim()) {
+      throw new Error("getOrCreatePerson() given an empty name");
+    }
+    const lcName = name.trim().toLowerCase();
+    const found = this.persons.items.find(
+      (p) =>
+        p.properties.getTextStringOrEmpty("name").toLowerCase() === lcName ||
+        p.properties.getTextStringOrEmpty("code").toLowerCase() === lcName
+    ) as Person;
+    if (found) return found;
+    else {
+      return this.addPerson(name.trim());
+    }
+  }
+  public deleteFolder(folder: Folder) {
+    const folderType = folder.folderType;
+    folderType;
+    try {
+      if (trash(folder.directory)) {
+        const folders = this.getFolderArrayFromType(folder.folderType);
+        const index = folders.items.findIndex((f) => f === folder);
+        // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+        // in case we had the last one selected and now there won't be a selection at that index.
+
+        const countAfterWeRemoveThisOne = folders.items.length - 1;
+        folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+        folders.items.splice(index, 1);
+        folder.wasDeleted = true;
+        console.log(
+          `Deleting folder index:${index}. selectedIndex:${
+            this.getFolderArrayFromType(folderType).selectedIndex
+          }`
+        );
+        this.getFolderArrayFromType(folderType).items.forEach((s) =>
+          console.log(
+            `after folder deletion, this folder remains ${s.displayName}`
+          )
+        );
+      } else throw Error("Failed to delete folder.");
+    } catch (e) {
+      NotifyException(e, "Error trying to delete folder.");
+    }
+  }
+
+  // public deleteSession(session: Session) {
+  //   try {
+  //     if (trash(session.directory)) {
+  //       const index = this.sessions.items.findIndex((s) => s === session);
+  //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+  //       // in case we had the last one selected and now there won't be a selection at that index.
+  //       const countAfterWeRemoveThisOne = this.sessions.items.length - 1;
+  //       this.sessions.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+  //       this.sessions.items.splice(index, 1);
+  //       // console.log(
+  //       //   `Deleting session index:${index}. sessions.selected.index:${this.sessions.selected.index}`
+  //       // );
+  //       //this.sessions.forEach((s) => console.log(`remaining session ${s.id}`));
+  //     } else throw Error("Failed to delete session.");
+  //   } catch (e) {
+  //     NotifyException(e, "Error trying to delete session.");
+  //   }
+  // }
+  // public deletePerson(person: Person) {
+  //   try {
+  //     if (trash(person.directory)) {
+  //       const index = this.persons.items.findIndex((s) => s === person);
+  //       // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+  //       // in case we had the last one selected and now there won't be a selection at that index.
+  //       const countAfterWeRemoveThisOne = this.persons.items.length - 1;
+  //       this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+  //       this.persons.items.splice(index, 1);
+  //       // console.log(
+  //       //   `Deleting session index:${index}. sessions.selected.index:${this.sessions.selected.index}`
+  //       // );
+  //       //this.persons.forEach((s) => console.log(`remaining person ${s.id}`));
+  //     } else throw Error("Failed to delete session.");
+  //   } catch (e) {
+  //     NotifyException(e, "Error trying to delete person.");
+  //   }
+  // }
   public deleteCurrentPerson() {
-    const person = this.persons[this.selectedPerson.index];
-    ConfirmDeleteDialog.show(`${person.displayName}`, (path: string) => {
-      if (trash(person.directory)) {
-        this.persons.splice(this.selectedPerson.index, 1);
-        this.selectedPerson.index = this.persons.length > 0 ? 0 : -1;
-      }
+    const person = this.persons.items[this.persons.selectedIndex];
+    ConfirmDeleteDialog.show(`"${person.displayName}"`, () => {
+      // if (trash(person.directory)) {
+      //   // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
+      //   // in case we had the last one selected and now there won't be a selection at that index.
+      //   const countAfterWeRemoveThisOne = this.persons.items.length - 1;
+      //   const indexToDelete = this.persons.selected.index;
+      //   this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
+      //   this.persons.items.splice(indexToDelete, 1);
+      // }
+      this.deleteFolder(person);
     });
   }
+
   public findPerson(name: string): Person | undefined {
-    return this.persons.find((p) => {
-      return p.referenceIdMatches(name);
-    });
+    return this.persons.items.find((p: Person) =>
+      p.referenceIdMatches(name)
+    ) as Person;
   }
 
   // called by Person when name or code changes
@@ -462,28 +660,30 @@ export class Project extends Folder {
     oldId: string,
     newId: string
   ): void {
-    this.sessions.forEach((session) =>
+    this.sessions.items.forEach((session: Session) =>
       session.updateSessionReferencesToPersonWhenIdChanges(oldId, newId)
     );
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
     const lowerCaseName = id.toLocaleLowerCase();
-    const arraysOfMatchingContributions = this.sessions.map((session) => {
-      return session
-        .getAllContributionsToAllFiles()
-        .map((contribution) => {
-          if (contribution.personReference.toLowerCase() === lowerCaseName) {
-            // the session name isn't normally part of the contribution because it is owned
-            // by the session. But we stick it in here for display purposes. Alternatively,
-            // we could stick in the session itself; might be useful for linking back to it.
-            contribution.sessionName = session.displayName;
-            return contribution;
-          }
-          return undefined;
-        })
-        .filter((c) => c); // remove the undefined's;
-    });
+    const arraysOfMatchingContributions = this.sessions.items.map(
+      (session: Session) => {
+        return session
+          .getAllContributionsToAllFiles()
+          .map((contribution) => {
+            if (contribution.personReference.toLowerCase() === lowerCaseName) {
+              // the session name isn't normally part of the contribution because it is owned
+              // by the session. But we stick it in here for display purposes. Alternatively,
+              // we could stick in the session itself; might be useful for linking back to it.
+              contribution.sessionName = session.displayName;
+              return contribution;
+            }
+            return undefined;
+          })
+          .filter((c) => c); // remove the undefined's;
+      }
+    );
 
     //flatten
     return [].concat.apply([], arraysOfMatchingContributions);
@@ -491,7 +691,7 @@ export class Project extends Folder {
 
   // public getSessionPeopleMatchingPersonName(personName: string): Session[] {
   //   const lowerCaseName = personName.toLocaleLowerCase();
-  //   return this.sessions.filter(session =>
+  //   return this.sessions.items.filter(session =>
   //     session
   //       .getParticipantNames()
   //       .some(name => name.toLowerCase() === lowerCaseName)
@@ -553,3 +753,50 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     this.finishLoading();
   }
 }
+
+function NewGuid() {
+  let sGuid = "";
+  for (let i = 0; i < 32; i++) {
+    sGuid += Math.floor(Math.random() * 0xf).toString(0xf);
+  }
+  return sGuid;
+}
+
+// // We store the media folder in a way that is unique to the title of the
+// // project and the machine we are on.
+// export function getMediaFolderOrEmptyForThisProjectAndMachine() {
+//   if (sCurrentProject === null) {
+//     throw new Error(
+//       "getMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null"
+//     );
+//   }
+//   // Note, we'd rather have an id that cannot change, but don't have one to
+//   // work with at the moment.
+//   const id = sCurrentProject.properties.getTextStringOrEmpty("title");
+//   if (!id) {
+//     NotifyWarning("The title for this project is empty.");
+//     return "";
+//   }
+//   return getMediaFolderOrEmptyForProjectAndMachine(id);
+// }
+// export function setMediaFolderOrEmptyForThisProjectAndMachine(path: string) {
+//   if (sCurrentProject === null) {
+//     throw new Error(
+//       "setMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null"
+//     );
+//   }
+//   if (!path) {
+//     throw new Error(
+//       "setMediaFolderOrEmptyForThisProjectAndMachine() called with empty path"
+//     );
+//   }
+
+//   // Note, we'd rather have an id that cannot change, but don't have one to
+//   // work with at the moment.
+//   const id = sCurrentProject.properties.getTextStringOrEmpty("title");
+//   if (!id) {
+//     NotifyWarning("The title for this project is empty.");
+//     return "";
+//   }
+//   return setMediaFolderOrEmptyForProjectAndMachine(id, path);
+// }

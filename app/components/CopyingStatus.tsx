@@ -11,13 +11,13 @@ import { CopyManager } from "../other/CopyManager";
 import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
 import { useState } from "react";
-import { saymore_orange } from "./colors";
+import { lameta_orange } from "../containers/theme";
 
 // This is in the upper right corner of the screen.
 export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
   const [message, setMessage] = useState("");
   useInterval(() => {
-    setMessage(CopyManager.filesAreStillCopying() ? i18n._(t`Copying...`) : "");
+    setMessage(CopyManager.filesAreStillCopying() ? t`Copying...` : "");
     if (CopyManager.filesAreStillCopying()) {
       ipcRenderer.send("copyInProgress");
     } else {
@@ -29,7 +29,7 @@ export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
     <div
       css={css`
         font-weight: bold;
-        color: ${saymore_orange};
+        color: ${lameta_orange};
       `}
     >
       {message}

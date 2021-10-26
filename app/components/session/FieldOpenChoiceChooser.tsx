@@ -6,7 +6,7 @@ import CreatableSelect from "react-select/creatable";
 import Tooltip from "react-tooltip-lite";
 import { Dictionary } from "typescript-collections";
 import { capitalCase } from "capital-case";
-import { saymore_orange } from "../colors";
+import { lameta_orange } from "../../containers/theme";
 
 //const Choices = new Dictionary<string, Array<string>>();
 
@@ -74,10 +74,8 @@ export const FieldOpenChoiceChooser = observer<{
             borderStyle: "inset",
             borderRadius: 0,
             borderColor: "rgb(169, 169, 169)",
-            boxShadow: state.isFocused
-              ? "0 0 0 1px " + saymore_orange
-              : "unset",
-            "&:hover": { borderColor: saymore_orange },
+            boxShadow: state.isFocused ? "0 0 0 1px " + lameta_orange : "unset",
+            "&:hover": { borderColor: lameta_orange },
           }),
           menu: (provided) => ({
             ...provided,
@@ -143,7 +141,7 @@ const CustomOption = (optionProps) => {
         {...innerProps}
         style={{
           ...getStyles("option", optionProps),
-          backgroundColor: optionProps.isFocused ? saymore_orange : "white",
+          backgroundColor: optionProps.isFocused ? lameta_orange : "white",
           fontWeight: optionProps.isSelected ? "bold" : "normal",
           fontStyle: optionProps.data.source === "custom" ? "italic" : "",
           color: "black",

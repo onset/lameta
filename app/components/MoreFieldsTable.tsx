@@ -5,12 +5,11 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.scss";
 import "./Form.scss";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { Trans } from "@lingui/react";
 import { i18n } from "../other/localization";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 
 export interface IProps {
   folder: Folder;
@@ -42,7 +41,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
     const additionalFieldTableColumns = [
       {
         id: "name",
-        Header: i18n._(t`Field`),
+        Header: t`Field`,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return field.labelInUILanguage;
@@ -50,7 +49,7 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
       },
       {
         id: "value",
-        Header: i18n._(t`Value`),
+        Header: t`Value`,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
 

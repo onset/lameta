@@ -1,4 +1,4 @@
-import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
+import { staticLanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { maxOtherLanguages } from "./Person";
 import { Field } from "../../field/Field";
 import { FieldSet } from "../../field/FieldSet";
@@ -7,8 +7,7 @@ import { IPersonLanguage } from "../../PersonLanguage";
 // see https://trello.com/c/f6hVbGoY and https://trello.com/c/zWaSIuSj
 export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
   properties: FieldSet,
-  languages: IPersonLanguage[],
-  languageFinder: LanguageFinder
+  languages: IPersonLanguage[]
 ) {
   // we don't try merging in the old fields; if we already have this modern languages list, then we
   // ignore the new fields.
@@ -73,9 +72,9 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
   const legacyLearnedin = properties.getTextFieldOrUndefined(
     "primaryLanguageLearnedIn"
   );
-  if (legacyLearnedin) {
+  if (legacyLearnedin && legacyLearnedin.text) {
     if (primary && primary.text) {
-      const primaryLanguageName = languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+      const primaryLanguageName = staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
         primary.text
       );
       const d = properties.getTextStringOrEmpty("description");
@@ -90,31 +89,29 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
 
 // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
 export function migrateLegacyPersonLanguagesFromNameToCode(
-  properties: FieldSet,
-  languageFinder: LanguageFinder
+  properties: FieldSet
 ) {
+  // const x = properties.getTextStringOrEmpty("fathersLanguage"); //??
+  // console.log("fl: " + x);
   [
     "primaryLanguage",
     "fathersLanguage",
     "mothersLanguage",
   ].forEach((fieldName) =>
     migrateOnePersonLanguageFromNameToCode(
-      properties.getTextFieldOrUndefined(fieldName),
-      languageFinder
+      properties.getTextFieldOrUndefined(fieldName)
     )
   );
   for (let i = 0; i < maxOtherLanguages; i++) {
     migrateOnePersonLanguageFromNameToCode(
-      properties.getTextFieldOrUndefined("otherLanguage" + i),
-      languageFinder
+      properties.getTextFieldOrUndefined("otherLanguage" + i)
     );
   }
 }
 // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
 // public and static to make it easier to unit test
 export function migrateOnePersonLanguageFromNameToCode(
-  field: Field | undefined,
-  languageFinder: LanguageFinder
+  field: Field | undefined
 ) {
   try {
     if (!field) return;
@@ -122,44 +119,10 @@ export function migrateOnePersonLanguageFromNameToCode(
     if (!nameOrCode) {
       return; // leave it alone
     }
-    //In SayMore and lameta < 0.8.7, this was stored as a name, rather than a code.
-    const possibleCode = languageFinder.findOne639_3CodeFromName(
-      nameOrCode,
-      undefined
+    const foundCode = staticLanguageFinder.findCodeFromCodeOrLanguageName(
+      nameOrCode
     );
-
-    if (possibleCode === "und") {
-      // just leave it alone. If we don't recognize a language name, it's better to just not convert it than
-      // to lose it.
-      return;
-    }
-    let code;
-    if (possibleCode === undefined && nameOrCode.length === 3) {
-      code = nameOrCode;
-    }
-    // I don't suppose this would ever happen, but it would be unambiguous
-    else if (
-      possibleCode &&
-      nameOrCode.length === 3 &&
-      possibleCode === nameOrCode
-    ) {
-      code = nameOrCode;
-    }
-    // ambiguous, but a sampling suggests that 3 letter language names are always given a matching 3 letter code.
-    else if (
-      possibleCode &&
-      nameOrCode.length === 3 &&
-      possibleCode !== nameOrCode
-    ) {
-      // let's error on the side of having the correct code already. Could theoretically
-      // give wrong code for some field filled out in a pre-release version of
-      code = nameOrCode;
-    }
-    // otherwise, go with the name to code lookup
-    else {
-      code = possibleCode;
-    }
-    field.setValueFromString(code);
+    return field.setValueFromString(foundCode);
 
     //console.log(`Migrate person lang ${key}:${nameOrCode} --> ${code}`);
   } catch (err) {
@@ -169,4 +132,29 @@ export function migrateOnePersonLanguageFromNameToCode(
     }')`;
     throw ex;
   }
+}
+
+// with spreadsheet import, we have this special field that can take a list of one or more langs separated by comma or semicolon,
+// contiaining language names or codes
+export function getCodesFromLanguageListField(
+  languageImportList: string
+): IPersonLanguage[] {
+  const languages: IPersonLanguage[] = [];
+  if (languageImportList) {
+    const languagesInEitherNameOrCode = languageImportList
+      .split(";")
+      .join(",")
+      .split(",")
+      .map((s) => s.trim());
+    languagesInEitherNameOrCode.forEach((l) => {
+      const code = staticLanguageFinder.findCodeFromCodeOrLanguageName(l);
+      languages.push({
+        code,
+        primary: false,
+        mother: false,
+        father: false,
+      });
+    });
+  }
+  return languages;
 }

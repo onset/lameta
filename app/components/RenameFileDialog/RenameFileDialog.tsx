@@ -1,15 +1,21 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+import { t, Trans } from "@lingui/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
 import ReactModal from "react-modal";
-import "./RenameFileDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { File } from "../../model/file/File";
+import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
-import { Trans } from "@lingui/react";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
+import { error_color } from "../../containers/theme";
 const sanitizeFilename = require("sanitize-filename");
 
 // tslint:disable-next-line:no-empty-interface
@@ -18,11 +24,16 @@ interface IState {
   isOpen: boolean;
   file?: File;
   filename: string;
-  core: string;
+  fileNameParts?: {
+    prefix: string;
+    core: string;
+    suffix: string;
+    suffixWithNoLink: string;
+  };
   folder?: Folder; // serves as a prefix on files which should not be modified by the user in this dialog
 }
 
-export default class RenameFileDialog extends React.Component<IProps, IState> {
+export class RenameFileDialog extends React.Component<IProps, IState> {
   private static singleton: RenameFileDialog;
 
   constructor(props: IProps) {
@@ -31,7 +42,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     this.state = {
       isOpen: false,
       file: undefined,
-      core: "",
+      fileNameParts: undefined,
       folder: undefined,
       filename: "",
     };
@@ -49,15 +60,18 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
         return; // don't close if it failed
       }
     }
-    this.setState({ isOpen: false, file: undefined, core: "" });
+    this.setState({ isOpen: false, file: undefined, fileNameParts: undefined });
   }
 
   public static async show(file: File, folder: Folder) {
     RenameFileDialog.singleton.setState({
       file,
-      filename: Path.basename(file.describedFilePath),
+      filename: Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
       folder,
-      core: this.getCore(file.describedFilePath, folder.filePrefix),
+      fileNameParts: this.getFileNameParts(
+        Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
+        folder.filePrefix
+      ),
       isOpen: true,
     });
   }
@@ -68,7 +82,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     const haveValidPath = this.getValidationProblemsMessage() === ""; // review: could do this when state changes
     const pathUnchanged =
       Path.normalize(this.getNewPath()) ===
-      Path.normalize(this.state.file!.describedFilePath);
+      Path.normalize(this.state.file!.pathInFolderToLinkFileOrLocalCopy);
     const canRenameNow = !pathUnchanged && haveValidPath;
     return (
       <CloseOnEscape
@@ -82,6 +96,28 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
           isOpen={this.state.isOpen}
           shouldCloseOnOverlayClick={true}
           onRequestClose={() => this.handleCloseModal(false)}
+          css={css`
+            z-index: 10000;
+            .dialogContent {
+              //margin-left: 20px;
+              width: calc(1em * 30);
+              height: 200px;
+
+              h1 {
+                height: 2em;
+              }
+              .validationMessage {
+                color: ${error_color};
+              }
+              .row {
+                margin-top: 1em;
+                display: flex;
+              }
+              input {
+                width: 1em * 27;
+              }
+            }
+          `}
         >
           <div className={"dialogTitle"}>
             <Trans>Rename File</Trans>
@@ -93,12 +129,7 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
               </h1>
             </div>
             <div className="row">
-              <span className="affix">
-                {RenameFileDialog.getUneditablePrefix(
-                  this.state.filename,
-                  this.state.folder!.filePrefix
-                )}
-              </span>
+              <span className="affix">{this.state.fileNameParts?.prefix}</span>
               <input
                 autoFocus
                 onKeyDown={(e) => {
@@ -107,26 +138,35 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
                     window.setTimeout(() => this.handleCloseModal(true), 0);
                   }
                 }}
-                value={this.state.core}
-                onChange={(e) => this.setState({ core: e.target.value })}
-              />
-
-              {/* many hassles with this, not worth it
-              <ContentEditable
-                className="core"
-                onChange={e => {                
-                  this.setState({ core: e.target.value });
+                value={this.state.fileNameParts?.core}
+                onChange={(e) =>
+                  this.setState({
+                    fileNameParts: {
+                      ...this.state.fileNameParts!,
+                      core: e.target.value,
+                    },
+                  })
                 }
-                html={this.state.core}
-              /> */}
+              />
               <span className="affix">
-                {RenameFileDialog.getUneditableSuffix(this.state.filename)}
+                {this.state.fileNameParts?.suffixWithNoLink}
               </span>
             </div>
             <div className="validationMessage">
               {pathUnchanged ? "" : this.getValidationProblemsMessage()}
             </div>
+            {this.state.file?.isLinkFile() && (
+              <p>
+                <Trans>
+                  Note that this is a link to a file in your Media Files
+                  directory. Here, you are renaming this link, not the original
+                  file that it points to. If you later create an export that
+                  includes this file, the export will use this name.
+                </Trans>
+              </p>
+            )}
           </div>
+
           <div className={"bottomButtonRow"}>
             <div className={"okCancelGroup"}>
               {/* List as default last (in the corner). */}
@@ -139,6 +179,11 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
                 id="okButton"
                 disabled={!canRenameNow}
                 onClick={() => this.handleCloseModal(true)}
+                css={css`
+                  /* hack to suggest that if you hit enter, it will choose this. Will do until we switch to something proper like material */
+                  border: solid 3px darkgray;
+                  border-radius: 4px;
+                `}
               >
                 <Trans>Rename</Trans>
               </button>
@@ -155,47 +200,17 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
     return m && m.length > 0 ? m[0] : "";
   }
 
-  // Keeping with how Windows Saymore Classic worked, if the prefix is missing,
-  // we assert it here, so any renamed file will get the prefix
-  private static getUneditablePrefix(
-    filename: string,
-    folderID: string
-  ): string {
-    // if instead, we wanted to only recognize the prefix pattern if it is there, we'd do this:
-    //return filename.startsWith(folderID + "_") ? folderID + "_" : "";
-    return folderID + "_";
-  }
-
-  private static getUneditableSuffix(path: string): string {
-    const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
-    return RenameFileDialog.stringMatchOrEmptyString(path, matchExtension);
-  }
-
-  private static getCore(filePath: string, folderId: string): string {
-    const fileName = Path.basename(filePath);
-    const prefix = RenameFileDialog.getUneditablePrefix(fileName, folderId);
-    const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
-    const suffixLength = RenameFileDialog.getUneditableSuffix(fileName).length;
-    return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
-  }
   private getNewFileName(includeExtension: boolean = true): string {
-    const pfx = RenameFileDialog.getUneditablePrefix(
-      this.state.filename,
-      this.state.folder!.filePrefix
-    );
-
     return (
-      _.trimEnd(pfx + this.state.core, "_") +
-      (includeExtension
-        ? RenameFileDialog.getUneditableSuffix(
-            this.state.file!.describedFilePath
-          )
-        : "")
+      _.trimEnd(
+        this.state.fileNameParts!.prefix + this.state.fileNameParts!.core,
+        "_"
+      ) + (includeExtension ? this.state.fileNameParts!.suffix : "")
     );
   }
   private getNewPath(): string {
     return Path.join(
-      Path.dirname(this.state.file!.describedFilePath),
+      Path.dirname(this.state.file!.pathInFolderToLinkFileOrLocalCopy),
 
       this.getNewFileName()
     );
@@ -208,18 +223,67 @@ export default class RenameFileDialog extends React.Component<IProps, IState> {
       userSettingsSingleton.IMDIMode
     );
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {
-      return "Some operating systems would not allow that name.";
+      return t`Some operating systems would not allow that name.`;
     }
 
     if (pendingNewName !== sanitizedForArchive) {
-      return "There are characters not allowed by the Archive Settings.";
+      return t`Please remove characters that not allowed by the Archive Settings.`;
     }
     if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
-      return "Sorry, no slashes are allowed";
+      return t`Sorry, no slashes are allowed`;
     }
     if (fs.existsSync(this.getNewPath())) {
-      return "A file with the same name already exists at that location.";
+      return t`A file with the same name already exists at that location.`;
     }
     return "";
+  }
+
+  public static getFileNameParts(fileName: string, folderId: string) {
+    return {
+      prefix: this.getUneditablePrefix(fileName, folderId),
+      core: this.getCore(fileName, folderId),
+      suffix: this.getUneditableSuffix(fileName, false),
+      suffixWithNoLink: this.getUneditableSuffix(fileName, true),
+    };
+  }
+
+  // Keeping with how Windows Saymore Classic worked, if the prefix is missing,
+  // we assert it here, so any renamed file will get the prefix
+  private static getUneditablePrefix(
+    filename: string,
+    folderID: string
+  ): string {
+    // if instead, we wanted to only recognize the prefix pattern if it is there, we'd do this:
+    //return filename.startsWith(folderID + "_") ? folderID + "_" : "";
+    return folderID + "_";
+  }
+
+  private static getCore(fileName: string, folderId: string): string {
+    const prefix = RenameFileDialog.getUneditablePrefix(fileName, folderId);
+    const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
+    const suffixLength = RenameFileDialog.getUneditableSuffix(fileName, false)
+      .length;
+    return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
+  }
+
+  private static getUneditableSuffix(
+    fileName: string,
+    stripLinkSuffix: boolean
+  ): string {
+    let p = fileName;
+    const isLink = fileName.endsWith(kLinkExtensionWithFullStop);
+    if (isLink) {
+      p = p.replace(kLinkExtensionWithFullStop, "");
+    }
+
+    const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+    // if it's a link file, this will give us ".link"
+    const sfx = RenameFileDialog.stringMatchOrEmptyString(p, matchExtension);
+
+    return stripLinkSuffix
+      ? sfx
+      : isLink
+      ? sfx + kLinkExtensionWithFullStop
+      : sfx;
   }
 }

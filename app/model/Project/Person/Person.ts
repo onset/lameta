@@ -1,5 +1,5 @@
 import * as mobx from "mobx";
-import { Folder } from "../../Folder/Folder";
+import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
@@ -16,6 +16,7 @@ import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+  getCodesFromLanguageListField,
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 
@@ -38,16 +39,25 @@ export class Person extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
     return ".person";
   }
+  public get folderType(): IFolderType {
+    return "person";
+  }
 
+  public importIdMatchesThisFolder(id: string): boolean {
+    return this.referenceIdMatches(id);
+  }
+  public get propertyForCheckingId(): string {
+    return "name";
+  }
   private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
-      return f.describedFilePath.indexOf("_Photo.") > -1;
+      return f.pathInFolderToLinkFileOrLocalCopy.indexOf("_Photo.") > -1;
     });
   }
 
   public get mugshotPath(): string {
     const m = this.getMugshotFile();
-    return m ? m.describedFilePath : "";
+    return m ? m.getActualFilePath() : "";
   }
 
   /* Used when the user gives us a mugshot, either the first one or replacement one */
@@ -56,7 +66,7 @@ export class Person extends Folder {
 
     const f = this.getMugshotFile();
     if (f) {
-      fs.removeSync(f.describedFilePath);
+      fs.removeSync(f.pathInFolderToLinkFileOrLocalCopy);
       this.files.splice(this.files.indexOf(f), 1); //remove that one
     }
 
@@ -107,8 +117,11 @@ export class Person extends Folder {
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
+    this.migrateFromPreviousVersions();
+  }
 
-    (this.metadataFile! as PersonMetadataFile).migrate(languageFinder);
+  public migrateFromPreviousVersions() {
+    (this.metadataFile! as PersonMetadataFile).migrateFromPreviousVersions();
   }
 
   public get languages() {
@@ -202,13 +215,21 @@ export class PersonMetadataFile extends FolderMetadataFile {
     //console.log("PersonMetadataFile.ctr");
   }
 
-  public migrate(languageFinder: LanguageFinder) {
-    migrateLegacyPersonLanguagesFromNameToCode(this.properties, languageFinder);
+  public migrateFromPreviousVersions() {
+    migrateLegacyPersonLanguagesFromNameToCode(this.properties);
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       this.properties,
-      this.languages,
-      languageFinder
+      this.languages
     );
+
+    const languageImportListContents = this.properties.getTextFieldOrUndefined(
+      "languageImportList"
+    );
+    const value = languageImportListContents?.text;
+    if (value) {
+      // TODO: consolidate so we don't have duplicates?
+      this.languages.push(...getCodesFromLanguageListField(value));
+    }
   }
 
   // override
@@ -253,41 +274,23 @@ export class PersonMetadataFile extends FolderMetadataFile {
       }
     });
     // Now output the legacy SayMore format that was used before lameta 0.92, for saymore and older lametas
-    const legacyLanguageFields = [
-      "primaryLanguage",
-      "otherLanguage0",
-      "otherLanguage1",
-      "otherLanguage2",
-      "otherLanguage3",
-      "otherLanguage4",
-      "otherLanguage5",
-      "otherLanguage6",
-      "otherLanguage7",
-      "otherLanguage8",
-      "otherLanguage9",
-      "otherLanguage10",
-    ];
-    let index = 0;
+    let fieldNameIndex = 0;
     let haveFatherLanguage = false;
     let haveMotherLanguage = false;
     const kNotice =
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name =
-        // if we have qaa-qtz, just output that
-        language.code.toLowerCase() >= "qaa" &&
-        language.code.toLowerCase() <= "qtz"
-          ? language.code
-          : // otherwise look up the name
-            staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-              language.code
-            );
+      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+        language.code
+      );
       if (language.code.trim().length > 0) {
-        root
-          .element(legacyLanguageFields[index], name)
-          .attribute("deprecated", kNotice);
-        ++index;
+        const fieldName =
+          fieldNameIndex === 0
+            ? "primaryLanguage"
+            : "otherLanguage" + fieldNameIndex.toString();
+        ++fieldNameIndex;
+        root.element(fieldName, name).attribute("deprecated", kNotice);
         if (!haveFatherLanguage && language.father) {
           root
             .element("fathersLanguage", name)

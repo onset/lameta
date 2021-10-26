@@ -1,11 +1,9 @@
 import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
-import { Field, FieldType } from "../field/Field";
-import { FieldDefinition } from "../field/FieldDefinition";
+import { Field } from "../field/Field";
 import { File, Contribution } from "./File";
 import assert from "assert";
-import { IPersonLanguage } from "../PersonLanguage";
-import { FolderMetadataFile } from "./FolderMetaDataFile";
+import { NotifyException } from "../../components/Notify";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
@@ -16,58 +14,70 @@ export default function getSayMoreXml(
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
-  const root = xmlbuilder.create(xmlRootName, {
-    version: "1.0",
-    encoding: "utf-8",
-  });
-  // 0.0.0 because we haven't started using this yet. It is just here  that in the future
-  // *if* we use it, old versions will know not to open the file. Note, we would never just replace
-  // "0.0.0" with the current version; we'd only update it, by hand, when we know we are doing something
-  // that is not backwards compatible. And at the point we would need to be concerned about locking
-  // people into whatever beta version this was introduced in, because they won't be able to go back
-  // to their release version if there is a problem.
-  // 0.9.2 (predicted) switched to new person languages format
-  root.attribute("minimum_lameta_version_to_read", "0.0.0");
-  const propertiesToPersist = properties
-    .values()
-    .filter((field) => field.persist);
-  writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
-  if (properties.getValue("participants")) {
-    // In older versions of SayMore & lameta, there were "participants", people without roles.
-    // Now we just use the Contributors, which have roles and comments. But we still write out
-    // this list in case the file is opened by an old version of SayMore
-    const legacyParticipantsList = contributions
-      .map((c) => c.personReference)
-      .join(";");
-    root.element("participants", {}, legacyParticipantsList);
+  try {
+    const root = xmlbuilder.create(xmlRootName, {
+      version: "1.0",
+      encoding: "utf-8",
+    });
+    // 0.0.0 because we haven't started using this yet. It is just here  that in the future
+    // *if* we use it, old versions will know not to open the file. Note, we would never just replace
+    // "0.0.0" with the current version; we'd only update it, by hand, when we know we are doing something
+    // that is not backwards compatible. And at the point we would need to be concerned about locking
+    // people into whatever beta version this was introduced in, because they won't be able to go back
+    // to their release version if there is a problem.
+    // 0.9.2 (predicted) switched to new person languages format
+    root.attribute("minimum_lameta_version_to_read", "0.0.0");
+    const propertiesToPersist = properties
+      .values()
+      .filter((field) => field.persist);
+    writeSimplePropertyElements(
+      root,
+      propertiesToPersist,
+      doOutputTypeInXmlTags
+    );
+    if (properties.getValue("participants")) {
+      // In older versions of SayMore & lameta, there were "participants", people without roles.
+      // Now we just use the Contributors, which have roles and comments. But we still write out
+      // this list in case the file is opened by an old version of SayMore
+      const legacyParticipantsList = contributions
+        .map((c) => c.personReference)
+        .join(";");
+      root.element("participants", {}, legacyParticipantsList);
+    }
+
+    file.writeXmlForComplexFields(root);
+    writeContributions(root, contributions); // enhance: move this a writeXmlForComplexFields() method on Session
+
+    // "Additional Fields are labeled "More Fields" in the UI.
+    // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
+    writeElementGroup(
+      root,
+      propertiesToPersist.filter(
+        (f) => f.definition && f.definition.isAdditional
+      ),
+      "AdditionalFields",
+      false // only custom fields might need special treatment
+    );
+    writeElementGroup(
+      root,
+      propertiesToPersist.filter((f) => f.definition && f.definition.isCustom),
+      "CustomFields",
+      doOutputEmptyCustomFields
+    );
+    //writeElementsWeDontUnderstand();
+    return root.end({
+      pretty: true,
+      indent: "  ",
+      /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
+      allowEmpty: true,
+    });
+  } catch (error) {
+    NotifyException(
+      error, // not translating for now
+      `While saving ${file.metadataFilePath}, got ${error}`
+    );
+    throw error;
   }
-
-  file.writeXmlForComplexFields(root);
-  writeContributions(root, contributions); // enhance: move this a writeXmlForComplexFields() method on Session
-
-  // "Additional Fields are labeled "More Fields" in the UI.
-  // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
-  writeElementGroup(
-    root,
-    propertiesToPersist.filter(
-      (f) => f.definition && f.definition.isAdditional
-    ),
-    "AdditionalFields",
-    false // only custom fields might need special treatment
-  );
-  writeElementGroup(
-    root,
-    propertiesToPersist.filter((f) => f.definition && f.definition.isCustom),
-    "CustomFields",
-    doOutputEmptyCustomFields
-  );
-  //writeElementsWeDontUnderstand();
-  return root.end({
-    pretty: true,
-    indent: "  ",
-    /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
-    allowEmpty: true,
-  });
 }
 //function writeElementsWeDontUnderstand() {}
 function writeSimplePropertyElements(
@@ -147,13 +157,9 @@ function writeContributions(
         tail = tail.element("smxrole", "unspecified").up();
       }
 
-      if (contribution.date) {
-        writeDate(tail, "date", contribution.date);
-      } else {
-        // SayMore classic will crash if there is no date.
-        // It also uses 0001-01-01 in this situation
-        writeDate(tail, "date", "0001-01-01");
-      }
+      // SayMore classic will crash if there is no date.
+      // It also uses 0001-01-01 in this situation
+      writeDate(tail, "date", "0001-01-01");
 
       if (contribution.comments && contribution.comments.trim().length > 0) {
         tail = tail.element("comments", contribution.comments).up();
@@ -168,6 +174,7 @@ function writeField(
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyFields: boolean = false
 ) {
+  if (field.definition.omitSave) return;
   const { type, value } = field.typeAndValueEscapedForXml();
 
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization...

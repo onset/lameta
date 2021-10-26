@@ -1,4 +1,4 @@
-import { Folder } from "../../Folder/Folder";
+import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
@@ -20,6 +20,18 @@ export class Session extends Folder {
       this.properties.getTextStringOrEmpty("id") ||
       "unknown"
     );
+  }
+  public get id(): string {
+    return this.properties.getTextStringOrEmpty("id");
+  }
+  public importIdMatchesThisFolder(id: string): boolean {
+    return this.id === id;
+  }
+  public get propertyForCheckingId(): string {
+    return "id";
+  }
+  public get folderType(): IFolderType {
+    return "session";
   }
 
   public constructor(
@@ -56,12 +68,12 @@ export class Session extends Folder {
         Project.getDefaultWorkingLanguageCode()
       );
     }
-    this.migrateDeprecatedFields();
+    this.migrateFromPreviousVersions();
   }
 
   // There are 2 fields that ELAR wanted removed. These work as part of the description,
   // so we just append them to the description.
-  private migrateDeprecatedFields() {
+  public migrateFromPreviousVersions() {
     this.migrateOneField("situation", "description");
     this.migrateOneField("setting", "description");
   }
@@ -118,7 +130,8 @@ export class Session extends Folder {
     const legacyParticipantNames = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
-      .map((s) => s.trim());
+      .map((s) => s.trim())
+      .filter((s) => s);
     legacyParticipantNames.forEach((name: string) => {
       if (
         !this.metadataFile!.contributions.find(
@@ -126,7 +139,7 @@ export class Session extends Folder {
         )
       ) {
         this.metadataFile!.contributions.push(
-          new Contribution(name, "participant", "", "")
+          new Contribution(name, "participant", "")
         );
       }
     });

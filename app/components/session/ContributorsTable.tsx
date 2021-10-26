@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { File, Contribution } from "../../model/file/File";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
@@ -31,7 +31,6 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     this.ensureOneBlankRow(nextProps);
   }
   private ensureOneBlankRow(propToUse: IProps) {
-    console.log("ensureOnBlankRow(): " + propToUse.file.describedFilePath);
     let i = propToUse.file.contributions.length;
     while (i--) {
       const c = propToUse.file.contributions[i];
@@ -41,7 +40,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
       }
     }
     //console.log("Adding blank contribution");
-    propToUse.file.contributions.push(new Contribution("", "", "", ""));
+    propToUse.file.contributions.push(new Contribution("", "", ""));
   }
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
@@ -110,12 +109,12 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     const contributors = this.props.file.contributions;
     const columns = [
       {
-        Header: i18n._(t`Name`),
+        Header: t`Name`,
         accessor: "name",
         Cell: (cellInfo: any) => this.renderPerson(cellInfo),
       },
       {
-        Header: i18n._(t`Role`),
+        Header: t`Role`,
         accessor: "role",
         Cell: (cellInfo: any) => this.renderRole(cellInfo),
       },
@@ -126,7 +125,7 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
       },*/
       {
-        Header: i18n._(t`Comments`),
+        Header: t`Comments`,
         accessor: "comments",
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
       },

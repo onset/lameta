@@ -21,8 +21,7 @@ import { locate } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
-import { Trans } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../other/localization";
 import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
@@ -31,8 +30,13 @@ import {
   ShowMessageDialog,
 } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { NotifyError, NotifyWarning } from "../components/Notify";
-import { PatientFS } from "../other/PatientFile";
+import {
+  NotifyError,
+  NotifyRenameProblem,
+  NotifyWarning,
+} from "../components/Notify";
+import { PatientFS } from "../other/patientFile";
+import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 
 const isDev = require("electron-is-dev");
 
@@ -149,6 +153,7 @@ export default class HomePage extends React.Component<IProps, IState> {
       try {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
         remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
+          console.log("HomePage blur");
           if (this.projectHolder.project) {
             this.projectHolder.project.saveAllFilesInFolder();
           }
@@ -172,10 +177,13 @@ export default class HomePage extends React.Component<IProps, IState> {
           const sampleSourceDir = locate("sample data/Edolo sample");
           fs.copySync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
-          PatientFS.renameSync(
-            Path.join(directory, "Edolo sample.sprj"),
+          const srcPath = Path.join(directory, "Edolo sample.sprj");
+
+          PatientFS.renameSyncWithNotifyAndRethrow(
+            srcPath,
             Path.join(directory, projectName + ".sprj")
           );
+
           this.projectHolder.setProject(Project.fromDirectory(directory));
           analyticsEvent("Create Project", "Create Sample Project");
         } else {
@@ -274,6 +282,7 @@ export default class HomePage extends React.Component<IProps, IState> {
           ""
         )}
         <ExportDialog projectHolder={this.projectHolder} />
+        <SpreadsheetImportDialog projectHolder={this.projectHolder} />
         <MessageDialog />
       </div>
     );
@@ -286,14 +295,14 @@ export default class HomePage extends React.Component<IProps, IState> {
     );
     sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
-      title: i18n._(t`Open Project...`),
+      title: t`Open Project...`,
       defaultPath: defaultProjectParentDirectory,
       //note, we'd like to use openDirectory instead, but in Jan 2018 you can't limit to just folders that
       // look like saymore projects
       properties: ["openFile"],
       filters: [
         {
-          name: i18n._(t`lameta and SayMore Project Files`),
+          name: t`lameta and SayMore Project Files`,
           extensions: ["sprj"],
         },
       ],

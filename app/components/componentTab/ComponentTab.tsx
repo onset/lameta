@@ -1,6 +1,8 @@
 import * as React from "react";
 import { FolderList } from "../FolderList";
-import { Folder, IFolderSelection } from "../../model/Folder/Folder";
+import {
+  FolderGroup,
+} from "../../model/Folder/Folder";
 import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
@@ -11,8 +13,7 @@ import SplitPane from "react-split-pane";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
-  folders: Folder[];
-  selectedFolder: IFolderSelection;
+  folders: FolderGroup;
   folderTypeStyleClass: string;
   columns: string[];
   columnWidths: number[];
@@ -33,6 +34,12 @@ export class ComponentTab extends React.Component<IProps> {
       this.props.folderTypeStyleClass + "VerticalSplitPosition";
     const splitterposition = localStorage.getItem(splitterKey) || "300";
     const sp = parseInt(splitterposition, 10);
+    // console.log(`folders.selected.index = ${this.props.folders.selected.index}`);
+    // console.log(`sessions.items.length = ${this.props.project.sessions.items.length}`);
+    if (this.props.folders.selectedIndex >= this.props.folders.items.length)
+      throw Error(
+        `folders.length = ${this.props.folders.items.length} but selected index is ${this.props.folders.selectedIndex}`
+      );
 
     return (
       <div className={"componentTab " + this.props.folderTypeStyleClass}>
@@ -47,18 +54,17 @@ export class ComponentTab extends React.Component<IProps> {
                 this.props.nameForPersistingUsersTableConfiguration
               }
               folders={this.props.folders}
-              selectedFolder={this.props.selectedFolder}
               columns={this.props.columns}
               columnWidths={this.props.columnWidths}
             />
             <div className={"newFolderBar"}>{this.props.folderListButtons}</div>
           </div>
           {this.props.folders &&
-            this.props.folders.length > 0 &&
-            this.props.selectedFolder.index > -1 && (
+            this.props.folders.items.length > 0 &&
+            this.props.folders.selectedIndex > -1 && (
               <FolderPane
                 project={this.props.project}
-                folder={this.props.folders[this.props.selectedFolder.index]}
+                folder={this.props.folders.items.[this.props.folders.selectedIndex]}
                 folderTypeStyleClass={this.props.folderTypeStyleClass}
                 showStandardMetaTabs={true}
                 authorityLists={this.props.authorityLists}
@@ -66,7 +72,7 @@ export class ComponentTab extends React.Component<IProps> {
               >
                 <h3 className={"paneTitle"}>
                   {
-                    this.props.folders[this.props.selectedFolder.index]
+                    this.props.folders.items[this.props.folders.selectedIndex]
                       .displayName
                   }
                 </h3>

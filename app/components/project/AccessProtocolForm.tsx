@@ -1,10 +1,10 @@
 import * as React from "react";
+import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Field } from "../../model/field/Field";
 import { Dictionary } from "typescript-collections";
 import { TextFieldEdit } from "../TextFieldEdit";
-import { Trans } from "@lingui/react";
 import "./AccessProtocolForm.scss";
 
 // enhance: this is kinda lame... we could do this dynamically after we

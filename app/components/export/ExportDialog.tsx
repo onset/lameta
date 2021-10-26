@@ -14,8 +14,7 @@ import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
 import { remote } from "electron";
 import * as Path from "path";
-import { Trans } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";
 import ImdiBundler from "../../export/ImdiBundler";
@@ -60,7 +59,7 @@ export const ExportDialog: React.FunctionComponent<{
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
     if (props.projectHolder && props.projectHolder.project) {
-      const count = props.projectHolder!.project!.countOfMarkedSessions();
+      const count = props.projectHolder!.project!.sessions.countOfMarkedFolders();
       setCountOfMarkedSessions(count);
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");
@@ -95,14 +94,14 @@ export const ExportDialog: React.FunctionComponent<{
       }
       remote.dialog
         .showSaveDialog({
-          title: i18n._(t`Save As`),
+          title: t`Save As`,
           defaultPath,
           filters:
             exportFormat === "csv"
               ? [
                   {
                     extensions: ["zip"],
-                    name: i18n._(t`ZIP Archive`),
+                    name: t`ZIP Archive`,
                   },
                 ]
               : [],
@@ -121,7 +120,7 @@ export const ExportDialog: React.FunctionComponent<{
               } catch (err) {
                 NotifyException(
                   err,
-                  `${i18n._(t`There was a problem exporting:`)} ${err.message}`
+                  `${t`There was a problem exporting:`} ${err.message}`
                 );
                 setMode(Mode.closed);
               } finally {
@@ -201,7 +200,7 @@ export const ExportDialog: React.FunctionComponent<{
     const folderFilter =
       whichSessionsOption === "all"
         ? (f: Folder) => true
-        : (f: Folder) => f.checked;
+        : (f: Folder) => f.marked;
 
     if (path) {
       switch (exportFormat) {
@@ -235,9 +234,7 @@ export const ExportDialog: React.FunctionComponent<{
           analyticsEvent("Export", "Export IMDI Plus Files");
           if (CopyManager.filesAreStillCopying()) {
             NotifyWarning(
-              i18n._(
-                t`lameta cannot export files while files are still being copied in.`
-              )
+              t`lameta cannot export files while files are still being copied in.`
             );
             setMode(Mode.choosing);
           } else {

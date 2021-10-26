@@ -1,27 +1,34 @@
 import * as React from "react";
-import { default as ReactTable, RowInfo } from "react-table";
+import { default as ReactTable, RowInfo } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import Dropzone, { ImageFile } from "react-dropzone";
 import { remote, OpenDialogOptions, ipcRenderer } from "electron";
 import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
-import RenameFileDialog from "./RenameFileDialog/RenameFileDialog";
+import { RenameFileDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
-import { t } from "@lingui/macro";
-import { Trans } from "@lingui/react";
+import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react-lite";
 import { NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
+import { getExtension } from "../other/CopyManager";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
+import {
+  getLinkStatusIconPath,
+  getStatusOfFile,
+} from "../model/file/FileStatus";
 const electron = require("electron");
 
 export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
   (props) => {
     const [selectedFile, setSelectedFile] = React.useState(undefined);
-
+    const [haveMediaFolder] = React.useState(
+      getMediaFolderOrEmptyForThisProjectAndMachine()
+    );
     // What this mobxDummy is about:
     // What happens inside the component tabeles cells are invisible to mobx; it doesn't
     // have a way of knowing that these are reliant on the filename of the file.
@@ -42,21 +49,32 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         width: 30,
         accessor: (d: any) => {
           const f: File = d;
-          return f.getIconName();
+          return f.getIconPath();
         },
         Cell: (p) => <img src={p.value} />,
       },
       {
         id: "name",
-        Header: i18n._(t`Name`),
+        Header: t`Name`,
         accessor: (d: any) => {
           const f: File = d;
-          return f.getTextProperty("filename");
+          return f.getFilenameToShowInList();
         },
+        className: "filename",
+      },
+      {
+        id: "linkStatus",
+        Header: "",
+        width: 30,
+        accessor: (d: any) => {
+          const f: File = d;
+          return getLinkStatusIconPath(f);
+        },
+        Cell: (p) => <img src={p.value} />,
       },
       {
         id: "type",
-        Header: i18n._(t`Type`),
+        Header: t`Type`,
         width: 72,
         accessor: (d: any) => {
           const f: File = d;
@@ -65,18 +83,18 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
       },
       {
         id: "modifiedDate",
-        Header: i18n._(t`Modified`),
+        Header: t`Modified`,
         accessor: (d: any) => {
           const f: File = d;
 
           return f.copyInProgress
             ? f.copyProgress
-            : d.properties.getValueOrThrow("modifiedDate").asISODateString();
+            : d.properties.getValue("modifiedDate")?.asISODateString();
         },
       },
       {
         id: "size",
-        Header: i18n._(t`Size`),
+        Header: t`Size`,
         width: 75,
         style: { textAlign: "right" },
         accessor: (d: any) => {
@@ -94,22 +112,9 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
         activeClassName={"drop-active"}
         className={"fileList"}
         onDrop={(accepted, rejected) => {
-          if (
-            accepted.some((f) => ["session", "person", "meta"].includes(f.type))
-          ) {
-            NotifyWarning(i18n._(t`You cannot add files of that type`));
-            return;
-          }
-          if (accepted.some((f) => fs.lstatSync(f.path).isDirectory())) {
-            NotifyWarning(i18n._(t`You cannot add folders.`));
-            return;
-          }
-          props.folder.copyInFiles(
-            accepted
-              .filter((f) => {
-                return f.type !== "session";
-              })
-              .map((f) => f.path)
+          addFiles(
+            props.folder,
+            accepted.map((f) => f.path)
           );
         }}
         disableClick
@@ -159,7 +164,7 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={() => addFiles(props.folder)}
+            onClick={() => showAddFilesDialog(props.folder)}
           >
             <Trans> Add Files</Trans>
           </button>
@@ -176,7 +181,10 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
+            const { missing, status, info } = getStatusOfFile(rowInfo.original);
+
             return {
+              title: info,
               onContextMenu: (e: any) => {
                 e.preventDefault();
                 //First select the row
@@ -212,8 +220,11 @@ export const FileList = observer<{ folder: Folder; extraButtons?: object[] }>(
               },
               className:
                 (rowInfo.original.copyInProgress ? "copyPending " : "") +
+                ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
+                status +
+                " " +
                 (rowInfo && rowInfo.original === props.folder.selectedFile
-                  ? "selected"
+                  ? " selected "
                   : ""),
             };
           }}
@@ -236,35 +247,39 @@ function showFileMenu(
     return;
   }
   const showDevOnlyItems = userSettings.DeveloperMode;
+  const missing = getStatusOfFile(file).missing;
 
   let items = [
     {
       label:
         process.platform === "darwin"
-          ? i18n._(t`Show in Finder`)
-          : i18n._(t`Show in File Explorer`),
+          ? t`Show in Finder`
+          : t`Show in File Explorer`,
       click: () => {
-        showInExplorer(file.describedFilePath);
+        showInExplorer(file.getActualFilePath());
       },
+      enabled: !missing,
     },
     {
-      label: i18n._(t`Open in program associated with this file type`),
+      label: t`Open in program associated with this file type`,
       click: () => {
         // the "file://" prefix is required on mac, works fine on windows
-        electron.shell.openExternal("file://" + file.describedFilePath);
+        electron.shell.openPath("file://" + file.getActualFilePath());
       },
+      enabled: !missing,
       visible: !isSpecialSayMoreFile || showDevOnlyItems,
     },
     {
-      label: i18n._(t`Rename...`),
+      label: t`Rename...`,
       click: () => {
         RenameFileDialog.show(file, folder);
       },
+      enabled: !missing,
       visible: contextMenu && !isSpecialSayMoreFile,
     },
     { type: "separator", visible: !contextMenu },
     {
-      label: i18n._(t`Delete File...`),
+      label: file.isLinkFile() ? t`Delete link to file...` : t`Delete File...`,
       enabled: file.canDelete,
       click: () => {
         folder.moveFileToTrash(file);
@@ -289,14 +304,30 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function addFiles(folder: Folder) {
+function showAddFilesDialog(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"],
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
       //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
-      folder.copyInFiles(result.filePaths);
+      addFiles(folder, result.filePaths);
     }
   });
+}
+
+function addFiles(folder: Folder, paths: string[]) {
+  if (
+    paths.some((path) =>
+      ["session", "person", "meta"].includes(getExtension(path))
+    )
+  ) {
+    NotifyWarning(t`You cannot add files of that type`);
+    return;
+  }
+  if (paths.some((path) => fs.lstatSync(path).isDirectory())) {
+    NotifyWarning(t`You cannot add folders.`);
+    return;
+  }
+  folder.copyInFiles(paths);
 }

@@ -5,14 +5,16 @@ import ReactModal from "react-modal";
 import "./ConfirmDeleteDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
+import { t } from "@lingui/macro";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
   isOpen: boolean;
-  path?: string;
-  deleteAction?: (path: string) => void;
+  isDeleting: boolean;
+  descriptionOfWhatWillBeDeleted?: string;
+  deleteAction?: () => void;
 }
 
 export default class ConfirmDeleteDialog extends React.Component<
@@ -23,20 +25,39 @@ export default class ConfirmDeleteDialog extends React.Component<
 
   constructor(props: IProps) {
     super(props);
-    this.state = { isOpen: false };
+    this.state = { isOpen: false, isDeleting: false };
     ConfirmDeleteDialog.singleton = this;
   }
   private handleCloseModal(doDelete: boolean) {
-    if (doDelete && this.state.deleteAction && this.state.path) {
-      this.state.deleteAction(this.state.path);
+    if (
+      doDelete &&
+      this.state.deleteAction &&
+      this.state.descriptionOfWhatWillBeDeleted
+    ) {
+      const action = this.state.deleteAction;
+      this.setState({ isDeleting: true });
+      window.setTimeout(() => {
+        try {
+          action();
+          this.setState({
+            isDeleting: false,
+            isOpen: false,
+            deleteAction: () => {},
+          });
+        } catch (error) {}
+      }, 10);
+    } else {
+      this.setState({
+        isDeleting: false,
+        isOpen: false,
+        deleteAction: () => {},
+      });
     }
-    this.setState({ isOpen: false, deleteAction: () => {} });
   }
 
-  public static async show(path: string, deleteAction: (path: string) => void) {
-    const fileName = Path.basename(path);
+  public static async show(name: string, deleteAction: () => void) {
     ConfirmDeleteDialog.singleton.setState({
-      path: fileName,
+      descriptionOfWhatWillBeDeleted: name,
       isOpen: true,
       deleteAction,
     });
@@ -63,24 +84,31 @@ export default class ConfirmDeleteDialog extends React.Component<
             <div className="row">
               <img src={locate("assets/trash.png")} />
               <h1>
-                <Trans>{this.state.path} will be moved to the Trash</Trans>
+                <Trans>
+                  {this.state.descriptionOfWhatWillBeDeleted} will be moved to
+                  the Trash
+                </Trans>
               </h1>
             </div>
           </div>
           <div className={"bottomButtonRow"}>
-            <div className={"okCancelGroup"}>
-              {}
-              {}
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
-              <button
-                id="deleteButton"
-                onClick={() => this.handleCloseModal(true)}
-              >
-                <Trans>Delete</Trans>
-              </button>
-            </div>
+            {this.state.isDeleting ? (
+              t`Deleting...`
+            ) : (
+              <div className={"okCancelGroup"}>
+                {}
+                {}
+                <button onClick={() => this.handleCloseModal(false)}>
+                  <Trans>Cancel</Trans>
+                </button>
+                <button
+                  id="deleteButton"
+                  onClick={() => this.handleCloseModal(true)}
+                >
+                  <Trans>Delete</Trans>
+                </button>
+              </div>
+            )}
           </div>
         </ReactModal>
       </CloseOnEscape>

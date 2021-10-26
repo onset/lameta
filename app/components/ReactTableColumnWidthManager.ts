@@ -1,4 +1,4 @@
-import { Resize } from "react-table";
+import { Resize } from "react-table-6";
 
 export class ReactTableColumnWidthManager {
   private columnKeys: any;

@@ -1,4 +1,17 @@
+import { IFolderType } from "../Folder/Folder";
+import { FieldType } from "./Field";
+import { FieldDefinition } from "./FieldDefinition";
+
 const knownFieldDefinitions = require("./fields.json5");
+export function getFieldDefinition(
+  folderType: IFolderType,
+  key: string
+): FieldDefinition {
+  return knownFieldDefinitions[folderType].find(
+    (d: any) =>
+      d.key.toLowerCase() === key.toLowerCase() || d.tagInSayMoreClassic === key
+  );
+}
 export function isKnownFieldKey(key: string): boolean {
   return Object.keys(knownFieldDefinitions).some((
     area // e.g. project, session, person
@@ -10,6 +23,7 @@ export function isKnownFieldKey(key: string): boolean {
     )
   );
 }
+
 const countries = [
   "unspecified",
   "Afghanistan",

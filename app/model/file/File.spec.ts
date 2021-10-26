@@ -18,9 +18,11 @@ function getPretendAudioFile(): string {
   return path;
 }
 
-function writeSessionFile(
-  contents: string
-): { tmpFolder; sessionFolder; filePath } {
+function writeSessionFile(contents: string): {
+  tmpFolder;
+  sessionFolder;
+  filePath;
+} {
   const tmpFolder = temp.mkdirSync();
   const sessionFolder = Path.join(tmpFolder, "test");
   fs.mkdirSync(sessionFolder);
@@ -62,7 +64,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 describe("file.save()", () => {
   it("should create a metadata file to go with audio file", () => {
     const mediaFilePath = getPretendAudioFile();
-    new OtherFile(mediaFilePath).save();
+    new OtherFile(mediaFilePath, new CustomFieldRegistry()).save();
     expect(fs.existsSync(mediaFilePath + ".meta"));
   });
 });
@@ -82,11 +84,11 @@ describe("FolderMetadataFile constructor", () => {
 describe("file", () => {
   it("should roundtrip notes with dangerous characters", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath);
+    const f = new OtherFile(mediaFilePath, new CustomFieldRegistry());
     const notes: string = "<you> & me > 1 \"quote\" 'single quote'";
     f.setTextProperty("notes", notes);
     f.save();
-    const f2 = new OtherFile(mediaFilePath);
+    const f2 = new OtherFile(mediaFilePath, new CustomFieldRegistry());
     expect(f2.getTextField("notes").text).toBe(notes);
   });
 });
@@ -94,10 +96,10 @@ describe("file", () => {
 describe("file", () => {
   it("should roundtrip custom field", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath);
+    const f = new OtherFile(mediaFilePath, new CustomFieldRegistry());
     f.setTextProperty("customone", "hello");
     f.save();
-    const f2 = new OtherFile(mediaFilePath);
+    const f2 = new OtherFile(mediaFilePath, new CustomFieldRegistry());
     expect(f2.getTextField("customone").text).toBe("hello");
   });
 

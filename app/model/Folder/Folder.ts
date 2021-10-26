@@ -1,6 +1,7 @@
 import {
   File,
   getStandardMessageAboutLockedFiles,
+  kLinkExtensionWithFullStop,
   OtherFile,
 } from "../file/File";
 import { observable } from "mobx";
@@ -12,6 +13,7 @@ import {
   NotifyError,
   NotifyWarning,
   NotifyException,
+  NotifyFileAccessProblem,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -26,21 +28,54 @@ import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
-import { i18n } from "@lingui/core";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
-import { PatientFS } from "../../other/PatientFile";
+import { PatientFS } from "../../other/patientFile";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
-export class IFolderSelection {
+export class FolderGroup {
+  //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
+  // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
   @observable
-  public index: number;
+  public items: Folder[];
+
+  @observable
+  public selectedIndex: number;
+
+  constructor() {
+    this.items = new Array<Folder>();
+    this.selectedIndex = -1;
+  }
+
+  public selectFirstMarkedFolder() {
+    const foundIndex = this.items.findIndex((f) => f.marked);
+    if (foundIndex >= 0) this.selectedIndex = foundIndex;
+  }
+
+  public unMarkAll() {
+    this.items.forEach((f) => {
+      f.marked = false;
+    });
+  }
+  public countOfMarkedFolders(): number {
+    return this.items.filter((f) => f.marked).length;
+  }
 }
 
+export type IFolderType =
+  | "project"
+  | "session"
+  | "person"
+  | "project documents";
+
 // Project, Session, or Person
-export /*babel doesn't like this: abstract*/ class Folder {
+export abstract class Folder {
+  // help with a hard to track down bug where folders are deleted but later something tries to save them.
+  public wasDeleted = false;
+
   // Is the folder's checkbox ticked?
   @observable
-  public checked: boolean = false;
+  public marked: boolean = false;
 
   public directory: string = "";
   @observable
@@ -87,6 +122,12 @@ export /*babel doesn't like this: abstract*/ class Folder {
   public get hasCustomFieldsTable(): boolean {
     return false;
   }
+
+  public abstract importIdMatchesThisFolder(id: string): boolean;
+  public abstract get folderType(): IFolderType;
+  public abstract get propertyForCheckingId(): string;
+  public abstract migrateFromPreviousVersions(): void;
+
   // the awkward things is that these Folder objects (Project/Session/Person) do
   // have one of their files that contains their properties, but it is natural
   // to think of these properties as belonging to the (Project/Session/Person) itself.
@@ -111,95 +152,108 @@ export /*babel doesn't like this: abstract*/ class Folder {
   ) {
     const destPath = Path.join(
       destDirectory,
-      Path.basename(sourceFile.describedFilePath)
+      Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy)
     );
     if (fs.existsSync(destPath)) {
       return;
     }
     // note, I can't think of how the .meta file of the consent could be helpful, so
     // I'm not bothering to get it copied, or its contents preserved, except for size.
-    fs.copyFileSync(sourceFile.describedFilePath, destPath);
+    fs.copyFileSync(sourceFile.pathInFolderToLinkFileOrLocalCopy, destPath);
     const destFile = new OtherFile(destPath, this.customFieldRegistry, true);
     destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
     this.files.push(destFile);
   }
 
-  public copyInOneFile(path: string, newFileName?: string): Promise<void> {
+  public copyInOneFile(
+    pathToOriginalFile: string,
+    newFileName?: string
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (
         ["session", "person", "meta"].includes(
-          getExtension(path)?.toLowerCase()
+          getExtension(pathToOriginalFile)?.toLowerCase()
         )
       ) {
         NotifyWarning(
-          i18n._(t`Cannot add files of that type`) + ` (${getExtension(path)}`
+          t`Cannot add files of that type` +
+            ` (${getExtension(pathToOriginalFile)}`
         );
         return;
       }
       const n = sanitizeForArchive(
-        newFileName ? newFileName : Path.basename(path),
+        newFileName ? newFileName : Path.basename(pathToOriginalFile),
         userSettingsSingleton.IMDIMode
       );
+      const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
         NotifyWarning(
-          i18n._(t`There is already a file here with the name`) + ` (${n})`
+          t`There is already a file here with the name` + ` (${n})`
         );
         return;
       }
+      const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
+      const linkInsteadOfCopy =
+        !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
 
-      const f = new OtherFile(dest, this.customFieldRegistry, true);
-      const stats = fs.statSync(path);
-      f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
-      f.copyProgress = i18n._(t`Copy Requested...`);
-      this.files.push(f);
+      if (linkInsteadOfCopy) {
+        const f = OtherFile.CreateLinkFile(
+          pathToOriginalFile,
+          this.customFieldRegistry,
+          this.directory
+        );
 
-      //throw new Error("testing");
-      // nodejs on macos is flaky copying large files: https://github.com/nodejs/node/issues/30575
-      // child_process.execFile('/bin/cp', ['--no-target-directory', source, target]
-
-      window.setTimeout(
-        () =>
-          CopyManager.safeAsyncCopyFileWithErrorNotification(
-            path,
-            dest,
-            (progress: string) => {
-              f.copyProgress = progress;
-            }
-          )
-            .then((successfulDestinationPath) => {
-              const pendingFile = this.files.find(
-                (x) => x.describedFilePath === dest
-              );
-              if (!pendingFile) {
-                NotifyError(
-                  // not translating for now
-                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
-                );
-                reject();
-                return;
+        this.files.push(f);
+      } else {
+        const f = new OtherFile(dest, this.customFieldRegistry, true);
+        f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
+        f.copyProgress = t`Copy Requested...`;
+        window.setTimeout(
+          () =>
+            CopyManager.safeAsyncCopyFileWithErrorNotification(
+              pathToOriginalFile,
+              dest,
+              (progress: string) => {
+                f.copyProgress = progress;
               }
-              pendingFile!.finishLoading();
-              resolve();
-            })
-            .catch((error) => {
-              console.log(`error ${error}`);
-              const fileIndex = this.files.findIndex(
-                (x) => x.describedFilePath === dest
-              );
-              if (fileIndex < 0) {
-                NotifyException(
-                  error, // not translating for now
-                  `Something went wrong copying ${path} to ${dest}: could not find a matching pending file.`
+            )
+              .then((successfulDestinationPath) => {
+                const pendingFile = this.files.find(
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
                 );
-                reject();
-                return;
-              }
-              this.files.splice(fileIndex, 1);
-            }),
-        0
-      );
+                if (!pendingFile) {
+                  NotifyError(
+                    // not translating for now
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
+                  );
+                  reject();
+                  return;
+                }
+                pendingFile!.finishLoading();
+                resolve();
+              })
+              .catch((error) => {
+                console.log(`error ${error}`);
+                const fileIndex = this.files.findIndex(
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
+                );
+                if (fileIndex < 0) {
+                  NotifyException(
+                    error, // not translating for now
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
+                  );
+                  reject();
+                  return;
+                }
+                this.files.splice(fileIndex, 1);
+              }),
+          0
+        );
+
+        this.files.push(f);
+      }
     });
   }
 
@@ -222,12 +276,44 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
   public knownFields: FieldDefinition[];
 
+  // renaming failures can lead to ____.meta files that don't match anything, they just gum up the works
+
+  private static cleanupZombieMetaFiles(directory: string) {
+    /*** this is ready to go but I'm afraid to pull the trigger
+     
+    const metaFilePaths = glob.sync(Path.join(directory, "*.meta"));
+    metaFilePaths.forEach((metaFilePath) => {
+      const basename = Path.basename(metaFilePath, Path.extname(metaFilePath));
+      const filePathThatWouldMatchTheMetaFileName = Path.join(
+        Path.dirname(metaFilePath),
+        basename
+      );
+      if (!fs.existsSync(filePathThatWouldMatchTheMetaFileName)) {
+        console.log("Removing zombie meta file" + metaFilePath);
+        if (!trash(metaFilePath)) {
+          NotifyWarning(
+            `lameta was not able to put this file in the trash (${metaFilePath})`
+          );
+        } else {
+          NotifyNoBigDeal(
+            `Moved unused lameta meta file to trash because there is no matching file to annotate. ${Path.basename(
+              metaFilePath
+            )}`
+          );
+        }
+      }
+    });
+
+    ****/
+  }
+
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
     customFieldRegistry: CustomFieldRegistry
   ): File[] {
+    Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
 
     files.push(folderMetaDataFile);
@@ -258,24 +344,26 @@ export /*babel doesn't like this: abstract*/ class Folder {
   }
 
   public moveFileToTrash(file: File) {
-    ConfirmDeleteDialog.show(file.describedFilePath, (path: string) => {
-      sentryBreadCrumb(`Moving to trash: ${file.describedFilePath}`);
+    ConfirmDeleteDialog.show(file.pathInFolderToLinkFileOrLocalCopy, () => {
+      sentryBreadCrumb(
+        `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
+      );
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
-      if (fs.existsSync(file.describedFilePath)) {
+      if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = trash(file.describedFilePath);
+        continueTrashing = trash(file.pathInFolderToLinkFileOrLocalCopy);
       }
       if (!continueTrashing) {
         return;
       }
       if (
         file.metadataFilePath &&
-        file.metadataFilePath !== file.describedFilePath
+        file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
           if (!trash(file.metadataFilePath)) {
             NotifyError(
-              i18n._(t`lameta was not able to put this file in the trash`) +
+              t`lameta was not able to put this file in the trash` +
                 ` (${file.metadataFilePath})`
             );
           }
@@ -284,9 +372,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
       if (this.selectedFile === file) {
         this.selectedFile = this.files.length > 0 ? this.files[0] : null;
       }
-      // there was a bug at one time with something still holding a reference to this.
-      file.metadataFilePath = "error: this file was previously put in trash";
-      file.describedFilePath = "";
+      file.wasDeleted();
       file.properties = new FieldSet();
 
       this.forgetFile(file);
@@ -304,13 +390,11 @@ export /*babel doesn't like this: abstract*/ class Folder {
     sentryBreadCrumb(`renameFilesAndFolders ${newFolderName}.`);
     if (this.files.some((f) => f.copyInProgress)) {
       NotifyWarning(
-        i18n._(
-          t`Please wait until all files are finished copying into this folder`
-        )
+        t`Please wait until all files are finished copying into this folder`
       );
       return false;
     }
-    this.saveAllFilesInFolder();
+    this.saveAllFilesInFolder(true);
 
     const oldDirPath = this.directory;
     const oldFolderName = Path.basename(oldDirPath);
@@ -320,19 +404,23 @@ export /*babel doesn't like this: abstract*/ class Folder {
 
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
-    const couldNotRenameDirectory = i18n._(
-      t`lameta could not rename the directory.`
-    );
+    const couldNotRenameDirectory = t`lameta could not rename the directory.`;
 
+    if (fs.pathExistsSync(newDirPath)) {
+      // this could almost just be silent. To see it, create several new people in a row
+      NotifyWarning(
+        t`lameta tried to rename the folder "${oldFolderName}" to "${newFolderName}", but there is already a folder with that name.`
+      );
+      return false;
+    }
     // first, we just do a trial run to see if this will work
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       PatientFS.renameSync(newDirPath, this.directory);
     } catch (err) {
-      NotifyException(
-        err,
-        couldNotRenameDirectory + getStandardMessageAboutLockedFiles(),
-        " [[STEP:Precheck]]"
+      NotifyFileAccessProblem(
+        couldNotRenameDirectory + " [[STEP:Precheck]]",
+        err
       );
       return false;
     }
@@ -341,11 +429,9 @@ export /*babel doesn't like this: abstract*/ class Folder {
         f.throwIfFilesMissing();
       });
     } catch (err) {
-      NotifyException(
-        err,
-        couldNotRenameDirectory +
-          getStandardMessageAboutLockedFiles() +
-          " [[STEP:Files Exist]]"
+      NotifyFileAccessProblem(
+        couldNotRenameDirectory + " [[STEP:Files Exist]]",
+        err
       );
       return false;
     }
@@ -356,14 +442,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
         f.updateNameBasedOnNewFolderName(newFolderName);
       } catch (err) {
         const base = Path.basename(f.metadataFilePath);
-        const msg = i18n._(
-          t`lameta was not able to rename one of the files in the folder.`
-        );
-        NotifyException(
-          err,
-          `${msg} (${base})` +
-            getStandardMessageAboutLockedFiles() +
-            " [[STEP:File names]]"
+        const msg = t`lameta was not able to rename one of the files in the folder.`;
+        NotifyFileAccessProblem(
+          `${msg} (${base})` + " [[STEP:File names]]",
+          err
         );
       }
     });
@@ -372,12 +454,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
     } catch (err) {
-      const msg = i18n._(t`lameta was not able to rename the folder.`);
-      NotifyException(
-        err,
-        `${msg} (${this.displayName}).` +
-          getStandardMessageAboutLockedFiles() +
-          " [[STEP:Actual folder]]"
+      const msg = t`lameta was not able to rename the folder.`;
+      NotifyFileAccessProblem(
+        `${msg} (${this.displayName}).` + " [[STEP:Actual folder]]",
+        err
       );
       return false; // don't continue on with telling the folders that they moved.
     }
@@ -387,6 +467,10 @@ export /*babel doesn't like this: abstract*/ class Folder {
       // no file i/o here
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
     });
+
+    console.log(
+      `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
+    );
     return true;
   }
 
@@ -427,7 +511,7 @@ export /*babel doesn't like this: abstract*/ class Folder {
         this.metadataFile.metadataFilePath,
         this.metadataFileExtensionWithDot
       );
-      this.metadataFile.save();
+      this.metadataFile.save(false);
     }
   }
 
@@ -459,9 +543,18 @@ export /*babel doesn't like this: abstract*/ class Folder {
     const dir = fs.readdirSync(directory);
     return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
   }
-  public saveAllFilesInFolder() {
+  public saveAllFilesInFolder(beforeRename: boolean = false) {
+    // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
+    // either the folder or something in the folder.
+    if (this.wasDeleted) {
+      debugger;
+      console.error(
+        ` called on ${this.displayName} which was already deleted.`
+      );
+      return;
+    }
     for (const f of this.files) {
-      f.save();
+      f.save(beforeRename);
     }
   }
 
@@ -493,4 +586,8 @@ export /*babel doesn't like this: abstract*/ class Folder {
       }
     }
   }
+}
+function isSubDirectory(root: string, path: string) {
+  const relative = Path.relative(root, path);
+  return relative && !relative.startsWith("..") && !Path.isAbsolute(relative);
 }

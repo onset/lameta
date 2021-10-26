@@ -5,9 +5,8 @@ import ReactModal from "react-modal";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("electron").remote;
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
-import { Trans } from "@lingui/react";
 import { analyticsLocation } from "../../other/analytics";
 
 interface IProps {
@@ -56,16 +55,16 @@ export default class CreateProjectDialog extends React.Component<
     } else if (projectNameIsDuplicate) {
       projectNameIsViable = false;
 
-      message = i18n._(t`There is already a project at: ${path}.`);
+      message = t`There is already a project at: ${path}.`;
       messageClass = "error";
     } else {
       projectNameIsViable = true;
-      message = i18n._(t`Project will be created in: ${path}.`);
+      message = t`Project will be created in: ${path}.`;
     }
 
     const title = this.props.useSampleProject
-      ? i18n._(t`Create Project Using Sample Data`)
-      : i18n._(t`Create New lameta Project`);
+      ? t`Create Project Using Sample Data`
+      : t`Create New lameta Project`;
     return (
       <ReactModal
         ariaHideApp={false}

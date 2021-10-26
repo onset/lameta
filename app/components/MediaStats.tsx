@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { default as React, useState, useEffect } from "react";
-import ReactTable from "react-table";
+import ReactTable from "react-table-6";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
 // import { i18n } from "../localization";
@@ -62,7 +62,7 @@ export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
         showPagination={false}
         defaultPageSize={10000}
         data={Object.keys(stats)}
-        sorted={[{ id: "key", asc: true }]}
+        sorted={[{ id: "key", desc: false }]}
         columns={columns}
         minRows={0}
       />
@@ -78,13 +78,13 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
     case "Image":
       return new Promise((resolve, reject) => {
         try {
-          const ext = Path.extname(file.describedFilePath)
+          const ext = Path.extname(file.getActualFilePath())
             .toLowerCase()
             .replace(/\./g, "");
           if (ext === "bmp") {
             resolve({ error: "lameta cannot read metadata of bmp files." });
           }
-          const buffer = readSyncEnoughForTags(file.describedFilePath);
+          const buffer = readSyncEnoughForTags(file.getActualFilePath());
           const tags = ExifReader.load(buffer);
           const y = {};
           Object.keys(tags).forEach((k) => {
@@ -93,26 +93,10 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
           //normally this comes in as "Image Height/Width" from ExifReader,
           //but not always (e.g. if it's from a paint program instead a camera).
           // We'll see if we get complaints, and then can figure out how to incorporate this second opinion from imagesize.
-          // imagesize(file.describedFilePath);
           resolve(y);
         } catch (err) {
           resolve({ error: err.message });
         }
-        /*fs.readFile(file.describedFilePath, (error, data) => {
-          if (error) {
-            resolve({ "error reading file": error });
-          }
-          const tags = ExifReader.loadView.load(data);
-          const y = {};
-          Object.keys(tags).forEach((k) => {
-            if (tags[k].description) y[k] = tags[k].description;
-          });
-          //normally this comes in as "Image Height/Width" from ExifReader,
-          //but not always (e.g. if it's from a paint program instead a camera).
-          // We'll see if we get complaints, and then can figure out how to incorporate this second opinion from imagesize.
-          // imagesize(file.describedFilePath);
-          resolve(y);
-        });*/
       });
       break;
 
@@ -121,10 +105,10 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
       return new Promise((resolve, reject) => {
         const stats: Stats = {};
         try {
-          ffmpeg.ffprobe(file.describedFilePath, (err, result) => {
+          ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
               console.error(
-                `error testing ffprobe on '${file.describedFilePath}'`
+                `error testing ffprobe on '${file.getActualFilePath()}'`
               );
               reject(err);
             } else if (result && result.format && result.format.duration) {

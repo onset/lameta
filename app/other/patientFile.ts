@@ -1,6 +1,14 @@
 import * as fs from "fs";
 import * as child_process from "child_process";
-import { NotifyNoBigDeal, NotifyWarning } from "../components/Notify";
+import {
+  getCannotRenameFileMsg,
+  NotifyError,
+  NotifyFileAccessProblem,
+  NotifyNoBigDeal,
+  NotifyRenameProblem,
+  NotifyWarning,
+} from "../components/Notify";
+import { t } from "@lingui/macro";
 
 /* Do what we can to co-exist with things like Dropbox that can temporarily lock files.
     To torture test this stuff, use https://github.com/hatton/filemeddler
@@ -19,40 +27,93 @@ export class PatientFS {
     const gracefulFs = require("graceful-fs");
     gracefulFs.gracefulify(realFs);
   }
-  public static readFileSync(path: string): string {
-    return PatientFS.patientFileOperationSync(() =>
-      fs.readFileSync(path, "utf8")
-    );
+  public static readFileSyncWithNotifyAndRethrow(path: string): string {
+    try {
+      return PatientFS.patientFileOperationSync(() =>
+        fs.readFileSync(path, "utf8")
+      );
+    } catch (err) {
+      NotifyFileAccessProblem(`Could not read ${path}`, err);
+      throw err;
+    }
   }
-  public static writeFileSync(path: string, contents: string): string {
-    return PatientFS.patientFileOperationSync(() =>
-      fs.writeFileSync(path, contents, { encoding: "utf8" })
-    );
+  public static writeFileSyncWithNotifyThenRethrow(
+    path: string,
+    contents: string
+  ) {
+    try {
+      return PatientFS.patientFileOperationSync(() =>
+        fs.writeFileSync(path, contents, { encoding: "utf8" })
+      );
+    } catch (err) {
+      NotifyFileAccessProblem(`Could not write ${path}`, err);
+      throw err;
+    }
+  }
+
+  public static assertWritePermissionWithNotification(
+    path: string,
+    thingWeWereTryingToDo: string
+  ): boolean {
+    try {
+      // from https://stackoverflow.com/a/64386424/723299
+      const UV_FS_O_EXLOCK = 0x10000000;
+      const handle = fs.openSync(path, fs.constants.O_RDONLY | UV_FS_O_EXLOCK);
+      fs.closeSync(handle);
+    } catch (err) {
+      NotifyFileAccessProblem(thingWeWereTryingToDo, err);
+      return false;
+    }
+    return true;
+  }
+
+  public static copyFileSync(from: string, to: string) {
+    PatientFS.patientFileOperationSync(() => fs.copyFileSync(from, to));
   }
   public static renameSync(from: string, to: string) {
     PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
+  }
+  public static renameSyncWithNotifyAndRethrow(
+    from: string,
+    to: string,
+    fileType?: string
+  ) {
+    try {
+      PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
+    } catch (err) {
+      if (
+        err.code === "EBUSY" &&
+        (fileType === "Video" || fileType === "Audio")
+      ) {
+        // this is a special case we've seen before.
+        NotifyError(
+          `${getCannotRenameFileMsg()} ` +
+            t`Restart lameta and do the rename before playing the video again.`
+        );
+      } else {
+        NotifyRenameProblem(err, from);
+      }
+      throw err;
+    }
   }
   private static patientFileOperationSync(operation: () => any): any {
     // note, graceful-fs is already pausing up to 60 seconds on each attempt.
     // So even 2 attempts may be too much.
     const kattempts = 2;
-    for (let attempt = 0; attempt < kattempts; attempt++) {
+    let attempt = 1;
+    for (; attempt <= kattempts; attempt++) {
       try {
         const result = operation();
-        if (attempt > 0) {
-          console.log("patientReadFileSync: OK, got the file");
+        if (attempt > 1) {
+          // there is no way to asynchronously show any UI, but after a long wait in which we finally got through, it might help to tell people what caused the a delay.
+          NotifyNoBigDeal(
+            `There was a delay in reading a file... perhaps another program, file sync service, or antivirus is interfering.`
+          );
         }
         return result;
       } catch (err) {
         if (err.code === "EBUSY") {
-          // there is no way to asynchronously show any UI, but after a long wait it might help to tell people what caused the a delay
-          if (attempt === 0) {
-            NotifyNoBigDeal(
-              `There was a delay in reading a file... perhaps Dropbox or antivirus is interfering.`
-            );
-          }
-
-          if (attempt === kattempts - 1) {
+          if (attempt === kattempts) {
             throw err; // give up
           }
           console.log("patientReadFileSync: Sleeping...");
@@ -60,6 +121,7 @@ export class PatientFS {
         } else throw err; // some other problem
       }
     }
+
     throw Error("should never get to this point");
   }
 

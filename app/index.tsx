@@ -9,7 +9,8 @@ import { initializeSentry as initializeErrorReporting } from "./other/errorHandl
 import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
-import { PatientFS } from "./other/PatientFile";
+import { PatientFS } from "./other/patientFile";
+import * as ReactModal from "react-modal";
 
 PatientFS.init();
 //if (!process.env.HOT) {
@@ -33,9 +34,9 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
     ipcRenderer
       .invoke(
         "confirm-quit",
-        i18n._(t`One or more files are still being copied into your project.`),
-        i18n._(t`Do not quit`),
-        i18n._(t`Abandon files that are still copying`)
+        t`One or more files are still being copied into your project.`,
+        t`Do not quit`,
+        t`Abandon files that are still copying`
       )
       .then((result) => {
         if (result.response === 1) {
@@ -47,4 +48,6 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
   }
   return; // just quit
 };
-render(<App />, document.getElementById("root"));
+const container = document.getElementById("root");
+ReactModal.default.setAppElement(container!);
+render(<App />, container);

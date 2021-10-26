@@ -6,17 +6,16 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { Trans } from "@lingui/react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import * as _ from "lodash";
 
 const ReactMarkdown = require("react-markdown");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
-import { i18n } from "@lingui/core";
-import { people_background_color, saymore_orange } from "./colors";
+import { i18n } from "../other/localization";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
+import { lameta_blue, lameta_orange } from "../containers/theme";
 type Mode =
   | "querying"
   | "update-available"
@@ -118,13 +117,18 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             css={css`
               float: right;
               font-size: 16px;
-              color: ${saymore_orange};
+              color: ${lameta_orange};
               margin-bottom: auto;
               margin-top: auto;
             `}
           >
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
-            {i18n._(t`You are running lameta version: `)}&nbsp;{version}
+            {i18n._(
+              /*i18n*/ {
+                id: "You are running lameta version:",
+              }
+            )}
+            &nbsp;{version}
           </div>
         </div>
         <div
@@ -154,14 +158,14 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                 key={release.name}
                 css={css`
                   &:not(:first-child) {
-                  margin-top: sem !important;
-                  
+                    margin-top: sem !important;
+                  }
                 `}
               >
                 <h1
                   css={css`
                     margin-bottom: 10px !important;
-                    background-color: ${people_background_color};
+                    background-color: ${lameta_blue};
                     padding: 5px;
                     padding-bottom: 35px;
                     font-size: 14pt !important;
@@ -216,7 +220,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                   setShowNewReleasesOnly(!event.target.checked);
                 }}
               ></input>
-              {i18n._(t`Show more releases`)}
+              {t`Show more releases`}
             </label>
           )}
           <div

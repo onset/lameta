@@ -60,7 +60,24 @@
   }
 }
 
+/* status values::after    status:
+      | "normalFile"
+      | "missing"
+      | "goodLink"
+      | "copyInProgress"
+      | "noMediaFolderConnection";
+*/
+
 .copyPending {
   //background-color: aqua;
   color: $project--color;
 }
+.missing {
+  color: $error-color !important;
+}
+.noMediaFolderConnection {
+  color: $project-color !important;
+}
+// .linkFile .filename {
+//   font-style: italic;
+// }

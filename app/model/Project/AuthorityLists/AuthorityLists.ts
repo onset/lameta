@@ -26,7 +26,7 @@ export class AuthorityLists {
     if (protocolName === "custom") {
       // tslint:disable-next-line:arrow-return-shorthand
       this.accessChoices = customChoices.split(",").map((c) => {
-        return { id: c, label: c, description: "" };
+        return { id: c.trim(), label: c.trim(), description: "" };
       });
     } else {
       const protocol = accessProtocols.find(

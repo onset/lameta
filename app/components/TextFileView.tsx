@@ -21,7 +21,7 @@ export default class TextFileView extends React.Component<IProps, IState> {
   }
 
   public readTextFile(path: string) {
-    fs.readFile(path, "utf8", (err, data) => {
+    fs.readFile(path, "utf-8", (err, data) => {
       if (err) {
         this.setState({ text: err.message });
       } else {

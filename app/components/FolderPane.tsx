@@ -22,13 +22,19 @@ const electron = require("electron");
 import "./FolderPane.scss";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
-import { Trans } from "@lingui/react";
+import { Trans } from "@lingui/macro";
 import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 import { locate } from "../other/crossPlatformUtilities";
 import * as URL from "url";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
+import {
+  FileStatusBlock,
+  getLinkStatusIconPath,
+  getStatusOfFile,
+} from "../model/file/FileStatus";
 
 export interface IProps {
   folder: Folder;
@@ -63,6 +69,7 @@ export const FolderPane = observer<
     selectedContribution,
     setSelectedContribution
   );
+
   const splitterKey = props.folderTypeStyleClass + "HorizontalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
@@ -80,7 +87,14 @@ export const FolderPane = observer<
         onChange={(size: any) => localStorage.setItem(splitterKey, size)}
       >
         <FileList folder={props.folder} extraButtons={props.fileListButtons} />
-        {tabs}
+        <div className="folder-bottom-pane">
+          {props.folder.selectedFile && (
+            <>
+              <FileStatusBlock file={props.folder.selectedFile} />
+              {tabs}
+            </>
+          )}
+        </div>
       </SplitPane>
     </div>
   );
@@ -94,11 +108,12 @@ function getTabs(
   setSelectedContribution: (c: Contribution | undefined) => void
 ) {
   const path: string = props.folder.selectedFile
-    ? Path.join(
-        props.folder.directory,
-        props.folder.selectedFile.getTextProperty("filename")
-      )
-    : "";
+    ? props.folder.selectedFile.getActualFilePath()
+    : // ? Path.join(
+      //     props.folder.directory,
+      //     props.folder.selectedFile.getTextProperty("filename")
+      //   )
+      "";
   const directoryObject = props.folder;
   const file = directoryObject.selectedFile;
   //console.log("getTabs:" + path);
@@ -198,7 +213,11 @@ function getTabs(
   // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
-  switch (file.type) {
+  let t = file.type;
+  let ext = Path.extname(file.getActualFilePath());
+  if ([".txt", ".md"].includes(ext)) t = "Text";
+
+  switch (t) {
     case "Session":
       return (
         <Tabs
@@ -231,7 +250,7 @@ function getTabs(
           <TabPanel>
             <SMErrorBoundary
               context={`${directoryObject.displayName} ${
-                directoryObject.metadataFile!.describedFilePath
+                directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } Session AutoForm`}
             >
               <AutoForm
@@ -289,7 +308,7 @@ function getTabs(
           <TabPanel>
             <SMErrorBoundary
               context={`${directoryObject.displayName} ${
-                directoryObject.metadataFile!.describedFilePath
+                directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } PersonForm`}
             >
               <PersonForm
@@ -404,7 +423,9 @@ function getTabs(
             <a
               onClick={() => {
                 // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openExternal("file://" + file.describedFilePath);
+                electron.shell.openExternal(
+                  "file://" + file.getActualFilePath()
+                );
               }}
             >
               <Trans>Open in ELAN</Trans>
@@ -428,7 +449,7 @@ function getTabs(
               onClick={(e) => {
                 e.preventDefault(); // don't try to follow the link
                 // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openExternal("file://" + file.describedFilePath);
+                electron.shell.openPath("file://" + file.getActualFilePath());
               }}
             >
               Open in program associated with this file type

@@ -5,6 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
+import userSettings from "../other/UserSettings";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
@@ -20,14 +21,14 @@ import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import SayLessMenu from "../other/menu";
 import SMErrorBoundary from "./SMErrorBoundary";
-import { Trans } from "@lingui/react";
-import { i18n } from "../other/localization";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
-
+import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
+import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
+import { IFolderType } from "../model/Folder/Folder";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -37,8 +38,6 @@ export interface IProps {
 @observer
 export default class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 0;
-  private notificationBar: NotificationBar | null;
-  // private currentTabIndex: number = this.kFirstTabToOpen;
 
   public constructor(props: IProps) {
     super(props);
@@ -53,10 +52,10 @@ export default class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.selectedSession, (change) => {
+    mobx.observe(this.props.project.sessions, (change) => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.selectedPerson, (change) => {
+    mobx.observe(this.props.project.persons, (change) => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
   }
@@ -68,10 +67,10 @@ export default class Home extends React.Component<IProps> {
   private UpdateMenus(currentTabIndex: number) {
     let enableMenu = currentTabIndex === 1;
     const sessionMenu = {
-      label: "&" + i18n._(t`Session`),
+      label: "&" + t`Session`,
       submenu: [
         {
-          label: i18n._(t`New Session`),
+          label: t`New Session`,
           enabled: enableMenu,
           click: () => {
             if (this.props.project) {
@@ -80,7 +79,7 @@ export default class Home extends React.Component<IProps> {
           },
         },
         {
-          label: i18n._(t`Duplicate Session`),
+          label: t`Duplicate Session`,
           enabled: enableMenu && this.props.project.haveSelectedSession(),
           accelerator: "Ctrl+D",
           click: () => {
@@ -91,7 +90,17 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: i18n._(t`Delete Session...`),
+          label: "&" + t`Import Spreadsheet of Sessions` + "...",
+          accelerator: "CmdOrCtrl+I",
+          enabled: enableMenu,
+          click: () => {
+            showSpreadsheetImportDialog("session");
+          },
+        },
+        { type: "separator" },
+        {
+          label: t`Delete Session...`,
+
           enabled: enableMenu && this.props.project.haveSelectedSession(),
           click: () => {
             if (this.props.project) {
@@ -99,14 +108,36 @@ export default class Home extends React.Component<IProps> {
             }
           },
         },
+        {
+          label: t`Delete Session`,
+          accelerator: "Ctrl+Alt+K",
+          enabled:
+            enableMenu &&
+            this.props.project.haveSelectedSession() &&
+            userSettings.DeveloperMode,
+          click: () => {
+            if (this.props.project) {
+              this.props.project.deleteFolder(
+                this.props.project.sessions.items[
+                  this.props.project.sessions.selectedIndex
+                ]
+              );
+            }
+          },
+        },
+        this.getDeleteMarkedMenuItem(
+          "session",
+          t`Delete All Marked Sessions...`,
+          enableMenu
+        ),
       ],
     };
     enableMenu = currentTabIndex === 2;
     const peopleMenu = {
-      label: "&" + i18n._(t`People`),
+      label: "&" + t`People`,
       submenu: [
         {
-          label: i18n._(t`New Person`),
+          label: t`New Person`,
           enabled: enableMenu,
           click: () => {
             if (this.props.project) {
@@ -115,7 +146,7 @@ export default class Home extends React.Component<IProps> {
           },
         },
         {
-          label: i18n._(t`Duplicate Person`),
+          label: t`Duplicate Person`,
           enabled: enableMenu && this.props.project.haveSelectedPerson(),
           click: () => {
             if (this.props.project) {
@@ -125,7 +156,16 @@ export default class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
-          label: i18n._(t`Delete Person...`),
+          label: "&" + t`Import Spreadsheet of People` + "...",
+          accelerator: "CmdOrCtrl+Alt+I",
+          enabled: enableMenu,
+          click: () => {
+            showSpreadsheetImportDialog("person");
+          },
+        },
+        { type: "separator" },
+        {
+          label: t`Delete Person...`,
           enabled: enableMenu && this.props.project.haveSelectedPerson(),
           click: () => {
             if (this.props.project) {
@@ -133,9 +173,41 @@ export default class Home extends React.Component<IProps> {
             }
           },
         },
+        this.getDeleteMarkedMenuItem(
+          "person",
+          t`Delete All Marked People...`,
+          enableMenu
+        ),
       ],
     };
     this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
+  }
+  private getDeleteMarkedMenuItem(
+    folderType: IFolderType,
+    label: string,
+    enabled: boolean
+  ): object {
+    return {
+      // this doesn't work because the count falls out of date (these menus cannot be updated on the fly)
+      //label: t`Delete ${this.props.project.countOfMarkedSessions()} Marked Sessions...`,
+      label: label,
+      enabled: enabled, // doesn't work (see explanation above): && this.props.project.countOfMarkedSessions() > 0,
+      click: () => {
+        if (this.props.project) {
+          if (
+            (this.props.project.getFolderArrayFromType(
+              folderType
+            ) as any).countOfMarkedFolders() === 0
+          ) {
+            ShowMessageDialog({
+              title: ``,
+              text: `To select the items that you want to delete, first tick one or more boxes.`,
+              buttonText: "Close",
+            });
+          } else this.props.project.deleteMarkedFolders(folderType);
+        }
+      },
+    };
   }
 
   // just makes the sessions or person menu initially enabled if we are

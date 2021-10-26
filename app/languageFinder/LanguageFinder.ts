@@ -40,6 +40,12 @@ export interface ILangIndexEntry {
 }
 
 export let staticLanguageFinder: LanguageFinder;
+
+// NB: you need to call this once if your unit test is not creating a Project.
+export function setupLanguageFinderForTests() {
+  staticLanguageFinder = new LanguageFinder(() => undefined);
+}
+
 export class LanguageFinder {
   private index: TrieSearch;
   private getDefaultLanguage: () => ILangIndexEntry | undefined;
@@ -118,7 +124,7 @@ export class LanguageFinder {
   ): string {
     const projectSubjectLanguage = this.getDefaultLanguage();
 
-    // handle qaa -- qtx or any other code that we don't have in our index, but the user has
+    // handle qaa -- qtz or any other code that we don't have in our index, but the user has
     // set up as the default language
     if (
       name.toLowerCase().trim() ===
@@ -267,12 +273,62 @@ export class LanguageFinder {
     // this would also match on full names, which we don't like (e.g., "en" is a language of Vietnam)
     const matches = this.lookupInIndexAndCustomLanguages(trimmedCode);
     const x = matches.filter((m) => {
-      return m.iso639_3 === trimmedCode;
+      return m.iso639_3 === trimmedCode || m.iso639_1 === trimmedCode;
     });
     // TODO unfortunately lang tags gives multiple hits for a given code if (x.length === 1) {
     if (x.length >= 1) {
       return x[0].englishName;
     }
     return trimmedCode;
+  }
+
+  public findCodeFromCodeOrLanguageName(codeOrLanguageName: string) {
+    var c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
+    // if we got something other than the code back, that means we did recognize it as a known code.
+    if (c.length > 0 && c.toLowerCase() !== codeOrLanguageName.toLowerCase())
+      return codeOrLanguageName;
+    else if (c >= "qaa" && c <= "qtz") return c;
+    else return this.convertNameToCode(codeOrLanguageName);
+  }
+
+  public convertNameToCode(nameOrCode: string): string {
+    //In SayMore and lameta < 0.8.7, this was stored as a name, rather than a code.
+    const possibleCode = staticLanguageFinder.findOne639_3CodeFromName(
+      nameOrCode,
+      undefined
+    );
+
+    if (possibleCode === "und") {
+      // just leave it alone. If we don't recognize a language name, it's better to just not convert it than
+      // to lose it.
+      return "und";
+    }
+    let code;
+    if (possibleCode === undefined && nameOrCode.length === 3) {
+      code = nameOrCode;
+    }
+    // I don't suppose this would ever happen, but it would be unambiguous
+    else if (
+      possibleCode &&
+      nameOrCode.length === 3 &&
+      possibleCode === nameOrCode
+    ) {
+      code = nameOrCode;
+    }
+    // ambiguous, but a sampling suggests that 3 letter language names are always given a matching 3 letter code.
+    else if (
+      possibleCode &&
+      nameOrCode.length === 3 &&
+      possibleCode !== nameOrCode
+    ) {
+      // let's error on the side of having the correct code already. Could theoretically
+      // give wrong code for some field filled out in a pre-release version of
+      code = nameOrCode;
+    }
+    // otherwise, go with the name to code lookup
+    else {
+      code = possibleCode;
+    }
+    return code;
   }
 }

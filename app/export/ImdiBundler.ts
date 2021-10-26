@@ -108,30 +108,32 @@ export default class ImdiBundler {
 
       //---- Sessions ----
 
-      project.sessions.filter(folderFilter).forEach((session: Session) => {
-        const imdi = ImdiGenerator.generateSession(session, project);
-        const imdiFileName = `${session.filePrefix}.imdi`;
-        fs.writeFileSync(
-          Path.join(
-            rootDirectory,
-            secondLevel,
-            sanitizeForArchive(imdiFileName, true)
-          ),
-          imdi
-        );
-        childrenSubpaths.push(secondLevel + "/" + imdiFileName);
-
-        if (copyInProjectFiles) {
-          this.copyFolderOfFiles(
-            session.files,
+      project.sessions.items
+        .filter(folderFilter)
+        .forEach((session: Session) => {
+          const imdi = ImdiGenerator.generateSession(session, project);
+          const imdiFileName = `${session.filePrefix}.imdi`;
+          fs.writeFileSync(
             Path.join(
               rootDirectory,
               secondLevel,
-              Path.basename(session.directory)
-            )
+              sanitizeForArchive(imdiFileName, true)
+            ),
+            imdi
           );
-        }
-      });
+          childrenSubpaths.push(secondLevel + "/" + imdiFileName);
+
+          if (copyInProjectFiles) {
+            this.copyFolderOfFiles(
+              session.files,
+              Path.join(
+                rootDirectory,
+                secondLevel,
+                Path.basename(session.directory)
+              )
+            );
+          }
+        });
 
       //childrenSubpaths.push(..something for consent if we have it---);
 
@@ -161,19 +163,26 @@ export default class ImdiBundler {
     let count = 0;
     let failed = 0;
     files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.describedFilePath)) {
+      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
         count++;
         try {
           CopyManager.safeAsyncCopyFileWithErrorNotification(
-            f.describedFilePath,
+            f.getActualFilePath(),
             Path.join(
               targetDirectory,
-              sanitizeForArchive(Path.basename(f.describedFilePath), true)
+              // TODO: should use the local file name minus the ".link" part, so
+              // that renames that change the link name are used.
+              sanitizeForArchive(
+                f.getNameToUseWhenExportingUsingTheActualFile(),
+                true
+              )
             ),
             (progressMessage) => {}
           );
         } catch (error) {
-          errors = errors + `Problem copying ${f.describedFilePath}+\r\n`;
+          errors =
+            errors +
+            `Problem copying ${f.getNameToUseWhenExportingUsingTheActualFile()}+\r\n`;
           log(error);
           failed++;
         }
@@ -199,8 +208,10 @@ export default class ImdiBundler {
   ): void {
     if (folder.files.length > 0) {
       const generator = new ImdiGenerator(folder, project);
-      const projectDocumentsImdi =
-        generator.makePseudoSessionImdiForOtherFolder(name, folder);
+      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
+        name,
+        folder
+      );
 
       ImdiBundler.WritePseudoSession(
         rootDirectory,
@@ -353,7 +364,7 @@ export default class ImdiBundler {
       "dummy",
       false
     );
-    project.sessions.filter(sessionFilter).forEach((session) => {
+    project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
       session.getAllContributionsToAllFiles().forEach((contribution) => {
         const p = project.findPerson(contribution.personReference);
         if (p) {

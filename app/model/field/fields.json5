@@ -345,6 +345,7 @@
       key: "primaryLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
@@ -358,61 +359,79 @@
       key: "otherLanguage0",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage1",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage2",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage3",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage4",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage5",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage6",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage7",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage8",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage9",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "fathersLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
     },
     {
       key: "mothersLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
+      importType: "languageCodeOrName",
+    },
+    {
+      key: "languageImportList",
+      omitExport: "true",
+      omitSave: "true",
+      importType: "languageCodeOrName",
     },
     {
       key: "education",
