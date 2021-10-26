@@ -49,7 +49,7 @@ export class FolderGroup {
 
   public selectFirstMarkedFolder() {
     const foundIndex = this.items.findIndex((f) => f.marked);
-    if (foundIndex) this.selectedIndex = foundIndex;
+    if (foundIndex >= 0) this.selectedIndex = foundIndex;
   }
 
   public unMarkAll() {
