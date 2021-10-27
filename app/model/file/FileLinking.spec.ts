@@ -85,9 +85,14 @@ describe("Linked file", () => {
   it("looks right when file is in minor directory", () => {
     setMediaFolderOrEmptyForThisProjectAndMachine(externalMediaDirectory);
     const f = getOtherFileForMinorMp3();
-    expect(fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf8")).toBe(
-      "child\\minor.mp3"
-    );
+    expect(
+      fs
+        .readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf8")
+        // on windows, this is "child\\minor.mp3". On mac, it is "child/minor.mp3"
+        .replace("\\", "/")
+    )
+      // so we normalized it
+      .toBe("child/minor.mp3");
     expect(f.getActualFilePath()).toBe(mp3InChildDirectory);
     commonTests(f, "minor.mp3");
 
