@@ -393,5 +393,6 @@
   "devEngines": {
     "node": "14.18.1",
     "npm": ">=3.x"
-  }
+  },
+  "packageManager": "yarn@3.1.0"
 }
