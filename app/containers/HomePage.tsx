@@ -122,6 +122,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     return /node_modules[\\/]electron[\\/]/.test(process.execPath);
   }
 
+  private previousFolderNames = "";
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
@@ -164,7 +165,24 @@ export default class HomePage extends React.Component<IProps, IState> {
         );
       }
     }, 3000);
+
+    // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
+    window.setInterval(() => {
+      try {
+        if (
+          this.projectHolder.project &&
+          this.previousFolderNames !==
+            this.projectHolder.project.getFolderNamesForDebugging()
+        ) {
+          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
+          console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
+        }
+      } catch (error) {
+        log.error("Error trying to list latest set of folder names. " + error);
+      }
+    }, 1000);
   }
+
   private handleCreateProjectDialogClose(
     directory: string,
     useSampleProject: boolean

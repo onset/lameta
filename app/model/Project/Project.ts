@@ -91,6 +91,32 @@ export class Project extends Folder {
     return codeAndName.split(":")[0].trim();
   }
 
+  // trying to find https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
+  public getFolderNamesForDebugging(): string {
+    return (
+      "sessions: " +
+      this.sessions.items
+        .map((f) => this.getFolderNamesForOneFolder(f))
+        .join(",") +
+      "\r\npeople: " +
+      this.persons.items
+        .map((f) => this.getFolderNamesForOneFolder(f))
+        .join(",")
+    );
+  }
+
+  // trying to find https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
+  private getFolderNamesForOneFolder(f: Folder): string {
+    const metafileDir = Path.basename(
+      Path.dirname(f.metadataFile!.metadataFilePath)
+    );
+    const folderName = Path.basename(f.directory);
+    if (folderName === metafileDir) return folderName;
+    throw Error(
+      `metadatafile dir doesn't match the folder's dir ${folderName} ${metafileDir}`
+    );
+  }
+
   public getFolderArrayFromType(folderType: string): FolderGroup {
     // kinda hacky here. "session"-->"sessions", "person"-->"persons"
     return this[folderType + "s"];
