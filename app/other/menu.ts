@@ -14,7 +14,7 @@ import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 
-export default class SayLessMenu {
+export default class LametaMenu {
   private homePage: HomePage;
   public constructor(homePage: HomePage) {
     this.homePage = homePage;

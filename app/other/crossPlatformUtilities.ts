@@ -91,7 +91,7 @@ export function locate(relativePath: string): string {
     // Running from windows install, or
     adjustedPath = Path.join(appPath, "../..", relativePath);
   } else {
-    // After a "yarn build-production", "yarn start", we are coming from sayless/app/dist. Just need to go up to app/
+    // After a "yarn build-production", "yarn start", we are coming from lameta/app/dist. Just need to go up to app/
     adjustedPath = Path.join(appPath, "..", relativePath);
   }
   //console.log(`locate(${path})  adjustment= ${adjustment}`);

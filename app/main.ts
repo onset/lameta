@@ -114,7 +114,7 @@ function fillLastMonitor() {
 }
 
 app.on("ready", () =>
-  // NB: __dirname is something like sayless\release\win-unpacked\resources\app.asar
+  // NB: __dirname is something like lameta\release\win-unpacked\resources\app.asar
   // you can look in the asar file using a 7-zip plugin: http://www.tc4shell.com/en/7zip/asar/
   // it looks like
   // dist/

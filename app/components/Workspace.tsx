@@ -19,7 +19,7 @@ import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
-import SayLessMenu from "../other/menu";
+import LametaMenu from "../other/menu";
 import SMErrorBoundary from "./SMErrorBoundary";
 import { t, Trans } from "@lingui/macro";
 import { analyticsLocation } from "../other/analytics";
@@ -32,7 +32,7 @@ import { IFolderType } from "../model/Folder/Folder";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
-  menu: SayLessMenu;
+  menu: LametaMenu;
 }
 
 @observer

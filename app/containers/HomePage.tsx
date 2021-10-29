@@ -16,7 +16,7 @@ import CreateProjectDialog from "../components/project/CreateProjectDialog";
 const { app } = require("electron").remote;
 import userSettings from "../other/UserSettings";
 
-import SayLessMenu from "../other/menu";
+import LametaMenu from "../other/menu";
 import { locate } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../other/log";
@@ -53,7 +53,7 @@ export default class HomePage extends React.Component<IProps, IState> {
   @mobx.observable
   public projectHolder: ProjectHolder;
 
-  private menu: SayLessMenu;
+  private menu: LametaMenu;
   public static homePageForTests: HomePage;
 
   constructor(props: IProps) {
@@ -113,7 +113,7 @@ export default class HomePage extends React.Component<IProps, IState> {
     this.updateMenu();
   }
   private updateMenu() {
-    this.menu = new SayLessMenu(this);
+    this.menu = new LametaMenu(this);
     this.menu.setupContentMenu();
     // do this in case we're just opening to the start screen. Otherwise, we get some confusing default Electron menu
     this.menu.updateMainMenu(undefined, undefined);

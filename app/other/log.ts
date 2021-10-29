@@ -1,7 +1,7 @@
 import * as Winston from "winston";
 import * as fs from "fs-extra";
 
-const name = process.env.log ? process.env.log : "sayless.log";
+const name = process.env.log ? process.env.log : "lameta.log";
 
 if (fs.existsSync(name)) {
   // no: removing it makes vscode close the window: fs.removeSync(name);
@@ -14,15 +14,15 @@ const log = Winston.createLogger({
       filename: name,
       format: Winston.format.combine(
         Winston.format.timestamp({
-          format: "hh:mm:ss"
+          format: "hh:mm:ss",
         }),
         Winston.format.printf(
-          info => `${info.timestamp} ${info.level}: ${info.message}`
+          (info) => `${info.timestamp} ${info.level}: ${info.message}`
         )
       ),
-      handleExceptions: false // "true" here kills react ErrorBoundary
-    })
-  ]
+      handleExceptions: false, // "true" here kills react ErrorBoundary
+    }),
+  ],
 });
 
 log.info("starting log");
