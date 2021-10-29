@@ -21798,17 +21798,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.12.0":
-  version: 16.13.1
-  resolution: "react-dom@npm:16.13.1"
+"react-dom@npm:^17.0.2":
+  version: 17.0.2
+  resolution: "react-dom@npm:17.0.2"
   dependencies:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.19.1
+    scheduler: ^0.20.2
   peerDependencies:
-    react: ^16.13.1
-  checksum: 5009f3ee9bca06d6d4b9cf92c832eca102c284e6d019e832179c8de3e353534571474c95b7ab975935b22823726710dcd73783596c11dd71304beb11c19281c5
+    react: 17.0.2
+  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
   languageName: node
   linkType: hard
 
@@ -21991,9 +21990,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-player@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "react-player@npm:2.6.2"
+"react-player@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "react-player@npm:2.9.0"
   dependencies:
     deepmerge: ^4.0.0
     load-script: ^1.0.0
@@ -22002,7 +22001,7 @@ __metadata:
     react-fast-compare: ^3.0.1
   peerDependencies:
     react: ">=16.6.0"
-  checksum: 013b64b1361053e7b13621344223d499666040d5080b7514a24c1fbc0eb9f25cc02a324cb77aa4f828607481fd7be7bdb0d294f062bc5c7e81a8f7dfb42d392c
+  checksum: 928fc38c36b713a1a2cc5ab972b1971181e407ab942dcdb0c8759e69f6d593fc15d413ab2ffaea2dfe4ecec106531ad7db02b4d996060d670fba68c75c262e1b
   languageName: node
   linkType: hard
 
@@ -23417,12 +23416,12 @@ __metadata:
     react-autosuggest: ^9.4.0
     react-close-on-escape: ^2.0.0
     react-datepicker: ^1.5.0
-    react-dom: ^16.12.0
+    react-dom: ^17.0.2
     react-dropzone: 4.1
     react-hot-loader: ^4.12.3
     react-markdown: ^5.0.3
     react-modal: ^3.1.10
-    react-player: ^2.6.2
+    react-player: ^2.9.0
     react-radio-group: ^3.0.3
     react-select: ^3.0.4
     react-sortable-hoc: ^1.11.0
@@ -23681,6 +23680,16 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: 73e185a59e2ff5aa3609f5b9cb97ddd376f89e1610579d29939d952411ca6eb7a24907a4ea4556569dacb931467a1a4a56d94fe809ef713aa76748642cd96a6c
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.20.2":
+  version: 0.20.2
+  resolution: "scheduler@npm:0.20.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+  checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
   languageName: node
   linkType: hard
 
