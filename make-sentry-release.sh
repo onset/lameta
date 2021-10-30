@@ -2,24 +2,25 @@
 
 # you must have LAMETA_SENTRY_AUTH_TOKEN in environment that has 
 # permissions org:read, project:read, project:releases
-# These Auth Tokens are found under the user settings in Sentry, not the project settings.
+# These Auth Tokens are found under the *user* settings in Sentry, not the project settings.
 
-export SENTRY_ORG=onset
-export SENTRY_PROJECT=lameta
-export SENTRY_URL=https://sentry.keyman.com/
+# Note: The commands also rely on .sentryclirc being in the same directory and configured appropriately.
+
 export SENTRY_AUTH_TOKEN=$LAMETA_SENTRY_AUTH_TOKEN
 
 commitSHA=$(sentry-cli releases propose-version)
 # notice that we keep the current version in a different package.json, on under app/
 VERSION=$(grep version app/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
+echo COMMIT: ${commitSHA}
+echo VERSION: ${VERSION}
 
-sentry-cli releases new -p lameta $VERSION
-# This is what we want, but can't do yet (waiting on github/sentry app from
-# keyman.sentry)
-#sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
-# so for now we are just using the "origin" repo that is present in
-# keyman.sentry
-sentry-cli releases set-commits $VERSION --commit "origin"@$commitSHA
+sentry-cli info
+
+sentry-cli releases list
+
+ sentry-cli releases new -p lameta $VERSION
+
+ sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
 
 # We need render-bundle.js, render-bundle.js.map, and all source code:
 

@@ -1,6 +1,6 @@
 Currently using "@sentry/browser" instead of '@sentry/electron' because of bugs long ago, which could be fixed by now. As a result we're only getting errors from the Render process.
 
-The Keyman team runs their own sentry sever and is graciously sharing that wil lameta. (Sentry.com limits retention on free accounts to 30 days).
+This is currently hosted at sentry.io.
 
 1. curl -sL https://sentry.io/get-cli/ | bash # may need some other install method on windows
 
@@ -12,6 +12,21 @@ Other commands:
 `sentry-cli releases files \$VERSION list`
 start over with the uploads:
 `sentry-cli releases files \$VERSION delete --all`
+
+--- Troubleshooting ---
+
+The sentry-cli is fairly user-hostile at the moment. Note the required ordering here ([ref](https://github.com/getsentry/sentry-cli/issues/631)):
+
+`sentry-cli projects -o "onset-org"  list`
+`sentry-cli repos -o "onset-org"  list`
+Note that even if you set SENTRY_ORG, you cannot omit -o parameter.
+
+However I've added .sentryclirc with the org and project set, so you *can* omit the other parameters. These should all work
+
+`sentry-cli info`
+`sentry-cli repos list`
+`sentry-cli projects list`
+`sentry-cli releases list`
 
 ---
 

@@ -11,7 +11,8 @@ import userSettingsSingleton from "./UserSettings";
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
-      dsn: "https://c43a3d96d2744436b51f8cae74cf7bde@sentry.keyman.com/26",
+      dsn:
+        "https://46f4099f6a80454c9e9b4c7f4ed00020@o359058.ingest.sentry.io/3369701",
       release: `${require("../package.json").version}`,
       integrations: [
         new Sentry.Integrations.Breadcrumbs({
