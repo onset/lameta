@@ -22,6 +22,8 @@ sentry-cli releases list
 
  sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
 
+ sentry-cli releases finalize "$VERSION"
+
 # We need render-bundle.js, render-bundle.js.map, and all source code:
 
 sentry-cli releases files $VERSION upload-sourcemaps ./app/ --rewrite --ext map --ext js --ext ts --ext tsx --ignore *.spec.ts --ignore *.css.map --ignore **/*Icon.tsx

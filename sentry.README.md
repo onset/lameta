@@ -4,11 +4,13 @@ This is currently hosted at sentry.io.
 
 1. curl -sL https://sentry.io/get-cli/ | bash # may need some other install method on windows
 
-2. Set a LAMTA_SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
+2. Set a LAMETA_SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
 
 3. run `./make-sentry-release.sh` in a bash shell
 
 Other commands:
+`sentry-cli login`
+Note that while the `./make-sentry-release.sh` will use the LAMETA_SENTRY_AUTH_TOKEN environment variable, these raw sentry-cli commands do not know about it.
 `sentry-cli releases files \$VERSION list`
 start over with the uploads:
 `sentry-cli releases files \$VERSION delete --all`
@@ -21,7 +23,19 @@ The sentry-cli is fairly user-hostile at the moment. Note the required ordering 
 `sentry-cli repos -o "onset-org"  list`
 Note that even if you set SENTRY_ORG, you cannot omit -o parameter.
 
-However I've added .sentryclirc with the org and project set, so you *can* omit the other parameters. These should all work
+However I've added .sentryclirc with the org and project set, so you *can* omit the other parameters. YOu would need to add your own:
+
+```
+[defaults]
+url=https://sentry.io/
+org=onset-org
+project=lameta
+
+[auth]
+token=the api token
+```
+
+These should all work
 
 `sentry-cli info`
 `sentry-cli repos list`
