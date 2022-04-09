@@ -342,7 +342,7 @@
     "mobx-react": "^6.1.1",
     "mobx-react-devtools": "^6.1.1",
     "mobx-react-lite": "^1.4.1",
-    "moment": "^2.19.4",
+    "moment": "^2.29.2",
     "musicmetadata": "^2.0.5",
     "papaparse": "^5.3.1",
     "path": "^0.12.7",
