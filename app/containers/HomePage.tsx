@@ -175,7 +175,7 @@ export default class HomePage extends React.Component<IProps, IState> {
             this.projectHolder.project.getFolderNamesForDebugging()
         ) {
           this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
-          console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
+          //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {
         log.error("Error trying to list latest set of folder names. " + error);
