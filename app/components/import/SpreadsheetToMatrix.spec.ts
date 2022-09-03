@@ -44,6 +44,10 @@ describe("SpreadsheetToMatrix", () => {
       "person"
     );
     personSmokeTest(matrix);
+    const customColumn = matrix.columnInfos.find((info) =>
+      info.incomingLabel.startsWith("custom")
+    );
+    expect(customColumn?.incomingLabel).toBe("custom-column-with-spaces");
   });
 
   it("Can read in session xslx", () => {
@@ -105,6 +109,6 @@ function sessionSmokeTest(matrix: MappedMatrix) {
 // if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
 function personSmokeTest(matrix: MappedMatrix) {
   expect(matrix.rows.length).toBe(2);
-  expect(matrix.columnInfos.length).toBe(14);
+  expect(matrix.columnInfos.length).toBe(15);
   expect(matrix.rows[0].importStatus).toBe(RowImportStatus.Yes);
 }

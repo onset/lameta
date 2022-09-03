@@ -184,7 +184,7 @@ export function NotifyException(
   details?: string
 ) {
   const errWas = ` Error was: ${err.message}`;
-  NotifyError(message ? message : errWas, details + errWas);
+  NotifyError(message ? message : errWas, details ?? "" + errWas);
   sentryException(err);
 }
 export function NotifyNoBigDeal(message: string, onClick?: () => void) {

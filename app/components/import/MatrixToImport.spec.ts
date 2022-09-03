@@ -1,7 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { addPersonToProject, addFolderToProject } from "./MatrixImporter";
+import { addFolderToProject } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -75,12 +75,12 @@ describe("addSessionToProject", () => {
       "contribution.role": "Singer",
       "contribution.comments": "vocals",
     });
-    expect(session.metadataFile.contributions.length).toBe(1);
-    expect(session.metadataFile.contributions[0].personReference).toBe(
+    expect(session.metadataFile!.contributions.length).toBe(1);
+    expect(session.metadataFile!.contributions[0].personReference).toBe(
       "Joe Strummer"
     );
-    expect(session.metadataFile.contributions[0].role).toBe("Singer");
-    expect(session.metadataFile.contributions[0].comments).toBe("vocals");
+    expect(session.metadataFile!.contributions[0].role).toBe("Singer");
+    expect(session.metadataFile!.contributions[0].comments).toBe("vocals");
   });
 });
 
@@ -257,10 +257,10 @@ function makeRow(values: any): MappedRow {
 function makeMatrixAndImportThenGetSession(values: any): Session {
   const row = makeRow(values);
   addFolderToProject(project, row, "session");
-  return project.sessions.items[0];
+  return project.sessions.items[0] as Session;
 }
 function makeMatrixAndImportThenGetPerson(values: any): Person {
   const row = makeRow(values);
   addFolderToProject(project, row, "person");
-  return project.persons.items[0];
+  return project.persons.items[0] as Person;
 }

@@ -7,6 +7,7 @@ import { Field } from "../../model/field/Field";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { Contribution } from "../../model/file/File";
+const XmlNameValidator = require("xml-name-validator");
 import {
   MappedMatrix,
   CellImportStatus,
@@ -18,6 +19,7 @@ import {
 import { Person } from "../../model/Project/Person/Person";
 import { IImportMapping } from "./SpreadsheetToMatrix";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
+import { NotifyException } from "../Notify";
 
 export const availableSpreadsheetMappings = {
   LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
@@ -28,52 +30,56 @@ export function addImportMatrixToProject(
   matrix: MappedMatrix,
   folderType: IFolderType
 ) {
-  const folders = project.getFolderArrayFromType(folderType);
-  folders.unMarkAll(); // new ones will be marked
-  matrix.rows
-    .filter((row) => row.importStatus === RowImportStatus.Yes)
-    .forEach((row) => {
-      addFolderToProject(project, row, folderType);
-    });
-  folders.selectFirstMarkedFolder();
-}
-
-export function addPersonToProject(project: Project, row: MappedRow): Person {
-  const person = project.makeFolderForImport("person") as Person;
-  //const person = project.getOrCreatePerson(cell.value);
-  person.marked = true; // help user find the newly imported person
-
-  row.cells
-    .filter((cell) => cell.column.doImport && cell.value)
-    .forEach((cell, cellIndex) => {
-      const lametaKey = cell.column.lametaProperty;
-      switch (lametaKey) {
-        case "custom":
-          person.properties.addCustomProperty(
-            makeCustomField(cell.column.incomingLabel, cell.value)
-          );
-
-          break;
-        default:
-          person.properties.setText(lametaKey /* ? */, cell.value);
-      }
-    });
-
-  // if we got this far and we are replacing an existing person, move it to the bin
-  const name = row.cells.find((c) => c.column.lametaProperty === "name")?.value;
-  if (!name) throw new Error("Missing Name on cell: " + JSON.stringify(row));
-  const existingMatchingPerson = project.persons.items.find((p) =>
-    p.importIdMatchesThisFolder(name)
-  );
-  if (existingMatchingPerson) {
-    project.deleteFolder(existingMatchingPerson);
+  try {
+    const folders = project.getFolderArrayFromType(folderType);
+    folders.unMarkAll(); // new ones will be marked
+    matrix.rows
+      .filter((row) => row.importStatus === RowImportStatus.Yes)
+      .forEach((row) => {
+        addFolderToProject(project, row, folderType);
+      });
+    folders.selectFirstMarkedFolder();
+  } catch (err) {
+    NotifyException(err, "There was a problem importing the project");
   }
-  // change the file name from "New Person" or whatever to the actual id
-  person.nameMightHaveChanged();
-  project.finishFolderImport(person);
-  person.saveAllFilesInFolder();
-  return person;
 }
+
+// export function addPersonToProject(project: Project, row: MappedRow): Person {
+//   const person = project.makeFolderForImport("person") as Person;
+//   //const person = project.getOrCreatePerson(cell.value);
+//   person.marked = true; // help user find the newly imported person
+
+//   row.cells
+//     .filter((cell) => cell.column.doImport && cell.value)
+//     .forEach((cell, cellIndex) => {
+//       const lametaKey = cell.column.lametaProperty;
+//       switch (lametaKey) {
+//         case "custom":
+//           person.properties.addCustomProperty(
+//             makeCustomField(cell.column.incomingLabel, cell.value)
+//           );
+
+//           break;
+//         default:
+//           person.properties.setText(lametaKey /* ? */, cell.value);
+//       }
+//     });
+
+//   // if we got this far and we are replacing an existing person, move it to the bin
+//   const name = row.cells.find((c) => c.column.lametaProperty === "name")?.value;
+//   if (!name) throw new Error("Missing Name on cell: " + JSON.stringify(row));
+//   const existingMatchingPerson = project.persons.items.find((p) =>
+//     p.importIdMatchesThisFolder(name)
+//   );
+//   if (existingMatchingPerson) {
+//     project.deleteFolder(existingMatchingPerson);
+//   }
+//   // change the file name from "New Person" or whatever to the actual id
+//   person.nameMightHaveChanged();
+//   project.finishFolderImport(person);
+//   person.saveAllFilesInFolder();
+//   return person;
+// }
 
 export function addFolderToProject(
   project: Project,
@@ -150,9 +156,19 @@ export function addFolderToProject(
 }
 
 function makeCustomField(key: string, value: string): Field {
+  let safeKey = key
+    .replace(/[<>&'"\s:!\\]/g, "-")
+    .trim()
+    .replace(/--/g, "-");
+  // the above is not comprehensive, so let's make sure
+  if (!XmlNameValidator.name(safeKey).success) {
+    throw Error(
+      `Lameta cannot handle some character in this custom column name: "${key}"`
+    );
+  }
   const definition: FieldDefinition = {
-    key,
-    englishLabel: key,
+    key: safeKey,
+    englishLabel: safeKey, // you would expect that this doesn't have to be safe, but it is actually what is used for the xml entity
     persist: true,
     type: "Text",
     tabIndex: 0,
