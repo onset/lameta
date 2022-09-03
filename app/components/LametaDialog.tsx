@@ -47,21 +47,16 @@ export const LametaDialog: React.FunctionComponent<{
   );
 
   return (
-    <CloseOnEscape
-      onEscape={() => {
-        props.onClose();
-      }}
+    <ReactModal
+      isOpen={props.open}
+      onRequestClose={() => props.onClose()}
+      css={css`
+        //  background-color: red;
+      `}
+      {...props} // get css styling given to us by parent
     >
-      <ReactModal
-        isOpen={props.open}
-        css={css`
-          //  background-color: red;
-        `}
-        {...props} // get css styling given to us by parent
-      >
-        {inner}
-      </ReactModal>
-    </CloseOnEscape>
+      {inner}
+    </ReactModal>
   );
 };
 

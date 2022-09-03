@@ -8,6 +8,7 @@ import {
   Table,
   TableFixedColumns,
   TableHeaderRow,
+  VirtualTable,
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@material-ui/core/Paper";
 import React, { useCallback, useMemo, useState } from "react";
@@ -25,6 +26,9 @@ import {
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
 import { Checkbox } from "@material-ui/core";
+
+const kpixelsThatAreNotAvailableToGridHeight = 400;
+
 const styles = (theme: Theme) => ({
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
@@ -193,10 +197,18 @@ export const MatrixGrid: React.FunctionComponent<{
         {/* Documentation on this material thing is hard to find. See https://github.com/DevExpress/devextreme-reactive/tree/master/packages/dx-react-grid-material-ui
          */}
         <Grid rows={props.matrix.rows} columns={tableColumns}>
-          <Table
+          {/* switching to VirtualTable sped things up enormously with only 500 people, including showing 
+          the grid and closing the dialog */}
+          <VirtualTable
             columnExtensions={tableColumnExtensions}
             tableComponent={TableComponent}
+            // unfortunately we can't use CSS here, we have to know how much of the screen is ours to use
+            height={window.innerHeight - kpixelsThatAreNotAvailableToGridHeight}
           />
+          {/* <Table
+            columnExtensions={tableColumnExtensions}
+            tableComponent={TableComponent}
+          /> */}
           <TableHeaderRow />
           {/* <TableSelection /> */}
           <TableFixedColumns leftColumns={["row_header"]} />

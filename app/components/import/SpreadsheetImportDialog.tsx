@@ -29,7 +29,7 @@ import {
 } from "./MatrixImporter";
 import * as Path from "path";
 import * as fs from "fs";
-import { Button } from "@material-ui/core";
+import { Button, LinearProgress } from "@material-ui/core";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
@@ -41,7 +41,6 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
-  const [currentlyOpenX, setCurrentlyOpenTestingOnly] = useState(true);
   const [folderType, setFolderType] = useState<IFolderType>("person");
   const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.mappingName",
@@ -51,7 +50,6 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   showSpreadsheetImportDialog = (folderType: IFolderType) => {
     setFolderType(folderType);
     showDialog();
-    setCurrentlyOpenTestingOnly(true);
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
 
@@ -64,16 +62,25 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   ] as IImportMapping;
 
   useEffect(() => {
-    if (currentlyOpen && path && props.projectHolder.project) {
+    setMatrix(undefined);
+    if (
+      currentlyOpen &&
+      path &&
+      props.projectHolder.project &&
+      fs.existsSync(path)
+    ) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
       try {
-        const x = makeMappedMatrixFromSpreadsheet(
-          path,
-          chosenMapping,
-          props.projectHolder.project,
-          folderType
-        );
-        setMatrix(x);
+        // this timeout is to let everything render before we load do the reading of the file and filling the grid
+        window.setTimeout(() => {
+          const x = makeMappedMatrixFromSpreadsheet(
+            path,
+            chosenMapping,
+            props.projectHolder.project!,
+            folderType
+          );
+          setMatrix(x);
+        }, 0 /* no actual wait needed*/);
       } catch (err) {
         NotifyException(err);
       }
@@ -101,6 +108,8 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
       onClose={closeDialog}
       css={css`
         width: calc(100% - 100px);
+        // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
+        // So if you change this here, you may need to tweak that
         height: calc(100% - 100px);
       `}
     >
@@ -244,7 +253,6 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
               folderType
             );
             closeDialog();
-            setCurrentlyOpenTestingOnly(false);
           }}
           css={css`
             min-width: 50px;
@@ -260,7 +268,6 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <DialogCancelButton
           onClick={() => {
             closeDialog();
-            setCurrentlyOpenTestingOnly(false);
           }}
         />
       </DialogBottomButtons>

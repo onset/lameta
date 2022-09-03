@@ -5457,12 +5457,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-modal@npm:^3.1.1":
-  version: 3.10.6
-  resolution: "@types/react-modal@npm:3.10.6"
+"@types/react-modal@npm:^3.13.1":
+  version: 3.13.1
+  resolution: "@types/react-modal@npm:3.13.1"
   dependencies:
     "@types/react": "*"
-  checksum: 2bc5bdd0804d415691a628e70325c634dd218515e3dd365961bf6b1432ecab26e2634aa60a138a03f8aee65ef5040dfddb61646cd701d69037aca1acbba9db8e
+  checksum: b0ad403e0051a2882e9086c6006cc342901b1c90caf760893b31717a5cbc04f86cc1ea7b5ce12a2c8350c9c09e9b344de3783404e70b7c7ea6a037d0ffd70e99
   languageName: node
   linkType: hard
 
@@ -21869,18 +21869,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-modal@npm:^3.1.10":
-  version: 3.11.2
-  resolution: "react-modal@npm:3.11.2"
+"react-modal@npm:^3.15.1":
+  version: 3.15.1
+  resolution: "react-modal@npm:3.15.1"
   dependencies:
     exenv: ^1.2.0
-    prop-types: ^15.5.10
+    prop-types: ^15.7.2
     react-lifecycles-compat: ^3.0.0
     warning: ^4.0.3
   peerDependencies:
-    react: ^0.14.0 || ^15.0.0 || ^16
-    react-dom: ^0.14.0 || ^15.0.0 || ^16
-  checksum: c4ba5cce812d6999ab7e37f93d478d7383f1050bdc1eb8e701c46a8e54f00c0d3c3fec2b826e8d7fe0249654dfb1b463211ef8daccedb741127c18480480c306
+    react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
+    react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
+  checksum: ee99ca312c35bcec9ef0868babf970ce03c52801731e29be336bb6bdc867a1ecf00a73e1fb5bc3b1b1ef66ceb0c9b4a0199fadb85b1b9829f731409951b018f0
   languageName: node
   linkType: hard
 
@@ -23216,7 +23216,7 @@ __metadata:
     "@types/react-dom": 17.0.9
     "@types/react-dropzone": 4.1
     "@types/react-hot-loader": ^4.1.0
-    "@types/react-modal": ^3.1.1
+    "@types/react-modal": ^3.13.1
     "@types/react-select": ^3.0.8
     "@types/react-sidebar": ^3.0.0
     "@types/react-table": ^7.7.1
@@ -23323,7 +23323,7 @@ __metadata:
     react-dropzone: 4.1
     react-hot-loader: ^4.12.3
     react-markdown: ^5.0.3
-    react-modal: ^3.1.10
+    react-modal: ^3.15.1
     react-player: ^2.9.0
     react-radio-group: ^3.0.3
     react-select: ^3.0.4
