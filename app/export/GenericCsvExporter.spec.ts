@@ -35,7 +35,7 @@ beforeAll(() => {
 });
 
 describe("csv exporter", () => {
-  it("should produce the file requested", () => {
+  it("should produce the file requested", async () => {
     // didn't work, though I set this variable in the main.yml
     if (
       process.platform === "win32" &&
@@ -46,15 +46,8 @@ describe("csv exporter", () => {
     } else {
       temp.track(); // cleanup on exit: doesn't work
       const path = temp.path({ suffix: ".zip" });
-      makeGenericCsvZipFile(path, project, () => true);
-      // on github actions run, this failed once, but I can't see
-      // what is async in the makeZipFile() function. So I'm wrapping it
-      // in a delay.
-      jest.useFakeTimers();
-      setTimeout(() => {
-        expect(fs.existsSync(path)).toBe(true);
-      }, 20000);
-      jest.runAllTimers();
+      await makeGenericCsvZipFile(path, project, () => true);
+      expect(fs.existsSync(path)).toBe(true);
       temp.cleanupSync(); // doesn't work
       fs.removeSync(path); // so we do it manually
     }

@@ -37,45 +37,52 @@ First name
 Last name
 */
 
-export function makeGenericCsvZipFile(
+export async function makeGenericCsvZipFile(
   path: string,
   project: Project,
   folderFilter: (f: Folder) => boolean
 ) {
-  makeZipFile(path, (archiver) =>
+  await makeZipFile(path, (archiver) =>
     genericCsvExporter(project, archiver, folderFilter)
   );
 }
-export function makeZipFile(
+export async function makeZipFile(
   path: string,
   exporter: (archive: nodeArchiver.Archiver) => void
 ) {
-  const output = fs.createWriteStream(path);
-  const archive = nodeArchiver.create("zip");
-  // listen for all archive data to be written
-  // 'close' event is fired only when a file descriptor is involved
-  output.on("close", () => {});
+  return new Promise((resolve, reject) => {
+    const archive = nodeArchiver.create("zip");
 
-  archive.on("warning", (err) => {
-    if (err.code === "ENOENT") {
-      console.log("csv makeZipFile Warning: " + err);
-    } else {
-      // throw error
-      throw err;
+    archive.on("warning", (err) => {
+      console.log("makeGenericCsvZipFile warning:" + err.code);
+      if (err.code === "ENOENT") {
+        console.log("csv makeZipFile Warning: " + err);
+      } else {
+        NotifyException(err, "There was an error making the zip file.");
+        reject("");
+      }
+    });
+
+    archive.on("error", (err) => {
+      NotifyException(err, "There was an error making the zip file (2).");
+      reject("");
+    });
+
+    const writeStream = fs.createWriteStream(path);
+
+    writeStream.on("close", () => {
+      resolve(path); /*? path */
+    });
+
+    archive.pipe(writeStream);
+
+    try {
+      exporter(archive);
+    } catch (e) {
+      NotifyException(e, "There was an error making the zip file (3).");
     }
+    archive.finalize();
   });
-
-  // good practice to catch this error explicitly
-  archive.on("error", (err) => {
-    NotifyException(err, "There was an error file making the zip file.");
-  });
-
-  // pipe archive data to the file
-  archive.pipe(output);
-
-  exporter(archive);
-
-  archive.finalize();
 }
 
 export function genericCsvExporter(
