@@ -155,11 +155,12 @@ export function addFolderToProject(
   return folder;
 }
 
-function makeCustomField(key: string, value: string): Field {
+export function makeCustomField(key: string, value: string): Field {
   let safeKey = key
     .replace(/[<>&'"\s:!\\]/g, "-")
     .trim()
-    .replace(/--/g, "-");
+
+    .replace(/[-]+/g, "-");
   // the above is not comprehensive, so let's make sure
   if (!XmlNameValidator.name(safeKey).success) {
     throw Error(

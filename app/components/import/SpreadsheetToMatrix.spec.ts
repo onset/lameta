@@ -47,7 +47,6 @@ describe("SpreadsheetToMatrix", () => {
     const customColumn = matrix.columnInfos.find((info) =>
       info.incomingLabel.startsWith("custom")
     );
-    expect(customColumn?.incomingLabel).toBe("custom-column-with-spaces");
   });
 
   it("Can read in session xslx", () => {

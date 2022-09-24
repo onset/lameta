@@ -1,7 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { addFolderToProject } from "./MatrixImporter";
+import { addFolderToProject, makeCustomField } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -14,6 +14,21 @@ import { Person } from "../../model/Project/Person/Person";
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
+
+describe("santizeCustomFiled", () => {
+  it("can replace spaces", () => {
+    expect(makeCustomField("one two       three", "foo").key).toBe(
+      "one-two-three"
+    );
+  });
+  it("can avoids multiple dashes", () => {
+    expect(makeCustomField("one ---   two", "foo").key).toBe("one-two");
+  });
+
+  it("can handle other dissallowed characters", () => {
+    expect(makeCustomField("one !!<>&': two", "foo").key).toBe("one-two");
+  });
+});
 
 describe("addSessionToProject", () => {
   beforeAll(() => {

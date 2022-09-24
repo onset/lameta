@@ -607,16 +607,16 @@ export class Project extends Folder {
         folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         folders.items.splice(index, 1);
         folder.wasDeleted = true;
-        console.log(
-          `Deleting folder index:${index}. selectedIndex:${
-            this.getFolderArrayFromType(folderType).selectedIndex
-          }`
-        );
-        this.getFolderArrayFromType(folderType).items.forEach((s) =>
-          console.log(
-            `after folder deletion, this folder remains ${s.displayName}`
-          )
-        );
+        // console.log(
+        //   `Deleting folder index:${index}. selectedIndex:${
+        //     this.getFolderArrayFromType(folderType).selectedIndex
+        //   }`
+        // );
+        //this.getFolderArrayFromType(folderType).items.forEach((s) =>
+        // console.log(
+        //   `after folder deletion, this folder remains ${s.displayName}`
+        // )
+        //);
       } else throw Error("Failed to delete folder.");
     } catch (e) {
       NotifyException(e, "Error trying to delete folder.");

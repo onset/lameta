@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
@@ -7,6 +13,7 @@ import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
 import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
+import { lameta_orange } from "../../containers/theme";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -93,7 +100,13 @@ export default class ConfirmDeleteDialog extends React.Component<
           </div>
           <div className={"bottomButtonRow"}>
             {this.state.isDeleting ? (
-              t`Deleting...`
+              <span
+                css={css`
+                  color: ${lameta_orange};
+                `}
+              >
+                {t`Deleting...`}
+              </span>
             ) : (
               <div className={"okCancelGroup"}>
                 {}
