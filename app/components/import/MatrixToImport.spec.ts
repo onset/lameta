@@ -25,7 +25,7 @@ describe("santizeCustomFiled", () => {
     expect(makeCustomField("one ---   two", "foo").key).toBe("one-two");
   });
 
-  it("can handle other dissallowed characters", () => {
+  it("can handle other disallowed characters", () => {
     expect(makeCustomField("one !!<>&': two", "foo").key).toBe("one-two");
   });
 });

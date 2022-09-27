@@ -571,11 +571,14 @@ export class Project extends Folder {
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
     ConfirmDeleteDialog.show(`${folders.countOfMarkedFolders()} Items`, () => {
-      folders.items
-        .filter((s) => s.marked)
-        .forEach((folder) => {
-          this.deleteFolder(folder);
-        });
+      // avoid re-rendering. Sept 2022 this still calls listeners for some reason, including UpdateMenus
+      mobx.runInAction(() => {
+        folders.items
+          .filter((s) => s.marked)
+          .forEach((folder) => {
+            this.deleteFolder(folder);
+          });
+      });
     });
   }
   public getOrCreatePerson(name: string): Person {
