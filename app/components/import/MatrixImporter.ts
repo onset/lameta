@@ -2,21 +2,13 @@
  */
 
 import { FieldDefinition } from "../../model/field/FieldDefinition";
-import { Session } from "../../model/Project/Session/Session";
+import * as mobx from "mobx";
 import { Field } from "../../model/field/Field";
 import { Project } from "../../model/Project/Project";
 import moment from "moment";
 import { Contribution } from "../../model/file/File";
 const XmlNameValidator = require("xml-name-validator");
-import {
-  MappedMatrix,
-  CellImportStatus,
-  RowImportStatus,
-  MappedColumnInfo,
-  MappedRow,
-  IMappedCell,
-} from "./MappedMatrix";
-import { Person } from "../../model/Project/Person/Person";
+import { MappedMatrix, RowImportStatus, MappedRow } from "./MappedMatrix";
 import { IImportMapping } from "./SpreadsheetToMatrix";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
 import { NotifyException } from "../Notify";
@@ -33,11 +25,13 @@ export function addImportMatrixToProject(
   try {
     const folders = project.getFolderArrayFromType(folderType);
     folders.unMarkAll(); // new ones will be marked
-    matrix.rows
-      .filter((row) => row.importStatus === RowImportStatus.Yes)
-      .forEach((row) => {
-        addFolderToProject(project, row, folderType);
-      });
+    mobx.runInAction(() =>
+      matrix.rows
+        .filter((row) => row.importStatus === RowImportStatus.Yes)
+        .forEach((row) => {
+          addFolderToProject(project, row, folderType);
+        })
+    );
     folders.selectFirstMarkedFolder();
   } catch (err) {
     NotifyException(err, "There was a problem importing the project");
