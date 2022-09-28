@@ -24,9 +24,8 @@ import {
   MappedRow,
   RowImportStatus,
 } from "./MappedMatrix";
-import { lameta_dark_green, lameta_green } from "../../containers/theme";
+import { lameta_dark_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
-import { Checkbox } from "@material-ui/core";
 import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 
 const kpixelsThatAreNotAvailableToGridHeight = 400;

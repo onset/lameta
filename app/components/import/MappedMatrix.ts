@@ -58,11 +58,6 @@ export class MappedRow {
   public addProblemDescription(problem: string) {
     this.problemDescriptions.push(problem);
   }
-  public toggleImportStatus() {
-    if (this.importStatus === RowImportStatus.No)
-      this.importStatus = RowImportStatus.Yes;
-    else this.importStatus = RowImportStatus.No;
-  }
 }
 export class MappedMatrix {
   columnInfos: MappedColumnInfo[];

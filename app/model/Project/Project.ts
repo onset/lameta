@@ -132,6 +132,11 @@ export class Project extends Folder {
     return (folders as any).items.find((f) => f.importIdMatchesThisFolder(id));
   }
 
+  public consoleLogAllIds(folderType: IFolderType) {
+    const folders = this.getFolderArrayFromType(folderType);
+    folders.items.forEach((f: Folder) => console.log(f.displayName));
+  }
+
   public static getDefaultWorkingLanguageCode() {
     const codeAndName =
       sCurrentProject === null
