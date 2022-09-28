@@ -25,13 +25,15 @@ export function addImportMatrixToProject(
   try {
     const folders = project.getFolderArrayFromType(folderType);
     folders.unMarkAll(); // new ones will be marked
-    mobx.runInAction(() =>
-      matrix.rows
-        .filter((row) => row.importStatus === RowImportStatus.Yes)
-        .forEach((row) => {
-          addFolderToProject(project, row, folderType);
-        })
-    );
+    //NO runInAction until we figure this out:
+    // for some reason things will get saved as empty objects, e.g. the file will have "<Person></Person>"
+    //mobx.runInAction(() =>
+    matrix.rows
+      .filter((row) => row.importStatus === RowImportStatus.Yes)
+      .forEach((row) => {
+        addFolderToProject(project, row, folderType);
+      });
+    //);
     folders.selectFirstMarkedFolder();
   } catch (err) {
     NotifyException(err, "There was a problem importing the project");
