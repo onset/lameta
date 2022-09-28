@@ -8,10 +8,11 @@ import {
   Table,
   TableFixedColumns,
   TableHeaderRow,
+  TableSelection,
   VirtualTable,
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@material-ui/core/Paper";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Theme, withStyles } from "@material-ui/core/styles";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 import ErrorRoundedIcon from "@material-ui/icons/ErrorRounded";
@@ -26,6 +27,7 @@ import {
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
 import { Checkbox } from "@material-ui/core";
+import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 
 const kpixelsThatAreNotAvailableToGridHeight = 400;
 
@@ -43,7 +45,7 @@ const TableComponentBase = ({ classes, ...restProps }) => (
 const TableComponent = withStyles(styles, { name: "TableComponent" })(
   TableComponentBase
 );
-const tableColumnExtensions = [{ columnName: "row_header", width: 78 }];
+const tableColumnExtensions = [{ columnName: "status_column", width: 70 }];
 export const MatrixGrid: React.FunctionComponent<{
   matrix: MappedMatrix;
   chosenRowsCountChanged: () => void;
@@ -53,22 +55,24 @@ export const MatrixGrid: React.FunctionComponent<{
       // first column is for check boxes, we don't seem to have access to that here.
       // The second is for our row number:
       {
-        name: "row_header",
+        name: "status_column",
         title: " ",
+        // note: the calls to this are just with rows from the data we are importing. There is no leading row for the header row.
         getCellValue: (row: MappedRow) => {
           return (
             <div
               css={css`
                 display: flex;
-                align-items: center;
+                justify-content: space-between;
               `}
             >
+              <span>{1 + row.index}</span>
               {row.importStatus === RowImportStatus.NotAllowed ? (
                 <span
                   css={css`
                     color: red;
-                    padding-left: 14px;
                     font-size: large;
+                    margin-left: auto;
                   `}
                 >
                   <Tooltip
@@ -87,7 +91,7 @@ export const MatrixGrid: React.FunctionComponent<{
                     <ErrorRoundedIcon
                       css={css`
                         //margin-left: -5px; // align under check box
-                        margin-left: 20px;
+                        //margin-left: 20px;
                         display: flex;
                         margin-bottom: -6px;
                       `}
@@ -95,15 +99,7 @@ export const MatrixGrid: React.FunctionComponent<{
                   </Tooltip>
                 </span>
               ) : (
-                <Checkbox
-                  checked={row.importStatus === RowImportStatus.Yes}
-                  onChange={(checked) => {
-                    row.toggleImportStatus();
-                    //Now updates because this count changes in the parent //forceUpdate();
-                    props.chosenRowsCountChanged();
-                  }}
-                  color="secondary"
-                />
+                <span></span>
               )}
               {row.matchesExistingRecord &&
                 row.importStatus !== RowImportStatus.NotAllowed && (
@@ -118,19 +114,12 @@ export const MatrixGrid: React.FunctionComponent<{
                       color="secondary"
                       //fontSize="small"
                       css={css`
-                        margin-left: -8px;
+                        //margin-left: -8px;
                         margin-bottom: -6px;
                       `}
                     />
                   </Tooltip>
                 )}
-              <span
-                css={css`
-                  margin-left: auto;
-                `}
-              >
-                {1 + row.index}
-              </span>
             </div>
           );
         },
@@ -197,6 +186,23 @@ export const MatrixGrid: React.FunctionComponent<{
         {/* Documentation on this material thing is hard to find. See https://github.com/DevExpress/devextreme-reactive/tree/master/packages/dx-react-grid-material-ui
          */}
         <Grid rows={props.matrix.rows} columns={tableColumns}>
+          <SelectionState
+            defaultSelection={props.matrix.rows
+              .filter((r) => r.importStatus === RowImportStatus.Yes)
+              .map((row) => props.matrix.rows.indexOf(row))}
+            onSelectionChange={(selection) => {
+              props.matrix.rows.forEach((row) => {
+                if (row.importStatus == RowImportStatus.Yes)
+                  row.importStatus = RowImportStatus.No;
+              });
+              selection.forEach((index) => {
+                const row = props.matrix.rows[index];
+                if (row.importStatus == RowImportStatus.No)
+                  row.importStatus = RowImportStatus.Yes;
+              });
+              props.chosenRowsCountChanged();
+            }}
+          />
           {/* switching to VirtualTable sped things up enormously with only 500 people, including showing 
           the grid and closing the dialog */}
           <VirtualTable
@@ -205,13 +211,13 @@ export const MatrixGrid: React.FunctionComponent<{
             // unfortunately we can't use CSS here, we have to know how much of the screen is ours to use
             height={window.innerHeight - kpixelsThatAreNotAvailableToGridHeight}
           />
-          {/* <Table
-            columnExtensions={tableColumnExtensions}
-            tableComponent={TableComponent}
-          /> */}
           <TableHeaderRow />
-          {/* <TableSelection /> */}
-          <TableFixedColumns leftColumns={["row_header"]} />
+          <IntegratedSelection />
+          <TableSelectionWithDisabledRows />
+          {/* keep the left-most column fixed even when we scroll horizontally */}
+          <TableFixedColumns
+            leftColumns={[TableSelection.COLUMN_TYPE, "status_column"]}
+          />
         </Grid>
       </Paper>
     </div>
@@ -281,21 +287,6 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
       );
   }
 }
-
-// function getCellComponent(cell?: IMappedCell) {
-//   const specialFormatting = getCellStyling(cell);
-//   return (
-//     <div
-//       css={css`
-//         overflow-wrap: break-word;
-//         white-space: break-spaces;
-//         ${specialFormatting}
-//       `}
-//     >
-//       {cell?.value}
-//     </div>
-//   );
-// }
 
 function getCellComponent(cell?: IMappedCell) {
   const defaultStyling = css`
@@ -376,10 +367,21 @@ function getCellComponent(cell?: IMappedCell) {
   }
 }
 
-// export function useForceUpdate() {
-//   const [, setTick] = useState(0);
-//   const update = useCallback(() => {
-//     setTick((tick) => tick + 1);
-//   }, []);
-//   return update;
-// }
+// This allows us to remove the checkboxes if a row is not ready to be imported
+// see https://github.com/DevExpress/devextreme-reactive/issues/1706
+class TableSelectionWithDisabledRows extends React.PureComponent<{}> {
+  render() {
+    return (
+      <TableSelection
+        showSelectAll={true}
+        cellComponent={(props) =>
+          props.tableRow.row.importStatus !== RowImportStatus.NotAllowed ? (
+            <TableSelection.Cell {...props} />
+          ) : (
+            <Table.StubCell {...props} />
+          )
+        }
+      />
+    );
+  }
+}
