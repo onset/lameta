@@ -295,8 +295,15 @@ function setInitialRowImportStatus(
 
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
-    const uniqueIdentifierProperty = folderType === "session" ? "id" : "name";
-    const id = r.asObjectByLametaProperties()[uniqueIdentifierProperty]; // review: or code?
+    let uniqueIdentifierProperty = folderType === "session" ? "id" : "code";
+    let id = r.asObjectByLametaProperties()[uniqueIdentifierProperty];
+    // if a person doesn't have a code, then we use ID
+    if (!id && folderType === "person") {
+      id = r.asObjectByLametaProperties()["name"];
+    }
+
+    //project.consoleLogAllIds(folderType); // nocommit
+
     if (!id) {
       r.addProblemDescription("Missing " + uniqueIdentifierProperty);
     } else if (!!project.findFolderById(folderType, id)) {
