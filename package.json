@@ -45,6 +45,8 @@
     "lingui-add": "lingui add-locale",
     "lingui-extract": "lingui extract",
     "lingui-compile": "lingui compile",
+    "crowdin": "crowdin",
+    "crowdin:sync": "crowdin upload && crowdin download",
     "make-langindex": "ts-node --dir app/languageFinder --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" make-langindex",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
@@ -188,6 +190,7 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
+    "@crowdin/cli": "^3.8.1",
     "@lingui/cli": "^3.9.0",
     "@storybook/addon-actions": "^6.2.9",
     "@storybook/addon-essentials": "^6.2.9",

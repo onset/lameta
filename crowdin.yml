@@ -1,0 +1,10 @@
+project_id: "324607"
+api_token_env: LAMETA_CROWDIN_TOKEN
+preserve_hierarchy: true
+files:
+  [
+    {
+      "source": /locale/en/*.*,
+      "translation": /i18n/%two_letters_code%/**/%original_file_name%,
+    },
+  ]
