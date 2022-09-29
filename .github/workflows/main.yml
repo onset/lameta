@@ -18,14 +18,14 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v3
         # remember to keep this in sync with package.json "engines"
         with:
           node-version: 16
-          cache: "yarn"
+          # cache: "yarn" this just always gave yarn cache is not found
       - name: Prepare for app notarization (macOS)
         if: startsWith(matrix.os, 'macos')
         # Import Apple API key for app notarization on macOS
