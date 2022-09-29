@@ -46,7 +46,7 @@
     "lingui-extract": "lingui extract",
     "lingui-compile": "lingui compile",
     "crowdin": "crowdin",
-    "crowdin:sync": "crowdin upload && crowdin download",
+    "crowdin:sync": "crowdin upload sources && crowdin download",
     "make-langindex": "ts-node --dir app/languageFinder --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" make-langindex",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"

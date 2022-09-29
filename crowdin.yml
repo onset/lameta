@@ -1,12 +1,12 @@
 project_id: "324607"
 api_token_env: LAMETA_CROWDIN_TOKEN
-preserve_hierarchy: true
+preserve_hierarchy: false # we don't want to see the "en/messages.po", just "messages.po"
 base_path: "./locale"
 files:
   [
     {
-      "source": /en/*.*,
-      "translation": /%two_letters_code%/%original_file_name%,
+      "source": /en/messages.po,
+      "translation": /%two_letters_code%/messages.po,
     },
     {
       "source": /*.csv,
