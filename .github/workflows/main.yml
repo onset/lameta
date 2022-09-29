@@ -17,10 +17,11 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         # remember to keep this in sync with package.json "engines"
         with:
-          node-version: 14.18.1
+          node-version: 16
+          cache: "yarn"
       - name: Prepare for app notarization (macOS)
         if: startsWith(matrix.os, 'macos')
         # Import Apple API key for app notarization on macOS
@@ -39,6 +40,9 @@ jobs:
           # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.github_token }}
 
+          # this is a guess...
+          releaseType: "prerelease"
+
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -51,8 +55,8 @@ jobs:
 
       - name: Make new release on Sentry
         env:
-            LAMETA_SENTRY_AUTH_TOKEN: ${{ secrets.LAMETA_SENTRY_AUTH_TOKEN }}
-        # Mac only because we only need this once per version, not once per operating system. 
+          LAMETA_SENTRY_AUTH_TOKEN: ${{ secrets.LAMETA_SENTRY_AUTH_TOKEN }}
+        # Mac only because we only need this once per version, not once per operating system.
         # this curl version doesn't work on windows because it calls `sudo`
         if: startsWith(github.ref, 'refs/tags/v') && startsWith(matrix.os, 'macos')
         run: |

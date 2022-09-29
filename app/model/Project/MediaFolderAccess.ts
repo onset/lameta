@@ -6,11 +6,11 @@ import {
 
 let sCurrentProjectId: string = "";
 export function getCurrentProjectId(): string {
-  console.log("get project id = " + sCurrentProjectId);
+  //console.log("get project id = " + sCurrentProjectId);
   return sCurrentProjectId;
 }
 export function setCurrentProjectId(projectId: string) {
-  console.log("set project id = " + projectId);
+  //console.log("set project id = " + projectId);
   sCurrentProjectId = projectId;
 }
 // We store the media folder in a way that is unique to the title of the

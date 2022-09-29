@@ -167,7 +167,7 @@ export class Project extends Folder {
     super(directory, metadataFile, files, customFieldRegistry);
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
-      console.log("***adding guid");
+      //console.log("***adding guid");
       this.properties.addTextProperty("guid", NewGuid());
       this.wasChangeThatMobxDoesNotNotice();
     }
