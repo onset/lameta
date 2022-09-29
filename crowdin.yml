@@ -1,10 +1,17 @@
 project_id: "324607"
 api_token_env: LAMETA_CROWDIN_TOKEN
 preserve_hierarchy: true
+base_path: "./locale"
 files:
   [
     {
-      "source": /locale/en/*.*,
-      "translation": /i18n/%two_letters_code%/**/%original_file_name%,
+      "source": /en/*.*,
+      "translation": /%two_letters_code%/%original_file_name%,
+    },
+    {
+      "source": /*.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "identifier,source_phrase,context,uk,ru,fr",
     },
   ]
