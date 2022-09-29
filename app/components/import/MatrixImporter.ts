@@ -133,6 +133,7 @@ export function addFolderToProject(
 
   // if we got this far and we are replacing an existing session or person, move it to the bin
 
+  console.log(folder.propertyForCheckingId);
   const id = row.cells.find(
     (c) => c.column.lametaProperty === folder.propertyForCheckingId
   )?.value;
@@ -140,9 +141,15 @@ export function addFolderToProject(
     throw new Error(
       `Missing ${folder.propertyForCheckingId} on cell: ${JSON.stringify(row)}`
     );
+  console.log(
+    folder.properties.getTextStringOrEmpty(folder.propertyForCheckingId)
+  );
   const previousFolderWithThisId = project.findFolderById(folderType, id);
+  console.log(previousFolderWithThisId?.displayName);
+
   if (previousFolderWithThisId) {
     project.deleteFolder(previousFolderWithThisId);
+    console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id
   folder.nameMightHaveChanged();

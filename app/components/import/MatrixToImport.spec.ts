@@ -64,7 +64,39 @@ describe("addSessionToProject", () => {
     expect(person.languages[1].father).toBe(true);
     expect(person.languages[1].mother).toBe(true);
   });
+  it("Second import can overwrite existing person, with code", () => {
+    const person1 = makeMatrixAndImportThenGetPerson({
+      code: "JS",
+      name: "Joe Strummer",
+      primaryOccupation: "Musician",
+    });
+    const person2 = makeMatrixAndImportThenGetPerson({
+      code: "JS",
+      name: "Joe Strummer",
+      primaryOccupation: "Producer",
+    });
 
+    expect(project.persons.items.length).toBe(1);
+    expect(person2.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
+      "Producer"
+    );
+  });
+
+  it("Second import can overwrite existing person, no code", () => {
+    const person1 = makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryOccupation: "Musician",
+    });
+    const person2 = makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryOccupation: "Producer",
+    });
+
+    expect(project.persons.items.length).toBe(1);
+    expect(person2.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
+      "Producer"
+    );
+  });
   it("Can import one normal session row", () => {
     const session = makeMatrixAndImportThenGetSession({
       id: "foo",
@@ -73,6 +105,7 @@ describe("addSessionToProject", () => {
       genre: "drama",
       subgenre: "play",
     });
+
     expect(session.id).toBe("foo");
     expect(session.properties.getDateField("date").asISODateString()).toBe(
       "2021-07-27"

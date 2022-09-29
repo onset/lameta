@@ -16,7 +16,7 @@ export function showInExplorer(path: string) {
 export function trash(path: string): boolean {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
-  const fixedPath = Path.normalize(path).replace("/", Path.sep);
+  const fixedPath = Path.normalize(path).replace("/", Path.sep); // ?
 
   const msg = t`lameta was not able to delete the file.`;
 
@@ -24,8 +24,18 @@ export function trash(path: string): boolean {
   // NB: if the file is locked (at least on windows), electron 10 wrongly returns true for success, so
   // we verify that it is now not there.
   // To test this manually, try to trash a video while it is playing.
-  const success =
-    electron.shell.moveItemToTrash(fixedPath) && !fs.existsSync(fixedPath);
+  let success;
+  if (electron?.shell) {
+    // note in Electron 13 this will go away and be replaced with async trashItem().then();
+    success = electron.shell.moveItemToTrash(
+      fixedPath,
+      true /* on mac volumes without trash, just delete*/
+    );
+  } else {
+    fs.rmdirSync(fixedPath, { recursive: true }); // unit tests, no electron available and we don't care about delete vs trash
+    success = true; // we don't get a result from rmdirSync
+  }
+  success = success && !fs.existsSync(fixedPath); // ?
 
   // enhance: this is lopsided because above we give an nice helpful message if certain problems occur.
   // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.

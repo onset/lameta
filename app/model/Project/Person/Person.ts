@@ -32,8 +32,8 @@ export class Person extends Folder {
   }
 
   // checks either the name or the code
-  public referenceIdMatches(name: string): boolean {
-    return name.toLowerCase() === this.getIdToUseForReferences().toLowerCase();
+  public referenceIdMatches(id: string): boolean {
+    return id.toLowerCase() === this.getIdToUseForReferences().toLowerCase();
   }
 
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -43,12 +43,6 @@ export class Person extends Folder {
     return "person";
   }
 
-  public importIdMatchesThisFolder(id: string): boolean {
-    return this.referenceIdMatches(id);
-  }
-  public get propertyForCheckingId(): string {
-    return "name";
-  }
   private getMugshotFile(): File | undefined {
     return this.files.find((f) => {
       return f.pathInFolderToLinkFileOrLocalCopy.indexOf("_Photo.") > -1;
@@ -78,6 +72,14 @@ export class Person extends Folder {
   public get displayName(): string {
     return this.getIdToUseForReferences();
   }
+  public importIdMatchesThisFolder(id: string): boolean {
+    return this.referenceIdMatches(id);
+  }
+  public get propertyForCheckingId(): string {
+    const code = this.properties.getTextStringOrEmpty("code").trim();
+    return code && code.length > 0 ? "code" : "name";
+  }
+
   public getIdToUseForReferences(): string {
     const code = this.properties.getTextStringOrEmpty("code").trim();
     return code && code.length > 0

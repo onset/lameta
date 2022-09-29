@@ -605,6 +605,7 @@ export class Project extends Folder {
     const folderType = folder.folderType;
     folderType;
     try {
+      console.log("deleting " + folder.displayName);
       if (trash(folder.directory)) {
         const folders = this.getFolderArrayFromType(folder.folderType);
         const index = folders.items.findIndex((f) => f === folder);
@@ -615,6 +616,7 @@ export class Project extends Folder {
         folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         folders.items.splice(index, 1);
         folder.wasDeleted = true;
+        console.log(folders.items.length);
         // console.log(
         //   `Deleting folder index:${index}. selectedIndex:${
         //     this.getFolderArrayFromType(folderType).selectedIndex
@@ -627,6 +629,7 @@ export class Project extends Folder {
         //);
       } else throw Error("Failed to delete folder.");
     } catch (e) {
+      console.log(e);
       NotifyException(e, "Error trying to delete folder.");
     }
   }
