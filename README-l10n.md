@@ -50,7 +50,7 @@ This format uses our own wrapper. Note that you still have to include the commen
 
 In Crowdin [lameta Settings](https://crowdin.com/project/saymorex/settings#translations), there is a "Build & Download" button. Both that and the "Download Latest" give a zip file. Note that it appears (not sure) that the "configuration" of the Settings:Files:fields.csv must be updated to contain a column for each target language. For a while, I was just getting Spanish, because there was not French column configured. However, once uploaded, the configure button disappears. So I had to remove and re-upload; then it acted like I still had French translations, but actually they were all English! Sigh....
 
-At runtime, lingui uses javascript file, which you get by running
+At runtime, lingui uses javascript file, which `yarn build` gets by running
 
 `yarn lingui-compile`
 
@@ -66,7 +66,7 @@ Strings in fields.json5 and genres.json do not go through lingui, and should sho
 
 `yarn lingui-extract`
 
-That reads .linguirc to know what files to include. This puts json files in ./locale/.
+That reads .linguirc to know what files to include. This puts json files in ./locale/. As of this writign, you have to do this and check it in, it's not part of the github build.
 
 # Send new strings to Crowdin
 

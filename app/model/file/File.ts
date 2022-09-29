@@ -696,7 +696,7 @@ export /*babel doesn't like this: abstract*/ class File {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
-    console.log(`Will save ${this.metadataFilePath}`);
+    //console.log(`Will save ${this.metadataFilePath}`);
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
@@ -712,7 +712,7 @@ export /*babel doesn't like this: abstract*/ class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {
-        console.log(`Saving ${this.metadataFilePath}`);
+        // console.log(`Saving ${this.metadataFilePath}`);
         ShowSavingNotifier(Path.basename(this.metadataFilePath), beforeRename);
         PatientFS.writeFileSyncWithNotifyThenRethrow(
           this.metadataFilePath,
