@@ -11,7 +11,7 @@ files: [
       "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
-      "scheme": "identifier,context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
+      "scheme": "identifier,context,source_phrase,es,fr,ru,zh-CN,pt-BR,id,fa",
     },
     #"key","Context","en","es","fr","ru","zh-CN","pt-BR","id"
     {
