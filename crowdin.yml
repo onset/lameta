@@ -2,16 +2,46 @@ project_id: "324607"
 api_token_env: LAMETA_CROWDIN_TOKEN
 preserve_hierarchy: false # we don't want to see the "en/messages.po", just "messages.po"
 base_path: "./locale"
-files:
-  [
+files: [
     {
       "source": /en/messages.po,
       "translation": /%two_letters_code%/messages.po,
     },
     {
-      "source": /*.csv,
+      "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
-      "scheme": "identifier,source_phrase,context,uk,ru,fr",
+      "scheme": "identifier,context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
+    },
+    #"key","Context","en","es","fr","ru","zh-CN","pt-BR","id"
+    {
+      "source": /choices.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "context,source_phrase,es,fr,ru,none,pt-BR",
+    },
+    {
+      "source": /fields.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "identifier,context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
+    },
+    {
+      "source": /genres.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
+    },
+    {
+      "source": /roles.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "key,context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
+    },
+    {
+      "source": /tips.csv,
+      "translation": /%original_file_name%,
+      "first_line_contains_header": true,
+      "scheme": "context,source_phrase,es,fr,ru,zh-CN,pt-BR,id",
     },
   ]
