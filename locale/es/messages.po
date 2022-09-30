@@ -982,7 +982,8 @@ msgid "Warning"
 msgstr "Aviso"
 
 #: app/components/Notify.tsx:143
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -1117,4 +1118,3 @@ msgstr "{0} se enviará a la Papelera de reciclaje"
 #: app/components/export/ExportDialog.tsx:224
 #~ msgid "{countOfMarkedSessions} Marked Sessions"
 #~ msgstr ""
-
