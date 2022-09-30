@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2021-05-22 14:03\n"
+"PO-Revision-Date: 2022-09-30 20:54\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -541,7 +541,7 @@ msgstr ""
 #: app/components/FolderList.tsx:75
 #: app/components/FolderList.tsx:113
 #~ msgid "Mark for Export"
-#~ msgstr "Marcar para Exportar"
+#~ msgstr ""
 
 #: app/components/FolderList.tsx:125
 msgid "Mark for Export or Deletion"
@@ -937,11 +937,11 @@ msgstr ""
 
 #: app/other/crossPlatformUtilities.ts:25
 #~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
-#~ msgstr "Intente reiniciar lameta y luego elimine el archivo antes de visualizarlo. Si eso no soluciona el problema, reinicie su computadora."
+#~ msgstr ""
 
 #: app/model/file/File.ts:707
 #~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
-#~ msgstr "Intente reiniciar lameta. Si eso no soluciona el problema, reinicie su computadora."
+#~ msgstr ""
 
 #: app/components/FileList.tsx:77
 msgid "Type"
@@ -982,8 +982,7 @@ msgid "Warning"
 msgstr "Aviso"
 
 #: app/components/Notify.tsx:143
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -1000,6 +999,10 @@ msgstr "¿Cómo desea llamar este proyecto?"
 #: app/components/ReleasesDialog.tsx:127
 msgid "You are running lameta version:"
 msgstr ""
+
+#: app/components/ReleasesDialog.tsx:127
+#~ msgid "You are running lameta version: {v}"
+#~ msgstr ""
 
 #: app/components/ReleasesDialog.tsx:72
 #~ msgid "You are running lameta {0}"
@@ -1114,3 +1117,4 @@ msgstr "{0} se enviará a la Papelera de reciclaje"
 #: app/components/export/ExportDialog.tsx:224
 #~ msgid "{countOfMarkedSessions} Marked Sessions"
 #~ msgstr ""
+
