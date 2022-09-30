@@ -8,7 +8,7 @@ msgstr ""
 "Language: fa\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2022-09-30 20:54\n"
+"PO-Revision-Date: 2022-09-30 23:20\n"
 "Last-Translator: \n"
 "Language-Team: Persian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -40,8 +40,7 @@ msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست.
 
 #: app/components/export/ExportChoices.tsx:52
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
-msgstr ""
-"\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
+msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
 "بسیاری از فیلدهای لامتا حذف شده است."
 
 #: app/components/export/ExportDialog.tsx:105
@@ -984,8 +983,7 @@ msgid "Warning"
 msgstr "هشدار"
 
 #: app/components/Notify.tsx:143
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -1120,3 +1118,4 @@ msgstr "به سطل زباله منتقل میشود."
 #: app/components/export/ExportDialog.tsx:224
 #~ msgid "{countOfMarkedSessions} Marked Sessions"
 #~ msgstr ""
+
