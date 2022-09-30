@@ -223,6 +223,7 @@ module.exports = {
     // alias: {
     //   _assets: path.resolve(__dirname, "assets")
     // }
+    alias: { "react-dom": "@hot-loader/react-dom" }, // https://github.com/gaearon/react-hot-loader/issues/1227
   },
 
   plugins: [

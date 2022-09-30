@@ -3141,6 +3141,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hot-loader/react-dom@npm:17.0.2":
+  version: 17.0.2
+  resolution: "@hot-loader/react-dom@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    scheduler: ^0.20.2
+  peerDependencies:
+    react: 17.0.2
+  checksum: 180de3211aff1d60fd9d2a9130ba7977e2e356b1ecd2e7c50a98e6507bb7873f0523b44fa63142f0ffdc629d2933994f4add86e1f19288941f9d223bd28f5e48
+  languageName: node
+  linkType: hard
+
 "@iarna/cli@npm:^1.2.0":
   version: 1.2.0
   resolution: "@iarna/cli@npm:1.2.0"
@@ -23277,6 +23290,7 @@ __metadata:
     "@devexpress/dx-react-core": ^2.7.6
     "@devexpress/dx-react-grid": ^2.7.6
     "@devexpress/dx-react-grid-material-ui": ^2.7.6
+    "@hot-loader/react-dom": 17.0.2
     "@lingui/cli": ^3.9.0
     "@lingui/core": ^3.9.0
     "@lingui/macro": ^3.9.0
