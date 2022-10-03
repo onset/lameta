@@ -13,7 +13,7 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
 
-const languages = ["en", "es", "fr", "ps", "ru", "pt-BR"];
+const languages = ["en", "es", "zh-CN", "fa", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
 export let currentUILanguage: string;
 // in the past we had to have our own version, with the upgrade to lingui 3
@@ -65,7 +65,11 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   // we don't actually use this plural function but without it, we get console errors if we don't set this.
   const pluralFn = allPlurals[code] || allPlurals["en"];
   i18n.loadLocaleData(code, { plurals: pluralFn });
-  i18n.load(code, require(`../../locale/${code}/messages.js`).messages);
+
+  // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
+  const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
+  const folder = fixes[code] || code;
+  i18n.load(code, require(`../../locale/${folder}/messages.js`).messages);
   i18n.activate(code);
 
   console.warn("Localization: Project = " + i18n._("Project"));
@@ -177,6 +181,10 @@ function getMatch(
 
   if (match && match[currentUILanguage]) {
     return match[currentUILanguage];
+  }
+  // for some reason, crowdin does spanish as "es-ES", but then saves it to "es", so we have this mix
+  else if (match && currentUILanguage === "es" && match["es-ES"]) {
+    return match["es-ES"];
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;

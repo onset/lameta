@@ -191,7 +191,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "en",
             },
             {
-              label: "Español (15%)",
+              label: "Español (Spanish 77%)",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -199,7 +199,15 @@ export default class LametaMenu {
               checked: currentUILanguage === "es",
             },
             {
-              label: "Français  (23%)",
+              label: "简体中文 (Chinese 5%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("zh-CN");
+              },
+              checked: currentUILanguage === "zh-CN",
+            },
+            {
+              label: "Français  (33%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
@@ -207,7 +215,15 @@ export default class LametaMenu {
               checked: currentUILanguage === "fr",
             },
             {
-              label: "Portuguesa, Brasileiro  (38%)",
+              label: "فارسی (Persion 77%)",
+              type: "radio",
+              click: () => {
+                setUILanguage("fa");
+              },
+              checked: currentUILanguage === "fa",
+            },
+            {
+              label: "Portuguesa, Brasileiro  (77%)",
               type: "radio",
               click: () => {
                 setUILanguage("pt-BR");
@@ -215,7 +231,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "pt-BR",
             },
             {
-              label: "Russian  (11%)",
+              label: "русский язык (Russian 10%)",
               type: "radio",
               click: () => {
                 setUILanguage("ru");
@@ -235,7 +251,7 @@ export default class LametaMenu {
             {
               label: t`Help translate`,
               click: () => {
-                shell.openPath("https://crowdin.com/project/lameta");
+                shell.openPath("https://crowdin.com/project/saymorex"); // haven't been able to correct this URL yet
               },
             },
           ],
