@@ -12,7 +12,7 @@ import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
@@ -30,7 +30,7 @@ import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../other/UserSettings";
 
 const saymore_orange = "#e69664";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};

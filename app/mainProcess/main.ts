@@ -1,5 +1,6 @@
 const Path = require("path");
 const electron = require("electron");
+import "./MainProcessApi"; // this instantiates the API for our render process to call
 
 /* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
 See https://github.com/getsentry/sentry-electron/issues/92. Probably don't really need the "electron" version anyhow,
@@ -8,7 +9,15 @@ could just use the node or web sdk's?
 // import {initializeSentry} from("./errorHandling");
 // initializeSentry();
 
-import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
+import {
+  app,
+  BrowserWindow,
+  Menu,
+  shell,
+  ipcMain,
+  dialog,
+  MessageBoxSyncOptions,
+} from "electron";
 
 (global as any).arguments = process.argv;
 
@@ -52,8 +61,10 @@ if (process.env.NODE_ENV === "development") {
   require("module").globalPaths.push(p); // eslint-disable-line
 }
 
+//Store.initRenderer();
+
 // will become unavailable in electron 11. Using until these are sorted out: https://github.com/electron/electron/pull/25869 https://github.com/electron/electron/issues/25405#issuecomment-707455020
-app.allowRendererProcessReuse = false;
+//app.allowRendererProcessReuse = false;
 
 // on macos, this will be called if the user directly opens an sprj file.
 app.on("open-file", (event, path: string) => {
@@ -126,11 +137,18 @@ app.on("ready", () =>
   // package.json
   {
     installExtensions().then(() => {
+      require("@electron/remote/main").initialize();
       mainWindow = new BrowserWindow({
         webPreferences: {
           nodeIntegration: true,
+          contextIsolation: false,
           plugins: true, // to enable the pdf-viewer built in to electron
-          enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
+          //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
+
+          backgroundThrottling: false,
+          nativeWindowOpen: false,
+          webSecurity: false,
+          //  enableRemoteModule: true
         },
         show: false,
         width: 1024,
@@ -141,6 +159,8 @@ app.on("ready", () =>
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this
+
+      require("@electron/remote/main").enable(mainWindow.webContents);
 
       /* For hot loading, this is how https://github.com/s-h-a-d-o-w/rhl-electron-quick-start does it, 
        but I get 
@@ -171,29 +191,29 @@ app.on("ready", () =>
         fillLastMonitor();
         if (process.env.NODE_ENV === "development") {
           console.log(
-            "*****If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+            "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
           );
 
           mainWindow!.webContents.openDevTools();
         }
       });
 
-      ipcMain.handle("showOpenDialog", (event, options) => {
-        //returns a promise which is somehow funneled to the caller in the render process
-        return dialog.showOpenDialog(mainWindow!, options);
-      });
+      // ipcMain.handle("showOpenDialog", (event, options) => {
+      //   //returns a promise which is somehow funneled to the caller in the render process
+      //   return dialog.showOpenDialog(mainWindow!, options);
+      // });
 
-      ipcMain.handle("showMessageBox", (event, options) => {
-        return dialog.showMessageBoxSync(mainWindow!, options);
-      });
+      // ipcMain.handle("showMessageBox", (event, options) => {
+      //   return dialog.showMessageBoxSync(mainWindow!, options);
+      // });
 
       mainWindow.on("closed", () => {
         mainWindow = undefined;
       });
 
-      ipcMain.on("show-debug-tools", (event, arg) => {
-        mainWindow!.webContents.openDevTools();
-      });
+      // ipcMain.on("show-debug-tools", (event, arg) => {
+      //   mainWindow!.webContents.openDevTools();
+      // });
 
       // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
       // if (process.env.NODE_ENV === "development") {

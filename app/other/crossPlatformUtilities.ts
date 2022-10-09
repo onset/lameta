@@ -1,5 +1,5 @@
 const electron = require("electron");
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
@@ -27,10 +27,7 @@ export function trash(path: string): boolean {
   let success;
   if (electron?.shell) {
     // note in Electron 13 this will go away and be replaced with async trashItem().then();
-    success = electron.shell.moveItemToTrash(
-      fixedPath,
-      true /* on mac volumes without trash, just delete*/
-    );
+    success = electron.shell.trashItem(fixedPath);
   } else {
     fs.rmdirSync(fixedPath, { recursive: true }); // unit tests, no electron available and we don't care about delete vs trash
     success = true; // we don't get a result from rmdirSync

@@ -4,7 +4,7 @@ import * as Path from "path";
 import ReactModal from "react-modal";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import { analyticsLocation } from "../../other/analytics";

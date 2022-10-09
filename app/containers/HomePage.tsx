@@ -11,9 +11,10 @@ import { observer } from "mobx-react";
 import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { remote, OpenDialogOptions, ipcRenderer } from "electron";
+import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
+import * as remote from "@electron/remote";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
@@ -66,6 +67,8 @@ export default class HomePage extends React.Component<IProps, IState> {
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
+    const test = require("@electron/remote").getCurrentWebContents();
+    const p = remote.process;
     const args = remote.getGlobal("arguments");
     // const args = [
     //   "ignore",

@@ -10,7 +10,8 @@ import * as React from "react";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { ipcRenderer, OpenDialogOptions, remote } from "electron";
+import { ipcRenderer, OpenDialogOptions } from "electron";
+import * as remote from "@electron/remote";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
   setMediaFolderOrEmptyForThisProjectAndMachine,

@@ -8,7 +8,7 @@ import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import { remote, ipcRenderer } from "electron";
+import * as remote from "@electron/remote";
 import { trash } from "../../other/crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";

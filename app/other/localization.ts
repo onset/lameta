@@ -3,7 +3,7 @@
   ---------------------------------------------------------------------*/
 import { i18n as i18nFromLinguiCore } from "@lingui/core";
 import userSettings from "./UserSettings";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { t } from "@lingui/macro";
 // tslint:disable-next-line: no-submodule-imports
 import * as allPlurals from "make-plural/plurals"; // this is from lingui.
@@ -33,11 +33,12 @@ export function initializeLocalization() {
   // or if there was no setting for this and we have the default (empty string)
   if (languages.indexOf(currentUILanguage) < 0) {
     // See if their OS's language is one we support
-    currentUILanguage = remote.app.getLocale();
-    // Do we have a localization for that language? If not, the default is English.
-    if (languages.indexOf(currentUILanguage) < 0) {
-      currentUILanguage = "en";
-    }
+    // currentUILanguage = remote.app.getLocale();
+    // // Do we have a localization for that language? If not, the default is English.
+    // if (languages.indexOf(currentUILanguage) < 0) {
+    //   currentUILanguage = "en";
+    // }
+    currentUILanguage = "en"; // remote.app is currently undefined
   }
   // TODO: lingui has fallback, so maybe we should not default to English above?
 
