@@ -1,10 +1,12 @@
-import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
 import { observable, computed } from "mobx";
 import React from "react";
+import { main } from "../MainProcessApiAccess";
 
-class FakeStore {
+main.getAppName().then((r) => console.log(r));
+
+class Cache {
   private values = {};
   public get(s: string, def: any = ""): any {
     return this.values[s] || def;
@@ -13,12 +15,11 @@ class FakeStore {
   public set(key: string, value: any): void {
     this.values[key] = value;
   }
-  public path: string = "fake path";
 }
 const kFontZoomStepSize = 0.2;
 
 export class UserSettings {
-  private store: Store | FakeStore;
+  //private store: Store | FakeStore;
 
   @observable
   private imdiMode: boolean;
@@ -32,12 +33,16 @@ export class UserSettings {
   private sendErrors: boolean;
 
   private clientId: string;
+  private cache: Cache;
 
   constructor() {
-    this.store =
-      process.env.NODE_ENV === "test"
-        ? new FakeStore()
-        : new Store({ name: "lameta-user-settings" });
+    this.cache = new Cache();
+    if (process.env.NODE_ENV === "test") {
+      this.cache.set("path", "fake path");
+    }
+
+    TODO: need a way to get *all* the values of the real file loaded into our, asynchonrously, before we can proceed.
+
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     this.imdiMode = this.storeGet("imdiMode", false);
@@ -52,10 +57,13 @@ export class UserSettings {
   }
 
   private storeGet<T>(name: string, defaultValue: T): T {
-    return this.store.get(name) ?? defaultValue;
+    return this.cache[name] ?? defaultValue;
   }
 
-  private storeSet<T>(name: string, value: T) {}
+  private storeSet<T>(name: string, value: T) {
+    this.cache.set(name, value);
+    main.setUserSetting(name, value);
+  }
 
   public get SendErrors() {
     return this.sendErrors;
