@@ -37,7 +37,7 @@ export interface IProps {
 
 @observer
 export default class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 2; // nocommit
+  private kFirstTabToOpen = 0;
 
   public constructor(props: IProps) {
     super(props);
