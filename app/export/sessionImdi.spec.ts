@@ -101,10 +101,6 @@ it("should contain Actors", () => {
 });
 it("should contain MediaFiles", () => {
   expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
-  expect(
-    "METATRANSCRIPT/Session/Resources/WrittenResource/ResourceLink"
-  ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
-
   expect("METATRANSCRIPT/Session/Resources/MediaFile/Type").toMatch("Audio"); // ELAR needs upper case
 });
 
@@ -142,4 +138,43 @@ it("should have an empty Access Description if description is missing", () => {
   expect(
     count("METATRANSCRIPT/Session/Resources/MediaFile/Access/Description")
   ).toBe(4);
+});
+
+// The `Resources` element has xs:sequence, which requires that the resouces be
+// in order by type. MediaFile, WrittenResource, LexiconResource,
+// LexiconComponent, Source, Anonyms
+it("media resources must precede written resources", () => {
+  // the etr009 sample data has 4 media and 3 written resources. The
+  // naming would intersperse them. Test that instead, the media files are first.
+
+  const kNumberOfMediaFiles = 4;
+  const kNumberOfWrittenResources = 3;
+  for (var i = 0; i < kNumberOfMediaFiles; i++) {
+    expect(
+      `METATRANSCRIPT/Session/Resources/*[${i + 1}][name()='MediaFile']`
+    ).toHaveCount(1);
+  }
+  for (
+    i = kNumberOfMediaFiles;
+    i < kNumberOfMediaFiles + kNumberOfWrittenResources;
+    i++
+  ) {
+    expect(
+      `METATRANSCRIPT/Session/Resources/*[${i + 1}][name()='WrittenResource']`
+    ).toHaveCount(1);
+  }
+});
+
+// maybe order is not important, but at least this tests that they are all there
+it("written resources to be in alphabetical order", () => {
+  expect(count("METATRANSCRIPT/Session/Resources/WrittenResource")).toBe(3);
+  expect(
+    "METATRANSCRIPT/Session/Resources/WrittenResource[1]/ResourceLink"
+  ).toMatch("ETR009/ETR009_AText.txt");
+  expect(
+    "METATRANSCRIPT/Session/Resources/WrittenResource[2]/ResourceLink"
+  ).toMatch("ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf");
+  expect(
+    "METATRANSCRIPT/Session/Resources/WrittenResource[3]/ResourceLink"
+  ).toMatch("ETR009/ETR009_XDoc.docx");
 });

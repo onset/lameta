@@ -230,10 +230,9 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -246,10 +245,9 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -490,7 +488,15 @@ export default class ImdiGenerator {
   private resourcesGroup(folder: Folder) {
     this.startGroup("Resources");
 
-    // schema requires that we group all the media files first, not intersperse them with written resources
+    // The schema's `Resources` element has xs:sequence, which requires that the resouces be
+    // in order by type. MediaFile, WrittenResource, LexiconResource,
+    // LexiconComponent, Source, Anonyms
+    this.resourcesOfType(folder, "MediaFile");
+    this.resourcesOfType(folder, "WrittenResource");
+    this.exitGroup(); // Resources
+  }
+
+  private resourcesOfType(folder: Folder, type: string) {
     folder.files.forEach((f: File) => {
       if (getStatusOfFile(f).missing) {
         // At the moment we're not even exporting metadata if the file is
@@ -498,18 +504,21 @@ export default class ImdiGenerator {
         NotifyWarning(getStatusOfFile(f).info);
       } else {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          if (this.isMediaFile(f)) {
-            this.mediaFile(f);
-          }
-
-          if (!this.isMediaFile(f)) {
-            this.writtenResource(f);
+          switch (type) {
+            case "MediaFile":
+              if (this.isMediaFile(f)) {
+                this.mediaFile(f);
+              }
+              break;
+            case "WrittenResource":
+              if (!this.isMediaFile(f)) {
+                this.writtenResource(f);
+              }
+              break;
           }
         }
       }
     });
-
-    this.exitGroup(); // Resources
   }
 
   // used by the ui imdi tabs, not actual imdi generator
@@ -675,8 +684,9 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode =
-      this.folderInFocus.properties.getTextStringOrEmpty("access");
+    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
+      "access"
+    );
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
