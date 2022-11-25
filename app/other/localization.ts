@@ -182,3 +182,7 @@ function getMatch(
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
 }
+
+export function i18nUnitTestPrep() {
+  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
+}

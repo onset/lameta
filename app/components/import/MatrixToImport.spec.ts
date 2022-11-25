@@ -13,8 +13,8 @@ import {
 import { Person } from "../../model/Project/Person/Person";
 import { i18n } from "@lingui/core";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
-
-i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
+import { i18nUnitTestPrep } from "../../other/localization";
+i18nUnitTestPrep();
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");

@@ -32,7 +32,7 @@ export function trash(path: string): boolean {
     fs.rmdirSync(fixedPath, { recursive: true }); // unit tests, no electron available and we don't care about delete vs trash
     success = true; // we don't get a result from rmdirSync
   }
-  success = success && !fs.existsSync(fixedPath); // ?
+  success = success && !fs.existsSync(fixedPath);
 
   // enhance: this is lopsided because above we give an nice helpful message if certain problems occur.
   // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.
