@@ -1,6 +1,7 @@
 const Path = require("path");
 const electron = require("electron");
 import "./MainProcessApi"; // this instantiates the API for our render process to call
+import Store from "electron-store";
 
 /* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
 See https://github.com/getsentry/sentry-electron/issues/92. Probably don't really need the "electron" version anyhow,
@@ -61,7 +62,7 @@ if (process.env.NODE_ENV === "development") {
   require("module").globalPaths.push(p); // eslint-disable-line
 }
 
-//Store.initRenderer();
+Store.initRenderer();
 
 // will become unavailable in electron 11. Using until these are sorted out: https://github.com/electron/electron/pull/25869 https://github.com/electron/electron/issues/25405#issuecomment-707455020
 //app.allowRendererProcessReuse = false;
@@ -140,15 +141,16 @@ app.on("ready", () =>
       require("@electron/remote/main").initialize();
       mainWindow = new BrowserWindow({
         webPreferences: {
-          nodeIntegration: true,
-          contextIsolation: false,
           plugins: true, // to enable the pdf-viewer built in to electron
-          //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
-          sandbox: false, // lameta does not show external web pages, so there is no threat there needing sanboxing
           backgroundThrottling: false,
           nativeWindowOpen: false,
           webSecurity: false,
           //  enableRemoteModule: true
+          // lameta does not show external web pages, so there is no threat there needing sanboxing
+          nodeIntegration: true,
+          sandbox: false,
+          contextIsolation: false,
+          //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
         },
         show: false,
         width: 1024,

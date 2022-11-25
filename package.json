@@ -322,7 +322,7 @@
     "electron-is-dev": "^0.3.0",
     "electron-log": "^4.4.8",
     "electron-notarize": "^0.1.1",
-    "electron-store": "5.2.0",
+    "electron-store": "8.1.0",
     "emotion": "^10.0.27",
     "exifreader": "^3.11.2",
     "ffprobe-static": "^3.0.0",
