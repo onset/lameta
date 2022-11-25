@@ -144,7 +144,7 @@ app.on("ready", () =>
           contextIsolation: false,
           plugins: true, // to enable the pdf-viewer built in to electron
           //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
-
+          sandbox: false, // lameta does not show external web pages, so there is no threat there needing sanboxing
           backgroundThrottling: false,
           nativeWindowOpen: false,
           webSecurity: false,
@@ -198,14 +198,14 @@ app.on("ready", () =>
         }
       });
 
-      // ipcMain.handle("showOpenDialog", (event, options) => {
-      //   //returns a promise which is somehow funneled to the caller in the render process
-      //   return dialog.showOpenDialog(mainWindow!, options);
-      // });
+      ipcMain.handle("showOpenDialog", (event, options) => {
+        //returns a promise which is somehow funneled to the caller in the render process
+        return dialog.showOpenDialog(mainWindow!, options);
+      });
 
-      // ipcMain.handle("showMessageBox", (event, options) => {
-      //   return dialog.showMessageBoxSync(mainWindow!, options);
-      // });
+      ipcMain.handle("showMessageBox", (event, options) => {
+        return dialog.showMessageBoxSync(mainWindow!, options);
+      });
 
       mainWindow.on("closed", () => {
         mainWindow = undefined;
