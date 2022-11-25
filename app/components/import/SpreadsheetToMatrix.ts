@@ -18,11 +18,11 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
-import moment from "moment";
 import { IFolderType } from "../../model/Folder/Folder";
 import * as fs from "fs";
 import * as Path from "path";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
+import * as getJsDateFromExcel from "excel-date-to-js";
 
 export interface IImportMapping {
   mapping_description: string;
@@ -44,7 +44,7 @@ export function makeMappedMatrixFromSpreadsheet(
   try {
     workbook = XLSX.readFile(fullPath, {
       cellDates: false,
-      // for csv files I ran into a case where an acii file had a non-breaking space (\u00A0)
+      // for csv files I ran into a case where an ascii file had a non-breaking space (\u00A0)
       // which looked fine in excel but was changed to � on import.
       // So far, it seems like leaving things to auto-detect works better?
       // codepage: 65001 /* utf-8 */,
@@ -88,12 +88,31 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
       var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
       var cell = worksheet[cellref];
 
-      // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
-      const value = (cell?.w || cell?.v || "")
-        .toString()
-        .replace(/\u00A0/g, " "); // remove non-breaking spaces (not critical, but I had a bunch in a sample file and there it didn't make sense)
+      // dates need special handling
+      if (
+        cell?.w &&
+        cell?.v &&
+        cell.w != cell.v &&
+        typeof cell.v === "number"
+      ) {
+        // looks like a date
+        //console.log("STM-c:" + JSON.stringify(cell));
+        // Excel will give the date as an abiguous string in some locale, which is hard on us to then work with.
+        // It also gives it as a unambiguous number, so we convert that to an ISO string
+        const v = getJsDateFromExcel
+          .getJsDateFromExcel(cell.v.toString())
+          .toISOString();
+        //console.log("STM-date:" + v);
+        row.push(v);
+      } else {
+        // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
+        const value = (cell?.w || cell?.v || "")
+          .toString()
+          .replace(/\u00A0/g, " "); // remove non-breaking spaces (not critical, but I had a bunch in a sample file and there it didn't make sense)
+        //console.log(`STM@ ${cell?.w} ${JSON.stringify(cell?.v)}`);
 
-      row.push(value);
+        row.push(value);
+      }
     }
     arrayOfArrays.push(row);
   }
@@ -212,7 +231,10 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
             cell.importStatus = CellImportStatus.OK; // will be set later in the process
             break;
           case "date":
-            if (!cell.value || moment(cell.value).isValid()) {
+            if (!cell.value) {
+              cell.importStatus = CellImportStatus.OK;
+            } else if (Date.parse(cell.value)) {
+              // NB: previously, we converted excel dates to ISO. But CSV dates could still be whatever?
               cell.importStatus = CellImportStatus.OK;
             } else {
               cell.importStatus = CellImportStatus.NotInClosedVocabulary;

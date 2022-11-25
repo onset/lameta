@@ -12266,6 +12266,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"excel-date-to-js@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "excel-date-to-js@npm:1.1.5"
+  checksum: 181a28528b786d33a2c83c0ef44c453f5badaf945d9f0900201174f260dafcaff5476f0109d7023ae6b0842852b3f7bf3ab2ea0070effbe53dc85154a466ec8f
+  languageName: node
+  linkType: hard
+
 "exec-sh@npm:^0.3.2":
   version: 0.3.4
   resolution: "exec-sh@npm:0.3.4"
@@ -23440,6 +23447,7 @@ __metadata:
     emotion: ^10.0.27
     enzyme: ^3.0.0
     enzyme-adapter-react-16: ^1.0.0
+    excel-date-to-js: ^1.1.5
     exifreader: ^3.11.2
     express: ^4.14.0
     fast-sass-loader: ^1.4.5

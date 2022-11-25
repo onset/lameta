@@ -149,7 +149,7 @@ export function addFolderToProject(
 
   if (previousFolderWithThisId) {
     project.deleteFolder(previousFolderWithThisId);
-    console.log(previousFolderWithThisId?.displayName);
+    //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id
   folder.nameMightHaveChanged();

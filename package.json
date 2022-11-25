@@ -324,6 +324,7 @@
     "electron-notarize": "^0.1.1",
     "electron-store": "8.1.0",
     "emotion": "^10.0.27",
+    "excel-date-to-js": "^1.1.5",
     "exifreader": "^3.11.2",
     "ffprobe-static": "^3.0.0",
     "filesize": "^6.1.0",
