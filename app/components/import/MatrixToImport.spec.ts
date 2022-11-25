@@ -11,11 +11,15 @@ import {
   IMappedCell,
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
+import { i18n } from "@lingui/core";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+
+i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 
-describe("santizeCustomFiled", () => {
+describe("santizeCustomField", () => {
   it("can replace spaces", () => {
     expect(makeCustomField("one two       three", "foo").key).toBe(
       "one-two-three"

@@ -10,6 +10,7 @@ import {
 
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 let project: Project;
 let person: Person;

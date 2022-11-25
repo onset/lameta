@@ -468,9 +468,9 @@ export abstract class Folder {
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
     });
 
-    console.log(
-      `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
-    );
+    // console.log(
+    //   `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
+    // );
     return true;
   }
 

@@ -11,6 +11,7 @@ import {
   count,
   value,
 } from "../../other/xmlUnitTestUtils";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -18,7 +19,9 @@ function getPretendAudioFile(): string {
   return path;
 }
 
-function writeSessionFile(contents: string): {
+function writeSessionFile(
+  contents: string
+): {
   tmpFolder;
   sessionFolder;
   filePath;

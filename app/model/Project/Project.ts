@@ -605,7 +605,7 @@ export class Project extends Folder {
     const folderType = folder.folderType;
     folderType;
     try {
-      console.log("deleting " + folder.displayName);
+      //console.log("deleting " + folder.displayName);
       if (trash(folder.directory)) {
         const folders = this.getFolderArrayFromType(folder.folderType);
         const index = folders.items.findIndex((f) => f === folder);

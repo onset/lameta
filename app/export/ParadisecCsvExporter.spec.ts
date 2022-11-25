@@ -10,6 +10,8 @@ import {
 //const parseSync = require("csv-parse/lib/sync");
 // tslint:disable-next-line:no-submodule-imports
 import parseSync from "csv-parse/lib/sync";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+
 temp.track(); // cleanup on exit: doesn't work
 
 let project: Project;

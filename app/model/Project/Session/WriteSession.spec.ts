@@ -14,6 +14,7 @@ import {
   getMimeType,
   getImdiResourceTypeForExtension,
 } from "../../file/FileTypeInfo";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 const os = require("os");
 
