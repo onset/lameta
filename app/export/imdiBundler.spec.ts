@@ -22,7 +22,7 @@ let rootDirectory: string;
 describe("Consent Form Inclusion", () => {
   afterAll(() => {
     fs.emptyDirSync(rootDirectory);
-    fs.rmdirSync(rootDirectory, { recursive: true });
+    fs.removeSync(rootDirectory);
   });
   beforeAll(() => {
     const project = Project.fromDirectory("sample data/Edolo sample");

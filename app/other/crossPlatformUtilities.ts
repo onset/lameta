@@ -29,7 +29,7 @@ export function trash(path: string): boolean {
     // note in Electron 13 this will go away and be replaced with async trashItem().then();
     success = electron.shell.trashItem(fixedPath);
   } else {
-    fs.rmdirSync(fixedPath, { recursive: true }); // unit tests, no electron available and we don't care about delete vs trash
+    fs.removeSync(fixedPath); // unit tests, no electron available and we don't care about delete vs trash
     success = true; // we don't get a result from rmdirSync
   }
   success = success && !fs.existsSync(fixedPath);
