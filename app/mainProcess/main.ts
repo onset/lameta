@@ -143,10 +143,9 @@ app.on("ready", () =>
         webPreferences: {
           plugins: true, // to enable the pdf-viewer built in to electron
           backgroundThrottling: false,
-          nativeWindowOpen: false,
           webSecurity: false,
           //  enableRemoteModule: true
-          // lameta does not show external web pages, so there is no threat there needing sanboxing
+          // lameta does not show external web content, so there is no threat, so no need for sandboxing
           nodeIntegration: true,
           sandbox: false,
           contextIsolation: false,
