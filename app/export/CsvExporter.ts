@@ -1,7 +1,5 @@
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
-const moment = require("moment");
-//import nodeArchiver = require("archiver");
 import * as nodeArchiver from "archiver";
 import * as fs from "fs";
 import { FieldType, Field } from "../model/field/Field";
@@ -37,19 +35,19 @@ First name
 Last name
 */
 
-export async function makeGenericCsvZipFile(
+export function makeGenericCsvZipFile(
   path: string,
   project: Project,
   folderFilter: (f: Folder) => boolean
-) {
-  await makeZipFile(path, (archiver) =>
-    genericCsvExporter(project, archiver, folderFilter)
+): Promise<string> {
+  return asyncMakeZipFile(path, (archiver) =>
+    exportGenericCsv(project, archiver, folderFilter)
   );
 }
-export async function makeZipFile(
+export async function asyncMakeZipFile(
   path: string,
-  exporter: (archive: nodeArchiver.Archiver) => void
-) {
+  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const archive = nodeArchiver.create("zip");
 
@@ -77,15 +75,15 @@ export async function makeZipFile(
     archive.pipe(writeStream);
 
     try {
-      exporter(archive);
+      synchronousExportFunction(archive);
     } catch (e) {
-      NotifyException(e, "There was an error making the zip file (3).");
+      NotifyException(e, "There was an error making the zip file.");
     }
     archive.finalize();
   });
 }
 
-export function genericCsvExporter(
+export function exportGenericCsv(
   project: Project,
   archive: nodeArchiver.Archiver,
   folderFilter: (f: Folder) => boolean
