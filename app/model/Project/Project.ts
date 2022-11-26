@@ -9,7 +9,7 @@ import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
-import { trash } from "../../other/crossPlatformUtilities";
+import { asyncTrash } from "../../other/crossPlatformUtilities";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
@@ -601,12 +601,14 @@ export class Project extends Folder {
       return this.addPerson(name.trim());
     }
   }
-  public deleteFolder(folder: Folder) {
+  public async deleteFolder(folder: Folder) {
     const folderType = folder.folderType;
     folderType;
     try {
       //console.log("deleting " + folder.displayName);
-      if (trash(folder.directory)) {
+      const didDelete = await asyncTrash(folder.directory);
+      if (didDelete) {
+        console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);
         const index = folders.items.findIndex((f) => f === folder);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand

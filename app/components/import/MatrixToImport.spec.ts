@@ -1,7 +1,7 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { addFolderToProject, makeCustomField } from "./MatrixImporter";
+import { asyncAddFolderToProject, makeCustomField } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -43,14 +43,14 @@ describe("addSessionToProject", () => {
     project.sessions.items.splice(0, 1000);
     project.persons.items.splice(0, 1000);
   });
-  it("Can import one row with just id column", () => {
-    const session = makeMatrixAndImportThenGetSession({ id: "foo" });
+  it("Can import one row with just id column", async () => {
+    const session = await makeMatrixAndImportThenGetSession({ id: "foo" });
     expect(project.sessions.items.length).toBe(1);
     expect(session.id).toBe("foo");
   });
 
-  it("Can import one normal person row", () => {
-    const person = makeMatrixAndImportThenGetPerson({
+  it("Can import one normal person row", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Musician",
       fathersLanguage: "Spanish",
@@ -68,13 +68,14 @@ describe("addSessionToProject", () => {
     expect(person.languages[1].father).toBe(true);
     expect(person.languages[1].mother).toBe(true);
   });
-  it("Second import can overwrite existing person, with code", () => {
-    const person1 = makeMatrixAndImportThenGetPerson({
+  it("Second import can overwrite existing person, with code", async () => {
+    const person1 = await makeMatrixAndImportThenGetPerson({
       code: "JS",
       name: "Joe Strummer",
       primaryOccupation: "Musician",
     });
-    const person2 = makeMatrixAndImportThenGetPerson({
+
+    const person2 = await makeMatrixAndImportThenGetPerson({
       code: "JS",
       name: "Joe Strummer",
       primaryOccupation: "Producer",
@@ -86,12 +87,12 @@ describe("addSessionToProject", () => {
     );
   });
 
-  it("Second import can overwrite existing person, no code", () => {
-    const person1 = makeMatrixAndImportThenGetPerson({
+  it("Second import can overwrite existing person, no code", async () => {
+    const person1 = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Musician",
     });
-    const person2 = makeMatrixAndImportThenGetPerson({
+    const person2 = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Producer",
     });
@@ -101,8 +102,8 @@ describe("addSessionToProject", () => {
       "Producer"
     );
   });
-  it("Can import one normal session row", () => {
-    const session = makeMatrixAndImportThenGetSession({
+  it("Can import one normal session row", async () => {
+    const session = await makeMatrixAndImportThenGetSession({
       id: "foo",
       title: "London Calling",
       date: "7/27/2021",
@@ -120,8 +121,8 @@ describe("addSessionToProject", () => {
     expect(session.properties.getTextStringOrEmpty("genre")).toBe("drama");
     expect(session.properties.getTextStringOrEmpty("subgenre")).toBe("play");
   });
-  it("Can import one contribution", () => {
-    const session = makeMatrixAndImportThenGetSession({
+  it("Can import one contribution", async () => {
+    const session = await makeMatrixAndImportThenGetSession({
       id: "foo",
       "contribution.name": "Joe Strummer",
       "contribution.role": "Singer",
@@ -306,13 +307,13 @@ function makeRow(values: any): MappedRow {
   );
   return row;
 }
-function makeMatrixAndImportThenGetSession(values: any): Session {
+async function makeMatrixAndImportThenGetSession(
+  values: any
+): Promise<Session> {
   const row = makeRow(values);
-  addFolderToProject(project, row, "session");
-  return project.sessions.items[0] as Session;
+  return (await asyncAddFolderToProject(project, row, "session")) as Session;
 }
-function makeMatrixAndImportThenGetPerson(values: any): Person {
+async function makeMatrixAndImportThenGetPerson(values: any): Promise<Person> {
   const row = makeRow(values);
-  addFolderToProject(project, row, "person");
-  return project.persons.items[0] as Person;
+  return (await asyncAddFolderToProject(project, row, "person")) as Person;
 }

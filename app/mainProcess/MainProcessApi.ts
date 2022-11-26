@@ -1,17 +1,19 @@
-import { app } from "electron";
 import call from "electron-call";
-import Store from "electron-store";
+import * as fs from "fs-extra";
+const electron = require("electron");
 
-const store = new Store({ name: "lameta-user-settings" });
+// Put things here that you want to run on the main process. You can then access them with:
+// This is is using `electron-call` to produce type-safe wrappers that hide the IPC stuff.
+// See MainProcessApiAccess for instructions on using this from the Render process.
+
 export class MainProcessApi {
-  async getAppName() {
-    return app.getName();
-  }
-  async getUserSetting<T>(name: string, defaultValue: T): Promise<T> {
-    return store.get(name, defaultValue) as T;
-  }
-  setUserSetting<T>(name: string, value: T) {
-    store.set(name, value);
+  // electron's trashItem not working in render process, so we provide this here
+  // see https://github.com/electron/electron/issues/29598
+  public trashItem(path: string): Promise<boolean> {
+    return electron.shell.trashItem(path).then(
+      () => !fs.existsSync(path), // returned true but let's double-check
+      () => false // reject
+    );
   }
 }
 

@@ -17,7 +17,7 @@ export const availableSpreadsheetMappings = {
   LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
 };
 
-export function addImportMatrixToProject(
+export async function asyncAddImportMatrixToProject(
   project: Project,
   matrix: MappedMatrix,
   folderType: IFolderType
@@ -28,11 +28,12 @@ export function addImportMatrixToProject(
     //NO runInAction until we figure this out:
     // for some reason things will get saved as empty objects, e.g. the file will have "<Person></Person>"
     //mobx.runInAction(() =>
-    matrix.rows
-      .filter((row) => row.importStatus === RowImportStatus.Yes)
-      .forEach((row) => {
-        addFolderToProject(project, row, folderType);
-      });
+    const rows = matrix.rows.filter(
+      (row) => row.importStatus === RowImportStatus.Yes
+    );
+    for (const row of rows) {
+      await asyncAddFolderToProject(project, row, folderType);
+    }
     //);
     folders.selectFirstMarkedFolder();
   } catch (err) {
@@ -77,11 +78,11 @@ export function addImportMatrixToProject(
 //   return person;
 // }
 
-export function addFolderToProject(
+export async function asyncAddFolderToProject(
   project: Project,
   row: MappedRow,
   folderType: IFolderType
-): Folder {
+): Promise<Folder> {
   const folder = project.makeFolderForImport(folderType);
   folder.marked = true; // help user find the newly imported session
 
@@ -148,7 +149,7 @@ export function addFolderToProject(
   //console.log(previousFolderWithThisId?.displayName);
 
   if (previousFolderWithThisId) {
-    project.deleteFolder(previousFolderWithThisId);
+    await project.deleteFolder(previousFolderWithThisId);
     //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id

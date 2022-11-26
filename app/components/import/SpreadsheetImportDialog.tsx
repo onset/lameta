@@ -24,7 +24,7 @@ import {
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
-  addImportMatrixToProject,
+  asyncAddImportMatrixToProject,
   availableSpreadsheetMappings,
 } from "./MatrixImporter";
 import * as Path from "path";
@@ -249,12 +249,11 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           color="secondary"
           disabled={!path || !chosenCount}
           onClick={() => {
-            addImportMatrixToProject(
+            asyncAddImportMatrixToProject(
               props.projectHolder.project!,
               matrix!,
               folderType
-            );
-            closeDialog();
+            ).then(() => closeDialog());
           }}
           css={css`
             min-width: 50px;
