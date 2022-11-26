@@ -96,13 +96,12 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
         typeof cell.v === "number"
       ) {
         // looks like a date
-        //console.log("STM-c:" + JSON.stringify(cell));
         // Excel will give the date as an abiguous string in some locale, which is hard on us to then work with.
         // It also gives it as a unambiguous number, so we convert that to an ISO string
         const v = getJsDateFromExcel
           .getJsDateFromExcel(cell.v.toString())
-          .toISOString();
-        //console.log("STM-date:" + v);
+          .toISOString()
+          .split("T", 1)[0]; // remove the time portion
         row.push(v);
       } else {
         // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
@@ -364,7 +363,7 @@ function getImportSituationForValue(cell: IMappedCell) {
 
 function invalidChoice(cell: IMappedCell) {
   cell.importStatus = CellImportStatus.NotInClosedVocabulary;
-  const s = `The the permitted values for ${
+  const s = `The permitted values for ${
     cell.column.lametaProperty
   } are: ${cell.column.choices.map((x) => `"${x}"`).join(", ")}. `;
   cell.problemDescription = (cell.problemDescription || "") + s;

@@ -53,12 +53,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
 
-  const paths = {}; //JSON.parse(pathsString);
+  const paths = JSON.parse(pathsString);
   const path = paths[folderType];
 
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
   const chosenMapping = availableSpreadsheetMappings[
-    "" //mappingName
+    mappingName
   ] as IImportMapping;
 
   useEffect(() => {
@@ -118,6 +118,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <div
           css={css`
             display: flex;
+            gap: 8px;
             flex-direction: column;
             width: fit-content;
             margin-bottom: 20px;
@@ -146,6 +147,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             </div>
             <Button
               color="secondary"
+              variant={path ? "text" : "contained"}
               onClick={() => {
                 let dir = app.getPath("documents");
                 // prefer to open in the same directory as the current one, if it's there
@@ -171,7 +173,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   ) {
                     const newPaths = paths;
                     paths[folderType] = result.filePaths[0];
-                    //setPaths(JSON.stringify(newPaths));
+                    setPaths(JSON.stringify(newPaths));
                   }
                 });
               }}
@@ -184,7 +186,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             >
               <Trans>Choose File</Trans>
             </Button>
-          </div>{" "}
+          </div>
           <div
             css={css`
               display: flex;
@@ -210,9 +212,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   border-radius: 3px; // without this it is cutting off the top border
                 `}
                 name={"Spreadsheet Mapping"}
-                value={""} //mappingName}
+                value={mappingName}
                 onChange={(event) => {
-                  //setMappingName(event.target.value);
+                  setMappingName(event.target.value);
                 }}
               >
                 {["LingMetaX"].map((n) => (
