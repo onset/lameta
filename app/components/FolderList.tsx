@@ -8,7 +8,6 @@ import * as React from "react";
 import { default as ReactTable, Resize } from "react-table-6";
 
 import { Folder, FolderGroup } from "../model/Folder/Folder";
-import * as mobxReact from "mobx-react";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
@@ -19,6 +18,7 @@ import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
+import { observer } from "mobx-react";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -26,8 +26,7 @@ export interface IProps {
   columns: string[];
   columnWidths: number[];
 }
-@mobxReact.observer
-export class FolderList extends React.Component<IProps> {
+class FolderList extends React.Component<IProps> {
   private hasConsentPath = locate("assets/hasConsent.png");
   private noConsentPath = locate("assets/noConsent.png");
   private columnWidthManager: ReactTableColumnWidthManager;
@@ -224,4 +223,4 @@ export class FolderList extends React.Component<IProps> {
   }
 }
 
-export default FolderList;
+export default observer(FolderList);

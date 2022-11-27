@@ -18,8 +18,7 @@ interface IProps {
   authorityLists: AuthorityLists;
 }
 
-@observer
-export class ProjectTab extends React.Component<IProps> {
+export const ProjectTab = observer(class ProjectTab extends React.Component<IProps> {
   public render() {
     const kFirstTabToOpen = 0;
     return (
@@ -136,4 +135,4 @@ export class ProjectTab extends React.Component<IProps> {
       </Tabs>
     );
   }
-}
+});

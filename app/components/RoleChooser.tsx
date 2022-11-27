@@ -12,8 +12,7 @@ export interface IProps {
   choices: IChoice[];
 }
 
-@observer
-export default class RoleChooser extends React.Component<IProps> {
+class RoleChooser extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -48,3 +47,5 @@ export default class RoleChooser extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(RoleChooser);

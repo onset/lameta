@@ -1,7 +1,7 @@
 import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
-import { observable, computed } from "mobx";
+import { observable, computed, makeObservable } from "mobx";
 import React from "react";
 
 class FakeStore {
@@ -20,20 +20,24 @@ const kFontZoomStepSize = 0.2;
 export class UserSettings {
   private store: Store | FakeStore;
 
-  @observable
   private imdiMode: boolean;
-  @observable
   private paradisecMode: boolean;
-  @observable
   private howUsing: string;
-  @observable
   public uiFontZoom: number;
-  @observable
   private sendErrors: boolean;
 
   private clientId: string;
 
   constructor() {
+    makeObservable<UserSettings, "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors">(this, {
+      imdiMode: observable,
+      paradisecMode: observable,
+      howUsing: observable,
+      uiFontZoom: observable,
+      sendErrors: observable,
+      HowUsing: computed
+    });
+
     this.store =
       process.env.NODE_ENV === "test"
         ? new FakeStore()
@@ -114,7 +118,6 @@ export class UserSettings {
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
 
-  @computed
   public get HowUsing() {
     return this.howUsing;
   }

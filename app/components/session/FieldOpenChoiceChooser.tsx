@@ -1,22 +1,22 @@
 import * as React from "react";
 import { Field } from "../../model/field/Field";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 // tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
 import Tooltip from "react-tooltip-lite";
-import { Dictionary } from "typescript-collections";
 import { capitalCase } from "capital-case";
 import { lameta_orange } from "../../containers/theme";
+import { observable } from "mobx";
 
 //const Choices = new Dictionary<string, Array<string>>();
 
 // For fields where there are choices but the user can enter new ones.
-export const FieldOpenChoiceChooser = observer<{
+const FieldOpenChoiceChooser: React.FunctionComponent<{
   field: Field;
   className?: string;
   tabIndex?: number;
   translateChoice: (english: string) => string;
-}>((props) => {
+}> = (props) => {
   const label = props.field.labelInUILanguage;
   // enhance: "complex" here means there is more than just a phrase associated with
   // this. Genres have definitions and examples too. It seems that this code is
@@ -115,7 +115,9 @@ export const FieldOpenChoiceChooser = observer<{
       />
     </div>
   );
-});
+};
+
+export default observer(FieldOpenChoiceChooser);
 
 const CustomOption = (optionProps) => {
   const {

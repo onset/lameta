@@ -13,6 +13,19 @@ import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/patientFile";
 import * as ReactModal from "react-modal";
+import { configure } from "mobx";
+
+// when I upgraded to mobx 6, I added this becuase I was getting "Since
+// strict-mode is enabled, changing (observed) observable values without using
+// an action is not allowed." Enhance: figure out what it would mean to wrap
+// everything in actions. Migration guide says After finishing the entire
+// migration process and validating that your project works as expected,
+// consider enabling the flags computedRequiresReaction,
+// reactionRequiresObservable and observableRequiresReaction and enforceActions:
+// "observed" to write more idiomatic MobX code.
+configure({
+  enforceActions: "never",
+});
 
 app.whenReady().then(() => {
   PatientFS.init();

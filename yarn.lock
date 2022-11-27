@@ -3806,6 +3806,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@playwright/test@npm:^1.28.1":
+  version: 1.28.1
+  resolution: "@playwright/test@npm:1.28.1"
+  dependencies:
+    "@types/node": "*"
+    playwright-core: 1.28.1
+  bin:
+    playwright: cli.js
+  checksum: dc39dfdf848171a6c65fc32a9dbc95162684a4a1e3401dd157d7d6822a065d8dcb96b2484fc3b223baea4da774450fddaeaa6d4d21546d17d45f01884fa8d7c5
+  languageName: node
+  linkType: hard
+
 "@pmmmwh/react-refresh-webpack-plugin@npm:^0.4.3":
   version: 0.4.3
   resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.4.3"
@@ -11510,13 +11522,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-debug@npm:^1.1.0":
-  version: 1.5.0
-  resolution: "electron-debug@npm:1.5.0"
+"electron-debug@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "electron-debug@npm:3.2.0"
   dependencies:
-    electron-is-dev: ^0.3.0
-    electron-localshortcut: ^3.0.0
-  checksum: 03afff9381841bc15465ca72bbc59741c12a611482779f3bc6c78052f80c335eba242e81632bd9f840cf74363a059871dd2b5f96ccbb839dcd6a548183203b96
+    electron-is-dev: ^1.1.0
+    electron-localshortcut: ^3.1.0
+  checksum: 40b1669ff7abbbd3ce483f3bbb9620bbc7cffd8073110a53a9a3083249efdcdea2913bf1ae5f6b74f49e4dad761eec872c31cab1b4569b34356ea41f334ce4f2
   languageName: node
   linkType: hard
 
@@ -11594,7 +11606,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-localshortcut@npm:^3.0.0":
+"electron-is-dev@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "electron-is-dev@npm:1.2.0"
+  checksum: 73eee7aa7ce90a387bf224ec26aa808237164572641ca41cdca34a046adb72406d4414c3cc5b0b5e335a6d6010886474e1325c0b0af40c9fac95210b00195fdb
+  languageName: node
+  linkType: hard
+
+"electron-localshortcut@npm:^3.1.0":
   version: 3.2.1
   resolution: "electron-localshortcut@npm:3.2.1"
   dependencies:
@@ -18930,47 +18949,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:>=2.2.0":
-  version: 2.2.1
-  resolution: "mobx-react-lite@npm:2.2.1"
+"mobx-react-lite@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "mobx-react-lite@npm:3.4.0"
   peerDependencies:
-    mobx: ^4.0.0 || ^5.0.0
-    react: ^16.8.0
+    mobx: ^6.1.0
+    react: ^16.8.0 || ^17 || ^18
   peerDependenciesMeta:
     react-dom:
       optional: true
     react-native:
       optional: true
-  checksum: b2d54af7932d44b82b588f9de1871c1829d7330745389a9e3ee572924b4e2abe4fc41a4e43df8b8f3eec875ef8be2ab6f458e47248630045071a8421a96e6d85
+  checksum: 9294e127e281c8b37ec7bcaf17de479f50519e6ad485b58d7b991291900511541a5a718653759d3cf6503462c70325d025e1c2ed376d4584fb1b2d3aac9d9b48
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^1.4.1":
-  version: 1.5.2
-  resolution: "mobx-react-lite@npm:1.5.2"
-  peerDependencies:
-    mobx: ^4.0.0 || ^5.0.0
-    react: ^16.8.0
-  checksum: 0f42927b4dad28d3c8973d7788caac359faaf44d396e4fd435c8811b5f8bc835094751719ecc838cd527cb8895d1a83788b70288757759686c19785f51d65e4a
-  languageName: node
-  linkType: hard
-
-"mobx-react@npm:^6.1.1":
-  version: 6.3.0
-  resolution: "mobx-react@npm:6.3.0"
+"mobx-react@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "mobx-react@npm:7.6.0"
   dependencies:
-    mobx-react-lite: ">=2.2.0"
+    mobx-react-lite: ^3.4.0
   peerDependencies:
-    mobx: ^5.15.4 || ^4.15.4
-    react: ^16.8.0 || 16.9.0-alpha.0
-  checksum: 7572f9de2186fd0f47f586da942d56fdc4ebeca4c13266d806e550f53cd319d6442b821e2f80789c70281940d0e1e62adc6a0c83c27032481f7ff14a339f4d6c
+    mobx: ^6.1.0
+    react: ^16.8.0 || ^17 || ^18
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 07ce6eb297ddab2cc693df7350a3e2f730194cc6eb56bd912f80e28f9427237569e0bda6b30167154faf094e7c5e5ff360abd52acd2860d9a0d0e53320617ee8
   languageName: node
   linkType: hard
 
-"mobx@npm:^5.11.0":
-  version: 5.15.6
-  resolution: "mobx@npm:5.15.6"
-  checksum: 304c83020d62c0b5d473f6ede197a886709d7bb0e52dae5b0b50f2af2972de5671ed8bfe9ac232811acff8a1231aee59af0de9c568fa13c3a2f5b6e38bb75f03
+"mobx@npm:^6.7.0":
+  version: 6.7.0
+  resolution: "mobx@npm:6.7.0"
+  checksum: 895b46177b074b4b9c43b3eb5a9e86ed9d75e86d99db0be362e9ff1bcc81eddd04d4cbe4a207bccb814621bd17889191d87be0dab4073d24a0ad3edefdd3a9bc
   languageName: node
   linkType: hard
 
@@ -20904,6 +20918,26 @@ __metadata:
   dependencies:
     find-up: ^3.0.0
   checksum: 5bac346b7c7c903613c057ae3ab722f320716199d753f4a7d053d38f2b5955460f3e6ab73b4762c62fd3e947f58e04f1343e92089e7bb6091c90877406fcd8c8
+  languageName: node
+  linkType: hard
+
+"playwright-core@npm:1.28.1":
+  version: 1.28.1
+  resolution: "playwright-core@npm:1.28.1"
+  bin:
+    playwright: cli.js
+  checksum: 8899e0d65de43ee10fadc171e0d48cd514bb574f3505478700094afa8a6e0dcd888a5c87af22acf31ebad455ada1327028909c42e20b8e25908b6255dc143bf0
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.28.1":
+  version: 1.28.1
+  resolution: "playwright@npm:1.28.1"
+  dependencies:
+    playwright-core: 1.28.1
+  bin:
+    playwright: cli.js
+  checksum: 97c6fff2835878da856bf1f587ec4cdcbcc9aa61c0efcf592633f6df37eabbb9e59d7a2ef994ec9283338e43ef80e278d6d52fed5f7c29abd0408fac0f69b3ca
   languageName: node
   linkType: hard
 
@@ -23488,6 +23522,7 @@ __metadata:
     "@lingui/react": ^3.9.0
     "@material-ui/core": ^4.12.1
     "@material-ui/icons": ^4.11.2
+    "@playwright/test": ^1.28.1
     "@sentry/browser": ^6.13.3
     "@sentry/integrations": ^6.13.3
     "@storybook/addon-actions": ^6.2.9
@@ -23563,7 +23598,7 @@ __metadata:
     electron-builder-notarize: ^1.2.0
     electron-call: ^0.0.7
     electron-context-menu: ^0.9.1
-    electron-debug: ^1.1.0
+    electron-debug: ^3.2.0
     electron-devtools-installer: 3.1.1
     electron-ga: ^1.0.6
     electron-is-dev: ^0.3.0
@@ -23606,15 +23641,15 @@ __metadata:
     markdown-loader: ^2.0.1
     mime: ^2.4.0
     mini-css-extract-plugin: ^0.4.1
-    mobx: ^5.11.0
-    mobx-react: ^6.1.1
+    mobx: ^6.7.0
+    mobx-react: ^7.6.0
     mobx-react-devtools: ^6.1.1
-    mobx-react-lite: ^1.4.1
     moment: ^2.19.4
     musicmetadata: ^2.0.5
     papaparse: ^5.3.1
     patch-package: ^6.2.2
     path: ^0.12.7
+    playwright: ^1.28.1
     postinstall-postinstall: ^2.1.0
     pupa: ^2.1.1
     raw-loader: ^0.5.1

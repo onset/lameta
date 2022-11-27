@@ -4,7 +4,7 @@ import {
   kLinkExtensionWithFullStop,
   OtherFile,
 } from "../file/File";
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 
@@ -36,13 +36,16 @@ import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaF
 export class FolderGroup {
   //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
   // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
-  @observable
   public items: Folder[];
 
-  @observable
   public selectedIndex: number;
 
   constructor() {
+    makeObservable(this, {
+      items: observable,
+      selectedIndex: observable
+    });
+
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
   }
@@ -74,15 +77,12 @@ export abstract class Folder {
   public wasDeleted = false;
 
   // Is the folder's checkbox ticked?
-  @observable
   public marked: boolean = false;
 
   public directory: string = "";
-  @observable
   public files: File[] = [];
 
   // file from this folder that is currently selected in the UI
-  @observable
   public selectedFile: File | null;
 
   public metadataFile: FolderMetadataFile | null;
@@ -95,6 +95,12 @@ export abstract class Folder {
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
+    makeObservable(this, {
+      marked: observable,
+      files: observable,
+      selectedFile: observable
+    });
+
     this.customFieldRegistry = customFieldRegistry;
     this.directory = directory;
     this.metadataFile = metadataFile;

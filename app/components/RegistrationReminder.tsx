@@ -2,16 +2,14 @@ import * as React from "react";
 import userSettings from "../other/UserSettings";
 import "./RegistrationReminder.scss";
 import RegistrationDialog from "./registration/RegistrationDialog";
-import * as mobx from "mobx-react";
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../other/localization";
+import { observer } from "mobx-react";
 
 // This is in the upper right corner of the screen. It shows either
 // * A button asking you to register, or
 // * The name of a role that is unusual (developer) or temporary (learner)
 // * Nothing, if you're registered with a normal, permanent role
-@mobx.observer
-export default class RegistrationReminder extends React.Component {
+class RegistrationReminder extends React.Component {
   public render() {
     let buttonText: string | undefined;
     let passiveText = <></>;
@@ -48,3 +46,4 @@ export default class RegistrationReminder extends React.Component {
     );
   }
 }
+export default observer(RegistrationReminder);

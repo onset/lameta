@@ -9,9 +9,7 @@ export interface IProps {
   field: Field;
 }
 
-// automatically update when the value changes
-@observer
-export default class IsoLanguageEdit extends React.Component<
+class IsoLanguageEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -38,3 +36,5 @@ export default class IsoLanguageEdit extends React.Component<
     );
   }
 }
+
+export default observer(IsoLanguageEdit);

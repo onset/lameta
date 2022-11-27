@@ -35,8 +35,7 @@ export interface IProps {
   menu: LametaMenu;
 }
 
-@observer
-export default class Home extends React.Component<IProps> {
+class Home extends React.Component<IProps> {
   private kFirstTabToOpen = 0; // nocommit
 
   public constructor(props: IProps) {
@@ -307,3 +306,5 @@ export default class Home extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(Home);

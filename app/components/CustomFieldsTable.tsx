@@ -17,8 +17,7 @@ export interface IProps {
   firstColumnHeaderText?: string;
 }
 
-@observer
-export default class CustomFieldsTable extends React.Component<IProps> {
+class CustomFieldsTable extends React.Component<IProps> {
   private fieldsForRows: Field[];
   private focusField: Field;
   constructor(props: IProps) {
@@ -216,3 +215,5 @@ export default class CustomFieldsTable extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(CustomFieldsTable);

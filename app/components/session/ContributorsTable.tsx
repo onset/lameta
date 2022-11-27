@@ -18,8 +18,8 @@ export interface IProps {
 interface IState {
   unused: number;
 }
-@observer
-export default class ContributorsTable extends React.Component<IProps, IState> {
+
+class ContributorsTable extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -148,3 +148,5 @@ export default class ContributorsTable extends React.Component<IProps, IState> {
     );
   }
 }
+
+export default observer(ContributorsTable);

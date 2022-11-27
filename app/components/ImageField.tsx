@@ -5,9 +5,7 @@ export interface IProps {
   path: string;
 }
 
-// automatically update when the value changes
-@observer
-export default class ImageField extends React.Component<
+class ImageField extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -28,3 +26,5 @@ export default class ImageField extends React.Component<
     );
   }
 }
+
+export default observer(ImageField);

@@ -13,8 +13,7 @@ export interface IProps {
   project: Project;
 }
 
-@observer
-export class PersonContributions extends React.Component<IProps> {
+export const PersonContributions = observer(class PersonContributions extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -62,4 +61,4 @@ export class PersonContributions extends React.Component<IProps> {
       </Tooltip>
     );
   }
-}
+});

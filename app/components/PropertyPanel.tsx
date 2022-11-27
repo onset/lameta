@@ -7,10 +7,7 @@ import CustomFieldsTable from "./CustomFieldsTable";
 import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 
-@observer
-export default class PropertyPanel extends React.Component<{
-  file: File;
-}> {
+class PropertyPanel extends React.Component<{ file: File }> {
   public render() {
     return (
       <div className="propertyPanel">
@@ -27,3 +24,5 @@ export default class PropertyPanel extends React.Component<{
     );
   }
 }
+
+export default observer(PropertyPanel);

@@ -16,8 +16,8 @@ import IsoLanguageEdit from "./IsoLanguageEdit";
 import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
 import { Contribution } from "../model/file/File";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
-import { FieldOpenChoiceChooser } from "./session/FieldOpenChoiceChooser";
 import { translateGenre } from "../other/localization";
+import FieldOpenChoiceChooser from "./session/FieldOpenChoiceChooser";
 
 export interface IProps {
   folder: Folder;
@@ -33,9 +33,7 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-/** Constructs a form by looking at the properties of the given fields */
-@observer
-export default class AutoForm extends React.Component<IProps> {
+class AutoForm extends React.Component<IProps> {
   private sortedKeys: string[];
 
   constructor(props: IProps) {
@@ -207,3 +205,5 @@ export default class AutoForm extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(AutoForm);

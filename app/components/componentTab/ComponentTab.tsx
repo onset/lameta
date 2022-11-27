@@ -1,8 +1,5 @@
 import * as React from "react";
-import { FolderList } from "../FolderList";
-import {
-  FolderGroup,
-} from "../../model/Folder/Folder";
+import { FolderGroup } from "../../model/Folder/Folder";
 import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
@@ -10,6 +7,7 @@ import { Project } from "../../model/Project/Project";
 import "./ComponentTab.scss";
 
 import SplitPane from "react-split-pane";
+import FolderList from "../FolderList";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -27,8 +25,7 @@ interface IProps {
 // This implements the screens for both Sessions and People, but not Projects.
 // So they are "components" of the project.
 // Any children are put in the bar at the lower left.
-@observer
-export class ComponentTab extends React.Component<IProps> {
+class ComponentTab extends React.Component<IProps> {
   public render() {
     const splitterKey =
       this.props.folderTypeStyleClass + "VerticalSplitPosition";
@@ -64,7 +61,9 @@ export class ComponentTab extends React.Component<IProps> {
             this.props.folders.selectedIndex > -1 && (
               <FolderPane
                 project={this.props.project}
-                folder={this.props.folders.items.[this.props.folders.selectedIndex]}
+                folder={
+                  this.props.folders.items[this.props.folders.selectedIndex]
+                }
                 folderTypeStyleClass={this.props.folderTypeStyleClass}
                 showStandardMetaTabs={true}
                 authorityLists={this.props.authorityLists}
@@ -99,3 +98,4 @@ export class FolderListButtons extends React.Component<IJustChildrenProps> {
     return this.props.children;
   }
 }
+export default observer(ComponentTab);

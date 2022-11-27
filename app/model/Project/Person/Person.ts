@@ -1,4 +1,3 @@
-import * as mobx from "mobx";
 import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
@@ -19,6 +18,7 @@ import {
   getCodesFromLanguageListField,
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
+import { makeObservable, observable } from "mobx";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -109,6 +109,7 @@ export class Person extends Folder {
       this.properties.getTextStringOrEmpty("name"),
       userSettingsSingleton.IMDIMode
     );
+    /* what did this ever do?
     this.properties
       .getValueOrThrow("name")
       .textHolder.map.intercept((change) => {
@@ -116,6 +117,7 @@ export class Person extends Folder {
 
         return change;
       });
+      */
     this.knownFields = knownFieldDefinitions.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
@@ -200,7 +202,6 @@ export class Person extends Folder {
 
 export class PersonMetadataFile extends FolderMetadataFile {
   // only used for people files
-  @mobx.observable
   public languages: IPersonLanguage[] = [];
 
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
@@ -212,6 +213,10 @@ export class PersonMetadataFile extends FolderMetadataFile {
       knownFieldDefinitions.person,
       customFieldRegistry
     );
+
+    makeObservable(this, {
+      languages: observable,
+    });
 
     this.finishLoading();
     //console.log("PersonMetadataFile.ctr");

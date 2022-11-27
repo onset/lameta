@@ -1,4 +1,5 @@
 import * as fs from "fs-extra";
+import { makeObservable, observable } from "mobx";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
@@ -38,8 +39,13 @@ import { setCurrentProjectId } from "./MediaFolderAccess";
 let sCurrentProject: Project | null = null;
 
 export class ProjectHolder {
-  @mobx.observable
   private projectInternal: Project | null;
+
+  constructor() {
+    makeObservable<ProjectHolder, "projectInternal">(this, {
+      projectInternal: observable,
+    });
+  }
 
   public get project(): Project | null {
     return this.projectInternal;
@@ -62,13 +68,11 @@ export class ProjectHolder {
 export class Project extends Folder {
   public loadingError: string;
 
-  // @mobx.observable
+  // @observable
   // public sessions.selected: IFolderSelection;
-  // @mobx.observable
+  // @observable
   // public persons.selected: IFolderSelection;
-  @mobx.observable
   public sessions: FolderGroup = new FolderGroup();
-  @mobx.observable
   public persons: FolderGroup = new FolderGroup();
 
   public descriptionFolder: Folder;
@@ -165,6 +169,11 @@ export class Project extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
+
+    makeObservable(this, {
+      sessions: observable,
+      persons: observable,
+    });
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
       //console.log("***adding guid");
@@ -438,28 +447,42 @@ export class Project extends Folder {
 
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
-    this.properties
-      .getValueOrThrow("accessProtocol")
-      .textHolder.map.intercept((change) => {
+    mobx.reaction(
+      () =>
+        this.properties.getValueOrThrow("accessProtocol").textHolder.map["en"], // currently we only use "en" for this
+      (newValue) =>
+        //      .textHolder.map.intercept((change) => { mobx6 doesn't have this intercept
         this.authorityLists.setAccessProtocol(
-          change.newValue as string,
+          newValue,
           this.properties.getTextStringOrEmpty("customAccessChoices")
-        );
-        return change;
-      });
-    this.properties
-      .getValueOrThrow("customAccessChoices")
-      .textHolder.map.intercept((change) => {
+        )
+    );
+    mobx.reaction(
+      () =>
+        this.properties.getValueOrThrow("customAccessChoices").textHolder.map[
+          "en" // currently we only use "en" for this
+        ],
+      (newValue) => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
-        // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
-        this.authorityLists.setAccessProtocol(
-          currentProtocol,
-          change.newValue as string
-        );
-        return change;
-      });
+        // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
+        this.authorityLists.setAccessProtocol(currentProtocol, newValue);
+      }
+    );
+    // this.properties
+    //   .getValueOrThrow("customAccessChoices")
+    //    .textHolder.map.intercept((change) => {
+    //     const currentProtocol = this.properties.getTextStringOrEmpty(
+    //       "accessProtocol"
+    //     );
+    //     // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
+    //     this.authorityLists.setAccessProtocol(
+    //       currentProtocol,
+    //       change.newValue as string
+    //     );
+    //     return change;
+    //   });
   }
 
   private setupGenreDefinition() {

@@ -1,6 +1,6 @@
 import { shell } from "electron";
 import * as remote from "@electron/remote";
-import HomePage from "../containers/HomePage";
+import { IHomePageMenuConnections } from "../containers/HomePage";
 import log from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
@@ -16,8 +16,8 @@ import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 
 export default class LametaMenu {
-  private homePage: HomePage;
-  public constructor(homePage: HomePage) {
+  private homePage: IHomePageMenuConnections;
+  public constructor(homePage: IHomePageMenuConnections) {
     this.homePage = homePage;
 
     // add some hotkeys that will work even in production, in case we need
