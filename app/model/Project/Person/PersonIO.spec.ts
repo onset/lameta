@@ -15,7 +15,10 @@ import {
   value,
 } from "../../../other/xmlUnitTestUtils";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
-
+import * as mobx from "mobx";
+mobx.configure({
+  enforceActions: "never",
+});
 let personDirectory;
 let personId;
 const languageFinder = new LanguageFinder(() => ({

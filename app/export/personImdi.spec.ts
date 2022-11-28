@@ -7,11 +7,13 @@ import {
   count,
   value,
 } from "../other/xmlUnitTestUtils";
-
+import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
-
+mobx.configure({
+  enforceActions: "never",
+});
 let project: Project;
 let person: Person;
 let generator: ImdiGenerator;

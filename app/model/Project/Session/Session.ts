@@ -8,6 +8,7 @@ import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
 import userSettingsSingleton from "../../../other/UserSettings";
+import { runInAction } from "mobx";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -138,8 +139,10 @@ export class Session extends Folder {
           (c) => c.personReference === name
         )
       ) {
-        this.metadataFile!.contributions.push(
-          new Contribution(name, "participant", "")
+        runInAction(() =>
+          this.metadataFile!.contributions.push(
+            new Contribution(name, "participant", "")
+          )
         );
       }
     });

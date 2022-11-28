@@ -119,7 +119,10 @@ export async function asyncAddFolderToProject(
           // TODO: have to group up to 3 consecutive cells into a single contribution record
           break;
         case "date":
-          const dateString: string = moment(cell.value).format("YYYY-MM-DD");
+          // creating "Date" to get around the deprecation warning we get if we run into, .e.g. "7/27/2022"
+          const dateString: string = moment(new Date(cell.value)).format(
+            "YYYY-MM-DD"
+          );
           const dateField = folder.properties.getValueOrThrow("date");
           dateField.setValueFromString(dateString);
           break;

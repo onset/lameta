@@ -631,7 +631,7 @@ export class Project extends Folder {
       //console.log("deleting " + folder.displayName);
       const didDelete = await asyncTrash(folder.directory);
       if (didDelete) {
-        console.log("Project did delete " + folder.directory);
+        //console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);
         const index = folders.items.findIndex((f) => f === folder);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
@@ -641,7 +641,7 @@ export class Project extends Folder {
         folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         folders.items.splice(index, 1);
         folder.wasDeleted = true;
-        console.log(folders.items.length);
+        //console.log(folders.items.length);
         // console.log(
         //   `Deleting folder index:${index}. selectedIndex:${
         //     this.getFolderArrayFromType(folderType).selectedIndex

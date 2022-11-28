@@ -13,6 +13,10 @@ import {
 import { Person } from "../../model/Project/Person/Person";
 import { i18n } from "@lingui/core";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+import * as mobx from "mobx";
+mobx.configure({
+  enforceActions: "never",
+});
 import { i18nUnitTestPrep } from "../../other/localization";
 i18nUnitTestPrep();
 

@@ -13,7 +13,7 @@ import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/patientFile";
 import * as ReactModal from "react-modal";
-import { configure } from "mobx";
+import * as mobx from "mobx";
 
 // when I upgraded to mobx 6, I added this becuase I was getting "Since
 // strict-mode is enabled, changing (observed) observable values without using
@@ -23,7 +23,7 @@ import { configure } from "mobx";
 // consider enabling the flags computedRequiresReaction,
 // reactionRequiresObservable and observableRequiresReaction and enforceActions:
 // "observed" to write more idiomatic MobX code.
-configure({
+mobx.configure({
   enforceActions: "never",
 });
 
