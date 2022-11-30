@@ -12,7 +12,11 @@ import { node } from "prop-types";
 let analytics: Analytics | undefined;
 
 export function initializeAnalytics() {
-  if (process.env.NODE_ENV === "test" || userSettingsSingleton.DeveloperMode) {
+  if (
+    process.env.NODE_ENV === "test" ||
+    process.env.NODE_ENV === "development" ||
+    userSettingsSingleton.DeveloperMode
+  ) {
     // analytics = new Analytics("bogus", {
     //   appName: "bogus",
     //   appVersion: require("package.json").version,

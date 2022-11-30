@@ -53,7 +53,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
 
-  const paths = JSON.parse(pathsString);
+  const paths = pathsString ? JSON.parse(pathsString) : [];
   const path = paths[folderType];
 
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);

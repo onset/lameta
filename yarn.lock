@@ -6838,6 +6838,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asar@npm:^3.1.0":
+  version: 3.2.0
+  resolution: "asar@npm:3.2.0"
+  dependencies:
+    "@types/glob": ^7.1.1
+    chromium-pickle-js: ^0.2.0
+    commander: ^5.0.0
+    glob: ^7.1.6
+    minimatch: ^3.0.4
+  dependenciesMeta:
+    "@types/glob":
+      optional: true
+  bin:
+    asar: bin/asar.js
+  checksum: f7d30b45970b053252ac124230bf319459d0728d7f6dedbe2f765cd2a83792d5a716d2c3f2861ceda69372b401f335e1f46460335169eadd0e91a0904a4f5a15
+  languageName: node
+  linkType: hard
+
 "asn1.js@npm:^5.2.0":
   version: 5.4.1
   resolution: "asn1.js@npm:5.4.1"
@@ -11659,6 +11677,15 @@ __metadata:
     electron-osx-flat: bin/electron-osx-flat.js
     electron-osx-sign: bin/electron-osx-sign.js
   checksum: ca1e55d8cb0987b78bfaf197860e73f7e6266cb219f3d6fd32f25665a8393efb284115db9e2246b42f75cdf6163c148060aff8a02960f4f810c6502d6f7d447c
+  languageName: node
+  linkType: hard
+
+"electron-playwright-helpers@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "electron-playwright-helpers@npm:1.2.0"
+  dependencies:
+    asar: ^3.1.0
+  checksum: 46c03d19c5410fdbfd0172826b9031c4ad485f0d499724821a5ae60054bc4c55815b9d15f208645ed95342259fcf634769dcbaa594bac20d4bb9018eed734171
   languageName: node
   linkType: hard
 
@@ -23597,6 +23624,7 @@ __metadata:
     electron-is-dev: ^0.3.0
     electron-log: ^4.4.8
     electron-notarize: ^0.1.1
+    electron-playwright-helpers: ^1.2.0
     electron-store: 8.1.0
     emotion: ^10.0.27
     enzyme: ^3.0.0

@@ -29,19 +29,27 @@ export class UserSettings {
   private clientId: string;
 
   constructor() {
-    makeObservable<UserSettings, "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors">(this, {
+    makeObservable<
+      UserSettings,
+      "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors"
+    >(this, {
       imdiMode: observable,
       paradisecMode: observable,
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
-      HowUsing: computed
+      HowUsing: computed,
     });
 
     this.store =
-      process.env.NODE_ENV === "test"
+      process.env.NODE_ENV === "test" ||
+      process.env.E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
-        : new Store({ name: "lameta-user-settings" });
+        : new Store({
+            name:
+              process.env.E2E_USER_SETTINGS_STORE_NAME ??
+              "lameta-user-settings",
+          });
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     this.imdiMode = this.store.get("imdiMode") || false;
