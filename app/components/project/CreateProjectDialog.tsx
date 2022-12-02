@@ -33,11 +33,8 @@ export default class CreateProjectDialog extends React.Component<
     );
   }
   private getChosenPath(): string {
-    return Path.join(
-      app.getPath("documents"),
-      "lameta",
-      sanitize(this.state.projectName)
-    );
+    const root = process.env.E2ERoot ?? app.getPath("documents");
+    return Path.join(root, "lameta", sanitize(this.state.projectName));
   }
 
   public render() {

@@ -12,7 +12,6 @@ import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
-import { MediaFolderDialog } from "../components/MediaFolderDialog";
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 
@@ -47,7 +46,6 @@ export const App: React.FunctionComponent = observer(() => {
           <RenameFileDialog />
           <RegistrationDialog />
           <ReleasesDialog />
-          <MediaFolderDialog />
         </ThemeProvider>
       </I18nProvider>
     </div>

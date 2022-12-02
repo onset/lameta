@@ -313,7 +313,6 @@ function showAddFilesDialog(folder: Folder) {
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {
-      //folder.addFiles(result.filePaths.map((p) => ({ path: p })));
       addFiles(folder, result.filePaths);
     }
   });
