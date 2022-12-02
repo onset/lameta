@@ -1,23 +1,19 @@
 import { test, expect as expect } from "@playwright/test";
-import { e2eNavigation } from "./navigation";
+import { Lameta } from "./Lameta";
+import { E2eProject } from "./e2eProject";
 
-test("after adding a file, it shows in the list immediately", async ({}, testInfo) => {
-  const nav = new e2eNavigation();
-  const page = await nav.launchAndCreateToNewProject(testInfo);
-  await nav.goToSessions();
-  await nav.addSession();
-  await nav.addFile("text=foo.txt");
+test("after adding a file, it shows in the list", async ({}, testInfo) => {
+  const lameta = new Lameta();
+  const page = await lameta.launchAndCreateToNewProject(testInfo);
+  const project = new E2eProject(lameta);
+  await project.goToSessions();
+  await project.addSession();
+  await project.addFile("text=foo.txt");
   //await page.pause();
   await expect(page.getByRole("gridcell", { name: "foo.txt" })).toBeVisible();
-  await nav.quit();
-});
-test("after adding a file, it shows in the list after leaving and coming back", async ({}, testInfo) => {
-  const nav = new e2eNavigation();
-  const page = await nav.launchAndCreateToNewProject(testInfo);
-  await nav.goToSessions();
-  await nav.addSession();
-  await nav.addFile("foo.txt");
-  await nav.goToPeople();
-  await nav.goToSessions();
+  // now leave and come back, should still be there
+  await project.goToPeople();
+  await project.goToSessions();
   await expect(page.getByRole("gridcell", { name: "foo.txt" })).toBeVisible();
+  await lameta.quit();
 });

@@ -2,45 +2,16 @@ import * as fs from "fs";
 import * as Path from "path";
 import { ElectronApplication, Page, _electron as electron } from "playwright";
 import { test, expect as expect, TestInfo } from "@playwright/test";
+import { Lameta } from "./Lameta";
 
-let electronApp: ElectronApplication;
-
-export class e2eNavigation {
+export class E2eProject {
   public page: Page;
-  public projectDirectory: string;
-  public async launch() {
-    electronApp = await electron.launch({
-      args: ["."],
-      env: {
-        NODE_ENV: "test" /* <-- doesn't work */,
-        E2E: "true",
-        E2E_USER_SETTINGS_STORE_NAME: "none", // like we're running for the first time
-        E2ERoot: process.env.E2ERoot!,
-      },
-    });
-    this.page = await electronApp.firstWindow();
-    return this.page;
+  public lameta: Lameta;
+  public constructor(lameta: Lameta) {
+    this.lameta = lameta;
+    this.page = lameta.page;
   }
-  // if you don't do this, there may be a noticable delay
-  public async quit() {
-    await electronApp.close();
-  }
-  public async launchAndCreateToNewProject(testInfo: TestInfo) {
-    const page = await this.launch();
-    await this.cancelRegistration();
-    await page.locator("#creatNewProjectLink").click();
-    const projectName = testInfo.title;
-    await page.locator("#projectNameInput").fill(projectName);
-    this.projectDirectory = Path.join(process.env.E2ERoot!, projectName);
-    const ok = await page.getByRole("button", { name: "OK" });
-    expect(ok).toBeEnabled();
-    ok.click();
-    return await electronApp.firstWindow();
-  }
-  public async cancelRegistration() {
-    const cancel = await this.page.getByRole("button", { name: "CANCEL" });
-    await cancel.click();
-  }
+
   public async goToSessions() {
     await this.page.getByText("Sessions").click();
   }
@@ -51,7 +22,7 @@ export class e2eNavigation {
     await this.page.getByRole("button", { name: "New Session" }).click();
   }
   public async mockShowOpenDialog(pathsToReturn: string[]) {
-    electronApp.evaluate(async ({ dialog }, filePaths) => {
+    this.lameta.electronApp.evaluate(async ({ dialog }, filePaths) => {
       dialog.showOpenDialog = () =>
         Promise.resolve({ canceled: false, filePaths });
     }, pathsToReturn);
