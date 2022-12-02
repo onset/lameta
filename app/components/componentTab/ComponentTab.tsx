@@ -57,26 +57,28 @@ class ComponentTab extends React.Component<IProps> {
             <div className={"newFolderBar"}>{this.props.folderListButtons}</div>
           </div>
           {this.props.folders &&
-            this.props.folders.items.length > 0 &&
-            this.props.folders.selectedIndex > -1 && (
-              <FolderPane
-                project={this.props.project}
-                folder={
+          this.props.folders.items.length > 0 &&
+          this.props.folders.selectedIndex > -1 ? (
+            <FolderPane
+              project={this.props.project}
+              folder={
+                this.props.folders.items[this.props.folders.selectedIndex]
+              }
+              folderTypeStyleClass={this.props.folderTypeStyleClass}
+              showStandardMetaTabs={true}
+              authorityLists={this.props.authorityLists}
+              fileListButtons={this.props.fileListButtons}
+            >
+              <h3 className={"paneTitle"}>
+                {
                   this.props.folders.items[this.props.folders.selectedIndex]
+                    .displayName
                 }
-                folderTypeStyleClass={this.props.folderTypeStyleClass}
-                showStandardMetaTabs={true}
-                authorityLists={this.props.authorityLists}
-                fileListButtons={this.props.fileListButtons}
-              >
-                <h3 className={"paneTitle"}>
-                  {
-                    this.props.folders.items[this.props.folders.selectedIndex]
-                      .displayName
-                  }
-                </h3>
-              </FolderPane>
-            )}
+              </h3>
+            </FolderPane>
+          ) : (
+            <React.Fragment />
+          )}
         </SplitPane>
       </div>
     );
