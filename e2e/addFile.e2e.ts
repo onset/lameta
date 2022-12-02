@@ -9,6 +9,7 @@ test("after adding a file, it shows in the list immediately", async ({}, testInf
   await nav.addFile("text=foo.txt");
   //await page.pause();
   await expect(page.getByRole("gridcell", { name: "foo.txt" })).toBeVisible();
+  await nav.quit();
 });
 test("after adding a file, it shows in the list after leaving and coming back", async ({}, testInfo) => {
   const nav = new e2eNavigation();

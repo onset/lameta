@@ -22,9 +22,10 @@ import {
   getLinkStatusIconPath,
   getStatusOfFile,
 } from "../model/file/FileStatus";
+import { toJS } from "mobx";
 const electron = require("electron");
 
-export const FileList: React.FunctionComponent<{
+export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
 }> = (props) => {
@@ -33,7 +34,7 @@ export const FileList: React.FunctionComponent<{
     getMediaFolderOrEmptyForThisProjectAndMachine()
   );
   // What this mobxDummy is about:
-  // What happens inside the component tabeles cells are invisible to mobx; it doesn't
+  // What happens inside the component tables cells are invisible to mobx; it doesn't
   // have a way of knowing that these are reliant on the filename of the file.
   // See https://mobx.js.org/best/react.html#mobx-only-tracks-data-accessed-for-observer-components-if-they-are-directly-accessed-by-render
   // However the <Observer> wrapper suggested by that link messes up the display of the table.
@@ -235,7 +236,9 @@ export const FileList: React.FunctionComponent<{
   );
 };
 
-export default observer(FileList);
+// this hackery is to get a named export while applying observer... there must be a better way!
+const x = observer(_FileList);
+export { x as FileList };
 
 function showFileMenu(
   folder: Folder,

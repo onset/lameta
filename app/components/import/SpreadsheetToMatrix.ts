@@ -323,8 +323,6 @@ function setInitialRowImportStatus(
       id = r.asObjectByLametaProperties()["name"];
     }
 
-    //project.consoleLogAllIds(folderType); // nocommit
-
     if (!id) {
       r.addProblemDescription("Missing " + uniqueIdentifierProperty);
     } else if (!!project.findFolderById(folderType, id)) {

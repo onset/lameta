@@ -4,7 +4,7 @@ import {
   kLinkExtensionWithFullStop,
   OtherFile,
 } from "../file/File";
-import { observable, makeObservable } from "mobx";
+import { observable, makeObservable, runInAction } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 
@@ -43,7 +43,7 @@ export class FolderGroup {
   constructor() {
     makeObservable(this, {
       items: observable,
-      selectedIndex: observable
+      selectedIndex: observable,
     });
 
     this.items = new Array<Folder>();
@@ -98,7 +98,7 @@ export abstract class Folder {
     makeObservable(this, {
       marked: observable,
       files: observable,
-      selectedFile: observable
+      selectedFile: observable,
     });
 
     this.customFieldRegistry = customFieldRegistry;
@@ -266,10 +266,11 @@ export abstract class Folder {
   public copyInFiles(paths: string[]) {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
-    //let lastFile: File | null = null;
-    paths.forEach((p: string) => {
-      this.copyInOneFile(p);
-      //lastFile = p;
+
+    runInAction(() => {
+      paths.forEach((p: string) => {
+        this.copyInOneFile(p);
+      });
     });
   }
   get type(): string {

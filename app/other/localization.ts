@@ -69,8 +69,6 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   i18n.load(code, require(`../../locale/${code}/messages.js`).messages);
   i18n.activate(code);
 
-  console.warn("Localization: Project = " + i18n._("Project"));
-
   userSettings.UILanguage = code;
 
   if (reload) remote.getCurrentWindow().reload();

@@ -21,6 +21,10 @@ export class e2eNavigation {
     this.page = await electronApp.firstWindow();
     return this.page;
   }
+  // if you don't do this, there may be a noticable delay
+  public async quit() {
+    await electronApp.close();
+  }
   public async launchAndCreateToNewProject(testInfo: TestInfo) {
     const page = await this.launch();
     await this.cancelRegistration();
