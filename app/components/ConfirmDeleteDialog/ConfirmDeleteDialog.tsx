@@ -3,128 +3,133 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-
+import DeleteIcon from "@material-ui/icons/Delete";
 import * as React from "react";
-import * as fs from "fs";
-import * as Path from "path";
-import ReactModal from "react-modal";
-import "./ConfirmDeleteDialog.scss";
-import CloseOnEscape from "react-close-on-escape";
-import { locate } from "../../other/crossPlatformUtilities";
 import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
 import { lameta_orange } from "../../containers/theme";
+import { runInAction } from "mobx";
+import {
+  DialogBottomButtons,
+  DialogCancelButton,
+  DialogMiddle,
+  DialogTitle,
+  LametaDialog,
+} from "../LametaDialog";
+import { Button } from "@material-ui/core";
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps {}
-interface IState {
-  isOpen: boolean;
-  isDeleting: boolean;
-  descriptionOfWhatWillBeDeleted?: string;
-  deleteAction?: () => void;
+let staticShowDeleteDialog: (
+  descriptionOfWhatWillBeDeleted: string,
+  asyncDeletionFunction: () => void
+) => void = () => {};
+export { staticShowDeleteDialog as ShowDeleteDialog };
+
+enum Mode {
+  closed = 0,
+  confirming = 1,
+  deleting = 2,
 }
-
-export default class ConfirmDeleteDialog extends React.Component<
-  IProps,
-  IState
-> {
-  private static singleton: ConfirmDeleteDialog;
-
-  constructor(props: IProps) {
-    super(props);
-    this.state = { isOpen: false, isDeleting: false };
-    ConfirmDeleteDialog.singleton = this;
-  }
-  private handleCloseModal(doDelete: boolean) {
-    if (
-      doDelete &&
-      this.state.deleteAction &&
-      this.state.descriptionOfWhatWillBeDeleted
-    ) {
-      const action = this.state.deleteAction;
-      this.setState({ isDeleting: true });
-      window.setTimeout(() => {
-        try {
-          action();
-          this.setState({
-            isDeleting: false,
-            isOpen: false,
-            deleteAction: () => {},
-          });
-        } catch (error) {}
-      }, 10);
-    } else {
-      this.setState({
-        isDeleting: false,
-        isOpen: false,
-        deleteAction: () => {},
-      });
+export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
+  const [mode, setMode] = React.useState<Mode>(Mode.closed);
+  const [deletionAction, setDeletionAction] = React.useState<() => void>(
+    () => () => {}
+  );
+  const [
+    descriptionOfWhatWillBeDeleted,
+    setDescriptionOfWhatWillBeDeleted,
+  ] = React.useState("__");
+  staticShowDeleteDialog = (description: string, deleteAction: () => void) => {
+    setDescriptionOfWhatWillBeDeleted(description);
+    setMode(Mode.confirming);
+    setDeletionAction(() => deleteAction);
+  };
+  React.useEffect(() => {
+    switch (mode) {
+      case Mode.deleting:
+        document.body.style.cursor = "wait";
+        break;
+      default:
+        document.body.style.cursor = "default";
     }
+  }, [mode]);
+
+  function close() {
+    setDeletionAction(() => {});
+    setMode(Mode.closed);
   }
 
-  public static async show(name: string, deleteAction: () => void) {
-    ConfirmDeleteDialog.singleton.setState({
-      descriptionOfWhatWillBeDeleted: name,
-      isOpen: true,
-      deleteAction,
-    });
-  }
-  public render() {
-    return (
-      <CloseOnEscape
-        onEscape={() => {
-          this.handleCloseModal(false);
-        }}
-      >
-        <ReactModal
-          ariaHideApp={false}
-          className="confirmDeleteDialog"
-          isOpen={this.state.isOpen}
-          shouldCloseOnOverlayClick={true}
-          shouldCloseOnEsc={true}
-          onRequestClose={() => this.handleCloseModal(false)}
+  return (
+    <LametaDialog
+      open={mode !== Mode.closed}
+      onClose={close}
+      // css={css`
+      //   width: calc(100% - 100px);
+      //   // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
+      //   // So if you change this here, you may need to tweak that
+      //   height: calc(100% - 100px);
+      // `}
+    >
+      <DialogTitle title={t`Confirm Delete`} />
+      <DialogMiddle>
+        <div
+          css={css`
+            display: flex;
+          `}
         >
-          <div className={"dialogTitle"}>
-            <Trans>Confirm Delete</Trans>
+          <DeleteIcon
+            fontSize="large"
+            // css={css`
+            //   width: auto;
+            //   height: 50px;
+            // `}
+          />
+          <div>
+            <Trans>
+              {descriptionOfWhatWillBeDeleted} will be moved to the Trash
+            </Trans>
           </div>
-          <div className="dialogContent">
-            <div className="row">
-              <img src={locate("assets/trash.png")} />
-              <h1>
-                <Trans>
-                  {this.state.descriptionOfWhatWillBeDeleted} will be moved to
-                  the Trash
-                </Trans>
-              </h1>
-            </div>
-          </div>
-          <div className={"bottomButtonRow"}>
-            {this.state.isDeleting ? (
-              <span
-                css={css`
-                  color: ${lameta_orange};
-                `}
-              >
-                {t`Deleting...`}
-              </span>
-            ) : (
-              <div className={"okCancelGroup"}>
-                {}
-                {}
-                <button onClick={() => this.handleCloseModal(false)}>
-                  <Trans>Cancel</Trans>
-                </button>
-                <button
-                  id="deleteButton"
-                  onClick={() => this.handleCloseModal(true)}
-                >
-                  <Trans>Delete</Trans>
-                </button>
-              </div>
-            )}
-          </div>
-        </ReactModal>
-      </CloseOnEscape>
-    );
-  }
-}
+        </div>
+      </DialogMiddle>
+      <DialogBottomButtons>
+        {mode === Mode.deleting ? (
+          <span
+            css={css`
+              color: ${lameta_orange};
+            `}
+          >
+            {t`Deleting...`}
+          </span>
+        ) : (
+          <React.Fragment>
+            <Button
+              startIcon={<DeleteIcon></DeleteIcon>}
+              variant="contained"
+              color="secondary"
+              id="deleteButton"
+              onClick={() => {
+                //const action = deletionAction; //review
+                setMode(Mode.deleting);
+                window.setTimeout(() => {
+                  try {
+                    runInAction(async () => {
+                      await deletionAction();
+                      setDeletionAction(() => {});
+                      setMode(Mode.closed);
+                    });
+                  } catch (error) {}
+                }, 10);
+              }}
+            >
+              <Trans>Delete</Trans>
+            </Button>
+            <DialogCancelButton
+              onClick={() => {
+                close();
+              }}
+            />
+          </React.Fragment>
+        )}
+      </DialogBottomButtons>
+    </LametaDialog>
+  );
+};

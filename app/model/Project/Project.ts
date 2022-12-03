@@ -11,7 +11,6 @@ const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
 import { asyncTrash } from "../../other/crossPlatformUtilities";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { Field, FieldType, IChoice } from "../field/Field";
@@ -35,6 +34,7 @@ import {
   NotifyWarning,
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
+import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 let sCurrentProject: Project | null = null;
 
@@ -592,22 +592,24 @@ export class Project extends Folder {
 
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
-    ConfirmDeleteDialog.show(`"${session.id}"`, () => {
+    ShowDeleteDialog(`"${session.id}"`, () => {
       this.deleteFolder(session);
     });
   }
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
-    ConfirmDeleteDialog.show(`${folders.countOfMarkedFolders()} Items`, () => {
-      // avoid re-rendering. Sept 2022 this still calls listeners for some reason, including UpdateMenus
-      mobx.runInAction(() => {
+    ShowDeleteDialog(
+      `${folders.countOfMarkedFolders()} Items and all their contents`,
+      async () => {
+        const p = new Array<Promise<void>>();
         folders.items
           .filter((s) => s.marked)
           .forEach((folder) => {
-            this.deleteFolder(folder);
+            p.push(this.deleteFolder(folder));
           });
-      });
-    });
+        return Promise.allSettled(p);
+      }
+    );
   }
   public getOrCreatePerson(name: string): Person {
     if (!name || !name.trim()) {
@@ -697,7 +699,7 @@ export class Project extends Folder {
   // }
   public deleteCurrentPerson() {
     const person = this.persons.items[this.persons.selectedIndex];
-    ConfirmDeleteDialog.show(`"${person.displayName}"`, () => {
+    ShowDeleteDialog(`"${person.displayName}"`, () => {
       // if (trash(person.directory)) {
       //   // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
       //   // in case we had the last one selected and now there won't be a selection at that index.

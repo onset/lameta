@@ -288,7 +288,7 @@ function showFileMenu(
       label: file.isLinkFile() ? t`Delete link to file...` : t`Delete File...`,
       enabled: file.canDelete,
       click: () => {
-        folder.asyncMoveFileToTrash(file);
+        folder.MoveFileToTrashWithUI(file);
       },
       visible: contextMenu,
     },

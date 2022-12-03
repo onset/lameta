@@ -20,7 +20,6 @@ import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { asyncTrash } from "../../other/crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
@@ -32,6 +31,7 @@ import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
+import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 export class FolderGroup {
   //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
@@ -350,45 +350,42 @@ export abstract class Folder {
     this.files.splice(index, 1);
   }
 
-  public async asyncMoveFileToTrash(file: File) {
-    ConfirmDeleteDialog.show(
-      file.pathInFolderToLinkFileOrLocalCopy,
-      async () => {
-        sentryBreadCrumb(
-          `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
+  public MoveFileToTrashWithUI(file: File) {
+    ShowDeleteDialog(file.pathInFolderToLinkFileOrLocalCopy, async () => {
+      sentryBreadCrumb(
+        `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
+      );
+      let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
+      if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
+        // electron.shell.showItemInFolder(file.describedFilePath);
+        continueTrashing = await asyncTrash(
+          file.pathInFolderToLinkFileOrLocalCopy
         );
-        let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
-        if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
-          // electron.shell.showItemInFolder(file.describedFilePath);
-          continueTrashing = await asyncTrash(
-            file.pathInFolderToLinkFileOrLocalCopy
-          );
-        }
-        if (!continueTrashing) {
-          return;
-        }
-        if (
-          file.metadataFilePath &&
-          file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
-        ) {
-          if (fs.existsSync(file.metadataFilePath)) {
-            if (!(await asyncTrash(file.metadataFilePath))) {
-              NotifyError(
-                t`lameta was not able to put this file in the trash` +
-                  ` (${file.metadataFilePath})`
-              );
-            }
+      }
+      if (!continueTrashing) {
+        return;
+      }
+      if (
+        file.metadataFilePath &&
+        file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
+      ) {
+        if (fs.existsSync(file.metadataFilePath)) {
+          if (!(await asyncTrash(file.metadataFilePath))) {
+            NotifyError(
+              t`lameta was not able to put this file in the trash` +
+                ` (${file.metadataFilePath})`
+            );
           }
         }
-        if (this.selectedFile === file) {
-          this.selectedFile = this.files.length > 0 ? this.files[0] : null;
-        }
-        file.wasDeleted();
-        file.properties = new FieldSet();
-
-        this.forgetFile(file);
       }
-    );
+      if (this.selectedFile === file) {
+        this.selectedFile = this.files.length > 0 ? this.files[0] : null;
+      }
+      file.wasDeleted();
+      file.properties = new FieldSet();
+
+      this.forgetFile(file);
+    });
   }
   public renameChildWithFilenameMinusExtension(
     childFile: File,
