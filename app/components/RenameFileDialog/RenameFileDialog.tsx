@@ -222,7 +222,6 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
         )}
       </DialogMiddle>
       <DialogBottomButtons>
-        <DialogCancelButton onClick={() => setMode(Mode.closed)} />
         <Button
           variant="contained"
           color="secondary"
@@ -236,6 +235,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
         >
           <Trans>Rename</Trans>
         </Button>
+        <DialogCancelButton onClick={() => setMode(Mode.closed)} />
       </DialogBottomButtons>
     </LametaDialog>
   );

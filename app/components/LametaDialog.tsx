@@ -9,15 +9,14 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
 import ReactModal from "react-modal";
-import CloseOnEscape from "react-close-on-escape";
 import { t, Trans } from "@lingui/macro";
 import { Button } from "@material-ui/core";
+import { mainProcessApi } from "../MainProcessApiAccess";
 
-// const saymore_orange = "#e69664";
-// const { app } = require("electron").remote;
-
-// let staticShowExportDialog: () => void = () => {};
-// export { staticShowExportDialog as ShowExportDialog };
+let isWin32: boolean;
+mainProcessApi.isWindows().then((isWindows) => {
+  isWin32 = isWindows;
+});
 
 const kDialogTopPadding = "24px";
 const kDialogSidePadding = "24px";
@@ -165,7 +164,9 @@ export const DialogBottomLeftButtons: React.FunctionComponent<{}> = (props) => (
   </div>
 );
 
-// normally one or more buttons. 1st child can also be <DialogBottomLeftButtons> if you have left-aligned buttons to show
+// normally one or two buttons, with the last one being <DialogCancelButton></DialCancelButton>.
+// The 1st child can also be <DialogBottomLeftButtons> if you have left-aligned buttons to show
+// give the order as it would be in Windows, which is Cancel-last. At runtime, this component reverse the order for mac & ubuntu.
 export const DialogBottomButtons: React.FunctionComponent<{}> = (props) => {
   return (
     <div
@@ -174,13 +175,17 @@ export const DialogBottomButtons: React.FunctionComponent<{}> = (props) => {
         margin-top: auto; // push to bottom
         padding-top: 20px; // leave room between us and the content above us
         display: flex;
-        justify-content: flex-end; // make buttons line up on the right, unless wrapped in <DialogBottomLeftButtons>
-        // this is better but Firefox doesn't support it until FF 63:  gap: ${kDialogPadding};
+        // The order of buttons on windows is action/cancel, mac & ubuntu are cancel/action
+        flex-direction: ${isWin32
+          ? "row"
+          : "row-reverse"}; // set the order of the buttons
+        // make buttons line up on the right, unless wrapped in <DialogBottomLeftButtons>
+        justify-content: ${isWin32
+          ? "flex-end"
+          : "flex-start"}; // we have to reverse because the meaning changes when with row-revers
 
         /* -- button separation -- */
-        button {
-          margin-left: ${kDialogPadding};
-        }
+        gap: ${kDialogPadding};
 
         // As per material (https://i.imgur.com/REsXU1C.png), we actually should be closer to the right than
         // the content.
