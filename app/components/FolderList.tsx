@@ -40,6 +40,7 @@ class FolderList extends React.Component<IProps> {
   }
 
   public render() {
+    //console.log("FOlderList rendering");
     // it's important that we access this at this level so that mobx will know to re-render us when this changes.
     const selectedFolderIndex = this.props.folders.selectedIndex;
     // console.log(

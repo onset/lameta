@@ -8,282 +8,270 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
-import ReactModal from "react-modal";
-import CloseOnEscape from "react-close-on-escape";
 import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
+import {
+  DialogBottomButtons,
+  DialogCancelButton,
+  DialogMiddle,
+  DialogTitle,
+  LametaDialog,
+} from "../LametaDialog";
 import { error_color } from "../../containers/theme";
+import { useEffect, useState } from "react";
+import { Button } from "@material-ui/core";
 const sanitizeFilename = require("sanitize-filename");
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps {}
-interface IState {
-  isOpen: boolean;
-  file?: File;
-  filename: string;
-  fileNameParts?: {
-    prefix: string;
-    core: string;
-    suffix: string;
-    suffixWithNoLink: string;
-  };
-  folder?: Folder; // serves as a prefix on files which should not be modified by the user in this dialog
+let staticShowRenameDialog: (file: File, folder: Folder) => void = () => {};
+export { staticShowRenameDialog as ShowRenameDialog };
+
+type FileNameParts = {
+  prefix: string;
+  core: string;
+  suffix: string;
+  suffixWithNoLink: string;
+};
+
+enum Mode {
+  closed = 0,
+  unchanged = 1,
+  valid = 2,
+  invalid = 3,
 }
+export const RenameFileDialog: React.FunctionComponent<{}> = () => {
+  const [file, setFile] = useState<File>();
+  const [filename, setFilename] = useState<string>("");
+  const [folder, setFolder] = useState<Folder>();
+  const [fileNameParts, setFileNameParts] = useState<FileNameParts>();
+  const [mode, setMode] = useState<Mode>(Mode.closed);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [originalCore, setOriginalCore] = useState("");
+  staticShowRenameDialog = (file: File, folder: Folder) => {
+    setFile(file);
+    setFilename(Path.basename(file.pathInFolderToLinkFileOrLocalCopy));
+    setFolder(folder);
+    const parts = getFileNameParts(
+      Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
+      folder.filePrefix
+    );
 
-export class RenameFileDialog extends React.Component<IProps, IState> {
-  private static singleton: RenameFileDialog;
-
-  constructor(props: IProps) {
-    super(props);
-
-    this.state = {
-      isOpen: false,
-      file: undefined,
-      fileNameParts: undefined,
-      folder: undefined,
-      filename: "",
-    };
-    RenameFileDialog.singleton = this;
-  }
-  private handleCloseModal(doRename: boolean) {
-    if (doRename) {
-      console.log("Attempting rename to " + this.getNewFileName());
-      if (
-        !this.state.folder!.renameChildWithFilenameMinusExtension(
-          this.state.file!,
-          this.getNewFileName(false)
-        )
-      ) {
-        return; // don't close if it failed
+    setFileNameParts(parts);
+    setOriginalCore(parts.core);
+    setMode(Mode.valid);
+  };
+  useEffect(() => {
+    if (mode !== Mode.closed) {
+      const unchanged = originalCore == fileNameParts?.core;
+      determineValidationProblemsMessage();
+      if (unchanged) {
+        setMode(Mode.unchanged);
+      } else {
+        setMode(validationMessage ? Mode.invalid : Mode.valid);
       }
     }
-    this.setState({ isOpen: false, file: undefined, fileNameParts: undefined });
-  }
+  }, [fileNameParts, mode]);
 
-  public static async show(file: File, folder: Folder) {
-    RenameFileDialog.singleton.setState({
-      file,
-      filename: Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
-      folder,
-      fileNameParts: this.getFileNameParts(
-        Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
-        folder.filePrefix
-      ),
-      isOpen: true,
-    });
-  }
-  public render() {
-    if (!this.state.isOpen) {
-      return null;
+  const renameAndClose = () => {
+    {
+      const didRename = folder!.renameChildWithFilenameMinusExtension(
+        file!,
+        getNewFileName(false)
+      );
+      if (didRename)
+        // doesn't close if we do this right away
+        window.setImmediate(() => setMode(Mode.closed));
     }
-    const haveValidPath = this.getValidationProblemsMessage() === ""; // review: could do this when state changes
-    const pathUnchanged =
-      Path.normalize(this.getNewPath()) ===
-      Path.normalize(this.state.file!.pathInFolderToLinkFileOrLocalCopy);
-    const canRenameNow = !pathUnchanged && haveValidPath;
-    return (
-      <CloseOnEscape
-        onEscape={() => {
-          this.handleCloseModal(false);
-        }}
-      >
-        <ReactModal
-          ariaHideApp={false}
-          className="renameFileDialog"
-          isOpen={this.state.isOpen}
-          shouldCloseOnOverlayClick={true}
-          onRequestClose={() => this.handleCloseModal(false)}
-          css={css`
-            z-index: 10000;
-            .dialogContent {
-              //margin-left: 20px;
-              width: calc(1em * 30);
-              height: 200px;
+  };
 
-              h1 {
-                height: 2em;
-              }
-              .validationMessage {
-                color: ${error_color};
-              }
-              .row {
-                margin-top: 1em;
-                display: flex;
-              }
-              input {
-                width: 1em * 27;
-              }
-            }
-          `}
-        >
-          <div className={"dialogTitle"}>
-            <Trans>Rename File</Trans>
-          </div>
-          <div className="dialogContent">
-            <div className="row">
-              <h1>
-                <Trans>Change Name To:</Trans>
-              </h1>
-            </div>
-            <div className="row">
-              <span className="affix">{this.state.fileNameParts?.prefix}</span>
-              <input
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.keyCode === 13 && canRenameNow) {
-                    // doesn't close if we do this right away
-                    window.setTimeout(() => this.handleCloseModal(true), 0);
-                  }
-                }}
-                value={this.state.fileNameParts?.core}
-                onChange={(e) =>
-                  this.setState({
-                    fileNameParts: {
-                      ...this.state.fileNameParts!,
-                      core: e.target.value,
-                    },
-                  })
-                }
-              />
-              <span className="affix">
-                {this.state.fileNameParts?.suffixWithNoLink}
-              </span>
-            </div>
-            <div className="validationMessage">
-              {pathUnchanged ? "" : this.getValidationProblemsMessage()}
-            </div>
-            {this.state.file?.isLinkFile() && (
-              <p>
-                <Trans>
-                  Note that this is a link to a file in your Media Files
-                  directory. Here, you are renaming this link, not the original
-                  file that it points to. If you later create an export that
-                  includes this file, the export will use this name.
-                </Trans>
-              </p>
-            )}
-          </div>
-
-          <div className={"bottomButtonRow"}>
-            <div className={"okCancelGroup"}>
-              {/* List as default last (in the corner). */}
-              {/* The actual order of these will be platform-specific, controlled by
-          a flex-direction rule in app.global.scss because this is has class okCancelButtonRow*/}
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
-              <button
-                id="okButton"
-                disabled={!canRenameNow}
-                onClick={() => this.handleCloseModal(true)}
-                css={css`
-                  /* hack to suggest that if you hit enter, it will choose this. Will do until we switch to something proper like material */
-                  border: solid 3px darkgray;
-                  border-radius: 4px;
-                `}
-              >
-                <Trans>Rename</Trans>
-              </button>
-            </div>
-          </div>
-        </ReactModal>
-      </CloseOnEscape>
-    );
-  }
-  private static stringMatchOrEmptyString(s: string, regexp: RegExp): string {
-    console.assert(s);
-    console.assert(regexp);
-    const m = s.match(regexp);
-    return m && m.length > 0 ? m[0] : "";
-  }
-
-  private getNewFileName(includeExtension: boolean = true): string {
-    return (
-      _.trimEnd(
-        this.state.fileNameParts!.prefix + this.state.fileNameParts!.core,
-        "_"
-      ) + (includeExtension ? this.state.fileNameParts!.suffix : "")
-    );
-  }
-  private getNewPath(): string {
-    return Path.join(
-      Path.dirname(this.state.file!.pathInFolderToLinkFileOrLocalCopy),
-
-      this.getNewFileName()
-    );
-  }
-
-  private getValidationProblemsMessage(): string {
-    const pendingNewName = this.getNewFileName();
+  function determineValidationProblemsMessage() {
+    const pendingNewName = getNewFileName();
     const sanitizedForArchive = sanitizeForArchive(
       pendingNewName,
       userSettingsSingleton.IMDIMode
     );
+    let m = "";
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {
-      return t`Some operating systems would not allow that name.`;
+      m = t`Some operating systems would not allow that name.`;
     }
 
     if (pendingNewName !== sanitizedForArchive) {
-      return t`Please remove characters that not allowed by the Archive Settings.`;
+      m = t`Please remove characters that not allowed by the Archive Settings.`;
     }
     if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
-      return t`Sorry, no slashes are allowed`;
+      m = t`Sorry, no slashes are allowed`;
     }
-    if (fs.existsSync(this.getNewPath())) {
-      return t`A file with the same name already exists at that location.`;
+    if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
+      m = t`A file with the same name already exists at that location.`;
     }
-    return "";
+    setValidationMessage(m);
   }
 
-  public static getFileNameParts(fileName: string, folderId: string) {
+  function getFileNameParts(fileName: string, folderId: string) {
     return {
-      prefix: this.getUneditablePrefix(fileName, folderId),
-      core: this.getCore(fileName, folderId),
-      suffix: this.getUneditableSuffix(fileName, false),
-      suffixWithNoLink: this.getUneditableSuffix(fileName, true),
+      prefix: getUneditablePrefix(fileName, folderId),
+      core: getCore(fileName, folderId),
+      suffix: getUneditableSuffix(fileName, false),
+      suffixWithNoLink: getUneditableSuffix(fileName, true),
     };
   }
-
-  // Keeping with how Windows Saymore Classic worked, if the prefix is missing,
-  // we assert it here, so any renamed file will get the prefix
-  private static getUneditablePrefix(
-    filename: string,
-    folderID: string
-  ): string {
-    // if instead, we wanted to only recognize the prefix pattern if it is there, we'd do this:
-    //return filename.startsWith(folderID + "_") ? folderID + "_" : "";
-    return folderID + "_";
-  }
-
-  private static getCore(fileName: string, folderId: string): string {
-    const prefix = RenameFileDialog.getUneditablePrefix(fileName, folderId);
+  function getCore(fileName: string, folderId: string): string {
+    const prefix = getUneditablePrefix(fileName, folderId);
     const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
-    const suffixLength = RenameFileDialog.getUneditableSuffix(fileName, false)
-      .length;
+    const suffixLength = getUneditableSuffix(fileName, false).length;
     return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
   }
 
-  private static getUneditableSuffix(
-    fileName: string,
-    stripLinkSuffix: boolean
-  ): string {
-    let p = fileName;
-    const isLink = fileName.endsWith(kLinkExtensionWithFullStop);
-    if (isLink) {
-      p = p.replace(kLinkExtensionWithFullStop, "");
-    }
-
-    const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
-    // if it's a link file, this will give us ".link"
-    const sfx = RenameFileDialog.stringMatchOrEmptyString(p, matchExtension);
-
-    return stripLinkSuffix
-      ? sfx
-      : isLink
-      ? sfx + kLinkExtensionWithFullStop
-      : sfx;
+  function getNewFileName(includeExtension: boolean = true): string {
+    return (
+      _.trimEnd(fileNameParts!.prefix + fileNameParts!.core, "_") +
+      (includeExtension ? fileNameParts!.suffix : "")
+    );
   }
+  function getNewPath(): string {
+    return Path.join(
+      Path.dirname(file!.pathInFolderToLinkFileOrLocalCopy),
+
+      getNewFileName()
+    );
+  }
+
+  if (mode === Mode.closed) {
+    return null;
+  }
+
+  return (
+    <LametaDialog
+      open={((mode as unknown) as any) !== Mode.closed}
+      onClose={() => setMode(Mode.closed)}
+      // css={css`
+      //   z-index: 10000;
+      //   .dialogContent {
+      //     //margin-left: 20px;
+      //     width: calc(1em * 30);
+      //     height: 200px;
+
+      //     h1 {
+      //       height: 2em;
+      //     }
+      //     .validationMessage {
+      //       color: ${error_color};
+      //     }
+      //     .row {
+      //       margin-top: 1em;
+      //       display: flex;
+      //     }
+      //     input {
+      //       width: 1em * 27;
+      //     }
+      //   }
+      // `}
+    >
+      <DialogTitle title={t`Rename File`} />
+      <DialogMiddle>
+        <div
+          css={css`
+            font-weight: bold;
+            margin-bottom: 1em;
+          `}
+        >
+          <Trans>Change Name To:</Trans>
+        </div>
+        <div className="row">
+          <span className="affix">{fileNameParts?.prefix}</span>
+          <input
+            css={css`
+              width: 1em * 27;
+            `}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && mode === Mode.valid) {
+                renameAndClose();
+              }
+            }}
+            value={fileNameParts?.core}
+            onChange={(e) =>
+              setFileNameParts({
+                ...fileNameParts!,
+                core: e.target.value,
+              })
+            }
+          />
+          <span className="affix">{fileNameParts?.suffixWithNoLink}</span>
+        </div>
+        <div
+          css={css`
+            color: ${error_color};
+            min-width: 400px;
+            min-height: 2em;
+          `}
+        >
+          {validationMessage}
+        </div>
+        {file?.isLinkFile() && (
+          <p>
+            <Trans>
+              Note that this is a link to a file in your Media Files directory.
+              Here, you are renaming this link, not the original file that it
+              points to. If you later create an export that includes this file,
+              the export will use this name.
+            </Trans>
+          </p>
+        )}
+      </DialogMiddle>
+      <DialogBottomButtons>
+        <DialogCancelButton onClick={() => setMode(Mode.closed)} />
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={mode != Mode.valid}
+          onClick={() => renameAndClose()}
+          // css={css`
+          //   /* hack to suggest that if you hit enter, it will choose this. Will do until we switch to something proper like material */
+          //   border: solid 3px darkgray;
+          //   border-radius: 4px;
+          // `}
+        >
+          <Trans>Rename</Trans>
+        </Button>
+      </DialogBottomButtons>
+    </LametaDialog>
+  );
+};
+function stringMatchOrEmptyString(s: string, regexp: RegExp): string {
+  console.assert(s);
+  console.assert(regexp);
+  const m = s.match(regexp);
+  return m && m.length > 0 ? m[0] : "";
+}
+
+// Keeping with how Windows Saymore Classic worked, if the prefix is missing,
+// we assert it here, so any renamed file will get the prefix
+function getUneditablePrefix(filename: string, folderID: string): string {
+  // if instead, we wanted to only recognize the prefix pattern if it is there, we'd do this:
+  //return filename.startsWith(folderID + "_") ? folderID + "_" : "";
+  return folderID + "_";
+}
+
+function getUneditableSuffix(
+  fileName: string,
+  stripLinkSuffix: boolean
+): string {
+  let p = fileName;
+  const isLink = fileName.endsWith(kLinkExtensionWithFullStop);
+  if (isLink) {
+    p = p.replace(kLinkExtensionWithFullStop, "");
+  }
+
+  const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+  // if it's a link file, this will give us ".link"
+  const sfx = stringMatchOrEmptyString(p, matchExtension);
+
+  return stripLinkSuffix
+    ? sfx
+    : isLink
+    ? sfx + kLinkExtensionWithFullStop
+    : sfx;
 }

@@ -7,7 +7,10 @@ import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
-import { RenameFileDialog } from "./RenameFileDialog/RenameFileDialog";
+import {
+  RenameFileDialog,
+  ShowRenameDialog,
+} from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
@@ -149,7 +152,7 @@ export const _FileList: React.FunctionComponent<{
           className={"cmd-rename"}
           disabled={isSpecialSayMoreFile}
           onClick={() =>
-            RenameFileDialog.show(props.folder.selectedFile!, props.folder)
+            ShowRenameDialog(props.folder.selectedFile!, props.folder)
           }
         >
           <Trans>Rename...</Trans>
@@ -278,7 +281,7 @@ function showFileMenu(
     {
       label: t`Rename...`,
       click: () => {
-        RenameFileDialog.show(file, folder);
+        ShowRenameDialog(file, folder);
       },
       enabled: !missing,
       visible: contextMenu && !isSpecialSayMoreFile,
