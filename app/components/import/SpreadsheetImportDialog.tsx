@@ -171,9 +171,8 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                     result.filePaths &&
                     result.filePaths.length > 0
                   ) {
-                    const newPaths = paths;
                     paths[folderType] = result.filePaths[0];
-                    setPaths(JSON.stringify(newPaths));
+                    setPaths(JSON.stringify(paths));
                   }
                 });
               }}
@@ -247,6 +246,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <Button
           variant="contained"
           color="secondary"
+          data-test-id="import"
           disabled={!path || !chosenCount}
           onClick={() => {
             asyncAddImportMatrixToProject(

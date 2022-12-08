@@ -22,23 +22,21 @@ export async function asyncAddImportMatrixToProject(
   matrix: MappedMatrix,
   folderType: IFolderType
 ) {
-  try {
-    const folders = project.getFolderArrayFromType(folderType);
-    folders.unMarkAll(); // new ones will be marked
-    //NO runInAction until we figure this out:
-    // for some reason things will get saved as empty objects, e.g. the file will have "<Person></Person>"
-    //mobx.runInAction(() =>
-    const rows = matrix.rows.filter(
-      (row) => row.importStatus === RowImportStatus.Yes
-    );
-    for (const row of rows) {
-      await asyncAddFolderToProject(project, row, folderType);
+  mobx.runInAction(async () => {
+    try {
+      const folders = project.getFolderArrayFromType(folderType);
+      folders.unMarkAll(); // new ones will be marked
+      const rows = matrix.rows.filter(
+        (row) => row.importStatus === RowImportStatus.Yes
+      );
+      for (const row of rows) {
+        await asyncAddFolderToProject(project, row, folderType);
+      }
+      folders.selectFirstMarkedFolder();
+    } catch (err) {
+      NotifyException(err, "There was a problem importing.");
     }
-    //);
-    folders.selectFirstMarkedFolder();
-  } catch (err) {
-    NotifyException(err, "There was a problem importing the project");
-  }
+  });
 }
 
 // export function addPersonToProject(project: Project, row: MappedRow): Person {
