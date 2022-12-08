@@ -1,8 +1,8 @@
 import call from "electron-call";
 import * as fs from "fs-extra";
 const electron = require("electron");
-
-// Put things here that you want to run on the main process. You can then access them with:
+import * as os from "os";
+// Put things here that y[ou want to run on the main process. You can then access them with:
 // This is is using `electron-call` to produce type-safe wrappers that hide the IPC stuff.
 // See MainProcessApiAccess for instructions on using this from the Render process.
 
@@ -14,6 +14,9 @@ export class MainProcessApi {
       () => !fs.existsSync(path), // returned true but let's double-check
       () => false // reject
     );
+  }
+  public test(): string {
+    return "hello";
   }
 }
 
