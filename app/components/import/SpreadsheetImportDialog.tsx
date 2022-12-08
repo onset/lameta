@@ -24,7 +24,7 @@ import {
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
-  addImportMatrixToProject,
+  asyncAddImportMatrixToProject,
   availableSpreadsheetMappings,
 } from "./MatrixImporter";
 import * as Path from "path";
@@ -34,7 +34,7 @@ const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
 import { IFolderType } from "../../model/Folder/Folder";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
 
 export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
@@ -53,7 +53,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
 
-  const paths = JSON.parse(pathsString);
+  const paths = pathsString ? JSON.parse(pathsString) : [];
   const path = paths[folderType];
 
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
@@ -118,6 +118,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <div
           css={css`
             display: flex;
+            gap: 8px;
             flex-direction: column;
             width: fit-content;
             margin-bottom: 20px;
@@ -146,6 +147,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             </div>
             <Button
               color="secondary"
+              variant={path ? "text" : "contained"}
               onClick={() => {
                 let dir = app.getPath("documents");
                 // prefer to open in the same directory as the current one, if it's there
@@ -169,9 +171,8 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                     result.filePaths &&
                     result.filePaths.length > 0
                   ) {
-                    const newPaths = paths;
                     paths[folderType] = result.filePaths[0];
-                    setPaths(JSON.stringify(newPaths));
+                    setPaths(JSON.stringify(paths));
                   }
                 });
               }}
@@ -184,7 +185,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             >
               <Trans>Choose File</Trans>
             </Button>
-          </div>{" "}
+          </div>
           <div
             css={css`
               display: flex;
@@ -245,14 +246,14 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <Button
           variant="contained"
           color="secondary"
+          data-test-id="import"
           disabled={!path || !chosenCount}
           onClick={() => {
-            addImportMatrixToProject(
+            asyncAddImportMatrixToProject(
               props.projectHolder.project!,
               matrix!,
               folderType
-            );
-            closeDialog();
+            ).then(() => closeDialog());
           }}
           css={css`
             min-width: 50px;

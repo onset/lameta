@@ -8,6 +8,10 @@ import {
   setCurrentProjectId,
   setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../Project/MediaFolderAccess";
+import { i18nUnitTestPrep } from "../../other/localization";
+i18nUnitTestPrep();
+
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

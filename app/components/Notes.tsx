@@ -7,8 +7,7 @@ export interface IProps {
   field: Field;
 }
 
-@observer
-export default class Notes extends React.Component<IProps> {
+class Notes extends React.Component<IProps> {
   public render() {
     return (
       <form className={"notesForm"}>
@@ -21,3 +20,5 @@ export default class Notes extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(Notes);

@@ -6,14 +6,15 @@ import { jsx } from "@emotion/core";
 
 import Workspace from "../components/Workspace";
 import * as React from "react";
-import * as mobx from "mobx";
+import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
 import { Project, ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { remote, OpenDialogOptions, ipcRenderer } from "electron";
+import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
+import * as remote from "@electron/remote";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
@@ -40,6 +41,13 @@ import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportD
 
 const isDev = require("electron-is-dev");
 
+// Added this as part of a workaround in typing when upgrading to mobx6.
+// Enhance: would be cleaner to pass the values to the menu constructor.
+export interface IHomePageMenuConnections {
+  projectHolder: ProjectHolder;
+  openProject(): void;
+  createProject(useSample: boolean): void;
+}
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
@@ -47,10 +55,8 @@ interface IState {
   useSampleProject: boolean;
 }
 
-@observer
-export default class HomePage extends React.Component<IProps, IState> {
+class HomePage extends React.Component<IProps, IState> {
   // we wrap the project in a "holder" so that mobx can observe when we change it
-  @mobx.observable
   public projectHolder: ProjectHolder;
 
   private menu: LametaMenu;
@@ -58,6 +64,11 @@ export default class HomePage extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+
+    makeObservable(this, {
+      projectHolder: observable,
+    });
+
     this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,
@@ -66,6 +77,8 @@ export default class HomePage extends React.Component<IProps, IState> {
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
+    const test = require("@electron/remote").getCurrentWebContents();
+    const p = remote.process;
     const args = remote.getGlobal("arguments");
     // const args = [
     //   "ignore",
@@ -342,3 +355,6 @@ export default class HomePage extends React.Component<IProps, IState> {
     });
   }
 }
+
+const h = observer(HomePage);
+export { h as HomePage };

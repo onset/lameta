@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FileList } from "./FileList";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";
 import { Folder } from "../model/Folder/Folder";
@@ -50,9 +50,9 @@ const dummyPreviewImage: string = URL.pathToFileURL(
   locate(`assets/invisible.png`)
 ).toString();
 
-export const FolderPane = observer<
+export const FolderPane: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
->((props: IProps) => {
+> = (props) => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [selectedContribution, setSelectedContribution] = React.useState<
     Contribution | undefined
@@ -98,7 +98,7 @@ export const FolderPane = observer<
       </SplitPane>
     </div>
   );
-});
+};
 
 function getTabs(
   props: React.PropsWithChildren<IProps & React.HTMLAttributes<HTMLDivElement>>,
@@ -460,3 +460,4 @@ function getTabs(
       );
   }
 }
+export default observer(FolderPane);

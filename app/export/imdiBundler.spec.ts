@@ -11,6 +11,7 @@ import temp from "temp";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as glob from "glob";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -21,7 +22,7 @@ let rootDirectory: string;
 describe("Consent Form Inclusion", () => {
   afterAll(() => {
     fs.emptyDirSync(rootDirectory);
-    fs.rmdirSync(rootDirectory, { recursive: true });
+    fs.removeSync(rootDirectory);
   });
   beforeAll(() => {
     const project = Project.fromDirectory("sample data/Edolo sample");

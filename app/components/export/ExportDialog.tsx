@@ -6,13 +6,14 @@ import { jsx } from "@emotion/core";
 
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
+import Button from "@material-ui/core/Button";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import "./ExportDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
@@ -22,15 +23,16 @@ import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
 import { NotifyError, NotifyException, NotifyWarning } from "../Notify";
 import { ensureDirSync, pathExistsSync } from "fs-extra";
-import { makeGenericCsvZipFile } from "../../export/CsvExporter";
+import { makeGenericCsvZipFile as asyncMakeGenericCsvZipFile } from "../../export/CsvExporter";
 import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
 import { ExportChoices } from "./ExportChoices";
 import { CopyManager, ICopyJob } from "../../other/CopyManager";
 import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../other/UserSettings";
+import { DialogButton } from "../LametaDialog";
 
 const saymore_orange = "#e69664";
-const { app } = require("electron").remote;
+const { app } = require("@electron/remote");
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};
@@ -50,6 +52,16 @@ export const ExportDialog: React.FunctionComponent<{
   staticShowExportDialog = () => {
     setMode(Mode.choosing);
   };
+  React.useEffect(() => {
+    switch (mode) {
+      case Mode.exporting:
+      case Mode.copying:
+        document.body.style.cursor = "wait";
+        break;
+      default:
+        document.body.style.cursor = "default";
+    }
+  }, [mode]);
 
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(
@@ -111,11 +123,11 @@ export const ExportDialog: React.FunctionComponent<{
             setMode(Mode.closed);
           } else {
             setMode(Mode.exporting);
-            document.body.style.cursor = "wait";
             // setTimeout lets us update the ui before diving in
             setTimeout(() => {
               try {
                 setOutputPath(result.filePath);
+                // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
                 saveFiles(result.filePath!);
               } catch (err) {
                 NotifyException(
@@ -123,8 +135,6 @@ export const ExportDialog: React.FunctionComponent<{
                   `${t`There was a problem exporting:`} ${err.message}`
                 );
                 setMode(Mode.closed);
-              } finally {
-                document.body.style.cursor = "default";
               }
             }, 100);
           }
@@ -207,12 +217,13 @@ export const ExportDialog: React.FunctionComponent<{
         case "csv":
           analyticsEvent("Export", "Export CSV");
 
-          makeGenericCsvZipFile(
+          asyncMakeGenericCsvZipFile(
             path,
             props.projectHolder.project!,
             folderFilter
-          );
-          setMode(Mode.finished); // don't have to wait for any copying of big files
+          ).then(() => {
+            setMode(Mode.finished); // don't have to wait for any copying of big files
+          });
           break;
         case "paradisec":
           analyticsEvent("Export", "Export Paradisec CSV");
@@ -324,28 +335,43 @@ export const ExportDialog: React.FunctionComponent<{
 
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
-          <div className={"okCancelGroup"}>
-            <button
-              onClick={() => handleContinue(false)}
-              disabled={mode === Mode.finished}
-            >
-              <Trans>Cancel</Trans>
-            </button>
+          <div className={"reverseOrderOnMac"}>
             {mode === Mode.choosing && (
-              <button id="okButton" onClick={() => handleContinue(true)}>
-                <Trans>Export</Trans>
-              </button>
+              <React.Fragment>
+                <DialogButton
+                  default={true}
+                  onClick={() => handleContinue(true)}
+                >
+                  <Trans>Export</Trans>
+                </DialogButton>
+                <Button
+                  variant="contained"
+                  onClick={() => handleContinue(false)}
+                >
+                  <Trans>Cancel</Trans>
+                </Button>
+              </React.Fragment>
             )}
             {mode === Mode.finished && (
-              <button
-                id="okButton"
-                onClick={() => {
-                  setMode(Mode.closed);
-                  showInExplorer(outputPath || "");
-                }}
-              >
-                <Trans>Show export</Trans>
-              </button>
+              <React.Fragment>
+                <Button
+                  variant="contained"
+                  onClick={() => setMode(Mode.closed)}
+                >
+                  <Trans>Close</Trans>
+                </Button>
+                <Button
+                  id="okButton"
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setMode(Mode.closed);
+                    showInExplorer(outputPath || "");
+                  }}
+                >
+                  <Trans>Show export</Trans>
+                </Button>
+              </React.Fragment>
             )}
           </div>
         </div>

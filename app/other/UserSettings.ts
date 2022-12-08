@@ -1,7 +1,7 @@
 import Store from "electron-store";
 import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
-import { observable, computed } from "mobx";
+import { observable, computed, makeObservable } from "mobx";
 import React from "react";
 
 class FakeStore {
@@ -20,24 +20,36 @@ const kFontZoomStepSize = 0.2;
 export class UserSettings {
   private store: Store | FakeStore;
 
-  @observable
   private imdiMode: boolean;
-  @observable
   private paradisecMode: boolean;
-  @observable
   private howUsing: string;
-  @observable
   public uiFontZoom: number;
-  @observable
   private sendErrors: boolean;
 
   private clientId: string;
 
   constructor() {
+    makeObservable<
+      UserSettings,
+      "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors"
+    >(this, {
+      imdiMode: observable,
+      paradisecMode: observable,
+      howUsing: observable,
+      uiFontZoom: observable,
+      sendErrors: observable,
+      HowUsing: computed,
+    });
+
     this.store =
-      process.env.NODE_ENV === "test"
+      process.env.NODE_ENV === "test" ||
+      process.env.E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
-        : new Store({ name: "lameta-user-settings" });
+        : new Store({
+            name:
+              process.env.E2E_USER_SETTINGS_STORE_NAME ??
+              "lameta-user-settings",
+          });
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     this.imdiMode = this.store.get("imdiMode") || false;
@@ -114,7 +126,6 @@ export class UserSettings {
     setUserInfoForErrorReporting(this.Email, this.HowUsing);
   }
 
-  @computed
   public get HowUsing() {
     return this.howUsing;
   }

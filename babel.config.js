@@ -15,7 +15,7 @@ module.exports = function (api) {
         {
           targets: {
             // else we get regeneratorRuntime is not defined
-            browsers: ["chrome 76"], // should be set to match whatever chromium electron is using
+            browsers: ["chrome 76"], // should be set to match whatever chromium electron is using. But at 106 (electron 22, babel with webpack 4 has compilation problems)
           },
         },
       ],
@@ -24,8 +24,8 @@ module.exports = function (api) {
     plugins: [
       "babel-plugin-macros",
       "@babel/plugin-transform-modules-commonjs", //https://github.com/facebook/jest/issues/6913#issuecomment-421618932
-      ["@babel/plugin-proposal-decorators", { legacy: true }],
-      ["@babel/plugin-proposal-class-properties", { loose: true }],
+      //playwright can't handle these ["@babel/plugin-proposal-decorators", { legacy: true }],
+      ["@babel/plugin-proposal-class-properties", { loose: false }],
     ],
   };
 };

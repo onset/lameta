@@ -15,8 +15,7 @@ export interface IProps {
   folder: Folder;
 }
 
-@observer
-export default class AdditionalFieldsTable extends React.Component<IProps> {
+class AdditionalFieldsTable extends React.Component<IProps> {
   private fieldsForRows: Field[];
   constructor(props: IProps) {
     super(props);
@@ -96,3 +95,5 @@ export default class AdditionalFieldsTable extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(AdditionalFieldsTable);

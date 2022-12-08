@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
+import { observer } from "mobx-react";
 
 const XmlNameValidator = require("xml-name-validator");
 
@@ -11,8 +11,7 @@ export interface IProps {
 interface IState {
   invalid: boolean;
 }
-@mobx.observer
-export default class FieldNameEdit extends React.Component<
+class FieldNameEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>, // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
   IState
 > {
@@ -76,3 +75,5 @@ export default class FieldNameEdit extends React.Component<
     );
   }
 }
+
+export default observer(FieldNameEdit);

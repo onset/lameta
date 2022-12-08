@@ -28,8 +28,7 @@ interface IProps {
   authorityLists: AuthorityLists;
 }
 
-@observer
-export class AccessProtocolForm extends React.Component<IProps> {
+export const AccessProtocolForm = observer(class AccessProtocolForm extends React.Component<IProps> {
   public render() {
     const protocol = this.props.protocolField.text.toLowerCase();
     let documentationHtml = doc.getValue(protocol);
@@ -79,4 +78,4 @@ export class AccessProtocolForm extends React.Component<IProps> {
       </div>
     );
   }
-}
+});

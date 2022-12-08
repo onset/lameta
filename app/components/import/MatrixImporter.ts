@@ -17,27 +17,26 @@ export const availableSpreadsheetMappings = {
   LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
 };
 
-export function addImportMatrixToProject(
+export async function asyncAddImportMatrixToProject(
   project: Project,
   matrix: MappedMatrix,
   folderType: IFolderType
 ) {
-  try {
-    const folders = project.getFolderArrayFromType(folderType);
-    folders.unMarkAll(); // new ones will be marked
-    //NO runInAction until we figure this out:
-    // for some reason things will get saved as empty objects, e.g. the file will have "<Person></Person>"
-    //mobx.runInAction(() =>
-    matrix.rows
-      .filter((row) => row.importStatus === RowImportStatus.Yes)
-      .forEach((row) => {
-        addFolderToProject(project, row, folderType);
-      });
-    //);
-    folders.selectFirstMarkedFolder();
-  } catch (err) {
-    NotifyException(err, "There was a problem importing the project");
-  }
+  mobx.runInAction(async () => {
+    try {
+      const folders = project.getFolderArrayFromType(folderType);
+      folders.unMarkAll(); // new ones will be marked
+      const rows = matrix.rows.filter(
+        (row) => row.importStatus === RowImportStatus.Yes
+      );
+      for (const row of rows) {
+        await asyncAddFolderToProject(project, row, folderType);
+      }
+      folders.selectFirstMarkedFolder();
+    } catch (err) {
+      NotifyException(err, "There was a problem importing.");
+    }
+  });
 }
 
 // export function addPersonToProject(project: Project, row: MappedRow): Person {
@@ -77,11 +76,11 @@ export function addImportMatrixToProject(
 //   return person;
 // }
 
-export function addFolderToProject(
+export async function asyncAddFolderToProject(
   project: Project,
   row: MappedRow,
   folderType: IFolderType
-): Folder {
+): Promise<Folder> {
   const folder = project.makeFolderForImport(folderType);
   folder.marked = true; // help user find the newly imported session
 
@@ -118,7 +117,10 @@ export function addFolderToProject(
           // TODO: have to group up to 3 consecutive cells into a single contribution record
           break;
         case "date":
-          const dateString: string = moment(cell.value).format("YYYY-MM-DD");
+          // creating "Date" to get around the deprecation warning we get if we run into, .e.g. "7/27/2022"
+          const dateString: string = moment(new Date(cell.value)).format(
+            "YYYY-MM-DD"
+          );
           const dateField = folder.properties.getValueOrThrow("date");
           dateField.setValueFromString(dateString);
           break;
@@ -148,8 +150,8 @@ export function addFolderToProject(
   //console.log(previousFolderWithThisId?.displayName);
 
   if (previousFolderWithThisId) {
-    project.deleteFolder(previousFolderWithThisId);
-    console.log(previousFolderWithThisId?.displayName);
+    await project.deleteFolder(previousFolderWithThisId);
+    //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id
   folder.nameMightHaveChanged();

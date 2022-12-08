@@ -5,6 +5,7 @@ import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { duplicateFolder } from "./DuplicateFolder";
 import { Project } from "../Project/Project";
 import temp from "temp";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 temp.track();
 describe("Duplicate Folder", () => {

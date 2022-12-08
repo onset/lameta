@@ -2,6 +2,7 @@ import * as xml2js from "xml2js";
 import * as fs from "fs";
 import * as Path from "path";
 const filesize = require("filesize");
+import { makeObservable, observable } from "mobx";
 import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
@@ -42,16 +43,19 @@ function getCannotRenameFileMsg() {
 export const kLinkExtensionWithFullStop = ".link";
 
 export class Contribution {
-  //review this @mobx.observable
-  @mobx.observable
+  //review this @observable
   public personReference: string; // this is the contributor
-  @mobx.observable
   public role: string;
-  @mobx.observable
   public comments: string;
   public sessionName: string; // not persisted; just used by the UI when listing contributions for a person
 
   public constructor(personReference: string, role: string, comments: string) {
+    makeObservable(this, {
+      personReference: observable,
+      role: observable,
+      comments: observable,
+    });
+
     this.personReference = personReference;
     this.role = role;
     this.comments = comments;
@@ -67,17 +71,14 @@ export /*babel doesn't like this: abstract*/ class File {
   // It may be a .link file file, which will contain as its contents the subpath starting from the the media
   // folder.
   // Otherwise, (mp3, jpeg, elan, txt), this will be the file we are storing metadata about.
-  @mobx.observable
   private describedFileOrLinkFilePath: string;
 
   public get pathInFolderToLinkFileOrLocalCopy() {
     return this.describedFileOrLinkFilePath;
   }
 
-  @mobx.observable
   public copyInProgress: boolean;
 
-  @mobx.observable
   public copyProgress: string;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
@@ -91,10 +92,8 @@ export /*babel doesn't like this: abstract*/ class File {
   public fileExtensionForMetadata: string;
   public canDelete: boolean;
 
-  @mobx.observable
   public properties = new FieldSet();
 
-  @mobx.observable
   public contributions = new Array<Contribution>();
 
   public customFieldNamesRegistry: CustomFieldRegistry;
@@ -307,6 +306,14 @@ export /*babel doesn't like this: abstract*/ class File {
     fileExtensionForMetadata: string,
     canDelete: boolean
   ) {
+    makeObservable<File, "describedFileOrLinkFilePath">(this, {
+      describedFileOrLinkFilePath: observable,
+      copyInProgress: observable,
+      copyProgress: observable,
+      properties: observable,
+      contributions: observable,
+    });
+
     this.canDelete = canDelete;
     this.describedFileOrLinkFilePath = describedFilePath;
     this.metadataFilePath = metadataFilePath;

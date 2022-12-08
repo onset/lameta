@@ -1,4 +1,5 @@
 import { normalizePath } from "./crossPlatformUtilities";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 describe("Linked file", () => {
   it("normalizePath converts to forward slashes", () => {

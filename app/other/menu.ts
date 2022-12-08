@@ -1,5 +1,6 @@
-import { remote, shell } from "electron";
-import HomePage from "../containers/HomePage";
+import { shell } from "electron";
+import * as remote from "@electron/remote";
+import { IHomePageMenuConnections } from "../containers/HomePage";
 import log from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
 import { i18n, setUILanguage, currentUILanguage } from "./localization";
@@ -15,8 +16,8 @@ import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 
 export default class LametaMenu {
-  private homePage: HomePage;
-  public constructor(homePage: HomePage) {
+  private homePage: IHomePageMenuConnections;
+  public constructor(homePage: IHomePageMenuConnections) {
     this.homePage = homePage;
 
     // add some hotkeys that will work even in production, in case we need
@@ -411,7 +412,7 @@ export default class LametaMenu {
       // do an e.preventDefault() to prevent this code from hiding their menu.
       //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
       //https://nodejs.org/api/events.html#events_class_eventemitter
-      const webContents = remote.getCurrentWebContents();
+      //const webContents = remote.getCurrentWebContents();
       remote.getCurrentWebContents().on("context-menu", (e, props) => {
         const { x, y } = props;
         //console.log("Main process go context click");

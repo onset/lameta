@@ -3,7 +3,7 @@
   ---------------------------------------------------------------------*/
 import { i18n as i18nFromLinguiCore } from "@lingui/core";
 import userSettings from "./UserSettings";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { t } from "@lingui/macro";
 // tslint:disable-next-line: no-submodule-imports
 import * as allPlurals from "make-plural/plurals"; // this is from lingui.
@@ -33,11 +33,12 @@ export function initializeLocalization() {
   // or if there was no setting for this and we have the default (empty string)
   if (languages.indexOf(currentUILanguage) < 0) {
     // See if their OS's language is one we support
-    currentUILanguage = remote.app.getLocale();
-    // Do we have a localization for that language? If not, the default is English.
-    if (languages.indexOf(currentUILanguage) < 0) {
-      currentUILanguage = "en";
-    }
+    // currentUILanguage = remote.app.getLocale();
+    // // Do we have a localization for that language? If not, the default is English.
+    // if (languages.indexOf(currentUILanguage) < 0) {
+    //   currentUILanguage = "en";
+    // }
+    currentUILanguage = "en"; // remote.app is currently undefined
   }
   // TODO: lingui has fallback, so maybe we should not default to English above?
 
@@ -71,8 +72,6 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   const folder = fixes[code] || code;
   i18n.load(code, require(`../../locale/${folder}/messages.js`).messages);
   i18n.activate(code);
-
-  console.warn("Localization: Project = " + i18n._("Project"));
 
   userSettings.UILanguage = code;
 
@@ -188,4 +187,8 @@ function getMatch(
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
+}
+
+export function i18nUnitTestPrep() {
+  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
 }

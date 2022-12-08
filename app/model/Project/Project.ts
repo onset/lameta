@@ -1,4 +1,5 @@
 import * as fs from "fs-extra";
+import { makeObservable, observable } from "mobx";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
@@ -8,9 +9,8 @@ import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import { remote, ipcRenderer } from "electron";
-import { trash } from "../../other/crossPlatformUtilities";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import * as remote from "@electron/remote";
+import { asyncTrash } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { Field, FieldType, IChoice } from "../field/Field";
@@ -34,12 +34,18 @@ import {
   NotifyWarning,
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
+import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 let sCurrentProject: Project | null = null;
 
 export class ProjectHolder {
-  @mobx.observable
   private projectInternal: Project | null;
+
+  constructor() {
+    makeObservable<ProjectHolder, "projectInternal">(this, {
+      projectInternal: observable,
+    });
+  }
 
   public get project(): Project | null {
     return this.projectInternal;
@@ -62,13 +68,11 @@ export class ProjectHolder {
 export class Project extends Folder {
   public loadingError: string;
 
-  // @mobx.observable
+  // @observable
   // public sessions.selected: IFolderSelection;
-  // @mobx.observable
+  // @observable
   // public persons.selected: IFolderSelection;
-  @mobx.observable
   public sessions: FolderGroup = new FolderGroup();
-  @mobx.observable
   public persons: FolderGroup = new FolderGroup();
 
   public descriptionFolder: Folder;
@@ -165,6 +169,11 @@ export class Project extends Folder {
     customFieldRegistry: CustomFieldRegistry
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
+
+    makeObservable(this, {
+      sessions: observable,
+      persons: observable,
+    });
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
       //console.log("***adding guid");
@@ -438,28 +447,42 @@ export class Project extends Folder {
 
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
-    this.properties
-      .getValueOrThrow("accessProtocol")
-      .textHolder.map.intercept((change) => {
+    mobx.reaction(
+      () =>
+        this.properties.getValueOrThrow("accessProtocol").textHolder.map["en"], // currently we only use "en" for this
+      (newValue) =>
+        //      .textHolder.map.intercept((change) => { mobx6 doesn't have this intercept
         this.authorityLists.setAccessProtocol(
-          change.newValue as string,
+          newValue,
           this.properties.getTextStringOrEmpty("customAccessChoices")
-        );
-        return change;
-      });
-    this.properties
-      .getValueOrThrow("customAccessChoices")
-      .textHolder.map.intercept((change) => {
+        )
+    );
+    mobx.reaction(
+      () =>
+        this.properties.getValueOrThrow("customAccessChoices").textHolder.map[
+          "en" // currently we only use "en" for this
+        ],
+      (newValue) => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"
         );
-        // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
-        this.authorityLists.setAccessProtocol(
-          currentProtocol,
-          change.newValue as string
-        );
-        return change;
-      });
+        // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
+        this.authorityLists.setAccessProtocol(currentProtocol, newValue);
+      }
+    );
+    // this.properties
+    //   .getValueOrThrow("customAccessChoices")
+    //    .textHolder.map.intercept((change) => {
+    //     const currentProtocol = this.properties.getTextStringOrEmpty(
+    //       "accessProtocol"
+    //     );
+    //     // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
+    //     this.authorityLists.setAccessProtocol(
+    //       currentProtocol,
+    //       change.newValue as string
+    //     );
+    //     return change;
+    //   });
   }
 
   private setupGenreDefinition() {
@@ -569,22 +592,24 @@ export class Project extends Folder {
 
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
-    ConfirmDeleteDialog.show(`"${session.id}"`, () => {
+    ShowDeleteDialog(`"${session.id}"`, () => {
       this.deleteFolder(session);
     });
   }
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
-    ConfirmDeleteDialog.show(`${folders.countOfMarkedFolders()} Items`, () => {
-      // avoid re-rendering. Sept 2022 this still calls listeners for some reason, including UpdateMenus
-      mobx.runInAction(() => {
+    ShowDeleteDialog(
+      `${folders.countOfMarkedFolders()} Items and all their contents`,
+      async () => {
+        const p = new Array<Promise<void>>();
         folders.items
           .filter((s) => s.marked)
           .forEach((folder) => {
-            this.deleteFolder(folder);
+            p.push(this.deleteFolder(folder));
           });
-      });
-    });
+        return Promise.allSettled(p);
+      }
+    );
   }
   public getOrCreatePerson(name: string): Person {
     if (!name || !name.trim()) {
@@ -601,12 +626,14 @@ export class Project extends Folder {
       return this.addPerson(name.trim());
     }
   }
-  public deleteFolder(folder: Folder) {
+  public async deleteFolder(folder: Folder) {
     const folderType = folder.folderType;
     folderType;
     try {
-      console.log("deleting " + folder.displayName);
-      if (trash(folder.directory)) {
+      //console.log("deleting " + folder.displayName);
+      const didDelete = await asyncTrash(folder.directory);
+      if (didDelete) {
+        //console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);
         const index = folders.items.findIndex((f) => f === folder);
         // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
@@ -616,7 +643,7 @@ export class Project extends Folder {
         folders.selectedIndex = countAfterWeRemoveThisOne > 0 ? 0 : -1;
         folders.items.splice(index, 1);
         folder.wasDeleted = true;
-        console.log(folders.items.length);
+        //console.log(folders.items.length);
         // console.log(
         //   `Deleting folder index:${index}. selectedIndex:${
         //     this.getFolderArrayFromType(folderType).selectedIndex
@@ -672,7 +699,7 @@ export class Project extends Folder {
   // }
   public deleteCurrentPerson() {
     const person = this.persons.items[this.persons.selectedIndex];
-    ConfirmDeleteDialog.show(`"${person.displayName}"`, () => {
+    ShowDeleteDialog(`"${person.displayName}"`, () => {
       // if (trash(person.directory)) {
       //   // NB: the splice() actually causes a UI update, so we have to get the selection changed beforehand
       //   // in case we had the last one selected and now there won't be a selection at that index.

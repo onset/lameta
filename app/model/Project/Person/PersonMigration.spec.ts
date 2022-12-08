@@ -7,6 +7,7 @@ import {
   migrateOnePersonLanguageFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
 } from "./PersonMigration";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",

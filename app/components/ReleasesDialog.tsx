@@ -91,7 +91,10 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   });
 
   // run once on startup
-  React.useEffect(() => checkForUpdates(), []);
+  React.useEffect(() => {
+    // this is works fine in e2e test but the notification covers stuff up that we may want to click so it slows things down
+    if (!process.env.E2E) checkForUpdates();
+  }, []);
 
   const releasesToShow = showNewReleasesOnly
     ? getNewerReleases(allReleases, channelsToRecommend)
@@ -224,7 +227,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             </label>
           )}
           <div
-            className={"okCancelGroup"}
+            className={"reverseOrderOnMac"}
             css={css`
               margin-left: auto;
             `}

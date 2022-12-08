@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, runInAction } from "mobx";
 
 /*** This class is really just a string. But it's here because we have found that virtually every long-lived language-related app
  * eventually
@@ -19,6 +19,6 @@ export default class TextHolder {
     return x ? x : "";
   }
   public set textInDefaultLanguage(value: string) {
-    this.map.set("en", value);
+    runInAction(() => this.map.set("en", value));
   }
 }

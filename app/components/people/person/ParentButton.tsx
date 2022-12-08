@@ -12,10 +12,7 @@ export interface IProps {
   notSelectedIcon: string;
 }
 
-@observer
-export default class ParentButton extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> {
+class ParentButton extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -50,3 +47,5 @@ export default class ParentButton extends React.Component<
     );
   }
 }
+
+export default observer(ParentButton);

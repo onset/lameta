@@ -4,7 +4,7 @@ import {
   kLinkExtensionWithFullStop,
   OtherFile,
 } from "../file/File";
-import { observable } from "mobx";
+import { observable, makeObservable, runInAction } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 
@@ -20,8 +20,7 @@ import * as Path from "path";
 import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import { trash } from "../../other/crossPlatformUtilities";
+import { asyncTrash } from "../../other/crossPlatformUtilities";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
@@ -32,17 +31,21 @@ import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
+import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 export class FolderGroup {
   //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
   // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
-  @observable
   public items: Folder[];
 
-  @observable
   public selectedIndex: number;
 
   constructor() {
+    makeObservable(this, {
+      items: observable,
+      selectedIndex: observable,
+    });
+
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
   }
@@ -74,15 +77,12 @@ export abstract class Folder {
   public wasDeleted = false;
 
   // Is the folder's checkbox ticked?
-  @observable
   public marked: boolean = false;
 
   public directory: string = "";
-  @observable
   public files: File[] = [];
 
   // file from this folder that is currently selected in the UI
-  @observable
   public selectedFile: File | null;
 
   public metadataFile: FolderMetadataFile | null;
@@ -95,6 +95,12 @@ export abstract class Folder {
     files: File[],
     customFieldRegistry: CustomFieldRegistry
   ) {
+    makeObservable(this, {
+      marked: observable,
+      files: observable,
+      selectedFile: observable,
+    });
+
     this.customFieldRegistry = customFieldRegistry;
     this.directory = directory;
     this.metadataFile = metadataFile;
@@ -260,10 +266,11 @@ export abstract class Folder {
   public copyInFiles(paths: string[]) {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
-    //let lastFile: File | null = null;
-    paths.forEach((p: string) => {
-      this.copyInOneFile(p);
-      //lastFile = p;
+
+    runInAction(() => {
+      paths.forEach((p: string) => {
+        this.copyInOneFile(p);
+      });
     });
   }
   get type(): string {
@@ -343,15 +350,17 @@ export abstract class Folder {
     this.files.splice(index, 1);
   }
 
-  public moveFileToTrash(file: File) {
-    ConfirmDeleteDialog.show(file.pathInFolderToLinkFileOrLocalCopy, () => {
+  public MoveFileToTrashWithUI(file: File) {
+    ShowDeleteDialog(file.pathInFolderToLinkFileOrLocalCopy, async () => {
       sentryBreadCrumb(
         `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
       );
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = trash(file.pathInFolderToLinkFileOrLocalCopy);
+        continueTrashing = await asyncTrash(
+          file.pathInFolderToLinkFileOrLocalCopy
+        );
       }
       if (!continueTrashing) {
         return;
@@ -361,7 +370,7 @@ export abstract class Folder {
         file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          if (!trash(file.metadataFilePath)) {
+          if (!(await asyncTrash(file.metadataFilePath))) {
             NotifyError(
               t`lameta was not able to put this file in the trash` +
                 ` (${file.metadataFilePath})`
@@ -468,9 +477,9 @@ export abstract class Folder {
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
     });
 
-    console.log(
-      `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
-    );
+    // console.log(
+    //   `** Completed on Disk renaming Folder from ${oldFolderName} to ${newFolderName}.`
+    // );
     return true;
   }
 

@@ -8,6 +8,8 @@ import {
   csvEncode,
   makeGenericCsvZipFile,
 } from "./CsvExporter";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");
 

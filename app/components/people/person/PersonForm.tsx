@@ -21,8 +21,7 @@ export interface IProps {
   validateCode: (value: string) => boolean;
 }
 
-@observer
-export default class PersonForm extends React.Component<IProps> {
+class PersonForm extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -135,3 +134,5 @@ export default class PersonForm extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(PersonForm);

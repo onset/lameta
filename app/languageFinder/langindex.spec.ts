@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 // langindex.json is created by `yarn make-langindex`. We will need to run that whenever we take in an updated langtags.json from
 describe("Check langindex.json", () => {

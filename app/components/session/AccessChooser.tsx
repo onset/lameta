@@ -13,8 +13,7 @@ export interface IProps {
   authorityLists: AuthorityLists;
 }
 
-@observer
-export default class AccessChooser extends React.Component<
+class AccessChooser extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -113,3 +112,5 @@ export default class AccessChooser extends React.Component<
     );
   }
 }
+
+export default observer(AccessChooser);

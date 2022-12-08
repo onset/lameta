@@ -3,6 +3,7 @@ import {
   getMediaFolderOrEmptyForProjectAndMachine,
   setMediaFolderOrEmptyForProjectAndMachine,
 } from "./UserSettings";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 describe("Round trips media folder in test environment", () => {
   it("roundtrips email", () => {

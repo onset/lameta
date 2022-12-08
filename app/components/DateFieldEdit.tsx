@@ -10,10 +10,8 @@ export interface IProps {
   field: Field;
 }
 
-// automatically update when the value changes
-@observer
-// the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export default class DateFieldEdit extends React.Component<
+class // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
+DateFieldEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -52,3 +50,8 @@ export default class DateFieldEdit extends React.Component<
     );
   }
 }
+
+export default observer(
+  // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
+  DateFieldEdit
+);

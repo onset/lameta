@@ -258,7 +258,10 @@ module.exports = {
     splitChunks: {},
   },
 
-  externals: Object.keys(externals || {}),
+  externals: [
+    ...Object.keys(externals || {}),
+    { "electron-debug": "electron-debug" }, //https://github.com/SimulatedGREG/electron-vue/issues/498
+  ],
 };
 
 if (process.env.NODE_ENV === "production") {

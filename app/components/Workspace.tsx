@@ -29,15 +29,15 @@ import { CopyingStatus } from "./CopyingStatus";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { IFolderType } from "../model/Folder/Folder";
+import { MediaFolderDialog } from "./MediaFolderDialog";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
   menu: LametaMenu;
 }
 
-@observer
-export default class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 0;
+class Home extends React.Component<IProps> {
+  private kFirstTabToOpen = 0; // nocommit
 
   public constructor(props: IProps) {
     super(props);
@@ -240,7 +240,8 @@ export default class Home extends React.Component<IProps> {
           <CopyingStatus /> <RegistrationReminder />
         </div>
         <SaveNotifier />
-
+        {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}
+        <MediaFolderDialog />
         <div id="tabContainer">
           <Tabs
             key={tabsKey}
@@ -307,3 +308,5 @@ export default class Home extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(Home);

@@ -11,7 +11,7 @@ import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { t } from "@lingui/macro";
-
+import * as remote from "@electron/remote";
 const electron = require("electron");
 
 const activeToasts: string[] = [];
@@ -287,7 +287,7 @@ export function NotifyMultipleProjectFiles(
               if (response > 0) {
                 showInExplorer(folder);
                 if (!userSettings.DeveloperMode) {
-                  window.setTimeout(() => electron.remote.app.quit(), 1000);
+                  window.setTimeout(() => remote.app.quit(), 1000);
                 }
               }
             });

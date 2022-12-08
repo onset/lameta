@@ -75,7 +75,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
           {config.content}
         </div>
         <div className={"bottomButtonRow"}>
-          <div className={"okCancelGroup"}>
+          <div className={"reverseOrderOnMac"}>
             <button id="confirm" onClick={() => setIsOpen(false)}>
               {config.buttonText || <Trans>OK</Trans>}
             </button>

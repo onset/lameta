@@ -13,8 +13,7 @@ export interface IProps {
   highlight: boolean;
 }
 
-@observer
-export default class PersonChooser extends React.Component<IProps> {
+class PersonChooser extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
   }
@@ -64,3 +63,5 @@ export default class PersonChooser extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(PersonChooser);

@@ -8,8 +8,7 @@ export interface IProps {
   field: Field;
 }
 
-@observer
-export default class ClosedChoiceEdit extends React.Component<
+class ClosedChoiceEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
   constructor(props: IProps) {
@@ -59,3 +58,5 @@ export default class ClosedChoiceEdit extends React.Component<
     );
   }
 }
+
+export default observer(ClosedChoiceEdit);

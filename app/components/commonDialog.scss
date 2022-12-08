@@ -80,7 +80,7 @@ right (see release notes dialog)*/
     }
   }
 
-  .okCancelGroup {
+  .reverseOrderOnMac {
     display: flex;
     flex-direction: row; // use for mac & Ubuntu
   }
@@ -116,9 +116,14 @@ right (see release notes dialog)*/
   //   }
   // }
 }
-
-//NB this has to be outside of the wrapping above, because .win32 is up on body
-.win32 .okCancelGroup {
-  // get the buttons ordered according to operating system preference
+// get the buttons ordered according to operating system preference
+body.win32 .reverseOrderOnMac{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+body:not(.win32) .reverseOrderOnMac{
+  display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-start;
 }

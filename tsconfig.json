@@ -4,19 +4,26 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "react",
-    "target": "es2019",
-    "lib": ["dom", "es6", "dom.iterable", "scripthost", "es2017"],
-    "types": ["jest"],
-
+    "target": "ES2020",
+    "lib": [
+      "dom",
+      "es6",
+      "dom.iterable",
+      "scripthost",
+      "ES2020"
+    ],
+    "types": [
+      "jest"
+    ],
     "alwaysStrict": true,
     "strictNullChecks": true,
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": false,
-
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": true, //mobx 6
+    //"experimentalDecorators": true,
+    //"emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "esModuleInterop": true,
@@ -25,12 +32,26 @@
       {
         "name": "typescript-styled-plugin", // adds intellisense for css / emotion
         "lint": {
-          "validProperties": ["label"]
+          "validProperties": [
+            "label"
+          ]
         }
       }
     ]
   },
-  "files": ["app/index.tsx", "app/other/sanitizeForArchive.ts"],
-  "include": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"],
-  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
+  "files": [
+    "app/index.tsx",
+    "app/other/sanitizeForArchive.ts"
+  ],
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "test/**/*.ts",
+    "test/**/*.tsx"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }

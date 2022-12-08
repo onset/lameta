@@ -10,8 +10,7 @@ export interface IProps {
   statusField: Field;
 }
 
-@observer
-export default class StatusControl extends React.Component<IProps> {
+class StatusControl extends React.Component<IProps> {
   public render() {
     return (
       <div className="statusControl">
@@ -42,3 +41,5 @@ export default class StatusControl extends React.Component<IProps> {
     );
   }
 }
+
+export default observer(StatusControl);

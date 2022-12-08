@@ -1,7 +1,7 @@
 import { default as React, useState, useEffect } from "react";
-import HomePage from "./HomePage";
+import { HomePage } from "./HomePage";
 import { hot } from "react-hot-loader";
-import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import { ConfirmDeleteDialog } from "../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialog";
@@ -12,7 +12,6 @@ import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
-import { MediaFolderDialog } from "../components/MediaFolderDialog";
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 
@@ -47,7 +46,6 @@ export const App: React.FunctionComponent = observer(() => {
           <RenameFileDialog />
           <RegistrationDialog />
           <ReleasesDialog />
-          <MediaFolderDialog />
         </ThemeProvider>
       </I18nProvider>
     </div>

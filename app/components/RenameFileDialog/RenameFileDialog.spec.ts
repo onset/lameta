@@ -1,4 +1,5 @@
 import { RenameFileDialog } from "./RenameFileDialog";
+jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 describe("Rename file parts", () => {
   it("like files look when first added", () => {
