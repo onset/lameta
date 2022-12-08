@@ -13,10 +13,10 @@ import { t, Trans } from "@lingui/macro";
 import { Button } from "@material-ui/core";
 import { mainProcessApi } from "../MainProcessApiAccess";
 
-let isWin32: boolean;
-mainProcessApi.isWindows().then((isWindows) => {
-  isWin32 = isWindows;
-});
+// let isWin32: boolean;
+// mainProcessApi.isWindows().then((isWindows: boolean) => {
+//   isWin32 = isWindows;
+// });
 
 const kDialogTopPadding = "24px";
 const kDialogSidePadding = "24px";
@@ -40,6 +40,17 @@ export const LametaDialog: React.FunctionComponent<{
         padding-bottom: ${kDialogBottomPadding};
         height: 100%;
       `}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          // find the button marked as default and click it
+          const defaultButton = document.querySelector(
+            ".defaultButton"
+          ) as HTMLButtonElement;
+          if (defaultButton) {
+            defaultButton.click();
+          }
+        }
+      }}
     >
       {props.children}
     </div>
@@ -77,13 +88,13 @@ export const DialogTitle: React.FunctionComponent<{
         color: ${color};
         background-color: ${background};
         display: flex;
-
+        /*
         padding-left: ${kDialogTopPadding};
         padding-right: ${kDialogTopPadding};
         //padding-top: ${titleTopPadding};
         padding-bottom: ${kDialogPadding};
         margin-left: -${kDialogTopPadding};
-        margin-right: -${kDialogTopPadding};
+        margin-right: -${kDialogTopPadding}; */
         margin-bottom: ${kDialogPadding};
         * {
           font-size: 16px;
@@ -170,19 +181,12 @@ export const DialogBottomLeftButtons: React.FunctionComponent<{}> = (props) => (
 export const DialogBottomButtons: React.FunctionComponent<{}> = (props) => {
   return (
     <div
+      className="reverseOrderOnMac"
       css={css`
         margin-left: auto;
         margin-top: auto; // push to bottom
         padding-top: 20px; // leave room between us and the content above us
         display: flex;
-        // The order of buttons on windows is action/cancel, mac & ubuntu are cancel/action
-        flex-direction: ${isWin32
-          ? "row"
-          : "row-reverse"}; // set the order of the buttons
-        // make buttons line up on the right, unless wrapped in <DialogBottomLeftButtons>
-        justify-content: ${isWin32
-          ? "flex-end"
-          : "flex-start"}; // we have to reverse because the meaning changes when with row-revers
 
         /* -- button separation -- */
         gap: ${kDialogPadding};
@@ -204,6 +208,7 @@ export const DialogCancelButton: React.FunctionComponent<{
   default?: boolean;
 }> = (props) => (
   <Button
+    className={props.default ? "defaultButton" : ""}
     variant={props.default ? "contained" : "outlined"}
     onClick={props.onClick}
   >
@@ -212,13 +217,28 @@ export const DialogCancelButton: React.FunctionComponent<{
 );
 export const DialogOKButton: React.FunctionComponent<{
   onClick: () => void;
+  disabled?: boolean;
   default?: boolean;
 }> = (props) => (
-  <button onClick={props.onClick}>
+  <DialogButton {...props}>
     <Trans>OK</Trans>
-  </button>
+  </DialogButton>
 );
-
+export const DialogButton: React.FunctionComponent<{
+  onClick: () => void;
+  default?: boolean;
+  disabled?: boolean;
+}> = (props) => (
+  <Button
+    className={props.default ? "defaultButton" : ""}
+    disabled={props.disabled}
+    color="secondary"
+    variant={props.default ? "contained" : "outlined"}
+    onClick={props.onClick}
+  >
+    {props.children}
+  </Button>
+);
 // Components that include <LametaDialog> to make a dialog should call this hook and use what it returns to manage the dialog.
 // See the uses of it in the code for examples.
 export function useSetupLametaDialog() {

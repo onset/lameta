@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
@@ -8,6 +14,15 @@ const { app } = require("@electron/remote");
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import { analyticsLocation } from "../../other/analytics";
+import {
+  DialogBottomButtons,
+  DialogButton,
+  DialogCancelButton,
+  DialogMiddle,
+  DialogOKButton,
+  DialogTitle,
+  LametaDialog,
+} from "../LametaDialog";
 
 interface IProps {
   isOpen: boolean;
@@ -63,17 +78,25 @@ export default class CreateProjectDialog extends React.Component<
       ? t`Create Project Using Sample Data`
       : t`Create New lameta Project`;
     return (
-      <ReactModal
-        ariaHideApp={false}
-        className={"createProject"}
-        isOpen={this.props.isOpen}
-        shouldCloseOnOverlayClick={true}
-        onRequestClose={() => this.handleCloseModal(false)}
-        onAfterOpen={() => analyticsLocation("Create Project Dialog")}
+      <LametaDialog
+        //className={"createProject"}
+        open={this.props.isOpen}
+        onClose={() => this.handleCloseModal(false)}
+        //        onAfterOpen={() => analyticsLocation("Create Project Dialog")}
       >
-        <div className={"dialogTitle"}>{title}</div>
-        <div className={"dialogContent"}>
-          <h1>
+        <DialogTitle title={title} />
+        <DialogMiddle
+          css={css`
+            width: 400px;
+          `}
+        >
+          <h1
+            css={css`
+              // because comonDialog.scss is messing us up, can remove once we get rid of it
+              margin-bottom: revert !important;
+              font-size: 16px;
+            `}
+          >
             <Trans>What would you like to call this project?</Trans>
           </h1>
           <input
@@ -82,27 +105,34 @@ export default class CreateProjectDialog extends React.Component<
             onChange={(event) =>
               this.setState({ projectName: event.target.value })
             }
+            css={css`
+              // because comonDialog.scss is messing us up, can remove once we get rid of it
+              margin-left: revert !important;
+            `}
           />
 
-          <p className={"message " + messageClass}>{message}</p>
-        </div>
-        <div className="bottomButtonRow">
-          <div className="okCancelGroup">
-            {/* actual order of these will be platform-specific, controlled by
-          app.global.scss */}
-            <button onClick={() => this.handleCloseModal(false)}>
-              <Trans>Cancel</Trans>
-            </button>
-            <button
-              id="okButton"
-              onClick={() => this.handleCloseModal(true)}
-              disabled={!projectNameIsViable}
-            >
-              <Trans>OK</Trans>
-            </button>
-          </div>
-        </div>
-      </ReactModal>
+          <p
+            css={css`
+              max-width: 100%;
+              min-height: 4em; // so that the dialog doesn't grow unnecessarily when this shows something
+              overflow-wrap: anywhere;
+              color: ${messageClass === "error" ? "red" : "black"};
+            `}
+          >
+            {message}
+          </p>
+        </DialogMiddle>
+        <DialogBottomButtons>
+          <DialogButton
+            onClick={() => this.handleCloseModal(true)}
+            disabled={!projectNameIsViable}
+            default={true}
+          >
+            <Trans>Create</Trans>
+          </DialogButton>
+          <DialogCancelButton onClick={() => this.handleCloseModal(false)} />
+        </DialogBottomButtons>
+      </LametaDialog>
     );
   }
 }

@@ -227,7 +227,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             </label>
           )}
           <div
-            className={"okCancelGroup"}
+            className={"reverseOrderOnMac"}
             css={css`
               margin-left: auto;
             `}

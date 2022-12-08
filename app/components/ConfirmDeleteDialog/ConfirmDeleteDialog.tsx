@@ -76,18 +76,18 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
             display: flex;
           `}
         >
-          <DeleteIcon
+          {/* <DeleteIcon
             fontSize="large"
             // css={css`
             //   width: auto;
             //   height: 50px;
             // `}
-          />
-          <div>
-            <Trans>
-              {descriptionOfWhatWillBeDeleted} will be moved to the Trash
-            </Trans>
-          </div>
+          /> */}
+          {/* <div> */}
+          <Trans>
+            {descriptionOfWhatWillBeDeleted} will be moved to the Trash
+          </Trans>
+          {/* </div> */}
         </div>
       </DialogMiddle>
       <DialogBottomButtons>

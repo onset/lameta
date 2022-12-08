@@ -120,7 +120,7 @@ export default class RegistrationDialog extends React.Component<
               </SMRadioGroup>
             </div>
             <div className={"bottomButtonRow"}>
-              <div className={"okCancelGroup"}>
+              <div className={"reverseOrderOnMac"}>
                 <button onClick={() => this.handleCloseModal(false)}>
                   <Trans>Cancel</Trans>
                 </button>

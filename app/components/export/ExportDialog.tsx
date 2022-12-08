@@ -29,6 +29,7 @@ import { ExportChoices } from "./ExportChoices";
 import { CopyManager, ICopyJob } from "../../other/CopyManager";
 import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../other/UserSettings";
+import { DialogButton } from "../LametaDialog";
 
 const saymore_orange = "#e69664";
 const { app } = require("@electron/remote");
@@ -334,22 +335,20 @@ export const ExportDialog: React.FunctionComponent<{
 
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
-          <div className={"okCancelGroup"}>
+          <div className={"reverseOrderOnMac"}>
             {mode === Mode.choosing && (
               <React.Fragment>
+                <DialogButton
+                  default={true}
+                  onClick={() => handleContinue(true)}
+                >
+                  <Trans>Export</Trans>
+                </DialogButton>
                 <Button
                   variant="contained"
                   onClick={() => handleContinue(false)}
                 >
                   <Trans>Cancel</Trans>
-                </Button>
-                <Button
-                  id="okButton"
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleContinue(true)}
-                >
-                  <Trans>Export</Trans>
                 </Button>
               </React.Fragment>
             )}
