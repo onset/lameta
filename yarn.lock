@@ -19040,10 +19040,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:>=2.14.0, moment@npm:^2.19.4":
+"moment@npm:>=2.14.0":
   version: 2.28.0
   resolution: "moment@npm:2.28.0"
   checksum: a061b266aec486fa02be7241e77c4356f3059917490bbf136948dff7f486ab7f194b24263eacb23c784ea6a79d3db640e3ca7760c96af9ccf3233b4c4fe5164f
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.29.4":
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
   languageName: node
   linkType: hard
 
@@ -23700,7 +23707,7 @@ __metadata:
     mobx: ^6.7.0
     mobx-react: ^7.6.0
     mobx-react-devtools: ^6.1.1
-    moment: ^2.19.4
+    moment: ^2.29.4
     musicmetadata: ^2.0.5
     papaparse: ^5.3.1
     patch-package: ^6.2.2
