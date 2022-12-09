@@ -414,8 +414,10 @@ export abstract class Folder {
     const parentPath = Path.dirname(this.directory);
     const newDirPath = Path.join(parentPath, newFolderName);
     const couldNotRenameDirectory = t`lameta could not rename the directory.`;
-
-    if (fs.pathExistsSync(newDirPath)) {
+    if (
+      oldFolderName.toLowerCase() !== newFolderName.toLowerCase() &&
+      fs.pathExistsSync(newDirPath)
+    ) {
       // this could almost just be silent. To see it, create several new people in a row
       NotifyWarning(
         t`lameta tried to rename the folder "${oldFolderName}" to "${newFolderName}", but there is already a folder with that name.`
