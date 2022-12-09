@@ -102,19 +102,22 @@ ipcMain.handle("confirm-quit", async (event, ...args) => {
 //   event.preventDefault();
 //   //}
 // });
+import installExtension, { MOBX_DEVTOOLS } from "electron-devtools-installer";
 
 const installExtensions = () => {
-  if (process.env.NODE_ENV === "development") {
-    const installer = require("electron-devtools-installer"); // eslint-disable-line global-require
+  // I wasn't able to get this to work... it would say it was installed, but nothing shows up.
+  // I got it to come up if I 1) ran the standalone version of the mobx tool AND included a
+  //   <script src="http://localhost:8098"></script> in app.html, then 2) it would show up in devtools as "MobX" after
+  //   maybe 5 minutes but would just say "connecting..."
+  // if (process.env.NODE_ENV === "development") {
+  //   console.log("installExtensions*************");
 
-    const extensions = ["REACT_DEVELOPER_TOOLS"];
-    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    return Promise.all(
-      extensions.map((name) =>
-        installer.default(installer[name], forceDownload)
-      )
-    );
-  }
+  //   installExtension(MOBX_DEVTOOLS, {
+  //     loadExtensionOptions: { loadExtensionx: true },
+  //   })
+  //     .then((name) => console.log(`Added Extension:  ${name}`))
+  //     .catch((err) => console.log("An error occurred: ", err));
+  // }
 
   return Promise.resolve([]);
 };
