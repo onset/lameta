@@ -7,19 +7,15 @@ import { jsx } from "@emotion/core";
 import * as React from "react";
 import * as fs from "fs";
 import * as Path from "path";
-import ReactModal from "react-modal";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
 const { app } = require("@electron/remote");
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../../other/localization";
-import { analyticsLocation } from "../../other/analytics";
 import {
   DialogBottomButtons,
   DialogButton,
   DialogCancelButton,
   DialogMiddle,
-  DialogOKButton,
   DialogTitle,
   LametaDialog,
 } from "../LametaDialog";
