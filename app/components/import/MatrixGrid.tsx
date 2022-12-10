@@ -29,6 +29,7 @@ import Tooltip from "react-tooltip-lite";
 import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 
 const kpixelsThatAreNotAvailableToGridHeight = 400;
+const kCharsBeforeWeHaveToShrink = 14;
 
 const styles = (theme: Theme) => ({
   tableCell: {
@@ -137,7 +138,16 @@ export const MatrixGrid: React.FunctionComponent<{
               >
                 {getLetterIndexForColumn(columnIndex + 1)}
               </div>
-              <div>{columnInfo.incomingLabel}</div>
+              <div
+                css={css`
+                  ${columnInfo.incomingLabel.length > kCharsBeforeWeHaveToShrink
+                    ? "font-size:9px"
+                    : ""};
+                `}
+                title={columnInfo.incomingLabel}
+              >
+                {columnInfo.incomingLabel}
+              </div>
               {getMappingStatusComponents(columnInfo)}
             </div>
           ),
@@ -261,7 +271,18 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
     case "Identity":
       return <div>✔</div>;
     case "Matched":
-      return <div>🡒{column.lametaProperty}</div>;
+      return (
+        <div
+          css={css`
+            ${column.lametaProperty.length > kCharsBeforeWeHaveToShrink
+              ? "font-size:9px"
+              : ""};
+          `}
+          title={column.lametaProperty}
+        >
+          🡒{column.lametaProperty}
+        </div>
+      );
     case "MissingIncomingLabel":
       return <div></div>;
     case "Custom":
@@ -280,6 +301,7 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
           css={css`
             color: red;
           `}
+          title={column.explanation}
         >
           SKIP
         </div>

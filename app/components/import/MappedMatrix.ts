@@ -21,6 +21,7 @@ export class MappedColumnInfo {
     | "Skip"
     | "Custom"
     | "MissingIncomingLabel";
+  public explanation: string;
 
   public closedList: boolean;
   // choices can be from an open or closed list

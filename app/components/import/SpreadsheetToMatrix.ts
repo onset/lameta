@@ -118,7 +118,7 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
   return arrayOfArrays;
 }
 
-function makeMappedMatrix(
+export function makeMappedMatrix(
   arrayOfArrays: any[][],
   mapping: IImportMapping,
   project: Project,
@@ -200,8 +200,9 @@ function addMappingAndValidatationInfoToColumns(
       const protocol = column.incomingLabel.replace("access_", "");
       if (protocol !== project.accessProtocol) {
         column.mappingStatus = "Skip";
+        column.explanation = `This access protocol doesn't match the project's access protocol.`;
       } else {
-        column.choices = project.authorityLists.accessChoices.map(
+        column.choices = project.authorityLists.accessChoicesOfCurrentProtocol.map(
           (c) => c.label
         );
         column.closedList = true; // review what if it's the "Custom" list?
