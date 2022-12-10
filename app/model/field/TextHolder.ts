@@ -13,7 +13,7 @@ import { observable, runInAction } from "mobx";
  *
  */
 export default class TextHolder {
-  public map = observable.map(); // enhance: starting with mobx 5, this is unnecessary. Could change to a normal javascript object (array?)
+  public map = observable.map();
   public get textInDefaultLanguage() {
     const x = this.map.get("en") as string;
     return x ? x : "";

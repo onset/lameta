@@ -13,9 +13,7 @@ import * as remote from "@electron/remote";
 import { asyncTrash } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
-import { Field, FieldType, IChoice } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
@@ -447,6 +445,21 @@ export class Project extends Folder {
 
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
+    mobx.reaction(
+      () => {
+        return {
+          protocol: this.properties.getTextField("accessProtocol").textHolder
+            .textInDefaultLanguage,
+          customChoices: this.properties.getTextStringOrEmpty(
+            "customAccessChoices"
+          ),
+        };
+      },
+      ({ protocol, customChoices }) => {
+        console.log("accessProtocol changed to " + protocol);
+        this.authorityLists.setAccessProtocol(protocol, customChoices);
+      }
+    );
     mobx.reaction(
       () =>
         this.properties.getValueOrThrow("accessProtocol").textHolder.map["en"], // currently we only use "en" for this

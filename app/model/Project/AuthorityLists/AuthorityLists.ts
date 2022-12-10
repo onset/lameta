@@ -12,27 +12,29 @@ export interface IAccessProtocolChoice {
 export class AuthorityLists {
   public getPeopleNames: () => string[];
   public accessProtocolChoices: IAccessProtocolChoice[];
-  public accessChoices: IChoice[];
+  public accessChoicesOfCurrentProtocol: IChoice[];
   public roleChoices: IChoice[];
 
   public constructor(getPersons: () => string[]) {
     this.getPeopleNames = getPersons;
     this.accessProtocolChoices = accessProtocols;
-    this.accessChoices = [];
+    this.accessChoicesOfCurrentProtocol = [];
     this.roleChoices = loadOLACRoles();
   }
 
   public setAccessProtocol(protocolName: string, customChoices: string) {
     if (protocolName === "custom") {
       // tslint:disable-next-line:arrow-return-shorthand
-      this.accessChoices = customChoices.split(",").map((c) => {
-        return { id: c.trim(), label: c.trim(), description: "" };
-      });
+      this.accessChoicesOfCurrentProtocol = customChoices
+        .split(",")
+        .map((c) => {
+          return { id: c.trim(), label: c.trim(), description: "" };
+        });
     } else {
       const protocol = accessProtocols.find(
         (o: any) => o.protocol === protocolName
       );
-      this.accessChoices = protocol ? protocol.choices : [];
+      this.accessChoicesOfCurrentProtocol = protocol ? protocol.choices : [];
     }
   }
 

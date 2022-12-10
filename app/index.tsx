@@ -25,6 +25,7 @@ import * as mobx from "mobx";
 // "observed" to write more idiomatic MobX code.
 mobx.configure({
   enforceActions: "never",
+  useProxies: "always",
 });
 
 app.whenReady().then(() => {

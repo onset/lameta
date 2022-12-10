@@ -21,16 +21,18 @@ class AccessChooser extends React.Component<
   }
 
   public render() {
-    const options = this.props.authorityLists.accessChoices.map((c) => {
-      return new Object({
-        value: c.label,
-        label:
-          translateAccessProtocol(c.label) +
-          (c.description.length > 0
-            ? ":  " + c.description // not localized yet
-            : ""),
-      });
-    });
+    const options = this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
+      (c) => {
+        return new Object({
+          value: c.label,
+          label:
+            translateAccessProtocol(c.label) +
+            (c.description.length > 0
+              ? ":  " + c.description // not localized yet
+              : ""),
+        });
+      }
+    );
 
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {

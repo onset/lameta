@@ -6,6 +6,7 @@ import { Field } from "../../model/field/Field";
 import { Dictionary } from "typescript-collections";
 import { TextFieldEdit } from "../TextFieldEdit";
 import "./AccessProtocolForm.scss";
+import { runInAction } from "mobx";
 
 // enhance: this is kinda lame... we could do this dynamically after we
 // figure out how to get certain the files packaged and accessible at runtime.
@@ -28,7 +29,7 @@ interface IProps {
   authorityLists: AuthorityLists;
 }
 
-export const AccessProtocolForm = observer(class AccessProtocolForm extends React.Component<IProps> {
+class AccessProtocolForm extends React.Component<IProps> {
   public render() {
     const protocol = this.props.protocolField.text.toLowerCase();
     let documentationHtml = doc.getValue(protocol);
@@ -56,7 +57,9 @@ export const AccessProtocolForm = observer(class AccessProtocolForm extends Reac
             name={this.props.protocolField.labelInUILanguage} //what does this do? Maybe accessibility?
             value={this.props.protocolField.text}
             onChange={(event) => {
-              this.props.protocolField.text = event.currentTarget.value;
+              runInAction(() => {
+                this.props.protocolField.text = event.currentTarget.value;
+              });
             }}
           >
             {
@@ -78,4 +81,6 @@ export const AccessProtocolForm = observer(class AccessProtocolForm extends Reac
       </div>
     );
   }
-});
+}
+const x = observer(AccessProtocolForm);
+export { x as AccessProtocolForm };
