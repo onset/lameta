@@ -10,6 +10,11 @@ import ReactModal from "react-modal";
 import "./MessageDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
 import { locate } from "../../other/crossPlatformUtilities";
+import {
+  DialogBottomButtons,
+  DialogButton,
+  LametaDialog,
+} from "../LametaDialog";
 
 interface IConfig {
   title: string;
@@ -36,52 +41,42 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     setIsOpen(true);
   };
   return (
-    <CloseOnEscape onEscape={() => setIsOpen(false)}>
-      <ReactModal
-        ariaHideApp={false}
-        className="messageDialog"
-        isOpen={isOpen}
-        shouldCloseOnOverlayClick={true}
-        onRequestClose={() => setIsOpen(false)}
-      >
-        <div className={"dialogTitle "}>
-          <div
-            css={css`
-              display: flex;
-            `}
-          >
-            {config.iconPath !== null && (
-              <img
-                css={css`
-                  height: 32px;
-                  margin-top: auto;
-                  margin-bottom: auto;
-                  margin-right: 10px;
-                `}
-                src={locate(config.iconPath || "assets/warning.png")}
-              />
-            )}
-            <div>{config.title}</div>
-          </div>
-        </div>
+    <LametaDialog open={isOpen} onClose={() => setIsOpen(false)}>
+      <div className={"dialogTitle "}>
         <div
-          className="dialogContent"
           css={css`
-            width: ${config.width || "400px"};
+            display: flex;
           `}
         >
-          {config.text && <div>{config.text}</div>}
+          {config.iconPath !== null && (
+            <img
+              css={css`
+                height: 32px;
+                margin-top: auto;
+                margin-bottom: auto;
+                margin-right: 10px;
+              `}
+              src={locate(config.iconPath || "assets/warning.png")}
+            />
+          )}
+          <div>{config.title}</div>
+        </div>
+      </div>
+      <div
+        className="dialogContent"
+        css={css`
+          width: ${config.width || "400px"};
+        `}
+      >
+        {config.text && <div>{config.text}</div>}
 
-          {config.content}
-        </div>
-        <div className={"bottomButtonRow"}>
-          <div className={"reverseOrderOnMac"}>
-            <button id="confirm" onClick={() => setIsOpen(false)}>
-              {config.buttonText || <Trans>OK</Trans>}
-            </button>
-          </div>
-        </div>
-      </ReactModal>
-    </CloseOnEscape>
+        {config.content}
+      </div>
+      <DialogBottomButtons>
+        <DialogButton onClick={() => setIsOpen(false)} default={true}>
+          {config.buttonText || <Trans>OK</Trans>}
+        </DialogButton>
+      </DialogBottomButtons>
+    </LametaDialog>
   );
 };
