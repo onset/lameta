@@ -701,7 +701,7 @@ export default class ImdiGenerator {
       this.element("Owner", "");
       this.element("Publisher", "");
       this.element("Contact", "");
-      const accessDef = this.project.authorityLists.accessChoices.find(
+      const accessDef = this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
         (c) => c.label === accessCode
       );
 
