@@ -139,7 +139,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
   );
   const columns: MappedColumnInfo[] = firstRow.map((value) => {
     const c: MappedColumnInfo = Object.assign(new MappedColumnInfo(), {
-      incomingLabel: value,
+      incomingLabel: value.trim(),
       //validationType: "unknown",
       lametaProperty: "not yet",
       mappingStatus: "Unmatched",

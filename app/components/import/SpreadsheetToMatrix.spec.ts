@@ -1,6 +1,9 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
-import { makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
+import {
+  makeMappedMatrix,
+  makeMappedMatrixFromSpreadsheet,
+} from "./SpreadsheetToMatrix";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -68,6 +71,41 @@ describe("SpreadsheetToMatrix", () => {
     );
     sessionSmokeTest(matrix);
   });
+  it("Can map in pariticipants from some data using LingMetaXMap column labels", () => {
+    const inputRows = [["participant_1_fullname"], ["Joe"]];
+    const m = makeMappedMatrix(
+      inputRows,
+      lingMetaX_ImportMap,
+      project,
+      "session"
+    );
+    expect(m.rows.length).toBe(1);
+    //    expect(m.columnInfos.length).toBe(2);
+    m.rows[0].cells; // ?
+    expect(m.rows[0].cells[0].column.incomingLabel).toBe(
+      "participant_1_fullname"
+    );
+    expect(m.rows[0].cells[0].column.lametaProperty).toBe("contribution.name");
+    expect(m.rows[0].cells[0].value).toBe("Joe");
+  });
+});
+it("Can map in filename and title from some data using LingMetaXMap column labels", () => {
+  const inputRows = [
+    ["filename", "title"],
+    ["forest recording", "forest"],
+  ];
+  const m = makeMappedMatrix(
+    inputRows,
+    lingMetaX_ImportMap,
+    project,
+    "session"
+  );
+  expect(m.rows.length).toBe(1);
+  m.rows[0].cells; // ?
+  expect(m.rows[0].cells[0].column.lametaProperty).toBe("id");
+  expect(m.rows[0].cells[1].column.lametaProperty).toBe("title");
+  expect(m.rows[0].cells[0].value).toBe("forest recording");
+  expect(m.rows[0].cells[1].value).toBe("forest");
 });
 
 // if you get an error here and you can't tell which format was being read in (csv or xslx, comment out the one you aren't interested in)
