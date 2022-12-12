@@ -61,7 +61,7 @@
     grid-row: 1;
     grid-column: 3;
     textarea {
-      width: 4em;
+      width: 7em; // only 4em is needed, but frequently people are putting in dates
       display: block;
     }
   }

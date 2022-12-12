@@ -1,5 +1,5 @@
 import * as fs from "fs-extra";
-import { makeObservable, observable } from "mobx";
+import { makeObservable, observable, runInAction } from "mobx";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { Session } from "./Session/Session";
@@ -10,7 +10,10 @@ import { ProjectDocuments } from "./ProjectDocuments";
 const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
-import { asyncTrash } from "../../other/crossPlatformUtilities";
+import {
+  asyncTrash,
+  asyncTrashWithContext,
+} from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -131,6 +134,7 @@ export class Project extends Folder {
     id: string
   ): Folder | undefined {
     const folders = this.getFolderArrayFromType(folderType);
+
     return (folders as any).items.find((f) => f.importIdMatchesThisFolder(id));
   }
 
@@ -588,10 +592,11 @@ export class Project extends Folder {
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
     for (const f of this.sessions.items) {
-      f.saveAllFilesInFolder(false);
+      // this gets called when we lose focus, and if we're in the process of deleting, then we don't want to save
+      if (!f.beingDeleted) f.saveAllFilesInFolder(false);
     }
     for (const f of this.persons.items) {
-      f.saveAllFilesInFolder(false);
+      if (!f.beingDeleted) f.saveAllFilesInFolder(false);
     }
   }
 
@@ -614,13 +619,71 @@ export class Project extends Folder {
     ShowDeleteDialog(
       `${folders.countOfMarkedFolders()} Items and all their contents`,
       async () => {
-        const p = new Array<Promise<void>>();
-        folders.items
+        const originalFolders = folders.items.slice();
+
+        const isFilled = <T extends {}>(
+          v: PromiseSettledResult<T>
+        ): v is PromiseFulfilledResult<T> => v.status === "fulfilled";
+
+        // attempt the directory deletions
+        const deletionPromises = new Array<
+          Promise<{ succeeded: boolean; path: string; context: Folder }>
+        >();
+        originalFolders
           .filter((s) => s.marked)
           .forEach((folder) => {
-            p.push(this.deleteFolder(folder));
+            folder.beingDeleted = true; // prevent trying to save if lameta loses focus
+            const p = asyncTrashWithContext<Folder>(folder.directory, folder);
+            deletionPromises.push(p);
           });
-        return Promise.allSettled(p);
+
+        const deletionPromiseResults = await Promise.allSettled(
+          deletionPromises
+        );
+        // for each folder that was deleted, remove it from the array
+        runInAction(() => {
+          deletionPromiseResults.forEach((p) => {
+            const fp = p as PromiseFulfilledResult<{
+              succeeded: boolean;
+              path: string;
+              context: Folder;
+            }>;
+            if (isFilled(p)) {
+              const folder = fp?.value.context;
+              if (p.value.succeeded) {
+                // remove this folder from the array
+                folders.items.splice(folders.items.indexOf(folder), 1);
+              } else {
+                folder.beingDeleted = false;
+                NotifyWarning(`Could not delete ${folder.directory}`);
+              }
+            } else {
+              NotifyError(`Unexpected error in deletion promise`); // we do a try catch so it should not be possible to get an unfufilled promise
+            }
+          });
+          folders.selectedIndex = folders.items.length > 0 ? 0 : -1;
+        });
+
+        runInAction(() => {
+          folders.items
+            .filter((s) => s.marked)
+            .filter((s) =>
+              deletionPromiseResults.some(
+                (r) => isFilled(r) && r.value.path === s.directory
+              )
+            )
+            .filter((s) =>
+              deletionPromiseResults.some(
+                (r) => isFilled(r) && r.value.succeeded
+              )
+            )
+            .forEach((folder) => {
+              // remove this folder from the array
+              folders.items.splice(folders.items.indexOf(folder), 1);
+              folder.wasDeleted = true;
+            });
+          folders.selectedIndex = folders.items.length > 0 ? 0 : -1;
+        });
       }
     );
   }
@@ -639,12 +702,19 @@ export class Project extends Folder {
       return this.addPerson(name.trim());
     }
   }
-  public async deleteFolder(folder: Folder) {
+
+  public async deleteFolder(folder: Folder, immediateWithoutTrash = false) {
     const folderType = folder.folderType;
     folderType;
     try {
+      let didDelete = false;
+      if (immediateWithoutTrash) {
+        fs.rmdirSync(folder.directory, { recursive: true });
+        didDelete = true;
+      }
+
       //console.log("deleting " + folder.displayName);
-      const didDelete = await asyncTrash(folder.directory);
+      else didDelete = await (await asyncTrash(folder.directory)).succeeded;
       if (didDelete) {
         //console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);

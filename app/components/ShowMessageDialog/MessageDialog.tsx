@@ -41,7 +41,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     setIsOpen(true);
   };
   return (
-    <LametaDialog open={isOpen} onClose={() => setIsOpen(false)}>
+    <LametaDialog open={isOpen} requestClose={() => setIsOpen(false)}>
       <div className={"dialogTitle "}>
         <div
           css={css`

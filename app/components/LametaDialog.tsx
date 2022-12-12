@@ -11,7 +11,6 @@ import { useState } from "react";
 import ReactModal from "react-modal";
 import { t, Trans } from "@lingui/macro";
 import { Button } from "@material-ui/core";
-import { mainProcessApi } from "../MainProcessApiAccess";
 
 // let isWin32: boolean;
 // mainProcessApi.isWindows().then((isWindows: boolean) => {
@@ -25,7 +24,7 @@ const kDialogPadding = "10px";
 
 export const LametaDialog: React.FunctionComponent<{
   open: boolean;
-  onClose: () => void;
+  requestClose: () => void;
 }> = (props) => {
   if (!open) {
     return <React.Fragment />;
@@ -59,7 +58,7 @@ export const LametaDialog: React.FunctionComponent<{
   return (
     <ReactModal
       isOpen={props.open}
-      onRequestClose={() => props.onClose()}
+      onRequestClose={() => props.requestClose()}
       css={css`
         //  background-color: red;
       `}
@@ -206,8 +205,10 @@ export const DialogBottomButtons: React.FunctionComponent<{}> = (props) => {
 export const DialogCancelButton: React.FunctionComponent<{
   onClick: () => void;
   default?: boolean;
+  disabled?: boolean;
 }> = (props) => (
   <Button
+    disabled={props.disabled}
     className={props.default ? "defaultButton" : ""}
     variant={props.default ? "contained" : "outlined"}
     onClick={props.onClick}
@@ -247,6 +248,7 @@ export function useSetupLametaDialog() {
     setOpen(true);
   }
   function closeDialog() {
+    document.body.style.cursor = "default";
     setOpen(false);
   }
   return {

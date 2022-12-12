@@ -61,7 +61,12 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
   return (
     <LametaDialog
       open={mode !== Mode.closed}
-      onClose={close}
+      requestClose={() => {
+        if (mode === Mode.deleting) {
+          return;
+        }
+        close();
+      }}
       // css={css`
       //   width: calc(100% - 100px);
       //   // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
@@ -69,7 +74,9 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
       //   height: calc(100% - 100px);
       // `}
     >
-      <DialogTitle title={t`Confirm Delete`} />
+      <DialogTitle
+        title={mode === Mode.deleting ? t`Deleting...` : t`Confirm Delete`}
+      />
       <DialogMiddle>
         <div
           css={css`
@@ -117,7 +124,7 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
                       setMode(Mode.closed);
                     });
                   } catch (error) {}
-                }, 10);
+                }, 100);
               }}
             >
               <Trans>Delete</Trans>

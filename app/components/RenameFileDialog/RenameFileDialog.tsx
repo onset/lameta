@@ -145,7 +145,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
   return (
     <LametaDialog
       open={((mode as unknown) as any) !== Mode.closed}
-      onClose={() => setMode(Mode.closed)}
+      requestClose={() => setMode(Mode.closed)}
       // css={css`
       //   z-index: 10000;
       //   .dialogContent {

@@ -74,7 +74,7 @@ export default function getSayMoreXml(
   } catch (error) {
     NotifyException(
       error, // not translating for now
-      `While saving ${file.metadataFilePath}, got ${error}`
+      `While saving ${file.metadataFilePath}, got ${error} (getXml)`
     );
     throw error;
   }

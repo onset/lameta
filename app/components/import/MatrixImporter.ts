@@ -12,31 +12,48 @@ import { MappedMatrix, RowImportStatus, MappedRow } from "./MappedMatrix";
 import { IImportMapping } from "./SpreadsheetToMatrix";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
 import { NotifyException } from "../Notify";
+import { runInAction } from "mobx";
 
 export const availableSpreadsheetMappings = {
   LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
 };
 
-export async function asyncAddImportMatrixToProject(
+export function addImportMatrixToProject(
   project: Project,
   matrix: MappedMatrix,
   folderType: IFolderType
 ) {
-  mobx.runInAction(async () => {
-    try {
-      const folders = project.getFolderArrayFromType(folderType);
-      folders.unMarkAll(); // new ones will be marked
-      const rows = matrix.rows.filter(
-        (row) => row.importStatus === RowImportStatus.Yes
+  try {
+    const folders = project.getFolderArrayFromType(folderType);
+    folders.unMarkAll(); // new ones will be marked
+    const rows = matrix.rows.filter(
+      (row) => row.importStatus === RowImportStatus.Yes
+    );
+    const inMemoryCreationResults = new Array<{
+      succeeded: boolean;
+      row: MappedRow;
+      createdFolder: Folder;
+      id: string;
+      message?: string;
+    }>();
+
+    for (const row of rows) {
+      inMemoryCreationResults.push(
+        createFolderInMemory(project, row, folderType)
       );
-      for (const row of rows) {
-        await asyncAddFolderToProject(project, row, folderType);
-      }
-      folders.selectFirstMarkedFolder();
-    } catch (err) {
-      NotifyException(err, "There was a problem importing.");
     }
-  });
+    // for each folder that was created, finish importing it
+    mobx.runInAction(() => {
+      inMemoryCreationResults
+        .filter((r) => inMemoryCreationResults.some((r) => r.succeeded))
+        .forEach((r) => {
+          addImportedFolderToProject(project, r.createdFolder, r.id);
+        });
+      folders.selectFirstMarkedFolder();
+    });
+  } catch (err) {
+    NotifyException(err, "There was a problem importing.");
+  }
 }
 
 // export function addPersonToProject(project: Project, row: MappedRow): Person {
@@ -76,11 +93,18 @@ export async function asyncAddImportMatrixToProject(
 //   return person;
 // }
 
-export async function asyncAddFolderToProject(
+// creates the folder but doesn't add it to the project yet
+export function createFolderInMemory(
   project: Project,
   row: MappedRow,
   folderType: IFolderType
-): Promise<Folder> {
+): {
+  succeeded: boolean;
+  row: MappedRow;
+  createdFolder: Folder;
+  id: string;
+  message?: string;
+} {
   const folder = project.makeFolderForImport(folderType);
   folder.marked = true; // help user find the newly imported session
 
@@ -104,6 +128,7 @@ export async function asyncAddFolderToProject(
         case "contribution.comments":
           break;
         case "contribution.name":
+          // note, this is making an on-disk person
           const person = project.getOrCreatePerson(cell.value);
           person.marked = true;
           folder.metadataFile!.contributions.push(
@@ -140,26 +165,48 @@ export async function asyncAddFolderToProject(
     (c) => c.column.lametaProperty === folder.propertyForCheckingId
   )?.value;
   if (!id)
-    throw new Error(
-      `Missing ${folder.propertyForCheckingId} on cell: ${JSON.stringify(row)}`
-    );
-  // console.log(
-  //   folder.properties.getTextStringOrEmpty(folder.propertyForCheckingId)
-  // );
-  const previousFolderWithThisId = project.findFolderById(folderType, id);
+    return {
+      succeeded: false,
+      row,
+      createdFolder: folder,
+      id: "unknown",
+      message: `Missing ${
+        folder.propertyForCheckingId
+      } on cell: ${JSON.stringify(row)}`,
+    };
+
+  return {
+    succeeded: true,
+    row,
+    createdFolder: folder,
+    id: id,
+    message: undefined,
+  };
+}
+export function addImportedFolderToProject(
+  project: Project,
+  folder: Folder,
+  id: string
+) {
+  const previousFolderWithThisId = project.findFolderById(
+    folder.folderType,
+    id
+  );
   //console.log(previousFolderWithThisId?.displayName);
 
   if (previousFolderWithThisId) {
-    await project.deleteFolder(previousFolderWithThisId);
+    // enhance: let's keep the contents of the folder, and just replace or rewrite the metadata file
+    project.deleteFolder(
+      previousFolderWithThisId,
+      true /* immediately, no trash */
+    );
     //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id
   folder.nameMightHaveChanged();
   project.finishFolderImport(folder);
   folder.saveAllFilesInFolder();
-  return folder;
 }
-
 export function makeCustomField(key: string, value: string): Field {
   let safeKey = key
     .replace(/[<>&'"\s:!\\]/g, "-")

@@ -77,7 +77,7 @@ export default class CreateProjectDialog extends React.Component<
       <LametaDialog
         //className={"createProject"}
         open={this.props.isOpen}
-        onClose={() => this.handleCloseModal(false)}
+        requestClose={() => this.handleCloseModal(false)}
         //        onAfterOpen={() => analyticsLocation("Create Project Dialog")}
       >
         <DialogTitle title={title} />

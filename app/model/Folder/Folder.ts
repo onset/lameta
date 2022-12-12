@@ -75,6 +75,7 @@ export type IFolderType =
 export abstract class Folder {
   // help with a hard to track down bug where folders are deleted but later something tries to save them.
   public wasDeleted = false;
+  public beingDeleted = false;
 
   // Is the folder's checkbox ticked?
   public marked: boolean = false;
@@ -358,9 +359,9 @@ export abstract class Folder {
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = await asyncTrash(
-          file.pathInFolderToLinkFileOrLocalCopy
-        );
+        continueTrashing = (
+          await asyncTrash(file.pathInFolderToLinkFileOrLocalCopy)
+        ).succeeded;
       }
       if (!continueTrashing) {
         return;
@@ -555,6 +556,13 @@ export abstract class Folder {
     return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
   }
   public saveAllFilesInFolder(beforeRename: boolean = false) {
+    if (this.beingDeleted) {
+      console.warn(
+        `Skipping saveAllFilesInFolder( ${this.displayName}) because beingDeleted`
+      );
+      return;
+    }
+
     // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
     // either the folder or something in the folder.
     if (this.wasDeleted) {

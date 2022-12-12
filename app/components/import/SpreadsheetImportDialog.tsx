@@ -13,7 +13,6 @@ import {
   LametaDialog,
   useSetupLametaDialog,
 } from "../LametaDialog";
-import { i18n } from "../../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
@@ -24,12 +23,12 @@ import {
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
-  asyncAddImportMatrixToProject,
+  addImportMatrixToProject,
   availableSpreadsheetMappings,
 } from "./MatrixImporter";
 import * as Path from "path";
 import * as fs from "fs";
-import { Button, LinearProgress } from "@material-ui/core";
+import { Button, CircularProgress, LinearProgress } from "@material-ui/core";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
@@ -49,6 +48,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
 
   showSpreadsheetImportDialog = (folderType: IFolderType) => {
     setFolderType(folderType);
+    setMode(Mode.normal);
     showDialog();
   };
   const [pathsString, setPaths] = useUserSetting("importPaths", "{}");
@@ -60,6 +60,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   const chosenMapping = availableSpreadsheetMappings[
     mappingName
   ] as IImportMapping;
+  enum Mode {
+    normal = 0,
+    startImporting = 1,
+    importing = 2,
+  }
+  const [mode, setMode] = useState<Mode>(Mode.normal);
 
   useEffect(() => {
     setMatrix(undefined);
@@ -87,6 +93,28 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     }
   }, [path, mappingName, currentlyOpen]);
 
+  React.useEffect(() => {
+    switch (mode) {
+      case Mode.startImporting:
+        setMode(Mode.importing);
+        window.setTimeout(() => {
+          addImportMatrixToProject(
+            props.projectHolder.project!,
+            matrix!,
+            folderType
+          );
+          closeDialog();
+        }, 100);
+        break;
+      case Mode.importing:
+      case Mode.startImporting:
+        document.body.style.cursor = "wait";
+        break;
+      default:
+        document.body.style.cursor = "default";
+    }
+  }, [mode]);
+
   const [chosenCount, setChosenCount] = useState(0);
   function countChosenRows() {
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
@@ -105,7 +133,12 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   return (
     <LametaDialog
       open={currentlyOpen}
-      onClose={closeDialog}
+      requestClose={() => {
+        if (mode === Mode.importing) {
+          return;
+        }
+        close();
+      }}
       css={css`
         width: calc(100% - 100px);
         // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
@@ -247,26 +280,26 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           variant="contained"
           color="secondary"
           data-test-id="import"
-          disabled={!path || !chosenCount}
+          disabled={!path || !chosenCount || mode === Mode.importing}
           onClick={() => {
-            asyncAddImportMatrixToProject(
-              props.projectHolder.project!,
-              matrix!,
-              folderType
-            ).then(() => closeDialog());
+            setMode(Mode.startImporting);
           }}
           css={css`
             min-width: 50px;
           `}
         >
-          {folderType === "session" && (
+          {(mode === Mode.importing || mode === Mode.startImporting) && (
+            <Trans>Importing...</Trans>
+          )}
+          {mode === Mode.normal && folderType === "session" && (
             <Trans>{`Import ${chosenCount} Sessions`}</Trans>
           )}
-          {folderType === "person" && (
+          {mode === Mode.normal && folderType === "person" && (
             <Trans>{`Import ${chosenCount} People`}</Trans>
           )}
         </Button>
         <DialogCancelButton
+          disabled={mode !== Mode.importing}
           onClick={() => {
             closeDialog();
           }}

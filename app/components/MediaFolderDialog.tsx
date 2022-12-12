@@ -38,7 +38,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
   };
 
   return (
-    <LametaDialog onClose={() => setOpen(false)} open={open}>
+    <LametaDialog requestClose={() => setOpen(false)} open={open}>
       <DialogTitle title={i18n._(`Media Folder Settings`)}></DialogTitle>
       <DialogMiddle>
         <div>

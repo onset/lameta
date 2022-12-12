@@ -733,7 +733,9 @@ export /*babel doesn't like this: abstract*/ class File {
             error
           );
         } else {
-          NotifyError(`While saving ${this.metadataFilePath}, got ${error}`);
+          NotifyError(
+            `While saving ${this.metadataFilePath}, got ${error} (file.save)`
+          );
         }
         //console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
       }

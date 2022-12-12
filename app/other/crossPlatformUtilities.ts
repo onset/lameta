@@ -14,8 +14,13 @@ export function showInExplorer(path: string) {
   }
   electron.shell.showItemInFolder(path);
 }
-
-export function asyncTrash(path: string): Promise<boolean> {
+export async function asyncTrash(path: string) {
+  return asyncTrashWithContext<null>(path, null);
+}
+export async function asyncTrashWithContext<T>(
+  path: string,
+  callerContext: T
+): Promise<{ succeeded: boolean; path: string; context: T }> {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
   const fixedPath = Path.normalize(path).replace("/", Path.sep); // ?
@@ -27,14 +32,35 @@ export function asyncTrash(path: string): Promise<boolean> {
   // we verify that it is now not there.
   // To test this manually, try to trash a video while it is playing.
   if (electron?.shell) {
-    return mainProcessApi.trashItem(fixedPath).then(
-      () => !fs.existsSync(fixedPath),
-      () => false
-    );
+    try {
+      const result = await mainProcessApi.trashItem(fixedPath);
+      if (result)
+        return Promise.resolve({
+          succeeded: !fs.existsSync(fixedPath),
+          path: path,
+          context: callerContext,
+        });
+      else
+        return Promise.resolve({
+          succeeded: false,
+          path: path,
+          context: callerContext,
+        });
+    } catch (e) {
+      return Promise.resolve({
+        succeeded: false,
+        path: path,
+        context: callerContext,
+      });
+    }
   } else {
     fs.removeSync(fixedPath); // unit tests, no electron available and we don't care about delete vs trash
     //console.log(`Deleting ${fixedPath} deleted: ${!fs.existsSync(fixedPath)}`);
-    return Promise.resolve(!fs.existsSync(fixedPath)); // we don't get a result from removeSync
+    return Promise.resolve({
+      succeeded: !fs.existsSync(fixedPath),
+      path: path,
+      context: callerContext,
+    }); // we don't get a result from removeSync
   }
 
   // enhance: this is lopsided because above we give an nice helpful message if certain problems occur.

@@ -1,7 +1,11 @@
 import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
-import { asyncAddFolderToProject, makeCustomField } from "./MatrixImporter";
+import {
+  addImportedFolderToProject,
+  createFolderInMemory,
+  makeCustomField,
+} from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -315,9 +319,15 @@ async function makeMatrixAndImportThenGetSession(
   values: any
 ): Promise<Session> {
   const row = makeRow(values);
-  return (await asyncAddFolderToProject(project, row, "session")) as Session;
+  const result = createFolderInMemory(project, row, "session");
+  expect(result.succeeded).toBeTruthy();
+  addImportedFolderToProject(project, result.createdFolder, result.id);
+  return result.createdFolder as Session;
 }
 async function makeMatrixAndImportThenGetPerson(values: any): Promise<Person> {
   const row = makeRow(values);
-  return (await asyncAddFolderToProject(project, row, "person")) as Person;
+  const result = createFolderInMemory(project, row, "person");
+  expect(result.succeeded).toBeTruthy();
+  addImportedFolderToProject(project, result.createdFolder, result.id);
+  return result.createdFolder as Person;
 }
