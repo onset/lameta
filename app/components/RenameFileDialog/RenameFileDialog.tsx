@@ -109,21 +109,6 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     setValidationMessage(m);
   }
 
-  function getFileNameParts(fileName: string, folderId: string) {
-    return {
-      prefix: getUneditablePrefix(fileName, folderId),
-      core: getCore(fileName, folderId),
-      suffix: getUneditableSuffix(fileName, false),
-      suffixWithNoLink: getUneditableSuffix(fileName, true),
-    };
-  }
-  function getCore(fileName: string, folderId: string): string {
-    const prefix = getUneditablePrefix(fileName, folderId);
-    const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
-    const suffixLength = getUneditableSuffix(fileName, false).length;
-    return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
-  }
-
   function getNewFileName(includeExtension: boolean = true): string {
     return (
       _.trimEnd(fileNameParts!.prefix + fileNameParts!.core, "_") +
@@ -274,4 +259,19 @@ function getUneditableSuffix(
     : isLink
     ? sfx + kLinkExtensionWithFullStop
     : sfx;
+}
+
+export function getFileNameParts(fileName: string, folderId: string) {
+  return {
+    prefix: getUneditablePrefix(fileName, folderId),
+    core: getCore(fileName, folderId),
+    suffix: getUneditableSuffix(fileName, false),
+    suffixWithNoLink: getUneditableSuffix(fileName, true),
+  };
+}
+function getCore(fileName: string, folderId: string): string {
+  const prefix = getUneditablePrefix(fileName, folderId);
+  const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
+  const suffixLength = getUneditableSuffix(fileName, false).length;
+  return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
 }

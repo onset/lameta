@@ -72,7 +72,7 @@ describe("SpreadsheetToMatrix", () => {
     sessionSmokeTest(matrix);
   });
   it("Can map in pariticipants from some data using LingMetaXMap column labels", () => {
-    const inputRows = [["participant_1_fullname"], ["Joe"]];
+    const inputRows = [["participant_1_full_name"], ["Joe"]];
     const m = makeMappedMatrix(
       inputRows,
       lingMetaX_ImportMap,
@@ -80,10 +80,9 @@ describe("SpreadsheetToMatrix", () => {
       "session"
     );
     expect(m.rows.length).toBe(1);
-    //    expect(m.columnInfos.length).toBe(2);
     m.rows[0].cells; // ?
     expect(m.rows[0].cells[0].column.incomingLabel).toBe(
-      "participant_1_fullname"
+      "participant_1_full_name"
     );
     expect(m.rows[0].cells[0].column.lametaProperty).toBe("contribution.name");
     expect(m.rows[0].cells[0].value).toBe("Joe");

@@ -183,6 +183,11 @@ function addMappingAndValidatationInfoToColumns(
       column.lametaProperty = "skip";
       return;
     }
+    // const x = mapping[folderType]; //?
+    // const y = mapping[folderType][column.incomingLabel]; //?
+    // const q = mapping[folderType]["participant_1_full_name"]; //?
+    const z = column.incomingLabel; //?
+
     column.lametaProperty =
       mapping[folderType][column.incomingLabel]?.lameta || "custom";
     if (
