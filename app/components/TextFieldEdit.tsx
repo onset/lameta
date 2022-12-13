@@ -1,7 +1,7 @@
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 import { FieldLabel } from "./FieldLabel";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 export interface IProps {
   field: Field;
@@ -19,6 +19,10 @@ export const TextFieldEdit: React.FunctionComponent<
 > = mobx.observer((props) => {
   const [invalid, setInvalid] = React.useState(false);
   const [previous, setPrevious] = useState(props.field.text);
+  const { current: fieldId } = useRef(
+    "textfield-" +
+      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
+  );
 
   function onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
     // NB: Don't trim here. It is tempting, because at the end of the day we'd
@@ -41,9 +45,14 @@ export const TextFieldEdit: React.FunctionComponent<
       className={"field " + (props.className ? props.className : "")}
       title={props.tooltip}
     >
-      {props.hideLabel ? "" : <FieldLabel fieldDef={props.field.definition} />}
+      {props.hideLabel ? (
+        ""
+      ) : (
+        <FieldLabel htmlFor={fieldId} fieldDef={props.field.definition} />
+      )}
 
       <textarea
+        id={fieldId}
         tabIndex={props.tabIndex}
         autoFocus={props.autoFocus}
         className={invalid ? "invalid" : ""}

@@ -39,7 +39,9 @@ export class E2eProject {
   public async addSession() {
     await this.page.getByRole("button", { name: "New Session" }).click();
   }
-
+  public async addPerson() {
+    await this.page.getByRole("button", { name: "New Person" }).click();
+  }
   public async addFile(name: string) {
     const p = Path.join(process.env.E2ERoot!, name); // creating it at our test root, which is a level above the lameta project directory
     fs.writeFileSync(p, "hello world");
