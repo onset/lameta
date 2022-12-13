@@ -35,6 +35,7 @@ import {
   getLinkStatusIconPath,
   getStatusOfFile,
 } from "../model/file/FileStatus";
+import { useEffect } from "react";
 
 export interface IProps {
   folder: Folder;
@@ -53,22 +54,21 @@ const dummyPreviewImage: string = URL.pathToFileURL(
 export const FolderPane: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const [tabIndex, setTabIndex] = React.useState(0);
-  const [selectedContribution, setSelectedContribution] = React.useState<
-    Contribution | undefined
-  >(undefined);
-
+  //const [tabs, setTabs] = React.useState<JSX.Element>(<React.Fragment />);
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
   }
 
-  const tabs = getTabs(
-    props,
-    tabIndex,
-    setTabIndex,
-    selectedContribution,
-    setSelectedContribution
-  );
+  // useEffect(() => {
+  //   console.log(`generating tabs`);
+  //   setTabs(
+  //     getTabs(
+  //       props,
+  //       selectedContribution,
+  //       setSelectedContribution
+  //     )
+  //   );
+  // }, [props.folder, props.folder.SelectedFile]);
 
   const splitterKey = props.folderTypeStyleClass + "HorizontalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
@@ -91,7 +91,7 @@ export const FolderPane: React.FunctionComponent<
           {props.folder.selectedFile && (
             <>
               <FileStatusBlock file={props.folder.selectedFile} />
-              {tabs}
+              <FileTabs {...props} />
             </>
           )}
         </div>
@@ -100,13 +100,20 @@ export const FolderPane: React.FunctionComponent<
   );
 };
 
-function getTabs(
-  props: React.PropsWithChildren<IProps & React.HTMLAttributes<HTMLDivElement>>,
-  tabIndex: number,
-  setTabIndex: (index: number) => void,
-  selectedContribution: Contribution | undefined,
-  setSelectedContribution: (c: Contribution | undefined) => void
-) {
+const FileTabs: React.FunctionComponent<
+  IProps & React.HTMLAttributes<HTMLDivElement>
+> = observer((props) => {
+  const [tabIndex, setTabIndex] = React.useState(0);
+
+  const [selectedContribution, setSelectedContribution] = React.useState<
+    Contribution | undefined
+  >(undefined);
+
+  // tabIndex: number,
+  // setTabIndex: (index: number) => void,
+  // selectedContribution: Contribution | undefined,
+  // setSelectedContribution: (c: Contribution | undefined) => void
+  //) {
   const path: string = props.folder.selectedFile
     ? props.folder.selectedFile.getActualFilePath()
     : // ? Path.join(
@@ -459,5 +466,5 @@ function getTabs(
         </Tabs>
       );
   }
-}
+});
 export default observer(FolderPane);
