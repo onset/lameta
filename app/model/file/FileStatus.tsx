@@ -33,6 +33,15 @@ export function getStatusOfFile(
       info: f.copyProgress,
     };
   }
+
+  if (!f.isLinkFile() && !f.getActualFileExists()) {
+    return {
+      missing: true,
+      status: "normalFile",
+      info: `Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. ${f.getActualFilePath()}`,
+    };
+  }
+
   if (f.getActualFileExists()) {
     if (f.isLinkFile()) {
       const info = t({
@@ -51,6 +60,7 @@ export function getStatusOfFile(
         info: `${f.getActualFilePath()}`,
       };
   }
+
   const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
 
   if (!mediaFolder)

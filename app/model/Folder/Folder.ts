@@ -33,6 +33,7 @@ import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
+// There are two `FolderGroup` instances, one for projects and one for sessions.
 export class FolderGroup {
   //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
   // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
