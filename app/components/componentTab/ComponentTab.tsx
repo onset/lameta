@@ -21,83 +21,73 @@ interface IProps {
   fileListButtons?: object[];
 }
 
-// Sorry, the name for this is bad... suggestions welcome.
-// This implements the screens for both Sessions and People, but not Projects.
-// So they are "components" of the project.
-// Any children are put in the bar at the lower left.
-class ComponentTab extends React.Component<IProps> {
-  public render() {
-    const splitterKey =
-      this.props.folderTypeStyleClass + "VerticalSplitPosition";
-    const splitterposition = localStorage.getItem(splitterKey) || "300";
-    const sp = parseInt(splitterposition, 10);
-    // console.log(`folders.selected.index = ${this.props.folders.selected.index}`);
-    // console.log(`sessions.items.length = ${this.props.project.sessions.items.length}`);
-    if (this.props.folders.selectedIndex >= this.props.folders.items.length)
-      throw Error(
-        `folders.length = ${this.props.folders.items.length} but selected index is ${this.props.folders.selectedIndex}`
-      );
-
-    return (
-      <div className={"componentTab " + this.props.folderTypeStyleClass}>
-        <SplitPane
-          split="vertical"
-          defaultSize={sp}
-          onChange={(size: any) => localStorage.setItem(splitterKey, size)}
-        >
-          <div className={"firstColumn"}>
-            <FolderList
-              nameForPersistingUsersTableConfiguration={
-                this.props.nameForPersistingUsersTableConfiguration
-              }
-              folders={this.props.folders}
-              columns={this.props.columns}
-              columnWidths={this.props.columnWidths}
-            />
-            <div className={"newFolderBar"}>{this.props.folderListButtons}</div>
-          </div>
-          {this.props.folders &&
-          this.props.folders.items.length > 0 &&
-          this.props.folders.selectedIndex > -1 ? (
-            <FolderPane
-              project={this.props.project}
-              folder={
-                this.props.folders.items[this.props.folders.selectedIndex]
-              }
-              folderTypeStyleClass={this.props.folderTypeStyleClass}
-              showStandardMetaTabs={true}
-              authorityLists={this.props.authorityLists}
-              fileListButtons={this.props.fileListButtons}
-            >
-              <h3 className={"paneTitle"}>
-                {
-                  this.props.folders.items[this.props.folders.selectedIndex]
-                    .displayName
-                }
-              </h3>
-            </FolderPane>
-          ) : (
-            <React.Fragment />
-          )}
-        </SplitPane>
-      </div>
+// This is the "Sessions" tab and the "People" tab.  It is a tab that has a list of folders on
+// the left and a pane showing the files of that folder on the right.
+const ComponentTab: React.FunctionComponent<IProps> = (props) => {
+  const splitterKey = props.folderTypeStyleClass + "VerticalSplitPosition";
+  const splitterposition = localStorage.getItem(splitterKey) || "300";
+  const sp = parseInt(splitterposition, 10);
+  console.log(`folders.selected.index = ${props.folders.selectedIndex}`);
+  console.log(`sessions.items.length = ${props.project.sessions.items.length}`);
+  if (props.folders.selectedIndex >= props.folders.items.length)
+    throw Error(
+      `folders.length = ${props.folders.items.length} but selected index is ${props.folders.selectedIndex}`
     );
-  }
-  // private static castArray(value) {
-  //   return Array.isArray(value) ? value : [value];
-  // }
-}
+
+  return (
+    <div className={"componentTab " + props.folderTypeStyleClass}>
+      <SplitPane
+        split="vertical"
+        defaultSize={sp}
+        onChange={(size: any) => localStorage.setItem(splitterKey, size)}
+      >
+        <div className={"firstColumn"}>
+          <FolderList
+            nameForPersistingUsersTableConfiguration={
+              props.nameForPersistingUsersTableConfiguration
+            }
+            folders={props.folders}
+            columns={props.columns}
+            columnWidths={props.columnWidths}
+          />
+          <div className={"newFolderBar"}>{props.folderListButtons}</div>
+        </div>
+        {props.folders &&
+        props.folders.items.length > 0 &&
+        props.folders.selectedIndex > -1 ? (
+          <FolderPane
+            project={props.project}
+            // Note, when props.folders.selectedIndex, mobx should cause us to re-render because selectedIndex is an observable,
+            // and we are an observer.
+            folder={props.folders.items[props.folders.selectedIndex]}
+            folderTypeStyleClass={props.folderTypeStyleClass}
+            showStandardMetaTabs={true}
+            authorityLists={props.authorityLists}
+            fileListButtons={props.fileListButtons}
+          >
+            <h3 className={"paneTitle"}>
+              {props.folders.items[props.folders.selectedIndex].displayName}
+            </h3>
+          </FolderPane>
+        ) : (
+          <React.Fragment />
+        )}
+      </SplitPane>
+    </div>
+  );
+};
 
 // tslint:disable-next-line:no-empty-interface
 interface IJustChildrenProps {}
-export class FileListButtons extends React.Component<IJustChildrenProps> {
-  public render() {
-    return this.props.children;
-  }
-}
-export class FolderListButtons extends React.Component<IJustChildrenProps> {
-  public render() {
-    return this.props.children;
-  }
-}
+export const FileListButtons: React.FunctionComponent<IJustChildrenProps> = (
+  props
+) => {
+  return <React.Fragment>{props.children}</React.Fragment>;
+};
+export const FolderListButtons: React.FunctionComponent<IJustChildrenProps> = (
+  props
+) => {
+  return <React.Fragment>{props.children}</React.Fragment>;
+};
+// we need to re-render when the selected folder or selected file in the folder changes
 export default observer(ComponentTab);

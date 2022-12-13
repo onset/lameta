@@ -30,7 +30,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    .filePane {
+    .folderPane {
       //border: solid purple;
       display: flex;
       flex: 1;
@@ -73,7 +73,7 @@
   }
 }
 
-.project .filePane {
+.project .folderPane {
   .selected {
     background-color: $project__selected--color;
     border-color: $project__outline--color;

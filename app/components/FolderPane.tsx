@@ -77,7 +77,7 @@ export const FolderPane: React.FunctionComponent<
   props.folder.runSanityCheck();
 
   return (
-    <div className={"filePane " + props.folderTypeStyleClass}>
+    <div className={"folderPane " + props.folderTypeStyleClass}>
       {(props as any).children}
       {/* <h3 className={"paneTitle"}>{props.folder.displayName}</h3> */}
       <SplitPane
