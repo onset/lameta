@@ -28,7 +28,7 @@ import {
 } from "./MatrixImporter";
 import * as Path from "path";
 import * as fs from "fs";
-import { Button, CircularProgress, LinearProgress } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
@@ -103,6 +103,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             matrix!,
             folderType
           );
+          setMode(Mode.normal);
           closeDialog();
         }, 100);
         break;
@@ -137,7 +138,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         if (mode === Mode.importing) {
           return;
         }
-        close();
+        closeDialog();
       }}
       css={css`
         width: calc(100% - 100px);
@@ -299,7 +300,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
           )}
         </Button>
         <DialogCancelButton
-          disabled={mode !== Mode.importing}
+          disabled={mode === Mode.importing}
           onClick={() => {
             closeDialog();
           }}
