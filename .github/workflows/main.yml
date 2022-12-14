@@ -27,6 +27,14 @@ jobs:
           node-version: 16
           cache: "yarn" # I always get 'yarn cache is not found' but ah well
 
+      - name: Write out segment key
+        env:
+          SEGMENT_API: ${{ secrets.SEGMENT_API }}
+        run: |
+          # note: not really hidden from a determined user
+          echo "$SEGMENT_API" > ./assets/.segment
+        shell: bash
+
       - name: Prepare for app notarization (macOS)
         if: startsWith(matrix.os, 'macos')
         # Import Apple API key for app notarization on macOS

@@ -89,6 +89,7 @@ export class UserSettings {
   public get ClientId() {
     if (!this.clientId || this.clientId.length === 0) {
       this.clientId = this.store.get("clientId", uuid());
+      this.store.set("clientId", this.clientId);
     }
     return this.clientId;
   }

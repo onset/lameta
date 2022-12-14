@@ -27,8 +27,6 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
   const splitterKey = props.folderTypeStyleClass + "VerticalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
-  console.log(`folders.selected.index = ${props.folders.selectedIndex}`);
-  console.log(`sessions.items.length = ${props.project.sessions.items.length}`);
   if (props.folders.selectedIndex >= props.folders.items.length)
     throw Error(
       `folders.length = ${props.folders.items.length} but selected index is ${props.folders.selectedIndex}`

@@ -7,7 +7,7 @@ import * as isEmail from "isemail";
 import userSettings from "../../other/UserSettings";
 import "./RegistrationDialog.scss";
 import { SMRadioGroup, SMRadio } from "../SMRadio";
-import { analyticsLocation } from "../../other/analytics";
+import { analyticsLocation, initializeAnalytics } from "../../other/analytics";
 
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
@@ -40,6 +40,8 @@ export default class RegistrationDialog extends React.Component<
     if (doSave) {
       userSettings.Email = this.state.email;
       userSettings.HowUsing = this.state.howUsing;
+      // send this new data to analytics
+      initializeAnalytics();
     }
     this.setState({ isOpen: false });
   }
