@@ -33,6 +33,7 @@ const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
 import { IFolderType } from "../../model/Folder/Folder";
+import { analyticsEvent } from "../../other/analytics";
 const { app } = require("@electron/remote");
 
 export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
@@ -98,11 +99,17 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
       case Mode.startImporting:
         setMode(Mode.importing);
         window.setTimeout(() => {
+          analyticsEvent(
+            "Import",
+            `Import ${folderType} Spreadsheet`,
+            paths.join(", ")
+          );
           addImportMatrixToProject(
             props.projectHolder.project!,
             matrix!,
             folderType
           );
+
           setMode(Mode.normal);
           closeDialog();
         }, 100);

@@ -53,11 +53,16 @@ export function analyticsLocation(name: string) {
   // in case of an error later, also list this in the error log
   sentryBreadCrumb(name);
 }
-export function analyticsEvent(category: string, action: string) {
+export function analyticsEvent(
+  category: string,
+  action: string,
+  details?: string
+) {
   if (analytics)
     analytics
       .track(action, {
         category,
+        details,
       })
       //.then(() => console.log(`Sent event ${category}/${action}`))
       .catch((error) => console.error(error));
