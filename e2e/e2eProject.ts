@@ -1,7 +1,6 @@
-import * as fs from "fs";
 import * as Path from "path";
-import { ElectronApplication, Page, _electron as electron } from "playwright";
-import { test, expect as expect, TestInfo } from "@playwright/test";
+import { Page, _electron as electron } from "playwright";
+import { expect as expect } from "@playwright/test";
 import { Lameta } from "./Lameta";
 
 export async function createNewProject(
@@ -22,6 +21,10 @@ export class E2eProject {
   }
 
   public async createNewProject(projectName: string) {
+    // console.log(
+    //   "**** createNewProject: attempting to create new project at " +
+    //     projectName
+    // );
     await this.page.locator("#creatNewProjectLink").click();
     await this.page.locator("#projectNameInput").fill(projectName);
     this.projectDirectory = Path.join(
@@ -45,12 +48,6 @@ export class E2eProject {
   }
   public async addPerson() {
     await this.page.getByRole("button", { name: "New Person" }).click();
-  }
-  public async addFile(name: string) {
-    const p = Path.join(process.env.E2ERoot!, name); // creating it at our test root, which is a level above the lameta project directory
-    fs.writeFileSync(p, "hello world");
-    this.lameta.mockShowOpenDialog([p]);
-    await this.page.getByRole("button", { name: "Add Files" }).click(); // await page.getByRole('gridcell', { name: 'New Session.session' }).click();
   }
 
   /* I haven't been able to control the context menu. I can open it, but playwright doens't see it and 

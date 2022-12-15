@@ -20,12 +20,13 @@ let analytics: AnalyticsBrowser | undefined;
 export async function initializeAnalytics() {
   try {
     let key = "";
-    if (
-      process.env.NODE_ENV === "test" ||
-      process.env.NODE_ENV === "development" ||
-      userSettingsSingleton.DeveloperMode
+    if (process.env.NODE_ENV === "test" || process.env.E2E) {
+      analytics = undefined; // don't spend segment.com quota on tests
+    } else if (
+      userSettingsSingleton.DeveloperMode ||
+      process.env.NODE_ENV === "development"
     ) {
-      key = "O3C1FrbcFpPL8ZKCXwek4mEr6sqq40UB"; // "lameta-test"
+      key = "O3C1FrbcFpPL8ZKCXwek4mEr6sqq40UB"; // Will show up here: https://app.segment.com/lameta/sources/lameta-test/debugger
     } else {
       // The github action saves the production in this file at runtime.
       // The key that is checked in is the "lameta-test" key, which doesn't go anywhere beyond segment debugger

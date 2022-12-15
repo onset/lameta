@@ -3,18 +3,26 @@ import * as Path from "path";
 import { test, expect as expect, Page } from "@playwright/test";
 import { Lameta } from "./Lameta";
 import { createNewProject, E2eProject } from "./e2eProject";
+import { E2eFileList } from "./e2eFileList";
 
 let lameta: Lameta;
 let page: Page;
 let project: E2eProject;
+let fileList: E2eFileList;
 
-test.describe("Changing person full name", () => {
+test.describe("AutoFileAndFolderRenaming Tests", () => {
   test.beforeAll(async ({}) => {
+    //console.log("************** beforeAll renamingFolder ");
     lameta = new Lameta();
     page = await lameta.launch();
     await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "FileList");
+    project = await createNewProject(lameta, "AutoFileAndFolderRenaming");
+    fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
+  test.afterAll(async ({}) => {
+    lameta.quit();
+  });
+
   test("changing FullName renames the file", async ({}, testInfo) => {
     await project.goToPeople();
     await project.addPerson();
@@ -32,7 +40,7 @@ test.describe("Changing person full name", () => {
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Paul Hewson");
-    await project.addFile("Paul Hewson_foo.txt");
+    await fileList.addFile("Paul Hewson_foo.txt");
     const original = Path.join(
       project.projectDirectory,
       "People",
