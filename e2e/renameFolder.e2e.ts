@@ -16,28 +16,38 @@ test.describe("Changing person full name", () => {
   test("changing FullName renames the file", async ({}, testInfo) => {
     await project.goToPeople();
     await project.addPerson();
-    await page.pause();
     await setFullName("Bono Vox");
     await expectFileNameInGrid("Bono Vox.person");
     await setFullName("Bono");
     await expectFileNameInGrid("Bono.person");
     await setFullName("Paul Hewson");
-    await expectFileNameInGrid("Bono.person");
-    await page.pause();
-    await lameta.quit();
+    await expectFileNameInGrid("Paul Hewson.person");
+    // remove dangerous characters
+    await setFullName(">Bono?Vox/Paul");
+    await expectFileNameInGrid("BonoVoxPaul.person");
+  });
+  test("changing FullName renames other files that have been renamed to match the person", async ({}, testInfo) => {
+    await project.goToPeople();
+    await project.addPerson();
+    await setFullName("Paul Hewson");
+    await project.addFile("Paul Hewson_foo.txt");
+    await expectFileNameInGrid("Paul Hewson_foo.txt");
+    await setFullName("Bono");
+    await expectFileNameInGrid("Bono_foo.txt");
   });
 });
 
 async function expectFileNameInGrid(name: string) {
-  await page.getByRole("gridcell", {
-    name: name,
-  });
+  await expect(
+    page.getByRole("gridcell", {
+      name: name,
+    }),
+    `Expected the file list to have a file named "${name}"`
+  ).toBeVisible({ timeout: 1000 });
 }
 async function setFullName(name: string) {
   const fullNameField = await page.getByLabel("Full Name");
-  console.log(JSON.stringify(fullNameField, null, 2));
   await fullNameField.click();
   await fullNameField.fill(name);
-  // type a tab to move to the next field
   await page.keyboard.press("Tab");
 }

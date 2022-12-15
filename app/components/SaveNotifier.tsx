@@ -33,7 +33,8 @@ export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
       }, 2000);
     }
   }, [showSaving]);
-  return (
+  // in e2e testing, this covers up buttons that we need to click, maybe because the fading is just done by changing opacity?
+  return process.env.E2E ? null : (
     <div id="saveNotifier" className={showSaving ? "show" : "hide"}>
       {beforeRename && (
         <div>

@@ -25,13 +25,13 @@ export class E2eProject {
     await this.page.locator("#creatNewProjectLink").click();
     await this.page.locator("#projectNameInput").fill(projectName);
     this.projectDirectory = Path.join(process.env.E2ERoot!, projectName);
-    const ok = await this.page.getByRole("button", { name: "OK" });
+    const ok = await this.page.getByRole("button", { name: "Create" });
     expect(ok).toBeEnabled();
     ok.click();
     return await this.lameta.electronApp.firstWindow();
   }
   public async goToSessions() {
-    await this.page.getByText("Sessions").click();
+    await this.page.getByRole("tab", { name: "Sessions" }).click();
   }
   public async goToPeople() {
     await this.page.getByRole("tab", { name: "People" }).click();
@@ -46,7 +46,6 @@ export class E2eProject {
     const p = Path.join(process.env.E2ERoot!, name); // creating it at our test root, which is a level above the lameta project directory
     fs.writeFileSync(p, "hello world");
     this.lameta.mockShowOpenDialog([p]);
-
     await this.page.getByRole("button", { name: "Add Files" }).click(); // await page.getByRole('gridcell', { name: 'New Session.session' }).click();
   }
 
