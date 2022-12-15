@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as Path from "path";
 import { test, expect as expect, Page } from "@playwright/test";
 import { Lameta } from "./Lameta";
 import { createNewProject, E2eProject } from "./e2eProject";
@@ -31,9 +33,31 @@ test.describe("Changing person full name", () => {
     await project.addPerson();
     await setFullName("Paul Hewson");
     await project.addFile("Paul Hewson_foo.txt");
+    const original = Path.join(
+      project.projectDirectory,
+      "People",
+      "Paul Hewson",
+      "Paul Hewson_foo.txt"
+    );
     await expectFileNameInGrid("Paul Hewson_foo.txt");
+    expect(
+      fs.existsSync(original),
+      `Expected to find ${original}`
+    ).toBeTruthy();
+
     await setFullName("Bono");
     await expectFileNameInGrid("Bono_foo.txt");
+    const after = Path.join(
+      project.projectDirectory,
+      "People",
+      "Bono",
+      "Bono_foo.txt"
+    );
+    expect(
+      fs.existsSync(original),
+      `Expected to NOT find ${original}`
+    ).toBeFalsy();
+    expect(fs.existsSync(after), `Expected to find ${after}`).toBeTruthy();
   });
 });
 

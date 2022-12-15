@@ -24,7 +24,11 @@ export class E2eProject {
   public async createNewProject(projectName: string) {
     await this.page.locator("#creatNewProjectLink").click();
     await this.page.locator("#projectNameInput").fill(projectName);
-    this.projectDirectory = Path.join(process.env.E2ERoot!, projectName);
+    this.projectDirectory = Path.join(
+      process.env.E2ERoot!,
+      "lameta",
+      projectName
+    );
     const ok = await this.page.getByRole("button", { name: "Create" });
     expect(ok).toBeEnabled();
     ok.click();
