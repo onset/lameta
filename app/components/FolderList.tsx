@@ -193,7 +193,7 @@ class FolderList extends React.Component<IProps> {
                 //   "row " + JSON.stringify(rowInfo.original.directory)
                 // );
                 if (
-                  this.props.folders.selectedIndex &&
+                  this.props.folders.selectedIndex > -1 &&
                   selectedFolderIndex > -1
                 ) {
                   this.props.folders.items[
