@@ -77,6 +77,13 @@ describe("LanguageFinder", () => {
     );
   });
 
+  it("findCodeFromCodeOrLanguageName('es') should give 'spa'", () => {
+    expect(languageFinder.findOneLanguageNameFromCode_Or_ReturnCode("es")).toBe(
+      "Spanish"
+    );
+    expect(languageFinder.findCodeFromCodeOrLanguageName("es")).toBe("spa");
+  });
+
   it("makeMatchesAndLabelsForSelect should handle English well", () => {
     expect(
       languageFinder.makeMatchesAndLabelsForSelect("en")[0].languageInfo

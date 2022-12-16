@@ -99,11 +99,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
       case Mode.startImporting:
         setMode(Mode.importing);
         window.setTimeout(() => {
-          analyticsEvent(
-            "Import",
-            `Import ${folderType} Spreadsheet`,
-            paths.join(", ")
-          );
+          analyticsEvent("Import", `Import ${folderType} Spreadsheet`, path);
           addImportMatrixToProject(
             props.projectHolder.project!,
             matrix!,

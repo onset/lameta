@@ -234,8 +234,11 @@ export class PersonMetadataFile extends FolderMetadataFile {
     );
     const value = languageImportListContents?.text;
     if (value) {
-      // TODO: consolidate so we don't have duplicates?
-      this.languages.push(...getCodesFromLanguageListField(value));
+      getCodesFromLanguageListField(value).forEach((lang) => {
+        if (!this.languages.find((l) => l.code === lang.code)) {
+          this.languages.push(lang);
+        }
+      });
     }
   }
 

@@ -56,7 +56,59 @@ describe("addSessionToProject", () => {
     expect(project.sessions.items.length).toBe(1);
     expect(session.id).toBe("foo");
   });
+  it("Multiple person Languages in a column", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryLanguage: "spa",
+      languageImportList: "por;eng",
+    });
 
+    expect(person.languages[0].code).toBe("spa");
+    expect(person.languages[1].code).toBe("por");
+    expect(person.languages[2].code).toBe("eng");
+    expect(person.languages.length).toBe(3);
+  });
+
+  it("Languages appearing in other are only added once", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      mothersLanguage: "spa", //"Español",
+      primaryLanguage: "spa",
+      languageImportList: "spa", //"Spanish",
+    });
+    expect(person.displayName).toBe("Joe Strummer");
+    expect(person.languages.length).toBe(1);
+    expect(person.languages[0].code).toBe("spa");
+    expect(person.languages[0].primary).toBe(true);
+    expect(person.languages[0].mother).toBe(true);
+
+    const person2 = await makeMatrixAndImportThenGetPerson({
+      name: "Garbiela",
+      primaryLanguage: "drc",
+      languageImportList: "por;eng",
+      mothersLanguage: "drc",
+      fathersLanguage: "eng",
+    });
+    expect(person2.languages[0].code).toBe("drc");
+    expect(person2.languages[0].primary).toBe(true);
+    expect(person2.languages[0].mother).toBe(true);
+    expect(person2.languages[1].code).toBe("eng");
+    expect(person2.languages[1].father).toBe(true);
+    expect(person2.languages[2].code).toBe("por");
+    expect(person2.languages.length).toBe(3);
+  });
+  it("Spanish, es, and Español all map to the same language during import", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryOccupation: "Musician",
+      fathersLanguage: "Spanish",
+      mothersLanguage: "Español",
+      primaryLanguage: "es",
+      otherLanguages: "es",
+    });
+    expect(person.languages.length).toBe(1);
+    expect(person.languages[0].code).toBe("exs");
+  });
   it("Can import one normal person row", async () => {
     const person = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",

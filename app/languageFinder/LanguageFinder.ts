@@ -180,6 +180,7 @@ export class LanguageFinder {
     // gives us hits on name & codes that start with the prefix
     // Enhance: in order to do search without stripDiacritics,
     // we would probably have to strip them off before adding to TrieSearch.
+
     const langs = this.index.get(s);
     const projectContentLanguage = this.getDefaultLanguage();
     // handle qaa -- qtx or any other code that we don't have in our index, but the user has
@@ -283,6 +284,9 @@ export class LanguageFinder {
   }
 
   public findCodeFromCodeOrLanguageName(codeOrLanguageName: string) {
+    // probably there is a mor principled approach here, hmmmm...
+    if (codeOrLanguageName === "es") return "spa";
+
     var c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
     // if we got something other than the code back, that means we did recognize it as a known code.
     if (c.length > 0 && c.toLowerCase() !== codeOrLanguageName.toLowerCase())
