@@ -137,9 +137,10 @@ export function createFolderInMemory(
               lookAheadForValue(row, cellIndex, "contribution.role") ??
                 "participant",
               lookAheadForValue(row, cellIndex, "contribution.comments") ?? ""
+
+              // enhance; comments and date are not part of lingmetax, will be needed if a new format adds them
             )
           );
-          // TODO: have to group up to 3 consecutive cells into a single contribution record
           break;
         case "date":
           // creating "Date" to get around the deprecation warning we get if we run into, .e.g. "7/27/2022"

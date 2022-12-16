@@ -661,6 +661,9 @@ export /*babel doesn't like this: abstract*/ class File {
         }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
+        // note this could conceivably be wrong if we wanted to save some changes/updates that happen during loadPropertiesFromXml()
+        // But otherwise, we don't want to spend time saving, notifying, and messing with the file change dates.
+        this.clearDirty();
       }
       this.recomputedChangeWatcher();
     } catch (err) {
@@ -699,15 +702,23 @@ export /*babel doesn't like this: abstract*/ class File {
   public save(beforeRename: boolean = false, forceSave: boolean = false) {
     //console.log(`Might save ${this.metadataFilePath}`);
 
-    if (!forceSave && !this.dirty && fs.existsSync(this.metadataFilePath)) {
+    // console.log(
+    //   `dirty of ${this.metadataFilePath} is ${
+    //     this.dirty === undefined ? "undefined" : this.dirty
+    //   }}`
+    // );
+    if (
+      !forceSave &&
+      this.dirty === false &&
+      fs.existsSync(this.metadataFilePath)
+    ) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
-    //console.log(`Will save ${this.metadataFilePath}`);
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
-    //    console.log(`Saving ${this.metadataFilePath}`);
+    console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 
@@ -800,7 +811,7 @@ export /*babel doesn't like this: abstract*/ class File {
       }
 
       PatientFS.renameSyncWithNotifyAndRethrow(currentFilePath, newPath);
-
+      console.log(`Renamed ${currentFilePath} to ${newPath}`);
       return newPath;
     }
     return currentFilePath;
@@ -905,10 +916,10 @@ export /*babel doesn't like this: abstract*/ class File {
 
   private changed() {
     if (this.dirty) {
-      // console.log("changed() but already dirty " + this.metadataFilePath);
+      //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
   }
   public wasChangeThatMobxDoesNotNotice() {

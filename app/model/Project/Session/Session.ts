@@ -146,9 +146,9 @@ export class Session extends Folder {
         );
       }
     });
-    // Now empty it out. We don't use it in the UI. We will however reconstruct it when saving, so that it
+    // Now remove it. We don't use it in the UI. We will however reconstruct it when saving, so that it
     // is there in case an older saymore tries to read this.
-    this.properties.setText("participants", "");
+    this.properties.removeProperty("participants");
   }
 
   // override

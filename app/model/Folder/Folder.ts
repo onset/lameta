@@ -449,7 +449,7 @@ export abstract class Folder {
       return false;
     }
 
-    // ok, that worked, so now have all the folder rename themselves if their name depends on the folder name
+    // ok, that worked, so now have all the files rename themselves if their name depends on the folder name
     this.files.forEach((f) => {
       try {
         f.updateNameBasedOnNewFolderName(newFolderName);
@@ -466,6 +466,9 @@ export abstract class Folder {
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
+      console.log(
+        `** Renamed Folder from ${oldFolderName} to ${newFolderName}.`
+      );
     } catch (err) {
       const msg = t`lameta was not able to rename the folder.`;
       NotifyFileAccessProblem(
@@ -475,7 +478,7 @@ export abstract class Folder {
       return false; // don't continue on with telling the folders that they moved.
     }
 
-    // ok, only after the folder was successfully renamed do we tell the individual files that they have been movd
+    // ok, only after the folder was successfully renamed do we tell the individual files that they have been moved
     this.files.forEach((f) => {
       // no file i/o here
       f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);

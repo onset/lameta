@@ -17,6 +17,9 @@ export class FieldSet extends Dictionary<string, Field> {
     assert.ok(f, `setText(${key}) assumes the value is already there.`);
     f.setValueFromString(value);
   }
+  public removeProperty(key: string) {
+    this.remove(key);
+  }
 
   // the dictionary implementation has a signature that includes undefined, which makes
   // it *really* annoying to use, as TS will force you to check the return value every time

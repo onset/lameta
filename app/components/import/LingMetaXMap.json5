@@ -41,6 +41,8 @@
     //other_equipment: { lameta: "" },
     //recording_conditions: { lameta: "" },
 
+    // note that comments and date are not part of lingmetax
+
     participant_1_full_name: { lameta: "contribution.name" },
     participant_1_role: { lameta: "contribution.role" },
     participant_2_full_name: { lameta: "contribution.name" },
