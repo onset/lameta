@@ -107,7 +107,7 @@ describe("addSessionToProject", () => {
       otherLanguages: "es",
     });
     expect(person.languages.length).toBe(1);
-    expect(person.languages[0].code).toBe("exs");
+    expect(person.languages[0].code).toBe("es");
   });
   it("Can import one normal person row", async () => {
     const person = await makeMatrixAndImportThenGetPerson({

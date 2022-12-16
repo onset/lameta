@@ -284,8 +284,19 @@ export class LanguageFinder {
   }
 
   public findCodeFromCodeOrLanguageName(codeOrLanguageName: string) {
-    // probably there is a mor principled approach here, hmmmm...
-    if (codeOrLanguageName === "es") return "spa";
+    // lameta works with 3 letter codes, but people (like me) may be used to BCP 47 codes, which default
+    // to 2 letter codes where they exist. Ideally we'd deal with this in the lookup, but for now
+    // the index doesn't discrimiate on lookup between names and codes.
+    const twoToThree = [
+      ["es", "spa"],
+      ["en", "eng"],
+      ["fr", "fra"],
+      ["de", "deu"],
+      ["id", "ind"],
+      ["pt", "por"],
+    ];
+    const match = twoToThree.find((t) => t[0] === codeOrLanguageName);
+    if (match) return match[1];
 
     var c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
     // if we got something other than the code back, that means we did recognize it as a known code.
