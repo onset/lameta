@@ -6,6 +6,7 @@
     title: { lameta: "title" },
     //  LingMetaX's code uses this for the folder and session name
     filename: { lameta: "id" },
+    id: { lameta: "id" }, // let's also allow this
     description: { lameta: "description" },
     location_region: { lameta: "locationRegion" },
     location_continent: { lameta: "locationContinent" },
