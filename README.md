@@ -33,17 +33,23 @@ yarn package
 More information available in the upstream project:
 [electron-react-typescript-boilerplate](https://github.com/iRath96/electron-react-typescript-boilerplate)
 
-## Troubleshooting
-
 ### unit tests
 
 ```bash
 yarn test
 ```
 
-When running e2e tests, there is occasionally a mystery error that won't go away, even if you got back to previous commits were unit tests were running. It goes away with a restart, `git clean -dxf && yarn && yarn test`. Make sure everything is committed first!
-
 If you see something like `TypeError: beforeAll is not a function`, that is caused by explicitly defining of the jest functions, as in `const { describe, it, beforeEach, afterEach } = require("jest");` Just remove that.
+
+### e2e tests
+
+Now using [playwright](https://playwright.dev/)
+
+```bash
+yarn e2e
+```
+
+(TODO: There are still old spectron tests around, these need to get cleared out.)
 
 ### l10n
 
