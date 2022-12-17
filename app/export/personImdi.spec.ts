@@ -10,6 +10,7 @@ import {
 import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
+import exp from "constants";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 mobx.configure({
   enforceActions: "never",
@@ -127,5 +128,14 @@ describe("actor imdi export", () => {
     setResultXml(xml);
     expect("Actor/BirthDate").toMatch("Unspecified");
     expect("Actor/Age").toMatch("Unspecified");
+  });
+
+  // this one is weird..., just testing a report from a user:
+  // "Lameta writes contributor role in lowercase in IMDI although it seems like uppercase from the GUI."
+  it("should output role in same case as it is stored", () => {
+    const gen = new ImdiGenerator(person, project);
+    const xml = gen.actor(person, "MixedCase", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Role").toMatch("MixedCase");
   });
 });
