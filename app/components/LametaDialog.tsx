@@ -254,6 +254,6 @@ export function useSetupLametaDialog() {
   return {
     currentlyOpen,
     showDialog,
-    closeDialog,
+    closeDialog
   };
 }

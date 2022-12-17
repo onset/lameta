@@ -4,7 +4,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import temp from "temp";

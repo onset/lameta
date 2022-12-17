@@ -9,7 +9,7 @@ import {
   translateSpecialInfo,
   i18n,
   translateTooltip,
-  translateTooltipNotice,
+  translateTooltipNotice
 } from "../other/localization";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";

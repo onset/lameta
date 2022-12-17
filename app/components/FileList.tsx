@@ -9,7 +9,7 @@ import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
 import {
   RenameFileDialog,
-  ShowRenameDialog,
+  ShowRenameDialog
 } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
@@ -23,7 +23,7 @@ import { getExtension } from "../other/CopyManager";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import {
   getLinkStatusIconPath,
-  getStatusOfFile,
+  getStatusOfFile
 } from "../model/file/FileStatus";
 import { toJS } from "mobx";
 const electron = require("electron");
@@ -58,7 +58,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getIconPath();
       },
-      Cell: (p) => <img src={p.value} />,
+      Cell: (p) => <img src={p.value} />
     },
     {
       id: "name",
@@ -67,7 +67,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getFilenameToShowInList();
       },
-      className: "filename",
+      className: "filename"
     },
     {
       id: "linkStatus",
@@ -77,7 +77,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return getLinkStatusIconPath(f);
       },
-      Cell: (p) => <img src={p.value} />,
+      Cell: (p) => <img src={p.value} />
     },
     {
       id: "type",
@@ -86,7 +86,7 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return translateFileType(f.getTextProperty("type", ""));
-      },
+      }
     },
     {
       id: "modifiedDate",
@@ -97,7 +97,7 @@ export const _FileList: React.FunctionComponent<{
         return f.copyInProgress
           ? f.copyProgress
           : d.properties.getValue("modifiedDate")?.asISODateString();
-      },
+      }
     },
     {
       id: "size",
@@ -107,8 +107,8 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return f.getTextProperty("size", "");
-      },
-    },
+      }
+    }
   ];
   const isSpecialSayMoreFile =
     props.folder.selectedFile === props.folder.metadataFile;
@@ -231,7 +231,7 @@ export const _FileList: React.FunctionComponent<{
               " " +
               (rowInfo && rowInfo.original === props.folder.selectedFile
                 ? " selected "
-                : ""),
+                : "")
           };
         }}
       />
@@ -267,7 +267,7 @@ function showFileMenu(
       click: () => {
         showInExplorer(file.getActualFilePath());
       },
-      enabled: !missing,
+      enabled: !missing
     },
     {
       label: t`Open in program associated with this file type`,
@@ -276,7 +276,7 @@ function showFileMenu(
         electron.shell.openPath("file://" + file.getActualFilePath());
       },
       enabled: !missing,
-      visible: !isSpecialSayMoreFile || showDevOnlyItems,
+      visible: !isSpecialSayMoreFile || showDevOnlyItems
     },
     {
       label: t`Rename...`,
@@ -284,7 +284,7 @@ function showFileMenu(
         ShowRenameDialog(file, folder);
       },
       enabled: !missing,
-      visible: contextMenu && !isSpecialSayMoreFile,
+      visible: contextMenu && !isSpecialSayMoreFile
     },
     { type: "separator", visible: !contextMenu },
     {
@@ -293,19 +293,19 @@ function showFileMenu(
       click: () => {
         folder.MoveFileToTrashWithUI(file);
       },
-      visible: contextMenu,
+      visible: contextMenu
     },
     {
       type: "separator",
-      visible: contextMenu && showDevOnlyItems,
+      visible: contextMenu && showDevOnlyItems
     },
     {
       label: "Inspect element",
       click() {
         (mainWindow as any).inspectElement(x, y);
       },
-      visible: contextMenu && showDevOnlyItems,
-    },
+      visible: contextMenu && showDevOnlyItems
+    }
   ];
 
   items = items.filter((item) => item.visible !== false);
@@ -315,7 +315,7 @@ function showFileMenu(
 
 function showAddFilesDialog(folder: Folder) {
   const options: OpenDialogOptions = {
-    properties: ["openFile", "multiSelections"],
+    properties: ["openFile", "multiSelections"]
   };
   ipcRenderer.invoke("showOpenDialog", options).then((result) => {
     if (result && result.filePaths && result.filePaths.length > 0) {

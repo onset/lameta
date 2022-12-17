@@ -12,8 +12,8 @@ export class Lameta {
         NODE_ENV: "test" /* <-- doesn't work */,
         E2E: "true",
         E2E_USER_SETTINGS_STORE_NAME: "none", // like we're running for the first time
-        E2ERoot: process.env.E2ERoot!,
-      },
+        E2ERoot: process.env.E2ERoot!
+      }
     });
     this.page = await this.electronApp.firstWindow();
     return this.page;

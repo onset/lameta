@@ -17,7 +17,7 @@ import {
   shell,
   ipcMain,
   dialog,
-  MessageBoxSyncOptions,
+  MessageBoxSyncOptions
 } from "electron";
 
 (global as any).arguments = process.argv;
@@ -92,7 +92,7 @@ ipcMain.on("copyStopped", () => {
 ipcMain.handle("confirm-quit", async (event, ...args) => {
   const result = await dialog.showMessageBox(mainWindow!, {
     message: args[0],
-    buttons: [args[1], args[2]],
+    buttons: [args[1], args[2]]
   });
   return result;
 });
@@ -151,7 +151,7 @@ app.on("ready", () =>
           // lameta does not show external web content, so there is no threat, so no need for sandboxing
           nodeIntegration: true,
           sandbox: false,
-          contextIsolation: false,
+          contextIsolation: false
           //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
         },
         show: false,
@@ -159,7 +159,7 @@ app.on("ready", () =>
         height: 728,
 
         //windows
-        icon: Path.join(__dirname, "../build/windows.ico"),
+        icon: Path.join(__dirname, "../build/windows.ico")
         //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
         //mac icon: path.join(__dirname, "../app/icons/mac.icns")
       }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this
@@ -173,9 +173,7 @@ app.on("ready", () =>
       if (process.env.NODE_ENV === "development") {
         mainWindow.loadURL("http://localhost:3000/app.html");
       } else {
-       */ mainWindow.loadURL(
-        `file://${__dirname}/app.html`
-      );
+       */ mainWindow.loadURL(`file://${__dirname}/app.html`);
 
       /*}*/
 

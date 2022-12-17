@@ -94,7 +94,7 @@ export class CopyManager {
         args,
         {
           shell: true,
-          detached: true, // without this, if we quit while the copy is going, it will be corrupt
+          detached: true // without this, if we quit while the copy is going, it will be corrupt
         }
       );
       const job = { process, destination: destPath, progress: "0%" };

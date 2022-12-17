@@ -38,7 +38,7 @@ export class UserSettings {
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
-      HowUsing: computed,
+      HowUsing: computed
     });
 
     this.store =
@@ -47,8 +47,7 @@ export class UserSettings {
         ? new FakeStore()
         : new Store({
             name:
-              process.env.E2E_USER_SETTINGS_STORE_NAME ??
-              "lameta-user-settings",
+              process.env.E2E_USER_SETTINGS_STORE_NAME ?? "lameta-user-settings"
           });
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
@@ -182,7 +181,7 @@ export function useUserSetting(name: string, defaultValue: string) {
     (value: string) => {
       userSettingsSingleton.Set(name, value);
       setX(value);
-    },
+    }
   ];
 }
 export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {

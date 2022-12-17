@@ -46,43 +46,43 @@ export default class LametaMenu {
       submenu: [
         {
           label: t`About lameta`,
-          selector: "orderFrontStandardAboutPanel:",
+          selector: "orderFrontStandardAboutPanel:"
         },
         {
-          type: "separator",
+          type: "separator"
         },
         {
           label: t`Services`,
-          submenu: [],
+          submenu: []
         },
         {
-          type: "separator",
+          type: "separator"
         },
         {
           label: t`Hide lameta`,
           accelerator: "Command+H",
-          selector: "hide:",
+          selector: "hide:"
         },
         {
           label: t`Hide Others`,
           accelerator: "Command+Shift+H",
-          selector: "hideOtherApplications:",
+          selector: "hideOtherApplications:"
         },
         {
           label: t`Show All`,
-          selector: "unhideAllApplications:",
+          selector: "unhideAllApplications:"
         },
         {
-          type: "separator",
+          type: "separator"
         },
         {
           label: t`Quit`,
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
     const editMenu = {
       label: t`Edit`,
@@ -90,31 +90,31 @@ export default class LametaMenu {
         {
           label: t`Undo`,
           accelerator: "CmdOrCtrl+Z",
-          selector: "undo:",
+          selector: "undo:"
         },
         {
           label: t`Redo`,
           accelerator: "Shift+CmdOrCtrl+Z",
-          selector: "redo:",
+          selector: "redo:"
         },
         { type: "separator" },
         { label: t`Cut`, accelerator: "CmdOrCtrl+X", selector: "cut:" },
         {
           label: t`Copy`,
           accelerator: "CmdOrCtrl+C",
-          selector: "copy:",
+          selector: "copy:"
         },
         {
           label: t`Paste`,
           accelerator: "CmdOrCtrl+V",
-          selector: "paste:",
+          selector: "paste:"
         },
         {
           label: t`Select All`,
           accelerator: "CmdOrCtrl+A",
-          selector: "selectAll:",
-        },
-      ],
+          selector: "selectAll:"
+        }
+      ]
     };
 
     const fileMenu = {
@@ -123,15 +123,15 @@ export default class LametaMenu {
         {
           label: "&" + t`Open Project...`,
           accelerator: "CmdOrCtrl+O",
-          click: () => this.homePage.openProject(),
+          click: () => this.homePage.openProject()
         },
         {
           label: "&" + t`Create Project...`,
-          click: () => this.homePage.createProject(false),
+          click: () => this.homePage.createProject(false)
         },
         {
           label: "&" + t`Start Screen`,
-          click: () => this.homePage.projectHolder.setProject(null),
+          click: () => this.homePage.projectHolder.setProject(null)
         },
         { type: "separator" },
         {
@@ -140,16 +140,16 @@ export default class LametaMenu {
           enabled: haveProject,
           click: () => {
             ShowExportDialog();
-          },
+          }
         },
         {
           label: "&" + t`Media Folder Settings...`,
           enabled: haveProject,
           click: () => {
             ShowMediaFolderDialog();
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
     if (fileMenu && process.platform !== "darwin") {
       fileMenu.submenu.push({ type: "separator" });
@@ -168,16 +168,16 @@ export default class LametaMenu {
               accelerator: "CmdOrCtrl+-",
               click: () => {
                 userSettingsSingleton.ZoomFont(-1);
-              },
+              }
             },
             {
               label: t`Larger`,
               accelerator: "CmdOrCtrl+=",
               click: () => {
                 userSettingsSingleton.ZoomFont(1);
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           label: t`Interface Language`,
@@ -189,7 +189,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("en");
               },
-              checked: currentUILanguage === "en",
+              checked: currentUILanguage === "en"
             },
             {
               label: "Español (Spanish 77%)",
@@ -197,7 +197,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("es");
               },
-              checked: currentUILanguage === "es",
+              checked: currentUILanguage === "es"
             },
             {
               label: "简体中文 (Chinese 5%)",
@@ -205,7 +205,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("zh-CN");
               },
-              checked: currentUILanguage === "zh-CN",
+              checked: currentUILanguage === "zh-CN"
             },
             {
               label: "Français  (33%)",
@@ -213,7 +213,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("fr");
               },
-              checked: currentUILanguage === "fr",
+              checked: currentUILanguage === "fr"
             },
             {
               label: "فارسی (Persion 77%)",
@@ -221,7 +221,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("fa");
               },
-              checked: currentUILanguage === "fa",
+              checked: currentUILanguage === "fa"
             },
             {
               label: "Portuguesa, Brasileiro  (77%)",
@@ -229,7 +229,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("pt-BR");
               },
-              checked: currentUILanguage === "pt-BR",
+              checked: currentUILanguage === "pt-BR"
             },
             {
               label: "русский язык (Russian 10%)",
@@ -237,7 +237,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("ru");
               },
-              checked: currentUILanguage === "ru",
+              checked: currentUILanguage === "ru"
             },
             userSettings.DeveloperMode
               ? {
@@ -246,16 +246,16 @@ export default class LametaMenu {
                   click: () => {
                     setUILanguage("ps");
                   },
-                  checked: currentUILanguage === "ps",
+                  checked: currentUILanguage === "ps"
                 }
               : { type: "separator" },
             {
               label: t`Help translate`,
               click: () => {
                 shell.openPath("https://crowdin.com/project/saymorex"); // haven't been able to correct this URL yet
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           label: t`IMDI Mode`,
@@ -264,7 +264,7 @@ export default class LametaMenu {
             "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
           type: "checkbox",
           checked: userSettings.IMDIMode,
-          click: () => (userSettings.IMDIMode = !userSettings.IMDIMode),
+          click: () => (userSettings.IMDIMode = !userSettings.IMDIMode)
         },
         {
           label: t`PARADISEC Mode`,
@@ -273,9 +273,9 @@ export default class LametaMenu {
           type: "checkbox",
           checked: userSettings.ParadisecMode,
           click: () =>
-            (userSettings.ParadisecMode = !userSettings.ParadisecMode),
-        },
-      ],
+            (userSettings.ParadisecMode = !userSettings.ParadisecMode)
+        }
+      ]
     };
     // sessionMenu,
     // peopleMenu,
@@ -287,20 +287,20 @@ export default class LametaMenu {
           accelerator: "CmdOrCtrl+R",
           click() {
             mainWindow.webContents.reload();
-          },
+          }
         },
         {
           label: "Abandon Copying",
           click() {
             CopyManager.abandonCopying(true);
-          },
+          }
         },
         {
           label: "Toggle &Developer Tools",
           accelerator: "Alt+CmdOrCtrl+T",
           click() {
             mainWindow.webContents.toggleDevTools();
-          },
+          }
         },
         {
           label: "Send errors to sentry",
@@ -309,7 +309,7 @@ export default class LametaMenu {
           click() {
             userSettings.SendErrors = !userSettings.SendErrors;
             initializeSentry(userSettings.SendErrors);
-          },
+          }
         },
         {
           label: "Test throw (for testing Sentry)",
@@ -318,7 +318,7 @@ export default class LametaMenu {
             throw new Error(
               "Test throw from menu " + Date.now().toLocaleString()
             );
-          },
+          }
         },
         {
           label: "Test alert dialog",
@@ -326,11 +326,11 @@ export default class LametaMenu {
             ShowMessageDialog({
               title: `The title`,
               text: "the text",
-              buttonText: "ok",
+              buttonText: "ok"
             });
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
     const testMenu = {
       label: "Test",
@@ -339,9 +339,9 @@ export default class LametaMenu {
           label: "Menu Test",
           click() {
             mainWindow.setTitle("Menu Test Invoked");
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
     const helpMenu = {
       label: t`Help`,
@@ -350,30 +350,30 @@ export default class LametaMenu {
           label: t`Registration...`,
           click: () => {
             RegistrationDialog.show();
-          },
+          }
         },
         {
           label: t`Report a problem`,
           click: () => {
             shell.openPath("https://saymorex.page.link/problem");
-          },
+          }
         },
         {
-          type: "separator",
+          type: "separator"
         },
         {
           label: t`Credits`,
-          click: () => ShowCreditsDialog(),
+          click: () => ShowCreditsDialog()
         },
         {
           label: t`Show Release Notes`,
-          click: () => ShowReleasesDialog(),
+          click: () => ShowReleasesDialog()
         },
         {
           label: "lameta " + require("../package.json").version,
-          enabled: false,
-        },
-      ],
+          enabled: false
+        }
+      ]
     };
 
     const template = Array<any>();
@@ -421,8 +421,8 @@ export default class LametaMenu {
             label: "Inspect element",
             click() {
               remote.getCurrentWebContents().inspectElement(x, y);
-            },
-          },
+            }
+          }
         ]).popup({});
       });
     }

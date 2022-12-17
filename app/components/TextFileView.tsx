@@ -12,7 +12,7 @@ export default class TextFileView extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      text: "",
+      text: ""
     };
   }
 

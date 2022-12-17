@@ -30,7 +30,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
   const customStyles = {
     input: (provided, state) => ({
       ...provided,
-      height: "1.3em",
+      height: "1.3em"
     }),
     control: (styles, state) => ({
       ...styles,
@@ -41,20 +41,20 @@ export const SingleLanguageChooser: React.FunctionComponent<
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange },
+      "&:hover": { borderColor: saymore_orange }
     }),
 
     clearIndicator: (styles) => ({
       ...styles,
-      color: "#e4e4e4", // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
-    }),
+      color: "#e4e4e4" // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
+    })
   };
 
   const code = props.languageTag ? props.languageTag.trim() : undefined;
   const currentValue = code
     ? {
         value: code,
-        label: getName(props.languageFinder, code),
+        label: getName(props.languageFinder, code)
       }
     : undefined;
 
@@ -68,7 +68,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
         (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
           value: m.languageInfo.iso639_3,
           label: m.nameMatchingWhatTheyTyped,
-          language: m.languageInfo,
+          language: m.languageInfo
         })
       )
     );
@@ -82,7 +82,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
           SingleValue: LanguagePill,
           Option: LanguageOption,
           // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
-          DropdownIndicator: null,
+          DropdownIndicator: null
           // ClearIndicator:
         }}
         className="select"

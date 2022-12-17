@@ -33,7 +33,7 @@ import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/
 import {
   FileStatusBlock,
   getLinkStatusIconPath,
-  getStatusOfFile,
+  getStatusOfFile
 } from "../model/file/FileStatus";
 import { useEffect } from "react";
 

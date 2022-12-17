@@ -6,7 +6,7 @@ import {
   makeCsvForProject,
   makeCsvForSessions,
   csvEncode,
-  makeGenericCsvZipFile,
+  makeGenericCsvZipFile
 } from "./CsvExporter";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 

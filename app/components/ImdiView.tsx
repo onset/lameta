@@ -9,7 +9,7 @@ import { File } from "../model/file/File";
 import "./ImdiView.scss";
 
 import SyntaxHighlighter, {
-  registerLanguage,
+  registerLanguage
 } from "react-syntax-highlighter/light";
 import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
@@ -50,9 +50,7 @@ export default class ImdiView extends React.Component<IProps, IState> {
       xml =
         ImdiGenerator.generateCorpus(
           this.props.target as Project,
-          new Array<
-            string
-          >() /* we don't bother to compute the children IMDI's for this view */
+          new Array<string>() /* we don't bother to compute the children IMDI's for this view */
         ) + // I want to see how some of this project info is going to show up inside of sessions
         "\r\n\r\n-- This project-related info will show up in the IMDI of sessions -- \r\n" +
         ImdiGenerator.generateProject(this.props.target as Project);

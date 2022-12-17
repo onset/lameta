@@ -4,7 +4,7 @@ import * as temp from "temp";
 import {
   makeParadisecSessionCsv,
   makeParadisecProjectFieldsCsv,
-  parseNameIntoFirstAndLast,
+  parseNameIntoFirstAndLast
 } from "./ParadisecCsvExporter";
 // tslint:disable-next-line:no-submodule-imports
 //const parseSync = require("csv-parse/lib/sync");
@@ -33,15 +33,15 @@ describe("Paradisec project csv export", () => {
   it("should parse depositor name", () => {
     expect(parseNameIntoFirstAndLast("jill smith")).toStrictEqual({
       first: "jill",
-      last: "smith",
+      last: "smith"
     });
     expect(parseNameIntoFirstAndLast("smith, jill")).toStrictEqual({
       first: "jill",
-      last: "smith",
+      last: "smith"
     });
     expect(parseNameIntoFirstAndLast("jill jane smith")).toStrictEqual({
       first: "jill jane",
-      last: "smith",
+      last: "smith"
     });
   });
 });

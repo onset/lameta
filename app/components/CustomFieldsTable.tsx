@@ -128,7 +128,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       type: "Text",
       tabIndex: 0,
       isCustom: true,
-      showOnAutoForm: false, // we do show it, but in the custom table
+      showOnAutoForm: false // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -141,7 +141,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       type: "Text",
       tabIndex: 0,
       isCustom: true,
-      showOnAutoForm: false, // we do show it, but in the custom table
+      showOnAutoForm: false // we do show it, but in the custom table
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -168,7 +168,7 @@ class CustomFieldsTable extends React.Component<IProps> {
               }}
             />
           );
-        },
+        }
       },
       {
         id: "value",
@@ -189,14 +189,14 @@ class CustomFieldsTable extends React.Component<IProps> {
               autoFocus={this.focusField === field}
             />
           );
-        },
-      },
+        }
+      }
     ];
     const def: FieldDefinition = new FieldDefinition({
       key: "Custom Fields",
       markAsNotImdi: true,
       specialInfo:
-        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
     });
 
     return (

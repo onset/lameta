@@ -169,7 +169,7 @@ class FolderList extends React.Component<IProps> {
             return field.text;
           }
           return "ERROR";
-        },
+        }
       };
       return c;
     });
@@ -206,7 +206,7 @@ class FolderList extends React.Component<IProps> {
               className:
                 rowInfo && rowInfo.index === selectedFolderIndex
                   ? "selected"
-                  : "",
+                  : ""
             };
           }}
         />

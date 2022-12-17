@@ -27,7 +27,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange },
+      "&:hover": { borderColor: saymore_orange }
     }),
     // valueContainer: (styles) => ({ ...styles }),
     // container: (styles) => ({
@@ -43,15 +43,15 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         color: "transparent", // hide the "x" unless the mouse is in us
         div: {
           paddingLeft: 0,
-          fontSize: "1rem", //should match $default-font-size: 13px;
+          fontSize: "1rem" //should match $default-font-size: 13px;
         },
 
         ":hover": {
-          color: "lightgray", // show the "x"
+          color: "lightgray" // show the "x"
           // span: {
           //   color: "lightgray", //go ahead and show it
           // },
-        },
+        }
       };
     },
     multiValueRemove: (styles, { data }) => ({
@@ -61,9 +61,9 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
       paddingLeft: "4px !important",
       ":hover": {
         backgroundColor: saymore_orange,
-        color: "white",
-      },
-    }),
+        color: "white"
+      }
+    })
   };
 
   const currentValueArray = props.field.text
@@ -72,7 +72,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
     .map((c) => c.trim())
     .map((code) => ({
       value: code,
-      label: getName(props.languageFinder, code),
+      label: getName(props.languageFinder, code)
     }));
 
   const loadMatchingOptions = (inputValue, callback) => {
@@ -85,7 +85,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
           value: m.languageInfo.iso639_3,
           label: m.nameMatchingWhatTheyTyped,
-          language: m.languageInfo,
+          language: m.languageInfo
         })
       )
     );
@@ -101,7 +101,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
           MultiValueLabel: LanguagePill,
           Option: LanguageOption,
           // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
-          DropdownIndicator: null,
+          DropdownIndicator: null
         }}
         className="select"
         placeholder=""

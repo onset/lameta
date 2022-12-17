@@ -13,52 +13,54 @@ export interface IProps {
   project: Project;
 }
 
-export const PersonContributions = observer(class PersonContributions extends React.Component<IProps> {
-  constructor(props: IProps) {
-    super(props);
-  }
+export const PersonContributions = observer(
+  class PersonContributions extends React.Component<IProps> {
+    constructor(props: IProps) {
+      super(props);
+    }
 
-  public render() {
-    const columns = [
-      {
-        id: "name",
-        Header: t`Session`,
-        width: 300,
-        accessor: (row: Contribution) => row.sessionName,
-      },
-      {
-        id: "role",
-        Header: t`Role`,
-        width: 100,
-        accessor: (row: Contribution) =>
-          row && row.role ? translateRole(row.role) : "",
-      },
-      {
-        id: "comments",
-        Header: t`Comments`,
-        //width: 200,
-        accessor: (row: Contribution) => row.comments,
-      },
-    ];
-    const rows = this.props.project.getContributionsMatchingPerson(
-      this.props.person.getIdToUseForReferences()
-    );
+    public render() {
+      const columns = [
+        {
+          id: "name",
+          Header: t`Session`,
+          width: 300,
+          accessor: (row: Contribution) => row.sessionName
+        },
+        {
+          id: "role",
+          Header: t`Role`,
+          width: 100,
+          accessor: (row: Contribution) =>
+            row && row.role ? translateRole(row.role) : ""
+        },
+        {
+          id: "comments",
+          Header: t`Comments`,
+          //width: 200,
+          accessor: (row: Contribution) => row.comments
+        }
+      ];
+      const rows = this.props.project.getContributionsMatchingPerson(
+        this.props.person.getIdToUseForReferences()
+      );
 
-    return (
-      <Tooltip
-        styles={{ display: "inline" }}
-        background={"darkblue"}
-        color={"white"}
-        content={"Changes can only be made from the Sessions tab."}
-      >
-        <ReactTable
-          className={"personContributions"}
-          showPagination={false}
-          data={rows}
-          columns={columns}
-          minRows={0}
-        />
-      </Tooltip>
-    );
+      return (
+        <Tooltip
+          styles={{ display: "inline" }}
+          background={"darkblue"}
+          color={"white"}
+          content={"Changes can only be made from the Sessions tab."}
+        >
+          <ReactTable
+            className={"personContributions"}
+            showPagination={false}
+            data={rows}
+            columns={columns}
+            minRows={0}
+          />
+        </Tooltip>
+      );
+    }
   }
-});
+);

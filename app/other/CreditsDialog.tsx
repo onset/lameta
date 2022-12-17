@@ -27,6 +27,6 @@ export function ShowCreditsDialog() {
           Project
         </p>
       </React.Fragment>
-    ),
+    )
   });
 }

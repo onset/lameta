@@ -40,14 +40,14 @@ export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
       id: "key",
       Header: "Stat",
       width: 120,
-      accessor: (key) => key,
+      accessor: (key) => key
     },
     {
       id: "value",
       Header: "Value",
       //width: 200,
-      accessor: (key) => (stats[key] ? stats[key].toString() : "---"),
-    },
+      accessor: (key) => (stats[key] ? stats[key].toString() : "---")
+    }
   ];
 
   return (
@@ -115,7 +115,7 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
               stats["Length"] = humanizeDuration(
                 1000 * result.format.duration,
                 {
-                  round: true,
+                  round: true
                 }
               );
               stats["Format"] = result.format.format_long_name;

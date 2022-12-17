@@ -44,7 +44,7 @@ class AdditionalFieldsTable extends React.Component<IProps> {
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
           return field.labelInUILanguage;
-        },
+        }
       },
       {
         id: "value",
@@ -72,8 +72,8 @@ class AdditionalFieldsTable extends React.Component<IProps> {
               />
             );
           }
-        },
-      },
+        }
+      }
     ];
 
     return (

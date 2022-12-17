@@ -10,7 +10,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import {
   makeParadisecProjectFields,
-  makeParadisecSessionFields,
+  makeParadisecSessionFields
 } from "../export/ParadisecCsvExporter";
 
 //const HtmlTree = require("react-htmltree");

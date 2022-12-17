@@ -11,28 +11,27 @@ import userSettingsSingleton from "./UserSettings";
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
-      dsn:
-        "https://46f4099f6a80454c9e9b4c7f4ed00020@o359058.ingest.sentry.io/3369701",
+      dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@o359058.ingest.sentry.io/3369701",
       release: `${require("../package.json").version}`,
       integrations: [
         new Sentry.Integrations.Breadcrumbs({
           // these aren't bad but my errors were getting refused for being too big
-          console: false,
+          console: false
         }),
         new RewriteFrames({
           iteratee: (frame: StackFrame) => {
             const start = frame.filename!.indexOf("dist");
             const newFilename = "~/" + frame.filename?.substr(start, 99);
             return { ...frame, filename: newFilename };
-          },
-        }),
+          }
+        })
       ],
       beforeSend(event) {
         try {
           console.log("Sending " + JSON.stringify(event));
         } catch (err) {}
         return event;
-      },
+      }
       /* This works, but I have it turned off for now because we don't really have a support
             plan in place.
             

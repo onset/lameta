@@ -6,7 +6,7 @@ import {
   NotifyFileAccessProblem,
   NotifyNoBigDeal,
   NotifyRenameProblem,
-  NotifyWarning,
+  NotifyWarning
 } from "../components/Notify";
 import { t } from "@lingui/macro";
 
@@ -129,7 +129,7 @@ export class PatientFS {
     //"sleep" would probably work on mac/linux. But the equivalent "timeout" on windows fails when there is no keyboad input.
     // So we're doing a ping. Note tha a pint of "-n 1" is 0ms on windows, oddly, while "-n 2" takes about a second
     child_process.spawnSync("ping", ["-n 2 127.0.0.1"], {
-      shell: true,
+      shell: true
     });
   }
 }

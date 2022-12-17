@@ -14,15 +14,15 @@ const log = Winston.createLogger({
       filename: name,
       format: Winston.format.combine(
         Winston.format.timestamp({
-          format: "hh:mm:ss",
+          format: "hh:mm:ss"
         }),
         Winston.format.printf(
           (info) => `${info.timestamp} ${info.level}: ${info.message}`
         )
       ),
-      handleExceptions: false, // "true" here kills react ErrorBoundary
-    }),
-  ],
+      handleExceptions: false // "true" here kills react ErrorBoundary
+    })
+  ]
 });
 
 log.info("starting log");

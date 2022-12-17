@@ -38,19 +38,19 @@ export async function asyncTrashWithContext<T>(
         return Promise.resolve({
           succeeded: !fs.existsSync(fixedPath),
           path: path,
-          context: callerContext,
+          context: callerContext
         });
       else
         return Promise.resolve({
           succeeded: false,
           path: path,
-          context: callerContext,
+          context: callerContext
         });
     } catch (e) {
       return Promise.resolve({
         succeeded: false,
         path: path,
-        context: callerContext,
+        context: callerContext
       });
     }
   } else {
@@ -59,7 +59,7 @@ export async function asyncTrashWithContext<T>(
     return Promise.resolve({
       succeeded: !fs.existsSync(fixedPath),
       path: path,
-      context: callerContext,
+      context: callerContext
     }); // we don't get a result from removeSync
   }
 

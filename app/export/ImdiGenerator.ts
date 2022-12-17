@@ -12,7 +12,7 @@ import * as mime from "mime";
 import {
   getImdiResourceTypeForPath,
   GetFileFormatInfoForPath,
-  getMimeType,
+  getMimeType
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
@@ -230,9 +230,10 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -245,9 +246,10 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -339,7 +341,7 @@ export default class ImdiGenerator {
         "Description",
         `${[
           lang.father ? "Also spoken by father." : undefined,
-          lang.mother ? "Also spoken by mother." : undefined,
+          lang.mother ? "Also spoken by mother." : undefined
         ]
           .join(" ")
           .trim()}`
@@ -398,7 +400,7 @@ export default class ImdiGenerator {
       "size",
       "contributions",
       "access",
-      "accessDescription", // output by addAccess()
+      "accessDescription" // output by addAccess()
     ];
     this.group("Keys", () => {
       target.properties.keys().forEach((key) => {
@@ -680,9 +682,8 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
-      "access"
-    );
+    const accessCode =
+      this.folderInFocus.properties.getTextStringOrEmpty("access");
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
@@ -697,9 +698,10 @@ export default class ImdiGenerator {
       this.element("Owner", "");
       this.element("Publisher", "");
       this.element("Contact", "");
-      const accessDef = this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
-        (c) => c.label === accessCode
-      );
+      const accessDef =
+        this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
+          (c) => c.label === accessCode
+        );
 
       // NB CAREFUL! It's easy to confuse accessDef.description (e.g. what does "U" mean?) with
       // accessDescription, which is "why am I limiting the access for this session?". The later
@@ -1079,5 +1081,5 @@ export default class ImdiGenerator {
 enum VocabularyType {
   ClosedVocabulary = "ClosedVocabulary",
   OpenVocabulary = "OpenVocabulary",
-  OpenVocabularyList = "OpenVocabularyList",
+  OpenVocabularyList = "OpenVocabularyList"
 }

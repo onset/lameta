@@ -208,10 +208,8 @@ export default class ImdiBundler {
   ): void {
     if (folder.files.length > 0) {
       const generator = new ImdiGenerator(folder, project);
-      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
-        name,
-        folder
-      );
+      const projectDocumentsImdi =
+        generator.makePseudoSessionImdiForOtherFolder(name, folder);
 
       ImdiBundler.WritePseudoSession(
         rootDirectory,

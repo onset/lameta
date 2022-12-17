@@ -72,7 +72,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
 async function expectFileNameInGrid(name: string) {
   await expect(
     page.getByRole("gridcell", {
-      name: name,
+      name: name
     }),
     `Expected the file list to have a file named "${name}"`
   ).toBeVisible({ timeout: 1000 });

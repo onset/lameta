@@ -38,7 +38,7 @@ export async function initializeAnalytics() {
       appVersion: require("package.json").version,
       language: currentUILanguage || "",
       howUsing: userSettingsSingleton.HowUsing,
-      email: userSettingsSingleton.Email,
+      email: userSettingsSingleton.Email
     });
   } catch (e) {
     console.error(e);
@@ -63,7 +63,7 @@ export function analyticsEvent(
     analytics
       .track(action, {
         category,
-        details,
+        details
       })
       //.then(() => console.log(`Sent event ${category}/${action}`))
       .catch((error) => console.error(error));

@@ -90,7 +90,7 @@ export function exportGenericCsv(
 ) {
   archive.append(makeCsvForProject(project), { name: "project.csv" });
   archive.append(makeCsvForSessions(project, folderFilter), {
-    name: "sessions.csv",
+    name: "sessions.csv"
   });
   archive.append(makeCsvForPeople(project), { name: "people.csv" });
 }
@@ -121,7 +121,7 @@ function getGenericCsv(folders: Folder[]): string {
     "type",
     "hasConsent",
     "displayName",
-    "filename",
+    "filename"
   ];
   const foundFields = getKeys(folders)
     .filter((k) => {
@@ -191,7 +191,7 @@ function addContributionsIfSession(folder: Folder): string[] {
     session
       .getAllContributionsToAllFiles()
       .map((c) => [c.role, c.personReference].join(":"))
-      .join("|"),
+      .join("|")
   ];
 }
 

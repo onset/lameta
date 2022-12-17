@@ -128,7 +128,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
             {i18n._(
               /*i18n*/ {
-                id: "You are running lameta version:",
+                id: "You are running lameta version:"
               }
             )}
             &nbsp;{version}

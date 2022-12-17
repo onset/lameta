@@ -1,7 +1,7 @@
 import {
   UserSettings,
   getMediaFolderOrEmptyForProjectAndMachine,
-  setMediaFolderOrEmptyForProjectAndMachine,
+  setMediaFolderOrEmptyForProjectAndMachine
 } from "./UserSettings";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 

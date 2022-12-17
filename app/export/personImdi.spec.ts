@@ -5,7 +5,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../other/xmlUnitTestUtils";
 import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
@@ -13,7 +13,7 @@ import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import exp from "constants";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 mobx.configure({
-  enforceActions: "never",
+  enforceActions: "never"
 });
 let project: Project;
 let person: Person;
@@ -22,7 +22,7 @@ const pretendSessionDate = new Date("2010-06-06");
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: "",
+  englishName: ""
 }));
 
 beforeAll(() => {

@@ -28,13 +28,13 @@ import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
   MessageDialog,
-  ShowMessageDialog,
+  ShowMessageDialog
 } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import {
   NotifyError,
   NotifyRenameProblem,
-  NotifyWarning,
+  NotifyWarning
 } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
@@ -66,13 +66,13 @@ class HomePage extends React.Component<IProps, IState> {
     super(props);
 
     makeObservable(this, {
-      projectHolder: observable,
+      projectHolder: observable
     });
 
     this.projectHolder = new ProjectHolder();
     this.state = {
       showModal: false,
-      useSampleProject: false, //enhance: this is a really ugly way to control this behavior
+      useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
@@ -140,10 +140,9 @@ class HomePage extends React.Component<IProps, IState> {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
         title: `Warning`,
-        text:
-          "This is a beta test version, so make sure you have a backup of your work.",
+        text: "This is a beta test version, so make sure you have a backup of your work.",
         width: "300px",
-        buttonText: "I understand",
+        buttonText: "I understand"
       });
     }
 
@@ -187,7 +186,8 @@ class HomePage extends React.Component<IProps, IState> {
           this.previousFolderNames !==
             this.projectHolder.project.getFolderNamesForDebugging()
         ) {
-          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
+          this.previousFolderNames =
+            this.projectHolder.project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {
@@ -334,9 +334,9 @@ class HomePage extends React.Component<IProps, IState> {
       filters: [
         {
           name: t`lameta and SayMore Project Files`,
-          extensions: ["sprj"],
-        },
-      ],
+          extensions: ["sprj"]
+        }
+      ]
     };
     ipcRenderer.invoke("showOpenDialog", options).then((results) => {
       sentryBreadCrumb("processing callback of open project dialog");

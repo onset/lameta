@@ -25,21 +25,21 @@ class RoleChooser extends React.Component<IProps> {
       return new Object({
         value: c.id, // this is snake case, as that's what we get from olac-roles.xml
         label,
-        title: c.description,
+        title: c.description
       });
     });
     const currentValueWrappedForSelect = {
       value: this.props.contribution.role,
-      label: titleCase(translateRole(this.props.contribution.role)),
+      label: titleCase(translateRole(this.props.contribution.role))
     };
     return (
       <ReactSelectClass
         name={"select role"}
         value={currentValueWrappedForSelect}
         onChange={(s: any) => {
-          this.props.contribution.role = (s && s.value
-            ? s.value
-            : "") as string;
+          this.props.contribution.role = (
+            s && s.value ? s.value : ""
+          ) as string;
           this.setState({});
         }}
         options={options}

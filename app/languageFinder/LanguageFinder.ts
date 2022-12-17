@@ -21,7 +21,7 @@ export class Language {
     const foundAtLeastOne = this.allNames().some((n) => {
       const match =
         name.localeCompare(n, undefined, {
-          sensitivity: "base",
+          sensitivity: "base"
         }) === 0;
       return match;
     });
@@ -64,7 +64,7 @@ export class LanguageFinder {
       "localName",
       //"altNames", TrieSearch can't handle array values, so we'll add them by hand below
       "iso639_1",
-      "iso639_3",
+      "iso639_3"
     ]);
 
     // NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
@@ -166,13 +166,13 @@ export class LanguageFinder {
           // if they have given us the name for this custom language in the Project settings, use it
           projectContentLanguage?.iso639_3 === prefix
             ? projectContentLanguage?.englishName
-            : `${prefix} [Unlisted]`,
+            : `${prefix} [Unlisted]`
       });
       sortedListOfMatches.push(l);
     }
     return sortedListOfMatches.map((l) => ({
       languageInfo: l,
-      nameMatchingWhatTheyTyped: l.englishName,
+      nameMatchingWhatTheyTyped: l.englishName
     }));
   }
 
@@ -216,7 +216,7 @@ export class LanguageFinder {
       { match: "es", code3: "spa" },
       { match: "ind", code3: "ind" },
       { match: "fre", code3: "fra" },
-      { match: "deu", code3: "de" },
+      { match: "deu", code3: "de" }
     ];
     const sorted = langs.sort((a: Language, b: Language) => {
       // if the user types "en", we want to suggest "english" above "en" of vietnam
@@ -293,7 +293,7 @@ export class LanguageFinder {
       ["fr", "fra"],
       ["de", "deu"],
       ["id", "ind"],
-      ["pt", "por"],
+      ["pt", "por"]
     ];
     const match = twoToThree.find((t) => t[0] === codeOrLanguageName);
     if (match) return match[1];

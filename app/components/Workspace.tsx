@@ -76,7 +76,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addSession();
             }
-          },
+          }
         },
         {
           label: t`Duplicate Session`,
@@ -86,7 +86,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentSession();
             }
-          },
+          }
         },
         { type: "separator" },
         {
@@ -95,7 +95,7 @@ class Home extends React.Component<IProps> {
           enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog("session");
-          },
+          }
         },
         { type: "separator" },
         {
@@ -106,7 +106,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
             }
-          },
+          }
         },
         {
           label: t`Delete Session`,
@@ -123,14 +123,14 @@ class Home extends React.Component<IProps> {
                 ]
               );
             }
-          },
+          }
         },
         this.getDeleteMarkedMenuItem(
           "session",
           t`Delete All Marked Sessions...`,
           enableMenu
-        ),
-      ],
+        )
+      ]
     };
     enableMenu = currentTabIndex === 2;
     const peopleMenu = {
@@ -143,7 +143,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addPerson();
             }
-          },
+          }
         },
         {
           label: t`Duplicate Person`,
@@ -152,7 +152,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentPerson();
             }
-          },
+          }
         },
         { type: "separator" },
         {
@@ -161,7 +161,7 @@ class Home extends React.Component<IProps> {
           enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog("person");
-          },
+          }
         },
         { type: "separator" },
         {
@@ -171,14 +171,14 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentPerson();
             }
-          },
+          }
         },
         this.getDeleteMarkedMenuItem(
           "person",
           t`Delete All Marked People...`,
           enableMenu
-        ),
-      ],
+        )
+      ]
     };
     this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
   }
@@ -195,18 +195,18 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (this.props.project.getFolderArrayFromType(
-              folderType
-            ) as any).countOfMarkedFolders() === 0
+            (
+              this.props.project.getFolderArrayFromType(folderType) as any
+            ).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
               text: `To select the items that you want to delete, first tick one or more boxes.`,
-              buttonText: "Close",
+              buttonText: "Close"
             });
           } else this.props.project.deleteMarkedFolders(folderType);
         }
-      },
+      }
     };
   }
 

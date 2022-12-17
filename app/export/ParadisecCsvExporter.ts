@@ -23,11 +23,11 @@ export function makeParadisecProjectFields(project: Project): string[][] {
   const rows: string[][] = [];
   rows.push([
     "Collection ID",
-    project.properties.getTextStringOrEmpty("grantId"),
+    project.properties.getTextStringOrEmpty("grantId")
   ]);
   rows.push([
     "Collection Title",
-    project.properties.getTextStringOrEmpty("fundingProjectTitle"),
+    project.properties.getTextStringOrEmpty("fundingProjectTitle")
   ]);
 
   const projectDescriptionBlacklist = [
@@ -39,7 +39,7 @@ export function makeParadisecProjectFields(project: Project): string[][] {
     "id", // output in its own column
     "grantId", // output in its own column
     "depositor", // output in its own column
-    "fundingProjectTitle", // output in its own column
+    "fundingProjectTitle" // output in its own column
   ];
 
   const descriptionWithHomelessFields = getDescriptionWithAllHomelessFields(
@@ -184,7 +184,7 @@ const sessionBlacklist = [
   "title", // output in its own column
   "languages", // output in its own column
   "date", // output in its own column
-  "genre", // output as "Discourse Type"
+  "genre" // output as "Discourse Type"
 ];
 
 function getDescriptionWithAllHomelessFields(
@@ -194,7 +194,7 @@ function getDescriptionWithAllHomelessFields(
   relabel: (label: string) => string
 ): string {
   const descriptionComponents = [
-    folder.properties.getTextStringOrEmpty(descriptionField),
+    folder.properties.getTextStringOrEmpty(descriptionField)
   ];
   folder.properties.keys().forEach((key) => {
     if (blacklist.indexOf(key) < 0) {
@@ -225,9 +225,10 @@ function getContributions(project: Project, session: Session): string[] {
   });
   return cols;
 }
-export function parseNameIntoFirstAndLast(
-  depositor: string
-): { first: string; last: string } {
+export function parseNameIntoFirstAndLast(depositor: string): {
+  first: string;
+  last: string;
+} {
   let first = "";
   let last = "";
   if (depositor.trim().length > 0) {

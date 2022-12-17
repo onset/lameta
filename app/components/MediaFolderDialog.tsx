@@ -13,7 +13,7 @@ import { ipcRenderer, OpenDialogOptions } from "electron";
 import * as remote from "@electron/remote";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
-  setMediaFolderOrEmptyForThisProjectAndMachine,
+  setMediaFolderOrEmptyForThisProjectAndMachine
 } from "../model/Project/MediaFolderAccess";
 import {
   DialogBottomButtons,
@@ -21,7 +21,7 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog,
+  LametaDialog
 } from "./LametaDialog";
 
 let staticShowMediaFolderDialog: () => void = () => {};
@@ -105,7 +105,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
               onClick={() => {
                 const options: OpenDialogOptions = {
                   properties: ["openDirectory"],
-                  defaultPath: require("os").homedir(),
+                  defaultPath: require("os").homedir()
                 };
 
                 ipcRenderer.invoke("showOpenDialog", options).then((result) => {

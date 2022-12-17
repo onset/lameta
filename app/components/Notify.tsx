@@ -58,7 +58,7 @@ export function NotifyError(message: string, details?: string) {
               //swallow
             }
           },
-          timeout: autoCloseTicks,
+          timeout: autoCloseTicks
         }),
       0
     );
@@ -172,7 +172,7 @@ export function NotifyFileAccessProblem(message: string, err: any) {
             scheme={Cinnamon.Crunch.SCHEME_RED}
           />
         ),
-        timeout: 60 * 1000,
+        timeout: 60 * 1000
       }),
     0
   );
@@ -198,7 +198,7 @@ export function NotifyNoBigDeal(message: string, onClick?: () => void) {
             content={message}
             scheme={Cinnamon.Crunch.SCHEME_GREY}
           />
-        ),
+        )
       }),
     0
   );
@@ -216,7 +216,7 @@ export function NotifyWarning(message: string, onClick?: () => void) {
             content={message}
             scheme={Cinnamon.Crunch.SCHEME_ORANGE}
           />
-        ),
+        )
       }),
     0
   );
@@ -232,7 +232,7 @@ export function NotifySuccess(message: string, onClick?: () => void) {
             content={message}
             scheme={Cinnamon.Crunch.SCHEME_GREEN}
           />
-        ),
+        )
       }),
     0
   );
@@ -259,7 +259,7 @@ export function NotifyUpdateAvailable(
           }
         />
       ),
-      timeout: 10 * 1000,
+      timeout: 10 * 1000
     });
   }, 0);
 }
@@ -281,7 +281,7 @@ export function NotifyMultipleProjectFiles(
               buttons: [t`Cancel`, t`Show me the folder with the problem`],
               title: t`Something is wrong here...`,
               message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
-              detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
+              detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
             })
             .then((response) => {
               if (response > 0) {

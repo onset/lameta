@@ -76,7 +76,7 @@ const indexEntries = firstEntryOfEachLanguage.map((entry) => {
     iso639_1: entry.iso639_1, // major languages will also have a two letter code
     iso639_3: entry.iso639_3,
     englishName: entry.name,
-    altNames: _.uniq(names),
+    altNames: _.uniq(names)
   };
   return item;
 });
