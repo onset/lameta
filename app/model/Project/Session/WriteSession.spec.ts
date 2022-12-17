@@ -5,14 +5,14 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../../../other/xmlUnitTestUtils";
 import { Field, FieldType } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { FieldDefinition } from "../../field/FieldDefinition";
 import {
   getMimeType,
-  getImdiResourceTypeForExtension,
+  getImdiResourceTypeForExtension
 } from "../../file/FileTypeInfo";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
@@ -59,7 +59,7 @@ describe("Session Write", () => {
       key: "favoriteColor",
       englishLabel: "favoriteColor",
       persist: true,
-      isCustom: true,
+      isCustom: true
     });
     f.properties.setValue("favoriteColor", field);
     setResultXml(f.getXml());
@@ -108,6 +108,6 @@ describe("Session Write", () => {
     expect(getImdiResourceTypeForExtension("mp4")).toBe("Video");
     expect(getImdiResourceTypeForExtension("tif")).toBe("Image");
     expect(getImdiResourceTypeForExtension("tiff")).toBe("Image");
-    expect(getImdiResourceTypeForExtension("flextex")).toBe("FLEx");
+    expect(getImdiResourceTypeForExtension("flextext")).toBe("FLEx");
   });
 });

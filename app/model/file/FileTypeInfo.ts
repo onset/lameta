@@ -136,7 +136,7 @@ export function getImdiResourceTypeForExtension(ext: string): string {
   const y = GetFileFormatInfoForExtension(ext);
   let resourceType = y?.imdiType ?? "Unspecified";
   if (resourceType === "Unspecified") {
-    const m = getMimeType(ext);
+    const m = getMimeType(ext); //?
     if (m && ["application"].indexOf(m.split("/")[0]) > -1) {
       resourceType = "Document";
     }
@@ -165,11 +165,15 @@ customMimeTypes.setValue("trs", "text/x-trs");
 
 //customMimeTypes.setValue("", "");
 
-export function getMimeType(extension: string) {
-  //strip off leading dot
-  extension = extension.replace(/^\./, "");
-  if (customMimeTypes.containsKey(extension.toLowerCase())) {
-    return customMimeTypes.getValue(extension.toLowerCase());
-  }
-  return mime.getType(extension);
+export function getMimeType(extension: string): string {
+  const noDot = extension.replace(/^\./, "").toLowerCase(); //?
+  //console.log("getMimeType", extension, noDot);
+  //console.log(JSON.stringify(customMimeTypes, null, 2));
+  const r =
+    customMimeTypes.getValue(noDot) ||
+    customMimeTypes.getValue(extension) ||
+    mime.getType(extension) ||
+    extension;
+  //console.log(`getMimeType(${extension}) => ${r}`);
+  return r;
 }

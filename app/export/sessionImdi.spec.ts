@@ -5,7 +5,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../other/xmlUnitTestUtils";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
@@ -103,6 +103,14 @@ it("should contain Actors", () => {
 it("should contain MediaFiles", () => {
   expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
   expect("METATRANSCRIPT/Session/Resources/MediaFile/Type").toMatch("Audio"); // ELAR needs upper case
+});
+it("should give a good record for an ELAN file", () => {
+  expect("METATRANSCRIPT/Session/Resources/WrittenResource[2]/Type").toMatch(
+    "ELAN"
+  );
+  expect("METATRANSCRIPT/Session/Resources/WrittenResource[2]/Format").toMatch(
+    "text/x-eaf+xml"
+  );
 });
 
 it("should make separate keys for each topic separated by a comma", () => {
