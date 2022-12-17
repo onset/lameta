@@ -43,7 +43,7 @@ export const knownFileFormats: IFileFormat[] = [
     type: "ELAN",
     isMediaType: false,
     imdiType: "ELAN",
-    extensions: "eaf",
+    extensions: "eaf, pfsx"
   },
   {
     type: "Transcriber",
@@ -81,7 +81,7 @@ export const knownFileFormats: IFileFormat[] = [
     type: "FLEx",
     isMediaType: false,
     imdiType: "FLEx",
-    extensions: "flextex,flextext, fwbackup",
+    extensions: "fwdata, flextext, fwbackup,lift, fwdict, fwnotebook, fwthes"
   },
   { type: "unused", isMediaType: false, imdiType: "XML", extensions: "xml" },
   {
@@ -141,12 +141,13 @@ export function getImdiResourceTypeForExtension(ext: string): string {
 export const customMimeTypes = new Dictionary<string, string>();
 // many of these come from https://trello.com/c/6XLzuBii/89-vera-mime-types
 // Also see https://archive.mpi.nl/accepted-file-formats
-customMimeTypes.setValue("pfsx", "text/x-pfsx+xml");
+customMimeTypes.setValue("pfsx", "text/x-pfsx+xml"); // ELAN Preferences File
 customMimeTypes.setValue("typ", "text/x-toolbox-type");
 customMimeTypes.setValue("lng", "text/x-toolbox-language");
 customMimeTypes.setValue("tbt", "text/x-toolbox-text");
 customMimeTypes.setValue("set", "Text/x-toolbox-sortorder");
 customMimeTypes.setValue("srt", "text/x-subrip");
+customMimeTypes.setValue("fwdata", "application/zip");
 customMimeTypes.setValue("flextext", "application/xml");
 customMimeTypes.setValue("fwbackup", "application/zip");
 customMimeTypes.setValue("praat", "text/praat-pitch");
