@@ -14,7 +14,7 @@ import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import knownFieldDefinitions, {
-  isKnownFieldKey,
+  isKnownFieldKey
 } from "../field/KnownFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
@@ -23,7 +23,7 @@ import {
   NotifyFileAccessProblem,
   NotifyRenameProblem,
   NotifySuccess,
-  NotifyWarning,
+  NotifyWarning
 } from "../../components/Notify";
 import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
@@ -53,7 +53,7 @@ export class Contribution {
     makeObservable(this, {
       personReference: observable,
       role: observable,
-      comments: observable,
+      comments: observable
     });
 
     this.personReference = personReference;
@@ -178,7 +178,7 @@ export /*babel doesn't like this: abstract*/ class File {
       persist,
       type: "Date",
       isCustom: false,
-      showOnAutoForm: false,
+      showOnAutoForm: false
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -193,7 +193,7 @@ export /*babel doesn't like this: abstract*/ class File {
       type: "Text",
       isCustom: false,
       showOnAutoForm: false,
-      multipleLines: true,
+      multipleLines: true
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -236,7 +236,7 @@ export /*babel doesn't like this: abstract*/ class File {
         persist,
         type: "Text",
         isCustom,
-        showOnAutoForm,
+        showOnAutoForm
       };
 
       const f = Field.fromFieldDefinition(definition);
@@ -311,7 +311,7 @@ export /*babel doesn't like this: abstract*/ class File {
       copyInProgress: observable,
       copyProgress: observable,
       properties: observable,
-      contributions: observable,
+      contributions: observable
     });
 
     this.canDelete = canDelete;
@@ -474,7 +474,7 @@ export /*babel doesn't like this: abstract*/ class File {
       "string",
       "date",
       "multiLanguage",
-      "language",
+      "language"
     ];
 
     // console.log("loadProperties key: " + key);
@@ -622,7 +622,7 @@ export /*babel doesn't like this: abstract*/ class File {
           xml,
           {
             async: false,
-            explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+            explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
             //explicitArray: true, this also just... gives you a mess
             //explicitChildren: true this makes even simple items have arrays... what a pain
           },
@@ -823,7 +823,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // enhance, on Linux this might need to be different?
     return (
       aNormalized.localeCompare(bNormalized, undefined, {
-        sensitivity: "accent",
+        sensitivity: "accent"
       }) === 0
     );
   }
@@ -919,7 +919,7 @@ export /*babel doesn't like this: abstract*/ class File {
       //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
   }
   public wasChangeThatMobxDoesNotNotice() {
@@ -1061,7 +1061,7 @@ export /*babel doesn't like this: abstract*/ class File {
           ShowMessageDialog({
             title: `Error`,
             text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `,
-            buttonText: "OK",
+            buttonText: "OK"
           });
         }
       }

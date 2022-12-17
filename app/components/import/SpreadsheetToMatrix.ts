@@ -15,7 +15,7 @@ import {
   RowImportStatus,
   MappedColumnInfo,
   MappedRow,
-  IMappedCell,
+  IMappedCell
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
 import { IFolderType } from "../../model/Folder/Folder";
@@ -43,7 +43,7 @@ export function makeMappedMatrixFromSpreadsheet(
   const fullPath = Path.resolve(path);
   try {
     workbook = XLSX.readFile(fullPath, {
-      cellDates: false,
+      cellDates: false
       // for csv files I ran into a case where an ascii file had a non-breaking space (\u00A0)
       // which looked fine in excel but was changed to � on import.
       // So far, it seems like leaving things to auto-detect works better?
@@ -142,7 +142,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
       incomingLabel: value.trim(),
       //validationType: "unknown",
       lametaProperty: "not yet",
-      mappingStatus: "Unmatched",
+      mappingStatus: "Unmatched"
     });
     return c;
   });
@@ -154,7 +154,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
       const c: IMappedCell = {
         column: columns[columnIndex],
         value: cell,
-        importStatus: CellImportStatus.OK,
+        importStatus: CellImportStatus.OK
       };
       return c;
     });
@@ -162,7 +162,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
       Object.assign(new MappedRow(), {
         cells,
         importStatus: RowImportStatus.No /* will get replaced */,
-        index,
+        index
       })
     );
   });
@@ -183,10 +183,6 @@ function addMappingAndValidatationInfoToColumns(
       column.lametaProperty = "skip";
       return;
     }
-    // const x = mapping[folderType]; //?
-    // const y = mapping[folderType][column.incomingLabel]; //?
-    // const q = mapping[folderType]["participant_1_full_name"]; //?
-    const z = column.incomingLabel; //?
 
     column.lametaProperty =
       mapping[folderType][column.incomingLabel]?.lameta || "custom";
@@ -249,10 +245,9 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
             break;
           default:
             const def = getFieldDefinition(folderType, primary);
+            if (!def) console.log("no def for ", primary);
             if (def.importType === "languageCodeOrName") {
-              const problems = getProblemsFromLanguageImportListField(
-                cell.value
-              );
+              const problems = getProblemsFromLanguageListText(cell.value);
               if (problems.length > 0) {
                 cell.importStatus = CellImportStatus.NotInClosedVocabulary;
                 cell.problemDescription = `lameta does not recognize these language names or codes: ${problems
@@ -275,14 +270,10 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
   });
 }
 
-// with spreadsheet import, we have this special languageImportList field that can take a list of one or more langs separated by comma or semicolon,
-// contiaining language names or codes
-function getProblemsFromLanguageImportListField(
-  languageImportList: string
-): string[] {
+function getProblemsFromLanguageListText(languageListText: string): string[] {
   const problems: string[] = [];
-  if (languageImportList) {
-    const languagesInEitherNameOrCode = languageImportList
+  if (languageListText) {
+    const languagesInEitherNameOrCode = languageListText
       .split(";")
       .join(",")
       .split(",")

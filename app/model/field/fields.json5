@@ -428,7 +428,7 @@
       importType: "languageCodeOrName"
     },
     {
-      key: "languageImportList",
+      key: "otherLanguages",
       omitExport: "true",
       omitSave: "true",
       importType: "languageCodeOrName"

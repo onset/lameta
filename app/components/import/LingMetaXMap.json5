@@ -64,14 +64,13 @@
     ethnic_group: { lameta: "ethnicGroup" },
     primary_occupation: { lameta: "primaryOccupation" },
     description: { lameta: "description" },
-    // TODO: migrate these to current model
     primary_language: {
       lameta: "primaryLanguage"
     },
     primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
-    other_languages: { lameta: "languageImportList" },
+    other_languages: {
       lameta: "otherLanguages"
-  },
+    },
     mother_language: {
       lameta: "mothersLanguage"
     },

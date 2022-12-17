@@ -4,7 +4,7 @@ import { Session } from "../../model/Project/Session/Session";
 import {
   addImportedFolderToProject,
   createFolderInMemory,
-  makeCustomField,
+  makeCustomField
 } from "./MatrixImporter";
 import {
   MappedMatrix,
@@ -12,16 +12,17 @@ import {
   RowImportStatus,
   MappedColumnInfo,
   MappedRow,
-  IMappedCell,
+  IMappedCell
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
 import { i18n } from "@lingui/core";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 import * as mobx from "mobx";
 mobx.configure({
-  enforceActions: "never",
+  enforceActions: "never"
 });
 import { i18nUnitTestPrep } from "../../other/localization";
+import { IPersonLanguage } from "../../model/PersonLanguage";
 i18nUnitTestPrep();
 
 let project: Project;
@@ -60,12 +61,34 @@ describe("addSessionToProject", () => {
     const person = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryLanguage: "spa",
-      languageImportList: "por;eng",
+      otherLanguages: "por;eng,fr"
     });
 
     expect(person.languages[0].code).toBe("spa");
     expect(person.languages[1].code).toBe("por");
     expect(person.languages[2].code).toBe("eng");
+    expect(person.languages[3].code).toBe("fra");
+    expect(person.languages.length).toBe(4);
+  });
+  it("Multiple father languages", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      fathersLanguage: "spa;por,fr"
+    });
+    expect(person.languages.length).toBe(3);
+    expect(person.languages[0].code).toBe("spa");
+    expect(person.languages[1].code).toBe("por");
+    expect(person.languages[2].code).toBe("fra");
+  });
+  it("Multiple primary languages", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      primaryLanguage: "spa;por,fr"
+    });
+
+    expect(person.languages[0].code).toBe("spa");
+    expect(person.languages[1].code).toBe("por");
+    expect(person.languages[2].code).toBe("fra");
     expect(person.languages.length).toBe(3);
   });
 
@@ -74,7 +97,7 @@ describe("addSessionToProject", () => {
       name: "Joe Strummer",
       mothersLanguage: "spa", //"Español",
       primaryLanguage: "spa",
-      languageImportList: "spa", //"Spanish",
+      otherLanguages: "spa" //"Spanish",
     });
     expect(person.displayName).toBe("Joe Strummer");
     expect(person.languages.length).toBe(1);
@@ -85,18 +108,33 @@ describe("addSessionToProject", () => {
     const person2 = await makeMatrixAndImportThenGetPerson({
       name: "Garbiela",
       primaryLanguage: "drc",
-      languageImportList: "por;eng",
+      otherLanguages: "por;eng",
       mothersLanguage: "drc",
-      fathersLanguage: "eng",
+      fathersLanguage: "eng"
     });
-    expect(person2.languages[0].code).toBe("drc");
-    expect(person2.languages[0].primary).toBe(true);
-    expect(person2.languages[0].mother).toBe(true);
-    expect(person2.languages[1].code).toBe("eng");
-    expect(person2.languages[1].father).toBe(true);
-    expect(person2.languages[2].code).toBe("por");
     expect(person2.languages.length).toBe(3);
+    expectOneLanguage(person2, "drc", (l) => {
+      expect(l.primary).toBe(true);
+      expect(l.mother).toBe(true);
+    });
+    expectOneLanguage(person2, "eng", (l) => {
+      expect(l.father).toBe(true);
+    });
+    expectOneLanguage(person2, "por", (l) => {
+      expect(l.primary).toBeFalsy();
+    });
   });
+  it("Temp", async () => {
+    const person2 = await makeMatrixAndImportThenGetPerson({
+      name: "Garbiela",
+      primaryLanguage: "drc"
+    });
+    expect(person2.languages.length).toBe(1);
+    expectOneLanguage(person2, "drc", (l) => {
+      expect(l.primary).toBe(true);
+    });
+  });
+
   it("Spanish, es, and Español all map to the same language during import", async () => {
     const person = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
@@ -104,41 +142,62 @@ describe("addSessionToProject", () => {
       fathersLanguage: "Spanish",
       mothersLanguage: "Español",
       primaryLanguage: "es",
-      otherLanguages: "es",
+      otherLanguages: "es"
     });
     expect(person.languages.length).toBe(1);
-    expect(person.languages[0].code).toBe("es");
+    expect(person.languages[0].code).toBe("spa");
   });
+  it("Migrates?", async () => {
+    const person = await makeMatrixAndImportThenGetPerson({
+      name: "Joe Strummer",
+      fathersLanguage: "Spanish",
+      primaryLanguage: "Thai"
+    });
+    // There should not be a "fathersLanguage" field, it should just be a flag on the language
+    expect(person.properties.getTextStringOrEmpty("fathersLanguage")).toBe(""); // this should not make it into the properties
+    expectOneLanguage(person, "spa", (l) => {
+      expect(l.father).toBe(true);
+    });
+    expectOneLanguage(person, "tha", (l) => {
+      expect(l.primary).toBe(true);
+    });
+  });
+
   it("Can import one normal person row", async () => {
     const person = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Musician",
       fathersLanguage: "Spanish",
       mothersLanguage: "Español",
-      primaryLanguage: "Thai",
+      primaryLanguage: "Thai"
     });
     expect(person.displayName).toBe("Joe Strummer");
     expect(person.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
       "Musician"
     );
-    // did it migrate languages?
-    expect(person.properties.getTextStringOrEmpty("fathersLanguage")).toBe(""); // should remove after migrating
-    expect(person.languages[0].code).toBe("tha");
-    expect(person.languages[1].code).toBe("spa");
-    expect(person.languages[1].father).toBe(true);
-    expect(person.languages[1].mother).toBe(true);
+    console.log(JSON.stringify(person.languages, null, 2));
+    expect(person.languages).toHaveLength(2);
+    expectOneLanguage(person, "tha", (l) => {
+      expect(l.primary).toBe(true);
+    });
+    expectOneLanguage(person, "spa", (l) => {
+      expect(l.primary).toBeFalsy();
+      expect(l.father).toBe(true);
+      expect(l.mother).toBe(true);
+    });
   });
+
   it("Second import can overwrite existing person, with code", async () => {
     const person1 = await makeMatrixAndImportThenGetPerson({
       code: "JS",
       name: "Joe Strummer",
-      primaryOccupation: "Musician",
+      primaryOccupation: "Musician"
     });
 
     const person2 = await makeMatrixAndImportThenGetPerson({
       code: "JS",
       name: "Joe Strummer",
-      primaryOccupation: "Producer",
+      primaryOccupation: "Producer"
     });
 
     expect(project.persons.items.length).toBe(1);
@@ -150,11 +209,11 @@ describe("addSessionToProject", () => {
   it("Second import can overwrite existing person, no code", async () => {
     const person1 = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
-      primaryOccupation: "Musician",
+      primaryOccupation: "Musician"
     });
     const person2 = await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
-      primaryOccupation: "Producer",
+      primaryOccupation: "Producer"
     });
 
     expect(project.persons.items.length).toBe(1);
@@ -168,7 +227,7 @@ describe("addSessionToProject", () => {
       title: "London Calling",
       date: "7/27/2021",
       genre: "drama",
-      subgenre: "play",
+      subgenre: "play"
     });
 
     expect(session.id).toBe("foo");
@@ -186,7 +245,7 @@ describe("addSessionToProject", () => {
       id: "foo",
       "contribution.name": "Joe Strummer",
       "contribution.role": "Singer",
-      "contribution.comments": "vocals",
+      "contribution.comments": "vocals"
     });
     expect(session.metadataFile!.contributions.length).toBe(1);
     expect(session.metadataFile!.contributions[0].personReference).toBe(
@@ -350,14 +409,14 @@ function simpleColumn(key: string): MappedColumnInfo {
   return Object.assign(new MappedColumnInfo(), {
     incomingLabel: key,
     lametaProperty: key,
-    mappingStatus: "Identity",
+    mappingStatus: "Identity"
   });
 }
 function simpleCell(property: string, value: string): IMappedCell {
   return {
     column: simpleColumn(property),
     value,
-    importStatus: CellImportStatus.OK,
+    importStatus: CellImportStatus.OK
   };
 }
 function makeRow(values: any): MappedRow {
@@ -382,4 +441,21 @@ async function makeMatrixAndImportThenGetPerson(values: any): Promise<Person> {
   expect(result.succeeded).toBeTruthy();
   addImportedFolderToProject(project, result.createdFolder, result.id);
   return result.createdFolder as Person;
+}
+function expectOneLanguage(
+  person: Person,
+  code: string,
+  expectations: (l: IPersonLanguage) => void
+) {
+  const langs = person.languages.filter((l) => l.code === code);
+  expect(langs && langs.length).toBeTruthy();
+  expect(langs).toHaveLength(1);
+  expectations(langs[0]);
+}
+
+function expectHasLanguage(person: Person, code: string) {
+  const langs = person.languages.filter((l) => l.code === code);
+  expect(langs && langs.length).toBeTruthy();
+  expect(langs).toHaveLength(1);
+  return langs[0];
 }

@@ -13,9 +13,12 @@ import { IImportMapping } from "./SpreadsheetToMatrix";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
 import { NotifyException } from "../Notify";
 import { runInAction } from "mobx";
+import { Person } from "../../model/Project/Person/Person";
+import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
+import { IPersonLanguage } from "../../model/PersonLanguage";
 
 export const availableSpreadsheetMappings = {
-  LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping,
+  LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping
 };
 
 export function addImportMatrixToProject(
@@ -112,6 +115,7 @@ export function createFolderInMemory(
     .filter((cell) => cell.column.doImport && cell.value)
     .forEach((cell, cellIndex) => {
       const lametaKey = cell.column.lametaProperty;
+      //console.log("lametaKey", lametaKey);
       switch (lametaKey) {
         case "custom":
           folder.properties.addCustomProperty(
@@ -150,12 +154,27 @@ export function createFolderInMemory(
           const dateField = folder.properties.getValueOrThrow("date");
           dateField.setValueFromString(dateString);
           break;
+        case "primaryLanguage":
+          processPersonLanguageCell(cell?.value, folder as Person, {
+            primary: true
+          });
+          //console.log(JSON.stringify((folder as Person).languages[0], null, 2));
+          break;
+        case "mothersLanguage":
+          processPersonLanguageCell(cell?.value, folder as Person, {
+            mother: true
+          });
+          break;
+        case "fathersLanguage":
+          processPersonLanguageCell(cell?.value, folder as Person, {
+            father: true
+          });
+          break;
+        case "otherLanguages":
+          processPersonLanguageCell(cell?.value, folder as Person, {});
+          break;
         default:
-          //review: which of these 3 is correct? setText() was fine until
-          // I tried to use the deprecated "fathersLanguage"
           folder.metadataFile!.addTextProperty(lametaKey, cell.value);
-        //folder.properties.addTextProperty(lametaKey, cell.value);
-        //folder.properties.setText(lametaKey /* ? */, cell.value);
       }
     });
 
@@ -173,7 +192,7 @@ export function createFolderInMemory(
       id: "unknown",
       message: `Missing ${
         folder.propertyForCheckingId
-      } on cell: ${JSON.stringify(row)}`,
+      } on cell: ${JSON.stringify(row)}`
     };
 
   return {
@@ -181,7 +200,7 @@ export function createFolderInMemory(
     row,
     createdFolder: folder,
     id: id,
-    message: undefined,
+    message: undefined
   };
 }
 export function addImportedFolderToProject(
@@ -227,7 +246,7 @@ export function makeCustomField(key: string, value: string): Field {
     type: "Text",
     tabIndex: 0,
     isCustom: true,
-    showOnAutoForm: false, // we do show it, but in the custom table
+    showOnAutoForm: false // we do show it, but in the custom table
   };
   const customField = Field.fromFieldDefinition(definition);
   customField.setValueFromString(value);
@@ -244,4 +263,39 @@ function lookAheadForValue(
     if (row.cells[i].column.lametaProperty == key) return row.cells[i].value;
   }
   return undefined;
+}
+
+// with spreadsheet import, we have this special field that can take a list of one or more langs separated by comma or semicolon,
+// containing language names or codes
+export function processPersonLanguageCell(
+  cellContent: string,
+  person: Person,
+  assignments: { primary?: boolean; mother?: boolean; father?: boolean }
+) {
+  if (!cellContent) {
+    return;
+  }
+  const tokens = cellContent.split(/[;,]/).map((s) => s.trim());
+  tokens.forEach((token) => {
+    const code = staticLanguageFinder.findCodeFromCodeOrLanguageName(token);
+    // do we already have this language for this person?
+    let lang: IPersonLanguage | undefined = person.languages.find(
+      (l) => l.code === code
+    );
+    // if not, add it
+    if (lang === undefined) {
+      lang = { code };
+    }
+    // now add any primary, mother, or father properties that are true
+    Object.keys(assignments).forEach((prop) => {
+      if (assignments[prop]) {
+        lang![prop] = true;
+      }
+    });
+
+    // Bizarrely, if we push before making changes to lang, they are lost, as if
+    // the push is making a copy of the object. Which is should only do if it is a primitive.
+    if (!person.languages.find((l) => l.code === lang?.code))
+      person.languages.push(lang);
+  });
 }

@@ -15,7 +15,6 @@ import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
-  getCodesFromLanguageListField,
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 import { makeObservable, observable } from "mobx";
@@ -228,18 +227,6 @@ export class PersonMetadataFile extends FolderMetadataFile {
       this.properties,
       this.languages
     );
-
-    const languageImportListContents = this.properties.getTextFieldOrUndefined(
-      "languageImportList"
-    );
-    const value = languageImportListContents?.text;
-    if (value) {
-      getCodesFromLanguageListField(value).forEach((lang) => {
-        if (!this.languages.find((l) => l.code === lang.code)) {
-          this.languages.push(lang);
-        }
-      });
-    }
   }
 
   // override
