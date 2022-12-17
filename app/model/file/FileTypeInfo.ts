@@ -13,31 +13,31 @@ export const knownFileFormats: IFileFormat[] = [
     type: "Session",
     isMediaType: false,
     imdiType: "unused",
-    extensions: "session",
+    extensions: "session"
   },
   {
     type: "Person",
     isMediaType: false,
     imdiType: "unused",
-    extensions: "person",
+    extensions: "person"
   },
   {
     type: "Audio",
     isMediaType: true,
     imdiType: "Audio",
-    extensions: "wav, mp3, wma,ogg",
+    extensions: "wav, mp3, wma,ogg"
   },
   {
     type: "Video",
     imdiType: "Video",
     isMediaType: true,
-    extensions: "mts, avi, mov, mp4, mpeg, mpg, avchd, wmv, m4v",
+    extensions: "mts, avi, mov, mp4, mpeg, mpg, avchd, wmv, m4v"
   },
   {
     type: "Image",
     imdiType: "Image",
     isMediaType: true,
-    extensions: "jpg, jpeg, png, tiff, gif, tif, svg, bmp",
+    extensions: "jpg, jpeg, png, tiff, gif, tif, svg, bmp"
   },
   {
     type: "ELAN",
@@ -49,32 +49,32 @@ export const knownFileFormats: IFileFormat[] = [
     type: "Transcriber",
     isMediaType: false,
     imdiType: "Transcriber",
-    extensions: "trs",
+    extensions: "trs"
   },
   {
     type: "Doc",
     isMediaType: false,
     imdiType: "Document",
-    extensions: "pdf, html, htm, doc, docx, txt",
+    extensions: "pdf, html, htm, doc, docx, txt"
   },
 
   {
     type: "Settings",
     isMediaType: false,
     imdiType: "Settings",
-    extensions: "psfx,typ,lng,etf",
+    extensions: "psfx,typ,lng,etf"
   },
   {
     type: "Toolbox",
     isMediaType: false,
     imdiType: "Toolbox",
-    extensions: "tbt",
+    extensions: "tbt"
   },
   {
     type: "Praat",
     isMediaType: false,
     imdiType: "Praat",
-    extensions: "textgrid",
+    extensions: "textgrid"
   },
   { type: "unused", isMediaType: false, imdiType: "XML", extensions: "xml" },
   {
@@ -88,8 +88,8 @@ export const knownFileFormats: IFileFormat[] = [
     type: "Geo",
     isMediaType: false,
     imdiType: "Geographic data",
-    extensions: "kml,kmz",
-  },
+    extensions: "kml,kmz"
+  }
 ];
 
 export function GetFileFormatInfoForPath(
