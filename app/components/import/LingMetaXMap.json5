@@ -52,7 +52,7 @@
     participant_4_full_name: { lameta: "contribution.name" },
     participant_4_role: { lameta: "contribution.role" },
     participant_5_full_name: { lameta: "contribution.name" },
-    participant_5_role: { lameta: "contribution.role" },
+    participant_5_role: { lameta: "contribution.role" }
   },
   person: {
     full_name: { lameta: "name" },
@@ -65,10 +65,18 @@
     primary_occupation: { lameta: "primaryOccupation" },
     description: { lameta: "description" },
     // TODO: migrate these to current model
-    primary_language: { lameta: "primaryLanguage" },
+    primary_language: {
+      lameta: "primaryLanguage"
+    },
     primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
     other_languages: { lameta: "languageImportList" },
-    mother_language: { lameta: "mothersLanguage" },
-    father_language: { lameta: "fathersLanguage" },
+      lameta: "otherLanguages"
   },
+    mother_language: {
+      lameta: "mothersLanguage"
+    },
+    father_language: {
+      lameta: "fathersLanguage"
+    }
+  }
 }

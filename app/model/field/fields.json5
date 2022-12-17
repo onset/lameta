@@ -5,7 +5,7 @@
       key: "title",
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
       tagInSayMoreClassic: "Title",
-      tabIndex: 0,
+      tabIndex: 0
     },
     {
       key: "projectDescription",
@@ -13,21 +13,21 @@
       englishLabel: "Description",
       cssClass: "text-block",
       multipleLines: true,
-      tabIndex: 11,
+      tabIndex: 11
     },
     {
       key: "vernacularIso3CodeAndName",
       englishLabel: "Subject Language",
       tagInSayMoreClassic: "VernacularISO3CodeAndName",
       type: "language",
-      tabIndex: 1,
+      tabIndex: 1
     },
     {
       key: "analysisIso3CodeAndName",
       englishLabel: "Working Language",
       tagInSayMoreClassic: "AnalysisISO3CodeAndName",
       type: "language",
-      tabIndex: 2,
+      tabIndex: 2
     },
     {
       key: "location",
@@ -35,19 +35,19 @@
       tagInSayMoreClassic: "Location",
       cssClass: "field__newSection",
       multipleLines: true,
-      tabIndex: 3,
+      tabIndex: 3
     },
     {
       key: "region",
       tagInSayMoreClassic: "Region",
-      tabIndex: 4,
+      tabIndex: 4
     },
     {
       key: "country",
       tagInSayMoreClassic: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
-      tabIndex: 5,
+      tabIndex: 5
       //choices are filled in by KnownFieldDefinitions.ts
     },
     {
@@ -65,38 +65,38 @@
         "North-America",
         "Middle-America",
         "Oceania",
-        "South-America",
+        "South-America"
       ],
-      tabIndex: 6,
+      tabIndex: 6
     },
     {
       key: "grantId",
       englishLabel: "Grant ID",
-      tabIndex: 7,
+      tabIndex: 7
     },
     {
       key: "fundingProjectTitle",
       tagInSayMoreClassic: "FundingProjectTitle",
       cssClass: "field__newSection",
-      tabIndex: 8,
+      tabIndex: 8
     },
     {
       key: "accessProtocol",
       form: "accessProtocol",
       tagInSayMoreClassic: "AccessProtocol",
-      englishLabel: "Access Protocol used by this project",
+      englishLabel: "Access Protocol used by this project"
     },
     {
       key: "customAccessChoices",
       form: "accessProtocol",
       "//": "Older Windows SM actually didn't store this in the sprj at all",
       tagInSayMoreClassic: "CustomAccessProtocol",
-      englishLabel: "Custom access choices",
+      englishLabel: "Custom access choices"
     },
     {
       key: "depositor",
       tagInSayMoreClassic: "Depositor",
-      tabIndex: 9,
+      tabIndex: 9
     },
     /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
       is a drag.
@@ -109,8 +109,8 @@
       key: "contactPerson",
       tagInSayMoreClassic: "ContactPerson",
       tooltip: "Contact information about the person or institution responsible for the project.",
-      tabIndex: 10,
-    },
+      tabIndex: 10
+    }
     /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
     {
       "key": "dateAvailable",
@@ -127,33 +127,33 @@
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
          we do persist it 
       "persist": false, */
-      tabIndex: 0,
+      tabIndex: 0
     },
     {
       key: "title",
-      tabIndex: 4,
+      tabIndex: 4
     },
     {
       key: "languages",
       type: "multiLanguage",
       englishLabel: "Subject Languages",
-      tabIndex: 12,
+      tabIndex: 12
     },
     {
       key: "workingLanguages",
       type: "multiLanguage",
       englishLabel: "Working Languages",
-      tabIndex: 14,
+      tabIndex: 14
     },
     {
       key: "participants",
       englishLabel: "People",
-      tabIndex: 3,
+      tabIndex: 3
     },
     {
       key: "genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-      tabIndex: 6,
+      tabIndex: 6
     },
     {
       key: "subgenre",
@@ -161,7 +161,7 @@
       englishLabel: "Subgenre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       // moved from additional/more Dec 2019 at ELAR request
-      tabIndex: 7,
+      tabIndex: 7
     },
     /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
     {
@@ -181,35 +181,35 @@
       key: "location",
       englishLabel: "Neighborhood/Town/Village",
       tooltip: "A location that is relevant within the group you are studying",
-      tabIndex: 12,
+      tabIndex: 12
     },
     {
       key: "access",
-      tabIndex: 8,
+      tabIndex: 8
     },
     {
       key: "accessDescription", // this was the inherited key... but really it's an explanation
       englishLabel: "Access Explanation",
       tooltip: "If the access is not open/free, use this to explain why.",
-      tabIndex: 9,
+      tabIndex: 9
     },
     {
       key: "description",
       tagInSayMoreClassic: "synopsis",
       multipleLines: true,
-      tabIndex: 5,
+      tabIndex: 5
     },
     {
       key: "status",
       choices: ["Incoming", "In_Progress", "Finished", "Skipped"],
       default: "Incoming",
       "//": "don't show on main form",
-      form: "status",
+      form: "status"
     },
     {
       key: "date",
       type: "Date",
-      tabIndex: 1,
+      tabIndex: 1
     },
     {
       key: "involvement",
@@ -224,16 +224,16 @@
 
         "elicited",
         "non-elicited",
-        "no-observer",
+        "no-observer"
       ],
-      default: "unspecified",
+      default: "unspecified"
     },
 
     {
       key: "locationRegion",
       englishLabel: "Region",
       tagInSayMoreClassic: "Location_Region",
-      additional: true,
+      additional: true
     },
     {
       key: "locationCountry",
@@ -241,7 +241,7 @@
       tagInSayMoreClassic: "Location_Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
-      additional: true,
+      additional: true
       //choices are filled in by KnownFieldDefinitions.ts
     },
     {
@@ -259,10 +259,10 @@
         "North-America",
         "Middle-America",
         "Oceania",
-        "South-America",
+        "South-America"
       ],
 
-      additional: true,
+      additional: true
     },
     // Removed Dec 2019 at ELAR request
     //{
@@ -282,9 +282,9 @@
 
         "spontaneous",
         "semi-spontaneous",
-        "planned",
+        "planned"
       ],
-      default: "unspecified",
+      default: "unspecified"
     },
     {
       key: "socialContext",
@@ -298,30 +298,30 @@
         "family",
         "private",
         "public",
-        "controlled environment",
+        "controlled environment"
       ],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml",
-      default: "unspecified",
+      default: "unspecified"
     },
     {
       // added at ELAR request Dec 2019
       key: "keyword",
       additional: false,
       tooltip: "Separate with commas. Note that individual keywords cannot contain a comma.",
-      tabIndex: 10,
+      tabIndex: 10
     },
     {
       // added at ELAR request Dec 2019
       key: "topic",
       additional: false,
       tooltip: "Separate with commas. Note that individual topics cannot contain a comma.",
-      tabIndex: 11,
-    },
+      tabIndex: 11
+    }
   ],
   person: [
     {
       key: "name",
-      englishLabel: "Full Name",
+      englishLabel: "Full Name"
       /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
          we do persist it */
@@ -330,22 +330,22 @@
     {
       key: "nickname",
       tagInSayMoreClassic: "nickName",
-      englishLabel: "Nickname",
+      englishLabel: "Nickname"
     },
     {
       key: "code",
-      englishLabel: "Code",
+      englishLabel: "Code"
     },
     {
       // new for lameta (starting with 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
       key: "languages",
-      type: "personLanguageList",
+      type: "personLanguageList"
     },
     {
       key: "primaryLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
@@ -353,118 +353,118 @@
       englishLabel: "Details", // in lameta we extend this to be more general
       tooltip: "Relevant details such as where they learned it",
       omitExport: "true",
-      deprecated: "migrated to description by lameta",
+      deprecated: "migrated to description by lameta"
     },
     {
       key: "otherLanguage0",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage1",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage2",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage3",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage4",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage5",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage6",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage7",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage8",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "otherLanguage9",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "fathersLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "mothersLanguage",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
       key: "languageImportList",
       omitExport: "true",
       omitSave: "true",
-      importType: "languageCodeOrName",
+      importType: "languageCodeOrName"
     },
     {
-      key: "education",
+      key: "education"
     },
     {
       key: "birthYear",
       specialInfo: "If you are estimating, talk about that in the Description",
-      tooltip: "Enter '?' if you don't know",
+      tooltip: "Enter '?' if you don't know"
     },
     {
       key: "gender",
       // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
       choices: ["Unknown", "Male", "Female", "Other"],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
-      imdiIsClosedVocabulary: true,
+      imdiIsClosedVocabulary: true
     },
     {
       key: "howToContact",
       multipleLines: true,
       tooltip: "This is only for the use of the researcher.",
       personallyIdentifiableInformation: true,
-      markAsNotImdi: true,
+      markAsNotImdi: true
     },
 
     {
-      key: "ethnicGroup",
+      key: "ethnicGroup"
     },
     {
       key: "primaryOccupation",
-      markAsNotImdi: true,
+      markAsNotImdi: true
     },
     {
-      key: "description",
-    },
-  ],
+      key: "description"
+    }
+  ]
 }
