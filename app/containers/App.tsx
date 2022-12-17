@@ -12,7 +12,7 @@ import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
-import theme from "./theme";
+import { createLametaTheme } from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
@@ -27,6 +27,9 @@ export const App: React.FunctionComponent = observer(() => {
   useEffect(() => {
     document.body.style.fontSize = `${userSettingsSingleton.uiFontZoom * 13}px`;
   }, [userSettingsSingleton.FontZoom]);
+
+  // use a hook to only create the theme once
+  const [theme] = useState(createLametaTheme());
 
   return (
     <div
