@@ -618,12 +618,8 @@ export default class ImdiGenerator {
     // Another says this is a mime type (https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml)
     // What we're doing here is emitting a mime type if we can determine it, otherwise the extension.
     // Review: should we instead be emitting, e.g. application/elan+xml for .eaf?
-    this.element(
-      "Format",
-      getMimeType(Path.extname(path)) || Path.extname(path),
-      false,
-      link
-    );
+    const mime = getMimeType(Path.extname(path));
+    this.element("Format", mime || Path.extname(path), false, link);
   }
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {

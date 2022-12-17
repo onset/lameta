@@ -40,6 +40,12 @@ export const knownFileFormats: IFileFormat[] = [
     extensions: "jpg, jpeg, png, tiff, gif, tif, svg, bmp"
   },
   {
+    type: "CHAT",
+    isMediaType: false,
+    imdiType: "CHAT",
+    extensions: "cha"
+  },
+  {
     type: "ELAN",
     isMediaType: false,
     imdiType: "ELAN",
@@ -153,12 +159,15 @@ customMimeTypes.setValue("fwbackup", "application/zip");
 customMimeTypes.setValue("praat", "text/praat-pitch");
 customMimeTypes.setValue("textgrid", "text/praat-textgrid");
 customMimeTypes.setValue("eaf", "text/x-eaf+xml");
-customMimeTypes.setValue("chat", "text/x-chat");
+customMimeTypes.setValue("cha", "text/x-chat");
+customMimeTypes.setValue("chat", "text/x-chat"); // I think this is wrong?
 customMimeTypes.setValue("trs", "text/x-trs");
 
 //customMimeTypes.setValue("", "");
 
 export function getMimeType(extension: string) {
+  //strip off leading dot
+  extension = extension.replace(/^\./, "");
   if (customMimeTypes.containsKey(extension.toLowerCase())) {
     return customMimeTypes.getValue(extension.toLowerCase());
   }
