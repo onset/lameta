@@ -2,12 +2,12 @@ import { Project } from "../../model/Project/Project";
 import * as temp from "temp";
 import {
   makeMappedMatrix,
-  makeMappedMatrixFromSpreadsheet,
+  makeMappedMatrixFromSpreadsheet
 } from "./SpreadsheetToMatrix";
 import {
   MappedMatrix,
   CellImportStatus,
-  RowImportStatus,
+  RowImportStatus
 } from "./MappedMatrix";
 import * as Path from "path";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
@@ -72,7 +72,32 @@ describe("SpreadsheetToMatrix", () => {
     sessionSmokeTest(matrix);
   });
   it("Can map in pariticipants from some data using LingMetaXMap column labels", () => {
-    const inputRows = [["participant_1_full_name"], ["Joe"]];
+    const inputRows = [
+      [
+        "participant_1_full_name",
+        "participant_1_role",
+        "participant_2_full_name",
+        "participant_2_role",
+        "participant_3_full_name",
+        "participant_3_role",
+        "participant_4_full_name",
+        "participant_4_role",
+        "participant_5_full_name",
+        "participant_5_role"
+      ],
+      [
+        "Joe",
+        "Speaker",
+        "Jane",
+        "Researcher",
+        "Bob",
+        "Interviewer",
+        "Sue",
+        "Depositor",
+        "Fred",
+        "Carefull Speech Speaker"
+      ]
+    ];
     const m = makeMappedMatrix(
       inputRows,
       lingMetaX_ImportMap,
@@ -81,17 +106,64 @@ describe("SpreadsheetToMatrix", () => {
     );
     expect(m.rows.length).toBe(1);
     m.rows[0].cells; // ?
+
+    // Joe is a speaker in role 1
     expect(m.rows[0].cells[0].column.incomingLabel).toBe(
       "participant_1_full_name"
     );
     expect(m.rows[0].cells[0].column.lametaProperty).toBe("contribution.name");
     expect(m.rows[0].cells[0].value).toBe("Joe");
+    expect(m.rows[0].cells[1].column.incomingLabel).toBe("participant_1_role");
+    expect(m.rows[0].cells[1].column.lametaProperty).toBe("contribution.role");
+    expect(m.rows[0].cells[1].value).toBe("Speaker");
+
+    // Jane is a researcher in role 2
+    expect(m.rows[0].cells[2].column.incomingLabel).toBe(
+      "participant_2_full_name"
+    );
+    expect(m.rows[0].cells[2].column.lametaProperty).toBe("contribution.name");
+    expect(m.rows[0].cells[2].value).toBe("Jane");
+    expect(m.rows[0].cells[3].column.incomingLabel).toBe("participant_2_role");
+    expect(m.rows[0].cells[3].column.lametaProperty).toBe("contribution.role");
+    expect(m.rows[0].cells[3].value).toBe("Researcher");
+
+    // Bob is an interviewer in role 3
+    expect(m.rows[0].cells[4].column.incomingLabel).toBe(
+      "participant_3_full_name"
+    );
+    expect(m.rows[0].cells[4].column.lametaProperty).toBe("contribution.name");
+    expect(m.rows[0].cells[4].value).toBe("Bob");
+
+    expect(m.rows[0].cells[5].column.incomingLabel).toBe("participant_3_role");
+    expect(m.rows[0].cells[5].column.lametaProperty).toBe("contribution.role");
+    expect(m.rows[0].cells[5].value).toBe("Interviewer");
+
+    // Sue is a depositor in role 4
+    expect(m.rows[0].cells[6].column.incomingLabel).toBe(
+      "participant_4_full_name"
+    );
+    expect(m.rows[0].cells[6].column.lametaProperty).toBe("contribution.name");
+    expect(m.rows[0].cells[6].value).toBe("Sue");
+
+    expect(m.rows[0].cells[7].column.incomingLabel).toBe("participant_4_role");
+    expect(m.rows[0].cells[7].column.lametaProperty).toBe("contribution.role");
+    expect(m.rows[0].cells[7].value).toBe("Depositor");
+
+    // Fred is a careful speech speaker in role 5
+    expect(m.rows[0].cells[8].column.incomingLabel).toBe(
+      "participant_5_full_name"
+    );
+    expect(m.rows[0].cells[8].column.lametaProperty).toBe("contribution.name");
+    expect(m.rows[0].cells[8].value).toBe("Fred");
+    expect(m.rows[0].cells[9].column.incomingLabel).toBe("participant_5_role");
+    expect(m.rows[0].cells[9].column.lametaProperty).toBe("contribution.role");
+    expect(m.rows[0].cells[9].value).toBe("Carefull Speech Speaker");
   });
 });
 it("Can map in filename and title from some data using LingMetaXMap column labels", () => {
   const inputRows = [
     ["filename", "title"],
-    ["forest recording", "forest"],
+    ["forest recording", "forest"]
   ];
   const m = makeMappedMatrix(
     inputRows,

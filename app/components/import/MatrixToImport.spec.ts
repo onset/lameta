@@ -256,6 +256,38 @@ describe("addSessionToProject", () => {
   });
 });
 
+it("Can import 5 contributions", async () => {
+  const session = await makeMatrixFromArrayOfArraysAndImportThenGetSession([
+    ["id", "foo"],
+    // inserting these to catch regression related to skipping cells
+    ["blah", "", CellImportStatus.NotInClosedVocabulary],
+    ["blahblah", "", CellImportStatus.NotInClosedVocabulary],
+    ["contribution.name", "Bob"],
+    ["contribution.role", "Speaker"],
+    ["contribution.name", "Joe"],
+    ["contribution.role", "Researcher"],
+    ["contribution.name", "Sally"],
+    ["contribution.role", "Depositor"],
+    ["contribution.name", "Jane"],
+    ["contribution.role", "Careful Speech Speaker"],
+    ["contribution.name", "John"],
+    ["contribution.role", "Compiler"]
+  ]);
+  expect(session.metadataFile!.contributions.length).toBe(5);
+  expect(session.metadataFile!.contributions[0].personReference).toBe("Bob");
+  expect(session.metadataFile!.contributions[0].role).toBe("Speaker");
+  expect(session.metadataFile!.contributions[1].personReference).toBe("Joe");
+  expect(session.metadataFile!.contributions[1].role).toBe("Researcher");
+  expect(session.metadataFile!.contributions[2].personReference).toBe("Sally");
+  expect(session.metadataFile!.contributions[2].role).toBe("Depositor");
+  expect(session.metadataFile!.contributions[3].personReference).toBe("Jane");
+  expect(session.metadataFile!.contributions[3].role).toBe(
+    "Careful Speech Speaker"
+  );
+  expect(session.metadataFile!.contributions[4].personReference).toBe("John");
+  expect(session.metadataFile!.contributions[4].role).toBe("Compiler");
+});
+
 /*
 import {
   mapSpreadsheetRecord,
@@ -430,6 +462,25 @@ async function makeMatrixAndImportThenGetSession(
   values: any
 ): Promise<Session> {
   const row = makeRow(values);
+  return makeMatrixFromRowAndImportThenGetSession(row);
+}
+async function makeMatrixFromArrayOfArraysAndImportThenGetSession(
+  aOfA: string[][]
+): Promise<Session> {
+  const row: MappedRow = new MappedRow();
+  aOfA.forEach((a) => {
+    const c = simpleCell(a[0], a[1]);
+    if (a[2]) c.importStatus = CellImportStatus[a[2]];
+
+    row.cells.push(c);
+  });
+
+  return makeMatrixFromRowAndImportThenGetSession(row);
+}
+
+async function makeMatrixFromRowAndImportThenGetSession(
+  row: MappedRow
+): Promise<Session> {
   const result = createFolderInMemory(project, row, "session");
   expect(result.succeeded).toBeTruthy();
   addImportedFolderToProject(project, result.createdFolder, result.id);

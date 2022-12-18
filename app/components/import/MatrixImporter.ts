@@ -112,8 +112,9 @@ export function createFolderInMemory(
   folder.marked = true; // help user find the newly imported session
 
   row.cells
-    .filter((cell) => cell.column.doImport && cell.value)
+    // no, this messes up indices: .filter((cell) => cell.column.doImport && cell.value)
     .forEach((cell, cellIndex) => {
+      if (!cell.column.doImport || !cell.value) return;
       const lametaKey = cell.column.lametaProperty;
       //console.log("lametaKey", lametaKey);
       switch (lametaKey) {
@@ -135,6 +136,9 @@ export function createFolderInMemory(
           // note, this is making an on-disk person
           const person = project.getOrCreatePerson(cell.value);
           person.marked = true;
+          console.log(
+            `${person.displayName} contribution at cell ${cellIndex}`
+          );
           folder.metadataFile!.contributions.push(
             new Contribution(
               person.getIdToUseForReferences(),
@@ -258,11 +262,16 @@ function lookAheadForValue(
   lookToRightOfCellIndex: number,
   key: string
 ): string | undefined {
+  let r: string | undefined = undefined;
   lookToRightOfCellIndex++;
   for (var i = lookToRightOfCellIndex; i < row.cells.length; i++) {
-    if (row.cells[i].column.lametaProperty == key) return row.cells[i].value;
+    if (row.cells[i].column.lametaProperty == key) {
+      r = row.cells[i].value;
+      break;
+    }
   }
-  return undefined;
+  console.log(`lookAheadForValue(${lookToRightOfCellIndex},${key})=${r}`);
+  return r;
 }
 
 // with spreadsheet import, we have this special field that can take a list of one or more langs separated by comma or semicolon,
