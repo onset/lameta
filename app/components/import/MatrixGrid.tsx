@@ -311,8 +311,10 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
 
 function getCellComponent(cell?: IMappedCell) {
   const defaultStyling = css`
-    overflow-wrap: break-word;
-    white-space: break-spaces;
+    /* overflow-wrap: break-word;
+    white-space: break-spaces; */
+    text-overflow: ellipsis;
+    overflow: hidden;
   `;
 
   if (!cell || cell.importStatus === "MissingKeyDef") {
