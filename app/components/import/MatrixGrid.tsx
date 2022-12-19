@@ -9,10 +9,10 @@ import {
   TableFixedColumns,
   TableHeaderRow,
   TableSelection,
-  VirtualTable,
+  VirtualTable
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@material-ui/core/Paper";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Theme, withStyles } from "@material-ui/core/styles";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 import ErrorRoundedIcon from "@material-ui/icons/ErrorRounded";
@@ -22,11 +22,16 @@ import {
   MappedColumnInfo,
   MappedMatrix,
   MappedRow,
-  RowImportStatus,
+  RowImportStatus
 } from "./MappedMatrix";
 import { lameta_dark_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
-import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
+import {
+  IntegratedSelection,
+  SelectionState,
+  TableColumnResizing,
+  TableColumnWidthInfo
+} from "@devexpress/dx-react-grid";
 
 const kpixelsThatAreNotAvailableToGridHeight = 400;
 const kCharsBeforeWeHaveToShrink = 14;
@@ -35,9 +40,9 @@ const styles = (theme: Theme) => ({
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
     "&:last-child": {
-      borderRight: 0,
-    },
-  },
+      borderRight: 0
+    }
+  }
 });
 const TableComponentBase = ({ classes, ...restProps }) => (
   <Table.Table {...restProps} className={classes.tableStriped} />
@@ -122,7 +127,7 @@ export const MatrixGrid: React.FunctionComponent<{
                 )}
             </div>
           );
-        },
+        }
       },
       // followed by the columns of the spreadsheet
       ...props.matrix.columnInfos.map((columnInfo, columnIndex) => {
@@ -153,12 +158,21 @@ export const MatrixGrid: React.FunctionComponent<{
           ),
           getCellValue: (row: MappedRow) => {
             return getCellComponent(row.cells[columnIndex]);
-          },
+          }
         };
-      }),
+      })
     ];
     return columnObjects;
   }, [props.matrix]);
+
+  /* Doesn't work, see note on <TableColumnResizing/> below
+  const [columnWidths, setColumnWidths] = useState<TableColumnWidthInfo[]>(
+    tableColumns.map((c) => ({
+      columnName: c.name,
+      width: 152
+    }))
+  );
+  */
 
   return (
     <div
@@ -220,6 +234,15 @@ export const MatrixGrid: React.FunctionComponent<{
             // unfortunately we can't use CSS here, we have to know how much of the screen is ours to use
             height={window.innerHeight - kpixelsThatAreNotAvailableToGridHeight}
           />
+          {/* no matter how I configure this, dragging doesn't change the width of the column,
+             but after dragging, using the horizontal scroll bar shows disaster
+            <TableColumnResizing
+              //defaultColumnWidths={columnWidths}
+              columnWidths={columnWidths}
+              onColumnWidthsChange={setColumnWidths}
+              //resizingMode={"nextColumn"}
+              resizingMode={"widget"}
+          /> */}
           <TableHeaderRow />
           <IntegratedSelection />
           <TableSelectionWithDisabledRows />
