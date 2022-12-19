@@ -18,7 +18,7 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog,
+  LametaDialog
 } from "../LametaDialog";
 import { error_color } from "../../containers/theme";
 import { useEffect, useState } from "react";
@@ -39,7 +39,7 @@ enum Mode {
   closed = 0,
   unchanged = 1,
   valid = 2,
-  invalid = 3,
+  invalid = 3
 }
 export const RenameFileDialog: React.FunctionComponent<{}> = () => {
   const [file, setFile] = useState<File>();
@@ -48,7 +48,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
   const [fileNameParts, setFileNameParts] = useState<FileNameParts>();
   const [mode, setMode] = useState<Mode>(Mode.closed);
   const [validationMessage, setValidationMessage] = useState("");
-  const [originalCore, setOriginalCore] = useState("");
+  const [originalFilename, setOriginalFileName] = useState("");
   staticShowRenameDialog = (file: File, folder: Folder) => {
     setFile(file);
     setFilename(Path.basename(file.pathInFolderToLinkFileOrLocalCopy));
@@ -59,12 +59,12 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     );
 
     setFileNameParts(parts);
-    setOriginalCore(parts.core);
+    setOriginalFileName(file.pathInFolderToLinkFileOrLocalCopy);
     setMode(Mode.valid);
   };
   useEffect(() => {
     if (mode !== Mode.closed) {
-      const unchanged = originalCore == fileNameParts?.core;
+      const unchanged = originalFilename == fileNameParts?.core;
       determineValidationProblemsMessage();
       if (unchanged) {
         setMode(Mode.unchanged);
@@ -168,6 +168,8 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
           <span className="affix">{fileNameParts?.prefix}</span>
           <input
             css={css`
+              margin: unset; //app.global.scss interference
+              margin-left: 1px; //else the highlighting can cover the end of the prefix
               width: 1em * 27;
             `}
             autoFocus
@@ -180,7 +182,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
             onChange={(e) =>
               setFileNameParts({
                 ...fileNameParts!,
-                core: e.target.value,
+                core: e.target.value
               })
             }
           />
@@ -237,7 +239,8 @@ function stringMatchOrEmptyString(s: string, regexp: RegExp): string {
 function getUneditablePrefix(filename: string, folderID: string): string {
   // if instead, we wanted to only recognize the prefix pattern if it is there, we'd do this:
   //return filename.startsWith(folderID + "_") ? folderID + "_" : "";
-  return folderID + "_";
+  //return folderID + "_"; see https://www.notion.so/lameta/When-renaming-make-it-possible-to-remove-the-leading-underscore-e9843f3bfc3a43a0bbe0a532a6e8e0db
+  return folderID;
 }
 
 function getUneditableSuffix(
@@ -266,12 +269,18 @@ export function getFileNameParts(fileName: string, folderId: string) {
     prefix: getUneditablePrefix(fileName, folderId),
     core: getCore(fileName, folderId),
     suffix: getUneditableSuffix(fileName, false),
-    suffixWithNoLink: getUneditableSuffix(fileName, true),
+    suffixWithNoLink: getUneditableSuffix(fileName, true)
   };
 }
 function getCore(fileName: string, folderId: string): string {
   const prefix = getUneditablePrefix(fileName, folderId);
   const startAt = fileName.startsWith(prefix) ? prefix.length : 0;
   const suffixLength = getUneditableSuffix(fileName, false).length;
-  return fileName.substr(startAt, fileName.length - (startAt + suffixLength));
+  // about underscore being editable, see https://www.notion.so/lameta/When-renaming-make-it-possible-to-remove-the-leading-underscore-e9843f3bfc3a43a0bbe0a532a6e8e0db
+  const possibleLeadingUnderscore = "_";
+  const r =
+    possibleLeadingUnderscore +
+    fileName.substr(startAt, fileName.length - (startAt + suffixLength));
+
+  return r.replace(/__/g, "_");
 }

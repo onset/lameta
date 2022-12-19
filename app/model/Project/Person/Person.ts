@@ -9,12 +9,12 @@ import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../../other/UserSettings";
 import {
   LanguageFinder,
-  staticLanguageFinder,
+  staticLanguageFinder
 } from "../../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 import { makeObservable, observable } from "mobx";
@@ -91,8 +91,7 @@ export class Person extends Folder {
     metadataFile: FolderMetadataFile,
     files: File[],
     customFieldRegistry: CustomFieldRegistry,
-    updateExternalReferencesToThisProjectComponent: idChangeHandler,
-    languageFinder: LanguageFinder
+    updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
     super(directory, metadataFile, files, customFieldRegistry);
     // we used to not store the name, relying instead on the folder name.
@@ -151,8 +150,7 @@ export class Person extends Folder {
       metadataFile,
       files,
       customFieldRegistry,
-      updateExternalReferencesToThisProjectComponent,
-      languageFinder
+      updateExternalReferencesToThisProjectComponent
     );
   }
   public static saveFolderMetaData() {
@@ -214,7 +212,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
     );
 
     makeObservable(this, {
-      languages: observable,
+      languages: observable
     });
 
     this.finishLoading();
@@ -251,14 +249,14 @@ export class PersonMetadataFile extends FolderMetadataFile {
         code: lang.$.tag,
         primary: lang.$.primary === "true",
         mother: lang.$.mother === "true",
-        father: lang.$.father === "true",
+        father: lang.$.father === "true"
       });
     });
   }
 
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {
     const languageElement = root.element("languages", {
-      type: "xml",
+      type: "xml"
     });
 
     this.languages.forEach((language) => {
