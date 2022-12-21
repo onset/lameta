@@ -90,7 +90,7 @@
   },
   {
     "id": "procedural_discourse",
-    "label": "Procedural Discourse",
+    "label": "Procedural discourse",
     "definition": "An explanation or description of a method, process, or situation having ordered steps.",
     "examples": ["Recipe", "Instructions", "Plan"]
   },
@@ -139,38 +139,23 @@
     "source": "ELAR genres"
   },
   {
-    "id": "personal",
-    "label": "Personal",
+    "id": "personal_narrative",
+    "label": "Personal narrative",
     "source": "ELAR genres"
   },
   {
-    "id": "oral",
-    "label": "Oral",
+    "id": "oral_history",
+    "label": "Oral History",
     "source": "ELAR genres"
   },
   {
-    "id": "history",
-    "label": "History",
+    "id": "folktale",
+    "label": "Folktale",
     "source": "ELAR genres"
   },
   {
-    "id": "folk",
-    "label": "Folk",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "tale",
-    "label": "Tale",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "verbal",
-    "label": "Verbal",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "art",
-    "label": "Art",
+    "id": "verbal_art",
+    "label": "Verbal art",
     "source": "ELAR genres"
   },
   {
@@ -179,8 +164,8 @@
     "source": "ELAR genres"
   },
   {
-    "id": "text",
-    "label": "Text",
+    "id": "procedural_text",
+    "label": "Procedural text",
     "source": "ELAR genres"
   },
   {
@@ -234,23 +219,13 @@
     "source": "ELAR genres"
   },
   {
-    "id": "community",
-    "label": "Community",
+    "id": "community_materials",
+    "label": "Community materials",
     "source": "ELAR genres"
   },
   {
-    "id": "materials",
-    "label": "Materials",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "academic",
-    "label": "Academic",
-    "source": "ELAR genres"
-  },
-  {
-    "id": "output",
-    "label": "Output",
+    "id": "academic_output",
+    "label": "Academic output",
     "source": "ELAR genres"
   },
   {
