@@ -532,14 +532,15 @@ export /*babel doesn't like this: abstract*/ class File {
       // Since we do not expect any new versions of SayMore Classic,
       // (which could theoretically introduce such a situation),
       // I'm living with that risk.
-      Object.keys(knownFieldDefinitions).some((
-        area // e.g. project, session, person
-      ) =>
-        knownFieldDefinitions[area].find(
-          (d: any) =>
-            d.key.toLowerCase() === xmlTag.toLowerCase() ||
-            d.tagInSayMoreClassic === xmlTag
-        )
+      Object.keys(knownFieldDefinitions).some(
+        (
+          area // e.g. project, session, person
+        ) =>
+          knownFieldDefinitions[area].find(
+            (d: any) =>
+              d.key.toLowerCase() === xmlTag.toLowerCase() ||
+              d.tagInSayMoreClassic === xmlTag
+          )
       )
     ) {
       fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
@@ -873,10 +874,11 @@ export /*babel doesn't like this: abstract*/ class File {
       //   newFolderName
       // );
     }
-    this.describedFileOrLinkFilePath = this.internalUpdateNameBasedOnNewFolderName(
-      this.describedFileOrLinkFilePath,
-      newFolderName
-    );
+    this.describedFileOrLinkFilePath =
+      this.internalUpdateNameBasedOnNewFolderName(
+        this.describedFileOrLinkFilePath,
+        newFolderName
+      );
     // this.describedFilePath = this.updateFolderOnly(
     //   this.describedFilePath,
     //   newFolderName

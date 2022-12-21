@@ -10,7 +10,7 @@ import { Field } from "../../../model/field/Field";
 import { locate } from "../../../other/crossPlatformUtilities";
 import {
   LanguageFinder,
-  Language,
+  Language
 } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 const femaleSelected: string = locate("assets/Female_Selected.png");

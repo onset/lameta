@@ -8,7 +8,7 @@ import { Story, Meta } from "@storybook/react";
 import * as XLSX from "xlsx";
 import Spreadsheet from "react-spreadsheet";
 export default {
-  title: "Sheet",
+  title: "Sheet"
 } as Meta;
 
 export const ReactSpreadsheet: Story = () => {
@@ -55,9 +55,9 @@ export const ReactSpreadsheet: Story = () => {
       "participant_4_full_name",
       "participant_4_role",
       "participant_5_full_name",
-      "participant_5_role",
+      "participant_5_role"
     ],
-    ["2021-06-10T06:00:00.000Z", "Take California", "take.mp3"],
+    ["2021-06-10T06:00:00.000Z", "Take California", "take.mp3"]
   ];
 
   const data = raw.map((r) => r.map((c) => ({ value: c })));

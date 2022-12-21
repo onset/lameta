@@ -27,8 +27,8 @@ export const PeopleTab = observer(
           enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
           onClick: (f) => {
             (f as File).renameForConsent();
-          },
-        },
+          }
+        }
       ];
 
       return (

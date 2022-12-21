@@ -2,7 +2,7 @@ import {
   File,
   getStandardMessageAboutLockedFiles,
   kLinkExtensionWithFullStop,
-  OtherFile,
+  OtherFile
 } from "../file/File";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field, FieldType, FieldVisibility } from "../field/Field";
@@ -13,7 +13,7 @@ import {
   NotifyError,
   NotifyWarning,
   NotifyException,
-  NotifyFileAccessProblem,
+  NotifyFileAccessProblem
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -44,7 +44,7 @@ export class FolderGroup {
   constructor() {
     makeObservable(this, {
       items: observable,
-      selectedIndex: observable,
+      selectedIndex: observable
     });
 
     this.items = new Array<Folder>();
@@ -100,7 +100,7 @@ export abstract class Folder {
     makeObservable(this, {
       marked: observable,
       files: observable,
-      selectedFile: observable,
+      selectedFile: observable
     });
 
     this.customFieldRegistry = customFieldRegistry;

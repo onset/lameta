@@ -13,14 +13,15 @@ export function getFieldDefinition(
   );
 }
 export function isKnownFieldKey(key: string): boolean {
-  return Object.keys(knownFieldDefinitions).some((
-    area // e.g. project, session, person
-  ) =>
-    knownFieldDefinitions[area].find(
-      (d: any) =>
-        d.key.toLowerCase() === key.toLowerCase() ||
-        d.tagInSayMoreClassic === key
-    )
+  return Object.keys(knownFieldDefinitions).some(
+    (
+      area // e.g. project, session, person
+    ) =>
+      knownFieldDefinitions[area].find(
+        (d: any) =>
+          d.key.toLowerCase() === key.toLowerCase() ||
+          d.tagInSayMoreClassic === key
+      )
   );
 }
 
@@ -271,7 +272,7 @@ const countries = [
   "Western Sahara",
   "Yemen",
   "Zambia",
-  "Zimbabwe",
+  "Zimbabwe"
 ];
 
 knownFieldDefinitions.project.find(

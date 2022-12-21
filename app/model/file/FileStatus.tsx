@@ -14,9 +14,7 @@ import { locate } from "../../other/crossPlatformUtilities";
 import { t } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
 
-export function getStatusOfFile(
-  f: File
-): {
+export function getStatusOfFile(f: File): {
   missing: boolean;
   status:
     | "normalFile"
@@ -30,7 +28,7 @@ export function getStatusOfFile(
     return {
       missing: false,
       status: "copyInProgress",
-      info: f.copyProgress,
+      info: f.copyProgress
     };
   }
 
@@ -38,7 +36,7 @@ export function getStatusOfFile(
     return {
       missing: true,
       status: "normalFile",
-      info: `Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. ${f.getActualFilePath()}`,
+      info: `Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. ${f.getActualFilePath()}`
     };
   }
 
@@ -46,18 +44,18 @@ export function getStatusOfFile(
     if (f.isLinkFile()) {
       const info = t({
         id: "Linked to {p}",
-        values: { p: f.getActualFilePath() },
+        values: { p: f.getActualFilePath() }
       });
       return {
         missing: false,
         status: "goodLink",
-        info,
+        info
       };
     } else
       return {
         missing: false,
         status: "normalFile",
-        info: `${f.getActualFilePath()}`,
+        info: `${f.getActualFilePath()}`
       };
   }
 
@@ -67,18 +65,17 @@ export function getStatusOfFile(
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info: t`This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.`,
+      info: t`This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.`
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
-      id:
-        "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
-      values: { m: mediaFolder },
+      id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+      values: { m: mediaFolder }
     });
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info,
+      info
     };
   }
 
@@ -89,8 +86,8 @@ export function getStatusOfFile(
       status: "missing",
       info: t({
         id: `lameta expected to find a .link file at {e}`,
-        values: { e: f.pathInFolderToLinkFileOrLocalCopy },
-      }),
+        values: { e: f.pathInFolderToLinkFileOrLocalCopy }
+      })
     };
 
   // we have the link file. We have the media folder. But we cannot find the file itself.
@@ -100,14 +97,13 @@ export function getStatusOfFile(
     subpath
   );
   const info = t({
-    id:
-      "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
-    values: { m: mediaFolder, e: expected },
+    id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+    values: { m: mediaFolder, e: expected }
   });
   return {
     missing: true,
     status: "missing",
-    info,
+    info
   };
 }
 

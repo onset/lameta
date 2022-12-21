@@ -40,7 +40,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         value: c.id,
         label: props.translateChoice(c.label),
         title: tip,
-        source: c.source,
+        source: c.source
       });
     })
     .sort((a: any, b: any) => (a.label as string).localeCompare(b.label));
@@ -54,7 +54,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
       ? matchingOption
       : {
           value: props.field.text,
-          label: props.field.text,
+          label: props.field.text
         };
   }
   return (
@@ -75,35 +75,35 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
             borderRadius: 0,
             borderColor: "rgb(169, 169, 169)",
             boxShadow: state.isFocused ? "0 0 0 1px " + lameta_orange : "unset",
-            "&:hover": { borderColor: lameta_orange },
+            "&:hover": { borderColor: lameta_orange }
           }),
           menu: (provided) => ({
             ...provided,
             marginTop: "0",
-            marginBottom: "0",
+            marginBottom: "0"
           }),
           container: (provided) => ({
             ...provided,
-            marginTop: "2px",
+            marginTop: "2px"
           }),
           valueContainer: (provided) => ({
             ...provided,
             paddingLeft: "2px",
-            paddingTop: "0",
+            paddingTop: "0"
           }),
           input: (provided) => ({
             ...provided,
-            height: "20px",
+            height: "20px"
           }),
           indicatorsContainer: (provided) => ({
             ...provided,
-            height: "26px",
+            height: "26px"
           }),
           dropdownIndicator: (provided) => ({
             ...provided,
             height: "26px",
-            padding: "1px",
-          }),
+            padding: "1px"
+          })
         }}
         onChange={(s: any) => {
           props.field.setValueFromString(
@@ -129,7 +129,7 @@ const CustomOption = (optionProps) => {
     isSelected,
     innerRef,
     innerProps,
-    getStyles,
+    getStyles
   } = optionProps;
   return (
     <Tooltip
@@ -146,14 +146,14 @@ const CustomOption = (optionProps) => {
           backgroundColor: optionProps.isFocused ? lameta_orange : "white",
           fontWeight: optionProps.isSelected ? "bold" : "normal",
           fontStyle: optionProps.data.source === "custom" ? "italic" : "",
-          color: "black",
+          color: "black"
         }}
         className={cx(
           {
             option: true,
             "option--is-disabled": isDisabled,
             "option--is-focused": isFocused,
-            "option--is-selected": isSelected,
+            "option--is-selected": isSelected
           },
           className
         )}

@@ -93,7 +93,7 @@ export function loadOLACRoles(): IChoice[] {
   return xmlAsObject.OLAC_doc.body.section[1].term.map((t: any) => ({
     id: t.code,
     label: t.name,
-    description: t.definition,
+    description: t.definition
   }));
 
   //xmlAsObject[Object.keys(xmlAsObject)[0]];

@@ -5,7 +5,7 @@ import * as temp from "temp";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import {
   setCurrentProjectId,
-  setMediaFolderOrEmptyForThisProjectAndMachine,
+  setMediaFolderOrEmptyForThisProjectAndMachine
 } from "../Project/MediaFolderAccess";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 

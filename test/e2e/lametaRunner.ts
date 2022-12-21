@@ -57,7 +57,7 @@ export default class lametaRunner {
       path: electronPath.toString(),
       args: [Path.join(__dirname, "..", "..", "app")],
       //doesn't seem to work.. maybe something else overrides
-      env: { NODE_ENV: "test" },
+      env: { NODE_ENV: "test" }
     });
 
     // "Unable to find Electron app at ____\sayles\app" here can be caused

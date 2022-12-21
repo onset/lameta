@@ -5,25 +5,25 @@ import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { PersonMetadataFile } from "./Person";
 import {
   LanguageFinder,
-  setupLanguageFinderForTests,
+  setupLanguageFinderForTests
 } from "../../../languageFinder/LanguageFinder";
 
 import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../../../other/xmlUnitTestUtils";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 import * as mobx from "mobx";
 mobx.configure({
-  enforceActions: "never",
+  enforceActions: "never"
 });
 let personDirectory;
 let personId;
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: "",
+  englishName: ""
 }));
 
 describe("Person Languages Read", () => {
@@ -117,19 +117,19 @@ describe("Person Languages Read", () => {
       code: "fra",
       mother: false,
       father: true,
-      primary: true,
+      primary: true
     });
     f.languages.push({
       code: "spa",
       mother: true,
       father: false,
-      primary: false,
+      primary: false
     });
     f.languages.push({
       code: "qaa",
       mother: true, // but we should only output the first one
       father: true, // but we should only output the first one
-      primary: true, // but we should only output the first one
+      primary: true // but we should only output the first one
     });
     const x = f.getXml();
     setResultXml(x);
@@ -153,7 +153,7 @@ describe("Person Languages Read", () => {
       code: "foo",
       mother: true,
       father: true,
-      primary: true,
+      primary: true
     });
     setResultXml(f.getXml());
     expect("Person/languages/language").toHaveCount(1);

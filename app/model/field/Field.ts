@@ -5,7 +5,7 @@ import { Person } from "../Project/Person/Person";
 import moment from "moment";
 import {
   translateFieldLabel,
-  currentUILanguage,
+  currentUILanguage
 } from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
 import { Folder } from "../Folder/Folder";
@@ -29,11 +29,11 @@ export enum FieldType {
   MultiLanguage,
   PersonLanguageList,
   Function,
-  Boolean,
+  Boolean
 }
 export enum FieldVisibility {
   Always,
-  IfNotEmpty,
+  IfNotEmpty
 }
 
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
@@ -118,7 +118,7 @@ export class Field {
     // imdiIsClosedVocabulary?: boolean
   ) {
     makeObservable(this, {
-      textHolder: observable,
+      textHolder: observable
     });
 
     this.key = key;
@@ -289,7 +289,7 @@ export class Field {
       case FieldType.PersonLanguageList:
         return {
           type: "personLanguageList",
-          value: Field.escapeSpecialChars(this.text),
+          value: Field.escapeSpecialChars(this.text)
         };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
@@ -324,7 +324,7 @@ export class Field {
           id: v,
           label: this.text,
           description: "",
-          source: "custom",
+          source: "custom"
         };
         this.definition.complexChoices?.push(newChoice);
       }
@@ -347,7 +347,7 @@ export class HasConsentField extends Field {
     this.definition = new FieldDefinition({
       key: "hasConsent",
       englishLabel: "Consent",
-      persist: false,
+      persist: false
     });
   }
   public hasConsent(): boolean {
@@ -369,7 +369,7 @@ export class PersonDisplayNameField extends Field {
     this.definition = new FieldDefinition({
       key: "displayName",
       englishLabel: "Person",
-      persist: false,
+      persist: false
     });
   }
   public get text(): string {

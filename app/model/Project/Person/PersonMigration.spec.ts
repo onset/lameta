@@ -5,13 +5,13 @@ import { Field, FieldType } from "../../field/Field";
 import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateOnePersonLanguageFromNameToCode,
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages
 } from "./PersonMigration";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: "",
+  englishName: ""
 }));
 
 // this migration happened before we switched to the new PersonLanguages structure
@@ -70,7 +70,7 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
       code: "tpi",
       primary: true,
       mother: true,
-      father: true,
+      father: true
     });
   });
   it("should create multiple languages if there is no overlap between primary, father, mother, other", () => {
@@ -91,31 +91,31 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
       code: "tpi",
       primary: true,
       mother: false,
-      father: false,
+      father: false
     });
     expect(languages[1]).toStrictEqual({
       code: "en",
       primary: false,
       mother: true,
-      father: false,
+      father: false
     });
     expect(languages[2]).toStrictEqual({
       code: "fr",
       primary: false,
       mother: false,
-      father: true,
+      father: true
     });
     expect(languages[3]).toStrictEqual({
       code: "de",
       primary: false,
       mother: false,
-      father: false,
+      father: false
     });
     expect(languages[4]).toStrictEqual({
       code: "etr",
       primary: false,
       mother: false,
-      father: false,
+      father: false
     });
   });
 });

@@ -17,7 +17,7 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog,
+  LametaDialog
 } from "../LametaDialog";
 
 interface IProps {

@@ -1,7 +1,7 @@
 import { NotifyWarning } from "../../components/Notify";
 import {
   getMediaFolderOrEmptyForProjectAndMachine,
-  setMediaFolderOrEmptyForProjectAndMachine,
+  setMediaFolderOrEmptyForProjectAndMachine
 } from "../../other/UserSettings";
 
 let sCurrentProjectId: string = "";

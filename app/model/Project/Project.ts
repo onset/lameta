@@ -452,8 +452,9 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol: this.properties.getTextField("accessProtocol").textHolder
-            .textInDefaultLanguage,
+          protocol:
+            this.properties.getTextField("accessProtocol").textHolder
+              .textInDefaultLanguage,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -480,9 +481,8 @@ export class Project extends Folder {
           "en" // currently we only use "en" for this
         ],
       (newValue) => {
-        const currentProtocol = this.properties.getTextStringOrEmpty(
-          "accessProtocol"
-        );
+        const currentProtocol =
+          this.properties.getTextStringOrEmpty("accessProtocol");
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -865,9 +865,8 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
-      "vernacularIso3CodeAndName"
-    );
+    const projectDefaultContentLanguage: string =
+      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project

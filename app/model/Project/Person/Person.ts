@@ -117,7 +117,8 @@ export class Person extends Folder {
       });
       */
     this.knownFields = knownFieldDefinitions.person; // for csv export
-    this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
+    this.updateExternalReferencesToThisPerson =
+      updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
     this.migrateFromPreviousVersions();
   }
@@ -276,9 +277,10 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-        language.code
-      );
+      const name =
+        staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+          language.code
+        );
       if (language.code.trim().length > 0) {
         const fieldName =
           fieldNameIndex === 0

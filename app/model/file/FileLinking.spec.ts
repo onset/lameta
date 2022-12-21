@@ -6,7 +6,7 @@ import * as temp from "temp";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import {
   setCurrentProjectId,
-  setMediaFolderOrEmptyForThisProjectAndMachine,
+  setMediaFolderOrEmptyForThisProjectAndMachine
 } from "../Project/MediaFolderAccess";
 import { i18nUnitTestPrep } from "../../other/localization";
 i18nUnitTestPrep();

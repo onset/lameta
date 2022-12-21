@@ -9,9 +9,11 @@ import { NotifyRenameProblem } from "../../components/Notify";
 
 // Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,
 // and change the id inside the metadata file.
-export function duplicateFolder(
-  folder: Folder
-): { directory: string; metadataFilePath: string; success: boolean } {
+export function duplicateFolder(folder: Folder): {
+  directory: string;
+  metadataFilePath: string;
+  success: boolean;
+} {
   try {
     folder.saveAllFilesInFolder();
     //const name = Path.basename(folder.directory);
@@ -80,13 +82,13 @@ export function duplicateFolder(
     return {
       directory: pathOfDuplicate,
       metadataFilePath: fixedDuplicateMetadataFilePath,
-      success: true,
+      success: true
     };
   } catch (err) {
     ShowMessageDialog({
       title: `Error`,
       text: `There was an error while duplicating ${folder.directory}: ${err}`,
-      buttonText: "OK",
+      buttonText: "OK"
     });
     return { success: false, directory: "", metadataFilePath: "" };
   }

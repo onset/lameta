@@ -26,7 +26,7 @@ class ParentButton extends React.Component<IProps> {
         type="button"
         style={{
           visibility:
-            this.props.childLanguage.text.length === 0 ? "hidden" : "visible",
+            this.props.childLanguage.text.length === 0 ? "hidden" : "visible"
         }}
         className={"state " + (matching ? " on" : "")}
         title={t`Indicates that this is the father or mother's primary language.`}

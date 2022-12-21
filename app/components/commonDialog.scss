@@ -117,12 +117,12 @@ right (see release notes dialog)*/
   // }
 }
 // get the buttons ordered according to operating system preference
-body.win32 .reverseOrderOnMac{
+body.win32 .reverseOrderOnMac {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
 }
-body:not(.win32) .reverseOrderOnMac{
+body:not(.win32) .reverseOrderOnMac {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-start;

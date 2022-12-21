@@ -26,7 +26,7 @@ export const PeopleChooser: React.FunctionComponent<
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange },
+      "&:hover": { borderColor: saymore_orange }
     }),
     multiValue: (styles) => {
       return {
@@ -38,8 +38,8 @@ export const PeopleChooser: React.FunctionComponent<
         color: "lightgray", // for the "x"
         ":hover": {
           borderColor: saymore_orange,
-          cursor: "pointer",
-        },
+          cursor: "pointer"
+        }
       };
     },
 
@@ -48,9 +48,9 @@ export const PeopleChooser: React.FunctionComponent<
       //color: "white",
       ":hover": {
         backgroundColor: saymore_orange,
-        color: "white",
-      },
-    }),
+        color: "white"
+      }
+    })
   };
 
   //const label: string = props.field.labelInUILanguage;
@@ -58,7 +58,7 @@ export const PeopleChooser: React.FunctionComponent<
     return new Object({
       value: "choice" + index, // only function of this is as a unique key
       contribution: new Contribution(name, "participant", ""),
-      label: name,
+      label: name
     });
   });
 
@@ -67,7 +67,7 @@ export const PeopleChooser: React.FunctionComponent<
     .map((c, index) => ({
       value: "existing" + index, // only function of this is as a unique key
       label: c.personReference + ":" + (c.role || ""),
-      contribution: c,
+      contribution: c
     }));
 
   const PersonAndRolePill = ({ children, data, innerProps, isDisabled }) => {

@@ -9,7 +9,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
-  value,
+  value
 } from "../../other/xmlUnitTestUtils";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 
@@ -19,9 +19,7 @@ function getPretendAudioFile(): string {
   return path;
 }
 
-function writeSessionFile(
-  contents: string
-): {
+function writeSessionFile(contents: string): {
   tmpFolder;
   sessionFolder;
   filePath;

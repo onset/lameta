@@ -43,7 +43,7 @@ enum Mode {
   choosing = 1,
   exporting = 2,
   copying = 3,
-  finished = 4,
+  finished = 4
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
@@ -71,7 +71,8 @@ export const ExportDialog: React.FunctionComponent<{
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
     if (props.projectHolder && props.projectHolder.project) {
-      const count = props.projectHolder!.project!.sessions.countOfMarkedFolders();
+      const count =
+        props.projectHolder!.project!.sessions.countOfMarkedFolders();
       setCountOfMarkedSessions(count);
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");
@@ -113,10 +114,10 @@ export const ExportDialog: React.FunctionComponent<{
               ? [
                   {
                     extensions: ["zip"],
-                    name: t`ZIP Archive`,
-                  },
+                    name: t`ZIP Archive`
+                  }
                 ]
-              : [],
+              : []
         })
         .then((result) => {
           if (result.canceled) {

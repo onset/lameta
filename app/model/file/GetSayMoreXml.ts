@@ -17,7 +17,7 @@ export default function getSayMoreXml(
   try {
     const root = xmlbuilder.create(xmlRootName, {
       version: "1.0",
-      encoding: "utf-8",
+      encoding: "utf-8"
     });
     // 0.0.0 because we haven't started using this yet. It is just here  that in the future
     // *if* we use it, old versions will know not to open the file. Note, we would never just replace
@@ -69,7 +69,7 @@ export default function getSayMoreXml(
       pretty: true,
       indent: "  ",
       /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
-      allowEmpty: true,
+      allowEmpty: true
     });
   } catch (error) {
     NotifyException(
@@ -104,7 +104,7 @@ function writeElementGroup(
   doOutputEmptyFields: boolean // used for watching empty custom fields
 ) {
   const groupParent = root.element(groupTag, {
-    type: "xml",
+    type: "xml"
   });
 
   let didWriteAtLeastOne = false;
@@ -133,7 +133,7 @@ function writeContributions(
   contributions: Contribution[]
 ) {
   const contributionsElement = root.element("contributions", {
-    type: "xml",
+    type: "xml"
   });
   contributions.forEach((contribution) => {
     if (

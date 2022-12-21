@@ -14,7 +14,7 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog,
+  LametaDialog
 } from "../LametaDialog";
 import { Button } from "@material-ui/core";
 
@@ -27,17 +27,15 @@ export { staticShowDeleteDialog as ShowDeleteDialog };
 enum Mode {
   closed = 0,
   confirming = 1,
-  deleting = 2,
+  deleting = 2
 }
 export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>(Mode.closed);
   const [deletionAction, setDeletionAction] = React.useState<() => void>(
     () => () => {}
   );
-  const [
-    descriptionOfWhatWillBeDeleted,
-    setDescriptionOfWhatWillBeDeleted,
-  ] = React.useState("__");
+  const [descriptionOfWhatWillBeDeleted, setDescriptionOfWhatWillBeDeleted] =
+    React.useState("__");
   staticShowDeleteDialog = (description: string, deleteAction: () => void) => {
     setDescriptionOfWhatWillBeDeleted(description);
     setMode(Mode.confirming);

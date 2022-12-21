@@ -7,7 +7,7 @@ const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
-import { Set } from "typescript-collections"
+import { Set } from "typescript-collections";
 import {
   getImdiResourceTypeForPath,
   GetFileFormatInfoForPath,
@@ -16,7 +16,7 @@ import {
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
-import { sanitizeForArchive } from "../other/sanitizeForArchive"
+import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
@@ -680,9 +680,8 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
-      "access"
-    );
+    const accessCode =
+      this.folderInFocus.properties.getTextStringOrEmpty("access");
     if (accessCode.length === 0) {
       return; // if the folder doesn't have an access code, then there is nothing for us to output
       // this can happen on a Session, and will always happen if the file (e.g. an image) is

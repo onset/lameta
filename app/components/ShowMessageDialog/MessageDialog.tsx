@@ -13,7 +13,7 @@ import { locate } from "../../other/crossPlatformUtilities";
 import {
   DialogBottomButtons,
   DialogButton,
-  LametaDialog,
+  LametaDialog
 } from "../LametaDialog";
 
 interface IConfig {
@@ -34,7 +34,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     title: "",
     text: "",
     buttonText: "",
-    width: "",
+    width: ""
   });
   staticShowMessageDialog = (c) => {
     setConfig(c);

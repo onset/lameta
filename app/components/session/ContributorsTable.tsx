@@ -111,12 +111,12 @@ class ContributorsTable extends React.Component<IProps> {
       {
         Header: t`Name`,
         accessor: "name",
-        Cell: (cellInfo: any) => this.renderPerson(cellInfo),
+        Cell: (cellInfo: any) => this.renderPerson(cellInfo)
       },
       {
         Header: t`Role`,
         accessor: "role",
-        Cell: (cellInfo: any) => this.renderRole(cellInfo),
+        Cell: (cellInfo: any) => this.renderRole(cellInfo)
       },
       /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
@@ -127,14 +127,14 @@ class ContributorsTable extends React.Component<IProps> {
       {
         Header: t`Comments`,
         accessor: "comments",
-        Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
       },
       {
         //Header: i18n._(t`Comments`),
         maxWidth: 40,
         accessor: "delete",
-        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo),
-      },
+        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)
+      }
     ];
 
     return (

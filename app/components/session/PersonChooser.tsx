@@ -23,16 +23,16 @@ class PersonChooser extends React.Component<IProps> {
       container: (styles, { data }) => {
         return {
           ...styles,
-          border: this.props.highlight ? "solid 2px " + saymore_orange : "none",
+          border: this.props.highlight ? "solid 2px " + saymore_orange : "none"
         };
-      },
+      }
     };
 
     //console.log("person name: " + JSON.stringify(this.props.name));
     const choices = this.props.getPeopleNames().map((c) => {
       return new Object({
         value: c,
-        label: c,
+        label: c
       });
     });
     /* Question: Should we allow contributors that we don't have a "Person" (Actor) record for?

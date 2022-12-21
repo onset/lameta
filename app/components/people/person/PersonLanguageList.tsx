@@ -11,13 +11,13 @@ import ReactDOM from "react-dom";
 import {
   SortableContainer,
   SortableElement,
-  SortableHandle,
+  SortableHandle
 } from "react-sortable-hoc";
 // @ts-ignore
 import dragIcon from "drag-affordance.svg";
 import {
   Person,
-  maxOtherLanguages,
+  maxOtherLanguages
 } from "../../../model/Project/Person/Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
@@ -77,8 +77,9 @@ export const PersonLanguageList: React.FunctionComponent<{
     () => props.person.properties.getFieldDefinition("languages"),
     []
   );
-  const [newLanguagePlaceholder, setNewLanguagePlaceholder] =
-    useState<IPersonLanguage | undefined>(undefined);
+  const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
+    IPersonLanguage | undefined
+  >(undefined);
   const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {

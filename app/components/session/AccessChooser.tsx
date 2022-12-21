@@ -21,18 +21,17 @@ class AccessChooser extends React.Component<
   }
 
   public render() {
-    const options = this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
-      (c) => {
+    const options =
+      this.props.authorityLists.accessChoicesOfCurrentProtocol.map((c) => {
         return new Object({
           value: c.label,
           label:
             translateAccessProtocol(c.label) +
             (c.description.length > 0
               ? ":  " + c.description // not localized yet
-              : ""),
+              : "")
         });
-      }
-    );
+      });
 
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {
@@ -44,7 +43,7 @@ class AccessChooser extends React.Component<
         : {
             value: this.props.field.text,
             label: this.props.field.text + " <-- Invalid Access",
-            title: "This value is not in the current access protocol.",
+            title: "This value is not in the current access protocol."
           };
     }
 
@@ -73,41 +72,41 @@ class AccessChooser extends React.Component<
               boxShadow: state.isFocused
                 ? "0 0 0 1px " + saymore_orange
                 : "unset",
-              "&:hover": { borderColor: saymore_orange },
+              "&:hover": { borderColor: saymore_orange }
             }),
             menu: (provided) => ({
               ...provided,
               marginTop: "0",
-              marginBottom: "0",
+              marginBottom: "0"
             }),
             container: (provided) => ({
               ...provided,
-              marginTop: "2px",
+              marginTop: "2px"
             }),
             valueContainer: (provided) => ({
               ...provided,
               paddingLeft: "2px",
-              paddingTop: "0",
+              paddingTop: "0"
             }),
             input: (provided) => ({
               ...provided,
-              height: "20px",
+              height: "20px"
             }),
             indicatorsContainer: (provided) => ({
               ...provided,
-              height: "26px",
+              height: "26px"
             }),
             dropdownIndicator: (provided) => ({
               ...provided,
               height: "26px",
-              padding: "1px",
+              padding: "1px"
             }),
             option: (provided, state) => ({
               ...provided,
               color: "black",
               backgroundColor: state.isFocused ? saymore_orange : "white",
-              fontWeight: state.isSelected ? "bold" : "normal",
-            }),
+              fontWeight: state.isSelected ? "bold" : "normal"
+            })
           }}
         />
       </div>

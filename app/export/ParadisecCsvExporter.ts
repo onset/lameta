@@ -237,9 +237,7 @@ function getContributions(project: Project, session: Session): string[] {
   });
   return cols;
 }
-export function parseNameIntoFirstAndLast(
-  depositor: string
-): {
+export function parseNameIntoFirstAndLast(depositor: string): {
   first: string;
   last: string;
 } {

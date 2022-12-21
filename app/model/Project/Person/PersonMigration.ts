@@ -20,7 +20,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
         code: primary.text,
         primary: true,
         mother: false,
-        father: false,
+        father: false
       });
     properties.remove("primaryLanguage");
     let x = properties.getTextFieldOrUndefined("mothersLanguage");
@@ -33,7 +33,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
           code: x.text,
           primary: false,
           mother: true,
-          father: false,
+          father: false
         });
       }
     }
@@ -49,7 +49,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
           code: x.text,
           primary: false,
           mother: false,
-          father: true,
+          father: true
         });
       }
     }
@@ -64,7 +64,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
             code: x.text,
             primary: false,
             mother: false,
-            father: false,
+            father: false
           });
         }
       }
@@ -77,9 +77,10 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
     );
     if (legacyLearnedin && legacyLearnedin.text) {
       if (primary && primary.text) {
-        const primaryLanguageName = staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-          primary.text
-        );
+        const primaryLanguageName =
+          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+            primary.text
+          );
         const d = properties.getTextStringOrEmpty("description");
         const descriptionToAdd = `${primaryLanguageName} learned in ${legacyLearnedin}.`;
         // if they are going back and forth with SayMore, we might already have this text. In which case do not add it again.
@@ -97,14 +98,11 @@ export function migrateLegacyPersonLanguagesFromNameToCode(
 ) {
   // const x = properties.getTextStringOrEmpty("fathersLanguage"); //??
   // console.log("fl: " + x);
-  [
-    "primaryLanguage",
-    "fathersLanguage",
-    "mothersLanguage",
-  ].forEach((fieldName) =>
-    migrateOnePersonLanguageFromNameToCode(
-      properties.getTextFieldOrUndefined(fieldName)
-    )
+  ["primaryLanguage", "fathersLanguage", "mothersLanguage"].forEach(
+    (fieldName) =>
+      migrateOnePersonLanguageFromNameToCode(
+        properties.getTextFieldOrUndefined(fieldName)
+      )
   );
   for (let i = 0; i < maxOtherLanguages; i++) {
     migrateOnePersonLanguageFromNameToCode(
@@ -123,9 +121,8 @@ export function migrateOnePersonLanguageFromNameToCode(
     if (!nameOrCode) {
       return; // leave it alone
     }
-    const foundCode = staticLanguageFinder.findCodeFromCodeOrLanguageName(
-      nameOrCode
-    );
+    const foundCode =
+      staticLanguageFinder.findCodeFromCodeOrLanguageName(nameOrCode);
     const valueToUse = foundCode === "und" ? nameOrCode : foundCode;
     return field.setValueFromString(valueToUse);
 

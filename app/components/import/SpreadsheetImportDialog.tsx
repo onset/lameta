@@ -11,20 +11,20 @@ import {
   DialogMiddle,
   DialogTitle,
   LametaDialog,
-  useSetupLametaDialog,
+  useSetupLametaDialog
 } from "../LametaDialog";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
 import {
   IImportMapping,
-  makeMappedMatrixFromSpreadsheet,
+  makeMappedMatrixFromSpreadsheet
 } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
 import {
   addImportMatrixToProject,
-  availableSpreadsheetMappings,
+  availableSpreadsheetMappings
 } from "./MatrixImporter";
 import * as Path from "path";
 import * as fs from "fs";
@@ -64,7 +64,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   enum Mode {
     normal = 0,
     startImporting = 1,
-    importing = 2,
+    importing = 2
   }
   const [mode, setMode] = useState<Mode>(Mode.normal);
 
@@ -124,11 +124,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
   }
 
-  useEffect(() => countChosenRows(), [
-    props.projectHolder.project,
-    path,
-    matrix,
-  ]);
+  useEffect(
+    () => countChosenRows(),
+    [props.projectHolder.project, path, matrix]
+  );
 
   const title =
     folderType === "session"
@@ -196,10 +195,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   filters: [
                     {
                       name: "Spreadsheet Files",
-                      extensions: ["csv", "xlsx", "xls", "ods"],
-                    },
+                      extensions: ["csv", "xlsx", "xls", "ods"]
+                    }
                   ],
-                  defaultPath: dir,
+                  defaultPath: dir
                 };
 
                 ipcRenderer.invoke("showOpenDialog", options).then((result) => {

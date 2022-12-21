@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Trans } from "@lingui/macro";
 import {
   Person,
-  maxOtherLanguages,
+  maxOtherLanguages
 } from "../../../model/Project/Person/Person";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";

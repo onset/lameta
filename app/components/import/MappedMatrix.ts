@@ -8,7 +8,7 @@ export enum CellImportStatus {
   OK = "OK",
   /* will be added to an open list */ Addition = "Addition",
   NotInClosedVocabulary = "NotInClosedVocabulary",
-  MissingKeyDef = "MissingKeyDef",
+  MissingKeyDef = "MissingKeyDef"
 }
 
 export class MappedColumnInfo {
@@ -40,7 +40,7 @@ export class MappedColumnInfo {
 export enum RowImportStatus {
   Yes,
   No,
-  NotAllowed,
+  NotAllowed
 }
 export class MappedRow {
   public importStatus: RowImportStatus;
