@@ -4,8 +4,7 @@ import { Person } from "../model/Project/Person/Person";
 import {
   setResultXml,
   xexpect as expect,
-  count,
-  value
+  count
 } from "../other/xmlUnitTestUtils";
 import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
@@ -103,6 +102,26 @@ describe("actor imdi export", () => {
     expect(
       "Actor/Languages/Language[2]/PrimaryLanguage[text()='false']"
     ).toHaveCount(1);
+  });
+
+  it("unlisted language handling", () => {
+    project.setContentLanguageCodeAndName("qaa", "Foo Bar");
+    const gen = new ImdiGenerator(person, project);
+    person.languages.splice(0, 10);
+    person.languages.push({ code: "qaa", mother: true, primary: true });
+    let xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Foo Bar");
+
+    project.setContentLanguageCodeAndName("qoo", "Blah blah");
+    person.languages.splice(0, 10);
+    person.languages.push({ code: "qoo", mother: true, primary: true });
+    const gen2 = new ImdiGenerator(person, project);
+    xml = gen2.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qoo");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Blah blah");
   });
 
   /* we now remove that field, so we cannot test it this way

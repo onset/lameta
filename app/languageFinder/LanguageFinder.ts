@@ -181,19 +181,32 @@ export class LanguageFinder {
     // Enhance: in order to do search without stripDiacritics,
     // we would probably have to strip them off before adding to TrieSearch.
 
-    const langs = this.index.get(s);
+    const langs: ILangIndexEntry[] = this.index.get(s);
     const projectContentLanguage = this.getDefaultLanguage();
-    // handle qaa -- qtx or any other code that we don't have in our index, but the user has
-    // set up as the default language
-    const nameOfProjectDefaultLanguage =
-      projectContentLanguage?.englishName.toLowerCase().trim() || "";
-    if (
-      nameOfProjectDefaultLanguage.startsWith(s.toLowerCase().trim()) ||
-      projectContentLanguage?.iso639_3
-        .toLowerCase()
-        .startsWith(s.toLowerCase().trim())
-    ) {
-      langs.push(projectContentLanguage!);
+    if (projectContentLanguage) {
+      // handle qaa -- qtx or any other code that we don't have in our index, but the user has
+      // set up as the default language
+      const nameOfProjectDefaultLanguage =
+        projectContentLanguage.englishName.toLowerCase().trim() || "";
+      if (
+        nameOfProjectDefaultLanguage.startsWith(s.toLowerCase().trim()) ||
+        projectContentLanguage.iso639_3
+          .toLowerCase()
+          .startsWith(s.toLowerCase().trim())
+      ) {
+        // The index may have a different name for this important language,
+        // in particular qaa is "Unlisted Language" in the index but we want to show the
+        // name the user has given it in the project settings.
+        const workingLang = langs.find(
+          (l) => l.iso639_3 === projectContentLanguage.iso639_3
+        );
+        if (workingLang) {
+          // example: if index thinks qaa is "Unlisted Language", fix that.
+          workingLang.englishName = projectContentLanguage.englishName;
+        } else {
+          langs.unshift(projectContentLanguage); //sticks at front
+        }
+      }
     }
     return langs;
   }
@@ -218,7 +231,21 @@ export class LanguageFinder {
       { match: "fre", code3: "fra" },
       { match: "deu", code3: "de" }
     ];
+    const projectWorkingLanguage = this.getDefaultLanguage();
     const sorted = langs.sort((a: Language, b: Language) => {
+      if (
+        projectWorkingLanguage &&
+        a.iso639_3 === projectWorkingLanguage.iso639_3
+      ) {
+        return -1;
+      }
+      if (
+        projectWorkingLanguage &&
+        b.iso639_3 === projectWorkingLanguage.iso639_3
+      ) {
+        return 1;
+      }
+
       // if the user types "en", we want to suggest "english" above "en" of vietnam
       if (
         commonLanguages.some((p) => p.match === pfx && a.iso639_3 === p.code3)
@@ -266,7 +293,7 @@ export class LanguageFinder {
       return a.englishName.localeCompare(b.englishName);
     });
 
-    return sorted;
+    return sorted; // ?
   }
 
   public findOneLanguageNameFromCode_Or_ReturnCode(code: string): string {

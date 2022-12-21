@@ -22,20 +22,6 @@ describe("LanguageFinder", () => {
     );
     expect(languageFinder.findOne639_3CodeFromName("tok pisin")).toBe("tpi");
   });
-  it("should find our unlisted code", () => {
-    // when we created the languageFinder, we gave it a function to find out the current default language info
-    // This allows the user to map any code, including the "unlisted" range (qaa-qtx) to a name
-    expect(languageFinder.findMatchesForSelect(kUnlistedCode)[0].iso639_3).toBe(
-      kUnlistedCode
-    );
-    expect(
-      languageFinder.findMatchesForSelect(kUnlistedCode)[0].englishName
-    ).toBe("Foobar");
-    expect(languageFinder.findOne639_3CodeFromName("fooBar", "sorry")).toBe(
-      kUnlistedCode
-    );
-  });
-
   it("should handle no match", () => {
     expect(languageFinder.findOne639_3CodeFromName("", "sorry")).toBe("sorry");
     expect(languageFinder.findOne639_3CodeFromName("")).toBe("und");
@@ -83,6 +69,27 @@ describe("LanguageFinder", () => {
     );
     expect(languageFinder.findCodeFromCodeOrLanguageName("es")).toBe("spa");
   });
+
+  it("findNameOfQaa", () => {
+    const lf_qoo = new LanguageFinder(() => ({
+      englishName: "Foo Bar",
+      iso639_3: "qoo"
+    }));
+    expect(lf_qoo.findOneLanguageNameFromCode_Or_ReturnCode("qoo")).toBe(
+      "Foo Bar"
+    );
+
+    const lf_qaa = new LanguageFinder(() => ({
+      englishName: "Foo Bar",
+      iso639_3: "qaa"
+    }));
+    expect(lf_qaa.findMatchesForSelect("qaa")[0].englishName).toBe("Foo Bar");
+    expect(lf_qaa.findOne639_3CodeFromName("fOo Bar", "not this")).toBe("qaa");
+    expect(lf_qaa.findOneLanguageNameFromCode_Or_ReturnCode("qaa")).toBe(
+      "Foo Bar"
+    );
+  });
+  5;
 
   it("makeMatchesAndLabelsForSelect should handle English well", () => {
     expect(

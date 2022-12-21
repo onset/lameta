@@ -6,9 +6,8 @@ import { Folder } from "../model/Folder/Folder";
 const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
-import { Person, maxOtherLanguages } from "../model/Project/Person/Person";
-import { Set } from "typescript-collections";
-import * as mime from "mime";
+import { Person } from "../model/Project/Person/Person";
+import { Set } from "typescript-collections"
 import {
   getImdiResourceTypeForPath,
   GetFileFormatInfoForPath,
@@ -17,8 +16,7 @@ import {
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
 import { capitalCase } from "capital-case";
-import { sanitizeForArchive } from "../other/sanitizeForArchive";
-import { values } from "mobx";
+import { sanitizeForArchive } from "../other/sanitizeForArchive"
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";

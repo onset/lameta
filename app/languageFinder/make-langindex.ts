@@ -81,9 +81,6 @@ const indexEntries = firstEntryOfEachLanguage.map((entry) => {
   return item;
 });
 
-// Enhance:  since qaa-qtz are all "Unlisted Language", it would be better to not put them in the index, but have code just recognize them.
-indexEntries.push({ iso639_3: "qaa", englishName: "Unlisted Language" });
-
 console.log(`${multipleTagsCount} languages had more than one tag.`);
 
 fs.writeFileSync(

@@ -12,7 +12,7 @@ import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
 import {
   asyncTrash,
-  asyncTrashWithContext,
+  asyncTrashWithContext
 } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
@@ -32,7 +32,7 @@ import {
   NotifyError,
   NotifyException,
   NotifyNoBigDeal,
-  NotifyWarning,
+  NotifyWarning
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
@@ -44,7 +44,7 @@ export class ProjectHolder {
 
   constructor() {
     makeObservable<ProjectHolder, "projectInternal">(this, {
-      projectInternal: observable,
+      projectInternal: observable
     });
   }
 
@@ -174,7 +174,7 @@ export class Project extends Folder {
 
     makeObservable(this, {
       sessions: observable,
-      persons: observable,
+      persons: observable
     });
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
@@ -456,7 +456,7 @@ export class Project extends Folder {
             .textInDefaultLanguage,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
-          ),
+          )
         };
       },
       ({ protocol, customChoices }) => {
@@ -507,7 +507,7 @@ export class Project extends Folder {
       return {
         ...g,
         // bit of a mismatch in the naming
-        description: g.definition,
+        description: g.definition
       };
     });
     console.assert(genreChoices.length > 0);
@@ -547,7 +547,7 @@ export class Project extends Folder {
       ShowMessageDialog({
         title: "Cannot use that name",
         text: msg,
-        buttonText: "OK",
+        buttonText: "OK"
       });
       return false;
     } else {
@@ -582,7 +582,7 @@ export class Project extends Folder {
       remote.dialog
         .showMessageBox({
           title: "lameta",
-          message: t`There is already a Person with that name or code.`,
+          message: t`There is already a Person with that name or code.`
         })
         .then(() => {});
       return false;
@@ -855,6 +855,10 @@ export class Project extends Folder {
     return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
   }*/
 
+  // used only by unit tests
+  public setContentLanguageCodeAndName(code: string, name: string) {
+    this.properties.setText("vernacularIso3CodeAndName", `${code}:${name}`);
+  }
   public getContentLanguageCodeAndName():
     | {
         iso639_3: string;
