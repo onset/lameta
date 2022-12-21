@@ -380,6 +380,10 @@ export /*babel doesn't like this: abstract*/ class File {
       return this.describedFileOrLinkFilePath;
     }
   }
+  public getModifiedDate(): Date | undefined {
+    return this.properties.getDateField("modifiedDate").asDate();
+  }
+
   // These are fields that are computed and which we don't save, but which show up in the UI.
   private addFieldsUsedInternally() {
     if (!fs.existsSync(this.getActualFilePath())) {
