@@ -20,7 +20,6 @@ import ImdiView from "./ImdiView";
 import { File, Contribution } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";
-import SMErrorBoundary from "./SMErrorBoundary";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/macro";
 import userSettings from "../other/UserSettings";
@@ -36,6 +35,7 @@ import {
   getStatusOfFile
 } from "../model/file/FileStatus";
 import { useEffect } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 export interface IProps {
   folder: Folder;
@@ -91,7 +91,9 @@ export const FolderPane: React.FunctionComponent<
           {props.folder.selectedFile && (
             <>
               <FileStatusBlock file={props.folder.selectedFile} />
-              <FileTabs {...props} />
+              <ErrorBoundary>
+                <FileTabs {...props} />
+              </ErrorBoundary>
             </>
           )}
         </div>
@@ -163,30 +165,34 @@ const FileTabs: React.FunctionComponent<
 
   const imdiPanel = userSettings.IMDIMode ? (
     <TabPanel>
-      <ImdiView
-        target={
-          file.type === "Session" || file.type === "Person"
-            ? directoryObject
-            : file
-        }
-        folder={props.folder}
-        project={props.project}
-      />
+      <ErrorBoundary>
+        <ImdiView
+          target={
+            file.type === "Session" || file.type === "Person"
+              ? directoryObject
+              : file
+          }
+          folder={props.folder}
+          project={props.project}
+        />
+      </ErrorBoundary>
     </TabPanel>
   ) : (
     <></>
   );
   const paradisecPanel = userSettings.ParadisecMode ? (
     <TabPanel>
-      <ParadisecView
-        target={
-          file.type === "Session" || file.type === "Person"
-            ? directoryObject
-            : file
-        }
-        folder={props.folder}
-        project={props.project}
-      />
+      <ErrorBoundary>
+        <ParadisecView
+          target={
+            file.type === "Session" || file.type === "Person"
+              ? directoryObject
+              : file
+          }
+          folder={props.folder}
+          project={props.project}
+        />
+      </ErrorBoundary>
     </TabPanel>
   ) : (
     <></>
@@ -255,7 +261,7 @@ const FileTabs: React.FunctionComponent<
             {imdiTab} {paradisecTab}
           </TabList>
           <TabPanel>
-            <SMErrorBoundary
+            <ErrorBoundary
               context={`${directoryObject.displayName} ${
                 directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } Session AutoForm`}
@@ -282,7 +288,7 @@ const FileTabs: React.FunctionComponent<
                   setTabIndex(1);
                 }}
               />
-            </SMErrorBoundary>
+            </ErrorBoundary>
           </TabPanel>
           {contributorsPanel}
           <TabPanel>
@@ -313,7 +319,7 @@ const FileTabs: React.FunctionComponent<
             {imdiTab}
           </TabList>
           <TabPanel>
-            <SMErrorBoundary
+            <ErrorBoundary
               context={`${directoryObject.displayName} ${
                 directoryObject.metadataFile!.pathInFolderToLinkFileOrLocalCopy
               } PersonForm`}
@@ -335,7 +341,7 @@ const FileTabs: React.FunctionComponent<
                 fields={directoryObject.properties}
                 languageFinder={props.project.languageFinder}
               />
-            </SMErrorBoundary>
+            </ErrorBoundary>
           </TabPanel>
           <TabPanel>
             <PersonContributions

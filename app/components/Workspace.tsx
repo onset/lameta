@@ -20,7 +20,6 @@ import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import LametaMenu from "../other/menu";
-import SMErrorBoundary from "./SMErrorBoundary";
 import { t, Trans } from "@lingui/macro";
 import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
@@ -30,6 +29,7 @@ import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { IFolderType } from "../model/Folder/Folder";
 import { MediaFolderDialog } from "./MediaFolderDialog";
+import { ErrorBoundary } from "./ErrorBoundary";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -195,9 +195,9 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (
-              this.props.project.getFolderArrayFromType(folderType) as any
-            ).countOfMarkedFolders() === 0
+            (this.props.project.getFolderArrayFromType(
+              folderType
+            ) as any).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
@@ -280,12 +280,12 @@ class Home extends React.Component<IProps> {
               />
             </TabPanel>
             <TabPanel className={"tab-panel-sessions"}>
-              <SMErrorBoundary>
+              <ErrorBoundary>
                 <SessionsTab
                   project={this.props.project}
                   authorityLists={this.props.authorityLists}
                 />
-              </SMErrorBoundary>
+              </ErrorBoundary>
             </TabPanel>
             <TabPanel className={"tab-panel-people"}>
               <PeopleTab
