@@ -70,6 +70,9 @@ export class CopyManager {
       destPath.indexOf("fssync") > -1
     ) {
       fs.copyFileSync(sourcePath, destPath);
+      // preserve the modified time, which may be helpful to the user
+      var stat = fs.statSync(sourcePath);
+      fs.utimesSync(destPath, stat.atime, stat.mtime);
       return Promise.resolve(destPath);
     }
 
