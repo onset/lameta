@@ -5,6 +5,14 @@ import { csvEncode, kEol } from "./CsvExporter";
 import * as fs from "fs";
 import { sentryBreadCrumb } from "../other/errorHandling";
 
+// see https://github.com/onset/lameta/issues/29
+const kParadisecHeaderRows = `Do not modify this row,Spreadsheet version,3,Spreadsheet date,20201006,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"First enter minimal collection details at the top (if the collection already exists then only Collection ID is necessary), then enter one line per item in the table below. ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Only fill in the yellow fields.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+`; // the closing quote should be on its own line, like this
+
 export function makeParadisecCsv(
   path: string,
   project: Project,
@@ -12,7 +20,11 @@ export function makeParadisecCsv(
 ) {
   sentryBreadCrumb("makeParadisecCsv()");
   const csv =
+    kParadisecHeaderRows +
     makeParadisecProjectFieldsCsv(project) +
+    kEol +
+    kEol + // empty rows requested here: https://github.com/onset/lameta/issues/29
+    kEol +
     kEol +
     kEol +
     makeParadisecSessionCsv(project, sessionFilter);
@@ -225,7 +237,9 @@ function getContributions(project: Project, session: Session): string[] {
   });
   return cols;
 }
-export function parseNameIntoFirstAndLast(depositor: string): {
+export function parseNameIntoFirstAndLast(
+  depositor: string
+): {
   first: string;
   last: string;
 } {
