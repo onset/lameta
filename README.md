@@ -59,6 +59,14 @@ When running lameta, if you see this in the Chrome debug console:
 
 then you need to do `yarn lingui-compile`.
 
+### Publishing a new release
+
+The current process, which I don't love, is this:
+
+1. Change the version in `/app/package.json`
+2. Commit, push. A github action will build installers for Mac and Windows and create an unpublished "Release" on github.
+3. Find that release, type in the description, and publish it.
+
 ## License
 
 MIT
