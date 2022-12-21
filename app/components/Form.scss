@@ -5,7 +5,7 @@ form {
   background-color: transparent; // $color-session;
   overflow: auto;
   //border: solid thin $color-session-outline;
-  margin: 8px;
+  //no: parent should have a padding instead margin: 8px;
   // display: grid;
   // grid-template-columns: 1fr 1fr;
   // grid-gap: 8px;
