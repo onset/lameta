@@ -5,7 +5,7 @@ import {
   Field,
   FieldType,
   HasConsentField,
-  PersonDisplayNameField,
+  PersonDisplayNameField
 } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
@@ -31,7 +31,10 @@ export class FieldSet extends Dictionary<string, Field> {
       return f;
     }
   }
-
+  public getHasValue(key: string): boolean {
+    const f = super.getValue(key);
+    return f !== undefined;
+  }
   // SayMore Classic has a mix of ways to name tags, and it... didn't sit well with me,
   // so all keys in this SayMore are camelCase, internally.
   // Then we map to and from the xml so we still use the same tags for I/O, but maybe

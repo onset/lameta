@@ -381,7 +381,10 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
   public getModifiedDate(): Date | undefined {
-    return this.properties.getDateField("modifiedDate").asDate();
+    // when you drag a file into the filelist, it doesn't have a modifiedDate
+    if (this.properties.getHasValue("modifiedDate"))
+      return this.properties.getDateField("modifiedDate").asDate();
+    return undefined;
   }
 
   // These are fields that are computed and which we don't save, but which show up in the UI.
