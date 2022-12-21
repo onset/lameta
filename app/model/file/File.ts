@@ -101,6 +101,9 @@ export /*babel doesn't like this: abstract*/ class File {
   public get isMedia(): boolean {
     return ["Image", "Audio", "Video"].indexOf(this.type) > -1;
   }
+  public get isImage(): boolean {
+    return "Image" === this.type;
+  }
 
   get type(): string {
     const x = this.properties.getValue("type") as Field;

@@ -680,8 +680,14 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode =
-      this.folderInFocus.properties.getTextStringOrEmpty("access");
+    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
+      "access"
+    );
+    if (accessCode.length === 0) {
+      return; // if the folder doesn't have an access code, then there is nothing for us to output
+      // this can happen on a Session, and will always happen if the file (e.g. an image) is
+      // part of a Person, becuase lameta does not currently support access codes on Persons.
+    }
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
