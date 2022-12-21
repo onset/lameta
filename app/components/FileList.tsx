@@ -94,18 +94,20 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
 
-        const dt: Date = f.getModifiedDate()!; // already local time
+        const dt: Date | undefined = f.getModifiedDate(); // already local time
         // convert the date to YYYY/MM/DD HH:MM
-        const dateDisplay =
-          dt.getFullYear() +
-          "/" +
-          (dt.getMonth() + 1) +
-          "/" +
-          dt.getDate() +
-          " " +
-          dt.getHours() +
-          ":" +
-          dt.getMinutes();
+        let dateDisplay = "";
+        if (dt)
+          dateDisplay =
+            dt.getFullYear() +
+            "/" +
+            (dt.getMonth() + 1) +
+            "/" +
+            dt.getDate() +
+            " " +
+            dt.getHours() +
+            ":" +
+            dt.getMinutes();
 
         return f.copyInProgress ? f.copyProgress : dateDisplay;
       }
