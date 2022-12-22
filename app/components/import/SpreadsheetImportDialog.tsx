@@ -99,7 +99,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
       case Mode.startImporting:
         setMode(Mode.importing);
         window.setTimeout(() => {
-          analyticsEvent("Import", `Import ${folderType} Spreadsheet`, path);
+          analyticsEvent("Import", `Import ${folderType} Spreadsheet`, {
+            path: path
+          });
           addImportMatrixToProject(
             props.projectHolder.project!,
             matrix!,
@@ -124,10 +126,11 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
   }
 
-  useEffect(
-    () => countChosenRows(),
-    [props.projectHolder.project, path, matrix]
-  );
+  useEffect(() => countChosenRows(), [
+    props.projectHolder.project,
+    path,
+    matrix
+  ]);
 
   const title =
     folderType === "session"

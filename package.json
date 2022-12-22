@@ -278,7 +278,7 @@
     "@lingui/react": "^3.9.0",
     "@material-ui/core": "^4.12.1",
     "@material-ui/icons": "^4.11.2",
-    "@segment/analytics-next": "^1.48.0",
+    "@segment/analytics-node": "^0.0.1-beta.8",
     "@sentry/browser": "^6.13.3",
     "@sentry/integrations": "^6.13.3",
     "@types/archiver": "5.3.1",
@@ -383,6 +383,7 @@
     "semver": "^7.3.4",
     "sentence-case": "^3.0.3",
     "source-map-support": "^0.5.0",
+    "spark-md5": "^3.0.2",
     "spectron-menu-addon": "^0.3.3",
     "temp": "^0.9.4",
     "title-case": "^3.0.2",
@@ -400,10 +401,10 @@
   },
   "//remember to match this with github actions in main.yml": "",
   "engines": {
-    "node": "16"
+    "node": " 18.12.1"
   },
   "devEngines": {
-    "node": "16",
+    "node": " 18.12.1",
     "npm": ">=3.x"
   },
   "packageManager": "yarn@3.1.0"
