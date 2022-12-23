@@ -163,7 +163,7 @@ export class UserSettings {
     }
   }
   public Get(name: string, defaultValue: string) {
-    return this.store.get(name) ?? defaultValue;
+    return this.store.get(name, defaultValue);
   }
   public Set(name: string, value: string) {
     this.store.set(name, value);

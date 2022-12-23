@@ -23,23 +23,57 @@ export class Lameta {
     await this.electronApp.close();
   }
 
-  public async clickMenu(menuId: string, itemId: string) {
+  public async clickMenu(
+    menuId: string,
+    menuLabel: string,
+    itemId: string,
+    itemLabel: string
+  ) {
+    console.log(`clickMenu(${menuId}, ${itemId})`);
     const x = { menuId, itemId };
     await this.electronApp.evaluate(
-      async ({ Menu }, params) => {
-        const menu = Menu.getApplicationMenu();
-        const sessionMenu = menu?.getMenuItemById(params.menuId);
-        const importItem = sessionMenu?.submenu?.getMenuItemById(params.itemId);
-        importItem?.click();
+      async ({ Menu, dialog }, params) => {
+        const menubar = Menu.getApplicationMenu();
+        // review: Somehow, the "id" is always undefined, but the "label" is correct.
+        // However if you debug in the browser, the id is there.
+        // dialog.showMessageBoxSync({
+        //   message: `clickMenu(label: ${menubar?.items[3].label} id:${menubar?.items[3].id})`
+        // });
+        // therefore, let's just find by label
+        //const menu = menubar?.getMenuItemById(params.menuId);
+        // find the menu item that has a label, ignoring the "&" character which is used to indicate a keyboard shortcut
+        const menu = menubar?.items.find(
+          (item) => item.label.replace(/&/g, "") === params.menuLabel
+        );
+
+        // dialog.showMessageBoxSync({
+        //   message: `clickMenu(${params.menuId}, ${params.itemId} ${menu?.label})`
+        // });
+        // dialog.showMessageBoxSync({
+        //   message: `clickMenu(${menu?.submenu?.getMenuItemById(params.itemId)})`
+        // });
+        //const importItem = menu?.submenu?.getMenuItemById(params.itemId);
+        const item = menu?.submenu?.items.find(
+          (item) => item.label.replace(/&/g, "") === params.itemLabel
+        );
+        // dialog.showMessageBoxSync({
+        //   message: `clickMenu(${item?.label})`
+        // });
+
+        item?.click();
       },
-      { menuId, itemId }
+      { menuId, menuLabel, itemId, itemLabel }
     );
   }
 
   public async mockShowOpenDialog(pathsToReturn: string[]) {
-    this.electronApp.evaluate(async ({ dialog }, filePaths) => {
-      dialog.showOpenDialog = () =>
-        Promise.resolve({ canceled: false, filePaths });
+    return await this.electronApp.evaluate(async ({ dialog }, filePaths) => {
+      dialog.showOpenDialog = () => {
+        // dialog.showMessageBoxSync({
+        //   message: `mockShowOpenDialog(${JSON.stringify(filePaths)})`
+        // });
+        return Promise.resolve({ canceled: false, filePaths });
+      };
     }, pathsToReturn);
 
     // If we were NOT mocking, and if https://github.com/microsoft/playwright/issues/8278 has been fixed:

@@ -285,7 +285,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         <Button
           variant="contained"
           color="secondary"
-          data-test-id="import"
+          data-testid="import"
           disabled={!path || !chosenCount || mode === Mode.importing}
           onClick={() => {
             setMode(Mode.startImporting);

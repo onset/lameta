@@ -67,6 +67,7 @@ class Home extends React.Component<IProps> {
   private UpdateMenus(currentTabIndex: number) {
     let enableMenu = currentTabIndex === 1;
     const sessionMenu = {
+      id: "session",
       label: "&" + t`Session`,
       submenu: [
         {
@@ -90,6 +91,7 @@ class Home extends React.Component<IProps> {
         },
         { type: "separator" },
         {
+          id: "import_spreadsheet",
           label: "&" + t`Import Spreadsheet of Sessions` + "...",
           accelerator: "CmdOrCtrl+I",
           enabled: enableMenu,
@@ -195,9 +197,9 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (
-              this.props.project.getFolderArrayFromType(folderType) as any
-            ).countOfMarkedFolders() === 0
+            (this.props.project.getFolderArrayFromType(
+              folderType
+            ) as any).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
