@@ -1,6 +1,6 @@
 const Path = require("path");
 const electron = require("electron");
-import "./MainProcessApi"; // this instantiates the API for our render process to call
+import { MainProcessApi } from "./MainProcessApi"; // this instantiates the API for our render process to call
 import Store from "electron-store";
 
 /* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
@@ -25,25 +25,6 @@ import {
 // Note: when actually running the program, stuff will be stored where you expect them,
 // using the name of the app. But running in development, you get everything in just
 // appdata/roaming/electron. Don't worry about that. app.setPath("userData", somewhere...);
-
-// Put this on global so that the renderer process can get at it.
-// When running from code, the path is something like <somewhere>lameta\node_modules\ffmpeg-static\bin\win32\x64\ffmpeg.exe
-// When running from installed, it will be somewhere else, depending on elctron builder's "build" parameters in the package.json
-// see https://stackoverflow.com/a/43389268/723299
-
-// running release/win-unpacked/lameta.exe we get C:\dev\lameta\release\win-unpacked\resources\app.asar\bin\win32\x64\ffprobe.exe
-// running  from installed we get C:\Users\hatto\AppData\Local\Programs\lameta\resources\app.asar\bin\win32\x64\ffprobe.exe
-console.log(
-  ` require("ffprobe-static").path was ${require("ffprobe-static").path}`
-);
-
-(global as any).ffprobepath = require("ffprobe-static")
-  .path // during run from release (win-unpacked or installed)
-  .replace("app.asar", "node_modules/ffprobe-static")
-  // during run from dev
-  .replace("app/", "node_modules/ffprobe-static/");
-
-console.log("Setting global.ffprobepath to " + (global as any).ffprobepath);
 
 let mainWindow: BrowserWindow | undefined;
 
@@ -173,7 +154,9 @@ app.on("ready", () =>
       if (process.env.NODE_ENV === "development") {
         mainWindow.loadURL("http://localhost:3000/app.html");
       } else {
-       */ mainWindow.loadURL(`file://${__dirname}/app.html`);
+       */ mainWindow.loadURL(
+        `file://${__dirname}/../../app.html`
+      );
 
       /*}*/
 
