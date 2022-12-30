@@ -11,6 +11,12 @@ import pkg from "./package.json";
 rmSync(path.join(__dirname, "dist"), { recursive: true, force: true });
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@assets": path.resolve(__dirname, "./assets"),
+      "package.json": path.resolve(__dirname, "./package.json")
+    }
+  },
   plugins: [
     react({
       babel: {

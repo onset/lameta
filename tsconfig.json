@@ -3,7 +3,8 @@
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
     "module": "ESNext",
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "target": "ES2020",
     "lib": [
       "dom",
