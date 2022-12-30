@@ -14,7 +14,7 @@ import {
   SortableHandle
 } from "react-sortable-hoc";
 // @ts-ignore
-import dragIcon from "drag-affordance.svg";
+import dragIcon from "@assets/drag-affordance.svg";
 import {
   Person,
   maxOtherLanguages
@@ -84,7 +84,7 @@ export const PersonLanguageList: React.FunctionComponent<{
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {
     if (props.person.languages.length === 0)
-      setNewLanguagePlaceholder({} as any as IPersonLanguage);
+      setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
     setFocusOnPlaceholder(false);
   }, [props.person.languages]);
 
@@ -137,7 +137,7 @@ export const PersonLanguageList: React.FunctionComponent<{
       {!!newLanguagePlaceholder || (
         <a
           onClick={(x) => {
-            setNewLanguagePlaceholder({} as any as IPersonLanguage);
+            setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
             setFocusOnPlaceholder(true);
           }}
         >

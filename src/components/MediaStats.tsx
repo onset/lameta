@@ -24,12 +24,12 @@ type Stats = object;
 // const ffprobePath = require("@electron/remote").getGlobal("ffprobepath");
 // ffmpeg().setFfprobePath(ffprobePath);
 
-const ffmpegPath = require("ffmpeg-static").replace(
-  "app.asar",
-  "" //app.asar.unpacked"
-);
+// const ffmpegPath = require("ffmpeg-static").replace(
+//   "app.asar",
+//   "" //app.asar.unpacked"
+// );
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+// ffmpeg.setFfmpegPath(ffmpegPath);
 const x = require("ffprobe-static").path;
 console.log(`ffprobe-static.path=${x}`);
 const ffprobePath = require("ffprobe-static")

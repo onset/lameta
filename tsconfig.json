@@ -44,12 +44,11 @@
     ]
   },
   "files": [
-    "app/index.tsx",
-    "app/other/sanitizeForArchive.ts"
+    "src/index.tsx",
   ],
   "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "test/**/*.ts",
     "test/**/*.tsx"
   ],

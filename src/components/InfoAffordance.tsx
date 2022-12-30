@@ -1,7 +1,7 @@
 import React from "react";
 import Tooltip from "react-tooltip-lite";
 // @ts-ignore
-import infoIcon from "info.png";
+import infoIcon from "@assets/info.png";
 // just a little 🛈 with a tooltip of whatever children you give it
 export const InfoAffordance: React.FunctionComponent<{}> = (props) => {
   return (
