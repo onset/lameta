@@ -23,7 +23,7 @@ import userSettings from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
 import * as Sentry from "@sentry/browser";
 
-const genres = require("./Session/genres.json");
+import genres from "./Session/genres.json";
 
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
