@@ -1,0 +1,1675 @@
+diff --git a/node_modules/fs-extra/lib/copy/copy-sync.js b/node_modules/fs-extra/lib/copy/copy-sync.js
+index 8bc6011..617ed7c 100644
+--- a/node_modules/fs-extra/lib/copy/copy-sync.js
++++ b/node_modules/fs-extra/lib/copy/copy-sync.js
+@@ -1,161 +1,171 @@
+-'use strict'
++"use strict";
+ 
+-const fs = require('graceful-fs')
+-const path = require('path')
+-const mkdirsSync = require('../mkdirs').mkdirsSync
+-const utimesMillisSync = require('../util/utimes').utimesMillisSync
+-const stat = require('../util/stat')
++const fs = require("fs" /*graceful-fs*/);
++const path = require("path");
++const mkdirsSync = require("../mkdirs").mkdirsSync;
++const utimesMillisSync = require("../util/utimes").utimesMillisSync;
++const stat = require("../util/stat");
+ 
+-function copySync (src, dest, opts) {
+-  if (typeof opts === 'function') {
+-    opts = { filter: opts }
++function copySync(src, dest, opts) {
++  if (typeof opts === "function") {
++    opts = { filter: opts };
+   }
+ 
+-  opts = opts || {}
+-  opts.clobber = 'clobber' in opts ? !!opts.clobber : true // default to true for now
+-  opts.overwrite = 'overwrite' in opts ? !!opts.overwrite : opts.clobber // overwrite falls back to clobber
++  opts = opts || {};
++  opts.clobber = "clobber" in opts ? !!opts.clobber : true; // default to true for now
++  opts.overwrite = "overwrite" in opts ? !!opts.overwrite : opts.clobber; // overwrite falls back to clobber
+ 
+   // Warn about using preserveTimestamps on 32-bit node
+-  if (opts.preserveTimestamps && process.arch === 'ia32') {
++  if (opts.preserveTimestamps && process.arch === "ia32") {
+     process.emitWarning(
+-      'Using the preserveTimestamps option in 32-bit node is not recommended;\n\n' +
+-      '\tsee https://github.com/jprichardson/node-fs-extra/issues/269',
+-      'Warning', 'fs-extra-WARN0002'
+-    )
++      "Using the preserveTimestamps option in 32-bit node is not recommended;\n\n" +
++        "\tsee https://github.com/jprichardson/node-fs-extra/issues/269",
++      "Warning",
++      "fs-extra-WARN0002"
++    );
+   }
+ 
+-  const { srcStat, destStat } = stat.checkPathsSync(src, dest, 'copy', opts)
+-  stat.checkParentPathsSync(src, srcStat, dest, 'copy')
+-  if (opts.filter && !opts.filter(src, dest)) return
+-  const destParent = path.dirname(dest)
+-  if (!fs.existsSync(destParent)) mkdirsSync(destParent)
+-  return getStats(destStat, src, dest, opts)
++  const { srcStat, destStat } = stat.checkPathsSync(src, dest, "copy", opts);
++  stat.checkParentPathsSync(src, srcStat, dest, "copy");
++  if (opts.filter && !opts.filter(src, dest)) return;
++  const destParent = path.dirname(dest);
++  if (!fs.existsSync(destParent)) mkdirsSync(destParent);
++  return getStats(destStat, src, dest, opts);
+ }
+ 
+-function getStats (destStat, src, dest, opts) {
+-  const statSync = opts.dereference ? fs.statSync : fs.lstatSync
+-  const srcStat = statSync(src)
++function getStats(destStat, src, dest, opts) {
++  const statSync = opts.dereference ? fs.statSync : fs.lstatSync;
++  const srcStat = statSync(src);
+ 
+-  if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts)
+-  else if (srcStat.isFile() ||
+-           srcStat.isCharacterDevice() ||
+-           srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts)
+-  else if (srcStat.isSymbolicLink()) return onLink(destStat, src, dest, opts)
+-  else if (srcStat.isSocket()) throw new Error(`Cannot copy a socket file: ${src}`)
+-  else if (srcStat.isFIFO()) throw new Error(`Cannot copy a FIFO pipe: ${src}`)
+-  throw new Error(`Unknown file: ${src}`)
++  if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
++  else if (
++    srcStat.isFile() ||
++    srcStat.isCharacterDevice() ||
++    srcStat.isBlockDevice()
++  )
++    return onFile(srcStat, destStat, src, dest, opts);
++  else if (srcStat.isSymbolicLink()) return onLink(destStat, src, dest, opts);
++  else if (srcStat.isSocket())
++    throw new Error(`Cannot copy a socket file: ${src}`);
++  else if (srcStat.isFIFO()) throw new Error(`Cannot copy a FIFO pipe: ${src}`);
++  throw new Error(`Unknown file: ${src}`);
+ }
+ 
+-function onFile (srcStat, destStat, src, dest, opts) {
+-  if (!destStat) return copyFile(srcStat, src, dest, opts)
+-  return mayCopyFile(srcStat, src, dest, opts)
++function onFile(srcStat, destStat, src, dest, opts) {
++  if (!destStat) return copyFile(srcStat, src, dest, opts);
++  return mayCopyFile(srcStat, src, dest, opts);
+ }
+ 
+-function mayCopyFile (srcStat, src, dest, opts) {
++function mayCopyFile(srcStat, src, dest, opts) {
+   if (opts.overwrite) {
+-    fs.unlinkSync(dest)
+-    return copyFile(srcStat, src, dest, opts)
++    fs.unlinkSync(dest);
++    return copyFile(srcStat, src, dest, opts);
+   } else if (opts.errorOnExist) {
+-    throw new Error(`'${dest}' already exists`)
++    throw new Error(`'${dest}' already exists`);
+   }
+ }
+ 
+-function copyFile (srcStat, src, dest, opts) {
+-  fs.copyFileSync(src, dest)
+-  if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest)
+-  return setDestMode(dest, srcStat.mode)
++function copyFile(srcStat, src, dest, opts) {
++  fs.copyFileSync(src, dest);
++  if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest);
++  return setDestMode(dest, srcStat.mode);
+ }
+ 
+-function handleTimestamps (srcMode, src, dest) {
++function handleTimestamps(srcMode, src, dest) {
+   // Make sure the file is writable before setting the timestamp
+   // otherwise open fails with EPERM when invoked with 'r+'
+   // (through utimes call)
+-  if (fileIsNotWritable(srcMode)) makeFileWritable(dest, srcMode)
+-  return setDestTimestamps(src, dest)
++  if (fileIsNotWritable(srcMode)) makeFileWritable(dest, srcMode);
++  return setDestTimestamps(src, dest);
+ }
+ 
+-function fileIsNotWritable (srcMode) {
+-  return (srcMode & 0o200) === 0
++function fileIsNotWritable(srcMode) {
++  return (srcMode & 0o200) === 0;
+ }
+ 
+-function makeFileWritable (dest, srcMode) {
+-  return setDestMode(dest, srcMode | 0o200)
++function makeFileWritable(dest, srcMode) {
++  return setDestMode(dest, srcMode | 0o200);
+ }
+ 
+-function setDestMode (dest, srcMode) {
+-  return fs.chmodSync(dest, srcMode)
++function setDestMode(dest, srcMode) {
++  return fs.chmodSync(dest, srcMode);
+ }
+ 
+-function setDestTimestamps (src, dest) {
++function setDestTimestamps(src, dest) {
+   // The initial srcStat.atime cannot be trusted
+   // because it is modified by the read(2) system call
+   // (See https://nodejs.org/api/fs.html#fs_stat_time_values)
+-  const updatedSrcStat = fs.statSync(src)
+-  return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime)
++  const updatedSrcStat = fs.statSync(src);
++  return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime);
+ }
+ 
+-function onDir (srcStat, destStat, src, dest, opts) {
+-  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts)
+-  return copyDir(src, dest, opts)
++function onDir(srcStat, destStat, src, dest, opts) {
++  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts);
++  return copyDir(src, dest, opts);
+ }
+ 
+-function mkDirAndCopy (srcMode, src, dest, opts) {
+-  fs.mkdirSync(dest)
+-  copyDir(src, dest, opts)
+-  return setDestMode(dest, srcMode)
++function mkDirAndCopy(srcMode, src, dest, opts) {
++  fs.mkdirSync(dest);
++  copyDir(src, dest, opts);
++  return setDestMode(dest, srcMode);
+ }
+ 
+-function copyDir (src, dest, opts) {
+-  fs.readdirSync(src).forEach(item => copyDirItem(item, src, dest, opts))
++function copyDir(src, dest, opts) {
++  fs.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
+ }
+ 
+-function copyDirItem (item, src, dest, opts) {
+-  const srcItem = path.join(src, item)
+-  const destItem = path.join(dest, item)
+-  if (opts.filter && !opts.filter(srcItem, destItem)) return
+-  const { destStat } = stat.checkPathsSync(srcItem, destItem, 'copy', opts)
+-  return getStats(destStat, srcItem, destItem, opts)
++function copyDirItem(item, src, dest, opts) {
++  const srcItem = path.join(src, item);
++  const destItem = path.join(dest, item);
++  if (opts.filter && !opts.filter(srcItem, destItem)) return;
++  const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
++  return getStats(destStat, srcItem, destItem, opts);
+ }
+ 
+-function onLink (destStat, src, dest, opts) {
+-  let resolvedSrc = fs.readlinkSync(src)
++function onLink(destStat, src, dest, opts) {
++  let resolvedSrc = fs.readlinkSync(src);
+   if (opts.dereference) {
+-    resolvedSrc = path.resolve(process.cwd(), resolvedSrc)
++    resolvedSrc = path.resolve(process.cwd(), resolvedSrc);
+   }
+ 
+   if (!destStat) {
+-    return fs.symlinkSync(resolvedSrc, dest)
++    return fs.symlinkSync(resolvedSrc, dest);
+   } else {
+-    let resolvedDest
++    let resolvedDest;
+     try {
+-      resolvedDest = fs.readlinkSync(dest)
++      resolvedDest = fs.readlinkSync(dest);
+     } catch (err) {
+       // dest exists and is a regular file or directory,
+       // Windows may throw UNKNOWN error. If dest already exists,
+       // fs throws error anyway, so no need to guard against it here.
+-      if (err.code === 'EINVAL' || err.code === 'UNKNOWN') return fs.symlinkSync(resolvedSrc, dest)
+-      throw err
++      if (err.code === "EINVAL" || err.code === "UNKNOWN")
++        return fs.symlinkSync(resolvedSrc, dest);
++      throw err;
+     }
+     if (opts.dereference) {
+-      resolvedDest = path.resolve(process.cwd(), resolvedDest)
++      resolvedDest = path.resolve(process.cwd(), resolvedDest);
+     }
+     if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
+-      throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`)
++      throw new Error(
++        `Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`
++      );
+     }
+ 
+     // prevent copy if src is a subdir of dest since unlinking
+     // dest in this case would result in removing src contents
+     // and therefore a broken symlink would be created.
+     if (stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
+-      throw new Error(`Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`)
++      throw new Error(
++        `Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`
++      );
+     }
+-    return copyLink(resolvedSrc, dest)
++    return copyLink(resolvedSrc, dest);
+   }
+ }
+ 
+-function copyLink (resolvedSrc, dest) {
+-  fs.unlinkSync(dest)
+-  return fs.symlinkSync(resolvedSrc, dest)
++function copyLink(resolvedSrc, dest) {
++  fs.unlinkSync(dest);
++  return fs.symlinkSync(resolvedSrc, dest);
+ }
+ 
+-module.exports = copySync
++module.exports = copySync;
+diff --git a/node_modules/fs-extra/lib/copy/copy.js b/node_modules/fs-extra/lib/copy/copy.js
+index bc188fb..adfb154 100644
+--- a/node_modules/fs-extra/lib/copy/copy.js
++++ b/node_modules/fs-extra/lib/copy/copy.js
+@@ -1,238 +1,258 @@
+-'use strict'
+-
+-const fs = require('graceful-fs')
+-const path = require('path')
+-const mkdirs = require('../mkdirs').mkdirs
+-const pathExists = require('../path-exists').pathExists
+-const utimesMillis = require('../util/utimes').utimesMillis
+-const stat = require('../util/stat')
+-
+-function copy (src, dest, opts, cb) {
+-  if (typeof opts === 'function' && !cb) {
+-    cb = opts
+-    opts = {}
+-  } else if (typeof opts === 'function') {
+-    opts = { filter: opts }
++"use strict";
++
++const fs = require("fs" /*graceful-fs*/);
++const path = require("path");
++const mkdirs = require("../mkdirs").mkdirs;
++const pathExists = require("../path-exists").pathExists;
++const utimesMillis = require("../util/utimes").utimesMillis;
++const stat = require("../util/stat");
++
++function copy(src, dest, opts, cb) {
++  if (typeof opts === "function" && !cb) {
++    cb = opts;
++    opts = {};
++  } else if (typeof opts === "function") {
++    opts = { filter: opts };
+   }
+ 
+-  cb = cb || function () {}
+-  opts = opts || {}
++  cb = cb || function () {};
++  opts = opts || {};
+ 
+-  opts.clobber = 'clobber' in opts ? !!opts.clobber : true // default to true for now
+-  opts.overwrite = 'overwrite' in opts ? !!opts.overwrite : opts.clobber // overwrite falls back to clobber
++  opts.clobber = "clobber" in opts ? !!opts.clobber : true; // default to true for now
++  opts.overwrite = "overwrite" in opts ? !!opts.overwrite : opts.clobber; // overwrite falls back to clobber
+ 
+   // Warn about using preserveTimestamps on 32-bit node
+-  if (opts.preserveTimestamps && process.arch === 'ia32') {
++  if (opts.preserveTimestamps && process.arch === "ia32") {
+     process.emitWarning(
+-      'Using the preserveTimestamps option in 32-bit node is not recommended;\n\n' +
+-      '\tsee https://github.com/jprichardson/node-fs-extra/issues/269',
+-      'Warning', 'fs-extra-WARN0001'
+-    )
++      "Using the preserveTimestamps option in 32-bit node is not recommended;\n\n" +
++        "\tsee https://github.com/jprichardson/node-fs-extra/issues/269",
++      "Warning",
++      "fs-extra-WARN0001"
++    );
+   }
+ 
+-  stat.checkPaths(src, dest, 'copy', opts, (err, stats) => {
+-    if (err) return cb(err)
+-    const { srcStat, destStat } = stats
+-    stat.checkParentPaths(src, srcStat, dest, 'copy', err => {
+-      if (err) return cb(err)
++  stat.checkPaths(src, dest, "copy", opts, (err, stats) => {
++    if (err) return cb(err);
++    const { srcStat, destStat } = stats;
++    stat.checkParentPaths(src, srcStat, dest, "copy", (err) => {
++      if (err) return cb(err);
+       runFilter(src, dest, opts, (err, include) => {
+-        if (err) return cb(err)
+-        if (!include) return cb()
++        if (err) return cb(err);
++        if (!include) return cb();
+ 
+-        checkParentDir(destStat, src, dest, opts, cb)
+-      })
+-    })
+-  })
++        checkParentDir(destStat, src, dest, opts, cb);
++      });
++    });
++  });
+ }
+ 
+-function checkParentDir (destStat, src, dest, opts, cb) {
+-  const destParent = path.dirname(dest)
++function checkParentDir(destStat, src, dest, opts, cb) {
++  const destParent = path.dirname(dest);
+   pathExists(destParent, (err, dirExists) => {
+-    if (err) return cb(err)
+-    if (dirExists) return getStats(destStat, src, dest, opts, cb)
+-    mkdirs(destParent, err => {
+-      if (err) return cb(err)
+-      return getStats(destStat, src, dest, opts, cb)
+-    })
+-  })
++    if (err) return cb(err);
++    if (dirExists) return getStats(destStat, src, dest, opts, cb);
++    mkdirs(destParent, (err) => {
++      if (err) return cb(err);
++      return getStats(destStat, src, dest, opts, cb);
++    });
++  });
+ }
+ 
+-function runFilter (src, dest, opts, cb) {
+-  if (!opts.filter) return cb(null, true)
+-  Promise.resolve(opts.filter(src, dest))
+-    .then(include => cb(null, include), error => cb(error))
++function runFilter(src, dest, opts, cb) {
++  if (!opts.filter) return cb(null, true);
++  Promise.resolve(opts.filter(src, dest)).then(
++    (include) => cb(null, include),
++    (error) => cb(error)
++  );
+ }
+ 
+-function getStats (destStat, src, dest, opts, cb) {
+-  const stat = opts.dereference ? fs.stat : fs.lstat
++function getStats(destStat, src, dest, opts, cb) {
++  const stat = opts.dereference ? fs.stat : fs.lstat;
+   stat(src, (err, srcStat) => {
+-    if (err) return cb(err)
++    if (err) return cb(err);
+ 
+-    if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts, cb)
+-    else if (srcStat.isFile() ||
+-             srcStat.isCharacterDevice() ||
+-             srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts, cb)
+-    else if (srcStat.isSymbolicLink()) return onLink(destStat, src, dest, opts, cb)
+-    else if (srcStat.isSocket()) return cb(new Error(`Cannot copy a socket file: ${src}`))
+-    else if (srcStat.isFIFO()) return cb(new Error(`Cannot copy a FIFO pipe: ${src}`))
+-    return cb(new Error(`Unknown file: ${src}`))
+-  })
++    if (srcStat.isDirectory())
++      return onDir(srcStat, destStat, src, dest, opts, cb);
++    else if (
++      srcStat.isFile() ||
++      srcStat.isCharacterDevice() ||
++      srcStat.isBlockDevice()
++    )
++      return onFile(srcStat, destStat, src, dest, opts, cb);
++    else if (srcStat.isSymbolicLink())
++      return onLink(destStat, src, dest, opts, cb);
++    else if (srcStat.isSocket())
++      return cb(new Error(`Cannot copy a socket file: ${src}`));
++    else if (srcStat.isFIFO())
++      return cb(new Error(`Cannot copy a FIFO pipe: ${src}`));
++    return cb(new Error(`Unknown file: ${src}`));
++  });
+ }
+ 
+-function onFile (srcStat, destStat, src, dest, opts, cb) {
+-  if (!destStat) return copyFile(srcStat, src, dest, opts, cb)
+-  return mayCopyFile(srcStat, src, dest, opts, cb)
++function onFile(srcStat, destStat, src, dest, opts, cb) {
++  if (!destStat) return copyFile(srcStat, src, dest, opts, cb);
++  return mayCopyFile(srcStat, src, dest, opts, cb);
+ }
+ 
+-function mayCopyFile (srcStat, src, dest, opts, cb) {
++function mayCopyFile(srcStat, src, dest, opts, cb) {
+   if (opts.overwrite) {
+-    fs.unlink(dest, err => {
+-      if (err) return cb(err)
+-      return copyFile(srcStat, src, dest, opts, cb)
+-    })
++    fs.unlink(dest, (err) => {
++      if (err) return cb(err);
++      return copyFile(srcStat, src, dest, opts, cb);
++    });
+   } else if (opts.errorOnExist) {
+-    return cb(new Error(`'${dest}' already exists`))
+-  } else return cb()
++    return cb(new Error(`'${dest}' already exists`));
++  } else return cb();
+ }
+ 
+-function copyFile (srcStat, src, dest, opts, cb) {
+-  fs.copyFile(src, dest, err => {
+-    if (err) return cb(err)
+-    if (opts.preserveTimestamps) return handleTimestampsAndMode(srcStat.mode, src, dest, cb)
+-    return setDestMode(dest, srcStat.mode, cb)
+-  })
++function copyFile(srcStat, src, dest, opts, cb) {
++  fs.copyFile(src, dest, (err) => {
++    if (err) return cb(err);
++    if (opts.preserveTimestamps)
++      return handleTimestampsAndMode(srcStat.mode, src, dest, cb);
++    return setDestMode(dest, srcStat.mode, cb);
++  });
+ }
+ 
+-function handleTimestampsAndMode (srcMode, src, dest, cb) {
++function handleTimestampsAndMode(srcMode, src, dest, cb) {
+   // Make sure the file is writable before setting the timestamp
+   // otherwise open fails with EPERM when invoked with 'r+'
+   // (through utimes call)
+   if (fileIsNotWritable(srcMode)) {
+-    return makeFileWritable(dest, srcMode, err => {
+-      if (err) return cb(err)
+-      return setDestTimestampsAndMode(srcMode, src, dest, cb)
+-    })
++    return makeFileWritable(dest, srcMode, (err) => {
++      if (err) return cb(err);
++      return setDestTimestampsAndMode(srcMode, src, dest, cb);
++    });
+   }
+-  return setDestTimestampsAndMode(srcMode, src, dest, cb)
++  return setDestTimestampsAndMode(srcMode, src, dest, cb);
+ }
+ 
+-function fileIsNotWritable (srcMode) {
+-  return (srcMode & 0o200) === 0
++function fileIsNotWritable(srcMode) {
++  return (srcMode & 0o200) === 0;
+ }
+ 
+-function makeFileWritable (dest, srcMode, cb) {
+-  return setDestMode(dest, srcMode | 0o200, cb)
++function makeFileWritable(dest, srcMode, cb) {
++  return setDestMode(dest, srcMode | 0o200, cb);
+ }
+ 
+-function setDestTimestampsAndMode (srcMode, src, dest, cb) {
+-  setDestTimestamps(src, dest, err => {
+-    if (err) return cb(err)
+-    return setDestMode(dest, srcMode, cb)
+-  })
++function setDestTimestampsAndMode(srcMode, src, dest, cb) {
++  setDestTimestamps(src, dest, (err) => {
++    if (err) return cb(err);
++    return setDestMode(dest, srcMode, cb);
++  });
+ }
+ 
+-function setDestMode (dest, srcMode, cb) {
+-  return fs.chmod(dest, srcMode, cb)
++function setDestMode(dest, srcMode, cb) {
++  return fs.chmod(dest, srcMode, cb);
+ }
+ 
+-function setDestTimestamps (src, dest, cb) {
++function setDestTimestamps(src, dest, cb) {
+   // The initial srcStat.atime cannot be trusted
+   // because it is modified by the read(2) system call
+   // (See https://nodejs.org/api/fs.html#fs_stat_time_values)
+   fs.stat(src, (err, updatedSrcStat) => {
+-    if (err) return cb(err)
+-    return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb)
+-  })
++    if (err) return cb(err);
++    return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb);
++  });
+ }
+ 
+-function onDir (srcStat, destStat, src, dest, opts, cb) {
+-  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts, cb)
+-  return copyDir(src, dest, opts, cb)
++function onDir(srcStat, destStat, src, dest, opts, cb) {
++  if (!destStat) return mkDirAndCopy(srcStat.mode, src, dest, opts, cb);
++  return copyDir(src, dest, opts, cb);
+ }
+ 
+-function mkDirAndCopy (srcMode, src, dest, opts, cb) {
+-  fs.mkdir(dest, err => {
+-    if (err) return cb(err)
+-    copyDir(src, dest, opts, err => {
+-      if (err) return cb(err)
+-      return setDestMode(dest, srcMode, cb)
+-    })
+-  })
++function mkDirAndCopy(srcMode, src, dest, opts, cb) {
++  fs.mkdir(dest, (err) => {
++    if (err) return cb(err);
++    copyDir(src, dest, opts, (err) => {
++      if (err) return cb(err);
++      return setDestMode(dest, srcMode, cb);
++    });
++  });
+ }
+ 
+-function copyDir (src, dest, opts, cb) {
++function copyDir(src, dest, opts, cb) {
+   fs.readdir(src, (err, items) => {
+-    if (err) return cb(err)
+-    return copyDirItems(items, src, dest, opts, cb)
+-  })
++    if (err) return cb(err);
++    return copyDirItems(items, src, dest, opts, cb);
++  });
+ }
+ 
+-function copyDirItems (items, src, dest, opts, cb) {
+-  const item = items.pop()
+-  if (!item) return cb()
+-  return copyDirItem(items, item, src, dest, opts, cb)
++function copyDirItems(items, src, dest, opts, cb) {
++  const item = items.pop();
++  if (!item) return cb();
++  return copyDirItem(items, item, src, dest, opts, cb);
+ }
+ 
+-function copyDirItem (items, item, src, dest, opts, cb) {
+-  const srcItem = path.join(src, item)
+-  const destItem = path.join(dest, item)
++function copyDirItem(items, item, src, dest, opts, cb) {
++  const srcItem = path.join(src, item);
++  const destItem = path.join(dest, item);
+   runFilter(srcItem, destItem, opts, (err, include) => {
+-    if (err) return cb(err)
+-    if (!include) return copyDirItems(items, src, dest, opts, cb)
++    if (err) return cb(err);
++    if (!include) return copyDirItems(items, src, dest, opts, cb);
+ 
+-    stat.checkPaths(srcItem, destItem, 'copy', opts, (err, stats) => {
+-      if (err) return cb(err)
+-      const { destStat } = stats
+-      getStats(destStat, srcItem, destItem, opts, err => {
+-        if (err) return cb(err)
+-        return copyDirItems(items, src, dest, opts, cb)
+-      })
+-    })
+-  })
++    stat.checkPaths(srcItem, destItem, "copy", opts, (err, stats) => {
++      if (err) return cb(err);
++      const { destStat } = stats;
++      getStats(destStat, srcItem, destItem, opts, (err) => {
++        if (err) return cb(err);
++        return copyDirItems(items, src, dest, opts, cb);
++      });
++    });
++  });
+ }
+ 
+-function onLink (destStat, src, dest, opts, cb) {
++function onLink(destStat, src, dest, opts, cb) {
+   fs.readlink(src, (err, resolvedSrc) => {
+-    if (err) return cb(err)
++    if (err) return cb(err);
+     if (opts.dereference) {
+-      resolvedSrc = path.resolve(process.cwd(), resolvedSrc)
++      resolvedSrc = path.resolve(process.cwd(), resolvedSrc);
+     }
+ 
+     if (!destStat) {
+-      return fs.symlink(resolvedSrc, dest, cb)
++      return fs.symlink(resolvedSrc, dest, cb);
+     } else {
+       fs.readlink(dest, (err, resolvedDest) => {
+         if (err) {
+           // dest exists and is a regular file or directory,
+           // Windows may throw UNKNOWN error. If dest already exists,
+           // fs throws error anyway, so no need to guard against it here.
+-          if (err.code === 'EINVAL' || err.code === 'UNKNOWN') return fs.symlink(resolvedSrc, dest, cb)
+-          return cb(err)
++          if (err.code === "EINVAL" || err.code === "UNKNOWN")
++            return fs.symlink(resolvedSrc, dest, cb);
++          return cb(err);
+         }
+         if (opts.dereference) {
+-          resolvedDest = path.resolve(process.cwd(), resolvedDest)
++          resolvedDest = path.resolve(process.cwd(), resolvedDest);
+         }
+         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
+-          return cb(new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`))
++          return cb(
++            new Error(
++              `Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`
++            )
++          );
+         }
+ 
+         // do not copy if src is a subdir of dest since unlinking
+         // dest in this case would result in removing src contents
+         // and therefore a broken symlink would be created.
+         if (stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
+-          return cb(new Error(`Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`))
++          return cb(
++            new Error(
++              `Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`
++            )
++          );
+         }
+-        return copyLink(resolvedSrc, dest, cb)
+-      })
++        return copyLink(resolvedSrc, dest, cb);
++      });
+     }
+-  })
++  });
+ }
+ 
+-function copyLink (resolvedSrc, dest, cb) {
+-  fs.unlink(dest, err => {
+-    if (err) return cb(err)
+-    return fs.symlink(resolvedSrc, dest, cb)
+-  })
++function copyLink(resolvedSrc, dest, cb) {
++  fs.unlink(dest, (err) => {
++    if (err) return cb(err);
++    return fs.symlink(resolvedSrc, dest, cb);
++  });
+ }
+ 
+-module.exports = copy
++module.exports = copy;
+diff --git a/node_modules/fs-extra/lib/ensure/file.js b/node_modules/fs-extra/lib/ensure/file.js
+index 15cc473..2e83fcd 100644
+--- a/node_modules/fs-extra/lib/ensure/file.js
++++ b/node_modules/fs-extra/lib/ensure/file.js
+@@ -1,69 +1,70 @@
+-'use strict'
++"use strict";
+ 
+-const u = require('universalify').fromCallback
+-const path = require('path')
+-const fs = require('graceful-fs')
+-const mkdir = require('../mkdirs')
++const u = require("universalify").fromCallback;
++const path = require("path");
++const fs = require("fs" /*graceful-fs*/);
++const mkdir = require("../mkdirs");
+ 
+-function createFile (file, callback) {
+-  function makeFile () {
+-    fs.writeFile(file, '', err => {
+-      if (err) return callback(err)
+-      callback()
+-    })
++function createFile(file, callback) {
++  function makeFile() {
++    fs.writeFile(file, "", (err) => {
++      if (err) return callback(err);
++      callback();
++    });
+   }
+ 
+-  fs.stat(file, (err, stats) => { // eslint-disable-line handle-callback-err
+-    if (!err && stats.isFile()) return callback()
+-    const dir = path.dirname(file)
++  fs.stat(file, (err, stats) => {
++    // eslint-disable-line handle-callback-err
++    if (!err && stats.isFile()) return callback();
++    const dir = path.dirname(file);
+     fs.stat(dir, (err, stats) => {
+       if (err) {
+         // if the directory doesn't exist, make it
+-        if (err.code === 'ENOENT') {
+-          return mkdir.mkdirs(dir, err => {
+-            if (err) return callback(err)
+-            makeFile()
+-          })
++        if (err.code === "ENOENT") {
++          return mkdir.mkdirs(dir, (err) => {
++            if (err) return callback(err);
++            makeFile();
++          });
+         }
+-        return callback(err)
++        return callback(err);
+       }
+ 
+-      if (stats.isDirectory()) makeFile()
++      if (stats.isDirectory()) makeFile();
+       else {
+         // parent is not a directory
+         // This is just to cause an internal ENOTDIR error to be thrown
+-        fs.readdir(dir, err => {
+-          if (err) return callback(err)
+-        })
++        fs.readdir(dir, (err) => {
++          if (err) return callback(err);
++        });
+       }
+-    })
+-  })
++    });
++  });
+ }
+ 
+-function createFileSync (file) {
+-  let stats
++function createFileSync(file) {
++  let stats;
+   try {
+-    stats = fs.statSync(file)
++    stats = fs.statSync(file);
+   } catch {}
+-  if (stats && stats.isFile()) return
++  if (stats && stats.isFile()) return;
+ 
+-  const dir = path.dirname(file)
++  const dir = path.dirname(file);
+   try {
+     if (!fs.statSync(dir).isDirectory()) {
+       // parent is not a directory
+       // This is just to cause an internal ENOTDIR error to be thrown
+-      fs.readdirSync(dir)
++      fs.readdirSync(dir);
+     }
+   } catch (err) {
+     // If the stat call above failed because the directory doesn't exist, create it
+-    if (err && err.code === 'ENOENT') mkdir.mkdirsSync(dir)
+-    else throw err
++    if (err && err.code === "ENOENT") mkdir.mkdirsSync(dir);
++    else throw err;
+   }
+ 
+-  fs.writeFileSync(file, '')
++  fs.writeFileSync(file, "");
+ }
+ 
+ module.exports = {
+   createFile: u(createFile),
+   createFileSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/ensure/link.js b/node_modules/fs-extra/lib/ensure/link.js
+index f6d6748..befbfc4 100644
+--- a/node_modules/fs-extra/lib/ensure/link.js
++++ b/node_modules/fs-extra/lib/ensure/link.js
+@@ -1,64 +1,64 @@
+-'use strict'
++"use strict";
+ 
+-const u = require('universalify').fromCallback
+-const path = require('path')
+-const fs = require('graceful-fs')
+-const mkdir = require('../mkdirs')
+-const pathExists = require('../path-exists').pathExists
+-const { areIdentical } = require('../util/stat')
++const u = require("universalify").fromCallback;
++const path = require("path");
++const fs = require("fs" /*graceful-fs*/);
++const mkdir = require("../mkdirs");
++const pathExists = require("../path-exists").pathExists;
++const { areIdentical } = require("../util/stat");
+ 
+-function createLink (srcpath, dstpath, callback) {
+-  function makeLink (srcpath, dstpath) {
+-    fs.link(srcpath, dstpath, err => {
+-      if (err) return callback(err)
+-      callback(null)
+-    })
++function createLink(srcpath, dstpath, callback) {
++  function makeLink(srcpath, dstpath) {
++    fs.link(srcpath, dstpath, (err) => {
++      if (err) return callback(err);
++      callback(null);
++    });
+   }
+ 
+   fs.lstat(dstpath, (_, dstStat) => {
+     fs.lstat(srcpath, (err, srcStat) => {
+       if (err) {
+-        err.message = err.message.replace('lstat', 'ensureLink')
+-        return callback(err)
++        err.message = err.message.replace("lstat", "ensureLink");
++        return callback(err);
+       }
+-      if (dstStat && areIdentical(srcStat, dstStat)) return callback(null)
++      if (dstStat && areIdentical(srcStat, dstStat)) return callback(null);
+ 
+-      const dir = path.dirname(dstpath)
++      const dir = path.dirname(dstpath);
+       pathExists(dir, (err, dirExists) => {
+-        if (err) return callback(err)
+-        if (dirExists) return makeLink(srcpath, dstpath)
+-        mkdir.mkdirs(dir, err => {
+-          if (err) return callback(err)
+-          makeLink(srcpath, dstpath)
+-        })
+-      })
+-    })
+-  })
++        if (err) return callback(err);
++        if (dirExists) return makeLink(srcpath, dstpath);
++        mkdir.mkdirs(dir, (err) => {
++          if (err) return callback(err);
++          makeLink(srcpath, dstpath);
++        });
++      });
++    });
++  });
+ }
+ 
+-function createLinkSync (srcpath, dstpath) {
+-  let dstStat
++function createLinkSync(srcpath, dstpath) {
++  let dstStat;
+   try {
+-    dstStat = fs.lstatSync(dstpath)
++    dstStat = fs.lstatSync(dstpath);
+   } catch {}
+ 
+   try {
+-    const srcStat = fs.lstatSync(srcpath)
+-    if (dstStat && areIdentical(srcStat, dstStat)) return
++    const srcStat = fs.lstatSync(srcpath);
++    if (dstStat && areIdentical(srcStat, dstStat)) return;
+   } catch (err) {
+-    err.message = err.message.replace('lstat', 'ensureLink')
+-    throw err
++    err.message = err.message.replace("lstat", "ensureLink");
++    throw err;
+   }
+ 
+-  const dir = path.dirname(dstpath)
+-  const dirExists = fs.existsSync(dir)
+-  if (dirExists) return fs.linkSync(srcpath, dstpath)
+-  mkdir.mkdirsSync(dir)
++  const dir = path.dirname(dstpath);
++  const dirExists = fs.existsSync(dir);
++  if (dirExists) return fs.linkSync(srcpath, dstpath);
++  mkdir.mkdirsSync(dir);
+ 
+-  return fs.linkSync(srcpath, dstpath)
++  return fs.linkSync(srcpath, dstpath);
+ }
+ 
+ module.exports = {
+   createLink: u(createLink),
+   createLinkSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/ensure/symlink-paths.js b/node_modules/fs-extra/lib/ensure/symlink-paths.js
+index 33cd760..28bb9cc 100644
+--- a/node_modules/fs-extra/lib/ensure/symlink-paths.js
++++ b/node_modules/fs-extra/lib/ensure/symlink-paths.js
+@@ -1,8 +1,8 @@
+-'use strict'
++"use strict";
+ 
+-const path = require('path')
+-const fs = require('graceful-fs')
+-const pathExists = require('../path-exists').pathExists
++const path = require("path");
++const fs = require("fs" /*graceful-fs*/);
++const pathExists = require("../path-exists").pathExists;
+ 
+ /**
+  * Function that returns two types of paths, one relative to symlink, and one
+@@ -26,69 +26,69 @@ const pathExists = require('../path-exists').pathExists
+  * the ability to pass in `relative to current working direcotry` paths.
+  */
+ 
+-function symlinkPaths (srcpath, dstpath, callback) {
++function symlinkPaths(srcpath, dstpath, callback) {
+   if (path.isAbsolute(srcpath)) {
+     return fs.lstat(srcpath, (err) => {
+       if (err) {
+-        err.message = err.message.replace('lstat', 'ensureSymlink')
+-        return callback(err)
++        err.message = err.message.replace("lstat", "ensureSymlink");
++        return callback(err);
+       }
+       return callback(null, {
+         toCwd: srcpath,
+         toDst: srcpath
+-      })
+-    })
++      });
++    });
+   } else {
+-    const dstdir = path.dirname(dstpath)
+-    const relativeToDst = path.join(dstdir, srcpath)
++    const dstdir = path.dirname(dstpath);
++    const relativeToDst = path.join(dstdir, srcpath);
+     return pathExists(relativeToDst, (err, exists) => {
+-      if (err) return callback(err)
++      if (err) return callback(err);
+       if (exists) {
+         return callback(null, {
+           toCwd: relativeToDst,
+           toDst: srcpath
+-        })
++        });
+       } else {
+         return fs.lstat(srcpath, (err) => {
+           if (err) {
+-            err.message = err.message.replace('lstat', 'ensureSymlink')
+-            return callback(err)
++            err.message = err.message.replace("lstat", "ensureSymlink");
++            return callback(err);
+           }
+           return callback(null, {
+             toCwd: srcpath,
+             toDst: path.relative(dstdir, srcpath)
+-          })
+-        })
++          });
++        });
+       }
+-    })
++    });
+   }
+ }
+ 
+-function symlinkPathsSync (srcpath, dstpath) {
+-  let exists
++function symlinkPathsSync(srcpath, dstpath) {
++  let exists;
+   if (path.isAbsolute(srcpath)) {
+-    exists = fs.existsSync(srcpath)
+-    if (!exists) throw new Error('absolute srcpath does not exist')
++    exists = fs.existsSync(srcpath);
++    if (!exists) throw new Error("absolute srcpath does not exist");
+     return {
+       toCwd: srcpath,
+       toDst: srcpath
+-    }
++    };
+   } else {
+-    const dstdir = path.dirname(dstpath)
+-    const relativeToDst = path.join(dstdir, srcpath)
+-    exists = fs.existsSync(relativeToDst)
++    const dstdir = path.dirname(dstpath);
++    const relativeToDst = path.join(dstdir, srcpath);
++    exists = fs.existsSync(relativeToDst);
+     if (exists) {
+       return {
+         toCwd: relativeToDst,
+         toDst: srcpath
+-      }
++      };
+     } else {
+-      exists = fs.existsSync(srcpath)
+-      if (!exists) throw new Error('relative srcpath does not exist')
++      exists = fs.existsSync(srcpath);
++      if (!exists) throw new Error("relative srcpath does not exist");
+       return {
+         toCwd: srcpath,
+         toDst: path.relative(dstdir, srcpath)
+-      }
++      };
+     }
+   }
+ }
+@@ -96,4 +96,4 @@ function symlinkPathsSync (srcpath, dstpath) {
+ module.exports = {
+   symlinkPaths,
+   symlinkPathsSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/ensure/symlink-type.js b/node_modules/fs-extra/lib/ensure/symlink-type.js
+index 42dc0ce..acdea05 100644
+--- a/node_modules/fs-extra/lib/ensure/symlink-type.js
++++ b/node_modules/fs-extra/lib/ensure/symlink-type.js
+@@ -1,31 +1,31 @@
+-'use strict'
++"use strict";
+ 
+-const fs = require('graceful-fs')
++const fs = require("fs" /*graceful-fs*/);
+ 
+-function symlinkType (srcpath, type, callback) {
+-  callback = (typeof type === 'function') ? type : callback
+-  type = (typeof type === 'function') ? false : type
+-  if (type) return callback(null, type)
++function symlinkType(srcpath, type, callback) {
++  callback = typeof type === "function" ? type : callback;
++  type = typeof type === "function" ? false : type;
++  if (type) return callback(null, type);
+   fs.lstat(srcpath, (err, stats) => {
+-    if (err) return callback(null, 'file')
+-    type = (stats && stats.isDirectory()) ? 'dir' : 'file'
+-    callback(null, type)
+-  })
++    if (err) return callback(null, "file");
++    type = stats && stats.isDirectory() ? "dir" : "file";
++    callback(null, type);
++  });
+ }
+ 
+-function symlinkTypeSync (srcpath, type) {
+-  let stats
++function symlinkTypeSync(srcpath, type) {
++  let stats;
+ 
+-  if (type) return type
++  if (type) return type;
+   try {
+-    stats = fs.lstatSync(srcpath)
++    stats = fs.lstatSync(srcpath);
+   } catch {
+-    return 'file'
++    return "file";
+   }
+-  return (stats && stats.isDirectory()) ? 'dir' : 'file'
++  return stats && stats.isDirectory() ? "dir" : "file";
+ }
+ 
+ module.exports = {
+   symlinkType,
+   symlinkTypeSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/fs/index.js b/node_modules/fs-extra/lib/fs/index.js
+index 3c3ec51..e024237 100644
+--- a/node_modules/fs-extra/lib/fs/index.js
++++ b/node_modules/fs-extra/lib/fs/index.js
+@@ -1,83 +1,83 @@
+-'use strict'
++"use strict";
+ // This is adapted from https://github.com/normalize/mz
+ // Copyright (c) 2014-2016 Jonathan Ong me@jongleberry.com and Contributors
+-const u = require('universalify').fromCallback
+-const fs = require('graceful-fs')
++const u = require("universalify").fromCallback;
++const fs = require("fs" /*graceful-fs*/);
+ 
+ const api = [
+-  'access',
+-  'appendFile',
+-  'chmod',
+-  'chown',
+-  'close',
+-  'copyFile',
+-  'fchmod',
+-  'fchown',
+-  'fdatasync',
+-  'fstat',
+-  'fsync',
+-  'ftruncate',
+-  'futimes',
+-  'lchmod',
+-  'lchown',
+-  'link',
+-  'lstat',
+-  'mkdir',
+-  'mkdtemp',
+-  'open',
+-  'opendir',
+-  'readdir',
+-  'readFile',
+-  'readlink',
+-  'realpath',
+-  'rename',
+-  'rm',
+-  'rmdir',
+-  'stat',
+-  'symlink',
+-  'truncate',
+-  'unlink',
+-  'utimes',
+-  'writeFile'
+-].filter(key => {
++  "access",
++  "appendFile",
++  "chmod",
++  "chown",
++  "close",
++  "copyFile",
++  "fchmod",
++  "fchown",
++  "fdatasync",
++  "fstat",
++  "fsync",
++  "ftruncate",
++  "futimes",
++  "lchmod",
++  "lchown",
++  "link",
++  "lstat",
++  "mkdir",
++  "mkdtemp",
++  "open",
++  "opendir",
++  "readdir",
++  "readFile",
++  "readlink",
++  "realpath",
++  "rename",
++  "rm",
++  "rmdir",
++  "stat",
++  "symlink",
++  "truncate",
++  "unlink",
++  "utimes",
++  "writeFile"
++].filter((key) => {
+   // Some commands are not available on some systems. Ex:
+   // fs.cp was added in Node.js v16.7.0
+   // fs.lchown is not available on at least some Linux
+-  return typeof fs[key] === 'function'
+-})
++  return typeof fs[key] === "function";
++});
+ 
+ // Export cloned fs:
+-Object.assign(exports, fs)
++Object.assign(exports, fs);
+ 
+ // Universalify async methods:
+-api.forEach(method => {
+-  exports[method] = u(fs[method])
+-})
++api.forEach((method) => {
++  exports[method] = u(fs[method]);
++});
+ 
+ // We differ from mz/fs in that we still ship the old, broken, fs.exists()
+ // since we are a drop-in replacement for the native module
+ exports.exists = function (filename, callback) {
+-  if (typeof callback === 'function') {
+-    return fs.exists(filename, callback)
++  if (typeof callback === "function") {
++    return fs.exists(filename, callback);
+   }
+-  return new Promise(resolve => {
+-    return fs.exists(filename, resolve)
+-  })
+-}
++  return new Promise((resolve) => {
++    return fs.exists(filename, resolve);
++  });
++};
+ 
+ // fs.read(), fs.write(), fs.readv(), & fs.writev() need special treatment due to multiple callback args
+ 
+ exports.read = function (fd, buffer, offset, length, position, callback) {
+-  if (typeof callback === 'function') {
+-    return fs.read(fd, buffer, offset, length, position, callback)
++  if (typeof callback === "function") {
++    return fs.read(fd, buffer, offset, length, position, callback);
+   }
+   return new Promise((resolve, reject) => {
+     fs.read(fd, buffer, offset, length, position, (err, bytesRead, buffer) => {
+-      if (err) return reject(err)
+-      resolve({ bytesRead, buffer })
+-    })
+-  })
+-}
++      if (err) return reject(err);
++      resolve({ bytesRead, buffer });
++    });
++  });
++};
+ 
+ // Function signature can be
+ // fs.write(fd, buffer[, offset[, length[, position]]], callback)
+@@ -85,56 +85,57 @@ exports.read = function (fd, buffer, offset, length, position, callback) {
+ // fs.write(fd, string[, position[, encoding]], callback)
+ // We need to handle both cases, so we use ...args
+ exports.write = function (fd, buffer, ...args) {
+-  if (typeof args[args.length - 1] === 'function') {
+-    return fs.write(fd, buffer, ...args)
++  if (typeof args[args.length - 1] === "function") {
++    return fs.write(fd, buffer, ...args);
+   }
+ 
+   return new Promise((resolve, reject) => {
+     fs.write(fd, buffer, ...args, (err, bytesWritten, buffer) => {
+-      if (err) return reject(err)
+-      resolve({ bytesWritten, buffer })
+-    })
+-  })
+-}
++      if (err) return reject(err);
++      resolve({ bytesWritten, buffer });
++    });
++  });
++};
+ 
+ // Function signature is
+ // s.readv(fd, buffers[, position], callback)
+ // We need to handle the optional arg, so we use ...args
+ exports.readv = function (fd, buffers, ...args) {
+-  if (typeof args[args.length - 1] === 'function') {
+-    return fs.readv(fd, buffers, ...args)
++  if (typeof args[args.length - 1] === "function") {
++    return fs.readv(fd, buffers, ...args);
+   }
+ 
+   return new Promise((resolve, reject) => {
+     fs.readv(fd, buffers, ...args, (err, bytesRead, buffers) => {
+-      if (err) return reject(err)
+-      resolve({ bytesRead, buffers })
+-    })
+-  })
+-}
++      if (err) return reject(err);
++      resolve({ bytesRead, buffers });
++    });
++  });
++};
+ 
+ // Function signature is
+ // s.writev(fd, buffers[, position], callback)
+ // We need to handle the optional arg, so we use ...args
+ exports.writev = function (fd, buffers, ...args) {
+-  if (typeof args[args.length - 1] === 'function') {
+-    return fs.writev(fd, buffers, ...args)
++  if (typeof args[args.length - 1] === "function") {
++    return fs.writev(fd, buffers, ...args);
+   }
+ 
+   return new Promise((resolve, reject) => {
+     fs.writev(fd, buffers, ...args, (err, bytesWritten, buffers) => {
+-      if (err) return reject(err)
+-      resolve({ bytesWritten, buffers })
+-    })
+-  })
+-}
++      if (err) return reject(err);
++      resolve({ bytesWritten, buffers });
++    });
++  });
++};
+ 
+ // fs.realpath.native sometimes not available if fs is monkey-patched
+-if (typeof fs.realpath.native === 'function') {
+-  exports.realpath.native = u(fs.realpath.native)
++if (typeof fs.realpath.native === "function") {
++  exports.realpath.native = u(fs.realpath.native);
+ } else {
+   process.emitWarning(
+-    'fs.realpath.native is not a function. Is fs being monkey-patched?',
+-    'Warning', 'fs-extra-WARN0003'
+-  )
++    "fs.realpath.native is not a function. Is fs being monkey-patched?",
++    "Warning",
++    "fs-extra-WARN0003"
++  );
+ }
+diff --git a/node_modules/fs-extra/lib/move/move-sync.js b/node_modules/fs-extra/lib/move/move-sync.js
+index 8453366..cf15e92 100644
+--- a/node_modules/fs-extra/lib/move/move-sync.js
++++ b/node_modules/fs-extra/lib/move/move-sync.js
+@@ -1,54 +1,59 @@
+-'use strict'
+-
+-const fs = require('graceful-fs')
+-const path = require('path')
+-const copySync = require('../copy').copySync
+-const removeSync = require('../remove').removeSync
+-const mkdirpSync = require('../mkdirs').mkdirpSync
+-const stat = require('../util/stat')
+-
+-function moveSync (src, dest, opts) {
+-  opts = opts || {}
+-  const overwrite = opts.overwrite || opts.clobber || false
+-
+-  const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, 'move', opts)
+-  stat.checkParentPathsSync(src, srcStat, dest, 'move')
+-  if (!isParentRoot(dest)) mkdirpSync(path.dirname(dest))
+-  return doRename(src, dest, overwrite, isChangingCase)
++"use strict";
++
++const fs = require("fs" /*graceful-fs*/);
++const path = require("path");
++const copySync = require("../copy").copySync;
++const removeSync = require("../remove").removeSync;
++const mkdirpSync = require("../mkdirs").mkdirpSync;
++const stat = require("../util/stat");
++
++function moveSync(src, dest, opts) {
++  opts = opts || {};
++  const overwrite = opts.overwrite || opts.clobber || false;
++
++  const { srcStat, isChangingCase = false } = stat.checkPathsSync(
++    src,
++    dest,
++    "move",
++    opts
++  );
++  stat.checkParentPathsSync(src, srcStat, dest, "move");
++  if (!isParentRoot(dest)) mkdirpSync(path.dirname(dest));
++  return doRename(src, dest, overwrite, isChangingCase);
+ }
+ 
+-function isParentRoot (dest) {
+-  const parent = path.dirname(dest)
+-  const parsedPath = path.parse(parent)
+-  return parsedPath.root === parent
++function isParentRoot(dest) {
++  const parent = path.dirname(dest);
++  const parsedPath = path.parse(parent);
++  return parsedPath.root === parent;
+ }
+ 
+-function doRename (src, dest, overwrite, isChangingCase) {
+-  if (isChangingCase) return rename(src, dest, overwrite)
++function doRename(src, dest, overwrite, isChangingCase) {
++  if (isChangingCase) return rename(src, dest, overwrite);
+   if (overwrite) {
+-    removeSync(dest)
+-    return rename(src, dest, overwrite)
++    removeSync(dest);
++    return rename(src, dest, overwrite);
+   }
+-  if (fs.existsSync(dest)) throw new Error('dest already exists.')
+-  return rename(src, dest, overwrite)
++  if (fs.existsSync(dest)) throw new Error("dest already exists.");
++  return rename(src, dest, overwrite);
+ }
+ 
+-function rename (src, dest, overwrite) {
++function rename(src, dest, overwrite) {
+   try {
+-    fs.renameSync(src, dest)
++    fs.renameSync(src, dest);
+   } catch (err) {
+-    if (err.code !== 'EXDEV') throw err
+-    return moveAcrossDevice(src, dest, overwrite)
++    if (err.code !== "EXDEV") throw err;
++    return moveAcrossDevice(src, dest, overwrite);
+   }
+ }
+ 
+-function moveAcrossDevice (src, dest, overwrite) {
++function moveAcrossDevice(src, dest, overwrite) {
+   const opts = {
+     overwrite,
+     errorOnExist: true
+-  }
+-  copySync(src, dest, opts)
+-  return removeSync(src)
++  };
++  copySync(src, dest, opts);
++  return removeSync(src);
+ }
+ 
+-module.exports = moveSync
++module.exports = moveSync;
+diff --git a/node_modules/fs-extra/lib/move/move.js b/node_modules/fs-extra/lib/move/move.js
+index 7dc6ecd..ad0d58a 100644
+--- a/node_modules/fs-extra/lib/move/move.js
++++ b/node_modules/fs-extra/lib/move/move.js
+@@ -1,75 +1,76 @@
+-'use strict'
++"use strict";
+ 
+-const fs = require('graceful-fs')
+-const path = require('path')
+-const copy = require('../copy').copy
+-const remove = require('../remove').remove
+-const mkdirp = require('../mkdirs').mkdirp
+-const pathExists = require('../path-exists').pathExists
+-const stat = require('../util/stat')
++const fs = require("fs" /*graceful-fs*/);
++const path = require("path");
++const copy = require("../copy").copy;
++const remove = require("../remove").remove;
++const mkdirp = require("../mkdirs").mkdirp;
++const pathExists = require("../path-exists").pathExists;
++const stat = require("../util/stat");
+ 
+-function move (src, dest, opts, cb) {
+-  if (typeof opts === 'function') {
+-    cb = opts
+-    opts = {}
++function move(src, dest, opts, cb) {
++  if (typeof opts === "function") {
++    cb = opts;
++    opts = {};
+   }
+ 
+-  opts = opts || {}
++  opts = opts || {};
+ 
+-  const overwrite = opts.overwrite || opts.clobber || false
++  const overwrite = opts.overwrite || opts.clobber || false;
+ 
+-  stat.checkPaths(src, dest, 'move', opts, (err, stats) => {
+-    if (err) return cb(err)
+-    const { srcStat, isChangingCase = false } = stats
+-    stat.checkParentPaths(src, srcStat, dest, 'move', err => {
+-      if (err) return cb(err)
+-      if (isParentRoot(dest)) return doRename(src, dest, overwrite, isChangingCase, cb)
+-      mkdirp(path.dirname(dest), err => {
+-        if (err) return cb(err)
+-        return doRename(src, dest, overwrite, isChangingCase, cb)
+-      })
+-    })
+-  })
++  stat.checkPaths(src, dest, "move", opts, (err, stats) => {
++    if (err) return cb(err);
++    const { srcStat, isChangingCase = false } = stats;
++    stat.checkParentPaths(src, srcStat, dest, "move", (err) => {
++      if (err) return cb(err);
++      if (isParentRoot(dest))
++        return doRename(src, dest, overwrite, isChangingCase, cb);
++      mkdirp(path.dirname(dest), (err) => {
++        if (err) return cb(err);
++        return doRename(src, dest, overwrite, isChangingCase, cb);
++      });
++    });
++  });
+ }
+ 
+-function isParentRoot (dest) {
+-  const parent = path.dirname(dest)
+-  const parsedPath = path.parse(parent)
+-  return parsedPath.root === parent
++function isParentRoot(dest) {
++  const parent = path.dirname(dest);
++  const parsedPath = path.parse(parent);
++  return parsedPath.root === parent;
+ }
+ 
+-function doRename (src, dest, overwrite, isChangingCase, cb) {
+-  if (isChangingCase) return rename(src, dest, overwrite, cb)
++function doRename(src, dest, overwrite, isChangingCase, cb) {
++  if (isChangingCase) return rename(src, dest, overwrite, cb);
+   if (overwrite) {
+-    return remove(dest, err => {
+-      if (err) return cb(err)
+-      return rename(src, dest, overwrite, cb)
+-    })
++    return remove(dest, (err) => {
++      if (err) return cb(err);
++      return rename(src, dest, overwrite, cb);
++    });
+   }
+   pathExists(dest, (err, destExists) => {
+-    if (err) return cb(err)
+-    if (destExists) return cb(new Error('dest already exists.'))
+-    return rename(src, dest, overwrite, cb)
+-  })
++    if (err) return cb(err);
++    if (destExists) return cb(new Error("dest already exists."));
++    return rename(src, dest, overwrite, cb);
++  });
+ }
+ 
+-function rename (src, dest, overwrite, cb) {
+-  fs.rename(src, dest, err => {
+-    if (!err) return cb()
+-    if (err.code !== 'EXDEV') return cb(err)
+-    return moveAcrossDevice(src, dest, overwrite, cb)
+-  })
++function rename(src, dest, overwrite, cb) {
++  fs.rename(src, dest, (err) => {
++    if (!err) return cb();
++    if (err.code !== "EXDEV") return cb(err);
++    return moveAcrossDevice(src, dest, overwrite, cb);
++  });
+ }
+ 
+-function moveAcrossDevice (src, dest, overwrite, cb) {
++function moveAcrossDevice(src, dest, overwrite, cb) {
+   const opts = {
+     overwrite,
+     errorOnExist: true
+-  }
+-  copy(src, dest, opts, err => {
+-    if (err) return cb(err)
+-    return remove(src, cb)
+-  })
++  };
++  copy(src, dest, opts, (err) => {
++    if (err) return cb(err);
++    return remove(src, cb);
++  });
+ }
+ 
+-module.exports = move
++module.exports = move;
+diff --git a/node_modules/fs-extra/lib/output-file/index.js b/node_modules/fs-extra/lib/output-file/index.js
+index 92297ca..6ba54f5 100644
+--- a/node_modules/fs-extra/lib/output-file/index.js
++++ b/node_modules/fs-extra/lib/output-file/index.js
+@@ -1,40 +1,40 @@
+-'use strict'
++"use strict";
+ 
+-const u = require('universalify').fromCallback
+-const fs = require('graceful-fs')
+-const path = require('path')
+-const mkdir = require('../mkdirs')
+-const pathExists = require('../path-exists').pathExists
++const u = require("universalify").fromCallback;
++const fs = require("fs" /*graceful-fs*/);
++const path = require("path");
++const mkdir = require("../mkdirs");
++const pathExists = require("../path-exists").pathExists;
+ 
+-function outputFile (file, data, encoding, callback) {
+-  if (typeof encoding === 'function') {
+-    callback = encoding
+-    encoding = 'utf8'
++function outputFile(file, data, encoding, callback) {
++  if (typeof encoding === "function") {
++    callback = encoding;
++    encoding = "utf8";
+   }
+ 
+-  const dir = path.dirname(file)
++  const dir = path.dirname(file);
+   pathExists(dir, (err, itDoes) => {
+-    if (err) return callback(err)
+-    if (itDoes) return fs.writeFile(file, data, encoding, callback)
++    if (err) return callback(err);
++    if (itDoes) return fs.writeFile(file, data, encoding, callback);
+ 
+-    mkdir.mkdirs(dir, err => {
+-      if (err) return callback(err)
++    mkdir.mkdirs(dir, (err) => {
++      if (err) return callback(err);
+ 
+-      fs.writeFile(file, data, encoding, callback)
+-    })
+-  })
++      fs.writeFile(file, data, encoding, callback);
++    });
++  });
+ }
+ 
+-function outputFileSync (file, ...args) {
+-  const dir = path.dirname(file)
++function outputFileSync(file, ...args) {
++  const dir = path.dirname(file);
+   if (fs.existsSync(dir)) {
+-    return fs.writeFileSync(file, ...args)
++    return fs.writeFileSync(file, ...args);
+   }
+-  mkdir.mkdirsSync(dir)
+-  fs.writeFileSync(file, ...args)
++  mkdir.mkdirsSync(dir);
++  fs.writeFileSync(file, ...args);
+ }
+ 
+ module.exports = {
+   outputFile: u(outputFile),
+   outputFileSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/remove/index.js b/node_modules/fs-extra/lib/remove/index.js
+index da746c7..173e45a 100644
+--- a/node_modules/fs-extra/lib/remove/index.js
++++ b/node_modules/fs-extra/lib/remove/index.js
+@@ -1,17 +1,17 @@
+-'use strict'
++"use strict";
+ 
+-const fs = require('graceful-fs')
+-const u = require('universalify').fromCallback
++const fs = require("fs" /*graceful-fs*/);
++const u = require("universalify").fromCallback;
+ 
+-function remove (path, callback) {
+-  fs.rm(path, { recursive: true, force: true }, callback)
++function remove(path, callback) {
++  fs.rm(path, { recursive: true, force: true }, callback);
+ }
+ 
+-function removeSync (path) {
+-  fs.rmSync(path, { recursive: true, force: true })
++function removeSync(path) {
++  fs.rmSync(path, { recursive: true, force: true });
+ }
+ 
+ module.exports = {
+   remove: u(remove),
+   removeSync
+-}
++};
+diff --git a/node_modules/fs-extra/lib/util/utimes.js b/node_modules/fs-extra/lib/util/utimes.js
+index 75395de..2c78145 100644
+--- a/node_modules/fs-extra/lib/util/utimes.js
++++ b/node_modules/fs-extra/lib/util/utimes.js
+@@ -1,26 +1,26 @@
+-'use strict'
++"use strict";
+ 
+-const fs = require('graceful-fs')
++const fs = require("fs" /*graceful-fs*/);
+ 
+-function utimesMillis (path, atime, mtime, callback) {
++function utimesMillis(path, atime, mtime, callback) {
+   // if (!HAS_MILLIS_RES) return fs.utimes(path, atime, mtime, callback)
+-  fs.open(path, 'r+', (err, fd) => {
+-    if (err) return callback(err)
+-    fs.futimes(fd, atime, mtime, futimesErr => {
+-      fs.close(fd, closeErr => {
+-        if (callback) callback(futimesErr || closeErr)
+-      })
+-    })
+-  })
++  fs.open(path, "r+", (err, fd) => {
++    if (err) return callback(err);
++    fs.futimes(fd, atime, mtime, (futimesErr) => {
++      fs.close(fd, (closeErr) => {
++        if (callback) callback(futimesErr || closeErr);
++      });
++    });
++  });
+ }
+ 
+-function utimesMillisSync (path, atime, mtime) {
+-  const fd = fs.openSync(path, 'r+')
+-  fs.futimesSync(fd, atime, mtime)
+-  return fs.closeSync(fd)
++function utimesMillisSync(path, atime, mtime) {
++  const fd = fs.openSync(path, "r+");
++  fs.futimesSync(fd, atime, mtime);
++  return fs.closeSync(fd);
+ }
+ 
+ module.exports = {
+   utimesMillis,
+   utimesMillisSync
+-}
++};
