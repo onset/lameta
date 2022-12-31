@@ -94,6 +94,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   React.useEffect(() => {
     switch (mode) {
       case Mode.startImporting:
+        document.body.style.cursor = "wait";
         setMode(Mode.importing);
         window.setTimeout(() => {
           analyticsEvent("Import", `Import ${folderType} Spreadsheet`, {
@@ -110,7 +111,6 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         }, 100);
         break;
       case Mode.importing:
-      case Mode.startImporting:
         document.body.style.cursor = "wait";
         break;
       default:
