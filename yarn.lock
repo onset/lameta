@@ -24944,7 +24944,7 @@ fsevents@^1.2.7:
     winston: ^3.0.0
     xlsx: ^0.17.2
     xml-name-validator: ^3.0.0
-    xml2js: ^0.4.19
+    xml2js: ^0.4.23
     xmlbuilder: ^10.1.1
     xmldom: ^0.6.0
     xpath: ^0.0.27
@@ -29048,7 +29048,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"xml2js@npm:^0.4.19":
+"xml2js@npm:^0.4.23":
   version: 0.4.23
   resolution: "xml2js@npm:0.4.23"
   dependencies:

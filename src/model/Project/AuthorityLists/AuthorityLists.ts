@@ -17,8 +17,7 @@ export class AuthorityLists {
 
   public constructor(getPersons: () => string[]) {
     this.getPeopleNames = getPersons;
-    this.accessProtocolChoices =
-      accessProtocols as unknown as IAccessProtocolChoice[];
+    this.accessProtocolChoices = (accessProtocols as unknown) as IAccessProtocolChoice[];
     this.accessChoicesOfCurrentProtocol = [];
     this.roleChoices = loadOLACRoles();
   }
@@ -36,7 +35,7 @@ export class AuthorityLists {
         (o: any) => o.protocol === protocolName
       );
       this.accessChoicesOfCurrentProtocol = protocol
-        ? (protocol.choices as unknown as IChoice[])
+        ? ((protocol.choices as unknown) as IChoice[])
         : [];
     }
   }
@@ -63,7 +62,7 @@ export class AuthorityLists {
 
   // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
   private convertAccessProtocolsToCSVForLocalization() {
-    (accessProtocols as unknown as IAccessProtocolChoice[]).forEach((p) => {
+    ((accessProtocols as unknown) as IAccessProtocolChoice[]).forEach((p) => {
       console.log(`"${p.protocol}", "Access Protocol Name", "${p.protocol}"`);
       p.choices.forEach((c) => {
         console.log(
@@ -77,8 +76,14 @@ export class AuthorityLists {
   }
 }
 
+import olacRolesRawq from "./olac-roles.xml?raw";
 export function loadOLACRoles(): IChoice[] {
-  const xml: string = require("./olac-roles.xml");
+  const xml: string = olacRolesRawq;
+
+  return [];
+  /* runtime error with vite todo
+TypeError: this.removeAllListeners is not a function
+https://github.com/Leonidas-from-XIV/node-xml2js/issues/88
 
   let xmlAsObject: any = {};
   xml2js.parseString(
@@ -98,6 +103,6 @@ export function loadOLACRoles(): IChoice[] {
     label: t.name,
     description: t.definition
   }));
-
+*/
   //xmlAsObject[Object.keys(xmlAsObject)[0]];
 }
