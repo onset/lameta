@@ -8,6 +8,14 @@ import { TextFieldEdit } from "../TextFieldEdit";
 import "./AccessProtocolForm.scss";
 import { runInAction } from "mobx";
 
+import ailca from "./AccessProtocolDocumentation/ailca.md?raw";
+import ailla from "./AccessProtocolDocumentation/ailla.md?raw";
+import anla from "./AccessProtocolDocumentation/anla.md?raw";
+import elar from "./AccessProtocolDocumentation/elar.md?raw";
+import reap from "./AccessProtocolDocumentation/reap.md?raw";
+import tla from "./AccessProtocolDocumentation/tla.md?raw";
+import paradisec from "./AccessProtocolDocumentation/paradisec.md?raw";
+
 // enhance: this is kinda lame... we could do this dynamically after we
 // figure out how to get certain the files packaged and accessible at runtime.
 // Doing it this way, it's taken care of by webpack at build time.
@@ -15,13 +23,13 @@ import { runInAction } from "mobx";
 // Should re-do as markdown or just build required fields into the
 // main AccessProtocols.json file.
 const doc: Dictionary<string, string> = new Dictionary<string, string>();
-doc.setValue("ailca", require("./AccessProtocolDocumenation/ailca.md"));
-doc.setValue("ailla", require("./AccessProtocolDocumenation/ailla.md"));
-doc.setValue("anla", require("./AccessProtocolDocumenation/anla.md"));
-doc.setValue("elar", require("./AccessProtocolDocumenation/elar.md"));
-doc.setValue("reap", require("./AccessProtocolDocumenation/reap.md"));
-doc.setValue("tla", require("./AccessProtocolDocumenation/tla.md"));
-doc.setValue("paradisec", require("./AccessProtocolDocumenation/paradisec.md"));
+doc.setValue("ailca", ailca);
+doc.setValue("ailla", ailla);
+doc.setValue("anla", anla);
+doc.setValue("elar", elar);
+doc.setValue("reap", reap);
+doc.setValue("tla", tla);
+doc.setValue("paradisec", paradisec);
 
 interface IProps {
   protocolField: Field;
