@@ -125,11 +125,16 @@ export function locate(relativePath: string): string {
   } else if (appPath.indexOf("app.asar") >= 0) {
     // Running from windows install, or
     adjustedPath = Path.join(appPath, "../..", relativePath);
-  } else {
+  } else if (appPath.indexOf("dist") >= 0) {
     // After a "yarn build-production", "yarn start", we are coming from lameta/app/dist. Just need to go up to app/
     adjustedPath = Path.join(appPath, "..", relativePath);
+  } else {
+    // runtime, appPath is just the root folder
+    adjustedPath = Path.join(appPath, relativePath);
   }
-  //console.log(`locate(${path})  adjustment= ${adjustment}`);
+  console.log(
+    `locate(${relativePath}) appPath=${appPath} adjustment= ${adjustedPath}`
+  );
 
   try {
     const result = fs.realpathSync(adjustedPath);
