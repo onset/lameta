@@ -16,9 +16,12 @@ import { runInAction } from "mobx";
 import { Person } from "../../model/Project/Person/Person";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../model/PersonLanguage";
+import LingMetaXMapRaw from "./LingMetaXMap.json5?raw";
+import JSON5 from "json5";
 
+const LingMetaXMap = JSON5.parse(LingMetaXMapRaw) as IImportMapping;
 export const availableSpreadsheetMappings = {
-  LingMetaXMap: require("./LingMetaXMap.json5") as IImportMapping
+  LingMetaXMap
 };
 
 export function addImportMatrixToProject(

@@ -4,6 +4,7 @@ import {
   makeMappedMatrix,
   makeMappedMatrixFromSpreadsheet
 } from "./SpreadsheetToMatrix";
+import { availableSpreadsheetMappings } from "./MatrixImporter";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -14,7 +15,7 @@ jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
-const lingMetaX_ImportMap = require("./LingMetaXMap.json5");
+const lingMetaX_ImportMap = availableSpreadsheetMappings.LingMetaXMap; //require("./LingMetaXMap.json5");
 const lingMetaX_Xlsx_SessionsPath = "sample data/LingMetaX_Sessions.xlsx";
 const lingMetaX_Xlsx_PeoplePath = "sample data/LingMetaX_People.xlsx";
 const lingMetaX_Csv_SessionsPath = "sample data/LingMetaX_Sessions.csv";
