@@ -1,12 +1,12 @@
 //@import "~font-awesome/css/font-awesome.css";
 
-@import "~react-table-6/react-table.css";
+//@import "~react-table-6/react-table.css";
 
-@import "~react-tabs/style/react-tabs.css";
+//@import "~react-tabs/style/react-tabs.css";
 
 @import "./colors";
 
-@import "~react-datepicker/dist/react-datepicker.css";
+//@import "~react-datepicker/dist/react-datepicker.css";
 
 $default-fonts: caption; // this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui
 $default-font-size: 1em; // note, we can't control the electron default font size as easily as the container, so we use em instead of rem
