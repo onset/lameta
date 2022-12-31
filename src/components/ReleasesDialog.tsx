@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { t, Trans } from "@lingui/macro";
 import * as _ from "lodash";
-import pkg from "../../package.json";
+import pkg from "package.json";
 const ReactMarkdown = require("react-markdown");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";

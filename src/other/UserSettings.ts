@@ -3,7 +3,7 @@ import { setUserInfoForErrorReporting } from "./errorHandling";
 import uuid from "uuid";
 import { observable, computed, makeObservable } from "mobx";
 import React from "react";
-import pkg from "../../package.json";
+import pkg from "package.json";
 class FakeStore {
   private values = {};
   public get(s: string, def: any = ""): any {

@@ -17,7 +17,7 @@ import { currentUILanguage } from "./localization";
 import fs from "fs";
 import { locate } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
-import pkg from "../../package.json";
+import pkg from "package.json";
 
 let analytics: Analytics | undefined;
 

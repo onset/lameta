@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import pkg from "../../package.json";
+import pkg from "package.json";
 import Workspace from "../components/Workspace";
 import * as React from "react";
 import { observable, makeObservable } from "mobx";

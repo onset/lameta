@@ -1,4 +1,4 @@
-import pkg from "../../package.json";
+import pkg from "package.json";
 import assert from "assert";
 import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
@@ -228,10 +228,9 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -244,10 +243,9 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -680,8 +678,9 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode =
-      this.folderInFocus.properties.getTextStringOrEmpty("access");
+    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
+      "access"
+    );
     if (accessCode.length === 0) {
       return; // if the folder doesn't have an access code, then there is nothing for us to output
       // this can happen on a Session, and will always happen if the file (e.g. an image) is
@@ -701,10 +700,9 @@ export default class ImdiGenerator {
       this.element("Owner", "");
       this.element("Publisher", "");
       this.element("Contact", "");
-      const accessDef =
-        this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
-          (c) => c.label === accessCode
-        );
+      const accessDef = this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
+        (c) => c.label === accessCode
+      );
 
       // NB CAREFUL! It's easy to confuse accessDef.description (e.g. what does "U" mean?) with
       // accessDescription, which is "why am I limiting the access for this session?". The later

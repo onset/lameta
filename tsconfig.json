@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "paths": {
+      "package.json": [
+        "./package.json"
+      ]
+    },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
     "module": "ESNext",

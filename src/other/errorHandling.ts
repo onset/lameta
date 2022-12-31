@@ -5,14 +5,15 @@ import * as Sentry from "@sentry/browser";
 import { StackFrame } from "@sentry/browser";
 import { RewriteFrames } from "@sentry/integrations";
 import userSettingsSingleton from "./UserSettings";
-import pkg from "../../package.json";
+import pkg from "package.json";
 
 // frame.replace("file:///C:/dev/lameta/app/dist", "dist"),
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
-      dsn: "https://46f4099f6a80454c9e9b4c7f4ed00020@o359058.ingest.sentry.io/3369701",
+      dsn:
+        "https://46f4099f6a80454c9e9b4c7f4ed00020@o359058.ingest.sentry.io/3369701",
       release: `${pkg.version}`,
       integrations: [
         new Sentry.Integrations.Breadcrumbs({
