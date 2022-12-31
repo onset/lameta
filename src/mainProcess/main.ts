@@ -43,6 +43,7 @@ async function createWindow() {
       }
     });
   }
+  process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
   win = new BrowserWindow({
     x: x,
