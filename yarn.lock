@@ -3723,19 +3723,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hot-loader/react-dom@npm:17.0.2":
-  version: 17.0.2
-  resolution: "@hot-loader/react-dom@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    scheduler: ^0.20.2
-  peerDependencies:
-    react: 17.0.2
-  checksum: 180de3211aff1d60fd9d2a9130ba7977e2e356b1ecd2e7c50a98e6507bb7873f0523b44fa63142f0ffdc629d2933994f4add86e1f19288941f9d223bd28f5e48
-  languageName: node
-  linkType: hard
-
 "@iarna/cli@npm:^1.2.0":
   version: 1.2.0
   resolution: "@iarna/cli@npm:1.2.0"
@@ -6184,15 +6171,6 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 51781cc63b4595ab94bae8d0311c966b7261cdad952cba4276d297ab7a8559a7d602a37d4532db24f760d5ab4ef25d23d180b1bec12feda524d2dd411a7bc44a
-  languageName: node
-  linkType: hard
-
-"@types/react-hot-loader@npm:^4.1.0":
-  version: 4.1.1
-  resolution: "@types/react-hot-loader@npm:4.1.1"
-  dependencies:
-    react-hot-loader: "*"
-  checksum: 9ad2216be8ed562741f8284d8d66e6feebd235bc795d6d53d67bb2324947d96afd741da636a38f97b6dbfbc352bce0659e31c1dbfca1911fbcaa7bdfc53302fb
   languageName: node
   linkType: hard
 
@@ -13485,7 +13463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-levenshtein@npm:^2.0.6, fast-levenshtein@npm:~2.0.6":
+"fast-levenshtein@npm:~2.0.6":
   version: 2.0.6
   resolution: "fast-levenshtein@npm:2.0.6"
   checksum: 92cfec0a8dfafd9c7a15fba8f2cc29cd0b62b85f056d99ce448bbcd9f708e18ab2764bda4dd5158364f4145a7c72788538994f0d1787b956ef0d1062b0f7c24c
@@ -14660,7 +14638,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"global@npm:^4.3.0, global@npm:^4.4.0":
+"global@npm:^4.4.0":
   version: 4.4.0
   resolution: "global@npm:4.4.0"
   dependencies:
@@ -22880,29 +22858,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-hot-loader@npm:*, react-hot-loader@npm:^4.12.3":
-  version: 4.12.21
-  resolution: "react-hot-loader@npm:4.12.21"
-  dependencies:
-    fast-levenshtein: ^2.0.6
-    global: ^4.3.0
-    hoist-non-react-statics: ^3.3.0
-    loader-utils: ^1.1.0
-    prop-types: ^15.6.1
-    react-lifecycles-compat: ^3.0.4
-    shallowequal: ^1.1.0
-    source-map: ^0.7.3
-  peerDependencies:
-    "@types/react": ^15.0.0 || ^16.0.0
-    react: ^15.0.0 || ^16.0.0
-    react-dom: ^15.0.0 || ^16.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: b91f16c50e39ac7a80861724eaee97540151eeddc1c719eadd9ee6d52251dd3f91fbdf7401efb826527747e78a7d84037870441c1588300fc241c9ec56e2ba31
-  languageName: node
-  linkType: hard
-
 "react-html-attributes@npm:^1.4.2":
   version: 1.4.6
   resolution: "react-html-attributes@npm:1.4.6"
@@ -24338,7 +24293,6 @@ fsevents@^1.2.7:
     "@emotion/babel-plugin": ^11.10.5
     "@emotion/eslint-plugin": ^11.10.0
     "@emotion/react": ^11.10.5
-    "@hot-loader/react-dom": 17.0.2
     "@lingui/cli": ^3.9.0
     "@lingui/core": ^3.9.0
     "@lingui/macro": ^3.9.0
@@ -24376,7 +24330,6 @@ fsevents@^1.2.7:
     "@types/react-datepicker": ^0.55.1
     "@types/react-dom": 17.0.9
     "@types/react-dropzone": 4.1
-    "@types/react-hot-loader": ^4.1.0
     "@types/react-modal": ^3.13.1
     "@types/react-select": ^3.0.8
     "@types/react-sidebar": ^3.0.0
@@ -24481,7 +24434,6 @@ fsevents@^1.2.7:
     react-dom: ^17.0.2
     react-dropzone: 4.1
     react-error-boundary: ^3.1.4
-    react-hot-loader: ^4.12.3
     react-markdown: ^5.0.3
     react-modal: ^3.15.1
     react-player: ^2.9.0
