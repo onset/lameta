@@ -3171,6 +3171,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron-toolkit/utils@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@electron-toolkit/utils@npm:1.0.2"
+  dependencies:
+    jszip: ^3.7.1
+  peerDependencies:
+    electron: ">=13.0.0"
+  checksum: fe3800a1c20ba381baa909b6601266d402eeda0cdd0302df762cb49c0380ed5f4af4cd559474e542a33757ff30714ee765366e7c4bb5a121c7f261c7f0a03894
+  languageName: node
+  linkType: hard
+
 "@electron/get@npm:^1.14.1":
   version: 1.14.1
   resolution: "@electron/get@npm:1.14.1"
@@ -17753,7 +17764,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.1.0":
+"jszip@npm:^3.1.0, jszip@npm:^3.7.1":
   version: 3.10.1
   resolution: "jszip@npm:3.10.1"
   dependencies:
@@ -24289,6 +24300,7 @@ fsevents@^1.2.7:
     "@devexpress/dx-react-core": ^2.7.6
     "@devexpress/dx-react-grid": ^2.7.6
     "@devexpress/dx-react-grid-material-ui": ^2.7.6
+    "@electron-toolkit/utils": ^1.0.2
     "@electron/remote": ^2.0.8
     "@emotion/babel-plugin": ^11.10.5
     "@emotion/eslint-plugin": ^11.10.0

@@ -1,52 +1,133 @@
-const Path = require("path");
-const electron = require("electron");
-import { MainProcessApi } from "./MainProcessApi"; // this instantiates the API for our render process to call
+process.env.DIST_ELECTRON = join(__dirname, "../..");
+process.env.DIST = join(process.env.DIST_ELECTRON, "../dist");
+process.env.PUBLIC = app.isPackaged
+  ? process.env.DIST
+  : join(process.env.DIST_ELECTRON, "../public");
+
+import { dialog } from "electron";
+
+import { is } from "@electron-toolkit/utils";
+import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
+import { release } from "os";
+import { join } from "path";
 import Store from "electron-store";
 
-/* cannot use electron sentry in the main process yet, error only shows up when you run the packaged app.
-See https://github.com/getsentry/sentry-electron/issues/92. Probably don't really need the "electron" version anyhow,
-could just use the node or web sdk's?
-*/
-// import {initializeSentry} from("./errorHandling");
-// initializeSentry();
+// require("@electron/remote/main").enable();
+// require("@electron/remote/main").initialize();
 
-import {
-  app,
-  BrowserWindow,
-  Menu,
-  shell,
-  ipcMain,
-  dialog,
-  MessageBoxSyncOptions
-} from "electron";
+// Disable GPU Acceleration for Windows 7
+if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 
-(global as any).arguments = process.argv;
+// Set application name for Windows 10+ notifications
+if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
-// Note: when actually running the program, stuff will be stored where you expect them,
-// using the name of the app. But running in development, you get everything in just
-// appdata/roaming/electron. Don't worry about that. app.setPath("userData", somewhere...);
-
-let mainWindow: BrowserWindow | undefined;
-
-if (process.env.NODE_ENV === "production") {
-  const sourceMapSupport = require("source-map-support"); // eslint-disable-line
-  sourceMapSupport.install();
-}
-
-if (process.env.NODE_ENV === "development") {
-  // Part of a failed attempt to hook up render process with vscode
-  // see launch.json and https://github.com/electron/electron/issues/10445
-  app.commandLine.appendSwitch("remote-debugging-port", "9223");
-
-  require("electron-debug")(); // eslint-disable-line global-require
-  const p = Path.join(__dirname, "..", "app", "node_modules"); // eslint-disable-line
-  require("module").globalPaths.push(p); // eslint-disable-line
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+  process.exit(0);
 }
 
 Store.initRenderer();
 
-// will become unavailable in electron 11. Using until these are sorted out: https://github.com/electron/electron/pull/25869 https://github.com/electron/electron/issues/25405#issuecomment-707455020
-//app.allowRendererProcessReuse = false;
+let win: BrowserWindow | null = null;
+// Here, you can also use other preload
+//const preload = join(__dirname, "../preload/index.js");
+const url = process.env.VITE_DEV_SERVER_URL;
+const indexHtml = join(process.env.DIST, "index.html");
+
+async function createWindow() {
+  let x: number | undefined = undefined;
+  let y: number | undefined = undefined;
+  if (is.dev) {
+    screen.getAllDisplays().forEach((display) => {
+      if (display.bounds.x < 0) {
+        x = display.bounds.x;
+        y = display.bounds.y;
+      }
+    });
+  }
+
+  win = new BrowserWindow({
+    x: x,
+    y: y,
+    title: "Main window",
+    //icon: join(process.env.PUBLIC, "favicon.svg"),
+    webPreferences: {
+      //preload,
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  if (process.env.VITE_DEV_SERVER_URL) {
+    console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
+    // electron-vite-vue#298
+    win.loadURL(url!);
+    // Open devTool if the app is not packaged
+    win.webContents.openDevTools();
+  } else {
+    win.loadFile(indexHtml);
+  }
+  win.on("ready-to-show", () => {
+    win!.maximize();
+    win!.show();
+  });
+  // Test actively push message to the Electron-Renderer
+  win.webContents.on("did-finish-load", () => {
+    win?.webContents.send("main-process-message", new Date().toLocaleString());
+  });
+
+  // Make all links open with the browser, not with the application
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("https:")) shell.openExternal(url);
+    return { action: "deny" };
+  });
+}
+
+app.whenReady().then(createWindow);
+
+app.on("window-all-closed", () => {
+  win = null;
+  if (process.platform !== "darwin") app.quit();
+});
+
+app.on("second-instance", () => {
+  if (win) {
+    // Focus on the main window if the user tried to open another
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  }
+});
+
+app.on("activate", () => {
+  const allWindows = BrowserWindow.getAllWindows();
+  if (allWindows.length) {
+    allWindows[0].focus();
+  } else {
+    createWindow();
+  }
+});
+
+// new window example arg: new windows url
+ipcMain.handle("open-win", (event, arg) => {
+  const childWindow = new BrowserWindow({
+    webPreferences: {
+      //preload,
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  if (process.env.VITE_DEV_SERVER_URL) {
+    childWindow.loadURL(`${url}#${arg}`);
+  } else {
+    childWindow.loadFile(indexHtml, { hash: arg });
+  }
+});
+
+// handle getAppPath event
+ipcMain.handle("getAppPath", () => {
+  return app.getAppPath();
+});
 
 // on macos, this will be called if the user directly opens an sprj file.
 app.on("open-file", (event, path: string) => {
@@ -71,146 +152,9 @@ ipcMain.on("copyStopped", () => {
   copyInProgress = false;
 });
 ipcMain.handle("confirm-quit", async (event, ...args) => {
-  const result = await dialog.showMessageBox(mainWindow!, {
+  const result = await dialog.showMessageBox(win!, {
     message: args[0],
     buttons: [args[1], args[2]]
   });
   return result;
 });
-// app.on("before-quit", (event) => {
-//   //if (copyInProgress) {
-//   dialog.showMessageBox(mainWindow!, { message: "hello" });
-//   event.preventDefault();
-//   //}
-// });
-import installExtension, { MOBX_DEVTOOLS } from "electron-devtools-installer";
-
-const installExtensions = () => {
-  // I wasn't able to get this to work... it would say it was installed, but nothing shows up.
-  // I got it to come up if I 1) ran the standalone version of the mobx tool AND included a
-  //   <script src="http://localhost:8098"></script> in app.html, then 2) it would show up in devtools as "MobX" after
-  //   maybe 5 minutes but would just say "connecting..."
-  // if (process.env.NODE_ENV === "development") {
-  //   console.log("installExtensions*************");
-
-  //   installExtension(MOBX_DEVTOOLS, {
-  //     loadExtensionOptions: { loadExtensionx: true },
-  //   })
-  //     .then((name) => console.log(`Added Extension:  ${name}`))
-  //     .catch((err) => console.log("An error occurred: ", err));
-  // }
-
-  return Promise.resolve([]);
-};
-
-function fillLastMonitor() {
-  const displays = electron.screen.getAllDisplays();
-  mainWindow?.setBounds(displays[displays.length - 1].bounds);
-  mainWindow?.maximize();
-}
-
-app.on("ready", () =>
-  // NB: __dirname is something like lameta\release\win-unpacked\resources\app.asar
-  // you can look in the asar file using a 7-zip plugin: http://www.tc4shell.com/en/7zip/asar/
-  // it looks like
-  // dist/
-  //    renderer-bundle.js
-  //    style.css
-  //    some fonts, maps, and stuff
-  // app.html
-  // main-bundle.js
-  // package.json
-  {
-    installExtensions().then(() => {
-      require("@electron/remote/main").initialize();
-      mainWindow = new BrowserWindow({
-        webPreferences: {
-          plugins: true, // to enable the pdf-viewer built in to electron
-          backgroundThrottling: false,
-          webSecurity: false,
-          //  enableRemoteModule: true
-          // lameta does not show external web content, so there is no threat, so no need for sandboxing
-          nodeIntegration: true,
-          sandbox: false,
-          contextIsolation: false
-          //enableRemoteModule: true, // TODO Electron wants us to stop using this: https://medium.com/@nornagon/electrons-remote-module-considered-harmful-70d69500f31
-        },
-        show: false,
-        width: 1024,
-        height: 728,
-
-        //windows
-        icon: Path.join(__dirname, "../build/windows.ico")
-        //linux icon: path.join(__dirname, "../app/icons/linux/64x64.png")
-        //mac icon: path.join(__dirname, "../app/icons/mac.icns")
-      }); // Ideally the main-bundle.js should be in app/dist, but Electron // doesn't allow us to reach up a level for the app.html like this: //mainWindow.loadURL(`file://${__dirname}/../app.html`); // so at the moment we're putting the main-bundle.js up in app and use this
-
-      require("@electron/remote/main").enable(mainWindow.webContents);
-
-      /* For hot loading, this is how https://github.com/s-h-a-d-o-w/rhl-electron-quick-start does it, 
-       but I get 
-          VM113 inject.js:29 Refused to execute inline script because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-T9oXk+Q36ipraPWSTq67s1+uEjr8aQsC45iEyyM9Ztk='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback.
-
-      if (process.env.NODE_ENV === "development") {
-        mainWindow.loadURL("http://localhost:3000/app.html");
-      } else {
-       */ mainWindow.loadURL(
-        `file://${__dirname}/../../app.html`
-      );
-
-      /*}*/
-
-      // Send links to the browser, instead of opening new electron windows
-      const handleRedirect = (e, url) => {
-        if (url !== mainWindow!.webContents.getURL()) {
-          e.preventDefault();
-          require("electron").shell.openExternal(url);
-        }
-      };
-      mainWindow.webContents.on("will-navigate", handleRedirect);
-      mainWindow.webContents.on("new-window", handleRedirect);
-
-      mainWindow.webContents.on("did-finish-load", () => {
-        mainWindow!.show();
-        mainWindow!.focus();
-        fillLastMonitor();
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
-          );
-
-          mainWindow!.webContents.openDevTools();
-        }
-      });
-
-      ipcMain.handle("showOpenDialog", (event, options) => {
-        //returns a promise which is somehow funneled to the caller in the render process
-        return dialog.showOpenDialog(mainWindow!, options);
-      });
-
-      ipcMain.handle("showMessageBox", (event, options) => {
-        return dialog.showMessageBoxSync(mainWindow!, options);
-      });
-
-      mainWindow.on("closed", () => {
-        mainWindow = undefined;
-      });
-
-      // ipcMain.on("show-debug-tools", (event, arg) => {
-      //   mainWindow!.webContents.openDevTools();
-      // });
-
-      // // warning: this kills e2e! mainWindow.openDevTools(); // temporary, during production build testing
-      // if (process.env.NODE_ENV === "development") {
-      //   console.log(
-      //     "*****If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
-      //   );
-      //   //mainWindow.openDevTools();
-      //   //NB: setting up the context menu happened here, in the boilerplate.
-      //   // But it proved difficult to override based on where the user clicked.
-      //   // So now the default context menu is handled on the home page.
-      //   // mainWindow.webContents.on("context-menu", (e, props) => {
-      // }
-    });
-  }
-);

@@ -250,6 +250,7 @@
     "@devexpress/dx-react-core": "^2.7.6",
     "@devexpress/dx-react-grid": "^2.7.6",
     "@devexpress/dx-react-grid-material-ui": "^2.7.6",
+    "@electron-toolkit/utils": "^1.0.2",
     "@electron/remote": "^2.0.8",
     "@emotion/babel-plugin": "^11.10.5",
     "@emotion/eslint-plugin": "^11.10.0",
