@@ -70,8 +70,8 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
-  i18n.load(code, require(`../../locale/${folder}/messages.js`).messages);
-  i18n.activate(code);
+  //i18n.load(code, require(`../../locale/${folder}/messages.js`).messages); vite todo  we need to load these dynamically? Maybe locase has to be like assets?
+  //i18n.activate(code);
 
   userSettings.UILanguage = code;
 
