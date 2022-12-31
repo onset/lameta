@@ -6,6 +6,7 @@ import electron from "vite-electron-plugin";
 import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
+import dsv from "@rollup/plugin-dsv";
 
 // I don't know if this is costly... it came with the boilerplate
 rmSync(path.join(__dirname, "dist"), { recursive: true, force: true });
@@ -53,7 +54,8 @@ export default defineConfig({
     // Use Node.js API in the Renderer-process
     renderer({
       nodeIntegration: true
-    })
+    }),
+    dsv() // for importing csv
   ],
   server: process.env.VSCODE_DEBUG
     ? (() => {

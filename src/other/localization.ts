@@ -86,12 +86,12 @@ export function setUILanguage(code: string, reload: boolean = true): void {
   ---------------------------------------------------------------------*/
 // I don't have a way of making the lingui-extract scanner scan our fields.json5, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
-const fields = require("../../locale/fields.csv");
-const choices = require("../../locale/choices.csv");
-const roles = require("../../locale/roles.csv");
-const genres = require("../../locale/genres.csv");
-const accessProtocols = require("../../locale/accessProtocols.csv");
-const tips = require("../../locale/tips.csv"); // tooltips and specialinfo
+import fields from "../../locale/fields.csv";
+import choices from "../../locale/choices.csv";
+import roles from "../../locale/roles.csv";
+import genres from "../../locale/genres.csv";
+import accessProtocols from "../../locale/accessProtocols.csv";
+import tips from "../../locale/tips.csv"; // tooltips and specialinfo
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
