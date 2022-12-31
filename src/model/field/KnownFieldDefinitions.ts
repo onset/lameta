@@ -1,8 +1,10 @@
 import { IFolderType } from "../Folder/Folder";
 import { FieldType } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
+import JSON5 from "json5";
+import raw from "./fields.json5?raw";
+const knownFieldDefinitions = JSON5.parse(raw);
 
-const knownFieldDefinitions = require("./fields.json5");
 export function getFieldDefinition(
   folderType: IFolderType,
   key: string
