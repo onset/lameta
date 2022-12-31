@@ -53,7 +53,8 @@ async function createWindow() {
     webPreferences: {
       //preload,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      webSecurity: false // this is safe, so long as we have no way of showing external web content
     }
   });
 
@@ -77,8 +78,22 @@ async function createWindow() {
   });
   // Test actively push message to the Electron-Renderer
   win.webContents.on("did-finish-load", () => {
-    win?.webContents.send("main-process-message", new Date().toLocaleString());
+    win!.show();
+    win!.focus();
+    fillLastMonitor();
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+      );
+
+      win!.webContents.openDevTools();
+    }
   });
+  function fillLastMonitor() {
+    const displays = screen.getAllDisplays();
+    win?.setBounds(displays[displays.length - 1].bounds);
+    win?.maximize();
+  }
 
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -161,4 +176,13 @@ ipcMain.handle("confirm-quit", async (event, ...args) => {
     buttons: [args[1], args[2]]
   });
   return result;
+});
+
+ipcMain.handle("showOpenDialog", (event, options) => {
+  //returns a promise which is somehow funneled to the caller in the render process
+  return dialog.showOpenDialog(win!, options);
+});
+
+ipcMain.handle("showMessageBox", (event, options) => {
+  return dialog.showMessageBoxSync(win!, options);
 });
