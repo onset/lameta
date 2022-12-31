@@ -64,6 +64,8 @@ export class CopyManager {
     destPath: string,
     progress?: (msg: string) => void
   ): Promise<string> {
+    if (!fs.existsSync(Path.dirname(destPath)))
+      fs.mkdirSync(Path.dirname(destPath));
     // it's too hard to write tests with the async copying happening (see the test "There should be 2 consent files in the ConsentDocuments folder")
     if (
       process.env.JEST_WORKER_ID !== undefined &&
