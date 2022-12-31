@@ -10,7 +10,7 @@ import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-const styles = require("./Workspace.scss");
+import stylesX from "./Workspace.scss";
 import { SessionIcon } from "./session/SessionIcon";
 import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
@@ -194,9 +194,9 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (
-              this.props.project.getFolderArrayFromType(folderType) as any
-            ).countOfMarkedFolders() === 0
+            (this.props.project.getFolderArrayFromType(
+              folderType
+            ) as any).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
@@ -222,7 +222,7 @@ class Home extends React.Component<IProps> {
     return (
       <div
         id="topLevelOfOpenProjectScreen"
-        className={styles.container}
+        className={stylesX.container}
         data-tid="container"
       >
         <div
