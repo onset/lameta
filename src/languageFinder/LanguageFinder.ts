@@ -1,4 +1,6 @@
 import TrieSearch from "trie-search";
+// this was before vite, I don't know if it's still true: NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
+import langIndex from "./langindex.json";
 
 export class Language {
   public englishName: string;
@@ -67,8 +69,6 @@ export class LanguageFinder {
       "iso639_3"
     ]);
 
-    // NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
-    const langIndex = require("./langindex.json");
     // add the primary name and two codes
     this.index.addAll(langIndex);
 

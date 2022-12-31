@@ -6460,12 +6460,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/xml2js@npm:^0.4.2":
-  version: 0.4.5
-  resolution: "@types/xml2js@npm:0.4.5"
+"@types/xml2js@npm:^0.4.11":
+  version: 0.4.11
+  resolution: "@types/xml2js@npm:0.4.11"
   dependencies:
     "@types/node": "*"
-  checksum: c9b9e1709fa787d2c5d3e52d2357b0c4bcfed2f1f00d5c9bebf1e258bd1bd8478805c3e25939b9dfa1c04e969762f57f3738c5aa14d9484b49bf6b7dc9ff97fc
+  checksum: d0e7d2a8c7e0a53147c777a6756bdea0eb26a3de0d3c1f42c17e63332e4e2dc532f687c19ca26a0518336f5de60e1ec4345d7ef71e7ba0656fcf3390c9388eb5
   languageName: node
   linkType: hard
 
@@ -24807,7 +24807,7 @@ fsevents@^1.2.7:
     "@types/sinon": ^2.3.1
     "@types/temp": ^0.8.31
     "@types/webdriverio": ^4.10.0
-    "@types/xml2js": ^0.4.2
+    "@types/xml2js": ^0.4.11
     "@types/xmlbuilder": ^0.0.32
     "@vitejs/plugin-react": ^3.0.0
     "@vitest/ui": ^0.26.2

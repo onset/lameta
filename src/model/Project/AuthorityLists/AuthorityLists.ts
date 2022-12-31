@@ -80,11 +80,6 @@ import olacRolesRawq from "./olac-roles.xml?raw";
 export function loadOLACRoles(): IChoice[] {
   const xml: string = olacRolesRawq;
 
-  return [];
-  /* runtime error with vite todo
-TypeError: this.removeAllListeners is not a function
-https://github.com/Leonidas-from-XIV/node-xml2js/issues/88
-
   let xmlAsObject: any = {};
   xml2js.parseString(
     xml,
@@ -103,6 +98,6 @@ https://github.com/Leonidas-from-XIV/node-xml2js/issues/88
     label: t.name,
     description: t.definition
   }));
-*/
+
   //xmlAsObject[Object.keys(xmlAsObject)[0]];
 }
