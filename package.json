@@ -22,7 +22,7 @@
     "e2ebuild": "npm run e2ebuild-main && npm run e2ebuild-renderer",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
-    "build": "npm run lingui-compile && yarn vite build",
+    "build": "npm run lingui-compile && tsc && yarn vite build",
     "build-without-test": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
