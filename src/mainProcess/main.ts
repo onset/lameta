@@ -11,9 +11,7 @@ import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
 import { release } from "os";
 import { join } from "path";
 import Store from "electron-store";
-
-// require("@electron/remote/main").enable();
-// require("@electron/remote/main").initialize();
+//import remoteMain from "@electron/remote/main";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -57,6 +55,11 @@ async function createWindow() {
       contextIsolation: false
     }
   });
+
+  require("@electron/remote/main").enable(win.webContents);
+  require("@electron/remote/main").initialize();
+
+  // invalid value used as a weak map key
 
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
