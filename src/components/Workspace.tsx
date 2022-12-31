@@ -10,7 +10,6 @@ import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { ProjectTab } from "./project/ProjectTab";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import stylesX from "./Workspace.scss";
 import { SessionIcon } from "./session/SessionIcon";
 import { ProjectIcon } from "./project/ProjectIcon";
 import { PeopleIcon } from "./people/PeopleIcon";
@@ -27,6 +26,7 @@ import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImp
 import { IFolderType } from "../model/Folder/Folder";
 import { MediaFolderDialog } from "./MediaFolderDialog";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { lameta_blue, lameta_green, lameta_orange } from "../containers/theme";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -222,8 +222,13 @@ class Home extends React.Component<IProps> {
     return (
       <div
         id="topLevelOfOpenProjectScreen"
-        className={stylesX.container}
         data-tid="container"
+        css={css`
+          display: flex;
+          flex-direction: row;
+          height: 100%;
+          left: 10px;
+        `}
       >
         <div
           css={css`
@@ -241,18 +246,56 @@ class Home extends React.Component<IProps> {
         <SaveNotifier />
         {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}
         <MediaFolderDialog />
-        <div id="tabContainer">
+        <div
+          id="tabContainer"
+          css={css`
+            flex: 1; //grow to fill as much as is can (up to edge of notification bar)
+            width: 100%; // else it goes beyond its parent
+          `}
+        >
           <Tabs
             key={tabsKey}
-            className={"tabComponent"}
             defaultIndex={this.kFirstTabToOpen}
             onSelect={(index: number) => {
               this.props.project.saveAllFilesInFolder();
               this.UpdateMenus(index);
               analyticsLocation(["Project", "Sessions", "People"][index]);
             }}
+            css={css`
+              overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
+              height: 100%;
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+
+              & > .react-tabs__tab-panel--selected {
+                padding: 8px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                overflow: auto; // keeps it from growing beyond its parent
+              }
+              .tab-panel-project {
+                background-color: ${lameta_orange};
+              }
+              .tab-panel-sessions {
+                background-color: ${lameta_green};
+              }
+              .tab-panel-people {
+                background-color: ${lameta_blue};
+              }
+              .icon-and-label {
+                display: flex;
+                align-items: center;
+
+                img {
+                  height: 24px;
+                  margin-right: 8px;
+                }
+              }
+            `}
           >
-            <TabList>
+            <TabList style={{ margin: 0 }}>
               <Tab className={"react-tabs__tab tab-project"}>
                 <div className={"icon-and-label"}>
                   <ProjectIcon />
