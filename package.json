@@ -1,6 +1,12 @@
 {
   "main": "dist/src/mainProcess/main.js",
+  "name": "lameta",
+  "productName": "lameta",
   "version": "2.0.15-alpha",
+  "author": {
+    "name": "lameta",
+    "email": "sorryno@email.org"
+  },
   "description": "File & metadata organization for language documentation projects.",
   "scripts": {
     "clear_jest": "jest --clearCache",
@@ -16,22 +22,15 @@
     "e2ebuild": "npm run e2ebuild-main && npm run e2ebuild-renderer",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
-    "build": "npm run lingui-compile && npm vite build",
+    "build": "npm run lingui-compile && yarn vite build",
     "build-without-test": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer",
-    "start": "cross-env NODE_ENV=production electron --inspect=5858 ./app/",
-    "start-hot": "cross-env HOT=1 NODE_ENV=development electron   ./app",
-    "start-hot-vscode": "cross-env HOT=1 NODE_ENV=development electron --remote-debugging-port=9223 ./app/main-bundle",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",
-    "hot-server": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=1  NODE_ENV=development node --max_old_space_size=2096 server.js",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
     "dev": "vite",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
     "clean": "node clean.js",
     "make-sentry-release": "./make-sentry-release.sh",
-    "package": "node clean.js && npm run build-without-test && electron-builder --publish never",
-    "package-win": "npm run build && electron-builder --win --x64",
-    "package-linux": "npm run build && electron-builder --linux",
-    "package-all": "npm run build-without-test && electron-builder -mwl",
+    "package": "npm run build && electron-builder",
     "cleanup": "mop -v",
     "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "lingui-add": "lingui add-locale",
@@ -213,6 +212,7 @@
     "css-loader": "^1.0.0",
     "css-modules-require-hook": "^4.0.6",
     "csv-loader": "^3.0.3",
+    "electron": "21.3.1",
     "electron-builder": "^23.6.0",
     "electron-builder-http": "^19.27.5",
     "electron-builder-notarize": "^1.5.0",
@@ -244,6 +244,7 @@
     "vite-electron-plugin": "^0.6.3",
     "vite-plugin-electron-renderer": "^0.11.3",
     "vite-plugin-environment": "^1.1.3",
+    "vite-plugin-time-reporter": "^2.1.0",
     "vitest": "^0.26.2",
     "webdriverio": "^4.14.0"
   },
@@ -307,7 +308,6 @@
     "compare-versions": "^3.6.0",
     "csv-parse": "^4.10.1",
     "date-fns": "^2.14.0",
-    "electron": "21.3.1",
     "electron-call": "^0.0.7",
     "electron-context-menu": "^0.9.1",
     "electron-debug": "^3.2.0",
@@ -393,7 +393,6 @@
     "node": " 18.12.1",
     "npm": ">=3.x"
   },
-  "packageManager": "yarn@3.1.0",
   "debug": {
     "env": {
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777"
