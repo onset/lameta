@@ -7,6 +7,7 @@ import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
 import dsv from "@rollup/plugin-dsv";
+import timeReporter from "vite-plugin-time-reporter";
 
 // I don't know if this is costly... it came with the boilerplate
 rmSync(path.join(__dirname, "dist"), { recursive: true, force: true });
@@ -19,6 +20,7 @@ export default defineConfig({
     }
   },
   plugins: [
+    timeReporter(),
     react({
       babel: {
         // makes lingui macros work. There is a some performance penalty, but I
