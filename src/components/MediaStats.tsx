@@ -147,14 +147,14 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
       });
   }
 }
-function processVideoStream(stream: any, stats: Stats) {
+function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
   switch (stream.codec_type) {
     case "audio":
       stats["Audio Codec"] = stream.codec_name;
       stats["Audio Channels"] = stream.channels;
       if (stream.bit_rate) {
-        stats["Audio Bit Rate"] =
-          Math.round(stream.bit_rate / 1000).toString() + " Kbps";
+        const br = Number(stream.bit_rate);
+        stats["Audio Bit Rate"] = Math.round(br / 1000).toString() + " Kbps";
       }
       if (stream.sample_rate) {
         stats["Audio Sample Rate"] =
@@ -172,9 +172,8 @@ function processVideoStream(stream: any, stats: Stats) {
       }
 
       if (stream.avg_frame_rate) {
-        stats["Frame rate"] =
-          // tslint:disable-next-line:no-eval
-          Math.round(eval(stream.avg_frame_rate)) + " fps";
+        const frmRate = Number(stream.avg_frame_rate);
+        stats["Frame rate"] = Math.round(frmRate) + " fps";
         //"avg_frame_rate":"26910000/896999",
       }
       break;
