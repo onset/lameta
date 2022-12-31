@@ -1,7 +1,7 @@
 import * as xml2js from "xml2js";
 import { IChoice } from "../../field/Field";
 
-const accessProtocols = require("./AccessProtocols/AccessProtocols.json");
+import accessProtocols from "./AccessProtocols/AccessProtocols.json";
 
 export interface IAccessProtocolChoice {
   protocol: string;
@@ -17,7 +17,8 @@ export class AuthorityLists {
 
   public constructor(getPersons: () => string[]) {
     this.getPeopleNames = getPersons;
-    this.accessProtocolChoices = accessProtocols;
+    this.accessProtocolChoices =
+      accessProtocols as unknown as IAccessProtocolChoice[];
     this.accessChoicesOfCurrentProtocol = [];
     this.roleChoices = loadOLACRoles();
   }
@@ -34,7 +35,9 @@ export class AuthorityLists {
       const protocol = accessProtocols.find(
         (o: any) => o.protocol === protocolName
       );
-      this.accessChoicesOfCurrentProtocol = protocol ? protocol.choices : [];
+      this.accessChoicesOfCurrentProtocol = protocol
+        ? (protocol.choices as unknown as IChoice[])
+        : [];
     }
   }
 
@@ -60,7 +63,7 @@ export class AuthorityLists {
 
   // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
   private convertAccessProtocolsToCSVForLocalization() {
-    (accessProtocols as IAccessProtocolChoice[]).forEach((p) => {
+    (accessProtocols as unknown as IAccessProtocolChoice[]).forEach((p) => {
       console.log(`"${p.protocol}", "Access Protocol Name", "${p.protocol}"`);
       p.choices.forEach((c) => {
         console.log(
