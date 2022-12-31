@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { test, expect as expect, Page } from "@playwright/test";
 import { Lameta } from "./Lameta";

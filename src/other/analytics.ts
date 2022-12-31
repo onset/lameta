@@ -14,7 +14,7 @@ import userSettingsSingleton from "./UserSettings";
 import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 
-import * as fs from "fs";
+import fs from "fs";
 import { locate } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
 

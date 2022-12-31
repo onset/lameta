@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";

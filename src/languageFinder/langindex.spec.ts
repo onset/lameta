@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
 jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
 

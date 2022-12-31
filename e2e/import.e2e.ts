@@ -1,7 +1,7 @@
 import { test, expect as expect, Page } from "@playwright/test";
 import { Lameta } from "./Lameta";
 import { createNewProject, E2eProject } from "./e2eProject";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { E2eFileList } from "./e2eFileList";
 

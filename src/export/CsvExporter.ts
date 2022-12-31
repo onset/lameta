@@ -1,7 +1,7 @@
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import * as nodeArchiver from "archiver";
-import * as fs from "fs";
+import fs from "fs";
 import { FieldType, Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Session } from "../model/Project/Session/Session";

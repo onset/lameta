@@ -2,7 +2,7 @@ import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { csvEncode, kEol } from "./CsvExporter";
-import * as fs from "fs";
+import fs from "fs";
 import { sentryBreadCrumb } from "../other/errorHandling";
 
 // see https://github.com/onset/lameta/issues/29

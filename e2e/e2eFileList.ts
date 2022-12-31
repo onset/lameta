@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { Page, _electron as electron } from "playwright";
 import { Lameta } from "./Lameta";

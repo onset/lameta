@@ -19,7 +19,7 @@ import {
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
 import { IFolderType } from "../../model/Folder/Folder";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 import * as getJsDateFromExcel from "excel-date-to-js";

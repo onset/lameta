@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import * as React from "react";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";

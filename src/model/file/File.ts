@@ -1,5 +1,5 @@
 import * as xml2js from "xml2js";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 const filesize = require("filesize");
 import { makeObservable, observable } from "mobx";

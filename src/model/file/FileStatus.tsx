@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import * as React from "react";
 import { File } from "./File";
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { locate } from "../../other/crossPlatformUtilities";

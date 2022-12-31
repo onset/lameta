@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
