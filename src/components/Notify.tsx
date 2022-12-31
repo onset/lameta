@@ -240,8 +240,6 @@ export function NotifyUpdateAvailable(
 ) {
   // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
   window.setTimeout(() => {
-    const current = require("../package.json");
-
     ButterToast.raise({
       content: (
         <Cinnamon.Crisp

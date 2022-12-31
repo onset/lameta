@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import { t, Trans } from "@lingui/macro";
 import * as _ from "lodash";
-
+import pkg from "../../package.json";
 const ReactMarkdown = require("react-markdown");
 import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
@@ -43,7 +43,6 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   const [showNewReleasesOnly, setShowNewReleasesOnly] = React.useState(true);
   const [version, setVersion] = React.useState("");
   React.useEffect(() => {
-    const pkg = require("../package.json");
     setVersion(pkg.version);
   }, []);
   console.log("Version = " + version);
@@ -263,7 +262,7 @@ function getChannel(version: string): Channel {
 // informed about betas. To improve this, we will need some more UI so that
 // people can specify what channels they are interested in hearing about.
 function getChannelsToRecommend(): Channel[] {
-  const current = getChannel(require("../package.json").version as string);
+  const current = getChannel(pkg.version as string);
   if (current === "alpha") return ["alpha", "beta", "release"];
   if (current === "beta") return ["beta", "release"];
   return ["release"];
@@ -273,7 +272,7 @@ function getNewerReleases(
   releasesNewestFirst: IGithubRelease[],
   channelsToInclude: Channel[]
 ) {
-  const current = require("../package.json").version as string;
+  const current = pkg.version as string;
   return releasesNewestFirst.filter(
     (r) =>
       channelsToInclude.includes(getChannel(r.tag_name)) &&

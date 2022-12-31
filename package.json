@@ -1,5 +1,7 @@
 {
   "main": "dist/src/mainProcess/main.js",
+  "version": "2.0.15-alpha",
+  "description": "File & metadata organization for language documentation projects.",
   "scripts": {
     "clear_jest": "jest --clearCache",
     "//test is what travis will run": "",

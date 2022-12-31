@@ -1,3 +1,4 @@
+import pkg from "../../package.json";
 import assert from "assert";
 import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
@@ -22,7 +23,6 @@ import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
-const pkg = require("../package.json");
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -1014,7 +1014,7 @@ export default class ImdiGenerator {
     this.tail
       //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())
-      .a("Originator", "lameta " + require("../package.json").version)
+      .a("Originator", "lameta " + pkg.version)
       .a("FormatId", "IMDI 3.0");
     this.mostRecentElement = this.tail;
     return this.tail;

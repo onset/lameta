@@ -17,6 +17,7 @@ import { currentUILanguage } from "./localization";
 import fs from "fs";
 import { locate } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
+import pkg from "../../package.json";
 
 let analytics: Analytics | undefined;
 
@@ -36,7 +37,7 @@ export async function initializeAnalytics() {
     if (!key) {
       return;
     }
-    const version = require("package.json").version;
+    const version = pkg.version;
     analytics = new Analytics({ writeKey: key });
     analytics.identify({
       userId: userSettingsSingleton.ClientId,

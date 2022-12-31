@@ -1,3 +1,4 @@
+import pkg from "../../package.json";
 import * as xml2js from "xml2js";
 import fs from "fs";
 import * as Path from "path";
@@ -663,7 +664,7 @@ export /*babel doesn't like this: abstract*/ class File {
         }
         const minimumVersion = properties.$?.minimum_lameta_version_to_read;
         if (minimumVersion) {
-          const current = require("../../package.json").version;
+          const current = pkg.version;
           if (compareVersions(minimumVersion, current) === 1) {
             throw Error(
               `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`

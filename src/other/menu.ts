@@ -14,6 +14,7 @@ import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
+import pkg from "../../package.json";
 
 export default class LametaMenu {
   private homePage: IHomePageMenuConnections;
@@ -370,7 +371,7 @@ export default class LametaMenu {
           click: () => ShowReleasesDialog()
         },
         {
-          label: "lameta " + require("../package.json").version,
+          label: "lameta " + pkg.version,
           enabled: false
         }
       ]
