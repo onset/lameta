@@ -1,9 +1,6 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
+import { css } from "@emotion/react";
 import { Trans } from "@lingui/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+/* removed emotion jsx declaration */
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import ReactDOM from "react-dom";
@@ -77,14 +74,13 @@ export const PersonLanguageList: React.FunctionComponent<{
     () => props.person.properties.getFieldDefinition("languages"),
     []
   );
-  const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<
-    IPersonLanguage | undefined
-  >(undefined);
+  const [newLanguagePlaceholder, setNewLanguagePlaceholder] =
+    useState<IPersonLanguage | undefined>(undefined);
   const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {
     if (props.person.languages.length === 0)
-      setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
+      setNewLanguagePlaceholder({} as any as IPersonLanguage);
     setFocusOnPlaceholder(false);
   }, [props.person.languages]);
 
@@ -137,7 +133,7 @@ export const PersonLanguageList: React.FunctionComponent<{
       {!!newLanguagePlaceholder || (
         <a
           onClick={(x) => {
-            setNewLanguagePlaceholder(({} as any) as IPersonLanguage);
+            setNewLanguagePlaceholder({} as any as IPersonLanguage);
             setFocusOnPlaceholder(true);
           }}
         >

@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+/* removed emotion jsx declaration */
 
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";

@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+/* removed emotion jsx declaration */
 
 import * as React from "react";
 import userSettings from "../other/UserSettings";
@@ -197,9 +194,9 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (this.props.project.getFolderArrayFromType(
-              folderType
-            ) as any).countOfMarkedFolders() === 0
+            (
+              this.props.project.getFolderArrayFromType(folderType) as any
+            ).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
