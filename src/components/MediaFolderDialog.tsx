@@ -44,12 +44,12 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
               Normally, when you add a file to a project, session, or person,
               that file is copied into the same folder as you lameta project.
               For some of your files, you might prefer to instead leave the
-              files where they are and just "link" to them.
+              files where they are and just 'link' to them.
             </Trans>
           </p>
           <p>
             <Trans>
-              lameta allows you to specify one "Media Folder". When you add
+              lameta allows you to specify one 'Media Folder'. When you add
               files that are somewhere within that folder, lameta will create a
               link instead of making a copy. This folder can be anywhere,
               including the root of an external drive where you keep large video
