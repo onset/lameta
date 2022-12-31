@@ -83,7 +83,7 @@ class HomePage extends React.Component<IProps, IState> {
     //   "ignore",
     //   "C:/Users/hatto/Documents/laMeta/qq/qq.sprj",
     // ];
-    console.log(`args = ${JSON.stringify(args)}`);
+    //    console.log(`args = ${JSON.stringify(args)}`);
     if (args && args.length > 1 && (args[1] as string).endsWith(".sprj")) {
       expectedProjectDirectory = Path.dirname(args[1]);
     }
@@ -138,7 +138,8 @@ class HomePage extends React.Component<IProps, IState> {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
         title: `Warning`,
-        text: "This is a beta test version, so make sure you have a backup of your work.",
+        text:
+          "This is a beta test version, so make sure you have a backup of your work.",
         width: "300px",
         buttonText: "I understand"
       });
@@ -184,8 +185,7 @@ class HomePage extends React.Component<IProps, IState> {
           this.previousFolderNames !==
             this.projectHolder.project.getFolderNamesForDebugging()
         ) {
-          this.previousFolderNames =
-            this.projectHolder.project.getFolderNamesForDebugging();
+          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {

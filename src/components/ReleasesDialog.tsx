@@ -45,7 +45,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   React.useEffect(() => {
     setVersion(pkg.version);
   }, []);
-  console.log("Version = " + version);
+  //  console.log("Version = " + version);
   const channelsToRecommend = getChannelsToRecommend();
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {

@@ -28,11 +28,11 @@ type Stats = object;
 
 // ffmpeg.setFfmpegPath(ffmpegPath);
 const x = require("ffprobe-static").path;
-console.log(`ffprobe-static.path=${x}`);
+//console.log(`ffprobe-static.path=${x}`);
 const ffprobePath = require("ffprobe-static")
   .path // during run from release (win-unpacked or installed)
   .replace("app.asar", ""); // on windows, both installed and not installed, win-unpacked/resources/node_modules/ffprobe-static exists
-console.log(`adjusted ffprobe-static.path=${ffprobePath}`);
+//console.log(`adjusted ffprobe-static.path=${ffprobePath}`);
 ffmpeg.setFfprobePath(ffprobePath);
 
 export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
