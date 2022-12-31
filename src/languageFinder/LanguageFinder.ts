@@ -79,9 +79,10 @@ export class LanguageFinder {
           this.index.map(alternativeName, indexEntry);
         });
       }
-      if (indexEntry.localName && indexEntry.localName.length > 0) {
-        this.index.map(indexEntry.localName, indexEntry);
-      }
+      // enhance: this is now an array of names ("localNames"), so we should add
+      // if (indexEntry.localName && indexEntry.localName.length > 0) {
+      //   this.index.map(indexEntry.localName, indexEntry);
+      // }
     });
     /*  the problem with having this here is that this index is not rebuilt if the user changes the default language (e.g. when first
   setting up the project)
