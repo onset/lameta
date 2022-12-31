@@ -1,5 +1,5 @@
 {
-  "main": "dist/app/mainProcess/main.js",
+  "main": "dist/src/mainProcess/main.js",
   "scripts": {
     "clear_jest": "jest --clearCache",
     "//test is what travis will run": "",

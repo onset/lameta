@@ -29,7 +29,7 @@ export default defineConfig({
     }),
     electron({
       outDir: "dist",
-      include: ["app/mainProcess/main", "app/mainProcess/preload"],
+      include: ["src/mainProcess/main", "src/mainProcess/preload"],
       transformOptions: {
         sourcemap: !!process.env.VSCODE_DEBUG
       },
