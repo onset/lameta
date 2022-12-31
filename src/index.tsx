@@ -11,7 +11,7 @@ import { i18n, initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
 import { PatientFS } from "./other/patientFile";
-import * as ReactModal from "react-modal";
+import ReactModal from "react-modal";
 import * as mobx from "mobx";
 
 // when I upgraded to mobx 6, I added this becuase I was getting "Since
@@ -38,7 +38,7 @@ app.whenReady().then(() => {
 
   document.body.setAttribute("class", process.platform);
   const container = document.getElementById("root");
-  ReactModal.default.setAppElement(container!);
+  ReactModal.setAppElement(container!);
   render(<App />, container);
 });
 
