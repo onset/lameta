@@ -26,7 +26,7 @@
     "build-without-test": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
-    "dev": "vite",
+    "dev": "yarn check-node && vite",
     "check-node": "yarn check-node-version --package",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
     "clean": "node clean.js",
@@ -389,11 +389,7 @@
   },
   "//remember to match this with github actions in main.yml": "",
   "engines": {
-    "node": " 18.12.1"
-  },
-  "devEngines": {
-    "node": " 18.12.1",
-    "npm": ">=3.x"
+    "node": "18.12.1"
   },
   "debug": {
     "env": {

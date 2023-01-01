@@ -9812,6 +9812,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"check-node-version@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "check-node-version@npm:4.2.1"
+  dependencies:
+    chalk: ^3.0.0
+    map-values: ^1.0.1
+    minimist: ^1.2.0
+    object-filter: ^1.0.2
+    run-parallel: ^1.1.4
+    semver: ^6.3.0
+  bin:
+    check-node-version: bin.js
+  checksum: a559236ce202125decfc51ffa9be5cfa46f2b791e0c0e7e41c306fb7c0729a4641669228c4b95749e5f518608609ba6cf3b7963116b4e2d49bd45e18c6bd9cb4
+  languageName: node
+  linkType: hard
+
 "cheerio@npm:^1.0.0-rc.3":
   version: 1.0.0-rc.3
   resolution: "cheerio@npm:1.0.0-rc.3"
@@ -18329,6 +18345,7 @@ fsevents@^1.2.7:
     chai: ^4.1.2
     chai-webdriverio: ^0.4.3
     change-case: ^4.1.1
+    check-node-version: ^4.2.1
     commonmark: ^0.28.1
     compare-versions: ^3.6.0
     concurrently: ^3.1.0
@@ -19349,6 +19366,13 @@ fsevents@^1.2.7:
   version: 1.5.0
   resolution: "map-or-similar@npm:1.5.0"
   checksum: f65c0d420e272d0fce4e24db35f6a08109218480bca1d61eaa442cbe6cf46270b840218d3b5e94e4bfcc2595f1d0a1fa5885df750b52aac9ab1d437b29dcce38
+  languageName: node
+  linkType: hard
+
+"map-values@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "map-values@npm:1.0.1"
+  checksum: 0ab60d451f4708861641dbb965e27b645c717c68083ff5927b7ad8473bd0bfb6069a561b6a6d83fa3a757fdb55b5772cfc07fd39a9956194f3b1532ad18478e3
   languageName: node
   linkType: hard
 
@@ -21188,6 +21212,13 @@ fsevents@^1.2.7:
     define-property: ^0.2.5
     kind-of: ^3.0.3
   checksum: a9e35f07e3a2c882a7e979090360d1a20ab51d1fa19dfdac3aa8873b328a7c4c7683946ee97c824ae40079d848d6740a3788fa14f2185155dab7ed970a72c783
+  languageName: node
+  linkType: hard
+
+"object-filter@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "object-filter@npm:1.0.2"
+  checksum: 9542bb51d33b76353587c6e49e3e1d7d8e8c00484b19c6b3d63c2bc7777873e50b842f9588cd506dcb138add559ee7a5dafb7951f6e8df40af1a9558c08412cb
   languageName: node
   linkType: hard
 
@@ -24978,7 +25009,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"run-parallel@npm:^1.1.9":
+"run-parallel@npm:^1.1.4, run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
   dependencies:
