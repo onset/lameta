@@ -24,7 +24,7 @@
     "build-production-main": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.main-process.js --colors",
     "build-production-renderer": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --config webpack.renderer-process.production.js --colors",
     "//---build-is-what-github-actions-runs": "",
-    "build": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer && npm run test-unit",
+    "build": "yarn check-node && npm run lingui-compile && npm run build-production-main && npm run build-production-renderer && npm run test-unit",
     "build-without-test": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer",
     "start": "cross-env NODE_ENV=production electron --inspect=5858 ./app/",
     "start-hot": "cross-env HOT=1 NODE_ENV=development electron   ./app",
@@ -33,7 +33,8 @@
     "postinstall": "",
     "hot-server": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=1  NODE_ENV=development node --max_old_space_size=2096 server.js",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render, but hot-loading of render process only. For attempt at hot-loading everything, see webpack.for-dev-mode.js",
-    "dev": "yarn lingui-compile && yarn build-dev-main && npm run hot-server -- --start-hot",
+    "dev": "yarn check-node && yarn lingui-compile && yarn build-dev-main && npm run hot-server -- --start-hot",
+    "check-node": "yarn check-node-version --package",
     "dev-renderer-only": "npm run hot-server -- --start-hot",
     "dev-vscode": "npm run hot-server -- --start-hot-vscode",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
@@ -219,6 +220,7 @@
     "boiler-room-custodian": "^0.6.2",
     "chai": "^4.1.2",
     "chai-webdriverio": "^0.4.3",
+    "check-node-version": "^4.2.1",
     "concurrently": "^3.1.0",
     "cross-env": "^5.1.4",
     "css-loader": "^1.0.0",
@@ -401,11 +403,6 @@
   },
   "//remember to match this with github actions in main.yml": "",
   "engines": {
-    "node": " 18.12.1"
-  },
-  "devEngines": {
-    "node": " 18.12.1",
-    "npm": ">=3.x"
-  },
-  "packageManager": "yarn@3.1.0"
+    "node": "16"
+  }
 }
