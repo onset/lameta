@@ -152,7 +152,7 @@
     "mac": {
       "icon": "build/mac.icns",
       "hardenedRuntime": true,
-      "artifactName": "${productName} Mac ${version}.${ext}",
+      "artifactName": "${productName}-mac-${version}.${ext}",
       "extraResources": [
         "node_modules/ffprobe-static/bin/darwin/x64"
       ],
