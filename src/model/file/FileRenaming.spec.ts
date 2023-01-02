@@ -7,7 +7,7 @@ import {
   setCurrentProjectId,
   setMediaFolderOrEmptyForThisProjectAndMachine
 } from "../Project/MediaFolderAccess";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

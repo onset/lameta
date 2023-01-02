@@ -10,7 +10,7 @@ import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import exp from "constants";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 mobx.configure({
   enforceActions: "never"
 });

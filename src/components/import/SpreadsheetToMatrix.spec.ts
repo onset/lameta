@@ -11,7 +11,7 @@ import {
   RowImportStatus
 } from "./MappedMatrix";
 import * as Path from "path";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;
 let projectDir = temp.mkdirSync("lameta spreadsheet importer test");

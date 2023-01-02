@@ -16,13 +16,17 @@ import {
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
 import { i18n } from "@lingui/core";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+
 import * as mobx from "mobx";
+
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
+
 mobx.configure({
   enforceActions: "never"
 });
 import { i18nUnitTestPrep } from "../../other/localization";
 import { IPersonLanguage } from "../../model/PersonLanguage";
+import { vi } from "vitest";
 i18nUnitTestPrep();
 
 let project: Project;

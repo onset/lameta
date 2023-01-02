@@ -1,21 +1,19 @@
 import fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+import { vi } from "vitest";
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 // langindex.json is created by `yarn make-langindex`. We will need to run that whenever we take in an updated langtags.json from
 describe("Check langindex.json", () => {
   let index: ILangIndexEntry[] = [];
   beforeAll(() => {
-    const json = fs.readFileSync("./app/languageFinder/langindex.json", "utf8");
+    const json = fs.readFileSync("./src/languageFinder/langindex.json", "utf8");
     index = JSON.parse(json);
   });
   it("has expected stuff", () => {
-    expect(
-      true
-      // index.find(
-      //   (i) => i.iso639_3 === "qaa"  && i.englishName === "Language Not Listed"
-      // )
-    ).toBeTruthy();
+    expect(index.find((i) => i.iso639_3 === "qaa")?.englishName).toBe(
+      "Unlisted Language"
+    );
 
     expect(
       index.find(

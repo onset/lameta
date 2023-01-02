@@ -5,67 +5,23 @@
   // For more information, https://github.com/Microsoft/vscode-recipes/tree/master/Electron
   "version": "0.2.0",
   "configurations": [
-    //this builds and runs, but doesn't attach. I added dev-vscode, server.js:start-hot-vscode to
-    //get the remote-debugging-port=9223 in, but something's still missing.
     {
       "type": "node",
       "request": "launch",
-      "name": "run hot with debugging",
-      "protocol": "inspector",
-      "runtimeExecutable": "npm",
-      "cwd": "${workspaceRoot}",
-      "runtimeArgs": ["run-script", "dev-vscode"],
-      "timeout": 30000,
+      "name": "Debug Current Test File",
+      "autoAttachChildProcesses": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+      ],
+      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+      "args": [
+        "run",
+        "${relativeFile}"
+      ],
+      "smartStep": true,
       "console": "integratedTerminal"
-    },
-    // this works in tandem with the next one, call via the compound "Electron: All".
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Electron: Main",
-      "protocol": "inspector",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-      "windows": {
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-      },
-      "program": "${workspaceRoot}/app/main-bundle.js",
-      "env": {
-        "NODE_ENV": "development"
-      }, //electron opens with blank with this: ,"HOT": "1" },
-      "runtimeArgs": ["--remote-debugging-port=9223", "${workspaceRoot}/app/."]
-    },
-    // this works in tandom with the previous one, call via the compound "Electron: All".
-    {
-      "name": "Electron: Renderer",
-      "type": "chrome",
-      "request": "attach",
-      "port": 9223,
-      "webRoot": "${workspaceRoot}",
-      "timeout": 30000
     }
-    // {
-    //   //does not show the correct lines (i.e. jest using js instead of ts?)
-    //   "type": "node",
-    //   "request": "launch",
-    //   "name": "Jest Tests",
-    //   "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
-    //   "args": ["--runInBand"],
-    //   "preLaunchTask": "build",
-    //   "internalConsoleOptions": "openOnSessionStart",
-    //   "outFiles": ["${workspaceRoot}/app/dist/**/*"]
-    //   //"envFile": "${workspaceRoot}/.env"
-    // }
   ],
-  "compounds": [
-    // this runs, but doesn't build, hot-reload, etc.
-    {
-      "name": "Electron: All",
-      "configurations": ["Electron: Main", "Electron: Renderer"]
-    },
-    // this runs the hot load system we want, but doesn't connect
-    {
-      "name": "Electron: test",
-      "configurations": ["run hot with debugging", "Electron: Renderer"]
-    }
-  ]
+  "compounds": []
 }

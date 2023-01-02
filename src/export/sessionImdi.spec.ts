@@ -8,7 +8,7 @@ import {
   value
 } from "../other/xmlUnitTestUtils";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;
 let session: Session;

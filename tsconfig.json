@@ -3,7 +3,7 @@
     "paths": {
       "package.json": [
         "./package.json"
-      ]
+      ],
     },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
@@ -20,8 +20,8 @@
       "ES2020"
     ],
     "types": [
-      "jest",
       "node",
+      "vitest/globals", // <--- not working? // this is paired with `globals:true` in the vitest config so we don't have to import vitest types
       "vite/client", // Vite-injected env variables , Asset imports
       "@emotion/react/types/css-prop"
     ],
@@ -56,7 +56,9 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "test/**/*.ts",
-    "test/**/*.tsx"
+    "test/**/*.tsx",
+    "test/e2e/lametaRunner.unusedts",
+    "test/e2e/e2e.spekdisabled.unusedts"
   ],
   "exclude": [
     "dist",

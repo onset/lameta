@@ -9,7 +9,8 @@ import {
 import temp from "temp";
 import * as fs from "fs-extra";
 import assert from "assert";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+import { describe, it, vi, beforeAll, afterAll } from "vitest";
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -17,8 +18,8 @@ let rootDirectory: string;
 let project: Project;
 describe("Imdi generation for images", () => {
   afterAll(() => {
-    fs.emptyDirSync(rootDirectory);
-    fs.removeSync(rootDirectory);
+    // fs.emptyDirSync(rootDirectory);
+    // fs.removeSync(rootDirectory);
   });
   beforeAll(() => {
     project = Project.fromDirectory("sample data/Edolo sample");

@@ -1,4 +1,5 @@
 import { sanitizeForArchive } from "./sanitizeForArchive";
+import { describe, it, expect } from "vitest";
 
 describe("SanitizeForArchive", () => {
   it("in IMDI mode, it replaces ! with underscores", () => {

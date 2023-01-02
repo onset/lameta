@@ -1,4 +1,4 @@
-import lametaRunner from "./lametaRunner";
+import lametaRunner from "./lametaRunner.unusedts";
 
 // NOTE: if using JEST vscode extension, it doesn't seem to run in the background
 // like with normal unit tests, but when you click "Debug" to run a test, it will

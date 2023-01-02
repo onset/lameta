@@ -1,3 +1,5 @@
+import { expect } from "vitest";
+
 const XPATH = require("xpath");
 const dom = require("xmldom").DOMParser;
 
