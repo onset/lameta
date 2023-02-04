@@ -23549,7 +23549,6 @@ __metadata:
     boiler-room-custodian: ^0.6.2
     butter-toast: ^3.3.5
     camelcase: ^5.0.0
-    capital-case: ^1.0.3
     chai: ^4.1.2
     chai-webdriverio: ^0.4.3
     change-case: ^4.1.1
