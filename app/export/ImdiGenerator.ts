@@ -15,13 +15,13 @@ import {
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
 import { sentenceCase } from "sentence-case";
-import { capitalCase } from "capital-case";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
+import { CapitalCase } from "../other/case";
 const pkg = require("../package.json");
 
 export default class ImdiGenerator {
@@ -228,10 +228,9 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -244,10 +243,9 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName =
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              code
+            );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -441,7 +439,7 @@ export default class ImdiGenerator {
 
               this.tail = this.tail.element("Key", v);
               this.mostRecentElement = this.tail;
-              this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+              this.attributeLiteral("Name", CapitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
               this.tail = this.tail.up();
             });
           }
@@ -680,8 +678,9 @@ export default class ImdiGenerator {
     });
   }
   private addAccess(f: File) {
-    const accessCode =
-      this.folderInFocus.properties.getTextStringOrEmpty("access");
+    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
+      "access"
+    );
     if (accessCode.length === 0) {
       return; // if the folder doesn't have an access code, then there is nothing for us to output
       // this can happen on a Session, and will always happen if the file (e.g. an image) is
@@ -701,10 +700,9 @@ export default class ImdiGenerator {
       this.element("Owner", "");
       this.element("Publisher", "");
       this.element("Contact", "");
-      const accessDef =
-        this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
-          (c) => c.label === accessCode
-        );
+      const accessDef = this.project.authorityLists.accessChoicesOfCurrentProtocol.find(
+        (c) => c.label === accessCode
+      );
 
       // NB CAREFUL! It's easy to confuse accessDef.description (e.g. what does "U" mean?) with
       // accessDescription, which is "why am I limiting the access for this session?". The later
