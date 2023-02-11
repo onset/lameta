@@ -24,6 +24,10 @@ import { getStatusOfFile } from "../model/file/FileStatus";
 import { CapitalCase } from "../other/case";
 const pkg = require("../package.json");
 
+export enum IMDIMode {
+  OPEX, // wrap in OPEX elements, name .opex
+  RAW_IMDI
+}
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
 
@@ -39,36 +43,41 @@ export default class ImdiGenerator {
   private omitNamespaces: boolean;
 
   private keysThatHaveBeenOutput = new Set<string>();
-
+  private mode: IMDIMode;
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
-  public constructor(folder?: Folder, project?: Project) {
+  public constructor(mode: IMDIMode, folder?: Folder, project?: Project) {
+    this.mode = mode;
     // folder and project can be omitted in some tests that are ust calling a function that doesn't need them
     if (folder) this.folderInFocus = folder;
     if (project) this.project = project;
   }
 
   public static generateCorpus(
+    mode: IMDIMode,
     project: Project,
     childrenSubPaths: string[],
+
     omitNamespaces?: boolean
   ): string {
-    const generator = new ImdiGenerator(project, project);
+    const generator = new ImdiGenerator(mode, project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
     return generator.corpus(childrenSubPaths);
   }
-  public static generateProject(project: Project): string {
-    const generator = new ImdiGenerator(project, project);
+  public static generateProject(mode: IMDIMode, project: Project): string {
+    const generator = new ImdiGenerator(mode, project, project);
     return generator.projectXmlForPreview();
   }
   public static generateSession(
+    mode: IMDIMode,
     session: Session,
     project: Project,
+
     omitNamespaces?: boolean
   ): string {
-    const generator = new ImdiGenerator(session, project);
+    const generator = new ImdiGenerator(mode, session, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
@@ -96,7 +105,12 @@ export default class ImdiGenerator {
     this.requiredField("Description", "projectDescription");
     for (const subpath of childrenSubpaths) {
       this.element("CorpusLink", subpath);
-      this.attributeLiteral("Name", Path.basename(subpath, ".imdi"));
+      // this element looks like this:
+      // <CorpusLink Name="OtherDocuments">myProject/OtherDocuments.imdi</CorpusLink>
+      let nameWithoutExtension = Path.basename(subpath, ".imdi");
+      // remove ".opex", too
+      nameWithoutExtension = nameWithoutExtension.replace(".opex", "");
+      this.attributeLiteral("Name", nameWithoutExtension);
     }
     return this.makeString();
   }
@@ -563,28 +577,29 @@ export default class ImdiGenerator {
     return !!g?.isMediaType;
   }
 
-  private sanitizedPathRelativeToProjectRoot(path: string): string {
-    const x = path;
+  private sanitizedRelativePath(path: string): string {
     // If the project has the right setting, then this path is probably already sanitized (though there may be corner
     // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
     // that to the file name we use for it in the xml.
-    const basename = sanitizeForArchive(Path.basename(path), true);
+    const filename = sanitizeForArchive(Path.basename(path), true);
+    const immediateParentDirectoryName = Path.basename(Path.dirname(path));
 
-    const p = Path.join(Path.basename(Path.dirname(path)), basename)
-      // get a path that works accros platforms.
+    const relativePath = Path.join(immediateParentDirectoryName, filename)
+      // get a path that works across platforms.
       .replace(/\\/g, "/");
 
-    return p;
+    // TODO: for IMDIMode===Opex, should we be including any path at all for written and media files?
+    // There is a different case, for CorpusLink, which is when the root file points at the opex files, which would
+    // still need to be relative to the root file.
+    return relativePath;
   }
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(
-          f.getRelativePathForExportingTheActualFile()
-        )
+        this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile())
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -623,9 +638,7 @@ export default class ImdiGenerator {
     return this.group("WrittenResource", () => {
       this.element(
         "ResourceLink",
-        this.sanitizedPathRelativeToProjectRoot(
-          f.getRelativePathForExportingTheActualFile()
-        )
+        this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile())
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -998,7 +1011,15 @@ export default class ImdiGenerator {
     this.tail = newElement.up();
   }
   private startXmlRoot(typeAttribute: string): XmlBuilder.XMLElementOrXMLNode {
-    this.tail = XmlBuilder.create("METATRANSCRIPT");
+    //in OPEX mode, we wrap the whole thing in a <opex:OPEXMetadata><opex:DescriptiveMetadata>
+    if (this.mode === IMDIMode.OPEX) {
+      this.tail = XmlBuilder.create("opex:OPEXMetadata");
+      this.tail.a("xmlns", "http://www.openpreservationexchange.org/opex/v1.0");
+      const x = this.tail.element("opex:DescriptiveMetadata");
+      this.tail = x.element("METATRANSCRIPT");
+    } else {
+      this.tail = XmlBuilder.create("METATRANSCRIPT");
+    }
     if (!this.omitNamespaces) {
       this.tail.a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI");
       this.tail.a("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -1014,6 +1035,7 @@ export default class ImdiGenerator {
       .a("Date", this.nowDate())
       .a("Originator", "lameta " + require("../package.json").version)
       .a("FormatId", "IMDI 3.0");
+
     this.mostRecentElement = this.tail;
     return this.tail;
   }

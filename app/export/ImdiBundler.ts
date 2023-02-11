@@ -1,16 +1,15 @@
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
-import { Contribution, File } from "../model/file/File";
+import { File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { log } from "util";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
-import * as glob from "glob";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
@@ -21,12 +20,14 @@ export default class ImdiBundler {
   public static saveImdiBundleToFolder(
     project: Project,
     rootDirectory: string,
+    imdiMode: IMDIMode,
     // If this is false, we're just making the IMDI files.
     // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
   ): Promise<void> {
+    const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
     return new Promise((resolve, reject) => {
       sentryBreadCrumb("Starting saveImdiBundleToFolder");
       try {
@@ -54,9 +55,21 @@ export default class ImdiBundler {
           session2/
              ...files...
     */
+      /* for opes, we want
+     myproject_3-6-2019/  <--- rootDirectory
+        
+        myproject/     <--- "secondLevel"
+          myproject.opex
+          session1/
+            session1.opex
+            ...files
+          session2/
+            session2.opex
+             ...files
+    */
 
       const childrenSubpaths: string[] = new Array<string>();
-      const secondLevel = Path.basename(project.directory);
+      const secondLevel = Path.basename(project.directory); // ?
       try {
         fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
       } catch (error) {
@@ -74,22 +87,24 @@ export default class ImdiBundler {
       this.outputDocumentFolder(
         project,
         "OtherDocuments",
-        "OtherDocuments.imdi",
+        "OtherDocuments" + extensionWithDot,
         rootDirectory,
         secondLevel,
         project.otherDocsFolder,
         childrenSubpaths,
+        imdiMode,
         copyInProjectFiles
       );
 
       this.outputDocumentFolder(
         project,
         "DescriptionDocuments",
-        "DescriptionDocuments.imdi",
+        "DescriptionDocuments" + extensionWithDot,
         rootDirectory,
         secondLevel,
         project.descriptionFolder,
         childrenSubpaths,
+        imdiMode,
         copyInProjectFiles
       );
 
@@ -100,6 +115,7 @@ export default class ImdiBundler {
           rootDirectory,
           secondLevel,
           childrenSubpaths,
+          imdiMode,
           copyInProjectFiles,
           folderFilter,
           omitNamespaces
@@ -111,15 +127,31 @@ export default class ImdiBundler {
       project.sessions.items
         .filter(folderFilter)
         .forEach((session: Session) => {
-          const imdi = ImdiGenerator.generateSession(session, project);
-          const imdiFileName = `${session.filePrefix}.imdi`;
+          const sessionImdi = ImdiGenerator.generateSession(
+            imdiMode,
+            session,
+            project
+          );
+          const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
+          if (imdiMode === IMDIMode.OPEX) {
+            fs.ensureDirSync(
+              Path.join(
+                rootDirectory,
+                secondLevel,
+                Path.basename(session.directory)
+              )
+            );
+          }
           fs.writeFileSync(
             Path.join(
               rootDirectory,
               secondLevel,
+              imdiMode === IMDIMode.OPEX
+                ? Path.basename(session.directory)
+                : "", // with opex, the metadata file goes into the folder it describes. Else, on the level above.
               sanitizeForArchive(imdiFileName, true)
             ),
-            imdi
+            sessionImdi
           );
           childrenSubpaths.push(secondLevel + "/" + imdiFileName);
 
@@ -138,11 +170,26 @@ export default class ImdiBundler {
       //childrenSubpaths.push(..something for consent if we have it---);
 
       // ---  Now that we know what all the child imdi's are, we can output the root  ---
-      fs.writeFileSync(
-        Path.join(rootDirectory, `${project.displayName}.imdi`),
-        ImdiGenerator.generateCorpus(project, childrenSubpaths, false)
+      const projectImdi = ImdiGenerator.generateCorpus(
+        imdiMode,
+        project,
+        childrenSubpaths,
+        false
+      );
+      const targetDirForProjectFile = Path.join(
+        rootDirectory,
+        imdiMode === IMDIMode.OPEX
+          ? Path.basename(Path.basename(project.directory))
+          : "" // with opex, the metadata file goes into the folder it describes. Else, on the level above.
       );
 
+      fs.writeFileSync(
+        Path.join(
+          targetDirForProjectFile,
+          `${project.displayName}${extensionWithDot}`
+        ),
+        projectImdi
+      );
       // const waitForCopying = () => {
       //   if (filesAreStillCopying()) {
       //     setTimeout(() => waitForCopying(), 1000);
@@ -204,19 +251,24 @@ export default class ImdiBundler {
     secondLevel: string,
     folder: Folder,
     subpaths: string[],
+    mode: IMDIMode,
     copyInProjectFiles: boolean
   ): void {
     if (folder.files.length > 0) {
-      const generator = new ImdiGenerator(folder, project);
-      const projectDocumentsImdi =
-        generator.makePseudoSessionImdiForOtherFolder(name, folder);
+      const generator = new ImdiGenerator(mode, folder, project);
+      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
+        name,
+        folder
+      );
 
       ImdiBundler.WritePseudoSession(
+        mode,
         rootDirectory,
         secondLevel,
         imdiFileName,
         projectDocumentsImdi,
         subpaths,
+
         copyInProjectFiles,
         folder
       );
@@ -226,29 +278,40 @@ export default class ImdiBundler {
   // This is called 3 times, to create folders and imdi files: one for project description documents,
   // other project documents, and a collection of all the consent files we find
   private static WritePseudoSession(
+    imdiMode: IMDIMode,
     rootDirectory: string,
     secondLevel: string,
     imdiFileName: string,
     imdiXml: string,
     subpaths: string[],
+
     copyInProjectFiles: boolean,
     folder: Folder
   ) {
+    const destinationFolderPath = Path.join(
+      rootDirectory,
+      secondLevel,
+      Path.basename(
+        imdiFileName,
+        imdiMode === IMDIMode.OPEX
+          ? ".opex"
+          : ".imdi" /* tells basename to strip this off*/
+      )
+    );
+    fs.ensureDirSync(destinationFolderPath);
+    const directoryForMetadataXmlFile =
+      imdiMode === IMDIMode.OPEX
+        ? destinationFolderPath // in there with the files it describes
+        : Path.join(rootDirectory, secondLevel); // one level above the files it describes
+
     fs.writeFileSync(
       Path.join(
-        rootDirectory,
-        secondLevel,
+        directoryForMetadataXmlFile,
         sanitizeForArchive(imdiFileName, true)
       ),
       imdiXml
     );
     subpaths.push(secondLevel + "/" + imdiFileName);
-
-    const destinationFolderPath = Path.join(
-      rootDirectory,
-      secondLevel,
-      Path.basename(imdiFileName, ".imdi" /* tells basename to strip this off*/)
-    );
 
     if (copyInProjectFiles) {
       this.copyFolderOfFiles(folder.files, destinationFolderPath);
@@ -262,6 +325,7 @@ export default class ImdiBundler {
     rootDirectory: string,
     secondLevel: string,
     subpaths: string[],
+    imdiMode: IMDIMode,
     // If this is false, we're just making the IMDI files.
     // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
     copyInProjectFiles: boolean,
@@ -322,6 +386,7 @@ export default class ImdiBundler {
     );
 
     const imdiXml = ImdiGenerator.generateSession(
+      imdiMode,
       dummySession,
       project,
       omitNamespaces
@@ -329,11 +394,13 @@ export default class ImdiBundler {
     //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
     ImdiBundler.WritePseudoSession(
+      imdiMode,
       rootDirectory,
       secondLevel,
-      "ConsentDocuments.imdi",
+      "ConsentDocuments" + (imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi"),
       imdiXml,
       subpaths,
+
       copyInProjectFiles,
       dummySession
     );

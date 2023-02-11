@@ -1,4 +1,4 @@
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import {
   setResultXml,
@@ -12,7 +12,12 @@ let project: Project;
 
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
-  const xml = ImdiGenerator.generateCorpus(project, ["ETR009.imdi"], true);
+  const xml = ImdiGenerator.generateCorpus(
+    IMDIMode.RAW_IMDI,
+    project,
+    ["ETR009.imdi"],
+    true
+  );
   setResultXml(xml);
 });
 beforeEach(() => {});

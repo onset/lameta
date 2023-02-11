@@ -377,7 +377,7 @@ export class Project extends Folder {
     //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.items.length - 1;
   }
 
-  public addSession() {
+  public addSession(): Session {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
       t`New Session`
@@ -388,6 +388,7 @@ export class Project extends Folder {
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
+    return session;
   }
   public duplicateCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex];
@@ -452,9 +453,8 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol:
-            this.properties.getTextField("accessProtocol").textHolder
-              .textInDefaultLanguage,
+          protocol: this.properties.getTextField("accessProtocol").textHolder
+            .textInDefaultLanguage,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -481,8 +481,9 @@ export class Project extends Folder {
           "en" // currently we only use "en" for this
         ],
       (newValue) => {
-        const currentProtocol =
-          this.properties.getTextStringOrEmpty("accessProtocol");
+        const currentProtocol = this.properties.getTextStringOrEmpty(
+          "accessProtocol"
+        );
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -865,8 +866,9 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string =
-      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
+    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
+      "vernacularIso3CodeAndName"
+    );
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project

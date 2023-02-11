@@ -87,16 +87,16 @@ export const ExportChoices: React.FunctionComponent<{
           <input
             type="radio"
             name="format"
-            value="imdi-plus-files"
-            checked={props.exportFormat === "imdi-plus-files"}
+            value="opex-plus-files"
+            checked={props.exportFormat === "opex-plus-files"}
             onChange={(e) => props.setExportFormat(e.target.value)}
           />
-          <Trans>IMDI + Files</Trans>
+          <Trans>OPEX + Files</Trans>
         </label>
         <p>
           <Trans>
-            A folder containing both the IMDI files and all the project's
-            archivable files.
+            A folder containing all the project's archivable files, with IMDI
+            wrapped for OPEX.
           </Trans>
         </p>
       </fieldset>

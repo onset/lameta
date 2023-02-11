@@ -1,4 +1,4 @@
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
 import {
@@ -22,10 +22,14 @@ beforeAll(() => {
   // a set of tests below rely on this value
   session.properties.setText("accessDescription", "just because");
   setResultXml(
-    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
+    ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      project,
+      true /*omit namespace*/
+    )
   );
 });
-beforeEach(() => {});
 
 describe("session imdi export", () => {
   it("should contain METATRANSCRIPT/Session", () => {
@@ -141,7 +145,12 @@ it("should have an Access Description if filled in", () => {
 it("should have an empty Access Description if description is missing", () => {
   session.properties.setText("accessDescription", "");
   setResultXml(
-    ImdiGenerator.generateSession(session, project, true /*omit namespace*/)
+    ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      project,
+      true /*omit namespace*/
+    )
   );
   // each media file will have one of these, hence 4
   expect(
