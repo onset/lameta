@@ -496,12 +496,12 @@ export default class ImdiGenerator {
 
   private resourcesOfType(folder: Folder, type: string) {
     folder.files.forEach((f: File) => {
-      if (getStatusOfFile(f).missing) {
-        // At the moment we're not even exporting metadata if the file is
-        // missing. With some work to avoid some errors, it would be possible.
-        NotifyWarning(getStatusOfFile(f).info);
-      } else {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (getStatusOfFile(f).missing) {
+          // At the moment we're not even exporting metadata if the file is
+          // missing. With some work to avoid some errors, it would be possible.
+          NotifyWarning(getStatusOfFile(f).info);
+        } else {
           switch (type) {
             case "MediaFile":
               if (this.isMediaFile(f)) {
