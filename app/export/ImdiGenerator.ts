@@ -1014,7 +1014,10 @@ export default class ImdiGenerator {
     //in OPEX mode, we wrap the whole thing in a <opex:OPEXMetadata><opex:DescriptiveMetadata>
     if (this.mode === IMDIMode.OPEX) {
       this.tail = XmlBuilder.create("opex:OPEXMetadata");
-      this.tail.a("xmlns", "http://www.openpreservationexchange.org/opex/v1.0");
+      this.tail.a(
+        "xmlns:opex",
+        "http://www.openpreservationexchange.org/opex/v1.0"
+      );
       const x = this.tail.element("opex:DescriptiveMetadata");
       this.tail = x.element("METATRANSCRIPT");
     } else {
