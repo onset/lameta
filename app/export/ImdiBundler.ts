@@ -55,7 +55,7 @@ export default class ImdiBundler {
           session2/
              ...files...
     */
-      /* for opes, we want
+      /* for opex, we want
      myproject_3-6-2019/  <--- rootDirectory
         
         myproject/     <--- "secondLevel"
@@ -298,11 +298,20 @@ export default class ImdiBundler {
           : ".imdi" /* tells basename to strip this off*/
       )
     );
-    fs.ensureDirSync(destinationFolderPath);
+    const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
+    if (imdiMode === IMDIMode.OPEX) {
+      // only in OPEX mode do we create the folder itself
+      fs.ensureDirSync(destinationFolderPath);
+    } else {
+      // in IMDI mode, we create the folder for the imdi file only
+      fs.ensureDirSync(imdiOnlyFolderPath);
+    }
+
+    //else fs.ensureDirSync(Path.basename(destinationFolderPath));
     const directoryForMetadataXmlFile =
       imdiMode === IMDIMode.OPEX
         ? destinationFolderPath // in there with the files it describes
-        : Path.join(rootDirectory, secondLevel); // one level above the files it describes
+        : imdiOnlyFolderPath; // one level above the files it describes
 
     fs.writeFileSync(
       Path.join(

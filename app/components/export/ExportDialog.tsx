@@ -237,7 +237,7 @@ export const ExportDialog: React.FunctionComponent<{
           ImdiBundler.saveImdiBundleToFolder(
             props.projectHolder.project!,
             path,
-            IMDIMode.OPEX,
+            IMDIMode.RAW_IMDI,
             false,
             folderFilter
           );
