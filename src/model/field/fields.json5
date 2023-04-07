@@ -416,18 +416,21 @@
     },
     {
       key: "fathersLanguage",
+      englishLabel: "Father's Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
     },
     {
       key: "mothersLanguage",
+      englishLabel: "Mother's Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
     },
     {
       key: "otherLanguages",
+      englishLabel: "Other Languages",
       omitExport: "true",
       omitSave: "true",
       importType: "languageCodeOrName"
@@ -437,6 +440,7 @@
     },
     {
       key: "birthYear",
+      englishLabel: "Birth Year",
       specialInfo: "If you are estimating, talk about that in the Description",
       tooltip: "Enter '?' if you don't know"
     },
@@ -449,6 +453,7 @@
     },
     {
       key: "howToContact",
+      englishLabel: "How to Contact",
       multipleLines: true,
       tooltip: "This is only for the use of the researcher.",
       personallyIdentifiableInformation: true,
@@ -456,10 +461,12 @@
     },
 
     {
-      key: "ethnicGroup"
+      key: "ethnicGroup",
+      englishLabel: "Ethnic Group"
     },
     {
       key: "primaryOccupation",
+      englishLabel: "Primary Occupation",
       markAsNotImdi: true
     },
     {

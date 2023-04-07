@@ -141,7 +141,7 @@
     "mac": {
       "icon": "build/mac.icns",
       "hardenedRuntime": true,
-      "artifactName": "${productName} Mac ${version}.${ext}",
+      "artifactName": "${productName}-mac-${version}.${ext}",
       "extraResources": [
         "node_modules/ffprobe-static/bin/darwin/x64"
       ],
@@ -300,7 +300,6 @@
     "axios-hooks": "^2.2.0",
     "butter-toast": "^3.3.5",
     "camelcase": "^5.0.0",
-    "capital-case": "^1.0.3",
     "change-case": "^4.1.1",
     "commonmark": "^0.28.1",
     "compare-versions": "^3.6.0",

@@ -32,6 +32,7 @@ import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import temp from "temp";
 
 // There are two `FolderGroup` instances, one for projects and one for sessions.
 export class FolderGroup {
@@ -171,6 +172,13 @@ export abstract class Folder {
     const destFile = new OtherFile(destPath, this.customFieldRegistry, true);
     destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
     this.files.push(destFile);
+  }
+
+  public addFileForTest(name: string) {
+    const dir = temp.mkdirSync("lameta-folder-temp-for-test");
+    const path = Path.join(dir, name);
+    fs.writeFileSync(path, "test");
+    this.copyInOneFile(path);
   }
 
   public copyInOneFile(

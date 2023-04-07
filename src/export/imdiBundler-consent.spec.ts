@@ -1,4 +1,4 @@
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import {
   setResultXml,
@@ -33,6 +33,7 @@ describe("Consent Form Inclusion", () => {
       rootDirectory,
       "",
       [],
+      IMDIMode.RAW_IMDI,
       true, //<-- copy in files
       (f) => true,
       true

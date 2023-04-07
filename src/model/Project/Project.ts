@@ -377,7 +377,7 @@ export class Project extends Folder {
     //no: wait until we have imported them all. Importer will then select one. // this.sessions.selected.index = this.sessions.items.length - 1;
   }
 
-  public addSession() {
+  public addSession(): Session {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
       t`New Session`
@@ -388,6 +388,7 @@ export class Project extends Folder {
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
+    return session;
   }
   public duplicateCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex];

@@ -1,4 +1,4 @@
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
 import {
@@ -37,7 +37,7 @@ beforeAll(() => {
   //   iso639_3: "etr",
   // });
 
-  generator = new ImdiGenerator(person, project);
+  generator = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
   setResultXml(
     generator.actor(person, "pretend-role", pretendSessionDate) as string
     // ImdiGenerator.generateActor(
@@ -79,7 +79,7 @@ describe("actor imdi export", () => {
 
   it("should output new languages list", () => {
     person.languages.splice(0, 10);
-    const gen = new ImdiGenerator(person, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     person.languages.push({ code: "spa", father: true, primary: true });
     person.languages.push({ code: "qaa", mother: true, primary: false });
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
@@ -106,7 +106,7 @@ describe("actor imdi export", () => {
 
   it("unlisted language handling", () => {
     project.setContentLanguageCodeAndName("qaa", "Foo Bar");
-    const gen = new ImdiGenerator(person, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     person.languages.splice(0, 10);
     person.languages.push({ code: "qaa", mother: true, primary: true });
     let xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
@@ -117,7 +117,7 @@ describe("actor imdi export", () => {
     project.setContentLanguageCodeAndName("qoo", "Blah blah");
     person.languages.splice(0, 10);
     person.languages.push({ code: "qoo", mother: true, primary: true });
-    const gen2 = new ImdiGenerator(person, project);
+    const gen2 = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     xml = gen2.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qoo");
@@ -142,7 +142,7 @@ describe("actor imdi export", () => {
   });
   it("should handle birth year being empty the way ELAR wants it", () => {
     person.properties.setText("birthYear", "");
-    const gen = new ImdiGenerator(person, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/BirthDate").toMatch("Unspecified");
@@ -152,7 +152,7 @@ describe("actor imdi export", () => {
   // this one is weird..., just testing a report from a user:
   // "Lameta writes contributor role in lowercase in IMDI although it seems like uppercase from the GUI."
   it("should output role in same case as it is stored", () => {
-    const gen = new ImdiGenerator(person, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     const xml = gen.actor(person, "MixedCase", pretendSessionDate) as string;
     setResultXml(xml);
     expect("Actor/Role").toMatch("MixedCase");

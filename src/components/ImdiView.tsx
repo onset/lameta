@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Folder } from "../model/Folder/Folder";
-import ImdiGenerator from "../export/ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
@@ -43,19 +43,25 @@ export default class ImdiView extends React.Component<IProps, IState> {
 
     if (this.props.target instanceof Session) {
       xml = ImdiGenerator.generateSession(
+        IMDIMode.OPEX,
         this.props.target as Session,
         this.props.project
       );
     } else if (this.props.target instanceof Project) {
       xml =
         ImdiGenerator.generateCorpus(
+          IMDIMode.RAW_IMDI,
           this.props.target as Project,
           new Array<string>() /* we don't bother to compute the children IMDI's for this view */
         ) + // I want to see how some of this project info is going to show up inside of sessions
         "\r\n\r\n-- This project-related info will show up in the IMDI of sessions -- \r\n" +
-        ImdiGenerator.generateProject(this.props.target as Project);
+        ImdiGenerator.generateProject(
+          IMDIMode.RAW_IMDI,
+          this.props.target as Project
+        );
     } else if (this.props.target instanceof Person) {
       const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
         this.props.target,
         this.props.project
       );
@@ -66,6 +72,7 @@ export default class ImdiView extends React.Component<IProps, IState> {
       ) as string;
     } else if (this.props.target instanceof File) {
       const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
         this.props.folder,
         this.props.project
       );

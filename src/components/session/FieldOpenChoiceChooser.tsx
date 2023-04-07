@@ -4,9 +4,9 @@ import { observer } from "mobx-react";
 // tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
 import Tooltip from "react-tooltip-lite";
-import { capitalCase } from "capital-case";
 import { lameta_orange } from "../../containers/theme";
 import { observable } from "mobx";
+import { CapitalCase } from "../../other/case";
 
 //const Choices = new Dictionary<string, Array<string>>();
 
@@ -107,7 +107,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         }}
         onChange={(s: any) => {
           props.field.setValueFromString(
-            capitalCase((s && s.value ? s.value : "") as string)
+            CapitalCase(s && s.value ? s.value : "")
           );
         }}
         components={{ Option: CustomOption }}

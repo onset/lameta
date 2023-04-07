@@ -27,6 +27,7 @@ import { CopyManager, ICopyJob } from "../../other/CopyManager";
 import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../other/UserSettings";
 import { DialogButton } from "../LametaDialog";
+import { IMDIMode } from "../../export/ImdiGenerator";
 
 const saymore_orange = "#e69664";
 const { app } = require("@electron/remote");
@@ -68,8 +69,7 @@ export const ExportDialog: React.FunctionComponent<{
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
     if (props.projectHolder && props.projectHolder.project) {
-      const count =
-        props.projectHolder!.project!.sessions.countOfMarkedFolders();
+      const count = props.projectHolder!.project!.sessions.countOfMarkedFolders();
       setCountOfMarkedSessions(count);
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");
@@ -234,13 +234,14 @@ export const ExportDialog: React.FunctionComponent<{
           ImdiBundler.saveImdiBundleToFolder(
             props.projectHolder.project!,
             path,
+            IMDIMode.RAW_IMDI,
             false,
             folderFilter
           );
           setMode(Mode.finished); // don't have to wait for any copying of big files
           break;
-        case "imdi-plus-files":
-          analyticsEvent("Export", "Export IMDI Plus Files");
+        case "opex-plus-files":
+          analyticsEvent("Export", "Export OPEX Plus Files");
           if (CopyManager.filesAreStillCopying()) {
             NotifyWarning(
               t`lameta cannot export files while files are still being copied in.`
@@ -250,6 +251,7 @@ export const ExportDialog: React.FunctionComponent<{
             ImdiBundler.saveImdiBundleToFolder(
               props.projectHolder.project!,
               path,
+              IMDIMode.OPEX,
               true,
               folderFilter
             ).then(() => {

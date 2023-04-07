@@ -354,6 +354,11 @@ export /*babel doesn't like this: abstract*/ class File {
     return fs.existsSync(this.getActualFilePath());
   }
 
+  // Note: This isn't giving correct results but at the moment ELAR wants it to stay the same,
+  // perhaps because their injestion systems are expecting it to be this way. (Feb 2023).
+  // For example, ConsentDocuments will list bundleroot/consentfile instead of bundleroot/myproject/ConsentDocuments/consentfile
+  // Meanwhile a file in a Session will be listed as mysession/thefile instead
+  // of either ./thefile or bundleroot/myproject/mysession/thefile, both of which would be better.
   public getRelativePathForExportingTheActualFile(): string {
     return Path.join(
       // folder name, e.g. "ETR009/"

@@ -1,4 +1,4 @@
-import ImdiGenerator from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import {
   setResultXml,
@@ -29,7 +29,7 @@ describe("Imdi generation for images", () => {
   it("Can get imdi of image file in session", () => {
     const session = project.sessions.items[0];
 
-    const gen = new ImdiGenerator(session, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, session, project);
     const f = session.files.find((f) => f.isImage);
     assert(f !== undefined);
     const xml = gen.mediaFile(f!);
@@ -43,7 +43,7 @@ describe("Imdi generation for images", () => {
   it("Can get imdi of audio even if session not have an access code", () => {
     const session = project.sessions.items[0];
     session.properties.remove("access");
-    const gen = new ImdiGenerator(session, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, session, project);
     const f = session.files.find((f) => f.isImage);
     assert(f !== undefined);
     const xml = gen.mediaFile(f!);
@@ -54,7 +54,7 @@ describe("Imdi generation for images", () => {
 
   it("Can get imdi of image file in person, which does not have an access", () => {
     const person = project.persons.items[0];
-    const gen = new ImdiGenerator(person, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     const f = person.files.find((f) => f.isImage);
     assert(f !== undefined);
     const xml = gen.mediaFile(f!);
@@ -67,7 +67,7 @@ describe("Imdi generation for images", () => {
 
   it("Can get imdi of an audio file", () => {
     const p = project.sessions.items[0];
-    const gen = new ImdiGenerator(p, project);
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, p, project);
     const f = p.files.find((f) => f.type === "Audio");
     assert(f !== undefined);
     const xml = gen.mediaFile(f!);
