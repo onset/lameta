@@ -1,3 +1,4 @@
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
 import { normalizePath } from "./crossPlatformUtilities";
 vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 

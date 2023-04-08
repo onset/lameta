@@ -734,7 +734,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
-    console.log(`Saving ${this.metadataFilePath}`);
+    //console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 
@@ -827,7 +827,7 @@ export /*babel doesn't like this: abstract*/ class File {
       }
 
       PatientFS.renameSyncWithNotifyAndRethrow(currentFilePath, newPath);
-      console.log(`Renamed ${currentFilePath} to ${newPath}`);
+      //console.log(`Renamed ${currentFilePath} to ${newPath}`);
       return newPath;
     }
     return currentFilePath;

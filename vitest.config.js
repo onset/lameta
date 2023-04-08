@@ -1,11 +1,10 @@
 import react from "@vitejs/plugin-react";
 /**
- * Configuration for the global end-to-end testing,
- * placed in the project's root 'tests' folder.
  * @type {import('vite').UserConfig}
  * @see https://vitest.dev/config/
  */
-const config = {
+import { defineConfig } from "vitest/config";
+export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
@@ -29,6 +28,4 @@ const config = {
       }
     })
   ]
-};
-
-export default config;
+});

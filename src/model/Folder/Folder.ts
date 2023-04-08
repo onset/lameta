@@ -474,9 +474,9 @@ export abstract class Folder {
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
-      console.log(
-        `** Renamed Folder from ${oldFolderName} to ${newFolderName}.`
-      );
+      // console.log(
+      //   `** Renamed Folder from ${oldFolderName} to ${newFolderName}.`
+      // );
     } catch (err) {
       const msg = t`lameta was not able to rename the folder.`;
       NotifyFileAccessProblem(

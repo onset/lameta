@@ -11,6 +11,8 @@ import {
   RowImportStatus
 } from "./MappedMatrix";
 import * as Path from "path";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+
 vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;

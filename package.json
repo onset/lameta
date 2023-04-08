@@ -9,13 +9,9 @@
   },
   "description": "File & metadata organization for language documentation projects.",
   "scripts": {
-    "clear_jest": "jest --clearCache",
-    "//test is what travis will run": "",
     "test": "yarn vitest",
     "testui": "yarn vitest --ui",
     "test-all": "npm run test-unit && npm run build && npm run test-e2e",
-    "test-unit": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit",
-    "test-unit-watch": "npm run clear_jest && cross-env NODE_ENV=test node --trace-warnings ./test/runTests.js unit --watch",
     "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",
     "e2e": "npx playwright test",
     "// This brings up the inspector and record button oh my...": "",
@@ -34,7 +30,6 @@
     "make-sentry-release": "./make-sentry-release.sh",
     "package": "npm run build && electron-builder",
     "cleanup": "mop -v",
-    "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "lingui-add": "lingui add-locale",
     "lingui-extract": "lingui extract",
     "lingui-compile": "lingui compile",
@@ -43,42 +38,6 @@
     "make-langindex": "ts-node --dir app/languageFinder --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" make-langindex",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "./tsconfig.json"
-      }
-    },
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/internals/mocks/fileMock.js",
-      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "json5",
-      "node",
-      "xml"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "app/node_modules"
-    ],
-    "transform": {
-      "only using json5-jest for one file (fields.json5) because it actually chokes on other json and I haven't figured out why": "json5-jest",
-      "^.+\\.json5$": "json5-jest",
-      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
-      "\\.xml$": "jest-raw-loader"
-    },
-    "testMatch": [
-      "**/?(*.)(spec|test).ts?(x)",
-      "**/?(*.)(spec|test).js?(x)"
-    ],
-    "testURL": "http://localhost/"
   },
   "//This 'build' section is for electron-builder": "",
   "//Note that 'afterSign': 'build/notarize.js' works but has been swapped here for a form that works on github actions": "",
@@ -198,7 +157,7 @@
     "@types/react-dom": "17.0.9",
     "@types/sinon": "^2.3.1",
     "@vitejs/plugin-react": "^3.0.0",
-    "@vitest/ui": "^0.26.2",
+    "@vitest/ui": "^0.29.8",
     "asar": "^0.13.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.1.0",

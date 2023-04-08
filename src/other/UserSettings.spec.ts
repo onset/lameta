@@ -1,3 +1,4 @@
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
 import {
   UserSettings,
   getMediaFolderOrEmptyForProjectAndMachine,

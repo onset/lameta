@@ -139,9 +139,9 @@ export function createFolderInMemory(
           // note, this is making an on-disk person
           const person = project.getOrCreatePerson(cell.value);
           person.marked = true;
-          console.log(
-            `${person.displayName} contribution at cell ${cellIndex}`
-          );
+          // console.log(
+          //   `${person.displayName} contribution at cell ${cellIndex}`
+          // );
           folder.metadataFile!.contributions.push(
             new Contribution(
               person.getIdToUseForReferences(),
@@ -273,7 +273,7 @@ function lookAheadForValue(
       break;
     }
   }
-  console.log(`lookAheadForValue(${lookToRightOfCellIndex},${key})=${r}`);
+  //console.log(`lookAheadForValue(${lookToRightOfCellIndex},${key})=${r}`);
   return r;
 }
 

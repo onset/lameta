@@ -22,11 +22,7 @@ import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
-<<<<<<< HEAD:src/export/ImdiGenerator.ts
-=======
 import { CapitalCase } from "../other/case";
-const pkg = require("../package.json");
->>>>>>> master:app/export/ImdiGenerator.ts
 
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex

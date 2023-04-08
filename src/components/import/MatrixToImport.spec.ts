@@ -15,8 +15,7 @@ import {
   IMappedCell
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
-import { i18n } from "@lingui/core";
-
+import { describe, it, beforeAll, beforeEach, expect } from "vitest";
 import * as mobx from "mobx";
 
 vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
@@ -179,7 +178,7 @@ describe("addSessionToProject", () => {
     expect(person.properties.getTextStringOrEmpty("primaryOccupation")).toBe(
       "Musician"
     );
-    console.log(JSON.stringify(person.languages, null, 2));
+    //console.log(JSON.stringify(person.languages, null, 2));
     expect(person.languages).toHaveLength(2);
     expectOneLanguage(person, "tha", (l) => {
       expect(l.primary).toBe(true);

@@ -1,3 +1,4 @@
+import { vi, describe, it, beforeAll, beforeEach } from "vitest";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
@@ -9,7 +10,7 @@ import {
 } from "../other/xmlUnitTestUtils";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import temp from "temp";
-jest.mock("@electron/remote", () => ({ exec: jest.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;
 let session: Session;

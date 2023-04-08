@@ -252,6 +252,7 @@
       choices: [
         "unspecified",
         "Africa",
+        "Americas",
         "Asia",
         "Australia",
         "Europe",
