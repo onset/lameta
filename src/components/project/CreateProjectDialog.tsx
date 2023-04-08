@@ -16,6 +16,7 @@ import {
   DialogTitle,
   LametaDialog
 } from "../LametaDialog";
+import { getTestEnvironment } from "../../index";
 
 interface IProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export default class CreateProjectDialog extends React.Component<
     );
   }
   private getChosenPath(): string {
-    const root = process.env.E2ERoot ?? app.getPath("documents");
+    const root = getTestEnvironment().E2ERoot ?? app.getPath("documents");
     return Path.join(root, "lameta", sanitize(this.state.projectName));
   }
 

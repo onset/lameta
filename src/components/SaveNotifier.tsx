@@ -6,6 +6,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState, useEffect } from "react";
 import { lameta_blue } from "../containers/theme";
+import { getTestEnvironment } from "../index";
 
 let staticSetShowSaving: (b: boolean) => void;
 let staticSetFilename: (name: string) => void;
@@ -36,7 +37,7 @@ export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
     }
   }, [showSaving]);
   // in e2e testing, this covers up buttons that we need to click, maybe because the fading is just done by changing opacity?
-  return process.env.E2E ? null : (
+  return getTestEnvironment().E2E ? null : (
     <div
       id="saveNotifier"
       css={css`

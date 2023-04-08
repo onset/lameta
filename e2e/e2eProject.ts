@@ -1,10 +1,10 @@
 import * as Path from "path";
 import { Page, _electron as electron } from "playwright";
 import { expect as expect } from "@playwright/test";
-import { Lameta } from "./Lameta";
+import { LametaE2ERunner } from "./lametaE2ERunner";
 
 export async function createNewProject(
-  lameta: Lameta,
+  lameta: LametaE2ERunner,
   name: string
 ): Promise<E2eProject> {
   const p = new E2eProject(lameta);
@@ -13,9 +13,9 @@ export async function createNewProject(
 }
 export class E2eProject {
   public page: Page;
-  public lameta: Lameta;
+  public lameta: LametaE2ERunner;
   public projectDirectory: string;
-  public constructor(lameta: Lameta) {
+  public constructor(lameta: LametaE2ERunner) {
     this.lameta = lameta;
     this.page = lameta.page;
   }

@@ -1,11 +1,23 @@
 import { ElectronApplication, Page, _electron as electron } from "playwright";
-import { test, expect as expect, TestInfo } from "@playwright/test";
-
-export class Lameta {
+import fs from "fs";
+import * as Path from "path";
+import * as os from "os";
+export class LametaE2ERunner {
   public electronApp: ElectronApplication;
   public page: Page;
 
   public async launch() {
+    const allTimeRoot = Path.join(os.tmpdir(), "lametae2e");
+    //fs.rmdirSync(allTimeRoot, { recursive: true });
+    const rootDir = Path.join(
+      allTimeRoot,
+      new Date().toISOString().replace(/\:/g, "_")
+    );
+    // clear out anything still in there. It won't hurt, but it's nice to free up the space
+    // note that we're not trying to clean up after each test, as this way it's easier to
+    // inspect what happened and we don't get leftovers around from crashes or whatever.
+    fs.mkdirSync(rootDir, { recursive: true });
+
     this.electronApp = await electron.launch({
       args: ["."],
       env: {

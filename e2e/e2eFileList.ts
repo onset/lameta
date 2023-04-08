@@ -1,13 +1,13 @@
 import fs from "fs";
 import * as Path from "path";
 import { Page, _electron as electron } from "playwright";
-import { Lameta } from "./Lameta";
+import { LametaE2ERunner } from "./lametaE2ERunner";
 
 export class E2eFileList {
   public page: Page;
-  public lameta: Lameta;
+  public lameta: LametaE2ERunner;
   public projectDirectory: string;
-  public constructor(lameta: Lameta, page, projectDirectory) {
+  public constructor(lameta: LametaE2ERunner, page, projectDirectory) {
     this.lameta = lameta;
     this.page = lameta.page;
     this.projectDirectory = projectDirectory;

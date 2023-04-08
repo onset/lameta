@@ -18,13 +18,14 @@ import fs from "fs";
 import { locate } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
 import pkg from "package.json";
+import { getTestEnvironment } from "../index";
 
 let analytics: Analytics | undefined;
 
 export async function initializeAnalytics() {
   try {
     let key: string | undefined = undefined;
-    if (process.env.NODE_ENV === "test" || process.env.E2E) {
+    if (process.env.NODE_ENV === "test" || getTestEnvironment().E2E) {
       analytics = undefined; // don't spend segment.com quota on tests
     } else if (
       userSettingsSingleton.DeveloperMode ||

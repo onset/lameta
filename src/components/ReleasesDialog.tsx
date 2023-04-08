@@ -13,6 +13,8 @@ import { i18n } from "../other/localization";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
 import { lameta_blue, lameta_orange } from "../containers/theme";
+import { getTestEnvironment } from "../index";
+
 type Mode =
   | "querying"
   | "update-available"
@@ -89,7 +91,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   // run once on startup
   React.useEffect(() => {
     // this is works fine in e2e test but the notification covers stuff up that we may want to click so it slows things down
-    if (!process.env.E2E) checkForUpdates();
+    if (!getTestEnvironment().E2E) checkForUpdates();
   }, []);
 
   const releasesToShow = showNewReleasesOnly

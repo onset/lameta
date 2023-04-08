@@ -4,6 +4,7 @@ import uuid from "uuid";
 import { observable, computed, makeObservable } from "mobx";
 import React from "react";
 import pkg from "package.json";
+
 class FakeStore {
   private values = {};
   public get(s: string, def: any = ""): any {
@@ -41,13 +42,13 @@ export class UserSettings {
       HowUsing: computed
     });
 
+    const E2E_USER_SETTINGS_STORE_NAME =
+      process["env"]["E2E_USER_SETTINGS_STORE_NAME"]; // This is instead of process.env... because vite replaces that with ({}). Bad vite!
     this.store =
-      process.env.NODE_ENV === "test" ||
-      process.env.E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
+      process.env.NODE_ENV === "test" || E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
         : new Store({
-            name:
-              process.env.E2E_USER_SETTINGS_STORE_NAME ?? "lameta-user-settings"
+            name: E2E_USER_SETTINGS_STORE_NAME ?? "lameta-user-settings"
           });
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
