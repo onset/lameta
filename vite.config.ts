@@ -1,4 +1,3 @@
-import { rmSync } from "fs";
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -9,15 +8,15 @@ import pkg from "./package.json";
 import dsv from "@rollup/plugin-dsv";
 import timeReporter from "vite-plugin-time-reporter";
 
-// I don't know if this is costly... it came with the boilerplate
-rmSync(path.join(__dirname, "dist"), { recursive: true, force: true });
-
 export default defineConfig({
   resolve: {
     alias: {
       "@assets": path.resolve(__dirname, "./assets"),
       "package.json": path.resolve(__dirname, "./package.json")
     }
+  },
+  build: {
+    emptyOutDir: true
   },
   plugins: [
     timeReporter(),
