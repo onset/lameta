@@ -20,7 +20,7 @@
   },
   "files": ["index.html", "dist/", "package.json", "index*.js"],
   "extraResources": ["artwork/"],
-  "extraFiles": ["sample data/", "assets/"],
+  "extraFiles": ["sample data/", "assets/", "locale/"],
   "directories": {
     "buildResources": "resources",
     "output": "release"

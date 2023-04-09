@@ -1,31 +1,39 @@
 {
-    "catalogs": [
-        {
-            "path": "./locale/{locale}/messages",
-            "include": [
-                "<rootDir>/app/"
-            ],
-            "exclude": [
-                "/node_modules/",
-                "/app/*.bundle.js",
-                "<rootDir>/app/main-bundle.js",
-                "<rootDir>/app/dist/**"
-            ]
-        }
-    ],
-    "format": "po",
-    "locales": ["en","es","id","ps","pt-BR","ru","fr", "fa","zh-cn"], 
-    "sourceLocale": "en-code",
-    "pseudoLocale": "ps",
-    "extractBabelOptions": {
-        "presets": [
-            "@babel/preset-env",
-            "@babel/preset-react"
-        ]
-    },
-    "compilerBabelOptions": {
-        "jsescOption": {
-            "minimal": false
-        }
+  "catalogs": [
+    {
+      "path": "<rootDir>/locale/{locale}/messages",
+      "include": [
+        "<rootDir>/src/"
+      ],
+      "exclude": [
+        "**/*.spec.*",
+        "**/*.e2e.*"
+      ]
     }
+  ],
+  "format": "po",
+  "locales": [
+    "en",
+    "es",
+    "id",
+    "ps",
+    "pt-BR",
+    "ru",
+    "fr",
+    "fa",
+    "zh-cn"
+  ],
+  "sourceLocale": "en-code",
+  "pseudoLocale": "ps",
+  "extractBabelOptions": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "compilerBabelOptions": {
+    "jsescOption": {
+      "minimal": false
+    }
+  }
 }
