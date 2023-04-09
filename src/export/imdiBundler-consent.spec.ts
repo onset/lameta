@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, afterAll } from "vitest";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import {

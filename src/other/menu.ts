@@ -3,7 +3,7 @@ import * as remote from "@electron/remote";
 import { IHomePageMenuConnections } from "../containers/HomePage";
 import log from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
-import { i18n, setUILanguage, currentUILanguage } from "./localization";
+import { setUILanguage, currentUILanguage } from "./localization";
 import { t } from "@lingui/macro";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
@@ -130,6 +130,7 @@ export default class LametaMenu {
           // Mystery: if we have label: "&" + t`Create Project...`, then this actually gets run
           // whenever we refresh during development mode. I can't figure out what is simulating
           // an alt+f,alt+c
+          // But later, this came back.
           label: t`Create Project...`,
           click: () => this.homePage.createProject(false)
         },

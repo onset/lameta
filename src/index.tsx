@@ -28,7 +28,7 @@ export function getTestEnvironment(): TestEnvironment {
       process["env"]["E2E_USER_SETTINGS_STORE_NAME"],
     E2ERoot: process["env"]["E2ERoot"]
   };
-  console.log("getTestEnvironment() = ", JSON.stringify(e, null, 2));
+  //console.log("getTestEnvironment() = ", JSON.stringify(e, null, 2));
   return e;
 }
 
