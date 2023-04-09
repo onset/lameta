@@ -36,8 +36,10 @@ async function createWindow() {
   let x: number | undefined = undefined;
   let y: number | undefined = undefined;
   if (is.dev) {
+    let smallest = 1000000;
     screen.getAllDisplays().forEach((display) => {
-      if (display.bounds.x < 0) {
+      if (display.bounds.height < smallest) {
+        smallest = display.bounds.height;
         x = display.bounds.x;
         y = display.bounds.y;
       }
@@ -61,8 +63,6 @@ async function createWindow() {
   require("@electron/remote/main").enable(win.webContents);
   require("@electron/remote/main").initialize();
 
-  // invalid value used as a weak map key
-
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
     // electron-vite-vue#298
@@ -80,7 +80,7 @@ async function createWindow() {
   win.webContents.on("did-finish-load", () => {
     win!.show();
     win!.focus();
-    fillLastMonitor();
+    //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(
         "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."

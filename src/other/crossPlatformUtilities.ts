@@ -132,9 +132,9 @@ export function locate(relativePath: string): string {
     // runtime, appPath is just the root folder
     adjustedPath = Path.join(appPath, relativePath);
   }
-  console.log(
-    `locate(${relativePath}) appPath=${appPath} adjustment= ${adjustedPath}`
-  );
+  // console.log(
+  //   `locate(${relativePath}) appPath=${appPath} adjustment= ${adjustedPath}`
+  // );
 
   try {
     const result = fs.realpathSync(adjustedPath);

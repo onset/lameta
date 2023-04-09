@@ -49,7 +49,7 @@ export interface IHomePageMenuConnections {
 // tslint:disable-next-line:no-empty-interface
 interface IProps {}
 interface IState {
-  showModal: boolean;
+  showCreateProjectDialog: boolean;
   useSampleProject: boolean;
 }
 
@@ -69,7 +69,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     this.projectHolder = new ProjectHolder();
     this.state = {
-      showModal: false,
+      showCreateProjectDialog: false,
       useSampleProject: false //enhance: this is a really ugly way to control this behavior
     };
 
@@ -113,7 +113,10 @@ class HomePage extends React.Component<IProps, IState> {
     HomePage.homePageForTests = this;
   }
   public createProject(useSample: boolean) {
-    this.setState({ showModal: true, useSampleProject: useSample });
+    this.setState({
+      showCreateProjectDialog: true,
+      useSampleProject: useSample
+    });
   }
 
   public goToStartScreenForTests() {
@@ -198,7 +201,7 @@ class HomePage extends React.Component<IProps, IState> {
     directory: string,
     useSampleProject: boolean
   ) {
-    this.setState({ showModal: false });
+    this.setState({ showCreateProjectDialog: false });
     if (directory) {
       fs.ensureDirSync(directory);
       try {
@@ -299,9 +302,9 @@ class HomePage extends React.Component<IProps, IState> {
             </div>
           </div>
         )}
-        {this.state.showModal ? (
+        {this.state.showCreateProjectDialog ? (
           <CreateProjectDialog
-            isOpen={this.state.showModal}
+            isOpen={this.state.showCreateProjectDialog}
             useSampleProject={this.state.useSampleProject}
             callback={(answer, useSampleProject) =>
               this.handleCreateProjectDialogClose(answer, useSampleProject)

@@ -127,7 +127,10 @@ export default class LametaMenu {
           click: () => this.homePage.openProject()
         },
         {
-          label: "&" + t`Create Project...`,
+          // Mystery: if we have label: "&" + t`Create Project...`, then this actually gets run
+          // whenever we refresh during development mode. I can't figure out what is simulating
+          // an alt+f,alt+c
+          label: t`Create Project...`,
           click: () => this.homePage.createProject(false)
         },
         {
