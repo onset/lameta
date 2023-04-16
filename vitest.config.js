@@ -1,8 +1,4 @@
 import react from "@vitejs/plugin-react";
-/**
- * @type {import('vite').UserConfig}
- * @see https://vitest.dev/config/
- */
 import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
@@ -10,7 +6,7 @@ export default defineConfig({
     environment: "happy-dom",
     //deps: { interopDefault: true }, // needed this when I was attempting environment:"node" see https://github.com/vitest-dev/vitest/issues/2544
     include: ["./**/*.spec.ts"],
-
+    setupFiles: ["./vitest.mock.ts"],
     /**
      * The default timeout of 5000ms is sometimes not enough for playwright.
      */
