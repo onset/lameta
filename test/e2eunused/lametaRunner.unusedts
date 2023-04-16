@@ -6,7 +6,7 @@ import * as assert from "assert";
 import Winston from "winston";
 import os from "os";
 import menuAddon from "spectron-menu-addon";
-//const { app } = require("electron").remote;
+//import { app }= require("electron").remote;
 
 //Spectron gives us this "app.client", which is WebdriverIO's "browser" object.
 // See http://webdriver.io/api/state/isExisting.html# and friends for documentation.

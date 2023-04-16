@@ -11,7 +11,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-const { app } = require("@electron/remote");
+import { app } from "@electron/remote";
 import * as remote from "@electron/remote";
 import userSettings from "../other/UserSettings";
 
@@ -75,7 +75,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
-    const test = require("@electron/remote").getCurrentWebContents();
+    //const test = require("@electron/remote").getCurrentWebContents();
     const p = remote.process;
     const args = remote.getGlobal("arguments");
     // const args = [

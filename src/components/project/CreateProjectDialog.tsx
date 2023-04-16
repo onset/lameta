@@ -6,7 +6,7 @@ import fs from "fs";
 import * as Path from "path";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.scss";
-const { app } = require("@electron/remote");
+import { app } from "@electron/remote";
 import { t, Trans } from "@lingui/macro";
 import {
   DialogBottomButtons,

@@ -30,7 +30,7 @@ import { DialogButton } from "../LametaDialog";
 import { IMDIMode } from "../../export/ImdiGenerator";
 
 const saymore_orange = "#e69664";
-const { app } = require("@electron/remote");
+import { app } from "@electron/remote";
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};

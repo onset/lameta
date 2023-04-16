@@ -31,7 +31,7 @@ import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
 import { IFolderType } from "../../model/Folder/Folder";
 import { analyticsEvent } from "../../other/analytics";
-const { app } = require("@electron/remote");
+import { app } from "@electron/remote";
 
 export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
@@ -123,10 +123,11 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
   }
 
-  useEffect(
-    () => countChosenRows(),
-    [props.projectHolder.project, path, matrix]
-  );
+  useEffect(() => countChosenRows(), [
+    props.projectHolder.project,
+    path,
+    matrix
+  ]);
 
   const title =
     folderType === "session"

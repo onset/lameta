@@ -1,8 +1,6 @@
-import * as React from "react";
 import { render } from "react-dom";
 import { ipcRenderer } from "electron";
-const { app } = require("@electron/remote");
-const { process } = require("@electron/remote");
+import { app, process } from "@electron/remote";
 import "./app.global.scss";
 import { App } from "./containers/App";
 import { initializeAnalytics, analyticsEvent } from "./other/analytics";
