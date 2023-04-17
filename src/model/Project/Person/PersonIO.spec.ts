@@ -14,7 +14,7 @@ import {
   count,
   value
 } from "../../../other/xmlUnitTestUtils";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
+
 import * as mobx from "mobx";
 mobx.configure({
   enforceActions: "never"

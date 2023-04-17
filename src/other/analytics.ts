@@ -18,7 +18,7 @@ import fs from "fs";
 import { locate } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
 import pkg from "package.json";
-import { getTestEnvironment } from "../index";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 let analytics: Analytics | undefined;
 

@@ -7,7 +7,6 @@ import {
   migrateOnePersonLanguageFromNameToCode,
   migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages
 } from "./PersonMigration";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",

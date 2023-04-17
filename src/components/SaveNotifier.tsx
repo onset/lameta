@@ -6,7 +6,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState, useEffect } from "react";
 import { lameta_blue } from "../containers/theme";
-import { getTestEnvironment } from "../index";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 let staticSetShowSaving: (b: boolean) => void;
 let staticSetFilename: (name: string) => void;

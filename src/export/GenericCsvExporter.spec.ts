@@ -9,7 +9,6 @@ import {
   csvEncode,
   makeGenericCsvZipFile
 } from "./CsvExporter";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");

@@ -11,8 +11,6 @@ import {
 import { i18nUnitTestPrep } from "../../other/localization";
 i18nUnitTestPrep();
 
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
-
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
   fs.writeFileSync(path, "pretend contents");

@@ -10,7 +10,6 @@ import {
 } from "../other/xmlUnitTestUtils";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import temp from "temp";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;
 let session: Session;

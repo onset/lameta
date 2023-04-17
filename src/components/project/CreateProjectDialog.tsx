@@ -16,7 +16,7 @@ import {
   DialogTitle,
   LametaDialog
 } from "../LametaDialog";
-import { getTestEnvironment } from "../../index";
+import { getTestEnvironment } from "../../getTestEnvironment";
 
 interface IProps {
   isOpen: boolean;

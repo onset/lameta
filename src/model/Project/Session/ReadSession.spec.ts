@@ -4,7 +4,6 @@ import fs from "fs";
 import Path from "path";
 import { Field } from "../../field/Field";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let sessionDirectory;
 let sessionName;

@@ -5,7 +5,6 @@ import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { duplicateFolder } from "./DuplicateFolder";
 import { Project } from "../Project/Project";
 import temp from "temp";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 temp.track();
 describe("Duplicate Folder", () => {

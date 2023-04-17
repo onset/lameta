@@ -1,5 +1,4 @@
 import { getFileNameParts } from "./RenameFileDialog";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 describe("Rename file parts", () => {
   it("like files look when first added", () => {

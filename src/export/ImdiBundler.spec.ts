@@ -14,7 +14,6 @@ import ImdiBundler from "./ImdiBundler";
 import { IMDIMode } from "./ImdiGenerator";
 import fs from "fs";
 import * as Path from "path";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let project: Project;
 let session: Session;

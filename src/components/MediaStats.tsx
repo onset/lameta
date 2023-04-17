@@ -18,7 +18,7 @@ type Stats = object;
 
 // require("ffprobe-static").path from here in the renderer only gives a partial path (starting inside the ffprobe folder),
 // so we retrieved it in the main process and adjusted for dev vs. installed location
-// const ffprobePath = require("@electron/remote").getGlobal("ffprobepath");
+// const ffprobePath from "@electron/remote".getGlobal("ffprobepath");
 // ffmpeg().setFfprobePath(ffprobePath);
 
 // const ffmpegPath = require("ffmpeg-static").replace(

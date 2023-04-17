@@ -11,7 +11,6 @@ import {
   count,
   value
 } from "../../other/xmlUnitTestUtils";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

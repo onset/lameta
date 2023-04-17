@@ -10,7 +10,6 @@ import temp from "temp";
 import * as fs from "fs-extra";
 import assert from "assert";
 import { describe, it, vi, beforeAll, afterAll } from "vitest";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 temp.track(); // cleanup on exit: doesn't work
 

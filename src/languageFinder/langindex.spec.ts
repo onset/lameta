@@ -1,7 +1,6 @@
 import fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
 import { vi } from "vitest";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 // langindex.json is created by `yarn make-langindex`. We will need to run that whenever we take in an updated langtags.json from
 describe("Check langindex.json", () => {

@@ -14,7 +14,6 @@ import {
   getMimeType,
   getImdiResourceTypeForExtension
 } from "../../file/FileTypeInfo";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 const os = require("os");
 

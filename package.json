@@ -16,7 +16,6 @@
     "e2e": "npx playwright test",
     "// This brings up the inspector and record button oh my...": "",
     "e2edebug": "PWDEBUG=console npx playwright test --debug",
-    "e2ebuild": "npm run e2ebuild-main && npm run e2ebuild-renderer",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
     "build": "npm run lingui-compile && tsc && yarn vite build",

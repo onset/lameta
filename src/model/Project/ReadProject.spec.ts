@@ -3,7 +3,6 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
 
 let projectDirectory;
 let projectName;

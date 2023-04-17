@@ -13,7 +13,7 @@ import { i18n } from "../other/localization";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
 import { lameta_blue, lameta_orange } from "../containers/theme";
-import { getTestEnvironment } from "../index";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 type Mode =
   | "querying"

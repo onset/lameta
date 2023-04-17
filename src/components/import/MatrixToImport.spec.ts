@@ -18,8 +18,6 @@ import { Person } from "../../model/Project/Person/Person";
 import { describe, it, beforeAll, beforeEach, expect } from "vitest";
 import * as mobx from "mobx";
 
-vi.mock("@electron/remote", () => ({ exec: vi.fn() })); //See commit msg for info
-
 mobx.configure({
   enforceActions: "never"
 });
