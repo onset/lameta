@@ -4,6 +4,10 @@ lameta (the Metadata Editor for Transparent Archiving) is a tool for Language Do
 
 Download [Installers](https://github.com/onset/lameta/releases)
 
+# Linux Installer
+
+n8marti has kindly created [a snap package](https://github.com/n8marti/lameta-snap)
+
 # For Users
 
 Learn more about this tool on its website: [https://www.lameta.org/](https://www.lameta.org/)
