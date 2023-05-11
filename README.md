@@ -6,7 +6,7 @@ Download [Installers](https://github.com/onset/lameta/releases)
 
 # Linux Installer
 
-n8marti has kindly created [a snap package](https://github.com/n8marti/lameta-snap)
+n8marti has kindly created [a snap package](https://github.com/wasta-linux/lameta-snap)
 
 # For Users
 
