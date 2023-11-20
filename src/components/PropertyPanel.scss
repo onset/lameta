@@ -1,0 +1,47 @@
+@import "../colors";
+
+.propertyPanel {
+  display: flex;
+  flex-direction: row;
+  .propertiesColumn {
+    //flex-grow: 1;
+    h1 {
+      font-size: 1em;
+      //text-align: center;
+      margin-bottom: 6px; // move closer to what we're labelling
+      margin-left: 7px; //align with text beneath
+    }
+    .mediaStatsTable {
+      width: 350px;
+      border: none;
+      background-color: transparent;
+      margin-right: 10px;
+      margin-bottom: 2em;
+      .rt-thead {
+        display: none;
+      }
+      .rt-tr-group {
+        border: none;
+      }
+      .rt-td {
+        border: none;
+        white-space: normal; // I do want these to wrap... sometimes they contain helpful error messages
+      }
+    }
+  }
+  .customPropertiesColumn {
+    margin-left: 20px;
+    flex-grow: 1;
+    label {
+      display: none;
+    }
+    .customPropertiesTable {
+      background-color: white;
+
+      .-odd {
+        //todo: should be different for sessions
+        background-color: $sessions__oddRowHighlight--color;
+      }
+    }
+  }
+}

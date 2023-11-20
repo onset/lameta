@@ -1,7 +1,7 @@
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import { test, expect as expect, Page } from "@playwright/test";
-import { Lameta } from "./Lameta";
+import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
 import { E2eFileList } from "./e2eFileList";
 
@@ -13,7 +13,7 @@ let fileList: E2eFileList;
 test.describe("AutoFileAndFolderRenaming Tests", () => {
   test.beforeAll(async ({}) => {
     //console.log("************** beforeAll renamingFolder ");
-    lameta = new Lameta();
+    lameta = new LametaE2ERunner();
     page = await lameta.launch();
     await lameta.cancelRegistration();
     project = await createNewProject(lameta, "AutoFileAndFolderRenaming");

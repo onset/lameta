@@ -1,9 +1,16 @@
 {
   "compilerOptions": {
+    "paths": {
+      "package.json": [
+        "./package.json"
+      ],
+    },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "node",
-    "module": "commonjs",
-    "jsx": "react",
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "target": "ES2020",
     "lib": [
       "dom",
@@ -13,7 +20,10 @@
       "ES2020"
     ],
     "types": [
-      "jest"
+      "node",
+      "vitest/globals", // <--- not working? // this is paired with `globals:true` in the vitest config so we don't have to import vitest types
+      "vite/client", // Vite-injected env variables , Asset imports
+      "@emotion/react/types/css-prop"
     ],
     "alwaysStrict": true,
     "strictNullChecks": true,
@@ -40,14 +50,15 @@
     ]
   },
   "files": [
-    "app/index.tsx",
-    "app/other/sanitizeForArchive.ts"
+    "src/index.tsx",
   ],
   "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "test/**/*.ts",
-    "test/**/*.tsx"
+    "test/**/*.tsx",
+    "test/e2e/lametaRunner.unusedts",
+    "test/e2e/e2e.spekdisabled.unusedts"
   ],
   "exclude": [
     "dist",

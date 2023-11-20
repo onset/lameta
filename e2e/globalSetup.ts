@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import * as Path from "path";
 import * as os from "os";
 import { FullConfig } from "@playwright/test";

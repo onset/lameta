@@ -1,16 +1,16 @@
 import { test, expect as expect, Page } from "@playwright/test";
-import { Lameta } from "./Lameta";
+import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
 import { E2eFileList } from "./e2eFileList";
 
-let lameta: Lameta;
+let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
 let fileList: E2eFileList;
 
 test.describe("FileList", () => {
   test.beforeAll(async ({}) => {
-    lameta = new Lameta();
+    lameta = new LametaE2ERunner();
     page = await lameta.launch();
     await lameta.cancelRegistration();
     project = await createNewProject(lameta, "FileList");
