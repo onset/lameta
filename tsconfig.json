@@ -6,7 +6,7 @@
       ],
     },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "ESNext",
     "resolveJsonModule": true,
     "jsx": "react-jsx",
