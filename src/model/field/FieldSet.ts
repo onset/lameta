@@ -67,6 +67,10 @@ export class FieldSet extends Dictionary<string, Field> {
       return "";
     }
   }
+  public getLabelOfValue(key: string): string {
+    const f = this.getValueOrThrow(key) as Field;
+    return f.labelOfValue;
+  }
   public getTextFieldOrUndefined(key: string): Field | undefined {
     try {
       return this.getValueOrThrow(key) as Field;

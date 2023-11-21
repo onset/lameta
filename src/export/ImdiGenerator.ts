@@ -935,9 +935,14 @@ export default class ImdiGenerator {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
       // they want "Formulaic Discourse"
       //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
-      // Theoretically we could fish out the original English label, but this is quite safe and easy
-      // and gives the same result since the keys are directly mappable to the English label via TitleCase.
-      value = titleCase(value);
+
+      // for some, we may have access to an explicit label. Probably makes no difference, the keys are always just snake case of the label.
+      const label = f.properties
+        .getLabelOfValue(fieldName)
+        // this probably isn't used. The idea is that if we didn't get new label, just replace the underscores
+        .replace(/_/g, " ");
+
+      value = titleCase(label);
     }
     if (projectFallbackFieldName && (!value || value.length === 0)) {
       value = this.project.properties.getTextStringOrEmpty(

@@ -165,6 +165,17 @@ export class Field {
   public get labelInUILanguage(): string {
     return translateFieldLabel(this.definition);
   }
+
+  public get labelOfValue(): string {
+    const complexChoice = this.definition.complexChoices?.find(
+      (c) => c.id.toLowerCase() === this.text.toLowerCase()
+    );
+    if (complexChoice) {
+      return complexChoice.label;
+    }
+    return this.text;
+  }
+
   public get text(): string {
     return this.textHolder.textInDefaultLanguage;
   }
