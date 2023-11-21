@@ -16,7 +16,12 @@ export default defineConfig({
     }
   },
   build: {
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        package: path.resolve(__dirname, "package.json")
+      }
+    }
   },
   plugins: [
     timeReporter(),
