@@ -376,7 +376,7 @@ export default class ImdiGenerator {
     this.startXmlRoot("SESSION");
     this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
-    this.startGroup("SessionFooBar");
+    this.startGroup("Session");
     this.requiredField("Name", "id");
     this.requiredField("Title", "title");
     this.field("Date", "date", true, "Unspecified");

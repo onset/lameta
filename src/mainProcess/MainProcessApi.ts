@@ -20,6 +20,7 @@ export class MainProcessApi {
   }
 
   // We're doing this in the main process because I didn't get xmllint-wasm to work in the render process.
+  // It has a browser build, but I couldn't get it loaded in vite. Could try again later.
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
@@ -28,17 +29,33 @@ export class MainProcessApi {
       fs.promises.readFile(schemaPath, "utf8")
     ]);
 
-    const validationResult = await validateXML({
-      xml: [
-        {
-          fileName: "imdi",
-          contents: imdiContents
-        }
-      ],
-      schema: [imdiSchemaContents]
-    });
+    try {
+      const validationResult = await validateXML({
+        xml: [
+          {
+            fileName: "imdi",
+            contents: imdiContents
+          }
+        ],
+        schema: [imdiSchemaContents]
+      });
 
-    return validationResult;
+      return validationResult;
+    } catch (e) {
+      const r: XMLValidationResult = {
+        valid: false,
+        normalized: e.message,
+        rawOutput: e.message,
+        errors: [
+          {
+            loc: null,
+            message: e.message,
+            rawMessage: e.message
+          }
+        ]
+      };
+      return r;
+    }
   }
 
   public test(): Promise<string> {

@@ -40,7 +40,7 @@ export const ImdiView: React.FunctionComponent<{
     if (props.target instanceof Session) {
       setImdi(
         ImdiGenerator.generateSession(
-          IMDIMode.OPEX,
+          IMDIMode.RAW_IMDI,
           props.target as Session,
           props.project
         )
@@ -78,9 +78,10 @@ export const ImdiView: React.FunctionComponent<{
 
   // when the imdi changes, run the validator
   React.useEffect(() => {
-    mainProcessApi.validateImdiAsync(imdi).then((r) => {
-      SetValidationResult(r);
-    });
+    if (imdi)
+      mainProcessApi.validateImdiAsync(wrapForValidation(imdi)).then((r) => {
+        SetValidationResult(r);
+      });
   }, [imdi]);
   return (
     <div
@@ -134,3 +135,84 @@ export const ImdiView: React.FunctionComponent<{
     </div>
   );
 };
+
+function wrapForValidation(imdi: string): string {
+  // if the imdi is Actor, wrap it in a Session so that it can be validated
+  if (imdi.startsWith("<Actor")) {
+    return `<?xml version="1.0"?>
+  <METATRANSCRIPT xmlns="http://www.mpi.nl/IMDI/Schema/IMDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd" Type="SESSION" Version="0" Date="2023-11-21" Originator="lameta 2.1.2-alpha" FormatId="IMDI 3.0" ArchiveHandle="">
+    <Session>
+      <Name>foo</Name>
+      <Title>foo</Title>
+      <Date>2000-01-01</Date>
+      <MDGroup>
+        <Location>
+          <Continent Link="http://www.mpi.nl/IMDI/Schema/Continents.xml" Type="ClosedVocabulary">Oceania</Continent>
+          <Country Link="http://www.mpi.nl/IMDI/Schema/Countries.xml" Type="OpenVocabulary">Solomon Islands</Country>
+        </Location>
+    
+        <Project>
+          <Name>foo</Name>
+          <Title>foo</Title>
+          <Id>foo</Id>
+          <Contact>
+            <Name>foo</Name>
+          </Contact>
+          <Description>foo</Description>
+        </Project>
+        <Keys/>
+        <Content>
+          <Genre Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
+          <CommunicationContext/>
+          <Languages/>
+          <Keys/>
+        </Content>
+        <Actors>
+          ${imdi}
+        </Actors>
+      </MDGroup>
+      <Resources/>
+      </Session>
+    </METATRANSCRIPT>`;
+  }
+  // do the same for MediaFile
+  if (imdi.startsWith("<MediaFile") || imdi.startsWith("<WrittenResource")) {
+    return `<?xml version="1.0"?>
+  <METATRANSCRIPT xmlns="http://www.mpi.nl/IMDI/Schema/IMDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd" Type="SESSION" Version="0" Date="2023-11-21" Originator="lameta 2.1.2-alpha" FormatId="IMDI 3.0" ArchiveHandle="">
+    <Session>
+      <Name>foo</Name>
+      <Title>foo</Title>
+      <Date>2000-01-01</Date>
+      <MDGroup>
+        <Location>
+          <Continent Link="http://www.mpi.nl/IMDI/Schema/Continents.xml" Type="ClosedVocabulary">Oceania</Continent>
+          <Country Link="http://www.mpi.nl/IMDI/Schema/Countries.xml" Type="OpenVocabulary">Solomon Islands</Country>
+        </Location>
+    
+        <Project>
+          <Name>foo</Name>
+          <Title>foo</Title>
+          <Id>foo</Id>
+          <Contact>
+            <Name>foo</Name>
+          </Contact>
+          <Description>foo</Description>
+        </Project>
+        <Keys/>
+        <Content>
+          <Genre Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
+          <CommunicationContext/>
+          <Languages/>
+          <Keys/>
+        </Content>
+        <Actors/>
+      </MDGroup>
+      <Resources>
+        ${imdi}
+      </Resources>
+      </Session>
+    </METATRANSCRIPT>`;
+  }
+
+  return imdi;
+}
