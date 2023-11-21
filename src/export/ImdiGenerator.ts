@@ -23,6 +23,7 @@ import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import { CapitalCase } from "../other/case";
+import { da } from "date-fns/locale";
 
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
@@ -803,9 +804,6 @@ export default class ImdiGenerator {
       conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
       */
       const dateToCompareWith = referenceDate ? referenceDate : moment.today;
-      if (!referenceDate) {
-        this.tail.comment("The following is based on today's date.");
-      }
 
       const birthYear = person.properties.getTextStringOrEmpty("birthYear");
       if (birthYear === "?") {
@@ -814,7 +812,12 @@ export default class ImdiGenerator {
         this.element("Age", "Unspecified"); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
         this.tail.comment("Could not compute age");
       } else {
-        const age = person.ageOn(dateToCompareWith);
+        const age = dateToCompareWith
+          ? person.ageOn(dateToCompareWith)
+          : "Unspecified";
+        if (!dateToCompareWith) {
+          this.tail.comment("Could not compute age");
+        }
         if (age && age.length > 0) {
           this.element("Age", age);
         }
