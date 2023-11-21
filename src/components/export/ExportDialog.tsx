@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
+import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import { useState } from "react";
 import ReactModal from "react-modal";
@@ -31,6 +32,7 @@ import { IMDIMode } from "../../export/ImdiGenerator";
 
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
+import { clipboard } from "electron";
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};
@@ -41,7 +43,8 @@ enum Mode {
   choosing = 1,
   exporting = 2,
   copying = 3,
-  finished = 4
+  finished = 4,
+  error = 5
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
@@ -61,6 +64,7 @@ export const ExportDialog: React.FunctionComponent<{
     }
   }, [mode]);
 
+  const [error, setError] = useState<string | undefined>(undefined);
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(
     userSettingsSingleton.ExportFormat
@@ -126,7 +130,7 @@ export const ExportDialog: React.FunctionComponent<{
               try {
                 setOutputPath(result.filePath);
                 // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
-                saveFiles(result.filePath!);
+                saveFilesAsync(result.filePath!);
               } catch (err) {
                 NotifyException(
                   err,
@@ -204,63 +208,70 @@ export const ExportDialog: React.FunctionComponent<{
     return folder;
   };
 
-  const saveFiles = (path: string) => {
-    const folderFilter =
-      whichSessionsOption === "all"
-        ? (f: Folder) => true
-        : (f: Folder) => f.marked;
+  const saveFilesAsync = async (path: string) => {
+    try {
+      const folderFilter =
+        whichSessionsOption === "all"
+          ? (f: Folder) => true
+          : (f: Folder) => f.marked;
 
-    if (path) {
-      switch (exportFormat) {
-        case "csv":
-          analyticsEvent("Export", "Export CSV");
+      if (path) {
+        switch (exportFormat) {
+          case "csv":
+            analyticsEvent("Export", "Export CSV");
 
-          asyncMakeGenericCsvZipFile(
-            path,
-            props.projectHolder.project!,
-            folderFilter
-          ).then(() => {
-            setMode(Mode.finished); // don't have to wait for any copying of big files
-          });
-          break;
-        case "paradisec":
-          analyticsEvent("Export", "Export Paradisec CSV");
-
-          makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
-          setMode(Mode.finished); // don't have to wait for any copying of big files
-          break;
-        case "imdi":
-          analyticsEvent("Export", "Export IMDI Xml");
-          ImdiBundler.saveImdiBundleToFolder(
-            props.projectHolder.project!,
-            path,
-            IMDIMode.RAW_IMDI,
-            false,
-            folderFilter
-          );
-          setMode(Mode.finished); // don't have to wait for any copying of big files
-          break;
-        case "opex-plus-files":
-          analyticsEvent("Export", "Export OPEX Plus Files");
-          if (CopyManager.filesAreStillCopying()) {
-            NotifyWarning(
-              t`lameta cannot export files while files are still being copied in.`
-            );
-            setMode(Mode.choosing);
-          } else {
-            ImdiBundler.saveImdiBundleToFolder(
-              props.projectHolder.project!,
+            asyncMakeGenericCsvZipFile(
               path,
-              IMDIMode.OPEX,
-              true,
+              props.projectHolder.project!,
               folderFilter
             ).then(() => {
-              // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
-              setMode(Mode.copying); // don't have to wait for any copying of big files
+              setMode(Mode.finished); // don't have to wait for any copying of big files
             });
-          }
-          break;
+            break;
+          case "paradisec":
+            analyticsEvent("Export", "Export Paradisec CSV");
+
+            makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
+            setMode(Mode.finished); // don't have to wait for any copying of big files
+            break;
+          case "imdi":
+            analyticsEvent("Export", "Export IMDI Xml");
+
+            await ImdiBundler.saveImdiBundleToFolder(
+              props.projectHolder.project!,
+              path,
+              IMDIMode.RAW_IMDI,
+              false,
+              folderFilter
+            );
+            setMode(Mode.finished); // don't have to wait for any copying of big files
+
+            break;
+          case "opex-plus-files":
+            analyticsEvent("Export", "Export OPEX Plus Files");
+            if (CopyManager.filesAreStillCopying()) {
+              NotifyWarning(
+                t`lameta cannot export files while files are still being copied in.`
+              );
+              setMode(Mode.choosing);
+            } else {
+              await ImdiBundler.saveImdiBundleToFolder(
+                props.projectHolder.project!,
+                path,
+                IMDIMode.OPEX,
+                true,
+                folderFilter
+              ).then(() => {
+                // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
+                setMode(Mode.copying); // don't have to wait for any copying of big files
+              });
+            }
+            break;
+        }
       }
+    } catch (err) {
+      setError(err);
+      setMode(Mode.error);
     }
   };
 
@@ -304,6 +315,19 @@ export const ExportDialog: React.FunctionComponent<{
               margin-left: 20px;
             `}
           >
+            {mode === Mode.error && (
+              <div>
+                <Alert severity="error">
+                  <div css={css``}>{error}</div>
+                </Alert>
+                <Button
+                  variant="outlined"
+                  onClick={() => clipboard.writeText(error!)}
+                >
+                  Copy
+                </Button>
+              </div>
+            )}
             {mode === Mode.exporting && (
               <h1>
                 <Trans>Exporting...</Trans>
@@ -336,6 +360,16 @@ export const ExportDialog: React.FunctionComponent<{
         <div className={"bottomButtonRow"}>
           {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
           <div className={"reverseOrderOnMac"}>
+            {mode === Mode.error && (
+              <React.Fragment>
+                <DialogButton
+                  default={true}
+                  onClick={() => setMode(Mode.closed)}
+                >
+                  <Trans>Close</Trans>
+                </DialogButton>
+              </React.Fragment>
+            )}
             {mode === Mode.choosing && (
               <React.Fragment>
                 <DialogButton

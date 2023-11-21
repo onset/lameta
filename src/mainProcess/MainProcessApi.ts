@@ -19,7 +19,8 @@ export class MainProcessApi {
     );
   }
 
-  public async validateImdi(
+  // We're doing this in the main process because I didn't get xmllint-wasm to work in the render process.
+  public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
     const schemaPath = locateWithApp(app.getAppPath(), "assets/IMDI_3.0.xsd");

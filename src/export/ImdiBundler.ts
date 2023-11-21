@@ -13,11 +13,12 @@ import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { NotifyError, NotifyWarning } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
+import { mainProcessApi } from "../MainProcessApiAccess";
 temp.track(true);
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
-  public static saveImdiBundleToFolder(
+  public static async saveImdiBundleToFolder(
     project: Project,
     rootDirectory: string,
     imdiMode: IMDIMode,
@@ -28,7 +29,7 @@ export default class ImdiBundler {
     omitNamespaces?: boolean
   ): Promise<void> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       sentryBreadCrumb("Starting saveImdiBundleToFolder");
       try {
         if (fs.existsSync(rootDirectory)) {
@@ -82,56 +83,58 @@ export default class ImdiBundler {
         reject();
         return;
       }
-      //---- Project Documents -----
 
-      this.outputDocumentFolder(
-        project,
-        "OtherDocuments",
-        "OtherDocuments" + extensionWithDot,
-        rootDirectory,
-        secondLevel,
-        project.otherDocsFolder,
-        childrenSubpaths,
-        imdiMode,
-        copyInProjectFiles
-      );
+      try {
+        //---- Project Documents -----
 
-      this.outputDocumentFolder(
-        project,
-        "DescriptionDocuments",
-        "DescriptionDocuments" + extensionWithDot,
-        rootDirectory,
-        secondLevel,
-        project.descriptionFolder,
-        childrenSubpaths,
-        imdiMode,
-        copyInProjectFiles
-      );
-
-      // I'm thinking, this only makes sense if we're going to provide the files
-      if (copyInProjectFiles) {
-        this.addConsentBundle(
+        this.outputDocumentFolder(
           project,
+          "OtherDocuments",
+          "OtherDocuments" + extensionWithDot,
           rootDirectory,
           secondLevel,
+          project.otherDocsFolder,
           childrenSubpaths,
           imdiMode,
-          copyInProjectFiles,
-          folderFilter,
-          omitNamespaces
+          copyInProjectFiles
         );
-      }
 
-      //---- Sessions ----
+        this.outputDocumentFolder(
+          project,
+          "DescriptionDocuments",
+          "DescriptionDocuments" + extensionWithDot,
+          rootDirectory,
+          secondLevel,
+          project.descriptionFolder,
+          childrenSubpaths,
+          imdiMode,
+          copyInProjectFiles
+        );
 
-      project.sessions.items
-        .filter(folderFilter)
-        .forEach((session: Session) => {
+        // I'm thinking, this only makes sense if we're going to provide the files
+        if (copyInProjectFiles) {
+          await this.addConsentBundle(
+            project,
+            rootDirectory,
+            secondLevel,
+            childrenSubpaths,
+            imdiMode,
+            copyInProjectFiles,
+            folderFilter,
+            omitNamespaces
+          );
+        }
+
+        //---- Sessions ----
+
+        const sessions = project.sessions.items.filter(folderFilter);
+        for await (const session of sessions as Array<Session>) {
           const sessionImdi = ImdiGenerator.generateSession(
             imdiMode,
             session,
             project
           );
+          await this.validateImdiOrThrow(sessionImdi, session.displayName);
           const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
           if (imdiMode === IMDIMode.OPEX) {
             fs.ensureDirSync(
@@ -165,43 +168,47 @@ export default class ImdiBundler {
               )
             );
           }
-        });
+        }
 
-      //childrenSubpaths.push(..something for consent if we have it---);
+        //childrenSubpaths.push(..something for consent if we have it---);
 
-      // ---  Now that we know what all the child imdi's are, we can output the root  ---
-      const projectImdi = ImdiGenerator.generateCorpus(
-        imdiMode,
-        project,
-        childrenSubpaths,
-        false
-      );
-      const targetDirForProjectFile = Path.join(
-        rootDirectory,
-        imdiMode === IMDIMode.OPEX
-          ? Path.basename(Path.basename(project.directory))
-          : "" // with opex, the metadata file goes into the folder it describes. Else, on the level above.
-      );
+        // ---  Now that we know what all the child imdi's are, we can output the root  ---
+        const projectImdi = ImdiGenerator.generateCorpus(
+          imdiMode,
+          project,
+          childrenSubpaths,
+          false
+        );
+        const targetDirForProjectFile = Path.join(
+          rootDirectory,
+          imdiMode === IMDIMode.OPEX
+            ? Path.basename(Path.basename(project.directory))
+            : "" // with opex, the metadata file goes into the folder it describes. Else, on the level above.
+        );
 
-      fs.writeFileSync(
-        Path.join(
-          targetDirForProjectFile,
-          `${project.displayName}${extensionWithDot}`
-        ),
-        projectImdi
-      );
-      // const waitForCopying = () => {
-      //   if (filesAreStillCopying()) {
-      //     setTimeout(() => waitForCopying(), 1000);
-      //   } else {
-      //     sentryBreadCrumb("Done with saveImdiBundleToFolder");
-      //     resolve();
-      //   }
-      // };
-      // sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
-      // waitForCopying();
+        fs.writeFileSync(
+          Path.join(
+            targetDirForProjectFile,
+            `${project.displayName}${extensionWithDot}`
+          ),
+          projectImdi
+        );
+        // const waitForCopying = () => {
+        //   if (filesAreStillCopying()) {
+        //     setTimeout(() => waitForCopying(), 1000);
+        //   } else {
+        //     sentryBreadCrumb("Done with saveImdiBundleToFolder");
+        //     resolve();
+        //   }
+        // };
+        // sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
+        // waitForCopying();
 
-      resolve();
+        resolve();
+      } catch (error) {
+        reject(`${error.message}`);
+        return;
+      }
     });
   }
   private static copyFolderOfFiles(files: File[], targetDirectory: string) {
@@ -329,7 +336,7 @@ export default class ImdiBundler {
 
   // IMDI doesn't have a place for consent files, so we have to create this
   // dummy Session to contain them.
-  public static addConsentBundle(
+  public static async addConsentBundle(
     project: Project,
     rootDirectory: string,
     secondLevel: string,
@@ -400,6 +407,7 @@ export default class ImdiBundler {
       project,
       omitNamespaces
     );
+    await this.validateImdiOrThrow(imdiXml);
     //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
     ImdiBundler.WritePseudoSession(
@@ -416,6 +424,20 @@ export default class ImdiBundler {
     // we're done with this dummy directory now
     fs.emptyDir(dir);
     fs.remove(dir);
+  }
+
+  private static async validateImdiOrThrow(
+    imdiXml: string,
+    displayNameForThisFile?: string
+  ) {
+    const result = await mainProcessApi.validateImdiAsync(imdiXml);
+    if (!result.valid) {
+      throw new Error(
+        `The IMDI for ${displayNameForThisFile} did not pass validation.\r\n${result.errors
+          .map((e) => e.message)
+          .join("\r\n")}`
+      );
+    }
   }
 
   // We need to have all the consenting people described in the <Actors> portion of the IMDI.

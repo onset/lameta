@@ -15,6 +15,7 @@ import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
 import { mainProcessApi } from "../MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
+import Alert from "@material-ui/lab/Alert";
 registerLanguage("xml", xmlLang);
 
 export const ImdiView: React.FunctionComponent<{
@@ -75,6 +76,12 @@ export const ImdiView: React.FunctionComponent<{
     }
   }, [props.target, props.project, props.folder]);
 
+  // when the imdi changes, run the validator
+  React.useEffect(() => {
+    mainProcessApi.validateImdiAsync(imdi).then((r) => {
+      SetValidationResult(r);
+    });
+  }, [imdi]);
   return (
     <div
       css={css`
@@ -97,54 +104,26 @@ export const ImdiView: React.FunctionComponent<{
         }
       `}
     >
-      <div
-        css={css`
-          display: flex;
-          justify-content: flex-end;
-          padding: 10px;
-        `}
-      >
-        {!validationResult && (
-          <Button
-            variant="contained"
-            onClick={async () => {
-              const r = await mainProcessApi.validateImdi(imdi);
-              SetValidationResult(r);
-            }}
-          >
-            Validate
-          </Button>
-        )}
-      </div>
       {validationResult?.valid && (
-        <div
-          css={css`
-            color: white;
-            font-weight: 500;
-            text-align: right;
-            font-size: 24px;
-          `}
-        >
-          ✔ Valid
-        </div>
+        <Alert severity="success">This XML conforms to the IMDI schema.</Alert>
       )}
-      {validationResult && (
-        <div>
-          {validationResult.errors.map((e) => {
+      {validationResult && !validationResult.valid && (
+        <Alert severity="error">
+          {validationResult?.errors.map((e) => {
             return (
               <div
                 css={css`
-                  color: white;
+                  margin: 0;
                   font-weight: 500;
-                  background-color: red;
-                  padding: 10px;
+
+                  white-space: pre-wrap;
                 `}
               >
                 {e.message}
               </div>
             );
           })}
-        </div>
+        </Alert>
       )}
       <SyntaxHighlighter
         language="xml"
