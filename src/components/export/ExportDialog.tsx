@@ -65,6 +65,7 @@ export const ExportDialog: React.FunctionComponent<{
   }, [mode]);
 
   const [error, setError] = useState<string | undefined>(undefined);
+  const [imdiValidated, setImdiValidated] = useState<boolean>(false);
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(
     userSettingsSingleton.ExportFormat
@@ -264,6 +265,7 @@ export const ExportDialog: React.FunctionComponent<{
               ).then(() => {
                 // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
                 setMode(Mode.copying); // don't have to wait for any copying of big files
+                setImdiValidated(true);
               });
             }
             break;
@@ -334,9 +336,22 @@ export const ExportDialog: React.FunctionComponent<{
               </h1>
             )}
             {mode === Mode.finished && (
-              <h1>
-                <Trans>Done</Trans>
-              </h1>
+              <div
+                css={css`
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                `}
+              >
+                <h1>
+                  <Trans>Done</Trans>
+                </h1>
+                {imdiValidated && (
+                  <Alert severity="success">
+                    {t`The IMDI files were validated.`}
+                  </Alert>
+                )}
+              </div>
             )}
             {mode === Mode.copying && (
               <div>

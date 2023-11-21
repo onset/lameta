@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" targetNamespace="http://www.openpreservationexchange.org/opex/v1.2" xmlns="http://www.openpreservationexchange.org/opex/v1.2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="OPEXMetadata" type="opexMetadata"/>
+
+  <xs:complexType name="opexMetadata">
+    <xs:sequence>
+      <xs:element name="Transfer" type="transfer" minOccurs="0"/>
+      <xs:element name="Properties" type="Properties" minOccurs="0"/>
+      <xs:element name="History" type="History" minOccurs="0"/>
+      <xs:element name="Relationships" type="Relationships" minOccurs="0"/>
+      <xs:element name="DescriptiveMetadata" type="DescriptiveMetadata" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transfer">
+    <xs:sequence>
+      <xs:element name="SourceID" type="xs:string" minOccurs="0"/>
+      <xs:element name="Manifest" type="manifest" minOccurs="0"/>
+      <xs:element name="Fixities" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Fixity" type="fixity" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="OriginalFilename" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="manifest">
+    <xs:sequence>
+      <xs:element name="Files" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="File" type="file" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Folders" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Folder" type="folder" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="file">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="size" type="xs:long"/>
+        <xs:attribute name="type" type="fileType"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="folder">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="fixity">
+    <xs:sequence/>
+    <xs:attribute name="path" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="Properties">
+    <xs:sequence>
+      <xs:element name="Title" type="xs:string" minOccurs="0"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="SecurityDescriptor" type="xs:string" minOccurs="0"/>
+      <xs:element name="Identifiers" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Identifier" type="Identifier" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Identifier">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="History">
+    <xs:sequence>
+      <xs:element name="Events" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Event" type="Event" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Event">
+    <xs:sequence>
+      <xs:element name="Type" type="xs:string" minOccurs="0"/>
+      <xs:element name="Action" type="xs:string" minOccurs="0"/>
+      <xs:element name="Detail" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="date" type="xs:dateTime" use="required"/>
+    <xs:attribute name="user" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="Relationships">
+    <xs:sequence>
+      <xs:element name="Relationship" type="Relationship" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Relationship">
+    <xs:sequence>
+      <xs:element name="Type" type="xs:string" minOccurs="0"/>
+      <xs:element name="Object" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DescriptiveMetadata">
+    <xs:sequence>
+      <xs:any processContents="skip" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="fileType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="content"/>
+      <xs:enumeration value="metadata"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

@@ -1016,7 +1016,7 @@ export default class ImdiGenerator {
       this.tail = XmlBuilder.create("opex:OPEXMetadata");
       this.tail.a(
         "xmlns:opex",
-        "http://www.openpreservationexchange.org/opex/v1.0"
+        "http://www.openpreservationexchange.org/opex/v1."
       );
       const x = this.tail.element("opex:DescriptiveMetadata");
       this.tail = x.element("METATRANSCRIPT");

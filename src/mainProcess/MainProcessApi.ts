@@ -24,11 +24,22 @@ export class MainProcessApi {
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
-    const schemaPath = locateWithApp(app.getAppPath(), "assets/IMDI_3.0.xsd");
-    const [imdiSchemaContents] = await Promise.all([
-      fs.promises.readFile(schemaPath, "utf8")
-    ]);
+    const imdiSchemaPath = locateWithApp(
+      app.getAppPath(),
+      "assets/IMDI_3.0.xsd"
+    );
 
+    const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
+    const schemas = [imdiSchemaContents];
+
+    if (imdiContents.indexOf("OPEXMetadata") > -1) {
+      const opexSchemaPath = locateWithApp(
+        app.getAppPath(),
+        "assets/OPEX-Metadata.xsd"
+      );
+      const opexSchemaContents = fs.readFileSync(opexSchemaPath, "utf8");
+      schemas.push(opexSchemaContents);
+    }
     try {
       const validationResult = await validateXML({
         xml: [
@@ -37,7 +48,7 @@ export class MainProcessApi {
             contents: imdiContents
           }
         ],
-        schema: [imdiSchemaContents]
+        schema: schemas
       });
 
       return validationResult;

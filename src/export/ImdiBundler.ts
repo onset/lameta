@@ -179,6 +179,7 @@ export default class ImdiBundler {
           childrenSubpaths,
           false
         );
+        await this.validateImdiOrThrow(projectImdi, project.displayName);
         const targetDirForProjectFile = Path.join(
           rootDirectory,
           imdiMode === IMDIMode.OPEX
