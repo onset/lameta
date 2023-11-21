@@ -16,7 +16,7 @@ import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./session/ContributorsTable";
 import { Project } from "../model/Project/Project";
-import ImdiView from "./ImdiView";
+import { ImdiView } from "./ImdiView";
 import { File, Contribution } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";

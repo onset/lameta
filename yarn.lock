@@ -13502,6 +13502,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-xml-parser@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "fast-xml-parser@npm:4.3.2"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: d507ce2efa5fd13d0a5ba28bd76dd68f2fc30ad8748357c37b70f360d19417866d79e35a688af067d5bceaaa796033fa985206aef9692f7a421e1326b6e73309
+  languageName: node
+  linkType: hard
+
 "fastparse@npm:^1.1.2":
   version: 1.1.2
   resolution: "fastparse@npm:1.1.2"
@@ -17679,6 +17690,7 @@ fsevents@^1.2.7:
     excel-date-to-js: ^1.1.5
     exifreader: ^3.11.2
     express: ^4.14.0
+    fast-xml-parser: ^4.3.2
     ffprobe-static: ^3.1.0
     filesize: ^6.1.0
     flatted: ^3.1.0
@@ -17767,6 +17779,7 @@ fsevents@^1.2.7:
     xml2js: ^0.4.23
     xmlbuilder: ^10.1.1
     xmldom: ^0.6.0
+    xmllint-wasm: ^4.0.2
     xpath: ^0.0.27
   bin:
     electron: ./node_modules/.bin/electron
@@ -25799,6 +25812,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"strnum@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "strnum@npm:1.0.5"
+  checksum: 651b2031db5da1bf4a77fdd2f116a8ac8055157c5420f5569f64879133825915ad461513e7202a16d7fec63c54fd822410d0962f8ca12385c4334891b9ae6dd2
+  languageName: node
+  linkType: hard
+
 "strtok2@npm:~1.0.0":
   version: 1.0.4
   resolution: "strtok2@npm:1.0.4"
@@ -28341,6 +28361,13 @@ fsevents@^1.2.7:
   version: 0.6.0
   resolution: "xmldom@npm:0.6.0"
   checksum: 710f64f5b2ba8ac1cbcf62c2e35b095a2f9ccbd596062efe037a5ca85d3ee077b691c4d74952ff476e4bab0dd82727604262899f25dddbb02f89ddeea4cca7f9
+  languageName: node
+  linkType: hard
+
+"xmllint-wasm@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "xmllint-wasm@npm:4.0.2"
+  checksum: f802920b2a9d6be5ac5923b1608eaff40dde0dbe8a8c2d47381ae370e26a04059d6517306a3728bd8a33b973acadd3fbf4b21b0e4fe6409ea6a2efb2c6a64b08
   languageName: node
   linkType: hard
 

@@ -11,7 +11,6 @@ import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
 import { release } from "os";
 import { join } from "path";
 import Store from "electron-store";
-//import remoteMain from "@electron/remote/main";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -186,3 +185,6 @@ ipcMain.handle("showOpenDialog", (event, options) => {
 ipcMain.handle("showMessageBox", (event, options) => {
   return dialog.showMessageBoxSync(win!, options);
 });
+
+// this instaniates the MainProcessApi class and makes it available to the render process
+import "./MainProcessApi";

@@ -8,7 +8,7 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { AccessProtocolForm } from "./AccessProtocolForm";
-import ImdiView from "../ImdiView";
+import { ImdiView } from "../ImdiView";
 import "./ProjectTab.scss";
 import userSettings from "../../other/UserSettings";
 import { ParadisecView } from "../ParadisecView";
