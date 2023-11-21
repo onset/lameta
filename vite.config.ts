@@ -34,6 +34,7 @@ export default defineConfig({
       include: [
         "src/mainProcess/main",
         "src/other/locateWithApp.ts",
+        "src/mainProcess/MainProcessApi.ts",
         "src/mainProcess/preload"
       ],
       transformOptions: {

@@ -24,7 +24,7 @@ export class MainProcessApi {
   ): Promise<XMLValidationResult> {
     const schemaPath = locateWithApp(app.getAppPath(), "assets/IMDI_3.0.xsd");
     const [imdiSchemaContents] = await Promise.all([
-      fs.promises.readFile(schemaPath, "utf8") // todo: path
+      fs.promises.readFile(schemaPath, "utf8")
     ]);
 
     const validationResult = await validateXML({
