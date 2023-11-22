@@ -10,7 +10,7 @@ import { locateWithApp } from "./locateWithApp";
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
     //https://github.com/electron/electron/issues/11617
-    path = replaceall("/", "\\", path);
+    path = path.replace(/\//g, "\\\\");
   }
   electron.shell.showItemInFolder(path);
 }
@@ -65,20 +65,6 @@ export async function asyncTrashWithContext<T>(
 
   // enhance: this is lopsided because above we give an nice helpful message if certain problems occur.
   // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.
-}
-
-function replaceall(replaceThis: string, withThis: string, inThis: string) {
-  withThis = withThis.replace(/\$/g, "$$$$");
-  return inThis.replace(
-    new RegExp(
-      replaceThis.replace(
-        /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|<>\-\&])/g,
-        "\\$&"
-      ),
-      "g"
-    ),
-    withThis
-  );
 }
 
 export function locate(relativePath: string): string {
