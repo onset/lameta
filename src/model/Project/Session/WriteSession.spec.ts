@@ -15,17 +15,15 @@ import {
   getImdiResourceTypeForExtension
 } from "../../file/FileTypeInfo";
 
-const os = require("os");
-
 let projectDirectory;
 let projectName;
 
 describe("Session Write", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     projectDirectory = temp.mkdirSync("test");
     projectName = Path.basename(projectDirectory);
   });
-  afterEach(async () => {
+  afterEach(() => {
     temp.cleanupSync();
   });
   it("should write simple text field", () => {

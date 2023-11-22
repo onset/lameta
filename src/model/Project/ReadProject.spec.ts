@@ -8,14 +8,15 @@ let projectDirectory;
 let projectName;
 
 describe("Project Read", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
+    const f = GetProjectFileWithOneField("Title", "This is the title.");
     projectDirectory = temp.mkdirSync("test");
     projectName = Path.basename(projectDirectory);
   });
-  afterEach(async () => {
+  afterEach(() => {
     temp.cleanupSync();
   });
-  it("should read title", () => {
+  it("should read title", async () => {
     const f = GetProjectFileWithOneField("Title", "This is the title.");
     expect(f.getTextProperty("title")).toBe("This is the title.");
   });

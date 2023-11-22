@@ -9,11 +9,11 @@ let sessionDirectory;
 let sessionName;
 
 describe("Session Read", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     sessionDirectory = temp.mkdirSync("test");
     sessionName = Path.basename(sessionDirectory);
   });
-  afterEach(async () => {
+  afterEach(() => {
     temp.cleanupSync();
   });
   it("should read title", () => {
