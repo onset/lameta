@@ -619,7 +619,7 @@ export default class ImdiGenerator {
         this.element("End", "Unspecified");
       });
 
-      this.addAccess(f);
+      this.addAccess();
       this.addCustomKeys(f);
     });
   }
@@ -680,24 +680,25 @@ export default class ImdiGenerator {
       this.element("LanguageId", "");
       this.element("Anonymized", "Unspecified");
 
-      // this bit is confusing... want this to work with Project Document Folders
-      if (this.folderInFocus instanceof Session) {
-        this.addAccess();
-      }
+      this.addAccess();
       this.addCustomKeys(f);
     });
   }
   // note, lameta doesn't have different access codes for different files,
   // so we're just outputting the access code for the session.
   private addAccess() {
-    const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
-      "access"
-    );
+    const accessCode =
+      this.folderInFocus instanceof Session
+        ? this.folderInFocus.properties.getTextStringOrEmpty("access")
+        : "";
+
+    /* NO: the schema requires a all the access fields, even if they are empty.
     if (accessCode.length === 0) {
       return; // if the folder doesn't have an access code, then there is nothing for us to output
       // this can happen on a Session, and will always happen if the file (e.g. an image) is
       // part of a Person, becuase lameta does not currently support access codes on Persons.
     }
+    */
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
@@ -744,7 +745,11 @@ export default class ImdiGenerator {
         this.element("Description", "");
       }
     */
-      this.requiredField("Description", "accessDescription");
+      if (accessCode.length > 0) {
+        this.requiredField("Description", "accessDescription");
+      } else {
+        this.element("Description", "");
+      }
     });
 
     //}

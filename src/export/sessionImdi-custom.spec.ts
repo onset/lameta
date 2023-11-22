@@ -54,4 +54,33 @@ describe("session imdi export", () => {
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("Foo");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("XYZ");
   });
+
+  // notion issue #255
+  it("session access applies to resources", () => {
+    session.properties.setText("access", "open");
+    session.addFileForTest("test.txt");
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect(`//Resources/WrittenResource/Access/Availability`).toMatch("open");
+  });
+
+  it("missing access should still emit access nodes", () => {
+    session.addFileForTest("test.txt");
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect(count(`//Resources/WrittenResource/Access`)).toBe(1);
+    expect(`//Resources/WrittenResource/Access/Availability`).toMatch("");
+  });
 });
