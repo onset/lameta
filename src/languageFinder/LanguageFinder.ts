@@ -326,7 +326,7 @@ export class LanguageFinder {
     const match = twoToThree.find((t) => t[0] === codeOrLanguageName);
     if (match) return match[1];
 
-    var c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
+    const c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
     // if we got something other than the code back, that means we did recognize it as a known code.
     if (c.length > 0 && c.toLowerCase() !== codeOrLanguageName.toLowerCase())
       return codeOrLanguageName;

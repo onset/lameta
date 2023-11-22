@@ -24,10 +24,13 @@ export class MainProcessApi {
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
+    fs.writeFileSync("mpa-log.txt", "enter");
     const imdiSchemaPath = locateWithApp(
       app.getAppPath(),
       "assets/IMDI_3.0.xsd"
     );
+    // append to mpa-log.txt
+    fs.appendFileSync("mpa-log.txt", `imdiSchemaPath:${imdiSchemaPath}`);
 
     const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
     const schemas = [imdiSchemaContents];
@@ -41,6 +44,7 @@ export class MainProcessApi {
       schemas.push(opexSchemaContents);
     }
     try {
+      fs.appendFileSync("mpa-log.txt", `calling validator`);
       const validationResult = await validateXML({
         xml: [
           {
@@ -50,9 +54,10 @@ export class MainProcessApi {
         ],
         schema: schemas
       });
-
+      fs.appendFileSync("mpa-log.txt", `finished validator`);
       return validationResult;
     } catch (e) {
+      fs.appendFileSync("mpa-log.txt", `caught error`);
       const r: XMLValidationResult = {
         valid: false,
         normalized: e.message,

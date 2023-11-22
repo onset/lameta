@@ -14,7 +14,7 @@ import * as Path from "path";
 import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
 
 let project: Project;
-let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
+const projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 const lingMetaX_ImportMap = availableSpreadsheetMappings.LingMetaXMap; //require("./LingMetaXMap.json5");
 const lingMetaX_Xlsx_SessionsPath = "sample data/LingMetaX_Sessions.xlsx";
 const lingMetaX_Xlsx_PeoplePath = "sample data/LingMetaX_People.xlsx";

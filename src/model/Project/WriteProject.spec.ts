@@ -62,7 +62,7 @@ function AttemptRoundTripOfOneField(
   }
 
   // now, can we change it and see it saved?
-  let newValue = "something different";
+  const newValue = "something different";
 
   f.setTextProperty(key, newValue);
 

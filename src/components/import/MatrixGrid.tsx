@@ -258,9 +258,9 @@ function getLetterIndexForColumn(num: number): string {
     return "";
   }
 
-  var str = num.toString(26);
-  var arr = str.split("").map((char) => {
-    var code = char.charCodeAt(0);
+  const str = num.toString(26);
+  const arr = str.split("").map((char) => {
+    let code = char.charCodeAt(0);
     if (code >= 48 && code <= 57) {
       code += 16; // convert 1-9 to A-I and 0 to @
     } else {
@@ -271,7 +271,7 @@ function getLetterIndexForColumn(num: number): string {
 
   // convert 'A@' to 'Z', 'B@' to 'AZ', etc.
   // ascii code of '@' is 64
-  var index = arr.indexOf(64);
+  let index = arr.indexOf(64);
   while (index >= 0) {
     if (index == 0) {
       arr.shift(); // remove head '@'
@@ -282,7 +282,7 @@ function getLetterIndexForColumn(num: number): string {
     index = arr.indexOf(64);
   }
 
-  var chars = arr.map((code) => String.fromCharCode(code));
+  const chars = arr.map((code) => String.fromCharCode(code));
   return chars.join("");
 }
 

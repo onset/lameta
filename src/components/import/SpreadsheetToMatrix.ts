@@ -39,7 +39,7 @@ export function makeMappedMatrixFromSpreadsheet(
     throw new Error("Cannot find a workbook at " + path);
   }
 
-  var workbook;
+  let workbook;
   const fullPath = Path.resolve(path);
   try {
     workbook = XLSX.readFile(fullPath, {
@@ -79,14 +79,14 @@ export function makeMappedMatrixFromSpreadsheet(
 function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
   const arrayOfArrays: any[][] = [];
 
-  var range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
+  const range = XLSX.utils.decode_range(worksheet["!ref"]!); // get the range
 
-  for (var R = range.s.r; R <= range.e.r; ++R) {
+  for (let R = range.s.r; R <= range.e.r; ++R) {
     const row: any[] = [];
     //console.log("range.c: " + range.e.c);
-    for (var C = range.s.c; C <= range.e.c; ++C) {
-      var cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
-      var cell = worksheet[cellref];
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellref = XLSX.utils.encode_cell({ c: C, r: R }); // construct A1 reference for cell
+      const cell = worksheet[cellref];
 
       // dates need special handling
       if (
@@ -133,7 +133,7 @@ export function makeMappedMatrix(
 }
 
 function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
-  let [firstRow, ...followingRows] = arrayOfArrays;
+  const [firstRow, ...followingRows] = arrayOfArrays;
   const nonEmptyRows = followingRows.filter((r) =>
     r.find((cellText: string) => cellText.trim().length > 0)
   );
@@ -314,7 +314,7 @@ function setInitialRowImportStatus(
 
   matrix.rows.forEach((r) => {
     r.importStatus = getStatus(r);
-    let uniqueIdentifierProperty = folderType === "session" ? "id" : "code";
+    const uniqueIdentifierProperty = folderType === "session" ? "id" : "code";
     let id = r.asObjectByLametaProperties()[uniqueIdentifierProperty];
     // if a person doesn't have a code, then we use ID
     if (!id && folderType === "person") {
@@ -323,7 +323,7 @@ function setInitialRowImportStatus(
 
     if (!id) {
       r.addProblemDescription("Missing " + uniqueIdentifierProperty);
-    } else if (!!project.findFolderById(folderType, id)) {
+    } else if (project.findFolderById(folderType, id)) {
       r.matchesExistingRecord = true;
       // if the other checks passed and the only problem is this overwrite issue
       if (r.importStatus === RowImportStatus.Yes)

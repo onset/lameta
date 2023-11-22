@@ -235,7 +235,7 @@ export function addImportedFolderToProject(
   folder.saveAllFilesInFolder();
 }
 export function makeCustomField(key: string, value: string): Field {
-  let safeKey = key
+  const safeKey = key
     .replace(/[<>&'"\s:!\\]/g, "-")
     .trim()
 
@@ -267,7 +267,7 @@ function lookAheadForValue(
 ): string | undefined {
   let r: string | undefined = undefined;
   lookToRightOfCellIndex++;
-  for (var i = lookToRightOfCellIndex; i < row.cells.length; i++) {
+  for (let i = lookToRightOfCellIndex; i < row.cells.length; i++) {
     if (row.cells[i].column.lametaProperty == key) {
       r = row.cells[i].value;
       break;

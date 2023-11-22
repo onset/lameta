@@ -227,7 +227,7 @@ const FileTabs: React.FunctionComponent<
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
   let t = file.type;
-  let ext = Path.extname(file.getActualFilePath());
+  const ext = Path.extname(file.getActualFilePath());
   if ([".txt", ".md"].includes(ext)) t = "Text";
 
   switch (t) {

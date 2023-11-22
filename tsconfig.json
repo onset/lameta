@@ -50,9 +50,9 @@
       }
     ]
   },
-  "files": [
-    "src/index.tsx",
-  ],
+  // "files": [
+  //   "src/index.tsx",
+  // ],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -64,6 +64,6 @@
   "exclude": [
     "dist",
     "node_modules",
-    "**/*.spec.ts"
+    //"**/*.spec.ts"
   ]
 }

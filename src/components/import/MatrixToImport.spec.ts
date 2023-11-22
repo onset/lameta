@@ -27,7 +27,7 @@ import { vi } from "vitest";
 i18nUnitTestPrep();
 
 let project: Project;
-let projectDir = temp.mkdirSync("lameta spreadsheet importer test");
+const projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 
 describe("santizeCustomField", () => {
   it("can replace spaces", () => {
