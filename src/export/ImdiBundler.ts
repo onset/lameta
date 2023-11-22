@@ -10,7 +10,7 @@ import { sentryBreadCrumb } from "../other/errorHandling";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
-import { NotifyError, NotifyWarning } from "../components/Notify";
+import { NotifyError } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
 import { mainProcessApi } from "../MainProcessApiAccess";
@@ -134,7 +134,12 @@ export default class ImdiBundler {
             session,
             project
           );
-          await this.validateImdiOrThrow(sessionImdi, session.displayName);
+          try {
+            await this.validateImdiOrThrow(sessionImdi, session.displayName);
+          } catch (e) {
+            console.log(e);
+            throw e;
+          }
           const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
           if (imdiMode === IMDIMode.OPEX) {
             fs.ensureDirSync(
@@ -408,6 +413,7 @@ export default class ImdiBundler {
       project,
       omitNamespaces
     );
+    this.validateImdiOrThrow(imdiXml, dummySession.displayName);
     await this.validateImdiOrThrow(imdiXml);
     //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
@@ -431,6 +437,9 @@ export default class ImdiBundler {
     imdiXml: string,
     displayNameForThisFile?: string
   ) {
+    if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
+      return; // we don't yet have a way to validate in test environment
+    }
     const result = await mainProcessApi.validateImdiAsync(imdiXml);
     if (!result.valid) {
       throw new Error(
