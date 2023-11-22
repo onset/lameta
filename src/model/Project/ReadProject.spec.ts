@@ -3,20 +3,21 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { CustomFieldRegistry } from "./CustomFieldRegistry";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 
-let projectDirectory;
-let projectName;
+let projectDirectory: string;
+let projectName: string;
 
 describe("Project Read", () => {
   beforeEach(() => {
-    const f = GetProjectFileWithOneField("Title", "This is the title.");
+    //const f:ProjectMetadataFile = GetProjectFileWithOneField("Title", "This is the title.");
     projectDirectory = temp.mkdirSync("test");
     projectName = Path.basename(projectDirectory);
   });
   afterEach(() => {
     temp.cleanupSync();
   });
-  it("should read title", async () => {
+  it("should read title", () => {
     const f = GetProjectFileWithOneField("Title", "This is the title.");
     expect(f.getTextProperty("title")).toBe("This is the title.");
   });

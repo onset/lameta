@@ -5,12 +5,7 @@ import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value
-} from "../../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

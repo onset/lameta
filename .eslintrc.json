@@ -1,11 +1,12 @@
 {
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": [
-      "tsconfig.json"
-    ]
-  },
+  // too slow: "parserOptions": {
+  //   "project": [
+  //     "tsconfig.json"
+  //   ]
+  // },
   "plugins": [
+    "eslint-plugin-react",
     "@typescript-eslint"
   ],
   "extends": [
@@ -14,7 +15,14 @@
   ],
   "rules": {
     "require-await": "warn",
-    "@typescript-eslint/no-floating-promises": "error",
-    "@typescript-eslint/no-misused-promises": "error"
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error"
+    ]
+    // these are commented out because they require the "parserOptions" which in turn makes linting glacially slow
+    // They didn't seem to catch the errors I wanted them to catch.
+    //"@typescript-eslint/no-floating-promises": "error"
+    //"@typescript-eslint/no-misused-promises": "error"
   }
 }

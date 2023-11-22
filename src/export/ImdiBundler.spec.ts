@@ -1,38 +1,33 @@
-import {
-  vi,
-  describe,
-  it,
-  beforeAll,
-  beforeEach,
-  expect,
-  afterAll
-} from "vitest";
+import { describe, it, beforeAll, expect, afterAll } from "vitest";
 import * as temp from "temp";
 import { Project } from "../model/Project/Project";
-import { Session } from "../model/Project/Session/Session";
 import ImdiBundler from "./ImdiBundler";
 import { IMDIMode } from "./ImdiGenerator";
 import fs from "fs";
 import * as Path from "path";
 
 let project: Project;
-let session: Session;
 const projectDir = temp.mkdirSync("lameta imdi bundler test");
 const projectName = Path.basename(projectDir);
 const targetDir = temp.mkdirSync("lameta imdi bundler test output");
-beforeAll(() => {
+beforeAll(async () => {
   temp.track();
   project = Project.fromDirectory(projectDir);
   project.descriptionFolder.addFileForTest("test.txt");
   project.otherDocsFolder.addFileForTest("test.txt");
-  session = project.addSession();
-  ImdiBundler.saveImdiBundleToFolder(
-    project,
-    targetDir,
-    IMDIMode.OPEX,
-    false,
-    (f) => true
-  );
+  project.addSession();
+  try {
+    await ImdiBundler.saveImdiBundleToFolder(
+      project,
+      targetDir,
+      IMDIMode.OPEX,
+      false,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (f) => true
+    );
+  } catch (e) {
+    expect(e).toBeUndefined();
+  }
 });
 afterAll(() => {
   temp.cleanupSync();

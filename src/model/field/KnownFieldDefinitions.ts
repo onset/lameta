@@ -1,5 +1,4 @@
 import { IFolderType } from "../Folder/Folder";
-import { FieldType } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
 import raw from "./fields.json5?raw";
@@ -15,15 +14,14 @@ export function getFieldDefinition(
   );
 }
 export function isKnownFieldKey(key: string): boolean {
-  return Object.keys(knownFieldDefinitions).some(
-    (
-      area // e.g. project, session, person
-    ) =>
-      knownFieldDefinitions[area].find(
-        (d: any) =>
-          d.key.toLowerCase() === key.toLowerCase() ||
-          d.tagInSayMoreClassic === key
-      )
+  return Object.keys(knownFieldDefinitions).some((
+    area // e.g. project, session, person
+  ) =>
+    knownFieldDefinitions[area].find(
+      (d: any) =>
+        d.key.toLowerCase() === key.toLowerCase() ||
+        d.tagInSayMoreClassic === key
+    )
   );
 }
 

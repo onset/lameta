@@ -24,11 +24,11 @@ describe("Consent Form Inclusion", () => {
     fs.emptyDirSync(rootDirectory);
     fs.removeSync(rootDirectory);
   });
-  beforeAll(() => {
+  beforeAll(async () => {
     const project = Project.fromDirectory("sample data/Edolo sample");
     // including "fssync" in the path tells our file copy thing to just do the copy synchronously
     rootDirectory = temp.mkdirSync("ImdiBundlerTest-fssync");
-    ImdiBundler.addConsentBundle(
+    await ImdiBundler.addConsentBundle(
       project,
       rootDirectory,
       "",

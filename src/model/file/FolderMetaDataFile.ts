@@ -55,7 +55,7 @@ export class FolderMetadataFile extends File {
 
     // load the file containing metadata about this folder with
     // empty fields from the fields.json5 file
-    knownFields.forEach((f: FieldDefinition, i: number) => {
+    knownFields.forEach((f: FieldDefinition) => {
       //f.tabIndex = i;
       const field = Field.fromFieldDefinition(f);
       this.properties.setValue(field.key, field);
