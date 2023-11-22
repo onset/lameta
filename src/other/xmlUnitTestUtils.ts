@@ -80,7 +80,7 @@ expect.extend({
       //console.log(resultXml);
       return {
         message: () =>
-          `expected ${xpath} to be '${expectedValue}' but it did not match anything`,
+          `expected ${xpath} to be '${expectedValue}' but that xpath did not match anything`,
         pass: false
       };
     }
@@ -100,6 +100,41 @@ expect.extend({
           `expected ${xpath} to be '${expectedValue}'  but it was '${value(
             xpath
           )}'`,
+        pass: false
+      };
+    }
+  }
+});
+expect.extend({
+  toHaveSomeMatch(xpath: string, expectedValue: string | RegExp) {
+    const hits = select(xpath);
+    if (!hits || hits.length === 0) {
+      //console.log(resultXml);
+      return {
+        message: () =>
+          `expected ${xpath} to have some match for '${expectedValue}' but that xpath did not match anything`,
+        pass: false
+      };
+    }
+    // the result of the xpath is an array of nodes. We want to see if any of them match.
+    const pass = hits.some((node) => {
+      if (expectedValue instanceof RegExp)
+        return node.textContent.match(expectedValue);
+      else return node.textContent === expectedValue;
+    });
+    if (pass) {
+      return {
+        message: () => `expected ${xpath} to be '${expectedValue}'`,
+        pass: true
+      };
+    } else {
+      //console.log(resultXml);
+      return {
+        message: () =>
+          `Did not find any ${xpath} that matched '${expectedValue}'. Found: [` +
+          // list all the hits that we found
+          hits.map((node) => node.textContent).join(",") +
+          "]",
         pass: false
       };
     }

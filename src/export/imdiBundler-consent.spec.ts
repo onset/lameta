@@ -1,17 +1,16 @@
-import { vi, describe, it, beforeAll, beforeEach, afterAll } from "vitest";
-import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
+import { describe, it, beforeAll, afterAll } from "vitest";
+
 import { Project } from "../model/Project/Project";
 import {
   setResultXml,
   xexpect as expect,
-  count,
-  value
+  count
 } from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import temp from "temp";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import * as glob from "glob";
+import { IMDIMode } from "./ImdiGenerator";
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -35,6 +34,7 @@ describe("Consent Form Inclusion", () => {
       [],
       IMDIMode.RAW_IMDI,
       true, //<-- copy in files
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (f) => true,
       true
     );
@@ -71,7 +71,6 @@ describe("Consent Form Inclusion", () => {
         Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG")
       )
     ).toBeTruthy();
-
     expect(
       fs.existsSync(
         Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
