@@ -682,12 +682,14 @@ export default class ImdiGenerator {
 
       // this bit is confusing... want this to work with Project Document Folders
       if (this.folderInFocus instanceof Session) {
-        this.addAccess(f);
+        this.addAccess();
       }
       this.addCustomKeys(f);
     });
   }
-  private addAccess(f: File) {
+  // note, lameta doesn't have different access codes for different files,
+  // so we're just outputting the access code for the session.
+  private addAccess() {
     const accessCode = this.folderInFocus.properties.getTextStringOrEmpty(
       "access"
     );
