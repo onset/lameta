@@ -4,7 +4,11 @@ import { shell, app } from "electron";
 import { XMLValidationResult, validateXML } from "xmllint-wasm";
 import { locateWithApp } from "../other/locateWithApp";
 
-const appPath = app.getAppPath();
+if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
+  throw new Error(
+    "MainProcessApiAccess should not be imported in unit tests. Mocking should have prevented this."
+  );
+}
 
 // Put things here that y[ou want to run on the main process. You can then access them with:
 // This is is using `electron-call` to produce type-safe wrappers that hide the IPC stuff.
@@ -24,14 +28,10 @@ export class MainProcessApi {
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
-    fs.writeFileSync("mpa-log.txt", "enter");
     const imdiSchemaPath = locateWithApp(
       app.getAppPath(),
       "assets/IMDI_3.0.xsd"
     );
-    // append to mpa-log.txt
-    fs.appendFileSync("mpa-log.txt", `imdiSchemaPath:${imdiSchemaPath}`);
-
     const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
     const schemas = [imdiSchemaContents];
 
@@ -44,7 +44,6 @@ export class MainProcessApi {
       schemas.push(opexSchemaContents);
     }
     try {
-      fs.appendFileSync("mpa-log.txt", `calling validator`);
       const validationResult = await validateXML({
         xml: [
           {
@@ -54,10 +53,8 @@ export class MainProcessApi {
         ],
         schema: schemas
       });
-      fs.appendFileSync("mpa-log.txt", `finished validator`);
       return validationResult;
     } catch (e) {
-      fs.appendFileSync("mpa-log.txt", `caught error`);
       const r: XMLValidationResult = {
         valid: false,
         normalized: e.message,
@@ -72,10 +69,6 @@ export class MainProcessApi {
       };
       return r;
     }
-  }
-
-  public test(): Promise<string> {
-    return Promise.resolve("hello from main");
   }
 }
 

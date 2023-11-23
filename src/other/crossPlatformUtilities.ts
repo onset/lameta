@@ -4,7 +4,7 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
-import { mainProcessApi } from "../MainProcessApiAccess";
+import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { locateWithApp } from "./locateWithApp";
 
 export function showInExplorer(path: string) {

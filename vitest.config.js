@@ -9,9 +9,19 @@ export default defineConfig({
   },
   test: {
     globals: true,
+
+    // "happy-dom" costs us about 1/2 second per test run (including each update)
+    // it is the cause of the "Download the React DevTools..." message
     environment: "happy-dom",
+    // About 20% of our tests rely browser environment of happy-dom.
+    //environment: "node",
+
     //deps: { interopDefault: true }, // needed this when I was attempting environment:"node" see https://github.com/vitest-dev/vitest/issues/2544
     include: ["./**/*.spec.ts"],
+
+    // Note: the __mocks__ system seems to not be working. In mainProcess/__mocks__ there is a MainProcessApiAccess.ts, but it is ignored,
+    // so I had to detect when we're tesitng within the real MainProcessApiAccess.ts and create a mock there.
+
     setupFiles: ["./src/vitest.mock.ts"],
     /**
      * The default timeout of 5000ms is sometimes not enough for playwright.

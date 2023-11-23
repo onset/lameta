@@ -13,7 +13,7 @@ import SyntaxHighlighter, {
 } from "react-syntax-highlighter/light";
 import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
-import { mainProcessApi } from "../MainProcessApiAccess";
+import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
 import Alert from "@material-ui/lab/Alert";
 registerLanguage("xml", xmlLang);

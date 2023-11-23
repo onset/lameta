@@ -15,9 +15,10 @@ const projectDir = temp.mkdirSync("lameta imdi bundler test");
 beforeAll(() => {
   temp.track();
   project = Project.fromDirectory(projectDir);
-  project.descriptionFolder.addFileForTest("test.txt");
-  project.otherDocsFolder.addFileForTest("test.txt");
+  project.descriptionFolder.addFileForTest(randomFileName());
+  project.otherDocsFolder.addFileForTest(randomFileName());
   session = project.addSession();
+  session.addFileForTest(randomFileName());
 });
 afterAll(() => {
   temp.cleanupSync();
@@ -58,7 +59,7 @@ describe("session imdi export", () => {
   // notion issue #255
   it("session access applies to resources", () => {
     session.properties.setText("access", "open");
-    session.addFileForTest("test.txt");
+
     setResultXml(
       ImdiGenerator.generateSession(
         IMDIMode.RAW_IMDI,
@@ -71,7 +72,7 @@ describe("session imdi export", () => {
   });
 
   it("missing access should still emit access nodes", () => {
-    session.addFileForTest("test.txt");
+    session.properties.removeProperty("access");
     setResultXml(
       ImdiGenerator.generateSession(
         IMDIMode.RAW_IMDI,
@@ -84,3 +85,7 @@ describe("session imdi export", () => {
     expect(`//Resources/WrittenResource/Access/Availability`).toMatch("");
   });
 });
+
+function randomFileName() {
+  return Math.random().toString(36).substring(7) + ".test.txt";
+}

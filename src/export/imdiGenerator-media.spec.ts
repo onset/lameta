@@ -39,7 +39,7 @@ describe("Imdi generation for images", () => {
     expect(count("MediaFile/Access")).toBe(1);
     expect(value("MediaFile/Access/Availability")).toBe("Open");
   });
-  it("Can get imdi of audio even if session not have an access code", () => {
+  it("Can get imdi of audio even if session not have an access field", () => {
     const session = project.sessions.items[0];
     session.properties.remove("access");
     const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, session, project);
@@ -48,7 +48,7 @@ describe("Imdi generation for images", () => {
     const xml = gen.mediaFile(f!);
     setResultXml(xml!);
     expect(count("MediaFile")).toBe(1);
-    expect(count("MediaFile/Access")).toBe(0); // that's ok (well it might not be according to the shema, but at the moment we don't have a default)
+    expect(count("MediaFile/Access")).toBe(1);
   });
 
   it("Can get imdi of image file in person, which does not have an access", () => {
@@ -61,7 +61,7 @@ describe("Imdi generation for images", () => {
     expect(count("MediaFile")).toBe(1);
     expect(value("MediaFile/Type")).toBe("Image");
     expect(value("MediaFile/Format")).toBe("image/jpeg");
-    expect(count("MediaFile/Access")).toBe(0); // that's ok (well it might not be according to the shema, but at the moment we don't have a default)
+    expect(count("MediaFile/Access")).toBe(1);
   });
 
   it("Can get imdi of an audio file", () => {

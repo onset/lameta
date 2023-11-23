@@ -13,7 +13,7 @@ import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { NotifyError } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
-import { mainProcessApi } from "../MainProcessApiAccess";
+import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 temp.track(true);
 
 // This class handles making/copying all the files for an IMDI archive.
