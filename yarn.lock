@@ -6947,6 +6947,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xmldom/xmldom@npm:^0.8.10":
+  version: 0.8.10
+  resolution: "@xmldom/xmldom@npm:0.8.10"
+  checksum: 4c136aec31fb3b49aaa53b6fcbfe524d02a1dc0d8e17ee35bd3bf35e9ce1344560481cd1efd086ad1a4821541482528672306d5e37cdbd187f33d7fadd3e2cf0
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -13762,28 +13769,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unused-imports@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "eslint-plugin-unused-imports@npm:3.0.0"
-  dependencies:
-    eslint-rule-composer: ^0.3.0
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": ^6.0.0
-    eslint: ^8.0.0
-  peerDependenciesMeta:
-    "@typescript-eslint/eslint-plugin":
-      optional: true
-  checksum: 51666f62cc8dccba2895ced83f3c1e0b78b68c357e17360e156c4db548bfdeda34cbd8725192fb4903f22d5069400fb22ded6039631df01ee82fd618dc307247
-  languageName: node
-  linkType: hard
-
-"eslint-rule-composer@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "eslint-rule-composer@npm:0.3.0"
-  checksum: c2f57cded8d1c8f82483e0ce28861214347e24fd79fd4144667974cd334d718f4ba05080aaef2399e3bbe36f7d6632865110227e6b176ed6daa2d676df9281b1
-  languageName: node
-  linkType: hard
-
 "eslint-scope@npm:^4.0.3":
   version: 4.0.3
   resolution: "eslint-scope@npm:4.0.3"
@@ -18910,6 +18895,7 @@ fsevents@^1.2.7:
     "@typescript-eslint/parser": ^6.12.0
     "@vitejs/plugin-react": ^4.2.0
     "@vitest/ui": ^0.34.6
+    "@xmldom/xmldom": ^0.8.10
     archiver: 5.3.1
     array-move: ^3.0.0
     asar: ^0.13.0
@@ -18957,7 +18943,6 @@ fsevents@^1.2.7:
     eslint-config-mfe: latest
     eslint-plugin-import: 2.29.0
     eslint-plugin-react: ^7.33.2
-    eslint-plugin-unused-imports: ^3.0.0
     excel-date-to-js: ^1.1.5
     exifreader: ^3.11.2
     express: ^4.14.0
@@ -19048,9 +19033,8 @@ fsevents@^1.2.7:
     xml-name-validator: ^3.0.0
     xml2js: ^0.4.23
     xmlbuilder: ^10.1.1
-    xmldom: ^0.6.0
     xmllint-wasm: ^4.0.2
-    xpath: ^0.0.27
+    xpath: ^0.0.33
   bin:
     electron: ./node_modules/.bin/electron
   languageName: unknown
@@ -30247,13 +30231,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"xmldom@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "xmldom@npm:0.6.0"
-  checksum: 710f64f5b2ba8ac1cbcf62c2e35b095a2f9ccbd596062efe037a5ca85d3ee077b691c4d74952ff476e4bab0dd82727604262899f25dddbb02f89ddeea4cca7f9
-  languageName: node
-  linkType: hard
-
 "xmllint-wasm@npm:^4.0.2":
   version: 4.0.2
   resolution: "xmllint-wasm@npm:4.0.2"
@@ -30261,10 +30238,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"xpath@npm:^0.0.27":
-  version: 0.0.27
-  resolution: "xpath@npm:0.0.27"
-  checksum: 51f45d211a9a552a8f6a12a474061e89bafb07e0aecd4bad18a557411feb975919c158e1a66e4ea0542198c6ed442481d9f709c625cca57b97aaedeaeded902e
+"xpath@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "xpath@npm:0.0.33"
+  checksum: 075cd553819302b9df0ae11526b666016ee286b72e0600a923c7565d847fcfa7ff195db3065ec86b9a12f1f81bfc82f1a316fc53442a8572c31582e87ccaec4a
   languageName: node
   linkType: hard
 

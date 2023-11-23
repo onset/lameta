@@ -1,14 +1,16 @@
 import { expect } from "vitest";
 
-const XPATH = require("xpath");
-const dom = require("xmldom").DOMParser;
+//const XPATH = require("xpath");
+import XPATH from "xpath";
+import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
+import { N } from "vitest/dist/reporters-5f784f42.js";
 
 let resultXml: string;
 let resultDom: Document;
 
 export function setResultXml(xml: string) {
   resultXml = xml;
-  resultDom = new dom().parseFromString(resultXml);
+  resultDom = new DOMParser().parseFromString(resultXml);
 }
 
 export function assertAttribute(
@@ -45,21 +47,21 @@ export function count(xpath: string): number {
   return select(xpath).length;
 }
 export function value(xpath: string): string {
-  return select(xpath)[0].textContent;
+  return (select(xpath)[0] as Node).textContent || "";
 }
-export function select(xpath: string) {
+export function select(xpath: string): Node[] {
   if (resultDom === undefined) {
     throw new Error(
       "resultDom was undefined in select(). Make sure you called setResultXml()"
     );
   }
   try {
-    const nodes = XPATH.selectWithResolver(
+    const nodes = XPATH.select(
       xpath,
       resultDom
       //, resolver
     );
-    return nodes;
+    return nodes as Node[];
   } catch (ex) {
     console.log("error in xpath: " + xpath);
     console.log(ex);
@@ -119,7 +121,7 @@ expect.extend({
     // the result of the xpath is an array of nodes. We want to see if any of them match.
     const pass = hits.some((node) => {
       if (expectedValue instanceof RegExp)
-        return node.textContent.match(expectedValue);
+        return node.textContent?.match(expectedValue);
       else return node.textContent === expectedValue;
     });
     if (pass) {
@@ -156,6 +158,27 @@ expect.extend({
     return {
       message: () => `expected ${xpath} to have ${expectedValue} matches`,
       pass: true
+    };
+  }
+});
+
+expect.extend({
+  toNotExist(xpath) {
+    const hits = select(xpath);
+    if (!hits || hits.length === 0) {
+      return {
+        message: () => `expected ${xpath} to not exist`,
+        pass: true
+      };
+    }
+
+    // get the xml (not just the text) of all the hits
+    const xml = hits
+      .map((node) => new XMLSerializer().serializeToString(node))
+      .join(",");
+    return {
+      message: () => `expected ${xpath} to not exist. Found: ${xml}`,
+      pass: false
     };
   }
 });

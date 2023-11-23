@@ -401,7 +401,7 @@ export default class ImdiGenerator {
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
   // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
   private addCustomKeys(target: File | Folder, moreKeys?: any[]) {
-    const blacklist = [
+    let blacklist = [
       "modifiedDate",
       "displayName",
       "type",
@@ -411,6 +411,10 @@ export default class ImdiGenerator {
       "access",
       "accessDescription" // output by addAccess()
     ];
+    if (target instanceof Person) {
+      blacklist.push("description"); // gets its own element
+    }
+
     this.group("Keys", () => {
       target.properties.keys().forEach((key) => {
         // only output things that don't have an explicit home in IMDI.

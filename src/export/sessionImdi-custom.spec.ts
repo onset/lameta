@@ -11,7 +11,7 @@ import temp from "temp";
 
 let project: Project;
 let session: Session;
-const projectDir = temp.mkdirSync("lameta imdi bundler test");
+const projectDir = temp.mkdirSync("lameta imdi session generator test");
 beforeAll(() => {
   temp.track();
   project = Project.fromDirectory(projectDir);

@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach } from "vitest";
+import { describe, it, beforeAll, beforeEach } from "vitest";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
@@ -10,7 +10,6 @@ import {
 import * as mobx from "mobx";
 import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
-import exp from "constants";
 
 mobx.configure({
   enforceActions: "never"
@@ -30,6 +29,7 @@ beforeAll(() => {
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
     new CustomFieldRegistry(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (oldName, newName) => true,
     languageFinder
   );

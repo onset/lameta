@@ -20,7 +20,6 @@
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
     "build": "npm run lingui-compile && tsc && yarn vite build",
-    "build-without-test": "npm run lingui-compile && npm run build-production-main && npm run build-production-renderer",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
     "dev": "yarn check-node && vite",
@@ -168,6 +167,7 @@
     "@types/webdriverio": "^4.10.0",
     "@types/xml2js": "^0.4.11",
     "@types/xmlbuilder": "^0.0.32",
+    "@xmldom/xmldom": "^0.8.10",
     "archiver": "5.3.1",
     "array-move": "^3.0.0",
     "assert": "^1.4.1",
@@ -255,9 +255,8 @@
     "xml-name-validator": "^3.0.0",
     "xml2js": "^0.4.23",
     "xmlbuilder": "^10.1.1",
-    "xmldom": "^0.6.0",
     "xmllint-wasm": "^4.0.2",
-    "xpath": "^0.0.27"
+    "xpath": "^0.0.33"
   },
   "//remember to match this with github actions in main.yml": "",
   "engines": {
