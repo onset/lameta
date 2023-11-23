@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2022-09-29 23:12\n"
+"PO-Revision-Date: 2023-11-23 16:12\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -64,27 +64,27 @@ msgstr ""
 
 #: app/components/project/ProjectTab.tsx:33
 msgid "About This Project"
-msgstr ""
+msgstr "Tentang proyek ini"
 
 #: app/other/menu.ts:47
 msgid "About lameta"
-msgstr ""
+msgstr "Tentang lameta"
 
 #: app/components/session/AccessChooser.tsx:53
 msgid "Access"
-msgstr ""
+msgstr "Akses"
 
 #: app/components/project/ProjectTab.tsx:36
 msgid "Access Protocol"
-msgstr ""
+msgstr "Protokol Akses"
 
 #: app/components/FileList.tsx:169
 msgid "Add Files"
-msgstr ""
+msgstr "Tambah File-File"
 
 #: app/components/people/person/PersonLanguageList.tsx:143
 msgid "Add Language"
-msgstr ""
+msgstr "Tambah Bahasa"
 
 #: app/components/project/ProjectTab.tsx:88
 msgid "Add documents here that describe the projects and corpus."
@@ -96,11 +96,11 @@ msgstr ""
 
 #: app/components/export/ExportChoices.tsx:115
 msgid "All Sessions"
-msgstr ""
+msgstr "Semua Sesi"
 
 #: app/components/FieldLabel.tsx:61
 msgid "As Personally Identifiable Information, this will not be exported to other formats."
-msgstr ""
+msgstr "Sebagai Informasi Identifikasi Pribadi, ini tidak akan diekspor ke format lain."
 
 #: app/components/registration/RegistrationDialog.tsx:115
 msgid "As a curator"
@@ -112,12 +112,12 @@ msgstr ""
 
 #: app/components/registration/RegistrationDialog.tsx:112
 msgid "As a trainer"
-msgstr ""
+msgstr "Sebagai pelatih"
 
 #: app/components/FolderPane.tsx:348
 #: app/other/localization.ts:106
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: app/components/MediaStats.tsx:96
 #~ msgid "Audio Bit Depth"
@@ -149,19 +149,19 @@ msgstr ""
 #: app/components/registration/RegistrationDialog.tsx:125
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:176
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #: app/model/Folder/Folder.ts:179
 msgid "Cannot add files of that type"
-msgstr ""
+msgstr "Tidak dapat tambah file jenis itu"
 
 #: app/components/RenameFileDialog/RenameFileDialog.tsx:128
 msgid "Change Name To:"
-msgstr ""
+msgstr "Ubah Nama Menjadi:"
 
 #: app/components/MediaFolderDialog.tsx:134
 msgid "Change..."
-msgstr ""
+msgstr "Ubah..."
 
 #: app/other/menu.ts:335
 #~ msgid "Check for new version"
@@ -169,97 +169,97 @@ msgstr ""
 
 #: app/components/import/SpreadsheetImportDialog.tsx:185
 msgid "Choose File"
-msgstr ""
+msgstr "Pilih File"
 
 #: app/components/LanguagePickerDialog/LanguagePickerDialog.tsx:144
 msgid "Choose Language"
-msgstr ""
+msgstr "Pilih Bahasa"
 
 #: app/components/import/SpreadsheetImportDialog.tsx:199
 msgid "Choose Spreadsheet Mapping:"
-msgstr ""
+msgstr "Pilih Pemetaan Spreadsheet:"
 
 #: app/components/export/ExportChoices.tsx:23
 msgid "Choose an export format:"
-msgstr ""
+msgstr "Pilih format ekspor:"
 
 #: app/components/export/ExportChoices.tsx:105
 msgid "Choose which Sessions to export:"
-msgstr ""
+msgstr "Pilih sesi mana yang akan diekspor:"
 
 #: app/components/MediaFolderDialog.tsx:144
 msgid "Clear"
-msgstr ""
+msgstr "Hapus"
 
 #: app/components/ReleasesDialog.tsx:233
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #: app/components/PersonContributions.tsx:39
 #: app/components/session/ContributorsTable.tsx:128
 msgid "Comments"
-msgstr ""
+msgstr "Komentar"
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:88
 msgid "Confirm Delete"
-msgstr ""
+msgstr "Konfirmasi Hapus"
 
 #: app/components/FolderPane.tsx:301
 msgid "Contributions"
-msgstr ""
+msgstr "Kontribusi"
 
 #: app/components/FolderPane.tsx:194
 #: app/components/FolderPane.tsx:240
 msgid "Contributors"
-msgstr ""
+msgstr "Penyumbang/Kontributor"
 
 #: app/other/menu.ts:102
 msgid "Copy"
-msgstr ""
+msgstr "Salin"
 
 #: app/model/Folder/Folder.ts:212
 msgid "Copy Requested..."
-msgstr ""
+msgstr "Salin yang Diminta..."
 
 #: app/components/export/ExportDialog.tsx:309
 msgid "Copying in Files..."
-msgstr ""
+msgstr "Menyalin ke Files..."
 
 #: app/components/CopyingStatus.tsx:20
 msgid "Copying..."
-msgstr ""
+msgstr "Menyalin..."
 
 #: app/containers/HomePage.tsx:265
 msgid "Create New Project"
-msgstr ""
+msgstr "Buat Proyek Baru"
 
 #: app/containers/HomePage.tsx:280
 msgid "Create New Project with Sample Data"
-msgstr ""
+msgstr "Buat Proyek Baru dengan Contoh Data"
 
 #: app/components/project/CreateProjectDialog.tsx:67
 msgid "Create New lameta Project"
-msgstr ""
+msgstr "Buat Proyek lameta Baru"
 
 #: app/components/project/CreateProjectDialog.tsx:66
 msgid "Create Project Using Sample Data"
-msgstr ""
+msgstr "Buat Proyek Baru dengan Contoh Data"
 
 #: app/other/menu.ts:128
 msgid "Create Project..."
-msgstr ""
+msgstr "Buat Proyek..."
 
 #: app/other/menu.ts:348
 msgid "Credits"
-msgstr ""
+msgstr "Kredit/Penghargaan"
 
 #: app/components/project/AccessProtocolForm.tsx:43
 msgid "Custom Access Choices"
-msgstr ""
+msgstr "Pilihan Akses yang disesuaikan"
 
 #: app/components/PropertyPanel.tsx:22
 msgid "Custom Field"
-msgstr ""
+msgstr "Field yang disesuaikan"
 
 #: app/components/CustomFieldsTable.tsx:158
 #~ msgid "Custom Fields"
@@ -267,7 +267,7 @@ msgstr ""
 
 #: app/other/menu.ts:100
 msgid "Cut"
-msgstr ""
+msgstr "Potong"
 
 #: app/components/session/ContributorsTable.tsx:91
 #~ msgid "Date"
@@ -275,63 +275,63 @@ msgstr ""
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:121
 msgid "Delete"
-msgstr ""
+msgstr "Hapus"
 
 #: app/components/Workspace.tsx:178
 msgid "Delete All Marked People..."
-msgstr ""
+msgstr "Hapus Semua Orang yang Diberi Tanda..."
 
 #: app/components/Workspace.tsx:130
 msgid "Delete All Marked Sessions..."
-msgstr ""
+msgstr "Hapus Semua Sesi yang Diberi Tanda..."
 
 #: app/components/FileList.tsx:282
 msgid "Delete File..."
-msgstr ""
+msgstr "Hapus File..."
 
 #: app/components/Workspace.tsx:168
 msgid "Delete Person..."
-msgstr ""
+msgstr "Hapus Orang..."
 
 #: app/components/Workspace.tsx:112
 msgid "Delete Session"
-msgstr ""
+msgstr "Hapus Sesi"
 
 #: app/components/Workspace.tsx:102
 msgid "Delete Session..."
-msgstr ""
+msgstr "Hapus Sesi..."
 
 #: app/components/FileList.tsx:282
 msgid "Delete link to file..."
-msgstr ""
+msgstr "Hapus tautan ke file..."
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:108
 msgid "Deleting..."
-msgstr ""
+msgstr "Hapus..."
 
 #: app/components/project/ProjectTab.tsx:39
 msgid "Description Documents"
-msgstr ""
+msgstr "Dokumen-Dokumen Keterangan"
 
 #: app/index.tsx:38
 msgid "Do not quit"
-msgstr ""
+msgstr "Jangan tutup"
 
 #: app/components/export/ExportDialog.tsx:303
 msgid "Done"
-msgstr ""
+msgstr "Selesai"
 
 #: app/components/ReleasesDialog.tsx:185
 msgid "Download"
-msgstr ""
+msgstr "Unduh"
 
 #: app/components/Workspace.tsx:149
 msgid "Duplicate Person"
-msgstr ""
+msgstr "Duplikasi orang"
 
 #: app/components/Workspace.tsx:82
 msgid "Duplicate Session"
-msgstr ""
+msgstr "Duplikasi Sesi"
 
 #: app/components/FolderPane.tsx:222
 #~ msgid "ELAN"
@@ -339,70 +339,70 @@ msgstr ""
 
 #: app/other/menu.ts:87
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
 
 #: app/components/registration/RegistrationDialog.tsx:76
 msgid "Email Address"
-msgstr ""
+msgstr "Alamat Email"
 
 #: app/components/project/AccessProtocolForm.tsx:46
 msgid "Enter each choice, separated by commas"
-msgstr ""
+msgstr "Masukkan setiap pilihan dipisahkan dengan koma"
 
 #: app/components/Notify.tsx:32
 #: app/components/Notify.tsx:154
 msgid "Error"
-msgstr ""
+msgstr "Eror"
 
 #: app/components/export/ExportDialog.tsx:336
 msgid "Export"
-msgstr ""
+msgstr "Ekspor"
 
 #: app/components/export/ExportDialog.tsx:271
 msgid "Export Project"
-msgstr ""
+msgstr "Ekspor proyek"
 
 #: app/other/menu.ts:137
 msgid "Export Project..."
-msgstr ""
+msgstr "Ekspor proyek..."
 
 #: app/components/export/ExportDialog.tsx:298
 msgid "Exporting..."
-msgstr ""
+msgstr "Mengekspor..."
 
 #: app/components/CustomFieldsTable.tsx:159
 #: app/components/MoreFieldsTable.tsx:44
 msgid "Field"
-msgstr ""
+msgstr "Field"
 
 #: app/components/FolderPane.tsx:442
 #: app/other/menu.ts:120
 msgid "File"
-msgstr ""
+msgstr "File"
 
 #: app/model/file/File.ts:1129
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
-msgstr ""
+msgstr "File locking dapat terjadi ketika pemutar media memegang file video. Ini juga bisa disebabkan oleh program anti-virus atau file sinkronisasi. Jika masalah terus berlanjut, mohon restart lameta dan coba lagi."
 
 #: app/components/import/SpreadsheetImportDialog.tsx:137
 msgid "File to Import:"
-msgstr ""
+msgstr "File untuk Impor:"
 
 #: app/other/menu.ts:162
 msgid "Font Size"
-msgstr ""
+msgstr "Ukuran Font"
 
 #: app/components/registration/RegistrationDialog.tsx:109
 msgid "For a course or workshop"
-msgstr ""
+msgstr "Untuk sebuah kursus atau workshop"
 
 #: app/components/registration/RegistrationDialog.tsx:106
 msgid "For documenting another language"
-msgstr ""
+msgstr "Untuk dokumentasi bahasa lain"
 
 #: app/components/registration/RegistrationDialog.tsx:103
 msgid "For documenting my own language"
-msgstr ""
+msgstr "Untuk dokumentasi bahasa saya"
 
 #: app/components/MediaStats.tsx:68
 #: app/components/MediaStats.tsx:68
