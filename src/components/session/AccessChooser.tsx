@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
-import { Field } from "../../model/field/Field";
+import { Field, IChoice } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-import { translateAccessProtocol } from "../../other/localization";
+import { translateAccessProtocolLabelOrDescription } from "../../other/localization";
 const saymore_orange = "#e69664";
 
 export interface IProps {
@@ -21,17 +21,25 @@ class AccessChooser extends React.Component<
   }
 
   public render() {
-    const options =
-      this.props.authorityLists.accessChoicesOfCurrentProtocol.map((c) => {
+    const options = this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
+      (c: IChoice) => {
+        console.log(
+          `translateAccessProtocol(${c.label})--> ${JSON.stringify(
+            translateAccessProtocolLabelOrDescription(c.label),
+            null,
+            2
+          )}`
+        );
+        const {
+          label,
+          description
+        } = translateAccessProtocolLabelOrDescription(c.label);
         return new Object({
-          value: c.label,
-          label:
-            translateAccessProtocol(c.label) +
-            (c.description.length > 0
-              ? ":  " + c.description // not localized yet
-              : "")
+          value: c.label, // we use english as the value, that's what we store on disk
+          label: description ? `${label}: ${description}` : label
         });
-      });
+      }
+    );
 
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {

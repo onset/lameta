@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------
-  Set up the stuff handled by lingui
+  Set up the stuff handled by lingui  
   ---------------------------------------------------------------------*/
 import { i18n as i18nFromLinguiCore } from "@lingui/core";
 import userSettings from "./UserSettings";
@@ -91,7 +91,9 @@ import fields from "../../locale/fields.csv";
 import choices from "../../locale/choices.csv";
 import roles from "../../locale/roles.csv";
 import genres from "../../locale/genres.csv";
-import accessProtocols from "../../locale/accessProtocols.csv";
+// note: accessProtocols.csv is pretty confusing because it's not the list of choices, but rather a mix
+// of protocol names, choices, and choice descriptions.
+import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import tips from "../../locale/tips.csv"; // tooltips and specialinfo
 
 export function translateFileType(englishTypeName: string): string {
@@ -137,8 +139,31 @@ export function translateSpecialInfo(fieldDef: FieldDefinition): string {
     ? getMatch(tips, fieldDef.specialInfo, "tips.csv")
     : "";
 }
-export function translateAccessProtocol(choice: string): string {
-  return getMatch(accessProtocols, choice, "accessProtocols.csv");
+export function translateAccessProtocolLabelOrDescription(
+  englishLabel: string
+): { label: string; description: string } {
+  // because there is an "ID" but also an "id" (for Indonesian), the loader (dsv at the moment) does this crazy thing to the ID column name
+  const keyForTheIDColumn = '\ufeff"ID"';
+  let labelRow = rawAccessProtocols.find((row) => row["en"] === englishLabel);
+  if (!labelRow) return { label: "", description: "" };
+  const choiceId = labelRow[keyForTheIDColumn];
+  const descriptionRowId = choiceId + ".Description";
+  const descriptionRow = rawAccessProtocols.find(
+    (row) => row[keyForTheIDColumn] === descriptionRowId
+  );
+
+  let description = descriptionRow
+    ? descriptionRow[currentUILanguage] || descriptionRow["en"] || ""
+    : "";
+
+  let label = labelRow[currentUILanguage] || englishLabel;
+
+  // some of the descriptions get translated exaclty the same as the label, which is just noise, so we don't want to show them
+  if (
+    description.toLocaleLowerCase().trim() === label.toLocaleLowerCase().trim()
+  )
+    description = "";
+  return { label, description };
 }
 export function translateChoice(choice: string, fieldName?: string): string {
   return getMatch(choices, choice, "choices.csv", fieldName);
@@ -179,11 +204,11 @@ function getMatch(
     }
   }
 
-  if (match && match[currentUILanguage]) {
-    return match[currentUILanguage];
-  }
+  const currentLanguageWithIndonesianFix =
+    currentUILanguage === "id" ? "indonesian" : currentUILanguage;
+
   // for some reason, crowdin does spanish as "es-ES", but then saves it to "es", so we have this mix
-  else if (match && currentUILanguage === "es" && match["es-ES"]) {
+  if (match && currentUILanguage === "es" && match["es-ES"]) {
     return match["es-ES"];
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);

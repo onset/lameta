@@ -52,17 +52,11 @@ This format uses our own wrapper. Note that you still have to include the commen
 
 `yarn lingui-extract` reads .linguirc to know what files to include. It creates `po` files.
 
-## 2) Upload changes to Crowdin
+## 2) Sync with Crowdin
 
-`yarn crowdin upload` will send everything to Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
+`yarn crowdin:sync` will send everything and pull the translations from Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
 
-## 3) Get translations from Crowdin
-
-`yarn crowdin download`
-
-This will update both the files `lingui` understands (po files), and also the csv files that lameta reads directly.
-
-## 4) Let lingui create its `messages.js` files
+## 3) Let lingui create its `messages.js` files
 
 `yarn lingui-compile`
 
