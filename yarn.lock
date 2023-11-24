@@ -3112,15 +3112,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crowdin/cli@npm:^3.8.1":
-  version: 3.8.1
-  resolution: "@crowdin/cli@npm:3.8.1"
+"@crowdin/cli@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "@crowdin/cli@npm:3.15.0"
   dependencies:
-    njre: ^0.2.0
+    command-exists-promise: ^2.0.2
+    node-fetch: 2.6.7
     shelljs: ^0.8.4
+    tar: ^4.4.8
+    yauzl: ^2.10.0
   bin:
     crowdin: jdeploy-bundle/jdeploy.js
-  checksum: e3068341f4c837570aee7ed2db1086576024803c39666bdfae2a426cc1d9bb7e4b5a9fdd34b1c6123fb9dbb55bce57adf4db24655c7037f41d4ae2b0597db41d
+  checksum: 232f455d9ba44357d8f107ed7471b642e20ae724ebe8ce28175219223225f1c6ca77d7c69b220fe45db7ce1f06774d5d9a5a46100e5aa948a89743ea0eb6b7c1
   languageName: node
   linkType: hard
 
@@ -18831,7 +18834,7 @@ fsevents@^1.2.7:
     "@babel/preset-env": ^7.11.5
     "@babel/preset-react": ^7.10.4
     "@babel/preset-typescript": ^7.10.4
-    "@crowdin/cli": ^3.8.1
+    "@crowdin/cli": ^3.15.0
     "@devexpress/dx-react-core": ^2.7.6
     "@devexpress/dx-react-grid": ^2.7.6
     "@devexpress/dx-react-grid-material-ui": ^2.7.6
@@ -21204,18 +21207,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"njre@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "njre@npm:0.2.0"
-  dependencies:
-    command-exists-promise: ^2.0.2
-    node-fetch: ^2.5.0
-    tar: ^4.4.8
-    yauzl: ^2.10.0
-  checksum: b5ec0e31237ff437956a4390c3bdf63ec3f911e83f6fc671d12448ae053a30546c2e82000d815636b118ff20b71395f97f45cc7c331ba15972b6d45ea678da1d
-  languageName: node
-  linkType: hard
-
 "no-case@npm:^3.0.3":
   version: 3.0.3
   resolution: "no-case@npm:3.0.3"
@@ -21255,17 +21246,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^1.0.1":
-  version: 1.7.3
-  resolution: "node-fetch@npm:1.7.3"
-  dependencies:
-    encoding: ^0.1.11
-    is-stream: ^1.0.1
-  checksum: 3bb0528c05d541316ebe52770d71ee25a6dce334df4231fd55df41a644143e07f068637488c18a5b0c43f05041dbd3346752f9e19b50df50569a802484544d5b
-  languageName: node
-  linkType: hard
-
-"node-fetch@npm:^2.5.0, node-fetch@npm:^2.6.7, node-fetch@npm:^2.x.x":
+"node-fetch@npm:2.6.7, node-fetch@npm:^2.6.7, node-fetch@npm:^2.x.x":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
   dependencies:
@@ -21276,6 +21257,16 @@ fsevents@^1.2.7:
     encoding:
       optional: true
   checksum: 8d816ffd1ee22cab8301c7756ef04f3437f18dace86a1dae22cf81db8ef29c0bf6655f3215cb0cdb22b420b6fe141e64b26905e7f33f9377a7fa59135ea3e10b
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^1.0.1":
+  version: 1.7.3
+  resolution: "node-fetch@npm:1.7.3"
+  dependencies:
+    encoding: ^0.1.11
+    is-stream: ^1.0.1
+  checksum: 3bb0528c05d541316ebe52770d71ee25a6dce334df4231fd55df41a644143e07f068637488c18a5b0c43f05041dbd3346752f9e19b50df50569a802484544d5b
   languageName: node
   linkType: hard
 
