@@ -1,4 +1,6 @@
+import { css } from "@emotion/react";
 import * as React from "react";
+import ReactMarkdown from "react-markdown";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
@@ -40,9 +42,9 @@ interface IProps {
 class AccessProtocolForm extends React.Component<IProps> {
   public render() {
     const protocol = this.props.protocolField.text.toLowerCase();
-    let documentationHtml = doc.getValue(protocol);
-    if (documentationHtml === undefined) {
-      documentationHtml = ""; // will be empty for CUSTOM
+    let documentationMarkdown = doc.getValue(protocol);
+    if (documentationMarkdown === undefined) {
+      documentationMarkdown = ""; // will be empty for CUSTOM
     }
     const customStuff =
       protocol === "custom" ? (
@@ -58,9 +60,25 @@ class AccessProtocolForm extends React.Component<IProps> {
       ) : undefined;
 
     return (
-      <div className={"field access-protocol"}>
-        <label>{this.props.protocolField.labelInUILanguage} </label>
-        <div className={"controls"}>
+      <div
+        css={css`
+          display: flex;
+          flex-direction: row;
+        `}
+      >
+        <label
+          css={css`
+            width: 120px;
+            min-width: 120px;
+          `}
+        >
+          {this.props.protocolField.labelInUILanguage}{" "}
+        </label>
+        <div
+          css={css`
+            margin-left: 20px;
+          `}
+        >
           <select
             name={this.props.protocolField.labelInUILanguage} //what does this do? Maybe accessibility?
             value={this.props.protocolField.text}
@@ -80,10 +98,20 @@ class AccessProtocolForm extends React.Component<IProps> {
               {"Custom"}
             </option>
           </select>
-          <div
-            className={"protocol-documentation"}
-            dangerouslySetInnerHTML={{ __html: documentationHtml }}
+
+          <ReactMarkdown
+            // note: the gfm plugin actually did worse that standard... it turned 2nd level bullets into <pre>
+            css={css`
+              max-width: 400px;
+              h1 {
+                font-size: 1em;
+                font-weight: 700;
+                margin-top: 1em;
+              }
+            `}
+            children={documentationMarkdown}
           />
+
           {customStuff}
         </div>
       </div>
