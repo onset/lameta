@@ -17,6 +17,7 @@ or
 or
 
 ```ts
+import { t } from "@lingui/macro";
 t`A simple string using the t macro`;
 ```
 
