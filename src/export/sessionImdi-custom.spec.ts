@@ -84,6 +84,18 @@ describe("session imdi export", () => {
     expect(count(`//Resources/WrittenResource/Access`)).toBe(1);
     expect(`//Resources/WrittenResource/Access/Availability`).toMatch("");
   });
+  it("should not include Notes in the Keys", () => {
+    session.properties.setText("notes", "We shared red hots.");
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect("//Content/Keys/Key[@Name='Notes']").toNotExist();
+  });
 });
 
 function randomFileName() {

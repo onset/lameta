@@ -409,6 +409,7 @@ export default class ImdiGenerator {
       "size",
       "contributions",
       "access",
+      "notes", // ELAR says not to export Notes to IMDI
       "accessDescription" // output by addAccess()
     ];
     if (target instanceof Person) {
