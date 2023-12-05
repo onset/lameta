@@ -1,10 +1,9 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-// tslint:disable-next-line:no-submodule-imports
 import DatePicker from "react-datepicker";
-import { Moment } from "moment";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 import { Field } from "../model/field/Field";
-const moment = require("moment");
 
 export interface IProps {
   field: Field;
@@ -20,7 +19,7 @@ DateFieldEdit extends React.Component<
 
   public render() {
     const label: string = this.props.field.labelInUILanguage;
-    const m: Moment = this.props.field.text
+    const m: moment.Moment | null = this.props.field.text
       ? moment(this.props.field.text)
       : null;
     return (
@@ -31,16 +30,13 @@ DateFieldEdit extends React.Component<
           <DatePicker
             tabIndex={this.props.tabIndex}
             className="date-picker"
-            dateFormat="YYYY-MM-DD"
-            selected={m}
+            dateFormat="yyyy-MM-dd"
+            selected={m?.toDate()}
             //onChange={d => console.log("change " + d)}
             onChange={(newDate) => {
               if (newDate != null) {
                 // TODO: while this is changing the value, it's not propagating back to our props so you don't see the change immediately
-                const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
-                this.props.field.setValueFromString(
-                  newDate.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT)
-                );
+                this.props.field.setValueFromString(newDate.toISOString());
               }
             }}
           />
