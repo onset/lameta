@@ -65,7 +65,7 @@ export class Person extends Folder {
 
     const renamedPhotoPath = this.filePrefix + "_Photo" + Path.extname(path);
 
-    return this.copyInOneFile(path, renamedPhotoPath);
+    return this.copyInOneFileAsync(path, renamedPhotoPath);
   }
 
   public get displayName(): string {

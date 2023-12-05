@@ -47,18 +47,11 @@ describe("Consent Form Inclusion", () => {
   });
   it("The consent form dummy session to look reasonable", () => {
     expect(count("METATRANSCRIPT")).toBe(1);
-    expect("METATRANSCRIPT/Session/Name").toMatch(
-      "Edolo Sample consent documents"
-    );
+    expect("METATRANSCRIPT/Session/Name").toMatch("ConsentDocuments"); // Notion #241
   });
 
   it("should contain Content", () => {
-    expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch(
-      "Secondary Document"
-    );
-    expect("METATRANSCRIPT/Session/MDGroup/Content/SubGenre").toMatch(
-      "Consent Forms"
-    );
+    expect("METATRANSCRIPT/Session/MDGroup/Content/Genre").toMatch("Consent");
   });
   it("should contain Actors", () => {
     // should have one entry for Awi, one for Ilawi. Should not include Hatton, because we do not have consent for him.

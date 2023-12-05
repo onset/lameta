@@ -13,15 +13,15 @@ const targetDir = temp.mkdirSync("lameta imdi bundler test output");
 beforeAll(async () => {
   temp.track();
   project = Project.fromDirectory(projectDir);
-  project.descriptionFolder.addFileForTest("test.txt");
-  project.otherDocsFolder.addFileForTest("test.txt");
+  await project.descriptionFolder.addFileForTestAsync("test.txt");
+  await project.otherDocsFolder.addFileForTestAsync("test.txt");
   project.addSession();
   try {
     await ImdiBundler.saveImdiBundleToFolder(
       project,
       targetDir,
       IMDIMode.OPEX,
-      false,
+      true,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (f) => true
     );
@@ -74,6 +74,31 @@ describe("opex file placement", () => {
       projectName,
       "New Session",
       "New_Session.opex"
+    );
+    expect(fs.existsSync(p)).toBe(true);
+  });
+
+  it("should have a ConsentDocuments folder", () => {
+    // console.log("targetDir: " + targetDir);
+    // // list all the files and directories in targetDir directory to the console
+    // fs.readdirSync(targetDir).forEach((file) => {
+    //   console.log(" /" + file);
+    // });
+    // console.log("target/project ");
+    // // list all the files and directories in targetDir directory to the console
+    // fs.readdirSync(Path.join(targetDir, projectName)).forEach((file) => {
+    //   console.log(" /" + file);
+    // });
+
+    const p = Path.join(targetDir, projectName, "ConsentDocuments");
+    expect(fs.existsSync(p)).toBe(true);
+  });
+  it("should have an imdi file in the ConsentDocuments folder", () => {
+    const p = Path.join(
+      targetDir,
+      projectName,
+      "ConsentDocuments",
+      "ConsentDocuments.opex"
     );
     expect(fs.existsSync(p)).toBe(true);
   });

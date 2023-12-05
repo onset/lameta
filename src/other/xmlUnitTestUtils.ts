@@ -79,7 +79,7 @@ expect.extend({
   toMatch(xpath: string, expectedValue: string | RegExp) {
     const hits = select(xpath);
     if (!hits || hits.length === 0) {
-      //console.log(resultXml);
+      console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to be '${expectedValue}' but that xpath did not match anything`,
@@ -176,6 +176,7 @@ expect.extend({
     const xml = hits
       .map((node) => new XMLSerializer().serializeToString(node))
       .join(",");
+    console.log(resultXml);
     return {
       message: () => `expected ${xpath} to not exist. Found: ${xml}`,
       pass: false

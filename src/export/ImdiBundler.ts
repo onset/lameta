@@ -362,10 +362,10 @@ export default class ImdiBundler {
 
     // simpler: for each person, for each document, if it is marked as consent,
     //   copy it in for now, we're simply finding all files with the right
-    //   pattern and copying them in, where ever they are.
+    //   pattern and copying them in, whereever they are.
 
     // TODO: this doesn't take the folderFilter into consideration. Can we do it in addDummyFileForConsentActors() where
-    // we are already doint that filtering?
+    // we are already doing that filtering?
     // const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
 
     // filePaths.forEach((path) => {
@@ -383,10 +383,7 @@ export default class ImdiBundler {
       "date",
       moment(new Date()).format("YYYY-MM-DD") // date is the date exported, i.e., today
     );
-    dummySession.properties.setText(
-      "id",
-      project.displayName + " consent documents"
-    );
+    dummySession.properties.setText("id", "ConsentDocuments");
     dummySession.properties.setText(
       "title",
       `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty(
@@ -397,8 +394,14 @@ export default class ImdiBundler {
       "description",
       `This bundle contains media demonstrating informed consent for sessions in this bundle.`
     );
-    dummySession.properties.setText("genre", "Secondary document");
-    dummySession.properties.setText("subgenre", "Consent forms");
+    dummySession.properties.setText("genre", "Consent"); // per Notion #241
+
+    // We could eventually gain knowledge of what other archives
+    // would want, but for now we just know tha ELAR wants this on consent bundles.
+    if (project.properties.getTextStringOrEmpty("accessProtocol") === "ELAR") {
+      dummySession.properties.setText("access", "S");
+      dummySession.properties.setText("accessDescription", "Consent documents"); // per Notion #241
+    }
 
     ImdiBundler.addDummyFileForConsentActors(
       project,
@@ -413,8 +416,8 @@ export default class ImdiBundler {
       project,
       omitNamespaces
     );
-    this.validateImdiOrThrow(imdiXml, dummySession.displayName);
-    await this.validateImdiOrThrow(imdiXml);
+
+    await this.validateImdiOrThrow(imdiXml, dummySession.displayName);
     //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
     ImdiBundler.WritePseudoSession(
@@ -476,7 +479,7 @@ export default class ImdiBundler {
         if (p) {
           const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
           // only add if it has at least one consent file
-          if (consentFiles) {
+          if (consentFiles && consentFiles.length > 0) {
             // only add each person once (or once for each unique role?)
             if (
               !dummyFileForActors.contributions.find(
@@ -488,7 +491,7 @@ export default class ImdiBundler {
 
               // copy over the actual consent files
               consentFiles.forEach((file) => {
-                // this should be rare, but someone might place a consent file with the name in more than one place in the project
+                // note, it should be rare, but someone might place a consent file with the name in more than one place in the project
                 // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
                 dummySession.copyInOneProjectFileIfNotThereAlready(
                   file,

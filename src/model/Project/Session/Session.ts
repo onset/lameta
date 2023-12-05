@@ -151,6 +151,10 @@ export class Session extends Folder {
     this.properties.removeProperty("participants");
   }
 
+  public addContribution(contribution: Contribution) {
+    this.metadataFile!.contributions.push(contribution);
+  }
+
   // override
   protected textValueThatControlsFolderName(): string {
     return this.properties.getTextStringOrEmpty("id").trim();

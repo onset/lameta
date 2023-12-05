@@ -33,7 +33,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
-  const projectDir = temp.mkdirSync("lameta imdi session generator test");
+  const projectDir = temp.mkdirSync("lameta imdi actor generator test");
   project = Project.fromDirectory(projectDir);
   person = project.addPerson();
   generator = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);

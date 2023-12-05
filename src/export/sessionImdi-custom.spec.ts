@@ -12,13 +12,13 @@ import temp from "temp";
 let project: Project;
 let session: Session;
 const projectDir = temp.mkdirSync("lameta imdi session generator test");
-beforeAll(() => {
+beforeAll(async () => {
   temp.track();
   project = Project.fromDirectory(projectDir);
-  project.descriptionFolder.addFileForTest(randomFileName());
-  project.otherDocsFolder.addFileForTest(randomFileName());
+  await project.descriptionFolder.addFileForTestAsync(randomFileName());
+  await project.otherDocsFolder.addFileForTestAsync(randomFileName());
   session = project.addSession();
-  session.addFileForTest(randomFileName());
+  session.addFileForTestAsync(randomFileName());
 });
 afterAll(() => {
   temp.cleanupSync();

@@ -18,7 +18,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
-      "warning"
+      "warn"
     ]
     // these are commented out because they require the "parserOptions" which in turn makes linting glacially slow
     // They didn't seem to catch the errors I wanted them to catch.

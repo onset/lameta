@@ -166,6 +166,13 @@ export abstract class Folder {
     if (fs.existsSync(destPath)) {
       return;
     }
+
+    // just for unit tests
+    if (!fs.existsSync(sourceFile.pathInFolderToLinkFileOrLocalCopy))
+      throw new Error(
+        `copyInOneProjectFileIfNotThereAlready ${sourceFile.pathInFolderToLinkFileOrLocalCopy} doesn't exist.`
+      );
+
     // note, I can't think of how the .meta file of the consent could be helpful, so
     // I'm not bothering to get it copied, or its contents preserved, except for size.
     fs.copyFileSync(sourceFile.pathInFolderToLinkFileOrLocalCopy, destPath);
@@ -174,14 +181,14 @@ export abstract class Folder {
     this.files.push(destFile);
   }
 
-  public addFileForTest(name: string) {
+  public async addFileForTestAsync(name: string) {
     const dir = temp.mkdirSync("lameta-folder-temp-for-test");
     const path = Path.join(dir, name);
     fs.writeFileSync(path, "test");
-    this.copyInOneFile(path);
+    await this.copyInOneFileAsync(path);
   }
 
-  public copyInOneFile(
+  public copyInOneFileAsync(
     pathToOriginalFile: string,
     newFileName?: string
   ): Promise<void> {
@@ -279,7 +286,7 @@ export abstract class Folder {
 
     runInAction(() => {
       paths.forEach((p: string) => {
-        this.copyInOneFile(p);
+        this.copyInOneFileAsync(p);
       });
     });
   }

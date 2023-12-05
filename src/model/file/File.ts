@@ -360,9 +360,13 @@ export /*babel doesn't like this: abstract*/ class File {
   // Meanwhile a file in a Session will be listed as mysession/thefile instead
   // of either ./thefile or bundleroot/myproject/mysession/thefile, both of which would be better.
   public getRelativePathForExportingTheActualFile(): string {
+    let dir = Path.dirname(this.pathInFolderToLinkFileOrLocalCopy);
+    if (dir.indexOf("ConsentBundle") > -1) {
+      dir = "ConsentDocuments"; // per notion #241
+    }
     return Path.join(
       // folder name, e.g. "ETR009/"
-      Path.basename(Path.dirname(this.pathInFolderToLinkFileOrLocalCopy)),
+      Path.basename(dir),
       // file name
       this.getNameToUseWhenExportingUsingTheActualFile()
     ).replace(/\\/g, "/");
