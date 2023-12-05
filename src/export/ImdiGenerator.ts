@@ -4,7 +4,7 @@ import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
-const moment = require("moment");
+import moment from "moment";
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
@@ -401,7 +401,7 @@ export default class ImdiGenerator {
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
   // Used for session, person, media file (and many other places, in the schema, but those are the places that saymore currently lets you add custom things)
   private addCustomKeys(target: File | Folder, moreKeys?: any[]) {
-    let blacklist = [
+    const blacklist = [
       "modifiedDate",
       "displayName",
       "type",
@@ -811,7 +811,7 @@ export default class ImdiGenerator {
       If the exact age is not known, it is nevertheless useful to enter an approximate age. This will allow you later to 
       conduct searches on all actors who are in the age range between, e.g., 20 and 30 years of age.
       */
-      const dateToCompareWith = referenceDate ? referenceDate : moment.today;
+      const dateToCompareWith = referenceDate ? referenceDate : undefined;
 
       const birthYear = person.properties.getTextStringOrEmpty("birthYear");
       if (birthYear === "?") {
