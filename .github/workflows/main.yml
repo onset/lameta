@@ -19,15 +19,13 @@ jobs:
         os: [windows-latest, macos-latest]
 
     steps:
+      - uses: volta-cli/action@v4 # get the yarn and node that is specified in package.json
+
       - name: Check out Git repository
         uses: actions/checkout@v3
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v3
-        # remember to keep this in sync with package.json "engines"
-        with:
-          node-version: 18
-          cache: "yarn" # I always get 'yarn cache is not found' but ah well
 
         # it's ok that we initially check in the test key in intentionally, but now we just list both in this secret ("testKey,projectionkey")
       - name: Write out segment key
