@@ -4,6 +4,7 @@ import uuid from "uuid";
 import { observable, computed, makeObservable } from "mobx";
 import React from "react";
 import pkg from "package.json";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 class FakeStore {
   private values = {};
@@ -42,8 +43,14 @@ export class UserSettings {
       HowUsing: computed
     });
 
-    const E2E_USER_SETTINGS_STORE_NAME =
-      process["env"]["E2E_USER_SETTINGS_STORE_NAME"]; // This is instead of process.env... because vite replaces that with ({}). Bad vite!
+    // NB: something really strange happened here; if we access process here directly, it doesn't get the name.
+    //     const E2E_USER_SETTINGS_STORE_NAME = process["env"]["E2E_USER_SETTINGS_STORE_NAME"];
+    // Also, if we copy getTestEnvironment() into this file, it doesn't work.
+    // Only works if we call from the other file. As if that file is in a different module with different acces to process.env.
+    // We know that vite is vicious about breaking process.env, so it has to be something to do with that.
+    const E2E_USER_SETTINGS_STORE_NAME = getTestEnvironment()
+      .E2E_USER_SETTINGS_STORE_NAME;
+
     this.store =
       process.env.NODE_ENV === "test" || E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
