@@ -47,10 +47,21 @@ If you see something like `TypeError: beforeAll is not a function`, that is caus
 
 ### e2e tests
 
-Now using [playwright](https://playwright.dev/)
+We are using [playwright](https://playwright.dev/) with "experimental electron support". As of this writing it does not appear to be possible to make use of the vite dev server for this. While playwright can point to an
+arbitrary URL, the render process in electron is tied up with its own chromium browser and, in the case of electron, even has nodejs access. Therefore, e2e tests have to actually
+run a built exe of lameta.
 
 ```bash
+yarn vite build --watch
 yarn e2e
+```
+
+Note that at the time of this writing, playwright does not have a "watch" mode via command line, and the "ui" mode, which can watch, does not work with electron.
+
+To run just one e2e fixture, name it:
+
+```bash
+yarn e2e registration.e2e.ts
 ```
 
 (TODO: There are still old spectron tests around, these need to get cleared out.)
