@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
 
         # it's ok that we initially check in the test key in intentionally, but now we just list both in this secret ("testKey,projectionkey")
       - name: Write out segment key
