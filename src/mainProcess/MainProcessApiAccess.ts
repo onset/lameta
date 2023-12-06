@@ -11,9 +11,10 @@ let mainProcessApi: MainProcessApi;
 
 // This shouldn't be needed, since there is a mock in __mocks__. But that isn't working at the moment.
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
-  mainProcessApi = await import("./__mocks__/MainProcessApiAccess").then(
-    (m) => (m.MainProcessApi as unknown) as MainProcessApi
-  );
+  import("./__mocks__/MainProcessApiAccess").then((m) => {
+    // NB: don't try to use await here, it is currently breaking vite build
+    mainProcessApi = (m as unknown) as any;
+  });
 } else {
   mainProcessApi = call.use<MainProcessApi>("MainProcessApi");
 }
