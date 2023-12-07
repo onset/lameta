@@ -12884,17 +12884,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-notarize@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "electron-notarize@npm:0.1.1"
-  dependencies:
-    debug: ^4.1.1
-    fs-extra: ^8.0.1
-  checksum: 344ee90c2a6401775315e3f46484c5a834db80b4889e093323a2e3ae706b1304a4269fa92bd2eb671a452a1436d6deba1d0ed8761cd327516f597d3aa169b231
-  languageName: node
-  linkType: hard
-
-"electron-notarize@npm:^1.1.1":
+"electron-notarize@npm:^1.1.1, electron-notarize@npm:^1.2.2":
   version: 1.2.2
   resolution: "electron-notarize@npm:1.2.2"
   dependencies:
@@ -15017,7 +15007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^8.0.1, fs-extra@npm:^8.1.0":
+"fs-extra@npm:^8.1.0":
   version: 8.1.0
   resolution: "fs-extra@npm:8.1.0"
   dependencies:
@@ -18944,7 +18934,7 @@ fsevents@^1.2.7:
     electron-devtools-installer: ^3.2.0
     electron-is-dev: ^0.3.0
     electron-log: ^4.4.8
-    electron-notarize: ^0.1.1
+    electron-notarize: ^1.2.2
     electron-playwright-helpers: ^1.5.4
     electron-store: 8.1.0
     enzyme: ^3.0.0
