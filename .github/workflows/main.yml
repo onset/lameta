@@ -36,7 +36,7 @@ jobs:
           echo "$SEGMENT_API" > ./assets/.segment
         shell: bash
 
-      - name: Prepare for app notarization (macOS)
+      - name: Prepare for app notarization (macOS) # REVIEW: this may not be used anymore with the switch from altool to notarize
         if: startsWith(matrix.os, 'macos')
         # Import Apple API key for app notarization on macOS
         run: |
@@ -48,8 +48,8 @@ jobs:
         #if: startsWith(github.ref, 'refs/tags/v')
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
-          mac_certs: ${{ secrets.mac_certs }}
-          mac_certs_password: ${{ secrets.mac_certs_password }}
+          #mac_certs: ${{ secrets.mac_certs }}
+          #mac_certs_password: ${{ secrets.mac_certs_password }}
 
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
@@ -59,13 +59,12 @@ jobs:
           # release the app after building
           release: true # ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
-          # macOS notarization API key
-          # See https://github.com/marketplace/actions/electron-builder-action for a description of all the repository:settings secrets this is using.
-          # API_KEY_ID: ${{ secrets.api_key_id }}
-          # API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
-          appleId: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}} #electron-notarize
           APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD}}
+          CSC_LINK: ${{ secrets.PROD_MACOS_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
+          APPLEID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
+          APPLEIDPASS: ${{ secrets.APPLE_ID_PASS }}
           in_github_action: "true"
 
       - name: Make new release on Sentry
