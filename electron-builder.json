@@ -50,7 +50,10 @@
         "name": "lameta/saymore project",
         "role": "Editor"
       }
-    ]
+    ],
+    "notarize": {
+      "teamId": "6VW9W5DFMP"
+    }
   },
   "linux": {
     "target": ["deb", "AppImage"],

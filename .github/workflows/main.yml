@@ -50,6 +50,7 @@ jobs:
         with:
           mac_certs: ${{ secrets.mac_certs }}
           mac_certs_password: ${{ secrets.mac_certs_password }}
+
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.github_token }}
@@ -60,8 +61,11 @@ jobs:
         env:
           # macOS notarization API key
           # See https://github.com/marketplace/actions/electron-builder-action for a description of all the repository:settings secrets this is using.
-          API_KEY_ID: ${{ secrets.api_key_id }}
-          API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
+          # API_KEY_ID: ${{ secrets.api_key_id }}
+          # API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
+          appleId: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}} #electron-notarize
+          APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD}}
           in_github_action: "true"
 
       - name: Make new release on Sentry
