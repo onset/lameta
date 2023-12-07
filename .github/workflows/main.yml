@@ -64,7 +64,8 @@ jobs:
           CSC_LINK: ${{ secrets.PROD_MACOS_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
           APPLEID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
-          APPLEIDPASS: ${{ secrets.APPLE_ID_PASS }}
+          appleIdPassword: ${{ secrets.APPLEIDPASS }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false # not totally sure about htis, but it doesn't seem CI friendly
           in_github_action: "true"
 
       - name: Make new release on Sentry
