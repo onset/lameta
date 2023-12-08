@@ -72,7 +72,8 @@ jobs:
           APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }} # this is the "app-specific password", not the account password
           APPLE_TEAM_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}
-
+          # got an error specifically asking for this
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }}
       - name: Make new release on Sentry
         env:
           LAMETA_SENTRY_AUTH_TOKEN: ${{ secrets.LAMETA_SENTRY_AUTH_TOKEN }}
