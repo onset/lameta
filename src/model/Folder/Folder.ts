@@ -280,13 +280,13 @@ export abstract class Folder {
     });
   }
 
-  public copyInFiles(paths: string[]) {
+  public async copyInFiles(paths: string[]) {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
 
-    runInAction(() => {
-      paths.forEach((p: string) => {
-        this.copyInOneFileAsync(p);
+    await runInAction(async () => {
+      await paths.forEach(async (p: string) => {
+        await this.copyInOneFileAsync(p);
       });
     });
   }

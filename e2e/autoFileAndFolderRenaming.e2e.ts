@@ -40,15 +40,17 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Paul Hewson");
-    await fileList.addFile("Paul Hewson_foo.txt");
+
     const original = Path.join(
       project.projectDirectory,
       "People",
       "Paul Hewson",
       "Paul Hewson_foo.txt"
     );
+    await fileList.addFile("Paul Hewson_foo.txt", page, original);
     await expectFileNameInGrid("Paul Hewson_foo.txt");
-    expect(
+
+    await expect(
       fs.existsSync(original),
       `Expected to find ${original}`
     ).toBeTruthy();

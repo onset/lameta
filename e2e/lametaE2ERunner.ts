@@ -80,10 +80,7 @@ export class LametaE2ERunner {
 
   public async mockShowOpenDialog(pathsToReturn: string[]) {
     return await this.electronApp.evaluate(async ({ dialog }, filePaths) => {
-      dialog.showOpenDialog = () => {
-        // dialog.showMessageBoxSync({
-        //   message: `mockShowOpenDialog(${JSON.stringify(filePaths)})`
-        // });
+      dialog.showOpenDialog = async () => {
         return Promise.resolve({ canceled: false, filePaths });
       };
     }, pathsToReturn);

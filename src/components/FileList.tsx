@@ -183,7 +183,7 @@ export const _FileList: React.FunctionComponent<{
           : null}
         <button
           className={"cmd-add-files"}
-          onClick={() => showAddFilesDialog(props.folder)}
+          onClick={async () => await showAddFilesDialog(props.folder)}
         >
           <Trans> Add Files</Trans>
         </button>
@@ -326,15 +326,14 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-function showAddFilesDialog(folder: Folder) {
+async function showAddFilesDialog(folder: Folder) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"]
   };
-  ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-    if (result && result.filePaths && result.filePaths.length > 0) {
-      addFiles(folder, result.filePaths);
-    }
-  });
+  const result = await ipcRenderer.invoke("showOpenDialog", options);
+  if (result && result.filePaths && result.filePaths.length > 0) {
+    await addFiles(folder, result.filePaths);
+  }
 }
 
 function addFiles(folder: Folder, paths: string[]) {
