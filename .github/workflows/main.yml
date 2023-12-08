@@ -20,6 +20,7 @@ jobs:
 
     steps:
       - name: Sync clock (see https://github.com/actions/runner/issues/2996)
+        if: startsWith(matrix.os, 'macos') # in dec 2023, github action macs were having trouble with time
         run: sudo sntp -sS time.windows.com
 
       - uses: volta-cli/action@v4 # get the yarn and node that is specified in package.json
