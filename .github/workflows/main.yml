@@ -19,6 +19,9 @@ jobs:
         os: [windows-latest, macos-latest]
 
     steps:
+      - name: Sync clock (see https://github.com/actions/runner/issues/2996)
+        run: sudo sntp -sS time.windows.com
+
       - uses: volta-cli/action@v4 # get the yarn and node that is specified in package.json
 
       - name: Check out Git repository
@@ -59,14 +62,16 @@ jobs:
           # release the app after building
           release: true # ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
-          APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD}}
           CSC_LINK: ${{ secrets.PROD_MACOS_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
+          # it's not clear which of these are used I see both in other people's yml
           APPLEID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
-          appleIdPassword: ${{ secrets.APPLEIDPASS }}
-          CSC_IDENTITY_AUTO_DISCOVERY: false # not totally sure about htis, but it doesn't seem CI friendly
-          in_github_action: "true"
+          APPLEIDPASS: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }} # this is the "app-specific password", not the account password
+          APPLETEAMID: ${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}
+          # These underline versions from https://github.com/karaggeorge/electron-builder-notarize
+          APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }} # this is the "app-specific password", not the account password
+          APPLE_TEAM_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}
 
       - name: Make new release on Sentry
         env:
