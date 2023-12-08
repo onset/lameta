@@ -1,5 +1,6 @@
 import * as Path from "path";
 import * as fs from "fs-extra";
+import * as remote from "@electron/remote";
 
 // Find a file or directory that is part of the distribution.
 // The path will vary when we're running from source vs in an asar-packaged mac app.
@@ -54,7 +55,11 @@ export function locateWithApp(appPath: string, relativePath: string): string {
   // );
 
   try {
-    const result = fs.realpathSync(adjustedPath);
+    let result = fs.realpathSync(adjustedPath);
+    // if we're running on a mac
+    if (process.platform === "darwin") {
+      result = result.replace(appPath, "");
+    }
     //console.log(`locate(${path})  result= ${result}`);
     fileLocationCache.set(relativePath, result);
     return result;

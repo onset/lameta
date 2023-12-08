@@ -23,6 +23,7 @@ Install node & yarn then
 
 ```bash
 yarn
+yarn build  <-- just once, before dev will work
 yarn dev
 ```
 
@@ -47,7 +48,7 @@ If you see something like `TypeError: beforeAll is not a function`, that is caus
 
 ### e2e tests
 
-We are using [playwright](https://playwright.dev/) with "experimental electron support". As of this writing it does not appear to be possible to make use of the vite dev server for this. While playwright can point to an
+We are using [playwright](https://playwright.dev/) with "experimental electron support". As of this writing, it does not appear to be possible to make use of the vite dev server for this. While playwright can point to an
 arbitrary URL, the render process in electron is tied up with its own chromium browser and, in the case of electron, even has nodejs access. Therefore, e2e tests have to actually
 run a built exe of lameta.
 
