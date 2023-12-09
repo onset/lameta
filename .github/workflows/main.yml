@@ -28,7 +28,9 @@ jobs:
 
       - name: Install Node.js, NPM and Yarn as specified in package.json
         uses: volta-cli/action@v4
-      - run: yarn install --frozen-lockfile
+      # install here may be breaking the macos run somehow. if this doesn'
+      # work, re-add       - name: Install Node.js, NPM and Yarn  #  uses: actions/setup-node@v4
+      #  - run: yarn install --frozen-lockfile
 
       - name: Write out segment key
         env:
