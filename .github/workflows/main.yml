@@ -23,15 +23,13 @@ jobs:
         if: startsWith(matrix.os, 'macos') # in dec 2023, github action macs were having trouble with time
         run: sudo sntp -sS time.windows.com
 
-      - uses: volta-cli/action@v4 # get the yarn and node that is specified in package.json
-
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v4
+      - name: Install Node.js, NPM and Yarn as specified in package.json
+        uses: volta-cli/action@v4
+      - run: yarn install --frozen-lockfile
 
-        # it's ok that we initially check in the test key in intentionally, but now we just list both in this secret ("testKey,projectionkey")
       - name: Write out segment key
         env:
           SEGMENT_API: ${{ secrets.SEGMENT_API }}
@@ -52,9 +50,6 @@ jobs:
         #if: startsWith(github.ref, 'refs/tags/v')
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
-          #mac_certs: ${{ secrets.mac_certs }}
-          #mac_certs_password: ${{ secrets.mac_certs_password }}
-
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.github_token }}
