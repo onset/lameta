@@ -241,7 +241,6 @@
     "sentence-case": "^3.0.3",
     "source-map-support": "^0.5.0",
     "spark-md5": "^3.0.2",
-    "spectron-menu-addon": "^0.3.3",
     "temp": "^0.9.4",
     "title-case": "^4.1.2",
     "trie-search": "^1.2.8",

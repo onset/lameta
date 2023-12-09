@@ -18285,7 +18285,6 @@ fsevents@^1.2.7:
     sinon: ^4.0.0
     source-map-support: ^0.5.0
     spark-md5: ^3.0.2
-    spectron-menu-addon: ^0.3.3
     temp: ^0.9.4
     title-case: ^4.1.2
     trie-search: ^1.2.8
@@ -24940,16 +24939,6 @@ fsevents@^1.2.7:
   version: 3.0.5
   resolution: "spdx-license-ids@npm:3.0.5"
   checksum: b1ceea3f87407ec375d1de90f6fc7610d6c845ff5f8db21d4d752b3d4e121df563c78113df7c564daff4e8778ad54b9a9024a7e9ea3779f13a43dd0e9128c08e
-  languageName: node
-  linkType: hard
-
-"spectron-menu-addon@npm:^0.3.3":
-  version: 0.3.3
-  resolution: "spectron-menu-addon@npm:0.3.3"
-  peerDependencies:
-    electron: ^1.7.11
-    spectron: ^3.7.2
-  checksum: 215128f878b75afc475d1906b4e80c10869f9ee3bf1ceb0e881741430acf8bfb4ddbe281013b752b424952bba5925209d89aaa6473c983eb10c133d4c33acf12
   languageName: node
   linkType: hard
 
