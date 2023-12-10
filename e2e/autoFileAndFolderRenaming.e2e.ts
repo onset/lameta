@@ -47,7 +47,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
       "Paul Hewson",
       "Paul Hewson_foo.txt"
     );
-    await fileList.addFile("Paul Hewson_foo.txt", page, original);
+    await fileList.addFile("Paul Hewson_foo.txt", { page, path: original });
     await expectFileNameInGrid("Paul Hewson_foo.txt");
 
     await expect(

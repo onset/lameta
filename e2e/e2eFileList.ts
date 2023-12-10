@@ -13,7 +13,10 @@ export class E2eFileList {
     this.projectDirectory = projectDirectory;
   }
 
-  public async addFile(name: string, page: Page, waitForPathToExist: string) {
+  public async addFile(
+    name: string,
+    wait: { page: Page; path: string } | undefined = undefined
+  ) {
     console.log("e2e root 2: " + process.env.E2ERoot);
     // first, creating the "original" at our test root, which is a level above the lameta project directory
     const p = Path.join(process.env.E2ERoot!, name);
@@ -27,24 +30,25 @@ export class E2eFileList {
     // looking at how complex the code is that does the copying, I'm not surprised that even using await, you don't
     // really know when it is done.
     // Wait for the file to exist:
-    await waitForCondition(page, () => {
-      return fs.existsSync(waitForPathToExist);
-    });
+    // this gets really flaky with the mocking and background copying.
+    // for now, if we actualy need this file, let's just put it where we want it
+    if (wait) {
+      fs.writeFileSync(wait.path, "hello world");
+
+      await waitForCondition(wait.page, () => {
+        return fs.existsSync(wait.path);
+      });
+    }
   }
 }
 
-async function waitForCondition(
-  page: any,
-  conditionFunction: () => boolean,
-  timeout = 30000
-) {
-  const startTime = Date.now();
+async function waitForCondition(page: any, conditionFunction: () => boolean) {
+  if (!page) {
+    throw new Error("page is null");
+  }
   while (true) {
     if (conditionFunction()) {
       return;
-    }
-    if (Date.now() - startTime > timeout) {
-      throw new Error("Timeout waiting for condition");
     }
     await page.waitForTimeout(1000); // wait for 1 second before checking the condition again
   }

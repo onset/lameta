@@ -23,7 +23,7 @@ test.describe("FileList", () => {
     await project.goToSessions();
     await project.addSession();
 
-    await fileList.addFile("foo.txt", page);
+    await fileList.addFile("foo.txt");
 
     const match = () => page.getByRole("gridcell", { name: "foo.txt" });
     await expect(match()).toBeVisible();
