@@ -17,7 +17,7 @@ test.describe("Import Session", () => {
     project = await createNewProject(lameta, "Import Session");
   });
   test.afterAll(async ({}) => {
-    lameta.quit();
+    await lameta.quit();
   });
   test("Smoke test", async ({}, testInfo) => {
     await project.goToSessions();

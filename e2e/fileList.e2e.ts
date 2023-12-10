@@ -17,12 +17,13 @@ test.describe("FileList", () => {
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
   test.afterAll(async ({}) => {
-    lameta.quit();
+    await lameta.quit();
   });
   test("after adding a file, it shows in the list", async ({}, testInfo) => {
     await project.goToSessions();
     await project.addSession();
-    await fileList.addFile("foo.txt");
+
+    await fileList.addFile("foo.txt", page);
 
     const match = () => page.getByRole("gridcell", { name: "foo.txt" });
     await expect(match()).toBeVisible();

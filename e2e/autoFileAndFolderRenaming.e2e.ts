@@ -20,7 +20,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
   test.afterAll(async ({}) => {
-    lameta.quit();
+    await lameta.quit();
   });
 
   test("changing FullName renames the file", async ({}, testInfo) => {

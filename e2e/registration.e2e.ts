@@ -10,7 +10,7 @@ test.describe("Registration", () => {
     page = await lameta.launch();
   });
   test.afterAll(async ({}) => {
-    lameta.quit();
+    await lameta.quit();
   });
 
   test("register then front window should be the start screen", async () => {
