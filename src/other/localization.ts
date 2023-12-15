@@ -12,6 +12,7 @@ import moment from "moment";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
+import fs from "fs";
 
 const languages = ["en", "es", "zh-CN", "fa", "fr", "ps", "ru", "pt-BR"];
 export const catalogs = {};
@@ -70,7 +71,16 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
-  const { messages } = require(`${process.cwd()}/locale/${folder}/messages.js`);
+  const path = locateDependency(`locale/${folder}/messages.js`);
+  // if it doesn't exist
+  if (!fs.existsSync(path)) {
+    console.error(
+      `Could not location ${path}. If you are running the dev server, make sure you have run "yarn lingui-compile" at least once.`
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { messages } = require(path);
   i18n.load(code, messages);
   i18n.activate(code);
 
@@ -95,6 +105,7 @@ import genres from "../../locale/genres.csv";
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import tips from "../../locale/tips.csv"; // tooltips and specialinfo
+import { locateDependency } from "./locateDependency";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {

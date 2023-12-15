@@ -19,11 +19,11 @@ Stack: Typescript, React, mobx, webpack, electron.
 
 ## Get Started
 
-Install node & yarn then
+Make sure [volta](https://github.com/volta-cli/volta) is installed
 
 ```bash
 yarn
-yarn build  <-- just once, before dev will work
+yarn lingui compile  <-- just once, before dev will work
 yarn dev
 ```
 

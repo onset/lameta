@@ -5,7 +5,7 @@ import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
-import { locateWithApp } from "./locateWithApp";
+import { locateDependency } from "./locateDependency";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -70,7 +70,7 @@ export async function asyncTrashWithContext<T>(
 export function locate(relativePath: string): string {
   //remote unavailable in unit tests (because I haven't figure out how to do it yet)
   const appPath = remote ? remote.app.getAppPath() : "";
-  return locateWithApp(appPath, relativePath);
+  return locateDependency(relativePath, appPath);
 }
 
 // normalize both in terms of resolving things like ".." but also going to posix path separators
