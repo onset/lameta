@@ -23,13 +23,13 @@ class AccessChooser extends React.Component<
   public render() {
     const options = this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
       (c: IChoice) => {
-        console.log(
-          `translateAccessProtocol(${c.label})--> ${JSON.stringify(
-            translateAccessProtocolLabelOrDescription(c.label),
-            null,
-            2
-          )}`
-        );
+        // console.log(
+        //   `translateAccessProtocol(${c.label})--> ${JSON.stringify(
+        //     translateAccessProtocolLabelOrDescription(c.label),
+        //     null,
+        //     2
+        //   )}`
+        // );
         const {
           label,
           description

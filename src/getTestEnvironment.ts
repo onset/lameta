@@ -5,7 +5,6 @@ type TestEnvironment = {
 };
 
 export function getTestEnvironment(): TestEnvironment {
-  console.log("******");
   // Indexing instead of, e.g., `process.env` because vite replaces that with ({}). Bad vite!
   const e = {
     E2E: !!process["env"]["E2E"],
