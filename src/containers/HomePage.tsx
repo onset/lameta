@@ -21,7 +21,7 @@ import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../other/localization";
+import chmodr from "chmodr";
 import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
@@ -211,7 +211,9 @@ class HomePage extends React.Component<IProps, IState> {
             "sample data/Edolo sample"
           );
           fs.copySync(sampleSourceDir, directory);
-          fs.chmodSync(directory, "777");
+          chmodr(directory, 0o777, (err) => {
+            throw err;
+          });
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
 
