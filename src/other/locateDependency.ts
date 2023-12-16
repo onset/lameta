@@ -1,5 +1,5 @@
 import * as Path from "path";
-import remote from "@electron/remote";
+import { app } from "@electron/remote";
 
 // When running from dev server, "locale/"" and "sample datat/" are at the current working directory.
 //        cwd=C:\dev\lameta
@@ -13,7 +13,7 @@ import remote from "@electron/remote";
 export function locateDependencyForFilesystemCall(
   relativePath: string
 ): string {
-  const appPath = remote.app.getAppPath();
+  const appPath = app.getAppPath();
   const adjustedPath = Path.join(appPath, relativePath);
   // print cwd
   // console.log(`locateDependencyForFilesystemCall() cwd=${process.cwd()}`);
