@@ -1,11 +1,9 @@
 const electron = require("electron");
-import * as remote from "@electron/remote";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
-import { locateDependency } from "./locateDependency";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
@@ -67,11 +65,8 @@ export async function asyncTrashWithContext<T>(
   // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.
 }
 
-export function locate(relativePath: string): string {
-  //remote unavailable in unit tests (because I haven't figure out how to do it yet)
-  const appPath = remote ? remote.app.getAppPath() : "";
-  return locateDependency(relativePath, appPath);
-}
+// reexport locateDependencyForBrowserUrl
+export { locateDependencyForBrowserUrl } from "./locateDependency";
 
 // normalize both in terms of resolving things like ".." but also going to posix path separators
 export function normalizePath(path: string): string {

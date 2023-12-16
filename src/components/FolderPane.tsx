@@ -26,7 +26,7 @@ import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
-import { locate } from "../other/crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "../other/crossPlatformUtilities";
 import * as URL from "url";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import {
@@ -48,7 +48,7 @@ export interface IProps {
 
 // avoids a console error every time react-player tries to come up with a preview of the video
 const dummyPreviewImage: string = URL.pathToFileURL(
-  locate(`assets/invisible.png`)
+  locateDependencyForBrowserUrl(`assets/invisible.png`)
 ).toString();
 
 export const FolderPane: React.FunctionComponent<

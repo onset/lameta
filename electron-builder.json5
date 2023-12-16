@@ -1,0 +1,81 @@
+{
+  productName: "lameta",
+  appId: "com.github.lameta.lameta",
+  asarUnpack: ["node_modules/ffprobe-static/*"],
+  afterSign: "electron-builder-notarize",
+  dmg: {
+    contents: [
+      {
+        x: 410,
+        y: 150,
+        type: "link",
+        path: "/Applications"
+      },
+      {
+        x: 130,
+        y: 150,
+        type: "file"
+      }
+    ]
+  },
+  files: [
+    "index.html",
+    "package.json",
+    "index*.js",
+    {
+      from: "assets/",
+      // "dist/" is the base directory (index.html is there), so the paths work out more simply if assets are there too. Then we can just say src="assets/whatever.png" in the html.
+      to: "dist/assets"
+    },
+    "dist/",
+    "locale/",
+    "sample data/"
+  ],
+  extraFiles: [],
+  directories: {
+    buildResources: "resources",
+    output: "release"
+  },
+  win: {
+    target: "nsis",
+    icon: "build/windows.ico",
+    extraResources: ["node_modules/ffprobe-static/bin/win32/x64"],
+    fileAssociations: [
+      {
+        ext: "sprj",
+        name: "lameta/saymore project"
+      }
+    ]
+  },
+  nsis: {
+    artifactName: "${productName} Windows Setup ${version}.${ext}"
+  },
+  mac: {
+    icon: "build/mac.icns",
+    hardenedRuntime: true,
+    artifactName: "${productName}-mac-${version}.${ext}",
+    extraResources: ["node_modules/ffprobe-static/bin/darwin/x64"],
+    fileAssociations: [
+      {
+        ext: "sprj",
+        name: "lameta/saymore project",
+        role: "Editor"
+      }
+    ],
+    notarize: {
+      teamId: "6VW9W5DFMP"
+    }
+  },
+  linux: {
+    target: ["deb", "AppImage"],
+    extraResources: ["node_modules/ffprobe-static/bin/linux/x64"],
+    category: "science",
+    description: "A metadata tool to help with organising collections of files. It is mainly aimed at collections made in the course of documenting language, music, and other cultural expressions.",
+    fileAssociations: [
+      {
+        ext: "sprj",
+        name: "lameta/saymore project"
+      }
+    ]
+  }
+}

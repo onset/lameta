@@ -4,16 +4,24 @@ import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../../model/field/Field";
-import { locate } from "../../../other/crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "../../../other/crossPlatformUtilities";
 import {
   LanguageFinder,
   Language
 } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
-const femaleSelected: string = locate("assets/Female_Selected.png");
-const femaleNotSelected: string = locate("assets/Female_NotSelected.png");
-const maleSelected: string = locate("assets/Male_Selected.png");
-const maleNotSelected: string = locate("assets/Male_NotSelected.png");
+const femaleSelected: string = locateDependencyForBrowserUrl(
+  "assets/Female_Selected.png"
+);
+const femaleNotSelected: string = locateDependencyForBrowserUrl(
+  "assets/Female_NotSelected.png"
+);
+const maleSelected: string = locateDependencyForBrowserUrl(
+  "assets/Male_Selected.png"
+);
+const maleNotSelected: string = locateDependencyForBrowserUrl(
+  "assets/Male_NotSelected.png"
+);
 
 export interface IProps {
   language: Field;

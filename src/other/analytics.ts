@@ -15,10 +15,11 @@ import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 
 import fs from "fs";
-import { locate } from "./crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { locateDependencyForFilesystemCall } from "./locateDependency";
 
 let analytics: Analytics | undefined;
 
@@ -86,7 +87,7 @@ export function analyticsEvent(
 }
 function getKey(index: number): string | undefined {
   // The github action saves this value in file, which is .gitIgnore'd, at runtime.
-  const path = locate("assets/.segment");
+  const path = locateDependencyForFilesystemCall("assets/.segment");
   // this .gitignore'd file, if it exists, should contain a comma-separated list of keys: "testKey, productionKey"
   if (!fs.existsSync(path)) {
     console.error(

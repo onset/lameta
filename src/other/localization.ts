@@ -71,7 +71,9 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
-  const path = locateDependency(`locale/${folder}/messages.js`);
+  const path = locateDependencyForFilesystemCall(
+    `locale/${folder}/messages.js`
+  );
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
@@ -105,7 +107,7 @@ import genres from "../../locale/genres.csv";
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import tips from "../../locale/tips.csv"; // tooltips and specialinfo
-import { locateDependency } from "./locateDependency";
+import { locateDependencyForFilesystemCall } from "./locateDependency";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {

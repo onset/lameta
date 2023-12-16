@@ -6,12 +6,14 @@ import { File } from "./File";
 import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
-import { locate } from "../../other/crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "../../other/crossPlatformUtilities";
 
 import { t } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
 
-export function getStatusOfFile(f: File): {
+export function getStatusOfFile(
+  f: File
+): {
   missing: boolean;
   status:
     | "normalFile"
@@ -66,7 +68,8 @@ export function getStatusOfFile(f: File): {
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
-      id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+      id:
+        "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
       values: { m: mediaFolder }
     });
     return {
@@ -94,7 +97,8 @@ export function getStatusOfFile(f: File): {
     subpath
   );
   const info = t({
-    id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+    id:
+      "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
     values: { m: mediaFolder, e: expected }
   });
   return {
@@ -108,11 +112,11 @@ export function getLinkStatusIconPath(f: File): string {
   const { status } = getStatusOfFile(f);
   switch (status) {
     case "goodLink":
-      return locate(`assets/link.png`);
+      return locateDependencyForBrowserUrl(`assets/link.png`);
     case "missing":
-      return locate("assets/missingFile.png");
+      return locateDependencyForBrowserUrl("assets/missingFile.png");
     case "noMediaFolderConnection":
-      return locate("assets/noMediaFolder.png");
+      return locateDependencyForBrowserUrl("assets/noMediaFolder.png");
     default:
       return "";
   }

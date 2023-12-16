@@ -16,7 +16,7 @@ import * as remote from "@electron/remote";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
-import { locate } from "../other/crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "../other/crossPlatformUtilities";
 import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
@@ -36,6 +36,7 @@ import {
 } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
+import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 
 const isDev = require("electron-is-dev");
 
@@ -206,7 +207,9 @@ class HomePage extends React.Component<IProps, IState> {
       fs.ensureDirSync(directory);
       try {
         if (useSampleProject) {
-          const sampleSourceDir = locate("sample data/Edolo sample");
+          const sampleSourceDir = locateDependencyForFilesystemCall(
+            "sample data/Edolo sample"
+          );
           fs.copySync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
@@ -267,10 +270,18 @@ class HomePage extends React.Component<IProps, IState> {
           <div className={"startScreen"}>
             <div className={"core"}>
               <div className={"top"}>
-                <img src={locate("assets/start-screen/wordmark.png")} />
+                <img
+                  src={locateDependencyForBrowserUrl(
+                    "assets/start-screen/wordmark.png"
+                  )}
+                />
               </div>
               <div className={"choices"}>
-                <img src={locate("assets/start-screen/create.png")} />
+                <img
+                  src={locateDependencyForBrowserUrl(
+                    "assets/start-screen/create.png"
+                  )}
+                />
                 <a
                   className={"creatNewProjectLink"}
                   id="creatNewProjectLink"
@@ -279,12 +290,20 @@ class HomePage extends React.Component<IProps, IState> {
                   <Trans>Create New Project</Trans>
                 </a>
                 <br />
-                <img src={locate("assets/start-screen/open.png")} />
+                <img
+                  src={locateDependencyForBrowserUrl(
+                    "assets/start-screen/open.png"
+                  )}
+                />
                 <a onClick={() => this.openProject()}>
                   <Trans>Open Project</Trans>
                 </a>
                 <br />
-                <img src={locate("assets/start-screen/sample.png")} />
+                <img
+                  src={locateDependencyForBrowserUrl(
+                    "assets/start-screen/sample.png"
+                  )}
+                />
                 <a
                   id="createNewProjectWithSampleDataLink"
                   onClick={() => {

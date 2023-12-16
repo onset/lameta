@@ -8,7 +8,7 @@ import { Folder, FolderGroup } from "../model/Folder/Folder";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
-import { locate } from "../other/crossPlatformUtilities";
+import { locateDependencyForBrowserUrl } from "../other/crossPlatformUtilities";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
@@ -24,8 +24,10 @@ export interface IProps {
   columnWidths: number[];
 }
 class FolderList extends React.Component<IProps> {
-  private hasConsentPath = locate("assets/hasConsent.png");
-  private noConsentPath = locate("assets/noConsent.png");
+  private hasConsentPath = locateDependencyForBrowserUrl(
+    "assets/hasConsent.png"
+  );
+  private noConsentPath = locateDependencyForBrowserUrl("assets/noConsent.png");
   private columnWidthManager: ReactTableColumnWidthManager;
   constructor(props: IProps) {
     super(props);
@@ -213,10 +215,10 @@ class FolderList extends React.Component<IProps> {
 
   private getStatusIcon(status: string) {
     try {
-      return locate(`assets/status-${status}.png`);
+      return locateDependencyForBrowserUrl(`assets/status-${status}.png`);
     } catch (e) {
       // there is some status this version doesn't understand
-      return locate("assets/warning.png");
+      return locateDependencyForBrowserUrl("assets/warning.png");
     }
   }
 }
