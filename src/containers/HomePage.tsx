@@ -211,6 +211,7 @@ class HomePage extends React.Component<IProps, IState> {
             "sample data/Edolo sample"
           );
           fs.copySync(sampleSourceDir, directory);
+          fs.chmodSync(directory, "777");
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
 
