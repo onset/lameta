@@ -19,6 +19,14 @@
     ]
   },
   files: [
+    /* I started on this because it seems crazy to include it (most should be bundled into index.js),
+   but actually it's one thing after another that something at runtime is expecting to find.
+    "!node_modules",
+    "node_modules/electron",
+    "node_modules/electron-store",
+    "node_modules/@electron-toolkit",
+    "node_modules/conf",
+    */
     "index.html",
     "package.json",
     "index*.js",
