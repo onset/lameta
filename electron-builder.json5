@@ -54,7 +54,10 @@
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
-    extraResources: ["node_modules/ffprobe-static/bin/darwin/x64"],
+    extraResources: [
+      "node_modules/ffprobe-static/bin/darwin/x64",
+      "node_modules/ffprobe-static/bin/darwin/arm64"
+    ],
     fileAssociations: [
       {
         ext: "sprj",
