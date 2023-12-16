@@ -1,12 +1,9 @@
 import call from "electron-call";
 import * as fs from "fs-extra";
-import { shell } from "electron";
+import { app, shell } from "electron";
 import { XMLValidationResult, validateXML } from "xmllint-wasm";
-import {
-  locateDependencyForBrowserUrl,
-  locateDependencyForFilesystemCall
-} from "../other/locateDependency";
-import { app } from "electron/main";
+
+import path from "path";
 
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
   throw new Error(
@@ -32,15 +29,15 @@ export class MainProcessApi {
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
-    const imdiSchemaPath = locateDependencyForFilesystemCall(
-      "assets/IMDI_3.0.xsd"
-    );
+    const imdiSchemaPath = path.join(app.getAppPath(), "schemas/IMDI_3.0.xsd");
+
     const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
     const schemas = [imdiSchemaContents];
 
     if (imdiContents.indexOf("OPEXMetadata") > -1) {
-      const opexSchemaPath = locateDependencyForFilesystemCall(
-        "assets/OPEX-Metadata.xsd"
+      const opexSchemaPath = path.join(
+        app.getAppPath(),
+        "schemas/OPEX-Metadata.xsd"
       );
       const opexSchemaContents = fs.readFileSync(opexSchemaPath, "utf8");
       schemas.push(opexSchemaContents);

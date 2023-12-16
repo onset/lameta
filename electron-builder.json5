@@ -37,6 +37,7 @@
     },
     "dist/",
     "locale/",
+    "schemas/",
     "sample data/"
   ],
   extraFiles: [],
