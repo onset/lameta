@@ -7,8 +7,7 @@ import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 
 export function showInExplorer(path: string) {
   if (process.platform === "win32") {
-    //https://github.com/electron/electron/issues/11617
-    path = path.replace(/\//g, "\\\\");
+    path = path.replace(/\//g, "\\");
   }
   electron.shell.showItemInFolder(path);
 }
