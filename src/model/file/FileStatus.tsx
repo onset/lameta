@@ -6,7 +6,6 @@ import { File } from "./File";
 import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
-import { locateDependencyForBrowserUrl } from "../../other/crossPlatformUtilities";
 
 import { t } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
@@ -112,11 +111,11 @@ export function getLinkStatusIconPath(f: File): string {
   const { status } = getStatusOfFile(f);
   switch (status) {
     case "goodLink":
-      return locateDependencyForBrowserUrl(`assets/link.png`);
+      return `assets/link.png`;
     case "missing":
-      return locateDependencyForBrowserUrl("assets/missingFile.png");
+      return "assets/missingFile.png";
     case "noMediaFolderConnection":
-      return locateDependencyForBrowserUrl("assets/noMediaFolder.png");
+      return "assets/noMediaFolder.png";
     default:
       return "";
   }

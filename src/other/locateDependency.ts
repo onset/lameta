@@ -26,9 +26,6 @@ export function locateDependencyForFilesystemCall(
   return adjustedPath;
 }
 
-export function locateDependencyForBrowserUrl(relativePath: string): string {
-  // note that the base directory for browser stuff is "dist/". In electron-builder.json5, we
-  // tell it to put "assets/" under "dist/", so it all works out something like "assets/foo.png" will just work
-  // without us having to do anything special.
-  return relativePath;
-}
+// note that the base directory for browser stuff is "dist/". In electron-builder.json5, we
+// tell it to put "assets/" under "dist/", so it all works out something like "assets/foo.png" will just work
+// without us having to do anything special.

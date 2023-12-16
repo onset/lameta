@@ -6,7 +6,7 @@ import * as React from "react";
 import ReactModal from "react-modal";
 import "./MessageDialog.scss";
 import CloseOnEscape from "react-close-on-escape";
-import { locateDependencyForBrowserUrl } from "../../other/crossPlatformUtilities";
+
 import {
   DialogBottomButtons,
   DialogButton,
@@ -53,9 +53,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
                 margin-bottom: auto;
                 margin-right: 10px;
               `}
-              src={locateDependencyForBrowserUrl(
-                config.iconPath || "assets/warning.png"
-              )}
+              src={config.iconPath || "assets/warning.png"}
             />
           )}
           <div>{config.title}</div>

@@ -16,7 +16,7 @@ import * as remote from "@electron/remote";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
-import { locateDependencyForBrowserUrl } from "../other/crossPlatformUtilities";
+
 import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
@@ -273,18 +273,10 @@ class HomePage extends React.Component<IProps, IState> {
           <div className={"startScreen"}>
             <div className={"core"}>
               <div className={"top"}>
-                <img
-                  src={locateDependencyForBrowserUrl(
-                    "assets/start-screen/wordmark.png"
-                  )}
-                />
+                <img src={"assets/start-screen/wordmark.png"} />
               </div>
               <div className={"choices"}>
-                <img
-                  src={locateDependencyForBrowserUrl(
-                    "assets/start-screen/create.png"
-                  )}
-                />
+                <img src={"assets/start-screen/create.png"} />
                 <a
                   className={"creatNewProjectLink"}
                   id="creatNewProjectLink"
@@ -293,20 +285,12 @@ class HomePage extends React.Component<IProps, IState> {
                   <Trans>Create New Project</Trans>
                 </a>
                 <br />
-                <img
-                  src={locateDependencyForBrowserUrl(
-                    "assets/start-screen/open.png"
-                  )}
-                />
+                <img src={"assets/start-screen/open.png"} />
                 <a onClick={() => this.openProject()}>
                   <Trans>Open Project</Trans>
                 </a>
                 <br />
-                <img
-                  src={locateDependencyForBrowserUrl(
-                    "assets/start-screen/sample.png"
-                  )}
-                />
+                <img src={"assets/start-screen/sample.png"} />
                 <a
                   id="createNewProjectWithSampleDataLink"
                   onClick={() => {

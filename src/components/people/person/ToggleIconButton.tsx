@@ -2,7 +2,6 @@ import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
-import { locateDependencyForBrowserUrl } from "../../../other/crossPlatformUtilities";
 
 export const ToggleIconButton: React.FunctionComponent<{
   onImagePath: string;
@@ -22,10 +21,6 @@ export const ToggleIconButton: React.FunctionComponent<{
       props.onChange(!props.isOn);
     }}
   >
-    <img
-      src={locateDependencyForBrowserUrl(
-        props.isOn ? props.onImagePath : props.offImagePath
-      )}
-    />
+    <img src={props.isOn ? props.onImagePath : props.offImagePath} />
   </button>
 );

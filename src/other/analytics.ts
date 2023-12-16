@@ -15,7 +15,6 @@ import { sentryBreadCrumb } from "./errorHandling";
 import { currentUILanguage } from "./localization";
 
 import fs from "fs";
-import { locateDependencyForBrowserUrl } from "./crossPlatformUtilities";
 import { Analytics } from "@segment/analytics-node";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";

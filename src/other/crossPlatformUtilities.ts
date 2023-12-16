@@ -65,9 +65,6 @@ export async function asyncTrashWithContext<T>(
   // But if we then fail in the actual moveItemTrash, well we just return false and leave it to the caller to communicate with the user.
 }
 
-// reexport locateDependencyForBrowserUrl
-export { locateDependencyForBrowserUrl } from "./locateDependency";
-
 // normalize both in terms of resolving things like ".." but also going to posix path separators
 export function normalizePath(path: string): string {
   return Path.normalize(path).replace(/\\/g, "/");

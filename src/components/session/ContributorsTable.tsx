@@ -8,7 +8,6 @@ import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
-import { locateDependencyForBrowserUrl } from "../../other/crossPlatformUtilities";
 
 export interface IProps {
   file: File;
@@ -99,10 +98,7 @@ class ContributorsTable extends React.Component<IProps> {
           this.setState({}); // update to show the change
         }}
       >
-        <img
-          alt="delete"
-          src={locateDependencyForBrowserUrl("assets/small-trash.png")}
-        />
+        <img alt="delete" src={"assets/small-trash.png"} />
       </button>
     );
   }

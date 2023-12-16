@@ -10,10 +10,6 @@ const camelcase = require("camelcase");
 import { Field, FieldType } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
-import {
-  locateDependencyForBrowserUrl,
-  normalizePath
-} from "../../other/crossPlatformUtilities";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
@@ -975,7 +971,7 @@ export /*babel doesn't like this: abstract*/ class File {
     //   return locate("assets/warning.png");
     // }
     const type = this.getTextProperty("type", "unknowntype");
-    return locateDependencyForBrowserUrl(`assets/file-icons/${type}.png`);
+    return `assets/file-icons/${type}.png`;
   }
 
   /**

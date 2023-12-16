@@ -8,7 +8,7 @@ import { Folder, FolderGroup } from "../model/Folder/Folder";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
-import { locateDependencyForBrowserUrl } from "../other/crossPlatformUtilities";
+
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
@@ -24,10 +24,8 @@ export interface IProps {
   columnWidths: number[];
 }
 class FolderList extends React.Component<IProps> {
-  private hasConsentPath = locateDependencyForBrowserUrl(
-    "assets/hasConsent.png"
-  );
-  private noConsentPath = locateDependencyForBrowserUrl("assets/noConsent.png");
+  private hasConsentPath = "assets/hasConsent.png";
+  private noConsentPath = "assets/noConsent.png";
   private columnWidthManager: ReactTableColumnWidthManager;
   constructor(props: IProps) {
     super(props);
@@ -215,10 +213,10 @@ class FolderList extends React.Component<IProps> {
 
   private getStatusIcon(status: string) {
     try {
-      return locateDependencyForBrowserUrl(`assets/status-${status}.png`);
+      return `assets/status-${status}.png`;
     } catch (e) {
       // there is some status this version doesn't understand
-      return locateDependencyForBrowserUrl("assets/warning.png");
+      return "assets/warning.png";
     }
   }
 }
