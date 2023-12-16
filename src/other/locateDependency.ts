@@ -1,20 +1,13 @@
 import * as Path from "path";
 
-// This all used to be complicated, but it's been simplified so much I'm almost ready to retire it.
+// When running from dev server, "locale/"" and "sample datat/" are at the current working directory.
+// When installed, they at at the root of the ASAR file.
 
 export function locateDependencyForFilesystemCall(
   relativePath: string
 ): string {
   const appPath = require("@electron/remote").app.getAppPath();
-  let adjustedPath = "";
-  if (appPath.indexOf("app.asar") >= 0) {
-    // Running from windows install, or
-    //adjustedPath = Path.join(appPath, "../..", relativePath);
-    adjustedPath = Path.join(appPath, relativePath);
-  } else {
-    // runtime, appPath is just the root folder
-    adjustedPath = Path.join(appPath, relativePath);
-  }
+  const adjustedPath = Path.join(appPath, relativePath);
 
   console.log(
     `locateDependencyForFilesystemCall(${relativePath}) appPath=${appPath} adjustedPath=${adjustedPath}`
