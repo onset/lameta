@@ -971,6 +971,17 @@ export /*babel doesn't like this: abstract*/ class File {
     //   return locate("assets/warning.png");
     // }
     const type = this.getTextProperty("type", "unknowntype");
+    const typesWeHaveIconsFor = [
+      "Audio",
+      "Video",
+      "Image",
+      "ELAN",
+      "Person",
+      "Session"
+    ];
+    if (!typesWeHaveIconsFor.includes(type)) {
+      return `assets/file-icons/generic.png`;
+    }
     return `assets/file-icons/${type}.png`;
   }
 
