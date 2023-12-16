@@ -364,7 +364,7 @@ const FileTabs: React.FunctionComponent<
           </TabList>
           <TabPanel>
             <audio controls>
-              <source src={path} />
+              <source src={`file://${path}`} />
             </audio>
           </TabPanel>
           {standardMetaPanels}
@@ -385,7 +385,7 @@ const FileTabs: React.FunctionComponent<
               // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
               light={dummyPreviewImage}
               playing={true} // start playing when the "light" play button is clicked
-              url={path}
+              url={`file://${path}`}
               controls
               onError={(e) => {
                 NotifyError("video error:" + e);
@@ -405,7 +405,11 @@ const FileTabs: React.FunctionComponent<
             {standardMetaTabs}
           </TabList>
           <TabPanel>
-            <img className="imageViewer" src={path.replace(/#/g, "%23")} />
+            <img
+              className="imageViewer"
+              // file:// is required on mac
+              src={`file:///${path.replace(/#/g, "%23")}`}
+            />
           </TabPanel>
           {standardMetaPanels}
         </Tabs>
@@ -420,6 +424,7 @@ const FileTabs: React.FunctionComponent<
             {standardMetaTabs}
           </TabList>
           <TabPanel>
+            {/* NB: not a url, just a file here path */}
             <TextFileView path={path} />
           </TabPanel>
           {standardMetaPanels}
