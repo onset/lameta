@@ -154,6 +154,9 @@ export class Session extends Folder {
   public addContribution(contribution: Contribution) {
     this.metadataFile!.contributions.push(contribution);
   }
+  public removeAllContributionsForUnitTest() {
+    this.metadataFile!.contributions = [];
+  }
 
   // override
   protected textValueThatControlsFolderName(): string {

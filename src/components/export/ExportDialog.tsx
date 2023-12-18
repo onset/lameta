@@ -346,16 +346,17 @@ export const ExportDialog: React.FunctionComponent<{
               margin-left: 20px;
             `}
           >
+            {rulesBasedValidationResult &&
+              (mode === Mode.error || mode === Mode.finished) && (
+                <>
+                  <Alert severity="warning">
+                    <ReactMarkdown children={rulesBasedValidationResult!} />
+                  </Alert>
+                  <br />
+                </>
+              )}
             {mode === Mode.error && (
               <div>
-                {rulesBasedValidationResult && (
-                  <>
-                    <Alert severity="warning">
-                      <ReactMarkdown children={rulesBasedValidationResult} />
-                    </Alert>
-                    <br />
-                  </>
-                )}
                 <Alert severity="error">
                   <div css={css``}>{error}</div>
                 </Alert>
@@ -381,14 +382,15 @@ export const ExportDialog: React.FunctionComponent<{
                   gap: 10px;
                 `}
               >
-                <h1>
-                  <Trans>Done</Trans>
-                </h1>
                 {imdiValidated && (
                   <Alert severity="success">
                     {t`The IMDI files were validated.`}
                   </Alert>
                 )}
+
+                <h1>
+                  <Trans>Done</Trans>
+                </h1>
               </div>
             )}
             {mode === Mode.copying && (

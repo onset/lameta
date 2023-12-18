@@ -163,7 +163,7 @@ export default class ImdiGenerator {
         this.element("FamilySocialRole", "");
         this.element("Languages", "");
         this.element("EthnicGroup", "");
-        this.element("Age", "");
+        this.element("Age", "Unspecified");
         this.element("BirthDate", "Unspecified");
         this.element("Sex", "");
         this.element("Education", "");

@@ -8,6 +8,7 @@ import {
   count
 } from "../other/xmlUnitTestUtils";
 import temp from "temp";
+import { Contribution } from "../model/file/File";
 
 let project: Project;
 let session: Session;
@@ -18,8 +19,13 @@ beforeAll(async () => {
   await project.descriptionFolder.addFileForTestAsync(randomFileName());
   await project.otherDocsFolder.addFileForTestAsync(randomFileName());
   session = project.addSession();
+  // set the session date to a known value so that the test results are predictable
+  session.properties.setText("date", "2010-01-01");
   session.addFileForTestAsync(randomFileName());
+  const mary = project.addPerson("Mary");
+  mary.properties.setText("birthYear", "1980");
 });
+
 afterAll(() => {
   temp.cleanupSync();
 });
@@ -54,6 +60,48 @@ describe("session imdi export", () => {
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("FLEx");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("Foo");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("XYZ");
+  });
+
+  it("should  output an Actor for a contributor with a matching person", () => {
+    session.removeAllContributionsForUnitTest();
+    session.addContribution(new Contribution("Mary", "Speaker", ""));
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect("//Actor").toHaveCount(1);
+    expect("//Actor/Name").toHaveText("Mary");
+    expect("//Actor/Age").toHaveText("30");
+  });
+
+  /* the actual policy is in discussion in Notion #238
+
+  It's not clear what we will do, but at the moment, we're output a minimal Actor
+  
+  it("should not output an Actor for a contributor without a matching person", () => {
+    session.addContribution(new Contribution("Joe", "Speaker", ""));
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true 
+      )
+    );
+    expect("//Actor").toNotExist();
+  });*/
+  it("should output an Actor for a contributor without a matching person", () => {
+    session.removeAllContributionsForUnitTest();
+    session.addContribution(new Contribution("Joe", "Speaker", ""));
+    setResultXml(
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true)
+    );
+    expect("//Actor").toHaveCount(1);
+    expect("//Actor/Age").toHaveText("Unspecified");
   });
 
   // notion issue #255

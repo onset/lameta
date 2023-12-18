@@ -56,4 +56,9 @@ describe("actor imdi export", () => {
     expect("//Actor/Description").toMatch("likes sour candy");
     expect("//Actor/Keys/Key[@Name='Description']").toNotExist();
   });
+  it("should export Unspecified for the Age if there is no birth year", () => {
+    person.properties.setText("birthYear", "");
+    generate();
+    expect("//Actor/Age").toMatch("Unspecified");
+  });
 });
