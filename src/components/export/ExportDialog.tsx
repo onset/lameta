@@ -33,6 +33,8 @@ import { IMDIMode } from "../../export/ImdiGenerator";
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
 import { clipboard } from "electron";
+import { Session } from "src/model/Project/Session/Session";
+import ReactMarkdown from "react-markdown";
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};
@@ -66,6 +68,12 @@ export const ExportDialog: React.FunctionComponent<{
 
   const [error, setError] = useState<string | undefined>(undefined);
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
+
+  const [
+    rulesBasedValidationResult,
+    SetRulesBasedValidationResult
+  ] = React.useState<string | undefined>();
+
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(
     userSettingsSingleton.ExportFormat
@@ -129,6 +137,27 @@ export const ExportDialog: React.FunctionComponent<{
             // setTimeout lets us update the ui before diving in
             setTimeout(() => {
               try {
+                const folderFilter =
+                  whichSessionsOption === "all"
+                    ? () => true
+                    : (f: Folder) => f.marked;
+                const sessions: Session[] = (props.projectHolder.project!.sessions.items.filter(
+                  folderFilter
+                ) as unknown) as Session[];
+                // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
+                let rulesBasedValidationResult = "";
+                for (const session of sessions) {
+                  const result = session.getRulesViolationsString(
+                    props.projectHolder.project!.persons.items.map((p) =>
+                      p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
+                    )
+                  );
+                  if (result) {
+                    rulesBasedValidationResult += `**${session.displayName}**\n\n${result}\n\n`;
+                  }
+                }
+                SetRulesBasedValidationResult(rulesBasedValidationResult);
+
                 setOutputPath(result.filePath);
                 // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
                 saveFilesAsync(result.filePath!);
@@ -246,7 +275,7 @@ export const ExportDialog: React.FunctionComponent<{
               folderFilter
             );
             setMode(Mode.finished); // don't have to wait for any copying of big files
-
+            setImdiValidated(true);
             break;
           case "opex-plus-files":
             analyticsEvent("Export", "Export OPEX Plus Files");
@@ -319,9 +348,18 @@ export const ExportDialog: React.FunctionComponent<{
           >
             {mode === Mode.error && (
               <div>
+                {rulesBasedValidationResult && (
+                  <>
+                    <Alert severity="warning">
+                      <ReactMarkdown children={rulesBasedValidationResult} />
+                    </Alert>
+                    <br />
+                  </>
+                )}
                 <Alert severity="error">
                   <div css={css``}>{error}</div>
                 </Alert>
+                <br />
                 <Button
                   variant="outlined"
                   onClick={() => clipboard.writeText(error!)}

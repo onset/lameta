@@ -6,8 +6,6 @@ import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
 import { File } from "../model/file/File";
-//import SyntaxHighlighter from 'react-syntax-highlighter';
-import { Button } from "@material-ui/core";
 import SyntaxHighlighter, {
   registerLanguage
 } from "react-syntax-highlighter/light";
@@ -32,9 +30,26 @@ export const ImdiView: React.FunctionComponent<{
 }> = (props) => {
   const [imdi, setImdi] = React.useState<string>("");
 
+  const [
+    rulesBasedValidationResult,
+    SetRulesBasedValidationResult
+  ] = React.useState<string | undefined>();
+
   const [validationResult, SetValidationResult] = React.useState<
     XMLValidationResult | undefined
   >();
+
+  React.useEffect(() => {
+    if (props.target instanceof Session) {
+      SetRulesBasedValidationResult(
+        (props.target as Session).getRulesViolationsString(
+          props.project.persons.items.map((p) =>
+            p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
+          )
+        )
+      );
+    }
+  }, [props.target, props.project, props.folder]);
 
   React.useEffect(() => {
     if (props.target instanceof Session) {
@@ -105,6 +120,12 @@ export const ImdiView: React.FunctionComponent<{
         }
       `}
     >
+      {rulesBasedValidationResult && (
+        <>
+          <Alert severity="warning">{rulesBasedValidationResult}</Alert>
+          <br />
+        </>
+      )}
       {validationResult?.valid && (
         <Alert severity="success">This XML conforms to the IMDI schema.</Alert>
       )}

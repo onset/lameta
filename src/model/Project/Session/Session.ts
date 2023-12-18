@@ -277,6 +277,36 @@ export class Session extends Folder {
   // private setParticipantNames(names: string[]) {
   //   this.properties.setText("participants", names.join(";"));
   // }
+
+  public getRulesViolationsString(existingPersonIds: Array<string>): string {
+    // Start with getAllContributionsToAllFiles(). Get a unique list of contributors. For each contributor, keep an array of each role they have played. Do not list the same role twice.
+    // Then for each contibutor, if there is not a corresponding person is, list their name followed by the roles they have played.
+    const violations = new Array<string>();
+    const contributors = new Array<string>();
+    const contributorRoles = new Map<string, Array<string>>();
+    this.getAllContributionsToAllFiles().forEach((c) => {
+      if (!contributors.includes(c.personReference)) {
+        contributors.push(c.personReference);
+      }
+      if (!contributorRoles.has(c.personReference)) {
+        contributorRoles.set(c.personReference, new Array<string>());
+      }
+      if (!contributorRoles.get(c.personReference)!.includes(c.role)) {
+        contributorRoles.get(c.personReference)!.push(c.role);
+      }
+    });
+    contributors.forEach((c) => {
+      if (!existingPersonIds.includes(c)) {
+        const roles = contributorRoles.get(c)!.join(", ");
+        violations.push(`${c} (${roles})`);
+      }
+    });
+    if (violations.length === 0) return "";
+    else
+      return `lameta could not find a matching Person for the following contributors: ${violations.join(
+        " "
+      )}`;
+  }
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
