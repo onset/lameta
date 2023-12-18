@@ -1,18 +1,11 @@
-import { vi, describe, it, beforeAll, beforeEach } from "vitest";
+import { vi, describe, it, beforeAll, afterAll } from "vitest";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value
-} from "../other/xmlUnitTestUtils";
-import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
+import { setResultXml, xexpect as expect } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 
 let project: Project;
-let session: Session;
 let opexXml = "";
 
 let projectDir;

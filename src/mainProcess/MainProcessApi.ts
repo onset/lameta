@@ -1,9 +1,9 @@
 import call from "electron-call";
 import * as fs from "fs-extra";
 import { app, shell } from "electron";
-import { XMLValidationResult, validateXML } from "xmllint-wasm";
+import { XMLValidationResult } from "xmllint-wasm";
 
-import path from "path";
+import { validateImdiAsyncInternal } from "./validateImdi";
 
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
   throw new Error(
@@ -29,45 +29,7 @@ export class MainProcessApi {
   public async validateImdiAsync(
     imdiContents: string
   ): Promise<XMLValidationResult> {
-    const imdiSchemaPath = path.join(app.getAppPath(), "schemas/IMDI_3.0.xsd");
-
-    const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
-    const schemas = [imdiSchemaContents];
-
-    if (imdiContents.indexOf("OPEXMetadata") > -1) {
-      const opexSchemaPath = path.join(
-        app.getAppPath(),
-        "schemas/OPEX-Metadata.xsd"
-      );
-      const opexSchemaContents = fs.readFileSync(opexSchemaPath, "utf8");
-      schemas.push(opexSchemaContents);
-    }
-    try {
-      const validationResult = await validateXML({
-        xml: [
-          {
-            fileName: "imdi",
-            contents: imdiContents
-          }
-        ],
-        schema: schemas
-      });
-      return validationResult;
-    } catch (e) {
-      const r: XMLValidationResult = {
-        valid: false,
-        normalized: e.message,
-        rawOutput: e.message,
-        errors: [
-          {
-            loc: null,
-            message: e.message,
-            rawMessage: e.message
-          }
-        ]
-      };
-      return r;
-    }
+    return await validateImdiAsyncInternal(app.getAppPath(), imdiContents);
   }
 }
 
