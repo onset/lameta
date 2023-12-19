@@ -21,7 +21,6 @@ import "./StartScreen.scss";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
 import { t, Trans } from "@lingui/macro";
-import chmodr from "chmodr";
 import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import {
