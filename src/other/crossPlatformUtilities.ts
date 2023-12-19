@@ -68,3 +68,25 @@ export async function asyncTrashWithContext<T>(
 export function normalizePath(path: string): string {
   return Path.normalize(path).replace(/\\/g, "/");
 }
+
+// on a recent macos/electron, copying sample data to the user's home directory was working but
+// the result was that the user did not have permissions to any of the folders! I tried
+// various approaches to fix the permissions after the directories were created, but
+// they failed. So insted here we creat the directories and then copy the files into them,
+// setting the permissions of the copied files as we go,
+export function copyDirSync(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = Path.join(src, entry.name);
+    const destPath = Path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirSync(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+      fs.chmodSync(destPath, 0o777); // Change the permissions here
+    }
+  }
+}

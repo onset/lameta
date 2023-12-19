@@ -37,6 +37,7 @@ import {
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
+import { copyDirSync } from "../other/crossPlatformUtilities";
 
 const isDev = require("electron-is-dev");
 
@@ -210,10 +211,7 @@ class HomePage extends React.Component<IProps, IState> {
           const sampleSourceDir = locateDependencyForFilesystemCall(
             "sample data/Edolo sample"
           );
-          fs.copySync(sampleSourceDir, directory);
-          chmodr(directory, 0o777, (err) => {
-            throw err;
-          });
+          copyDirSync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
 
