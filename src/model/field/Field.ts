@@ -22,11 +22,11 @@ export interface IChoice {
 
 export enum FieldType {
   Text,
+  LanguageChoices,
   Date,
   Image,
   // Contributions,
   Language,
-  MultiLanguage,
   PersonLanguageList,
   Function,
   Boolean
@@ -71,7 +71,7 @@ export class Field {
         type = FieldType.Language;
         break;
       case "multilanguage":
-        type = FieldType.MultiLanguage;
+        type = FieldType.LanguageChoices;
         break;
       case "personlanguagelist":
         type = FieldType.PersonLanguageList;
@@ -295,7 +295,7 @@ export class Field {
         return { type: "date", value: this.asISODateString() };
       case FieldType.Language:
         return { type: "language", value: this.text };
-      case FieldType.MultiLanguage:
+      case FieldType.LanguageChoices:
         return { type: "multiLanguage", value: this.text };
       case FieldType.PersonLanguageList:
         return {

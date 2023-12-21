@@ -16,7 +16,7 @@ export interface IProps {
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
-export const MultiLanguageFieldEdit: React.FunctionComponent<
+export const LanguageChoicesEditor: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
   const customStyles = {

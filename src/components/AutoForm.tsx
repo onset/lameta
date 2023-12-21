@@ -13,7 +13,7 @@ import "./Form.scss";
 import CustomFieldsTable from "./CustomFieldsTable";
 import AdditionalFieldsTable from "./MoreFieldsTable";
 import IsoLanguageEdit from "./IsoLanguageEdit";
-import { MultiLanguageFieldEdit } from "./MultiLanguageFieldEdit";
+import { LanguageChoicesEditor } from "./LanguageChoicesEditor";
 import { Contribution } from "../model/file/File";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 import { translateGenre } from "../other/localization";
@@ -143,9 +143,9 @@ class AutoForm extends React.Component<IProps> {
             field={field}
           />
         );
-      case FieldType.MultiLanguage:
+      case FieldType.LanguageChoices:
         return (
-          <MultiLanguageFieldEdit
+          <LanguageChoicesEditor
             className={field.cssClass}
             key={field.key}
             field={field as Field}
