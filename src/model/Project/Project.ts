@@ -340,9 +340,10 @@ export class Project extends Folder {
     return dir;
   }
   public makeFolderForImport(folderType: IFolderType): Folder {
+    let dir: string;
     switch (folderType) {
-      case "session":
-        var dir = this.getUniqueFolder(
+      case "session": {
+        dir = this.getUniqueFolder(
           Path.join(this.directory, "Sessions"), // we don't localize the directory name.
           t`New Session`
         );
@@ -353,8 +354,9 @@ export class Project extends Folder {
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
         return session;
-        break;
-      case "person":
+      }
+
+      case "person": {
         dir = this.getUniqueFolder(
           Path.join(this.directory, "People"), // we don't localize the directory name.
           t`New Person`
@@ -363,7 +365,8 @@ export class Project extends Folder {
         person.properties.setText("name", Path.basename(dir));
         analyticsEvent("Create", "Create Person From Import");
         return person;
-        break;
+      }
+
       default:
         throw Error(
           "Unexpected folderType on makeFolderForImport: " + folderType
@@ -453,8 +456,7 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol: this.properties.getTextField("accessProtocol").textHolder
-            .textInDefaultLanguage,
+          protocol: this.properties.getTextField("accessProtocol").text,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -466,8 +468,7 @@ export class Project extends Folder {
       }
     );
     mobx.reaction(
-      () =>
-        this.properties.getValueOrThrow("accessProtocol").textHolder.map["en"], // currently we only use "en" for this
+      () => this.properties.getValueOrThrow("accessProtocol").text,
       (newValue) =>
         //      .textHolder.map.intercept((change) => { mobx6 doesn't have this intercept
         this.authorityLists.setAccessProtocol(
@@ -476,10 +477,7 @@ export class Project extends Folder {
         )
     );
     mobx.reaction(
-      () =>
-        this.properties.getValueOrThrow("customAccessChoices").textHolder.map[
-          "en" // currently we only use "en" for this
-        ],
+      () => this.properties.getValueOrThrow("customAccessChoices").text,
       (newValue) => {
         const currentProtocol = this.properties.getTextStringOrEmpty(
           "accessProtocol"
@@ -622,7 +620,7 @@ export class Project extends Folder {
       async () => {
         const originalFolders = folders.items.slice();
 
-        const isFilled = <T extends {}>(
+        const isFilled = <T extends object>(
           v: PromiseSettledResult<T>
         ): v is PromiseFulfilledResult<T> => v.status === "fulfilled";
 

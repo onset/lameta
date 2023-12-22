@@ -131,12 +131,18 @@ class FolderList extends React.Component<IProps> {
           }
           const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
-            if (field.key === "status") {
-              return (
-                <img title={field.text} src={this.getStatusIcon(field.text)} />
-              );
-            } else {
-              return field.toString();
+            switch (key) {
+              case "status":
+                return (
+                  <img
+                    title={field.text}
+                    src={this.getStatusIcon(field.text)}
+                  />
+                );
+              case "title":
+                return field.getTextForSimpleDisplay();
+              default:
+                return field.toString();
             }
           }
           if (field.type === FieldType.Date) {

@@ -1,3 +1,4 @@
+import { beforeEach, afterEach, describe, it } from "vitest";
 import { OtherFile } from "./File";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -36,10 +37,7 @@ function writeSessionFile(
 }
 
 function runTestsOnMetadataFile(contents: string, tests: () => any) {
-  let sessionFolder;
-  let filePath;
-  let tmpFolder;
-  ({ tmpFolder, sessionFolder, filePath } = writeSessionFile(contents));
+  const { tmpFolder, sessionFolder, filePath } = writeSessionFile(contents);
 
   // note, we are using a session to run these just because we need something
   // concrete. It would be an improvement to do it in some more generic way.

@@ -1,16 +1,11 @@
 import { observable, makeObservable } from "mobx";
-import TextHolder from "./TextHolder";
+import { TextHolder } from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
-import {
-  translateFieldLabel,
-  currentUILanguage
-} from "../../other/localization";
+import { translateFieldLabel } from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
-import { Folder } from "../Folder/Folder";
 import * as DateFns from "date-fns";
-//import * as assert from "assert";
 
 export interface IChoice {
   id: string;
@@ -46,7 +41,7 @@ export class Field {
   public readonly visibility: FieldVisibility;
   public persist: boolean;
   public readonly cssClass: string;
-  public textHolder = new TextHolder();
+  private textHolder = new TextHolder();
   public choices: string[];
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
@@ -177,11 +172,28 @@ export class Field {
   }
 
   public get text(): string {
-    return this.textHolder.textInDefaultLanguage;
+    return this.textHolder.combinedText;
   }
   public set text(value: string) {
-    this.textHolder.textInDefaultLanguage = value;
+    this.textHolder.combinedText = value;
   }
+  public setTextAxis(tag: string, textForAxis: string): void {
+    this.textHolder.setTextAxis(tag, textForAxis);
+  }
+  public getTextAxis(tag: string): string {
+    return this.textHolder.getTextAxis(tag);
+  }
+  public getTextForSimpleDisplay(): string {
+    return this.textHolder.getFirstNonEmptyText([
+      "en",
+      "es",
+      "fr",
+      "id",
+      "pt",
+      "zh"
+    ]); // enhance just hard coded for now
+  }
+
   public toString(): string {
     return this.text;
   }
