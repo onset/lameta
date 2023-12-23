@@ -197,7 +197,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "en"
             },
             {
-              label: "Español (Spanish 77%)",
+              label: "Español (Spanish 76%)",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -205,7 +205,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "es"
             },
             {
-              label: "简体中文 (Chinese 5%)",
+              label: "简体中文 (Chinese 10%)",
               type: "radio",
               click: () => {
                 setUILanguage("zh-CN");
@@ -213,7 +213,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "zh-CN"
             },
             {
-              label: "Français  (33%)",
+              label: "Français  (93%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
@@ -221,7 +221,15 @@ export default class LametaMenu {
               checked: currentUILanguage === "fr"
             },
             {
-              label: "فارسی (Persion 77%)",
+              label: "Bahasa Indonesia",
+              type: "radio",
+              click: () => {
+                setUILanguage("id");
+              },
+              checked: currentUILanguage === "id"
+            },
+            {
+              label: "فارسی (Persion 76%)",
               type: "radio",
               click: () => {
                 setUILanguage("fa");
@@ -229,7 +237,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "fa"
             },
             {
-              label: "Portuguesa, Brasileiro  (77%)",
+              label: "Portuguesa, Brasileiro  (76%)",
               type: "radio",
               click: () => {
                 setUILanguage("pt-BR");
