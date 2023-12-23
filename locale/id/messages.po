@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-11-24 15:17\n"
+"PO-Revision-Date: 2023-12-23 17:20\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -24,11 +24,11 @@ msgstr ""
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:104
 msgid "A file with the same name already exists at that location."
-msgstr ""
+msgstr "Sebuah file dengan nama yang sama sudah ada di lokasi tersebut."
 
 #: src/components/export/ExportChoices.tsx:94
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
-msgstr ""
+msgstr "Sebuah folder yang berisi semua file arsip proyek, dengan IMDI yang dibungkus untuk OPEX."
 
 #: app/components/export/ExportChoices.tsx:97
 #~ msgid "A folder containing both the IMDI files and all the project's archivable files."
@@ -36,7 +36,7 @@ msgstr ""
 
 #: src/components/export/ExportChoices.tsx:79
 msgid "A folder with an IMDI file for the project and each session."
-msgstr ""
+msgstr "Sebuah folder dengan file IMDI untuk proyek dan setiap sesi."
 
 #: app/components/export/ExportDialog.tsx:106
 #~ msgid "A single ISLE Meta Data Initiative XML file."
@@ -44,7 +44,7 @@ msgstr ""
 
 #: src/components/export/ExportChoices.tsx:49
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
-msgstr ""
+msgstr "Sebuah file yang dipisahkan oleh koma dengan informasi proyek dengan satu baris untuk setiap sesi. Banyak kotak lameta dihilangkan."
 
 #: app/components/export/ExportDialog.tsx:105
 #~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
@@ -52,7 +52,7 @@ msgstr ""
 
 #: src/components/export/ExportChoices.tsx:33
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
-msgstr ""
+msgstr "Satu arsip zip yang berisi satu file yang dipisahkan oleh koma untuk masing-masing Proyek, Sesi, dan Orang."
 
 #: app/components/export/ExportDialog.tsx:127
 #~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
@@ -64,7 +64,7 @@ msgstr ""
 
 #: src/index.tsx:51
 msgid "Abandon files that are still copying"
-msgstr ""
+msgstr "Abaikan file-file yang sedang disalin"
 
 #: src/components/project/ProjectTab.tsx:33
 msgid "About This Project"
@@ -92,11 +92,11 @@ msgstr "Tambah Bahasa"
 
 #: src/components/project/ProjectTab.tsx:88
 msgid "Add documents here that describe the projects and corpus."
-msgstr ""
+msgstr "Tambahkan dokumen di sini yang menjelaskan proyek dan korpus."
 
 #: src/components/project/ProjectTab.tsx:104
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
-msgstr ""
+msgstr "Tambahkan dokumen-dokumen di sini yang tampaknya tidak cocok di tempat lain. Contohnya bisa berupa dokumen yang menjelaskan bagaimana proyek ini didanai."
 
 #: src/components/export/ExportChoices.tsx:112
 msgid "All Sessions"
@@ -108,18 +108,18 @@ msgstr "Sebagai Informasi Identifikasi Pribadi, ini tidak akan diekspor ke forma
 
 #: src/components/registration/RegistrationDialog.tsx:117
 msgid "As a curator"
-msgstr ""
+msgstr "Sebagai seorang kurator"
 
 #: src/components/registration/RegistrationDialog.tsx:120
 msgid "As a developer"
-msgstr ""
+msgstr "Sebagai seorang pengembang"
 
 #: src/components/registration/RegistrationDialog.tsx:114
 msgid "As a trainer"
 msgstr "Sebagai pelatih"
 
 #: src/components/FolderPane.tsx:361
-#: src/other/localization.ts:112
+#: src/other/localization.ts:125
 msgid "Audio"
 msgstr "Audio"
 
@@ -143,7 +143,7 @@ msgstr "Audio"
 #~ msgid "Audio Sample Rate"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:400
+#: src/components/export/ExportDialog.tsx:440
 #: src/components/LametaDialog.tsx:213
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:196
 #: src/components/Notify.tsx:276
@@ -151,7 +151,7 @@ msgstr "Audio"
 msgid "Cancel"
 msgstr "Batal"
 
-#: src/model/Folder/Folder.ts:195
+#: src/model/Folder/Folder.ts:202
 msgid "Cannot add files of that type"
 msgstr "Tidak dapat tambah file jenis itu"
 
@@ -191,14 +191,14 @@ msgstr "Pilih sesi mana yang akan diekspor:"
 msgid "Clear"
 msgstr "Hapus"
 
-#: src/components/export/ExportDialog.tsx:384
-#: src/components/export/ExportDialog.tsx:410
+#: src/components/export/ExportDialog.tsx:424
+#: src/components/export/ExportDialog.tsx:450
 #: src/components/ReleasesDialog.tsx:234
 msgid "Close"
 msgstr "Tutup"
 
 #: src/components/PersonContributions.tsx:39
-#: src/components/session/ContributorsTable.tsx:128
+#: src/components/session/ContributorsTable.tsx:127
 msgid "Comments"
 msgstr "Komentar"
 
@@ -219,11 +219,11 @@ msgstr "Penyumbang/Kontributor"
 msgid "Copy"
 msgstr "Salin"
 
-#: src/model/Folder/Folder.ts:228
+#: src/model/Folder/Folder.ts:235
 msgid "Copy Requested..."
 msgstr "Salin yang Diminta..."
 
-#: src/components/export/ExportDialog.tsx:359
+#: src/components/export/ExportDialog.tsx:399
 msgid "Copying in Files..."
 msgstr "Menyalin ke Files..."
 
@@ -231,23 +231,23 @@ msgstr "Menyalin ke Files..."
 msgid "Copying..."
 msgstr "Menyalin..."
 
-#: src/components/project/CreateProjectDialog.tsx:125
+#: src/components/project/CreateProjectDialog.tsx:127
 msgid "Create"
-msgstr ""
+msgstr "Buat"
 
-#: src/containers/HomePage.tsx:279
+#: src/containers/HomePage.tsx:282
 msgid "Create New Project"
 msgstr "Buat Proyek Baru"
 
-#: src/containers/HomePage.tsx:294
+#: src/containers/HomePage.tsx:297
 msgid "Create New Project with Sample Data"
 msgstr "Buat Proyek Baru dengan Contoh Data"
 
-#: src/components/project/CreateProjectDialog.tsx:73
+#: src/components/project/CreateProjectDialog.tsx:75
 msgid "Create New lameta Project"
 msgstr "Buat Proyek lameta Baru"
 
-#: src/components/project/CreateProjectDialog.tsx:72
+#: src/components/project/CreateProjectDialog.tsx:74
 msgid "Create Project Using Sample Data"
 msgstr "Buat Proyek Baru dengan Contoh Data"
 
@@ -255,7 +255,7 @@ msgstr "Buat Proyek Baru dengan Contoh Data"
 msgid "Create Project..."
 msgstr "Buat Proyek..."
 
-#: src/other/menu.ts:370
+#: src/other/menu.ts:378
 msgid "Credits"
 msgstr "Kredit/Penghargaan"
 
@@ -265,7 +265,7 @@ msgstr "Pilihan Akses yang disesuaikan"
 
 #: src/components/PropertyPanel.tsx:19
 msgid "Custom Field"
-msgstr "Field yang disesuaikan"
+msgstr "Kotak yang disesuaikan"
 
 #: app/components/CustomFieldsTable.tsx:158
 #~ msgid "Custom Fields"
@@ -324,7 +324,7 @@ msgstr "Dokumen-Dokumen Keterangan"
 msgid "Do not quit"
 msgstr "Jangan tutup"
 
-#: src/components/export/ExportDialog.tsx:347
+#: src/components/export/ExportDialog.tsx:392
 msgid "Done"
 msgstr "Selesai"
 
@@ -361,11 +361,11 @@ msgstr "Masukkan setiap pilihan dipisahkan dengan koma"
 msgid "Error"
 msgstr "Eror"
 
-#: src/components/export/ExportDialog.tsx:394
+#: src/components/export/ExportDialog.tsx:434
 msgid "Export"
 msgstr "Ekspor"
 
-#: src/components/export/ExportDialog.tsx:295
+#: src/components/export/ExportDialog.tsx:324
 msgid "Export Project"
 msgstr "Ekspor proyek"
 
@@ -373,21 +373,21 @@ msgstr "Ekspor proyek"
 msgid "Export Project..."
 msgstr "Ekspor proyek..."
 
-#: src/components/export/ExportDialog.tsx:335
+#: src/components/export/ExportDialog.tsx:374
 msgid "Exporting..."
 msgstr "Mengekspor..."
 
 #: src/components/CustomFieldsTable.tsx:158
 #: src/components/MoreFieldsTable.tsx:43
 msgid "Field"
-msgstr "Field"
+msgstr "Kotak"
 
-#: src/components/FolderPane.tsx:455
+#: src/components/FolderPane.tsx:460
 #: src/other/menu.ts:122
 msgid "File"
 msgstr "File"
 
-#: src/model/file/File.ts:1165
+#: src/model/file/File.ts:1179
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr "File locking dapat terjadi ketika pemutar media memegang file video. Ini juga bisa disebabkan oleh program anti-virus atau file sinkronisasi. Jika masalah terus berlanjut, mohon restart lameta dan coba lagi."
 
@@ -418,11 +418,11 @@ msgstr "Untuk dokumentasi bahasa saya"
 
 #: src/components/FolderList.tsx:152
 msgid "Found file with a name containing 'Consent'"
-msgstr ""
+msgstr "Ada file dengan nama yang mengandung 'Consent'"
 
 #: src/components/FolderList.tsx:159
 msgid "Found no file with a name containing 'Consent'"
-msgstr ""
+msgstr "Tidak ada file dengan nama yang mengandung 'Consent'"
 
 #: app/components/MediaStats.tsx:106
 #~ msgid "Frame rate"
@@ -430,31 +430,31 @@ msgstr ""
 
 #: src/model/Project/Project.ts:572
 msgid "Full Name"
-msgstr ""
+msgstr "Nama Lengkap"
 
-#: src/other/menu.ts:352
+#: src/other/menu.ts:360
 msgid "Help"
-msgstr ""
+msgstr "Bantuan"
 
-#: src/other/menu.ts:258
+#: src/other/menu.ts:266
 msgid "Help translate"
-msgstr ""
+msgstr "Bantu menerjemahkan"
 
 #: src/other/menu.ts:68
 msgid "Hide Others"
-msgstr ""
+msgstr "Sembunyikan Yang Lain"
 
 #: src/other/menu.ts:63
 msgid "Hide lameta"
-msgstr ""
+msgstr "Sembunyikan lameta"
 
 #: src/components/registration/RegistrationDialog.tsx:93
 msgid "How are you using lameta?"
-msgstr ""
+msgstr "Bagaimana Anda menggunakan lameta?"
 
 #: src/model/Project/Project.ts:563
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: app/components/FolderPane.tsx:79
 #: app/components/project/ProjectTab.tsx:36
@@ -465,52 +465,52 @@ msgstr ""
 #~ msgid "IMDI + Files"
 #~ msgstr ""
 
-#: src/other/menu.ts:266
+#: src/other/menu.ts:274
 msgid "IMDI Mode"
-msgstr ""
+msgstr "Modus IMDI"
 
 #: src/components/export/ExportChoices.tsx:76
 msgid "IMDI Only"
-msgstr ""
+msgstr "Hanya IMDI"
 
 #: src/components/FolderPane.tsx:403
-#: src/other/localization.ts:110
+#: src/other/localization.ts:123
 msgid "Image"
-msgstr ""
+msgstr "Gambar"
 
 #: src/components/import/SpreadsheetImportDialog.tsx:135
 #: src/components/Workspace.tsx:158
 msgid "Import Spreadsheet of People"
-msgstr ""
+msgstr "Impor Spreadsheet Orang"
 
 #: src/components/import/SpreadsheetImportDialog.tsx:134
 #: src/components/Workspace.tsx:92
 msgid "Import Spreadsheet of Sessions"
-msgstr ""
+msgstr "Impor Spreadsheet Sesi"
 
 #: src/components/import/SpreadsheetImportDialog.tsx:301
 msgid "Import {chosenCount} People"
-msgstr ""
+msgstr "Impor {chosenCount} Orang"
 
 #: src/components/import/SpreadsheetImportDialog.tsx:298
 msgid "Import {chosenCount} Sessions"
-msgstr ""
+msgstr "Impor {chosenCount} Sesi"
 
 #: src/components/import/SpreadsheetImportDialog.tsx:295
 msgid "Importing..."
-msgstr ""
+msgstr "Sedang mengimpor..."
 
 #: src/components/people/person/ParentButton.tsx:32
 msgid "Indicates that this is the father or mother's primary language."
-msgstr ""
+msgstr "Menunjukkan bahwa ini adalah bahasa utama ayah atau ibu."
 
 #: src/other/menu.ts:188
 msgid "Interface Language"
-msgstr ""
+msgstr "Bahasa Antarmuka"
 
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:148
 msgid "Language Code"
-msgstr ""
+msgstr "Kode Bahasa"
 
 #: app/components/people/person/PersonLanguageList.tsx:107
 #~ msgid "Languages"
@@ -518,36 +518,36 @@ msgstr ""
 
 #: src/other/menu.ts:179
 msgid "Larger"
-msgstr ""
+msgstr "Lebih besar"
 
 #: src/components/RegistrationReminder.tsx:26
 msgid "Learner"
-msgstr ""
+msgstr "Pembelajar"
 
 #: app/components/MediaStats.tsx:65
 #: app/components/MediaStats.tsx:65
 #~ msgid "Length"
 #~ msgstr ""
 
-#: src/model/file/FileStatus.tsx:42
+#: src/model/file/FileStatus.tsx:43
 msgid "Linked to {p}"
-msgstr ""
+msgstr "Terhubung ke {p}"
 
 #: src/components/people/person/OnePersonLanguageEditor.tsx:62
 msgid "Mark as a primary language of the mother."
-msgstr ""
+msgstr "Tandai sebagai bahasa utama ibu."
 
 #: src/components/people/person/OnePersonLanguageEditor.tsx:46
 msgid "Mark as a primary language."
-msgstr ""
+msgstr "Tandai sebagai bahasa utama."
 
 #: src/components/people/person/OnePersonLanguageEditor.tsx:69
 msgid "Mark as primary language of the father."
-msgstr ""
+msgstr "Tandai sebagai bahasa utama ayah."
 
 #: src/components/FolderList.tsx:81
 msgid "Mark for Deletion or Export"
-msgstr ""
+msgstr "Tandai untuk Dihapus atau Diekspor"
 
 #: app/components/FolderList.tsx:75
 #: app/components/FolderList.tsx:113
@@ -556,11 +556,11 @@ msgstr ""
 
 #: src/components/FolderList.tsx:122
 msgid "Mark for Export or Deletion"
-msgstr ""
+msgstr "Tandai untuk Diekspor atau Dihapus"
 
 #: src/components/MediaFolderDialog.tsx:71
 msgid "Media Folder"
-msgstr ""
+msgstr "Folder Media"
 
 #: app/components/MediaFolderDialog.tsx:45
 #~ msgid "Media Folder Settings"
@@ -568,21 +568,21 @@ msgstr ""
 
 #: src/other/menu.ts:151
 msgid "Media Folder Settings..."
-msgstr ""
+msgstr "Pengaturan Folder Media..."
 
 #: src/components/FileList.tsx:93
 msgid "Modified"
-msgstr ""
+msgstr "Dimodifikasi"
 
 #: src/components/MoreFieldsTable.tsx:84
 msgid "More Fields"
-msgstr ""
+msgstr "Kotak Lainnya"
 
 #: src/components/FileList.tsx:65
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:157
-#: src/components/session/ContributorsTable.tsx:112
+#: src/components/session/ContributorsTable.tsx:111
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #: src/components/people/PeopleTab.tsx:21
 #: src/components/Workspace.tsx:139
@@ -590,14 +590,14 @@ msgstr ""
 #: src/model/Project/Project.ts:432
 #: src/model/Project/Project.ts:436
 msgid "New Person"
-msgstr ""
+msgstr "Orang Baru"
 
 #: src/components/session/SessionsTab.tsx:24
 #: src/components/Workspace.tsx:71
 #: src/model/Project/Project.ts:347
 #: src/model/Project/Project.ts:383
 msgid "New Session"
-msgstr ""
+msgstr "Sesi Baru"
 
 #: app/components/MediaFolderDialog.tsx:56
 #~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
@@ -605,17 +605,17 @@ msgstr ""
 
 #: src/components/MediaFolderDialog.tsx:43
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
-msgstr ""
+msgstr "Biasanya, ketika Anda menambahkan file ke proyek, sesi, atau orang, file tersebut disalin ke dalam folder yang sama dengan proyek lameta Anda. Untuk beberapa file, mungkin Anda lebih suka tidak menyalin file tersebut dari lokasi asalnya dan hanya membuat 'tautan' ke file tersebut."
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:199
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
-msgstr ""
+msgstr "Perhatikan bahwa ini adalah tautan ke file di direktori Media Files Anda. Di sini, Anda mengganti nama tautan ini, bukan file asli yang ditunjuknya. Jika nanti Anda membuat ekspor yang menyertakan file ini, ekspor tersebut akan menggunakan nama ini."
 
 #: src/components/FolderPane.tsx:210
 #: src/components/FolderPane.tsx:259
 #: src/components/FolderPane.tsx:317
 msgid "Notes"
-msgstr ""
+msgstr "Catatan"
 
 #: src/components/LametaDialog.tsx:222
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:203
@@ -623,89 +623,89 @@ msgstr ""
 #: src/components/registration/RegistrationDialog.tsx:134
 #: src/components/ShowMessageDialog/MessageDialog.tsx:74
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/components/export/ExportChoices.tsx:91
 msgid "OPEX + Files"
-msgstr ""
+msgstr "OPEX + File-File"
 
 #: src/index.tsx:49
 msgid "One or more files are still being copied into your project."
-msgstr ""
+msgstr "Satu atau beberapa file masih dalam proses penyalinan ke proyek Anda."
 
 #: src/components/FileList.tsx:157
 msgid "Open"
-msgstr ""
+msgstr "Buka"
 
-#: src/containers/HomePage.tsx:284
+#: src/containers/HomePage.tsx:287
 msgid "Open Project"
-msgstr ""
+msgstr "Buka Proyek"
 
-#: src/containers/HomePage.tsx:330
+#: src/containers/HomePage.tsx:333
 #: src/other/menu.ts:125
 msgid "Open Project..."
-msgstr ""
+msgstr "Buka Proyek..."
 
 #: app/containers/HomePage.tsx:165
 #~ msgid "Open SayMore Project"
 #~ msgstr ""
 
-#: src/components/FolderPane.tsx:444
+#: src/components/FolderPane.tsx:449
 msgid "Open in ELAN"
-msgstr ""
+msgstr "Buka di ELAN"
 
 #: src/components/FileList.tsx:286
 msgid "Open in program associated with this file type"
-msgstr ""
+msgstr "Buka dengan program yang terkait dengan jenis file ini"
 
 #: src/components/project/ProjectTab.tsx:42
 msgid "Other Documents"
-msgstr ""
+msgstr "Dokumen Lainnya"
 
 #: app/components/people/person/PersonForm.tsx:46
 #~ msgid "Other Languages"
 #~ msgstr ""
 
-#: src/other/menu.ts:275
+#: src/other/menu.ts:283
 msgid "PARADISEC Mode"
-msgstr ""
+msgstr "Modus PARADISEC"
 
 #: src/components/export/ExportChoices.tsx:46
 msgid "Paradisec CSV"
-msgstr ""
+msgstr "CSV PARADISEC"
 
 #: src/other/menu.ts:109
 msgid "Paste"
-msgstr ""
+msgstr "Tempel"
 
 #: src/components/session/PeopleChooser.tsx:94
 #: src/components/Workspace.tsx:136
 #: src/components/Workspace.tsx:314
 msgid "People"
-msgstr ""
+msgstr "Orang-Orang"
 
 #: src/components/FolderPane.tsx:311
 #: src/model/Project/Project.ts:573
-#: src/other/localization.ts:106
+#: src/other/localization.ts:119
 msgid "Person"
-msgstr ""
+msgstr "Orang"
 
 #: src/components/RegistrationReminder.tsx:18
 msgid "Please Register"
-msgstr ""
+msgstr "Tolong Daftarkan"
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:98
 msgid "Please remove characters that not allowed by the Archive Settings."
-msgstr ""
+msgstr "Silakan hapus karakter yang tidak diizinkan oleh Pengaturan Arsip."
 
-#: src/model/Folder/Folder.ts:412
+#: src/model/Folder/Folder.ts:419
 msgid "Please wait until all files are finished copying into this folder"
-msgstr ""
+msgstr "Tunggu sampai semua file-file selesai disalin ke dalam folder ini"
 
 #: src/components/Workspace.tsx:302
-#: src/other/localization.ts:102
+#: src/other/localization.ts:115
 msgid "Project"
-msgstr ""
+msgstr "Proyek"
 
 #: app/components/project/CreateProjectDialog.tsx:42
 #~ msgid "Project will be created in: {folderPath}"
@@ -715,58 +715,58 @@ msgstr ""
 #~ msgid "Project will be created in: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:68
+#: src/components/project/CreateProjectDialog.tsx:70
 msgid "Project will be created in: {path}."
-msgstr ""
+msgstr "Proyek akan dibuat di: {path}."
 
 #: src/components/FolderPane.tsx:204
 msgid "Properties"
-msgstr ""
+msgstr "Properti"
 
 #: src/other/menu.ts:80
 msgid "Quit"
-msgstr ""
+msgstr "Keluar"
 
 #: src/other/menu.ts:97
 msgid "Redo"
-msgstr ""
+msgstr "Ulangi"
 
 #: src/components/registration/RegistrationDialog.tsx:73
 msgid "Registration"
-msgstr ""
+msgstr "Pendaftaran"
 
-#: src/other/menu.ts:355
+#: src/other/menu.ts:363
 msgid "Registration..."
-msgstr ""
+msgstr "Pendaftaran..."
 
 #: src/components/ReleasesDialog.tsx:115
 msgid "Release Notes"
-msgstr ""
+msgstr "Catatan Rilis"
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:220
 msgid "Rename"
-msgstr ""
+msgstr "Ubah Nama"
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:154
 msgid "Rename File"
-msgstr ""
+msgstr "Ubah Nama File"
 
 #: src/components/people/PeopleTab.tsx:26
 msgid "Rename for Consent"
-msgstr ""
+msgstr "Ubahn Nama untuk Persetujuan"
 
 #: src/components/FileList.tsx:171
 #: src/components/FileList.tsx:295
 msgid "Rename..."
-msgstr ""
+msgstr "Ubah Nama..."
 
-#: src/model/file/File.ts:1022
+#: src/model/file/File.ts:1036
 msgid "Renaming failed because there is already a file with that name."
-msgstr ""
+msgstr "Penggantian nama gagal karena sudah ada sebuah file dengan nama tersebut."
 
-#: src/other/menu.ts:361
+#: src/other/menu.ts:369
 msgid "Report a problem"
-msgstr ""
+msgstr "Laporkan masalah"
 
 #: app/components/MediaStats.tsx:103
 #~ msgid "Resolution"
@@ -774,24 +774,24 @@ msgstr ""
 
 #: src/other/patientFile.ts:91
 msgid "Restart lameta and do the rename before playing the video again."
-msgstr ""
+msgstr "Restart lameta dan lakukan penggantian nama sebelum memutar video lagi."
 
 #: src/components/PersonContributions.tsx:32
-#: src/components/session/ContributorsTable.tsx:117
+#: src/components/session/ContributorsTable.tsx:116
 msgid "Role"
-msgstr ""
+msgstr "Peran"
 
-#: src/components/export/ExportDialog.tsx:112
+#: src/components/export/ExportDialog.tsx:120
 msgid "Save As"
-msgstr ""
+msgstr "Simpan Sebagai"
 
 #: src/components/SaveNotifier.tsx:65
 msgid "Saving"
-msgstr ""
+msgstr "Sedang menyimpan"
 
 #: src/components/SaveNotifier.tsx:62
 msgid "Saving before rename..."
-msgstr ""
+msgstr "Menyimpan sebelum ubah nama..."
 
 #: app/containers/HomePage.tsx:192
 #~ msgid "SayMore/SayMore Project Files"
@@ -799,111 +799,111 @@ msgstr ""
 
 #: src/other/menu.ts:114
 msgid "Select All"
-msgstr ""
+msgstr "Pilih Semua"
 
 #: src/other/menu.ts:56
 msgid "Services"
-msgstr ""
+msgstr "Layanan"
 
 #: src/components/FolderPane.tsx:250
 #: src/components/PersonContributions.tsx:26
 #: src/components/Workspace.tsx:68
 #: src/model/Project/Project.ts:564
-#: src/other/localization.ts:104
+#: src/other/localization.ts:117
 msgid "Session"
-msgstr ""
+msgstr "Sesi"
 
 #: src/components/Workspace.tsx:308
 msgid "Sessions"
-msgstr ""
+msgstr "Sesi"
 
 #: src/other/menu.ts:73
 msgid "Show All"
-msgstr ""
+msgstr "Tampilkan Semua"
 
-#: src/other/menu.ts:374
+#: src/other/menu.ts:382
 msgid "Show Release Notes"
-msgstr ""
+msgstr "Lihat Catatan Rilis"
 
-#: src/components/export/ExportDialog.tsx:421
+#: src/components/export/ExportDialog.tsx:461
 msgid "Show export"
-msgstr ""
+msgstr "Tampilkan Ekspor"
 
 #: src/components/FileList.tsx:279
 msgid "Show in File Explorer"
-msgstr ""
+msgstr "Tampilkan di File Explorer"
 
 #: src/components/FileList.tsx:278
 msgid "Show in Finder"
-msgstr ""
+msgstr "Tampilkan di Finder"
 
 #: src/components/Notify.tsx:276
 msgid "Show me the folder with the problem"
-msgstr ""
+msgstr "Tampilkan folder yang ada masalah"
 
 #: src/components/ReleasesDialog.tsx:224
 msgid "Show more releases"
-msgstr ""
+msgstr "Tambilkan rilis-rilis lebih banyak"
 
 #: src/components/FileList.tsx:117
 msgid "Size"
-msgstr ""
+msgstr "Ukuran"
 
 #: src/other/menu.ts:172
 msgid "Smaller"
-msgstr ""
+msgstr "Lebih kecil"
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:94
 msgid "Some operating systems would not allow that name."
-msgstr ""
+msgstr "Beberapa sistem operasi mungkin tidak mengizinkan nama tersebut."
 
 #: src/components/Notify.tsx:277
 msgid "Something is wrong here..."
-msgstr ""
+msgstr "Ada yang salah di sini..."
 
 #: src/components/RenameFileDialog/RenameFileDialog.tsx:101
 msgid "Sorry, no slashes are allowed"
-msgstr ""
+msgstr "Maaf, tidak diperbolehkan menggunakan tanda garis miring (\"/\")"
 
 #: src/other/menu.ts:138
 msgid "Start Screen"
-msgstr ""
+msgstr "Layar Awal"
 
 #: src/components/FolderPane.tsx:256
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
-#: src/components/FolderPane.tsx:418
+#: src/components/FolderPane.tsx:422
 msgid "Text"
-msgstr ""
+msgstr "Teks"
 
 #: src/model/Project/Project.ts:536
 msgid "That name would lead to an empty filename."
-msgstr ""
+msgstr "Nama itu akan menghasilkan nama file kosong."
 
 #: app/model/Project/Project.ts:178
 #~ msgid "That would lead to an empty filename"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:351
+#: src/components/export/ExportDialog.tsx:387
 msgid "The IMDI files were validated."
-msgstr ""
+msgstr "File IMDI telah divalidasi."
 
-#: src/model/file/FileStatus.tsx:96
+#: src/model/file/FileStatus.tsx:98
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
-msgstr ""
+msgstr "File tersebut tidak ada di lokasi yang diharapkan di Folder Media. Folder Media diatur ke {m} dan fili ini seharusnya berada di {e}"
 
 #: src/model/Project/Project.ts:534
 msgid "The {fieldNameInUiLanguage} cannot be empty"
-msgstr ""
+msgstr "{fieldNameInUiLanguage} tidak boleh kosong"
 
 #: src/components/Notify.tsx:278
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
-msgstr ""
+msgstr "Ada lebih dari satu file dengan jenis \"{projectType}\" di folder ini, padahal hanya boleh ada satu."
 
 #: src/components/Notify.tsx:272
 msgid "There is a problem with {displayName}. Click for more information."
-msgstr ""
+msgstr "Ada masalah dengan {displayName}. Klik untuk informasi lebih lanjut."
 
 #: app/model/Project/Project.ts:208
 #~ msgid "There is already a Person with that name or code"
@@ -911,23 +911,23 @@ msgstr ""
 
 #: src/model/Project/Project.ts:586
 msgid "There is already a Person with that name or code."
-msgstr ""
+msgstr "Sudah ada Orang dengan nama atau kode tersebut."
 
-#: src/model/Folder/Folder.ts:209
+#: src/model/Folder/Folder.ts:216
 msgid "There is already a file here with the name"
-msgstr ""
+msgstr "Sudah ada sebuah file di sini dengan nama tersebut"
 
 #: app/components/project/CreateProjectDialog.tsx:37
 #~ msgid "There is already a project at: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:64
+#: src/components/project/CreateProjectDialog.tsx:66
 msgid "There is already a project at: {path}."
-msgstr ""
+msgstr "Sudah ada sebuah proyek di: {path}."
 
 #: src/model/Project/Project.ts:545
 msgid "There is already a {folderKind} \"{value}\"."
-msgstr ""
+msgstr "Sudah ada sebuah {folderKind} \"{value}\"."
 
 #: app/model/Project/Project.ts:183
 #~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
@@ -945,17 +945,21 @@ msgstr ""
 #~ msgid "There is already a {folderKind} with the name '{value}'"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:138
+#: src/components/export/ExportDialog.tsx:167
 msgid "There was a problem exporting:"
+msgstr "Ada masalah saat mengekspor:"
+
+#: src/components/ImdiView.tsx:132
+msgid "This XML conforms to the IMDI schema."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:65
+#: src/model/file/FileStatus.tsx:66
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
-msgstr ""
+msgstr "Ini adalah sebuah tautan, namun lameta tidak tahu di mana Folder Media untuk proyek ini. Lihat file: Pengaturan Folder Media."
 
 #: src/components/MediaFolderDialog.tsx:60
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
-msgstr ""
+msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seorang rekan di komputer lain perlu mengatur nilai ini ke lokasi yang benar di komputer mereka."
 
 #: app/other/crossPlatformUtilities.ts:25
 #~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
@@ -967,25 +971,25 @@ msgstr ""
 
 #: src/components/FileList.tsx:84
 msgid "Type"
-msgstr ""
+msgstr "Tipe"
 
 #: src/other/menu.ts:92
 msgid "Undo"
-msgstr ""
+msgstr "Batalkan"
 
 #: src/components/Notify.tsx:246
 msgid "Update available"
-msgstr ""
+msgstr "Pembaruan/Update tersedia"
 
 #: src/components/CustomFieldsTable.tsx:175
 #: src/components/MoreFieldsTable.tsx:51
 msgid "Value"
-msgstr ""
+msgstr "Nilai"
 
 #: src/components/FolderPane.tsx:378
-#: src/other/localization.ts:108
+#: src/other/localization.ts:121
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: app/components/MediaStats.tsx:101
 #~ msgid "Video Codec"
@@ -993,26 +997,25 @@ msgstr ""
 
 #: src/other/menu.ts:165
 msgid "View"
-msgstr ""
+msgstr "Lihat"
 
 #: src/components/Notify.tsx:252
 msgid "View Release Notes"
-msgstr ""
+msgstr "Lihat Catatan Rilis"
 
 #: src/components/Notify.tsx:212
 msgid "Warning"
-msgstr ""
+msgstr "Peringatan"
 
 #: src/components/Notify.tsx:140
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
-msgstr ""
+msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bisa memperbaikinya dengan me-restart komputer, harap laporkan masalah ini ke https://github.com/onset/lameta/issues."
 
-#: src/components/project/CreateProjectDialog.tsx:94
+#: src/components/project/CreateProjectDialog.tsx:96
 msgid "What would you like to call this project?"
-msgstr ""
+msgstr "Koleksi ini akan diberi nama apa?"
 
 #: app/components/MediaStats.tsx:53
 #: app/components/MediaStats.tsx:53
@@ -1021,7 +1024,7 @@ msgstr ""
 
 #: src/components/ReleasesDialog.tsx:128
 msgid "You are running lameta version:"
-msgstr ""
+msgstr "Anda menjalankan versi lameta:"
 
 #: app/components/ReleasesDialog.tsx:127
 #~ msgid "You are running lameta version: {v}"
@@ -1035,25 +1038,25 @@ msgstr ""
 #~ msgid "You are running lameta {version}"
 #~ msgstr ""
 
-#: src/components/FileList.tsx:346
+#: src/components/FileList.tsx:345
 msgid "You cannot add files of that type"
-msgstr ""
+msgstr "Tidak dapat tambah file jenis itu"
 
-#: src/components/FileList.tsx:350
+#: src/components/FileList.tsx:349
 msgid "You cannot add folders."
-msgstr ""
+msgstr "Anda tidak bisa menambahkan folder."
 
-#: src/components/export/ExportDialog.tsx:119
+#: src/components/export/ExportDialog.tsx:127
 msgid "ZIP Archive"
-msgstr ""
+msgstr "Arsip ZIP"
 
 #: src/components/export/ExportChoices.tsx:30
 msgid "Zip of CSVs"
-msgstr ""
+msgstr "Arsip ZIP dengan semua CSV"
 
 #: src/components/IsoLanguageEdit.tsx:32
 msgid "choose..."
-msgstr ""
+msgstr "pilih..."
 
 #: app/components/MediaStats.tsx:54
 #: app/components/MediaStats.tsx:54
@@ -1062,12 +1065,12 @@ msgstr ""
 
 #: src/other/menu.ts:46
 msgid "lameta"
-msgstr ""
+msgstr "lameta"
 
 #: src/components/Notify.tsx:75
-#: src/model/file/File.ts:41
+#: src/model/file/File.ts:40
 msgid "lameta  was not able to rename that file."
-msgstr ""
+msgstr "lameta tidak dapat mengubah nama file tersebut."
 
 #: app/components/MediaFolderDialog.tsx:64
 #~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
@@ -1075,60 +1078,64 @@ msgstr ""
 
 #: src/components/MediaFolderDialog.tsx:51
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
-msgstr ""
+msgstr "lameta memungkinkan Anda untuk menentukan satu 'Folder Media'. Ketika Anda menambahkan file yang berada di dalam folder itu, lameta akan membuat tautan tetapi tidak menyalinnya. Folder ini bisa berada di mana saja, termasuk di root dari drive eksternal di mana Anda menyimpan rekaman video besar."
 
-#: src/containers/HomePage.tsx:337
+#: src/containers/HomePage.tsx:340
 msgid "lameta and SayMore Project Files"
-msgstr ""
+msgstr "file Proyek lameta dan SayMore"
 
-#: src/components/export/ExportDialog.tsx:255
+#: src/components/export/ExportDialog.tsx:284
 msgid "lameta cannot export files while files are still being copied in."
-msgstr ""
+msgstr "lameta tidak dapat mengekspor file-file ketika masih dalam proses penyalinan masuk."
 
-#: src/model/file/FileStatus.tsx:68
+#: src/model/file/FileStatus.tsx:69
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
-msgstr ""
+msgstr "lameta tidak dapat menemukan Folder Media {m}. Lihat Berkas: Pengaturan Folder Media."
 
-#: src/model/Folder/Folder.ts:426
-msgid "lameta could not rename the directory."
-msgstr ""
-
-#: src/model/file/FileStatus.tsx:84
-msgid "lameta expected to find a .link file at {e}"
+#: src/model/Project/Session/Session.ts:312
+msgid "lameta could not find a matching Person for the following contributors:"
 msgstr ""
 
 #: src/model/Folder/Folder.ts:433
+msgid "lameta could not rename the directory."
+msgstr "lameta tidak bisa mengubah nama direktori tersebut."
+
+#: src/model/file/FileStatus.tsx:86
+msgid "lameta expected to find a .link file at {e}"
+msgstr "lameta mengharapkan menemukan sebuah file .link di {e}"
+
+#: src/model/Folder/Folder.ts:440
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
-msgstr ""
+msgstr "lameta mencoba mengubah nama folder \"{oldFolderName}\" menjadi \"{newFolderName}\", namun sudah ada sebuah folder dengan nama tersebut."
 
-#: src/other/crossPlatformUtilities.ts:28
+#: src/other/crossPlatformUtilities.ts:25
 msgid "lameta was not able to delete the file."
-msgstr ""
+msgstr "lameta tidak dapat menghapus file tersebut."
 
-#: src/model/Folder/Folder.ts:385
+#: src/model/Folder/Folder.ts:392
 msgid "lameta was not able to put this file in the trash"
-msgstr ""
+msgstr "lameta tidak dapat memindahkan file ini ke tempat sampah"
 
-#: src/model/Folder/Folder.ts:466
+#: src/model/Folder/Folder.ts:473
 msgid "lameta was not able to rename one of the files in the folder."
-msgstr ""
+msgstr "lameta tidak dapat mengubah nama salah satu file di dalam folder tersebut."
 
 #: app/model/file/File.ts:682
 #~ msgid "lameta was not able to rename that file."
 #~ msgstr ""
 
-#: src/model/Folder/Folder.ts:481
+#: src/model/Folder/Folder.ts:488
 msgid "lameta was not able to rename the folder."
-msgstr ""
+msgstr "lameta tidak dapat mengubah nama folder tersebut."
 
 #. Shows in a tooltip on an info icon in the Notes tab
 #: src/components/Notes.tsx:31
 msgid "lameta will not export Notes to MIDI"
-msgstr ""
+msgstr "lameta tidak akan mengekspor Catatan ke format MIDI"
 
 #: src/components/Notify.tsx:279
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
-msgstr ""
+msgstr "Sekarang, lameta akan membuka folder ini di hard disk Anda dan kemudian akan keluar. Anda sebaiknya membuka file-file {projectType} ini di editor teks dan memutuskan mana yang ingin Anda gunakan, kemudian hapus yang lainnya. File yang Anda pilih sebaiknya dinamai {name}."
 
 #: app/model/file/FileStatus.tsx:67
 #~ msgid "undefined"
@@ -1140,7 +1147,7 @@ msgstr ""
 
 #: src/components/export/ExportChoices.tsx:119
 msgid "{0} Marked Sessions"
-msgstr ""
+msgstr "{0} Sesi yang Ditandai"
 
 #: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:94
 #~ msgid "{0} will be moved to the Trash"
@@ -1152,4 +1159,5 @@ msgstr ""
 
 #: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:89
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
-msgstr ""
+msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
+

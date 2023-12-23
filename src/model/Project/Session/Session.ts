@@ -9,6 +9,8 @@ import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
 import userSettingsSingleton from "../../../other/UserSettings";
 import { runInAction } from "mobx";
+import { i18n } from "../../../other/localization";
+import { t } from "@lingui/macro";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -305,10 +307,12 @@ export class Session extends Folder {
       }
     });
     if (violations.length === 0) return "";
-    else
-      return `lameta could not find a matching Person for the following contributors: ${violations.join(
-        " "
-      )}`;
+    else {
+      const s = i18n._(
+        t`lameta could not find a matching Person for the following contributors:`
+      );
+      return s + violations.join(" ");
+    }
   }
 }
 

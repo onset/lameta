@@ -14,6 +14,7 @@ import syntaxStyle from "./ImdiSyntaxStyle";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
 import Alert from "@material-ui/lab/Alert";
+import { Trans } from "@lingui/macro";
 registerLanguage("xml", xmlLang);
 
 export const ImdiView: React.FunctionComponent<{
@@ -127,7 +128,9 @@ export const ImdiView: React.FunctionComponent<{
         </>
       )}
       {validationResult?.valid && (
-        <Alert severity="success">This XML conforms to the IMDI schema.</Alert>
+        <Alert severity="success">
+          <Trans>This XML conforms to the IMDI schema.</Trans>
+        </Alert>
       )}
       {validationResult && !validationResult.valid && (
         <Alert severity="error">

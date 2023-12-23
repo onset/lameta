@@ -14,7 +14,7 @@ import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
 import fs from "fs";
 
-const languages = ["en", "es", "zh-CN", "fa", "fr", "ps", "ru", "pt-BR"];
+const languages = ["en", "es", "zh-CN", "fa", "fr", "id", "ps", "ru", "pt-BR"];
 export const catalogs = {};
 export let currentUILanguage: string;
 // in the past we had to have our own version, with the upgrade to lingui 3
@@ -217,8 +217,12 @@ function getMatch(
     }
   }
 
-  const currentLanguageWithIndonesianFix =
-    currentUILanguage === "id" ? "indonesian" : currentUILanguage;
+  // const currentLanguageWithIndonesianFix =
+  //   currentUILanguage === "id" ? "indonesian" : currentUILanguage;
+
+  if (match && match[currentUILanguage]) {
+    return match[currentUILanguage];
+  }
 
   // for some reason, crowdin does spanish as "es-ES", but then saves it to "es", so we have this mix
   if (match && currentUILanguage === "es" && match["es-ES"]) {

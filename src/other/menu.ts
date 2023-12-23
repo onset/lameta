@@ -213,7 +213,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "zh-CN"
             },
             {
-              label: "Français  (93%)",
+              label: "Français  (98%)",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
