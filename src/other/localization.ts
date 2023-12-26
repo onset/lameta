@@ -214,5 +214,5 @@ function getMatch(
 }
 
 export function i18nUnitTestPrep() {
-  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
+  i18n.loadLocaleData(i18n.locale, { plurals: (x) => "other" }); // silence i18n error  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
 }
