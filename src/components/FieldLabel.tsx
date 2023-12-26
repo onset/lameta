@@ -56,7 +56,7 @@ export const FieldLabel: React.FunctionComponent<{
     );
 
   return (
-    <>
+    <div style={{ display: "flex" }}>
       {labelMaybeWithTooltip}
       {props.fieldDef.personallyIdentifiableInformation ? (
         <InfoAffordance>
@@ -67,6 +67,6 @@ export const FieldLabel: React.FunctionComponent<{
         </InfoAffordance>
       ) : null}
       {specialInfo ? <InfoAffordance>{specialInfo}</InfoAffordance> : null}
-    </>
+    </div>
   );
 });
