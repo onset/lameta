@@ -173,6 +173,11 @@ function getMatch(
   fileThatShouldHaveThis: string,
   fieldName?: string
 ): string {
+  // there is a mismatch in the plurality of the CSV's "Subject Language" and the code's "Subject Languages"
+  // I'd rather fix this when we get out of using the CSV as I'm concerned about losing translations in Crowdin.
+  if (s.toLowerCase().indexOf("subject language") > -1) {
+    s = "Subject Languages";
+  }
   const match = lines.find((f) => f.en.toLowerCase() === s.toLowerCase());
 
   if (currentUILanguage === "ps") {

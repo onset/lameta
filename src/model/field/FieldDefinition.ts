@@ -43,7 +43,7 @@ export class FieldDefinition {
       rawObject.additional === true || rawObject.additional === "true";
     /// if englishLabel wasn't specified, derive it from the key
     if (!this.englishLabel) {
-      this.englishLabel = CapitalCase(this.key);
+      this.englishLabel = this.key;
     }
   }
 }
