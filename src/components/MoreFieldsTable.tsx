@@ -10,90 +10,82 @@ import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
 import { i18n } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
+import { useEffect, useState } from "react";
 
 export interface IProps {
   folder: Folder;
 }
 
-class AdditionalFieldsTable extends React.Component<IProps> {
-  private fieldsForRows: Field[];
-  constructor(props: IProps) {
-    super(props);
-    this.state = { fieldsForRows: [] };
-  }
+const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
+  const [fieldsForRows, setFieldsForRows] = useState<Field[]>([]);
 
-  public UNSAFE_componentWillMount() {
-    this.computeRows(this.props);
-  }
-  public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
-    // for the bug that prompted using this, see https://trello.com/c/9keiiGFA
-    this.computeRows(nextProps);
-  }
-  private computeRows(nextProps: IProps) {
-    this.fieldsForRows = nextProps.folder.properties
+  useEffect(() => {
+    computeRows(folder);
+  }, [folder]);
+
+  const computeRows = (folder: Folder) => {
+    const filteredFields = folder.properties
       .values()
       .filter((f) => (f.definition ? f.definition.isAdditional : false));
-    //     .sort((a, b) => a.englishLabel.localeCompare(b.englishLabel)); // enhance: really we don't care about your locale, we care about the language of the label
-  }
+    setFieldsForRows(filteredFields);
+  };
 
-  public render() {
-    const additionalFieldTableColumns = [
-      {
-        id: "name",
-        Header: t`Field`,
-        Cell: (cellInfo: any) => {
-          const field = cellInfo.original as Field;
-          return field.labelInUILanguage;
-        }
-      },
-      {
-        id: "value",
-        Header: t`Value`,
-        Cell: (cellInfo: any) => {
-          const field = cellInfo.original as Field;
+  const additionalFieldTableColumns = [
+    {
+      id: "name",
+      Header: t`Field`,
+      Cell: (cellInfo: any) => {
+        const field = cellInfo.original as Field;
+        return field.labelInUILanguage;
+      }
+    },
+    {
+      id: "value",
+      Header: t`Value`,
+      Cell: (cellInfo: any) => {
+        const field = cellInfo.original as Field;
 
-          const f = field as Field;
-          if (f.choices && f.choices.length > 0) {
-            return (
-              <ClosedChoiceEdit
-                includeLabel={false}
-                field={f}
-                key={field.key}
-                className={field.cssClass}
-              />
-            );
-          } else {
-            return (
-              <TextFieldEdit
-                hideLabel={true}
-                className={field.cssClass}
-                key={field.key}
-                field={field as Field}
-              />
-            );
-          }
+        const f = field as Field;
+        if (f.choices && f.choices.length > 0) {
+          return (
+            <ClosedChoiceEdit
+              includeLabel={false}
+              field={f}
+              key={field.key}
+              className={field.cssClass}
+            />
+          );
+        } else {
+          return (
+            <TextFieldEdit
+              hideLabel={true}
+              className={field.cssClass}
+              key={field.key}
+              field={field as Field}
+            />
+          );
         }
       }
-    ];
+    }
+  ];
 
-    return (
-      <div className="moreFieldsBlock">
-        {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in lameta we
+  return (
+    <div className="moreFieldsBlock">
+      {/* In SayMore classic, the file format calls these fields "additional", but in the ui it calls them "more". So in lameta we
           too are using the 'additional' term internally, and 'more' in the English label. */}
-        <label>
-          <Trans>More Fields</Trans>
-        </label>
-        <ReactTable
-          className="moreFieldsTable"
-          noDataText=""
-          showPagination={false}
-          data={this.fieldsForRows}
-          columns={additionalFieldTableColumns}
-          minRows={1} //don't add extra blank rows
-        />
-      </div>
-    );
-  }
-}
+      <label>
+        <Trans>More Fields</Trans>
+      </label>
+      <ReactTable
+        className="moreFieldsTable"
+        noDataText=""
+        showPagination={false}
+        data={fieldsForRows}
+        columns={additionalFieldTableColumns}
+        minRows={1} //don't add extra blank rows
+      />
+    </div>
+  );
+});
 
-export default observer(AdditionalFieldsTable);
+export default AdditionalFieldsTable;

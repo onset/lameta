@@ -64,10 +64,6 @@ export function setUILanguage(code: string, reload: boolean = true) {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
 
-  // we don't actually use this plural function but without it, we get console errors if we don't set this.
-  const pluralFn = allPlurals[code] || allPlurals["en"];
-  i18n.loadLocaleData(code, { plurals: pluralFn });
-
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
@@ -88,7 +84,7 @@ export function setUILanguage(code: string, reload: boolean = true) {
 
   userSettings.UILanguage = code;
 
-  if (reload) remote.getCurrentWindow().reload();
+  //if (reload) remote.getCurrentWindow().reload();
 }
 
 // This is for strings that are not part of react, e.g. menus. They use this i18n variable to do localization
@@ -197,7 +193,7 @@ function getMatch(
   fileThatShouldHaveThis: string,
   fieldName?: string
 ): string {
-  const match = lines.find((f) => f.en === s);
+  const match = lines.find((f) => f.en.toLowerCase() === s.toLowerCase());
 
   if (currentUILanguage === "ps") {
     // do we have a column for english for this?
