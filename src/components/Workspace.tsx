@@ -296,19 +296,28 @@ class Home extends React.Component<IProps> {
             `}
           >
             <TabList style={{ margin: 0 }}>
-              <Tab className={"react-tabs__tab tab-project"}>
+              <Tab
+                className={"react-tabs__tab tab-project"}
+                data-testid="project-tab"
+              >
                 <div className={"icon-and-label"}>
                   <ProjectIcon />
                   <Trans>Project</Trans>
                 </div>
               </Tab>
-              <Tab className={"react-tabs__tab tab-sessions"}>
+              <Tab
+                className={"react-tabs__tab tab-sessions"}
+                data-testid="sessions-tab"
+              >
                 <div className={"icon-and-label"}>
                   <SessionIcon />
                   <Trans>Sessions</Trans>
                 </div>
               </Tab>
-              <Tab className={"react-tabs__tab tab-people"}>
+              <Tab
+                className={"react-tabs__tab tab-people"}
+                data-testid="people-tab"
+              >
                 <div className={"icon-and-label"}>
                   <PeopleIcon />
                   <Trans>People</Trans>

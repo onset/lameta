@@ -125,12 +125,14 @@ export default class RegistrationDialog extends React.Component<
               <div className={"reverseOrderOnMac"}>
                 <button
                   name="Cancel"
+                  data-testid="cancel"
                   onClick={() => this.handleCloseModal(false)}
                 >
                   <Trans>Cancel</Trans>
                 </button>
                 <button
                   id="okButton"
+                  data-testid="ok"
                   name="OK"
                   disabled={!this.state.acceptable}
                   onClick={() => this.handleCloseModal(true)}

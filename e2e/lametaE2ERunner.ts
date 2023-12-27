@@ -39,13 +39,11 @@ export class LametaE2ERunner {
   }
 
   public async clickMenu(
-    menuId: string,
     menuLabel: string,
-    itemId: string,
-    itemLabel: string
+    itemLabel: string,
+    subMenuChoiceLabel?: string
   ) {
-    console.log(`clickMenu(${menuId}, ${itemId})`);
-    const x = { menuId, itemId };
+    //console.log(`clickMenu(${menuLabel}, ${itemLabel})`);
     await this.electronApp.evaluate(
       async ({ Menu, dialog }, params) => {
         const menubar = Menu.getApplicationMenu();
@@ -76,8 +74,15 @@ export class LametaE2ERunner {
         // });
 
         item?.click();
+
+        if (params.subMenuChoiceLabel) {
+          const subMenuChoice = item?.submenu?.items.find(
+            (item) => item.label.replace(/&/g, "") === params.subMenuChoiceLabel
+          );
+          subMenuChoice?.click();
+        }
       },
-      { menuId, menuLabel, itemId, itemLabel }
+      { menuLabel, itemLabel, subMenuChoiceLabel }
     );
   }
 
@@ -101,7 +106,7 @@ export class LametaE2ERunner {
   }
 
   public async cancelRegistration() {
-    const cancel = await this.page.getByRole("button", { name: "CANCEL" });
+    const cancel = await this.page.getByTestId("cancel"); //.getByRole("button", { name: "Cancel" });
     await cancel.click();
   }
 }

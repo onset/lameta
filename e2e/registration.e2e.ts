@@ -16,7 +16,6 @@ test.describe("Registration", () => {
 
   test("register then front window should be the start screen", async () => {
     const ok = await page.getByRole("button", { name: "OK" });
-
     await expect(ok).toBeDisabled();
     const email = await page.locator('input:below(:text("Email"))').first();
     await email.click();
