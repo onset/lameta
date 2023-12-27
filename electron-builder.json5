@@ -60,6 +60,7 @@
     artifactName: "${productName} Windows Setup ${version}.${ext}"
   },
   mac: {
+    target: "dmg",
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
