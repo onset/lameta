@@ -3237,7 +3237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/asar@npm:^3.2.1":
+"@electron/asar@npm:^3.2.1, @electron/asar@npm:^3.2.4":
   version: 3.2.8
   resolution: "@electron/asar@npm:3.2.8"
   dependencies:
@@ -3247,24 +3247,6 @@ __metadata:
   bin:
     asar: bin/asar.js
   checksum: 878d3b9ad232e4e8bb179ed50ed81244481c5dfe667952545a841f3afd782479c1d7e353f8fdedac771e029927b0f31b0a05a41f34cfc7c3099a064733c6d50a
-  languageName: node
-  linkType: hard
-
-"@electron/asar@npm:^3.2.2":
-  version: 3.2.3
-  resolution: "@electron/asar@npm:3.2.3"
-  dependencies:
-    "@types/glob": ^7.1.1
-    chromium-pickle-js: ^0.2.0
-    commander: ^5.0.0
-    glob: ^7.1.6
-    minimatch: ^3.0.4
-  dependenciesMeta:
-    "@types/glob":
-      optional: true
-  bin:
-    asar: bin/asar.js
-  checksum: 67ce7170fc4fc1d4157c03e4d2a03cba461835f77df449d659a71eaf69a412a765bf27198935d8d4ce6c9070bb563dd9fe2a2618863830c0ec2708e53d48dc5c
   languageName: node
   linkType: hard
 
@@ -4502,18 +4484,13 @@ __metadata:
   linkType: hard
 
 "@playwright/test@npm:^1.32.2":
-  version: 1.32.2
-  resolution: "@playwright/test@npm:1.32.2"
+  version: 1.40.1
+  resolution: "@playwright/test@npm:1.40.1"
   dependencies:
-    "@types/node": "*"
-    fsevents: 2.3.2
-    playwright-core: 1.32.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
+    playwright: 1.40.1
   bin:
     playwright: cli.js
-  checksum: 3e4a9286c2a63c12b55368c3b94e8817fee15146e09e5be549be21d6938b6bcd26a32b0dc295100a3b24f1f0839fdb65be680e7a11a39014f485f36551c6844a
+  checksum: ae094e6cb809365c0707ee2b184e42d2a2542569ada020d2d44ca5866066941262bd9a67af185f86c2fb0133c9b712ea8cb73e2959a289e4261c5fd17077283c
   languageName: node
   linkType: hard
 
@@ -12548,12 +12525,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-playwright-helpers@npm:^1.5.4":
-  version: 1.5.4
-  resolution: "electron-playwright-helpers@npm:1.5.4"
+"electron-playwright-helpers@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "electron-playwright-helpers@npm:1.7.0"
   dependencies:
-    "@electron/asar": ^3.2.2
-  checksum: ed37356f5e9130ecbea3a5a818a3001a4f8b75e5a885d4785ff18714aa5a00a9a3483ca88e2adbf69fe652536533376749bb896c3592d55422bddd5cabd9f6bb
+    "@electron/asar": ^3.2.4
+  checksum: 164bc70fc8527ca6df7174086ebc4c87fec27093711b387eb6a05b64244d17a163828a73c59d29c7b6ecc26e3aef0f8080088f579acda83d3c976a5262ceea0f
   languageName: node
   linkType: hard
 
@@ -18279,7 +18256,7 @@ fsevents@^1.2.7:
     electron-is-dev: ^0.3.0
     electron-log: ^4.4.8
     electron-notarize: ^1.2.2
-    electron-playwright-helpers: ^1.5.4
+    electron-playwright-helpers: ^1.7.0
     electron-store: 8.1.0
     enzyme: ^3.0.0
     enzyme-adapter-react-16: ^1.0.0
@@ -21590,23 +21567,27 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.32.2":
-  version: 1.32.2
-  resolution: "playwright-core@npm:1.32.2"
+"playwright-core@npm:1.40.1":
+  version: 1.40.1
+  resolution: "playwright-core@npm:1.40.1"
   bin:
-    playwright: cli.js
-  checksum: ff000cbf280e5d558fe70fd3edf14910a2e86ec68b04e28327176268345be7b3f88a5d22d78e8dae677dd633dce6cd493237df199773b55312f2ae1ab85d711f
+    playwright-core: cli.js
+  checksum: 84d92fb9b86e3c225b16b6886bf858eb5059b4e60fa1205ff23336e56a06dcb2eac62650992dede72f406c8e70a7b6a5303e511f9b4bc0b85022ede356a01ee0
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.32.2":
-  version: 1.32.2
-  resolution: "playwright@npm:1.32.2"
+"playwright@npm:1.40.1, playwright@npm:^1.32.2":
+  version: 1.40.1
+  resolution: "playwright@npm:1.40.1"
   dependencies:
-    playwright-core: 1.32.2
+    fsevents: 2.3.2
+    playwright-core: 1.40.1
+  dependenciesMeta:
+    fsevents:
+      optional: true
   bin:
     playwright: cli.js
-  checksum: 36967299a5c4c02830bcb7fb94b96d6c6a7a2d7e749feb924509e89b1fdc34f8ee2218cfaf75e5f32572663568b468ad28fdc170bced41869d5ed69f9a7ff384
+  checksum: 9e36791c1b4a649c104aa365fdd9d049924eeb518c5967c0e921aa38b9b00994aa6ee54784d6c2af194b3b494b6f69772673081ef53c6c4a4b2065af9955c4ba
   languageName: node
   linkType: hard
 
