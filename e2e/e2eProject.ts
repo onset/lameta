@@ -1,5 +1,5 @@
 import * as Path from "path";
-import { Page, _electron as electron } from "playwright";
+import { Page, _electron as electron } from "playwright-core";
 import { expect as expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 

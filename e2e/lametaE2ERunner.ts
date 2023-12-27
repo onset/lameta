@@ -1,4 +1,5 @@
-import { ElectronApplication, Page, _electron as electron } from "playwright";
+import { ElectronApplication, _electron as electron } from "playwright-core";
+import { Page } from "playwright-core";
 import fs from "fs";
 import * as Path from "path";
 import * as os from "os";
@@ -33,6 +34,8 @@ export class LametaE2ERunner {
   // if you don't do this, there may be a noticable delay
   public async quit() {
     await this.electronApp.close();
+    // without this, the command line hangs for 30 seconds after the tests are done
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   public async clickMenu(

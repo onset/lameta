@@ -18301,7 +18301,7 @@ fsevents@^1.2.7:
     papaparse: ^5.3.1
     patch-package: ^6.2.2
     path: ^0.12.7
-    playwright: ^1.32.2
+    playwright-core: ^1.34.3
     postinstall-postinstall: ^2.1.0
     pupa: ^2.1.1
     raw-loader: ^0.5.1
@@ -21567,7 +21567,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.40.1":
+"playwright-core@npm:1.40.1, playwright-core@npm:^1.34.3":
   version: 1.40.1
   resolution: "playwright-core@npm:1.40.1"
   bin:
@@ -21576,7 +21576,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.40.1, playwright@npm:^1.32.2":
+"playwright@npm:1.40.1":
   version: 1.40.1
   resolution: "playwright@npm:1.40.1"
   dependencies:
