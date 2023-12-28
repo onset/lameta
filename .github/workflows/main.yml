@@ -3,6 +3,7 @@ name: Build/release
 on:
   push:
     branches:
+      - V2
       - master
       - beta
       - release

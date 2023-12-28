@@ -26,12 +26,14 @@ import {
   getStatusOfFile
 } from "../model/file/FileStatus";
 import { toJS } from "mobx";
+import { useLingui } from "@lingui/react";
 const electron = require("electron");
 
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
 }> = (props) => {
+  useLingui();
   const [selectedFile, setSelectedFile] = React.useState(undefined);
   const [haveMediaFolder] = React.useState(
     getMediaFolderOrEmptyForThisProjectAndMachine()

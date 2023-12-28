@@ -93,11 +93,11 @@ For some reason, for genres.csv, the "Change scheme" tool doesn't recognize the 
 
 Be sure that whatever you open with notices the UTF8 encoding! If necessary, vscode `Change File Encoding` will save and explit BOM for you.
 
-When the language has enough strings translated an it's time to add the language to the program, download the files from crowdin, and in `localization.ts`, add the new language code, e.g.
+1. When the language has enough strings translated an it's time to add the language to the program, download the files from crowdin, and in `localization.ts`, add the new language code, e.g.
 
-    `const languages = ["en", "es", "fr", "xyz"];`
+   `const languages = ["en", "es", "fr", "xyz"];`
 
-Next, in the menu.ts, add the new language option.
+1. Finally, in the menu.ts, add the new language option.
 
 # Problems
 

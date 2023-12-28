@@ -20,8 +20,13 @@ temp.track(); // cleanup on exit: doesn't work
 let rootDirectory: string;
 describe("Consent Form Inclusion", () => {
   afterAll(() => {
-    fs.emptyDirSync(rootDirectory);
-    fs.removeSync(rootDirectory);
+    try {
+      fs.emptyDirSync(rootDirectory);
+      fs.removeSync(rootDirectory);
+    } catch (e) {
+      // was having trouble cleaning up when running all tests
+      console.warn(`consentImdi-edolo.spec.ts: afterAll: ${e}`);
+    }
   });
   beforeAll(async () => {
     const project = Project.fromDirectory("sample data/Edolo sample");

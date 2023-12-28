@@ -75,6 +75,7 @@
     },
     {
       key: "fundingProjectTitle",
+      englishLabel: "Funding Project Title",
       tagInSayMoreClassic: "FundingProjectTitle",
       cssClass: "field__newSection",
       tabIndex: 8
@@ -106,6 +107,7 @@
     */
     {
       key: "contactPerson",
+      englishLabel: "Contact Person",
       tagInSayMoreClassic: "ContactPerson",
       tooltip: "Contact information about the person or institution responsible for the project.",
       tabIndex: 10

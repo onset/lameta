@@ -1,6 +1,8 @@
 import path from "path";
 import { defineConfig } from "vite";
+//import react from "@vitejs/plugin-react-swc";
 import react from "@vitejs/plugin-react";
+import { lingui } from "@lingui/vite-plugin";
 import electron from "vite-electron-plugin";
 import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
@@ -20,7 +22,11 @@ export default defineConfig({
   },
   plugins: [
     timeReporter(),
+    //lingui(),
     react({
+      // TODO: linguijs V4 will allow us to get rid of babel and use swc, using
+      //plugins: [["@lingui/swc-plugin", {}]],
+      // and then we can import the po files directly instead of having to compile js files
       babel: {
         // makes lingui macros work. There is a some performance penalty, but I
         //don't know how much. See https://github.com/skovhus/vite-lingui

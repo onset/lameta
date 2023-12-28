@@ -25,12 +25,6 @@
   ],
   "sourceLocale": "en-code",
   "pseudoLocale": "ps",
-  "extractBabelOptions": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ]
-  },
   "compilerBabelOptions": {
     "jsescOption": {
       "minimal": false

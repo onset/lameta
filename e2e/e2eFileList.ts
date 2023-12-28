@@ -1,6 +1,6 @@
 import fs from "fs";
 import * as Path from "path";
-import { Page, _electron as electron } from "playwright";
+import { Page } from "playwright-core";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 
 export class E2eFileList {

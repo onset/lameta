@@ -18,6 +18,7 @@ export const SessionsTab = observer(
       folderListButtons.push(
         <button
           id="newSession"
+          data-testid="new-session-button"
           key="newSession"
           onClick={(e) => this.props.project.addSession()}
         >

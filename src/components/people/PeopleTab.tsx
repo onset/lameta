@@ -17,7 +17,11 @@ export const PeopleTab = observer(
     public render() {
       const folderListButtons = new Array<JSX.Element>();
       folderListButtons.push(
-        <button key="newPerson" onClick={(e) => this.props.project.addPerson()}>
+        <button
+          key="newPerson"
+          data-testid="new-person-button"
+          onClick={(e) => this.props.project.addPerson()}
+        >
           <Trans>New Person</Trans>
         </button>
       );

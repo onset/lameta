@@ -23,12 +23,7 @@ test.describe("Import Session", () => {
     await project.goToSessions();
     //const fileList = new E2eFileList(lameta, page, project.projectDirectory);
 
-    await lameta.clickMenu(
-      "session",
-      "Session",
-      "import_spreadsheet",
-      "Import Spreadsheet of Sessions..."
-    );
+    await lameta.clickMenu("Session", "Import Spreadsheet of Sessions...");
     const csvPath = Path.join(process.env.E2ERoot!, "test.csv");
     fs.writeFileSync(
       csvPath,
@@ -42,7 +37,6 @@ Yesterday,This one has a bad date,foobar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 `
     );
     await lameta.mockShowOpenDialog([csvPath]);
-    console.log("&&&& " + page.getByRole("button", { name: "Choose File" }));
     await page.getByRole("button", { name: "Choose File" }).click();
     const importButton = await page.getByTestId("import");
     await expect(importButton).toBeEnabled();

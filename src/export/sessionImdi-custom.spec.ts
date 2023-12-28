@@ -20,7 +20,7 @@ beforeAll(async () => {
   await project.otherDocsFolder.addFileForTestAsync(randomFileName());
   session = project.addSession();
   // set the session date to a known value so that the test results are predictable
-  session.properties.setText("date", "2010-01-01");
+
   session.addFileForTestAsync(randomFileName());
   const mary = project.addPerson("Mary");
   mary.properties.setText("birthYear", "1980");
@@ -30,6 +30,21 @@ afterAll(() => {
   temp.cleanupSync();
 });
 describe("session imdi export", () => {
+  it("uses the IMDI date format", () => {
+    // Given a date that includes the time
+    session.properties.setText("date", "2010-01-01T07:00:00.000Z");
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    // we need to strip out the time
+    expect("//Date").toHaveText("2010-01-01");
+  });
+
   it("genres should show title case version instead of underscored", () => {
     session.properties.setText("genre", "academic_output");
     setResultXml(

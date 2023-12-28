@@ -378,7 +378,7 @@ export default class ImdiGenerator {
     this.startGroup("Session");
     this.requiredField("Name", "id");
     this.requiredField("Title", "title");
-    this.field("Date", "date", true, "Unspecified");
+    this.dateField("Date", "date");
     this.requiredField("Description", "description"); //https://trello.com/c/6VXkbU3a/110-imdi-empty-cells-need-to-become-xml-tags-eg-session-description
     this.keysThatHaveBeenOutput.add("Session.description");
 
@@ -919,6 +919,16 @@ export default class ImdiGenerator {
       target,
       projectFallbackFieldName
     );
+  }
+  private dateField(elementName: string, fieldName: string) {
+    const date = this.folderInFocus.properties.getTextStringOrEmpty(fieldName);
+    const s =
+      date === ""
+        ? "Unspecified"
+        : // all we're really doing here is stripping off the time portion
+          moment(new Date(date)).utcOffset(0).format("YYYY-MM-DD"); // utcOffset prevents changing date based on local time zone
+    this.element(elementName, s);
+    this.keysThatHaveBeenOutput.add(this.folderInFocus.type + "." + fieldName);
   }
   private field(
     elementName: string,

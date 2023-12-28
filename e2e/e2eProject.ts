@@ -1,5 +1,5 @@
 import * as Path from "path";
-import { Page, _electron as electron } from "playwright";
+import { Page } from "playwright-core";
 import { expect as expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 
@@ -35,19 +35,32 @@ export class E2eProject {
     const ok = await this.page.getByRole("button", { name: "Create" });
     expect(ok).toBeEnabled();
     ok.click();
-    return await this.lameta.electronApp.firstWindow();
+    //await this.page.getByTitle(projectName, { exact: false }).waitFor();
+    const w = await this.lameta.electronApp.firstWindow();
+    // wait until the window title contains the project name
+    // await w.waitForFunction(
+    //   async (params) => {
+    //     const title = await params.w.title();
+    //     return title.includes(params.projectName);
+    //   },
+    //   { projectName, w }
+    // );
+    // I couldn't get the above to work, so I'm just waiting a fixed amount of time
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return w;
   }
   public async goToSessions() {
-    await this.page.getByRole("tab", { name: "Sessions" }).click();
+    await this.page.getByTestId("sessions-tab").click();
   }
   public async goToPeople() {
-    await this.page.getByRole("tab", { name: "People" }).click();
+    await this.page.getByTestId("people-tab").click();
   }
   public async addSession() {
-    await this.page.getByRole("button", { name: "New Session" }).click();
+    await this.page.getByTestId("new-session-button").click();
   }
   public async addPerson() {
-    await this.page.getByRole("button", { name: "New Person" }).click();
+    await this.page.getByTestId("new-person-button").click();
   }
 
   /* I haven't been able to control the context menu. I can open it, but playwright doens't see it and 

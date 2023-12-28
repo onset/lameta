@@ -2939,6 +2939,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.20.13":
+  version: 7.23.6
+  resolution: "@babel/runtime@npm:7.23.6"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 1a8eaf3d3a103ef5227b60ca7ab5c589118c36ca65ef2d64e65380b32a98a3f3b5b3ef96660fa0471b079a18b619a8317f3e7f03ab2b930c45282a8b69ed9a16
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.21.0":
   version: 7.23.5
   resolution: "@babel/runtime@npm:7.23.5"
@@ -3228,7 +3237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/asar@npm:^3.2.1":
+"@electron/asar@npm:^3.2.1, @electron/asar@npm:^3.2.4":
   version: 3.2.8
   resolution: "@electron/asar@npm:3.2.8"
   dependencies:
@@ -3238,24 +3247,6 @@ __metadata:
   bin:
     asar: bin/asar.js
   checksum: 878d3b9ad232e4e8bb179ed50ed81244481c5dfe667952545a841f3afd782479c1d7e353f8fdedac771e029927b0f31b0a05a41f34cfc7c3099a064733c6d50a
-  languageName: node
-  linkType: hard
-
-"@electron/asar@npm:^3.2.2":
-  version: 3.2.3
-  resolution: "@electron/asar@npm:3.2.3"
-  dependencies:
-    "@types/glob": ^7.1.1
-    chromium-pickle-js: ^0.2.0
-    commander: ^5.0.0
-    glob: ^7.1.6
-    minimatch: ^3.0.4
-  dependenciesMeta:
-    "@types/glob":
-      optional: true
-  bin:
-    asar: bin/asar.js
-  checksum: 67ce7170fc4fc1d4157c03e4d2a03cba461835f77df449d659a71eaf69a412a765bf27198935d8d4ce6c9070bb563dd9fe2a2618863830c0ec2708e53d48dc5c
   languageName: node
   linkType: hard
 
@@ -4098,6 +4089,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lingui/conf@npm:3.17.2":
+  version: 3.17.2
+  resolution: "@lingui/conf@npm:3.17.2"
+  dependencies:
+    "@babel/runtime": ^7.20.13
+    chalk: ^4.1.0
+    cosmiconfig: ^8.0.0
+    cosmiconfig-typescript-loader: ^4.3.0
+    jest-validate: ^26.5.2
+    lodash.get: ^4.4.2
+  peerDependencies:
+    ts-node: ">=10"
+    typescript: ">=4"
+  peerDependenciesMeta:
+    ts-node:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 9c73e544a3a3cfd8a90769f5a1959404965e9b064fd36ef43e9629ae675adc99c940a7a0b18a985d7f85dd80392edc5bb6bc7bb0da091ddbc514db83cc095c84
+  languageName: node
+  linkType: hard
+
 "@lingui/conf@npm:^3.9.0":
   version: 3.9.0
   resolution: "@lingui/conf@npm:3.9.0"
@@ -4112,39 +4125,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lingui/core@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "@lingui/core@npm:3.9.0"
+"@lingui/core@npm:3.17.2, @lingui/core@npm:^3.17.2":
+  version: 3.17.2
+  resolution: "@lingui/core@npm:3.17.2"
   dependencies:
-    "@babel/runtime": ^7.11.2
+    "@babel/runtime": ^7.20.13
+    "@messageformat/parser": ^5.0.0
     make-plural: ^6.2.2
-    messageformat-parser: ^4.1.3
-  checksum: 3bfde6622f1e6806ebfafe4ce9964cde075f2f400568f20368a7c7ddc6038c7d0a10ec8d61ffc2ef8c8eb11fffff3fc7a45638fbe209d663350e7c150cf38adf
+  checksum: 92689ccc4e03c18be4d875faef4b6b22dca590e744dfa1b004bfb02f946e87d6fb3747fd4d421f49cb847e818c145a2c9c75cf1af569fd48bb7512b8a7749d6d
   languageName: node
   linkType: hard
 
-"@lingui/macro@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "@lingui/macro@npm:3.9.0"
+"@lingui/macro@npm:^3.17.2":
+  version: 3.17.2
+  resolution: "@lingui/macro@npm:3.17.2"
   dependencies:
-    "@babel/runtime": ^7.11.2
-    "@lingui/conf": ^3.9.0
+    "@babel/runtime": ^7.20.13
+    "@babel/types": ^7.20.7
+    "@lingui/conf": 3.17.2
     ramda: ^0.27.1
   peerDependencies:
-    babel-plugin-macros: 2 || 3
-  checksum: 23a3ee1933a7c40cb6ac80b7863e38340ac97234828cecb4c026d2677c5ae09111df09740dce15f26574a2c91715850acadb7623d533a3e16e125b5fbbc00ccf
+    "@lingui/core": ^3.13.0
+    "@lingui/react": ^3.13.0
+    babel-plugin-macros: 2 || 3
+  checksum: 12c5ec3c63bb4d18d0eeb59fd5c03c16ef7b9e80b0edc7eb6610a7ce39e3901ea1e82e8e64ea0fb76de2f1b83c3ea8bbf6380dc4dc4652b6c2f3dccda957a7d4
   languageName: node
   linkType: hard
 
-"@lingui/react@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "@lingui/react@npm:3.9.0"
+"@lingui/react@npm:^3.17.2":
+  version: 3.17.2
+  resolution: "@lingui/react@npm:3.17.2"
   dependencies:
-    "@babel/runtime": ^7.11.2
-    "@lingui/core": ^3.9.0
+    "@babel/runtime": ^7.20.13
+    "@lingui/core": 3.17.2
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-  checksum: f35a5ffea0f1bc2a4885f275d32bf66545b223c8c34251a8899a51aad55aa1ebf9add1b2832f83a4ec4a3f0dff258f87ad705796ee6537ded5c229f6e2341d54
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 82d6c1abff61fd4128cbc4764ab8bcf0fc4c78b982a37f9e8551fb57db5fd84f21b14b654a319593824ed34d1ca66a4d56158eaa458e8a17952eae8037f94514
   languageName: node
   linkType: hard
 
@@ -4394,6 +4410,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@messageformat/parser@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "@messageformat/parser@npm:5.1.0"
+  dependencies:
+    moo: ^0.5.1
+  checksum: e5c53d1328f90bcf4bf01321c996e4aa18bff95e30b4bb508284a7f290bbaf496adffec20407596aaf6556467cbd82bee8931ca0982a4254ded651569d356da2
+  languageName: node
+  linkType: hard
+
 "@mrmlnc/readdir-enhanced@npm:^2.2.1":
   version: 2.2.1
   resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
@@ -4459,18 +4484,13 @@ __metadata:
   linkType: hard
 
 "@playwright/test@npm:^1.32.2":
-  version: 1.32.2
-  resolution: "@playwright/test@npm:1.32.2"
+  version: 1.40.1
+  resolution: "@playwright/test@npm:1.40.1"
   dependencies:
-    "@types/node": "*"
-    fsevents: 2.3.2
-    playwright-core: 1.32.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
+    playwright: 1.40.1
   bin:
     playwright: cli.js
-  checksum: 3e4a9286c2a63c12b55368c3b94e8817fee15146e09e5be549be21d6938b6bcd26a32b0dc295100a3b24f1f0839fdb65be680e7a11a39014f485f36551c6844a
+  checksum: ae094e6cb809365c0707ee2b184e42d2a2542569ada020d2d44ca5866066941262bd9a67af185f86c2fb0133c9b712ea8cb73e2959a289e4261c5fd17077283c
   languageName: node
   linkType: hard
 
@@ -10912,6 +10932,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cosmiconfig-typescript-loader@npm:^4.3.0":
+  version: 4.4.0
+  resolution: "cosmiconfig-typescript-loader@npm:4.4.0"
+  peerDependencies:
+    "@types/node": "*"
+    cosmiconfig: ">=7"
+    ts-node: ">=10"
+    typescript: ">=4"
+  checksum: d6ba546de333f9440226ab2384a7b5355d8d2e278a9ca9d838664181bc27719764af10c69eec6f07189e63121e6d654235c374bd7dc455ac8dfdef3aad6657fd
+  languageName: node
+  linkType: hard
+
 "cosmiconfig@npm:^4.0.0":
   version: 4.0.0
   resolution: "cosmiconfig@npm:4.0.0"
@@ -10959,6 +10991,23 @@ __metadata:
     path-type: ^4.0.0
     yaml: ^1.10.0
   checksum: 6801feaa0249e9b9fdde5b3d70dc33b4f9c69095bec94d67e3fe08b66eac24dc7e2099f053597cfbc94b743de269aa5d2cfa7da3fde765433423b06bd122941a
+  languageName: node
+  linkType: hard
+
+"cosmiconfig@npm:^8.0.0":
+  version: 8.3.6
+  resolution: "cosmiconfig@npm:8.3.6"
+  dependencies:
+    import-fresh: ^3.3.0
+    js-yaml: ^4.1.0
+    parse-json: ^5.2.0
+    path-type: ^4.0.0
+  peerDependencies:
+    typescript: ">=4.9.5"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: dc339ebea427898c9e03bf01b56ba7afbac07fc7d2a2d5a15d6e9c14de98275a9565da949375aee1809591c152c0a3877bb86dbeaf74d5bd5aaa79955ad9e7a0
   languageName: node
   linkType: hard
 
@@ -12476,12 +12525,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-playwright-helpers@npm:^1.5.4":
-  version: 1.5.4
-  resolution: "electron-playwright-helpers@npm:1.5.4"
+"electron-playwright-helpers@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "electron-playwright-helpers@npm:1.7.0"
   dependencies:
-    "@electron/asar": ^3.2.2
-  checksum: ed37356f5e9130ecbea3a5a818a3001a4f8b75e5a885d4785ff18714aa5a00a9a3483ca88e2adbf69fe652536533376749bb896c3592d55422bddd5cabd9f6bb
+    "@electron/asar": ^3.2.4
+  checksum: 164bc70fc8527ca6df7174086ebc4c87fec27093711b387eb6a05b64244d17a163828a73c59d29c7b6ecc26e3aef0f8080088f579acda83d3c976a5262ceea0f
   languageName: node
   linkType: hard
 
@@ -16180,7 +16229,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1":
+"import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1, import-fresh@npm:^3.3.0":
   version: 3.3.0
   resolution: "import-fresh@npm:3.3.0"
   dependencies:
@@ -18114,9 +18163,9 @@ fsevents@^1.2.7:
     "@emotion/eslint-plugin": ^11.11.0
     "@emotion/react": ^11.10.5
     "@lingui/cli": ^3.9.0
-    "@lingui/core": ^3.9.0
-    "@lingui/macro": ^3.9.0
-    "@lingui/react": ^3.9.0
+    "@lingui/core": ^3.17.2
+    "@lingui/macro": ^3.17.2
+    "@lingui/react": ^3.17.2
     "@material-ui/core": ^4.12.1
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
@@ -18207,7 +18256,7 @@ fsevents@^1.2.7:
     electron-is-dev: ^0.3.0
     electron-log: ^4.4.8
     electron-notarize: ^1.2.2
-    electron-playwright-helpers: ^1.5.4
+    electron-playwright-helpers: ^1.7.0
     electron-store: 8.1.0
     enzyme: ^3.0.0
     enzyme-adapter-react-16: ^1.0.0
@@ -18252,7 +18301,7 @@ fsevents@^1.2.7:
     papaparse: ^5.3.1
     patch-package: ^6.2.2
     path: ^0.12.7
-    playwright: ^1.32.2
+    playwright-core: ^1.34.3
     postinstall-postinstall: ^2.1.0
     pupa: ^2.1.1
     raw-loader: ^0.5.1
@@ -19885,6 +19934,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"moo@npm:^0.5.1":
+  version: 0.5.2
+  resolution: "moo@npm:0.5.2"
+  checksum: 5a41ddf1059fd0feb674d917c4774e41c877f1ca980253be4d3aae1a37f4bc513f88815041243f36f5cf67a62fb39324f3f997cf7fb17b6cb00767c165e7c499
+  languageName: node
+  linkType: hard
+
 "move-concurrently@npm:^1.0.1":
   version: 1.0.1
   resolution: "move-concurrently@npm:1.0.1"
@@ -21169,6 +21225,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"parse-json@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "parse-json@npm:5.2.0"
+  dependencies:
+    "@babel/code-frame": ^7.0.0
+    error-ex: ^1.3.1
+    json-parse-even-better-errors: ^2.3.0
+    lines-and-columns: ^1.1.6
+  checksum: 62085b17d64da57f40f6afc2ac1f4d95def18c4323577e1eced571db75d9ab59b297d1d10582920f84b15985cbfc6b6d450ccbf317644cfa176f3ed982ad87e2
+  languageName: node
+  linkType: hard
+
 "parse5@npm:5.1.1":
   version: 5.1.1
   resolution: "parse5@npm:5.1.1"
@@ -21499,23 +21567,27 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.32.2":
-  version: 1.32.2
-  resolution: "playwright-core@npm:1.32.2"
+"playwright-core@npm:1.40.1, playwright-core@npm:^1.34.3":
+  version: 1.40.1
+  resolution: "playwright-core@npm:1.40.1"
   bin:
-    playwright: cli.js
-  checksum: ff000cbf280e5d558fe70fd3edf14910a2e86ec68b04e28327176268345be7b3f88a5d22d78e8dae677dd633dce6cd493237df199773b55312f2ae1ab85d711f
+    playwright-core: cli.js
+  checksum: 84d92fb9b86e3c225b16b6886bf858eb5059b4e60fa1205ff23336e56a06dcb2eac62650992dede72f406c8e70a7b6a5303e511f9b4bc0b85022ede356a01ee0
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.32.2":
-  version: 1.32.2
-  resolution: "playwright@npm:1.32.2"
+"playwright@npm:1.40.1":
+  version: 1.40.1
+  resolution: "playwright@npm:1.40.1"
   dependencies:
-    playwright-core: 1.32.2
+    fsevents: 2.3.2
+    playwright-core: 1.40.1
+  dependenciesMeta:
+    fsevents:
+      optional: true
   bin:
     playwright: cli.js
-  checksum: 36967299a5c4c02830bcb7fb94b96d6c6a7a2d7e749feb924509e89b1fdc34f8ee2218cfaf75e5f32572663568b468ad28fdc170bced41869d5ed69f9a7ff384
+  checksum: 9e36791c1b4a649c104aa365fdd9d049924eeb518c5967c0e921aa38b9b00994aa6ee54784d6c2af194b3b494b6f69772673081ef53c6c4a4b2065af9955c4ba
   languageName: node
   linkType: hard
 

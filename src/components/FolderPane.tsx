@@ -36,6 +36,7 @@ import {
 } from "../model/file/FileStatus";
 import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { useLingui } from "@lingui/react";
 
 export interface IProps {
   folder: Folder;
@@ -105,6 +106,7 @@ export const FolderPane: React.FunctionComponent<
 const FileTabs: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
+  useLingui();
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const [selectedContribution, setSelectedContribution] = React.useState<
