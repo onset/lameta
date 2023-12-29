@@ -4,6 +4,9 @@ import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import fieldDefinitionsOfCurrentConfig, {
+  prepareFieldDefinitionCatalog
+} from "../field/ConfiguredFieldDefinitions";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -13,7 +16,7 @@ export class FolderMetadataFile extends File {
     xmlRootName: string,
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
-    rawKnownFieldsFromJson: FieldDefinition[],
+    fieldCatalog: FieldDefinition[],
     customFieldRegistry: CustomFieldRegistry
   ) {
     const name = Path.basename(directory);
@@ -30,8 +33,24 @@ export class FolderMetadataFile extends File {
       fileExtensionForMetadata,
       false
     );
+    //TODO: this is really only for the project... have a bit of a pulling up by bootstraps problem here
+    if (fieldCatalog.length == 0) {
+      {
+        // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
+        const contents = fs.readFileSync(metadataPath, "utf8");
+        // TODO: should we migrate? Probably duplicate for backwards compat for a while?
+        // TODO: change name to archiveRepository, for now, using the existing AccessProtocol
+
+        const regex = /<AccessProtocol>(.*)<\/AccessProtocol>/gm;
+        const archive = regex.exec(contents)?.[1] || "default";
+
+        prepareFieldDefinitionCatalog(archive);
+        fieldCatalog = fieldDefinitionsOfCurrentConfig.project;
+      }
+    }
+
     this.customFieldNamesRegistry = customFieldRegistry;
-    this.readDefinitionsFromJson(rawKnownFieldsFromJson);
+    this.readDefinitionsFromJson(fieldCatalog);
 
     /* NB: don't do this within the constructor. subclass fields are not initialized until after super(): 
     this.finishLoading();

@@ -27,7 +27,6 @@ mobx.configure({
 
 app.whenReady().then(async () => {
   PatientFS.init();
-
   initializeErrorReporting(false);
 
   initializeLocalization();

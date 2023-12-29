@@ -1,0 +1,8 @@
+{
+  project: [
+    {
+      key: "title",
+      englishLabel: "Title TEST"
+    }
+  ]
+}

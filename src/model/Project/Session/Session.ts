@@ -3,7 +3,7 @@ import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
+import fieldDefinitionsOfCurrentConfig from "../../field/ConfiguredFieldDefinitions";
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
@@ -54,7 +54,7 @@ export class Session extends Folder {
       this.properties.getTextStringOrEmpty("id"),
       userSettingsSingleton.IMDIMode
     );
-    this.knownFields = knownFieldDefinitions.session; // for csv export
+    this.knownFields = fieldDefinitionsOfCurrentConfig.session; // for csv export
 
     // default to the project's content language
     if (this.properties.getTextStringOrEmpty("languages") === "") {
@@ -323,7 +323,7 @@ export class SessionMetadataFile extends FolderMetadataFile {
       "Session",
       true,
       ".session",
-      knownFieldDefinitions.session,
+      fieldDefinitionsOfCurrentConfig.session,
       customFieldRegistry
     );
     this.finishLoading();

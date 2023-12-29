@@ -1,7 +1,7 @@
 import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
-import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
+import fieldDefinitionsOfCurrentConfig from "../../field/ConfiguredFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
@@ -116,7 +116,7 @@ export class Person extends Folder {
         return change;
       });
       */
-    this.knownFields = knownFieldDefinitions.person; // for csv export
+    this.knownFields = fieldDefinitionsOfCurrentConfig.person; // for csv export
     this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
     this.migrateFromPreviousVersions();
@@ -208,7 +208,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "Person",
       true,
       ".person",
-      knownFieldDefinitions.person,
+      fieldDefinitionsOfCurrentConfig.person,
       customFieldRegistry
     );
 

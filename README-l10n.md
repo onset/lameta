@@ -65,7 +65,7 @@ This format uses our own wrapper. Note that you still have to include the commen
 
 Under Help:Registration, make sure you are listed as a "Developer". Next, under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents: https://i.imgur.com/Mc1dX8Y.png.
 
-Strings in fields.json5 and genres.json do not go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
+Strings in fields.json5 and genres.json do not (yet) go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
 
 # Non-code Lookups in CSV
 

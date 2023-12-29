@@ -14,7 +14,7 @@ export class FieldDefinition {
   public persist: boolean;
   public type: string = "Text";
   public form?: string; // what form this shows on, if not the main one
-  //visibility?: string;
+  public visibility?: "always" | "never" | "ifNotEmpty";
   public cssClass?: string;
   public choices?: string[];
   //note: this is currently used only for genres, and is also an open list,

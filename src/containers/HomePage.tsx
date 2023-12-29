@@ -265,6 +265,9 @@ class HomePage extends React.Component<IProps, IState> {
             project={this.projectHolder.project}
             authorityLists={this.projectHolder.project.authorityLists}
             menu={this.menu}
+            reload={() => {
+              remote.getCurrentWindow().reload();
+            }}
           />
         )) || (
           <div className={"startScreen"}>

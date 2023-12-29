@@ -13,9 +13,9 @@ import { FieldSet } from "../field/FieldSet";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import knownFieldDefinitions, {
+import fieldDefinitionsOfCurrentConfig, {
   isKnownFieldKey
-} from "../field/KnownFieldDefinitions";
+} from "../field/ConfiguredFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
   NotifyError,
@@ -541,10 +541,10 @@ export /*babel doesn't like this: abstract*/ class File {
       // Since we do not expect any new versions of SayMore Classic,
       // (which could theoretically introduce such a situation),
       // I'm living with that risk.
-      Object.keys(knownFieldDefinitions).some((
+      Object.keys(fieldDefinitionsOfCurrentConfig).some((
         area // e.g. project, session, person
       ) =>
-        knownFieldDefinitions[area].find(
+        fieldDefinitionsOfCurrentConfig[area].find(
           (d: any) =>
             d.key.toLowerCase() === xmlTag.toLowerCase() ||
             d.tagInSayMoreClassic === xmlTag

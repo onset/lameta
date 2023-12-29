@@ -31,6 +31,7 @@ export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
   menu: LametaMenu;
+  reload: () => void;
 }
 
 class Home extends React.Component<IProps> {
@@ -328,6 +329,7 @@ class Home extends React.Component<IProps> {
               <ProjectTab
                 project={this.props.project}
                 authorityLists={this.props.authorityLists}
+                reload={this.props.reload}
               />
             </TabPanel>
             <TabPanel className={"tab-panel-sessions"}>

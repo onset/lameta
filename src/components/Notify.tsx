@@ -9,7 +9,7 @@ import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { t } from "@lingui/macro";
 import * as remote from "@electron/remote";
-const electron = require("electron");
+import { ipcRenderer } from "electron";
 
 const activeToasts: string[] = [];
 const autoCloseTicks = 60 * 1000;
@@ -271,7 +271,7 @@ export function NotifyMultipleProjectFiles(
       NotifyWarning(
         t`There is a problem with ${displayName}. Click for more information.`,
         () => {
-          electron.ipcRenderer
+          ipcRenderer
             .invoke("showMessageBox", {
               buttons: [t`Cancel`, t`Show me the folder with the problem`],
               title: t`Something is wrong here...`,

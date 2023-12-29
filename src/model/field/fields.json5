@@ -111,7 +111,7 @@
       tagInSayMoreClassic: "ContactPerson",
       tooltip: "Contact information about the person or institution responsible for the project.",
       tabIndex: 10
-    }
+    },
     /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
     {
       "key": "dateAvailable",
@@ -119,6 +119,40 @@
       "type": "Date",
       "tabIndex": 11
     }*/
+
+    // This section added in V3 to support fields ELAR uses. See ELAR/fields.json5
+    {
+      key: "collectionName",
+      englishLabel: "Collection Name",
+      visibility: "never"
+    },
+    {
+      key: "collectionTitle",
+      englishLabel: "Collection Title",
+      visibility: "never"
+    },
+    {
+      key: "collectionDescription",
+      englishLabel: "Collection Description",
+      visibility: "never"
+    },
+    {
+      key: "collectionSteward",
+      englishLabel: "Collection Steward",
+      visibility: "never"
+    },
+    {
+      key: "deputyCollectionSteward",
+      englishLabel: "Deputy Collection Stewards",
+      tooltip: "For multiple people, separate with commas",
+      visibility: "never"
+    },
+    {
+      key: "depositor",
+      englishLabel: "Depositor",
+      tooltip: "For multiple people, separate with commas",
+      visibility: "never"
+    }
   ],
   session: [
     {

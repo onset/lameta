@@ -25,7 +25,9 @@ import * as Sentry from "@sentry/browser";
 
 import genres from "./Session/genres.json";
 
-import knownFieldDefinitions from "../field/KnownFieldDefinitions";
+import fieldDefinitionsOfCurrentConfig, {
+  prepareFieldDefinitionCatalog
+} from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import {
@@ -201,7 +203,7 @@ export class Project extends Folder {
     this.setupProtocolChoices();
     this.setupGenreDefinition();
 
-    this.knownFields = knownFieldDefinitions.project; // for csv export
+    this.knownFields = fieldDefinitionsOfCurrentConfig.project; // for csv export
 
     this.languageFinder = new LanguageFinder(() =>
       this.getContentLanguageCodeAndName()
@@ -222,6 +224,7 @@ export class Project extends Folder {
   public static fromDirectory(directory: string): Project {
     try {
       const customFieldRegistry = new CustomFieldRegistry();
+
       const metadataFile = new ProjectMetadataFile(
         directory,
         customFieldRegistry
@@ -244,6 +247,7 @@ export class Project extends Folder {
         metadataFile,
         customFieldRegistry
       );
+
       // console.log(
       //   "Project had " + files.length + " files. " + JSON.stringify(files)
       // );
@@ -513,7 +517,7 @@ export class Project extends Folder {
     });
     console.assert(genreChoices.length > 0);
 
-    const genreFieldDefinition = knownFieldDefinitions.session.find(
+    const genreFieldDefinition = fieldDefinitionsOfCurrentConfig.session.find(
       (o: any) => o.key === "genre"
     ) as FieldDefinition;
     //AuthorityLists.convertGenresToCSVForLocalization(genreChoices);
@@ -894,12 +898,20 @@ export class Project extends Folder {
 
 export class ProjectMetadataFile extends FolderMetadataFile {
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
+    // TODO: should we migrate? Probably duplicate for backwards compat for a while?
+    //const archive = metadataFile.getTextProperty("archiveRepository","default");
+    // For now, using the existing AccessProtocol
+    //const archive = metadataFile.getTextProperty("AccessProtocol", "default");
+
+    //prepareFieldDefinitionCatalog("default"); // todo: load the actual configuration if not the default
+
+    prepareFieldDefinitionCatalog("default"); // todo: load the actual configuration if not the default
     super(
       directory,
       "Project",
       false,
       ".sprj",
-      knownFieldDefinitions.project,
+      [], // TODO: as written, it's hard to make the field catalog before we have read the xml, so we have a chicken and egg situation
       customFieldRegistry
     );
     this.finishLoading();

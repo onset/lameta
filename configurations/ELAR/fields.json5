@@ -1,0 +1,10 @@
+{
+  project: [
+    { key: "collectionName", visibility: "always" },
+    { key: "collectionTitle", visibility: "always" },
+    { key: "collectionDescription", visibility: "always" },
+    { key: "collectionSteward", visibility: "always" },
+    { key: "deputyCollectionSteward", visibility: "always" },
+    { key: "depositor", visibility: "always" }
+  ]
+}

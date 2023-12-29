@@ -33,7 +33,8 @@ export enum FieldType {
 }
 export enum FieldVisibility {
   Always,
-  IfNotEmpty
+  IfNotEmpty,
+  Never
 }
 
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)

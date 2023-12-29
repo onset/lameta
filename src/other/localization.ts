@@ -54,7 +54,7 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
-      `Could not location ${path}. If you are running the dev server, make sure you have run "yarn lingui-compile" at least once.`
+      `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn lingui-compile" at least once.`
     );
   }
 
@@ -73,8 +73,9 @@ export function setUILanguage(code: string, reload: boolean = true) {
   Handle the l10n of various data files while we wait for lingui to 
   be able to handle non-code input.
   ---------------------------------------------------------------------*/
-// I don't have a way of making the lingui-extract scanner scan our fields.json5, so I just extracted this csv manually,
+// I didn't originally have a way of making the lingui-extract scanner scan our fields.json5, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
+// These days linguijs can be given a custom scanner, so we will eventually be able to simplify things.
 import fields from "../../locale/fields.csv";
 import choices from "../../locale/choices.csv";
 import roles from "../../locale/roles.csv";

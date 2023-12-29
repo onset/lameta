@@ -165,6 +165,7 @@ class AutoForm extends React.Component<IProps> {
       .filter(
         (f) =>
           f.definition &&
+          f.definition.visibility !== "never" &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
           !f.definition.isAdditional

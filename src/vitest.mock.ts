@@ -1,6 +1,10 @@
 import { beforeAll, vi } from "vitest";
 
-vi.mock("@electron/remote", () => ({ exec: vi.fn(), process: vi.fn() })); //See commit msg for info
+vi.mock("@electron/remote", () => ({
+  exec: vi.fn(),
+  process: vi.fn(),
+  app: { getAppPath: () => "" }
+})); //See commit msg for info
 //
 //   getTestEnvironment: () => ({
 //     E2E: false,

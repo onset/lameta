@@ -16,6 +16,7 @@ import { ParadisecView } from "../ParadisecView";
 interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
+  reload: () => void;
 }
 
 export const ProjectTab = observer(
@@ -74,6 +75,13 @@ export const ProjectTab = observer(
                 "customAccessChoices"
               )}
               authorityLists={this.props.authorityLists}
+              onChange={() => {
+                window.alert(
+                  "lameta will now reload to show any changes associate with this archive."
+                );
+                this.props.project.saveFolderMetaData();
+                this.props.reload();
+              }}
             />
           </TabPanel>
           <TabPanel>

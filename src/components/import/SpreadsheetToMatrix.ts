@@ -8,7 +8,7 @@
   and then handed to functions in MatrixImporter to actually import.
 */
 import * as XLSX from "xlsx";
-import { getFieldDefinition } from "../../model/field/KnownFieldDefinitions";
+import { getFieldDefinition } from "../../model/field/ConfiguredFieldDefinitions";
 import {
   MappedMatrix,
   CellImportStatus,
@@ -203,10 +203,9 @@ function addMappingAndValidatationInfoToColumns(
         column.mappingStatus = "Skip";
         column.explanation = `This access protocol doesn't match the project's access protocol.`;
       } else {
-        column.choices =
-          project.authorityLists.accessChoicesOfCurrentProtocol.map(
-            (c) => c.label
-          );
+        column.choices = project.authorityLists.accessChoicesOfCurrentProtocol.map(
+          (c) => c.label
+        );
         column.closedList = true; // review what if it's the "Custom" list?
       }
     } else if (def) {

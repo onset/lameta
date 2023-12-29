@@ -37,6 +37,7 @@ interface IProps {
   protocolField: Field;
   customChoicesField: Field;
   authorityLists: AuthorityLists;
+  onChange: () => void;
 }
 
 class AccessProtocolForm extends React.Component<IProps> {
@@ -85,6 +86,7 @@ class AccessProtocolForm extends React.Component<IProps> {
             onChange={(event) => {
               runInAction(() => {
                 this.props.protocolField.text = event.currentTarget.value;
+                this.props.onChange();
               });
             }}
           >

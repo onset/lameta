@@ -1,23 +1,26 @@
+import fs from "fs";
 import { IFolderType } from "../Folder/Folder";
 import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
 import raw from "./fields.json5?raw";
-const knownFieldDefinitions = JSON5.parse(raw);
+import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
+import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
+const catalogOfAllAvailableKnownFields = JSON5.parse(raw);
 
 export function getFieldDefinition(
   folderType: IFolderType,
   key: string
 ): FieldDefinition {
-  return knownFieldDefinitions[folderType].find(
+  return fieldDefinitionsOfCurrentConfig[folderType].find(
     (d: any) =>
       d.key.toLowerCase() === key.toLowerCase() || d.tagInSayMoreClassic === key
   );
 }
 export function isKnownFieldKey(key: string): boolean {
-  return Object.keys(knownFieldDefinitions).some((
+  return Object.keys(fieldDefinitionsOfCurrentConfig).some((
     area // e.g. project, session, person
   ) =>
-    knownFieldDefinitions[area].find(
+    fieldDefinitionsOfCurrentConfig[area].find(
       (d: any) =>
         d.key.toLowerCase() === key.toLowerCase() ||
         d.tagInSayMoreClassic === key
@@ -275,10 +278,102 @@ const countries = [
   "Zimbabwe"
 ];
 
-knownFieldDefinitions.project.find(
+catalogOfAllAvailableKnownFields.project.find(
   (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
 ).choices = countries;
-knownFieldDefinitions.session.find(
+catalogOfAllAvailableKnownFields.session.find(
   (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
 ).choices = countries;
-export default knownFieldDefinitions;
+
+type FieldDefinitionCatalog = {
+  project: FieldDefinition[];
+  session: FieldDefinition[];
+  person: FieldDefinition[];
+};
+// we can't use the full definition becuase we want every field to be optional
+type FieldDefinitionCustomization = {
+  key: string;
+  // allow any other fields
+  [x: string]: any;
+};
+
+type FieldDefinitionCustomizationCatalog = {
+  project?: FieldDefinitionCustomization[];
+  session?: FieldDefinitionCustomization[];
+  person?: FieldDefinitionCustomization[];
+};
+// exported for unit test use
+export function computeMergedCatalog(
+  catalogOfConfiguration: FieldDefinitionCustomizationCatalog
+): FieldDefinitionCatalog {
+  const mergedCatalog: FieldDefinitionCatalog = {
+    project: [],
+    session: [],
+    person: []
+  };
+  for (const area of ["project", "session", "person"]) {
+    // check for any keys that aren't in the official catalog, and throw an error
+    if (catalogOfConfiguration[area]) {
+      for (const customization of catalogOfConfiguration[area]) {
+        if (
+          catalogOfAllAvailableKnownFields[area].find(
+            (f) => f.key === customization.key
+          ) === undefined
+        ) {
+          throw new Error(
+            `The custom catalog has an entry with key:"${customization.key}", but that is not found in the official catalog. We don't currently support adding unknown fields.`
+          );
+        }
+      }
+    }
+
+    mergedCatalog[area] = catalogOfAllAvailableKnownFields[area].map(
+      (def: any) => {
+        if (catalogOfConfiguration[area]) {
+          const entry = catalogOfConfiguration[area].find(
+            (d) => d.key == def.key
+          );
+          if (entry) {
+            // merge the properties of the choice into the field definition, overriding the defaults
+            const m = { ...def, ...entry };
+            return m;
+          }
+        }
+        return def;
+      }
+    );
+  }
+  return mergedCatalog;
+}
+function loadFieldChoices(configurationName: string) {
+  const path = locateDependencyForFilesystemCall(
+    `configurations/${configurationName}/fields.json5`
+  );
+  if (!fs.existsSync(path)) {
+    NotifyNoBigDeal(
+      `This version of lameta does not have a field configuration for ${configurationName}.`
+    );
+    // throw new Error(`The file ${path} does not exist.`);
+    return computeMergedCatalog({});
+  }
+
+  const fieldChoicesText = fs.readFileSync(path, "utf8");
+  const fieldChoices = JSON5.parse(fieldChoicesText);
+  return computeMergedCatalog(fieldChoices);
+}
+
+const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {
+  project: [],
+  session: [],
+  person: []
+};
+export function prepareFieldDefinitionCatalog(configurationName: string) {
+  const x = loadFieldChoices(configurationName);
+  // copy the contents of x into fieldDefinitionsOfCurrentConfig without
+  // changing the identify of fieldDefinitionsOfCurrentConfig, because only
+  // the original object is exported.
+  Object.assign(fieldDefinitionsOfCurrentConfig, x);
+}
+
+// todo: move to Project?
+export default fieldDefinitionsOfCurrentConfig; // does not include custom fields
