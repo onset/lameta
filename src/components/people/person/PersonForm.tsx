@@ -79,7 +79,7 @@ class PersonForm extends React.Component<IProps> {
         />
         {/* </div> */}
         <TextFieldEdit
-          className="howToContact text-block full-right-side"
+          className="howToContact multiline full-right-side"
           field={this.props.fields.getTextField("howToContact")}
         />
         <TextFieldEdit

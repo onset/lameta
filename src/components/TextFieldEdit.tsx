@@ -1,6 +1,6 @@
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
-import { FieldLabel } from "./FieldLabel";
+import { FieldInfoAffordances, FieldLabel } from "./FieldLabel";
 import React, { useRef, useState } from "react";
 
 export interface IProps {
@@ -12,6 +12,7 @@ export interface IProps {
   // this one will prevent the user from moving on
   validate?: (value: string) => boolean;
   tooltip?: string;
+  showAffordancesAfter?: boolean;
 }
 
 export const TextFieldEdit: React.FunctionComponent<
@@ -39,16 +40,27 @@ export const TextFieldEdit: React.FunctionComponent<
     }
     return text.text;
   }
+  console.log(
+    `${props.field.definition.key} ---- ${props.field.definition.multipleLines}`
+  );
 
   return (
     <div
-      className={"field " + (props.className ? props.className : "")}
+      className={
+        "field " +
+        props.className +
+        (props.field.definition.multipleLines ? " multiline" : "")
+      }
       title={props.tooltip}
     >
       {props.hideLabel ? (
         ""
       ) : (
-        <FieldLabel htmlFor={fieldId} fieldDef={props.field.definition} />
+        <FieldLabel
+          htmlFor={fieldId}
+          fieldDef={props.field.definition}
+          omitInfoAffordances={props.showAffordancesAfter}
+        />
       )}
 
       <textarea
@@ -60,7 +72,7 @@ export const TextFieldEdit: React.FunctionComponent<
         value={getValue(props.field)}
         onChange={(event) => onChange(event, props.field)}
         onKeyDown={(event) => {
-          if (!props.field.definition.multipleLines && event.keyCode === 13) {
+          if (!props.field.definition.multipleLines && event.key === "Enter") {
             event.preventDefault();
           }
         }}
@@ -88,6 +100,9 @@ export const TextFieldEdit: React.FunctionComponent<
           }
         }}
       />
+      {props.showAffordancesAfter && (
+        <FieldInfoAffordances fieldDef={props.field.definition} />
+      )}
     </div>
   );
 });

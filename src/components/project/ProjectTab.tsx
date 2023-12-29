@@ -33,6 +33,9 @@ export const ProjectTab = observer(
             <Tab className={"tab-project-about"}>
               <Trans>About This Project</Trans>
             </Tab>
+            <Tab className={"tab-project-collection"}>
+              <Trans>Collection</Trans>
+            </Tab>
             <Tab className={"tab-project-access"}>
               <Trans>Access Protocol</Trans>
             </Tab>
@@ -64,6 +67,17 @@ export const ProjectTab = observer(
               folder={this.props.project}
               authorityLists={this.props.authorityLists}
               languageFinder={this.props.project.languageFinder}
+              rowStyle={true}
+            />
+          </TabPanel>
+          <TabPanel>
+            <AutoForm
+              form="collection"
+              formClass="project"
+              folder={this.props.project}
+              authorityLists={this.props.authorityLists}
+              languageFinder={this.props.project.languageFinder}
+              rowStyle={true}
             />
           </TabPanel>
           <TabPanel>

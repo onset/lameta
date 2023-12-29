@@ -57,9 +57,13 @@
     //grid-row: 5/8;
     grid-column: 1/3;
   }
+
   .birth {
     grid-row: 1;
     grid-column: 3;
+    & > .field-label {
+      justify-content: left;
+    }
     textarea {
       width: 7em; // only 4em is needed, but frequently people are putting in dates
       display: block;

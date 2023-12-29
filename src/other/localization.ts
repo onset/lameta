@@ -111,23 +111,9 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
   }
   return getMatch(fields, fieldDef.englishLabel, "fields.csv");
 }
-export function translateTooltip(fieldDef: FieldDefinition): string {
-  if (!fieldDef.tooltip) {
-    return "";
-  }
-  return fieldDef.tooltip ? getMatch(tips, fieldDef.tooltip, "tips.csv") : "";
-}
 
-export function translateTooltipNotice(notice: string): string {
-  return getMatch(tips, notice, "tips.csv");
-}
-export function translateSpecialInfo(fieldDef: FieldDefinition): string {
-  if (!fieldDef.specialInfo) {
-    return "";
-  }
-  return fieldDef.specialInfo
-    ? getMatch(tips, fieldDef.specialInfo, "tips.csv")
-    : "";
+export function translateTip(tip?: string): string {
+  return tip ? getMatch(tips, tip, "tips.csv") : "";
 }
 export function translateAccessProtocolLabelOrDescription(
   englishLabel: string

@@ -10,7 +10,6 @@
       key: "projectDescription",
       tagInSayMoreClassic: "ProjectDescription",
       englishLabel: "Description",
-      cssClass: "text-block",
       multipleLines: true,
       tabIndex: 11
     },
@@ -124,34 +123,47 @@
     {
       key: "collectionName",
       englishLabel: "Collection Name",
-      visibility: "never"
+      visibility: "never",
+      form: "collection",
+      tabIndex: 1
     },
     {
       key: "collectionTitle",
       englishLabel: "Collection Title",
-      visibility: "never"
+      visibility: "never",
+      form: "collection",
+      tabIndex: 2
     },
     {
       key: "collectionDescription",
       englishLabel: "Collection Description",
-      visibility: "never"
+      visibility: "never",
+      form: "collection",
+      multipleLines: true,
+      tabIndex: 3
     },
     {
       key: "collectionSteward",
       englishLabel: "Collection Steward",
-      visibility: "never"
+      visibility: "never",
+      form: "collection",
+      tabIndex: 4
     },
     {
       key: "deputyCollectionSteward",
       englishLabel: "Deputy Collection Stewards",
-      tooltip: "For multiple people, separate with commas",
-      visibility: "never"
+      tipOnUsingThisField: "For multiple people, separate with commas",
+      visibility: "never",
+      form: "collection",
+      tabIndex: 5
     },
     {
       key: "depositor",
       englishLabel: "Depositor",
-      tooltip: "For multiple people, separate with commas",
-      visibility: "never"
+      tipOnUsingThisField: "For multiple people, separate with commas",
+      visibility: "never",
+      form: "collection",
+      tabIndex: 6
     }
   ],
   session: [
@@ -343,14 +355,14 @@
       // added at ELAR request Dec 2019
       key: "keyword",
       additional: false,
-      tooltip: "Separate with commas. Note that individual keywords cannot contain a comma.",
+      tipOnUsingThisField: "Separate with commas. Note that individual keywords cannot contain a comma.",
       tabIndex: 10
     },
     {
       // added at ELAR request Dec 2019
       key: "topic",
       additional: false,
-      tooltip: "Separate with commas. Note that individual topics cannot contain a comma.",
+      tipOnUsingThisField: "Separate with commas. Note that individual topics cannot contain a comma.",
       tabIndex: 11
     }
   ],
@@ -478,8 +490,7 @@
     {
       key: "birthYear",
       englishLabel: "Birth Year",
-      specialInfo: "If you are estimating, talk about that in the Description",
-      tooltip: "Enter '?' if you don't know"
+      tipOnUsingThisField: "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
     },
     {
       key: "gender",

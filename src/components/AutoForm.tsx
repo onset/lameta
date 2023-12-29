@@ -31,6 +31,7 @@ export interface IProps {
   validateFieldThatControlsFileNames?: (value: string) => boolean;
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
+  rowStyle?: boolean; // like used in the Properties tab
 }
 
 class AutoForm extends React.Component<IProps> {
@@ -123,6 +124,7 @@ class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               key={field.key}
               field={field as Field}
+              showAffordancesAfter={props.rowStyle}
             />
           );
         }

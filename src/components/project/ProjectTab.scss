@@ -50,6 +50,7 @@
     display: block; // just v-scroll if we don't have room
   }
   .primary,
+  .collection,
   .accessProtocol {
     .field {
       display: flex;
@@ -63,7 +64,7 @@
         text-align: right;
         width: 150px;
         margin-right: 1em;
-        margin-top: 7px; // line up the label with the first line of text in the input field
+        margin-top: 4px; // line up the label with the first line of text in the input field
       }
 
       textarea {

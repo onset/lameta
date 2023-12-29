@@ -1,39 +1,35 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Tooltip from "react-tooltip-lite";
-import { Field } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
-import { InfoAffordance } from "./InfoAffordance";
-import userSettingsSingleton from "../other/UserSettings";
 import {
-  translateFieldLabel,
-  translateSpecialInfo,
-  i18n,
-  translateTooltip,
-  translateTooltipNotice
-} from "../other/localization";
+  InfoAffordance,
+  NotConsumedByArchive,
+  PiiAffordance
+} from "./InfoAffordance";
+import userSettingsSingleton from "../other/UserSettings";
+import { translateFieldLabel, translateTip } from "../other/localization";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
   htmlFor?: string; // aria for accessibility (react requires 'htmlFor')
+  omitInfoAffordances?: boolean;
 }> = observer((props) => {
-  let tooltip = translateTooltip(props.fieldDef);
-  if (userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi) {
-    tooltip =
-      ("" && tooltip) + " " + translateTooltipNotice("Not important for IMDI.");
-  }
-  const specialInfo = translateSpecialInfo(props.fieldDef);
+  const tooltip = useMemo(() => translateTip(props.fieldDef.tooltip), [
+    props.fieldDef
+  ]);
 
   const labelElement = (
     <label
       htmlFor={props.htmlFor}
       style={{ display: "inline-block" }}
-      className={
-        userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi
-          ? "markAsNotImdi"
-          : ""
-      }
+      // at one poitn we greyed out these fields, but the icon with tooltip should be sufficient
+      // className={
+      //   userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi
+      //     ? "markAsNotImdi"
+      //     : ""
+      // }
     >
       {translateFieldLabel(props.fieldDef)}
     </label>
@@ -56,17 +52,32 @@ export const FieldLabel: React.FunctionComponent<{
     );
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="field-label" style={{ display: "flex" }}>
       {labelMaybeWithTooltip}
-      {props.fieldDef.personallyIdentifiableInformation ? (
-        <InfoAffordance>
-          <Trans>
-            As Personally Identifiable Information, this will not be exported to
-            other formats.
-          </Trans>
-        </InfoAffordance>
-      ) : null}
-      {specialInfo ? <InfoAffordance>{specialInfo}</InfoAffordance> : null}
+      {!props.omitInfoAffordances && (
+        <FieldInfoAffordances fieldDef={props.fieldDef} />
+      )}
+    </div>
+  );
+});
+export const FieldInfoAffordances: React.FunctionComponent<{
+  fieldDef: FieldDefinition;
+}> = observer((props) => {
+  const tipOnUsingThisField = useMemo(
+    () => translateTip(props.fieldDef.tipOnUsingThisField),
+    [props.fieldDef]
+  );
+
+  return (
+    <div style={{ display: "flex" }}>
+      {tipOnUsingThisField && (
+        <InfoAffordance>{tipOnUsingThisField}</InfoAffordance>
+      )}
+      {props.fieldDef.personallyIdentifiableInformation && <PiiAffordance />}
+
+      {userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi && (
+        <NotConsumedByArchive />
+      )}
     </div>
   );
 });

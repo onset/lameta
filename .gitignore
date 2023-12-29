@@ -62,3 +62,5 @@ app/languageFinder/langtags-master.json
 !.yarn/versions
 .pnp.*
 .sentryclirc
+
+*.cjs

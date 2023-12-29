@@ -64,7 +64,7 @@ input {
 //   //margin-right: 8px;
 // }
 
-.field:not(.text-block) {
+.field:not(.multiline) {
   //height: 40px;
 }
 label {
@@ -92,7 +92,8 @@ label + .select {
 li {
   cursor: default;
 }
-.text-block textarea {
+
+.multiline textarea {
   height: 6em;
 }
 body,
@@ -288,6 +289,7 @@ input {
 
 .react-tooltip-lite {
   max-width: 300px !important;
+  border-radius: 8px;
 }
 
 .toast-crunch {
@@ -303,4 +305,7 @@ input {
 }
 .folder-bottom-pane {
   width: 100%;
+}
+.field-label {
+  justify-content: space-between;
 }
