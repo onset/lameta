@@ -2,11 +2,11 @@ import React, { useMemo } from "react";
 import Tooltip from "react-tooltip-lite";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import {
-  CommaSeparatedAffordance,
-  InfoAffordance,
-  NotConsumedByArchive,
-  PiiAffordance
-} from "./InfoAffordance";
+  CommaSeparatedIndicator,
+  InfoIndicator,
+  NotConsumedByArchiveIndicator,
+  PiiIndicator
+} from "./FieldIndicators";
 import userSettingsSingleton from "../other/UserSettings";
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { Trans } from "@lingui/macro";
@@ -80,18 +80,18 @@ export const FieldInfoAffordances: React.FunctionComponent<{
          " className=""></label>{props.fieldDef.description && (
         <InfoAffordance>{props.fieldDef.description}</InfoAffordance>
       )} */}
-      {props.fieldDef.personallyIdentifiableInformation && <PiiAffordance />}
+      {props.fieldDef.personallyIdentifiableInformation && <PiiIndicator />}
       {props.fieldDef.tipOnUsingThisField && (
-        <InfoAffordance>{props.fieldDef.tipOnUsingThisField}</InfoAffordance>
+        <InfoIndicator>{props.fieldDef.tipOnUsingThisField}</InfoIndicator>
       )}
       {props.fieldDef.separatorWithCommaInstructions && (
-        <CommaSeparatedAffordance>
+        <CommaSeparatedIndicator>
           {props.fieldDef.separatorWithCommaInstructions}
-        </CommaSeparatedAffordance>
+        </CommaSeparatedIndicator>
       )}
 
       {userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi && (
-        <NotConsumedByArchive />
+        <NotConsumedByArchiveIndicator />
       )}
     </div>
   );

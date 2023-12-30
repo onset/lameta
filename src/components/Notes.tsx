@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { TextFieldEdit } from "./TextFieldEdit";
-import { InfoAffordance } from "./InfoAffordance";
+import { InfoIndicator } from "./FieldIndicators";
 import userSettingsSingleton from "../other/UserSettings";
 import { css } from "@emotion/react";
 import { Trans, t } from "@lingui/macro";
@@ -23,7 +23,7 @@ export const Notes: React.FunctionComponent<{
       `}
     >
       {userSettingsSingleton.IMDIMode && (
-        <InfoAffordance
+        <InfoIndicator
           css={css`
             margin-left: auto;
           `}
@@ -31,7 +31,7 @@ export const Notes: React.FunctionComponent<{
           <Trans comment="Shows in a tooltip on an info icon in the Notes tab">
             lameta will not export Notes to MIDI
           </Trans>
-        </InfoAffordance>
+        </InfoIndicator>
       )}
 
       <form

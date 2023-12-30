@@ -16,7 +16,7 @@ const colors = {
 };
 
 // just a little 🛈 with a tooltip of whatever children you give it
-export const InfoAffordance: React.FunctionComponent<{
+export const InfoIndicator: React.FunctionComponent<{
   children;
   className?; // enable emotion css from parent
 }> = (props) => {
@@ -35,7 +35,7 @@ export const InfoAffordance: React.FunctionComponent<{
   );
 };
 
-export const CommaSeparatedAffordance: React.FunctionComponent<{
+export const CommaSeparatedIndicator: React.FunctionComponent<{
   children;
   className?; // enable emotion css from parent
 }> = (props) => {
@@ -53,7 +53,7 @@ export const CommaSeparatedAffordance: React.FunctionComponent<{
   );
 };
 
-export const PiiAffordance: React.FunctionComponent<{
+export const PiiIndicator: React.FunctionComponent<{
   className?; // enable emotion css from parent
 }> = (props) => {
   return (
@@ -75,7 +75,7 @@ export const PiiAffordance: React.FunctionComponent<{
   );
 };
 
-export const NotConsumedByArchive: React.FunctionComponent<{
+export const NotConsumedByArchiveIndicator: React.FunctionComponent<{
   className?; // enable emotion css from parent
 }> = (props) => {
   return (
@@ -100,7 +100,7 @@ export const NotConsumedByArchive: React.FunctionComponent<{
   );
 };
 
-export const NotImportantToArchive: React.FunctionComponent<{
+export const NotImportantToArchiveIndicator: React.FunctionComponent<{
   className?; // enable emotion css from parent
 }> = (props) => {
   return (
