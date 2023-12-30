@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import Tooltip from "react-tooltip-lite";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import {
+  CommaSeparatedAffordance,
   InfoAffordance,
   NotConsumedByArchive,
   PiiAffordance
@@ -65,17 +66,29 @@ export const FieldLabel: React.FunctionComponent<{
 export const FieldInfoAffordances: React.FunctionComponent<{
   fieldDef: FieldDefinition;
 }> = observer((props) => {
-  const tipOnUsingThisField = useMemo(
-    () => translateTip(props.fieldDef.tipOnUsingThisField),
-    [props.fieldDef]
-  );
+  // const tipOnUsingThisField = useMemo(
+  //   () => translateTip(props.fieldDef.tipOnUsingThisField),
+  //   [props.fieldDef]
+  // );
 
   return (
     <div style={{ display: "flex" }}>
-      {tipOnUsingThisField && (
-        <InfoAffordance>{tipOnUsingThisField}</InfoAffordance>
-      )}
+      {/* I've gone back and forth on this... in some cases it seems optimal to show an info
+         icon for each description. But in others, the screen gets too crowded. Currently
+         I'm going with the description by hovering over the label.
+         
+         " className=""></label>{props.fieldDef.description && (
+        <InfoAffordance>{props.fieldDef.description}</InfoAffordance>
+      )} */}
       {props.fieldDef.personallyIdentifiableInformation && <PiiAffordance />}
+      {props.fieldDef.tipOnUsingThisField && (
+        <InfoAffordance>{props.fieldDef.tipOnUsingThisField}</InfoAffordance>
+      )}
+      {props.fieldDef.separatorWithCommaInstructions && (
+        <CommaSeparatedAffordance>
+          {props.fieldDef.separatorWithCommaInstructions}
+        </CommaSeparatedAffordance>
+      )}
 
       {userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi && (
         <NotConsumedByArchive />

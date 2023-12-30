@@ -10,6 +10,7 @@ export class FieldDefinition {
   public importType?: "languageCodeOrName";
   public description?: string;
   public tipOnUsingThisField?: string;
+  public separatorWithCommaInstructions?: string;
   public default?: string;
   public persist: boolean;
   public type: string = "Text";
