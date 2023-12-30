@@ -13,1138 +13,834 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: app/components/FileList.tsx:197
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:104
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:94
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
 msgstr ""
 
-#: app/components/export/ExportChoices.tsx:97
 #~ msgid "A folder containing both the IMDI files and all the project's archivable files."
 #~ msgstr ""
 
-#: src/components/export/ExportChoices.tsx:79
 msgid "A folder with an IMDI file for the project and each session."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:106
 #~ msgid "A single ISLE Meta Data Initiative XML file."
 #~ msgstr ""
 
-#: src/components/export/ExportChoices.tsx:49
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:105
 #~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
 #~ msgstr ""
 
-#: src/components/export/ExportChoices.tsx:33
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr ""
 
-#: app/components/export/ExportDialog.tsx:127
 #~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:118
 #~ msgid "A zip file with an IMDI file for the project and each session."
 #~ msgstr ""
 
-#: src/index.tsx:51
 msgid "Abandon files that are still copying"
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:33
 msgid "About This Project"
 msgstr ""
 
-#: src/other/menu.ts:49
 msgid "About lameta"
 msgstr ""
 
-#: src/components/session/AccessChooser.tsx:61
 msgid "Access"
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:36
 msgid "Access Protocol"
 msgstr ""
 
-#: src/components/FileList.tsx:188
 msgid "Add Files"
 msgstr ""
 
-#: src/components/people/person/PersonLanguageList.tsx:140
 msgid "Add Language"
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:88
 msgid "Add documents here that describe the projects and corpus."
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:104
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:112
 msgid "All Sessions"
 msgstr ""
 
-#: src/components/FieldLabel.tsx:63
-msgid "As Personally Identifiable Information, this will not be exported to other formats."
-msgstr ""
+#~ msgid "As Personally Identifiable Information, this will not be exported to other formats."
+#~ msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:117
 msgid "As a curator"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:120
 msgid "As a developer"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:114
 msgid "As a trainer"
 msgstr ""
 
-#: src/components/FolderPane.tsx:361
-#: src/other/localization.ts:112
 msgid "Audio"
 msgstr ""
 
-#: app/components/MediaStats.tsx:96
 #~ msgid "Audio Bit Depth"
 #~ msgstr ""
 
-#: app/components/MediaStats.tsx:90
 #~ msgid "Audio Bit Rate"
 #~ msgstr ""
 
-#: app/components/MediaStats.tsx:88
 #~ msgid "Audio Channels"
 #~ msgstr ""
 
-#: app/components/MediaStats.tsx:87
 #~ msgid "Audio Codec"
 #~ msgstr ""
 
-#: app/components/MediaStats.tsx:93
 #~ msgid "Audio Sample Rate"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:400
-#: src/components/LametaDialog.tsx:213
-#: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:196
-#: src/components/Notify.tsx:276
-#: src/components/registration/RegistrationDialog.tsx:127
 msgid "Cancel"
 msgstr ""
 
-#: src/model/Folder/Folder.ts:195
 msgid "Cannot add files of that type"
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:162
 msgid "Change Name To:"
 msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:119
 msgid "Change..."
 msgstr ""
 
-#: app/other/menu.ts:335
 #~ msgid "Check for new version"
 #~ msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:222
 msgid "Choose File"
 msgstr ""
 
-#: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:144
 msgid "Choose Language"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:236
 msgid "Choose Spreadsheet Mapping:"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:20
 msgid "Choose an export format:"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:102
 msgid "Choose which Sessions to export:"
 msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:129
 msgid "Clear"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:384
-#: src/components/export/ExportDialog.tsx:410
-#: src/components/ReleasesDialog.tsx:234
 msgid "Close"
 msgstr ""
 
-#: src/components/PersonContributions.tsx:39
-#: src/components/session/ContributorsTable.tsx:128
+msgid "Collection"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
-#: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:73
 msgid "Confirm Delete"
 msgstr ""
 
-#: src/components/FolderPane.tsx:314
 msgid "Contributions"
 msgstr ""
 
-#: src/components/FolderPane.tsx:207
-#: src/components/FolderPane.tsx:253
 msgid "Contributors"
 msgstr ""
 
-#: src/other/menu.ts:104
 msgid "Copy"
 msgstr ""
 
-#: src/model/Folder/Folder.ts:228
 msgid "Copy Requested..."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:359
 msgid "Copying in Files..."
 msgstr ""
 
-#: src/components/CopyingStatus.tsx:16
 msgid "Copying..."
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:125
 msgid "Create"
 msgstr ""
 
-#: src/containers/HomePage.tsx:279
 msgid "Create New Project"
 msgstr ""
 
-#: src/containers/HomePage.tsx:294
 msgid "Create New Project with Sample Data"
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:73
 msgid "Create New lameta Project"
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:72
 msgid "Create Project Using Sample Data"
 msgstr ""
 
-#: src/other/menu.ts:134
 msgid "Create Project..."
 msgstr ""
 
-#: src/other/menu.ts:370
 msgid "Credits"
 msgstr ""
 
-#: src/components/project/AccessProtocolForm.tsx:53
 msgid "Custom Access Choices"
 msgstr ""
 
-#: src/components/PropertyPanel.tsx:19
 msgid "Custom Field"
 msgstr ""
 
-#: app/components/CustomFieldsTable.tsx:158
 #~ msgid "Custom Fields"
 #~ msgstr ""
 
-#: src/other/menu.ts:102
 msgid "Cut"
 msgstr ""
 
-#: app/components/session/ContributorsTable.tsx:91
 #~ msgid "Date"
 #~ msgstr ""
 
-#: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:125
 msgid "Delete"
 msgstr ""
 
-#: src/components/Workspace.tsx:177
 msgid "Delete All Marked People..."
 msgstr ""
 
-#: src/components/Workspace.tsx:129
 msgid "Delete All Marked Sessions..."
 msgstr ""
 
-#: src/components/FileList.tsx:304
 msgid "Delete File..."
 msgstr ""
 
-#: src/components/Workspace.tsx:167
 msgid "Delete Person..."
 msgstr ""
 
-#: src/components/Workspace.tsx:111
 msgid "Delete Session"
 msgstr ""
 
-#: src/components/Workspace.tsx:101
 msgid "Delete Session..."
 msgstr ""
 
-#: src/components/FileList.tsx:304
 msgid "Delete link to file..."
 msgstr ""
 
-#: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:73
-#: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:102
 msgid "Deleting..."
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:39
 msgid "Description Documents"
 msgstr ""
 
-#: src/index.tsx:50
 msgid "Do not quit"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:347
 msgid "Done"
 msgstr ""
 
-#: src/components/ReleasesDialog.tsx:186
 msgid "Download"
 msgstr ""
 
-#: src/components/Workspace.tsx:148
 msgid "Duplicate Person"
 msgstr ""
 
-#: src/components/Workspace.tsx:80
 msgid "Duplicate Session"
 msgstr ""
 
-#: app/components/FolderPane.tsx:222
 #~ msgid "ELAN"
 #~ msgstr ""
 
-#: src/other/menu.ts:89
 msgid "Edit"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:78
 msgid "Email Address"
 msgstr ""
 
-#: src/components/project/AccessProtocolForm.tsx:56
 msgid "Enter each choice, separated by commas"
 msgstr ""
 
-#: src/components/Notify.tsx:29
-#: src/components/Notify.tsx:151
 msgid "Error"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:394
 msgid "Export"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:295
 msgid "Export Project"
 msgstr ""
 
-#: src/other/menu.ts:143
 msgid "Export Project..."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:335
 msgid "Exporting..."
 msgstr ""
 
-#: src/components/CustomFieldsTable.tsx:158
-#: src/components/MoreFieldsTable.tsx:43
 msgid "Field"
 msgstr ""
 
-#: src/components/FolderPane.tsx:455
-#: src/other/menu.ts:122
 msgid "File"
 msgstr ""
 
-#: src/model/file/File.ts:1165
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:174
 msgid "File to Import:"
 msgstr ""
 
-#: src/other/menu.ts:168
 msgid "Font Size"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:111
 msgid "For a course or workshop"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:108
 msgid "For documenting another language"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:105
 msgid "For documenting my own language"
 msgstr ""
 
-#: app/components/MediaStats.tsx:68
-#: app/components/MediaStats.tsx:68
 #~ msgid "Format"
 #~ msgstr ""
 
-#: src/components/FolderList.tsx:152
 msgid "Found file with a name containing 'Consent'"
 msgstr ""
 
-#: src/components/FolderList.tsx:159
 msgid "Found no file with a name containing 'Consent'"
 msgstr ""
 
-#: app/components/MediaStats.tsx:106
 #~ msgid "Frame rate"
 #~ msgstr ""
 
-#: src/model/Project/Project.ts:572
 msgid "Full Name"
 msgstr ""
 
-#: src/other/menu.ts:352
 msgid "Help"
 msgstr ""
 
-#: src/other/menu.ts:258
 msgid "Help translate"
 msgstr ""
 
-#: src/other/menu.ts:68
 msgid "Hide Others"
 msgstr ""
 
-#: src/other/menu.ts:63
 msgid "Hide lameta"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:93
 msgid "How are you using lameta?"
 msgstr ""
 
-#: src/model/Project/Project.ts:563
 msgid "ID"
 msgstr ""
 
-#: app/components/FolderPane.tsx:79
-#: app/components/project/ProjectTab.tsx:36
 #~ msgid "IMDI"
 #~ msgstr ""
 
-#: app/components/export/ExportChoices.tsx:94
 #~ msgid "IMDI + Files"
 #~ msgstr ""
 
-#: src/other/menu.ts:266
 msgid "IMDI Mode"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:76
 msgid "IMDI Only"
 msgstr ""
 
-#: src/components/FolderPane.tsx:403
-#: src/other/localization.ts:110
 msgid "Image"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:135
-#: src/components/Workspace.tsx:158
 msgid "Import Spreadsheet of People"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:134
-#: src/components/Workspace.tsx:92
 msgid "Import Spreadsheet of Sessions"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:301
 msgid "Import {chosenCount} People"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:298
 msgid "Import {chosenCount} Sessions"
 msgstr ""
 
-#: src/components/import/SpreadsheetImportDialog.tsx:295
 msgid "Importing..."
 msgstr ""
 
-#: src/components/people/person/ParentButton.tsx:32
 msgid "Indicates that this is the father or mother's primary language."
 msgstr ""
 
-#: src/other/menu.ts:188
 msgid "Interface Language"
 msgstr ""
 
-#: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:148
 msgid "Language Code"
 msgstr ""
 
-#: app/components/people/person/PersonLanguageList.tsx:107
 #~ msgid "Languages"
 #~ msgstr ""
 
-#: src/other/menu.ts:179
 msgid "Larger"
 msgstr ""
 
-#: src/components/RegistrationReminder.tsx:26
 msgid "Learner"
 msgstr ""
 
-#: app/components/MediaStats.tsx:65
-#: app/components/MediaStats.tsx:65
 #~ msgid "Length"
 #~ msgstr ""
 
-#: src/model/file/FileStatus.tsx:42
 msgid "Linked to {p}"
 msgstr ""
 
-#: src/components/people/person/OnePersonLanguageEditor.tsx:62
 msgid "Mark as a primary language of the mother."
 msgstr ""
 
-#: src/components/people/person/OnePersonLanguageEditor.tsx:46
 msgid "Mark as a primary language."
 msgstr ""
 
-#: src/components/people/person/OnePersonLanguageEditor.tsx:69
 msgid "Mark as primary language of the father."
 msgstr ""
 
-#: src/components/FolderList.tsx:81
 msgid "Mark for Deletion or Export"
 msgstr ""
 
-#: app/components/FolderList.tsx:75
-#: app/components/FolderList.tsx:113
 #~ msgid "Mark for Export"
 #~ msgstr ""
 
-#: src/components/FolderList.tsx:122
 msgid "Mark for Export or Deletion"
 msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:71
 msgid "Media Folder"
 msgstr ""
 
-#: app/components/MediaFolderDialog.tsx:45
 #~ msgid "Media Folder Settings"
 #~ msgstr ""
 
-#: src/other/menu.ts:151
 msgid "Media Folder Settings..."
 msgstr ""
 
-#: src/components/FileList.tsx:93
 msgid "Modified"
 msgstr ""
 
-#: src/components/MoreFieldsTable.tsx:84
 msgid "More Fields"
 msgstr ""
 
-#: src/components/FileList.tsx:65
-#: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:157
-#: src/components/session/ContributorsTable.tsx:112
 msgid "Name"
 msgstr ""
 
-#: src/components/people/PeopleTab.tsx:21
-#: src/components/Workspace.tsx:139
-#: src/model/Project/Project.ts:360
-#: src/model/Project/Project.ts:432
-#: src/model/Project/Project.ts:436
 msgid "New Person"
 msgstr ""
 
-#: src/components/session/SessionsTab.tsx:24
-#: src/components/Workspace.tsx:71
-#: src/model/Project/Project.ts:347
-#: src/model/Project/Project.ts:383
 msgid "New Session"
 msgstr ""
 
-#: app/components/MediaFolderDialog.tsx:56
 #~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
 #~ msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:43
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:199
+msgid "Not important to the archive, but will be included"
+msgstr ""
+
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr ""
 
-#: src/components/FolderPane.tsx:210
-#: src/components/FolderPane.tsx:259
-#: src/components/FolderPane.tsx:317
 msgid "Notes"
 msgstr ""
 
-#: src/components/LametaDialog.tsx:222
-#: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:203
-#: src/components/MediaFolderDialog.tsx:144
-#: src/components/registration/RegistrationDialog.tsx:134
-#: src/components/ShowMessageDialog/MessageDialog.tsx:74
 msgid "OK"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:91
 msgid "OPEX + Files"
 msgstr ""
 
-#: src/index.tsx:49
 msgid "One or more files are still being copied into your project."
 msgstr ""
 
-#: src/components/FileList.tsx:157
 msgid "Open"
 msgstr ""
 
-#: src/containers/HomePage.tsx:284
 msgid "Open Project"
 msgstr ""
 
-#: src/containers/HomePage.tsx:330
-#: src/other/menu.ts:125
 msgid "Open Project..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:165
 #~ msgid "Open SayMore Project"
 #~ msgstr ""
 
-#: src/components/FolderPane.tsx:444
 msgid "Open in ELAN"
 msgstr ""
 
-#: src/components/FileList.tsx:286
 msgid "Open in program associated with this file type"
 msgstr ""
 
-#: src/components/project/ProjectTab.tsx:42
 msgid "Other Documents"
 msgstr ""
 
-#: app/components/people/person/PersonForm.tsx:46
 #~ msgid "Other Languages"
 #~ msgstr ""
 
-#: src/other/menu.ts:275
 msgid "PARADISEC Mode"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:46
 msgid "Paradisec CSV"
 msgstr ""
 
-#: src/other/menu.ts:109
 msgid "Paste"
 msgstr ""
 
-#: src/components/session/PeopleChooser.tsx:94
-#: src/components/Workspace.tsx:136
-#: src/components/Workspace.tsx:314
 msgid "People"
 msgstr ""
 
-#: src/components/FolderPane.tsx:311
-#: src/model/Project/Project.ts:573
-#: src/other/localization.ts:106
 msgid "Person"
 msgstr ""
 
-#: src/components/RegistrationReminder.tsx:18
 msgid "Please Register"
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:98
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:412
 msgid "Please wait until all files are finished copying into this folder"
 msgstr ""
 
-#: src/components/Workspace.tsx:302
-#: src/other/localization.ts:102
 msgid "Project"
 msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:42
 #~ msgid "Project will be created in: {folderPath}"
 #~ msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:42
 #~ msgid "Project will be created in: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:68
 msgid "Project will be created in: {path}."
 msgstr ""
 
-#: src/components/FolderPane.tsx:204
 msgid "Properties"
 msgstr ""
 
-#: src/other/menu.ts:80
 msgid "Quit"
 msgstr ""
 
-#: src/other/menu.ts:97
 msgid "Redo"
 msgstr ""
 
-#: src/components/registration/RegistrationDialog.tsx:73
 msgid "Registration"
 msgstr ""
 
-#: src/other/menu.ts:355
 msgid "Registration..."
 msgstr ""
 
-#: src/components/ReleasesDialog.tsx:115
 msgid "Release Notes"
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:220
 msgid "Rename"
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:154
 msgid "Rename File"
 msgstr ""
 
-#: src/components/people/PeopleTab.tsx:26
 msgid "Rename for Consent"
 msgstr ""
 
-#: src/components/FileList.tsx:171
-#: src/components/FileList.tsx:295
 msgid "Rename..."
 msgstr ""
 
-#: src/model/file/File.ts:1022
 msgid "Renaming failed because there is already a file with that name."
 msgstr ""
 
-#: src/other/menu.ts:361
 msgid "Report a problem"
 msgstr ""
 
-#: app/components/MediaStats.tsx:103
 #~ msgid "Resolution"
 #~ msgstr ""
 
-#: src/other/patientFile.ts:91
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
-#: src/components/PersonContributions.tsx:32
-#: src/components/session/ContributorsTable.tsx:117
 msgid "Role"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:112
 msgid "Save As"
 msgstr ""
 
-#: src/components/SaveNotifier.tsx:65
 msgid "Saving"
 msgstr ""
 
-#: src/components/SaveNotifier.tsx:62
 msgid "Saving before rename..."
 msgstr ""
 
-#: app/containers/HomePage.tsx:192
 #~ msgid "SayMore/SayMore Project Files"
 #~ msgstr ""
 
-#: src/other/menu.ts:114
 msgid "Select All"
 msgstr ""
 
-#: src/other/menu.ts:56
 msgid "Services"
 msgstr ""
 
-#: src/components/FolderPane.tsx:250
-#: src/components/PersonContributions.tsx:26
-#: src/components/Workspace.tsx:68
-#: src/model/Project/Project.ts:564
-#: src/other/localization.ts:104
 msgid "Session"
 msgstr ""
 
-#: src/components/Workspace.tsx:308
 msgid "Sessions"
 msgstr ""
 
-#: src/other/menu.ts:73
 msgid "Show All"
 msgstr ""
 
-#: src/other/menu.ts:374
 msgid "Show Release Notes"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:421
 msgid "Show export"
 msgstr ""
 
-#: src/components/FileList.tsx:279
 msgid "Show in File Explorer"
 msgstr ""
 
-#: src/components/FileList.tsx:278
 msgid "Show in Finder"
 msgstr ""
 
-#: src/components/Notify.tsx:276
 msgid "Show me the folder with the problem"
 msgstr ""
 
-#: src/components/ReleasesDialog.tsx:224
 msgid "Show more releases"
 msgstr ""
 
-#: src/components/FileList.tsx:117
 msgid "Size"
 msgstr ""
 
-#: src/other/menu.ts:172
 msgid "Smaller"
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:94
 msgid "Some operating systems would not allow that name."
 msgstr ""
 
-#: src/components/Notify.tsx:277
 msgid "Something is wrong here..."
 msgstr ""
 
-#: src/components/RenameFileDialog/RenameFileDialog.tsx:101
 msgid "Sorry, no slashes are allowed"
 msgstr ""
 
-#: src/other/menu.ts:138
 msgid "Start Screen"
 msgstr ""
 
-#: src/components/FolderPane.tsx:256
 msgid "Status"
 msgstr ""
 
-#: src/components/FolderPane.tsx:418
 msgid "Text"
 msgstr ""
 
-#: src/model/Project/Project.ts:536
 msgid "That name would lead to an empty filename."
 msgstr ""
 
-#: app/model/Project/Project.ts:178
 #~ msgid "That would lead to an empty filename"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:351
 msgid "The IMDI files were validated."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:96
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr ""
 
-#: src/model/Project/Project.ts:534
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr ""
 
-#: src/components/Notify.tsx:278
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr ""
 
-#: src/components/Notify.tsx:272
 msgid "There is a problem with {displayName}. Click for more information."
 msgstr ""
 
-#: app/model/Project/Project.ts:208
 #~ msgid "There is already a Person with that name or code"
 #~ msgstr ""
 
-#: src/model/Project/Project.ts:586
 msgid "There is already a Person with that name or code."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:209
 msgid "There is already a file here with the name"
 msgstr ""
 
-#: app/components/project/CreateProjectDialog.tsx:37
 #~ msgid "There is already a project at: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:64
 msgid "There is already a project at: {path}."
 msgstr ""
 
-#: src/model/Project/Project.ts:545
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr ""
 
-#: app/model/Project/Project.ts:183
 #~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:183
 #~ msgid "There is already a {folderKind} with that name or code '{value}'"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:183
 #~ msgid "There is already a {folderKind} with that name or code '{value}.'"
 #~ msgstr ""
 
-#: app/model/Project/Project.ts:178
 #~ msgid "There is already a {folderKind} with the name '{value}'"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:138
 msgid "There was a problem exporting:"
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:65
+msgid "This Personally Identifiable Information may not be exported by some formats."
+msgstr ""
+
+msgid "This XML conforms to the IMDI schema."
+msgstr ""
+
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:60
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr ""
 
-#: app/other/crossPlatformUtilities.ts:25
+msgid "This will not be consumed by the archive. It is only for the use of the researcher."
+msgstr ""
+
 #~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
 #~ msgstr ""
 
-#: app/model/file/File.ts:707
 #~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
 #~ msgstr ""
 
-#: src/components/FileList.tsx:84
 msgid "Type"
 msgstr ""
 
-#: src/other/menu.ts:92
 msgid "Undo"
 msgstr ""
 
-#: src/components/Notify.tsx:246
 msgid "Update available"
 msgstr ""
 
-#: src/components/CustomFieldsTable.tsx:175
-#: src/components/MoreFieldsTable.tsx:51
 msgid "Value"
 msgstr ""
 
-#: src/components/FolderPane.tsx:378
-#: src/other/localization.ts:108
 msgid "Video"
 msgstr ""
 
-#: app/components/MediaStats.tsx:101
 #~ msgid "Video Codec"
 #~ msgstr ""
 
-#: src/other/menu.ts:165
 msgid "View"
 msgstr ""
 
-#: src/components/Notify.tsx:252
 msgid "View Release Notes"
 msgstr ""
 
-#: src/components/Notify.tsx:212
 msgid "Warning"
 msgstr ""
 
-#: src/components/Notify.tsx:140
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:94
 msgid "What would you like to call this project?"
 msgstr ""
 
-#: app/components/MediaStats.tsx:53
-#: app/components/MediaStats.tsx:53
 #~ msgid "Width"
 #~ msgstr ""
 
-#: src/components/ReleasesDialog.tsx:128
 msgid "You are running lameta version:"
 msgstr ""
 
-#: app/components/ReleasesDialog.tsx:127
 #~ msgid "You are running lameta version: {v}"
 #~ msgstr ""
 
-#: app/components/ReleasesDialog.tsx:72
 #~ msgid "You are running lameta {0}"
 #~ msgstr ""
 
-#: app/components/ReleasesDialog.tsx:87
 #~ msgid "You are running lameta {version}"
 #~ msgstr ""
 
-#: src/components/FileList.tsx:346
 msgid "You cannot add files of that type"
 msgstr ""
 
-#: src/components/FileList.tsx:350
 msgid "You cannot add folders."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:119
 msgid "ZIP Archive"
 msgstr ""
 
-#: src/components/export/ExportChoices.tsx:30
 msgid "Zip of CSVs"
 msgstr ""
 
-#: src/components/IsoLanguageEdit.tsx:32
 msgid "choose..."
 msgstr ""
 
-#: app/components/MediaStats.tsx:54
-#: app/components/MediaStats.tsx:54
 #~ msgid "height"
 #~ msgstr ""
 
-#: src/other/menu.ts:46
 msgid "lameta"
 msgstr ""
 
-#: src/components/Notify.tsx:75
-#: src/model/file/File.ts:41
 msgid "lameta  was not able to rename that file."
 msgstr ""
 
-#: app/components/MediaFolderDialog.tsx:64
 #~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 #~ msgstr ""
 
-#: src/components/MediaFolderDialog.tsx:51
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr ""
 
-#: src/containers/HomePage.tsx:337
 msgid "lameta and SayMore Project Files"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:255
 msgid "lameta cannot export files while files are still being copied in."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:68
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:426
+msgid "lameta could not find a matching Person for the following contributors:"
+msgstr ""
+
 msgid "lameta could not rename the directory."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:84
 msgid "lameta expected to find a .link file at {e}"
 msgstr ""
 
-#: src/model/Folder/Folder.ts:433
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
 msgstr ""
 
-#: src/other/crossPlatformUtilities.ts:28
 msgid "lameta was not able to delete the file."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:385
 msgid "lameta was not able to put this file in the trash"
 msgstr ""
 
-#: src/model/Folder/Folder.ts:466
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr ""
 
-#: app/model/file/File.ts:682
 #~ msgid "lameta was not able to rename that file."
 #~ msgstr ""
 
-#: src/model/Folder/Folder.ts:481
 msgid "lameta was not able to rename the folder."
 msgstr ""
 
 #. Shows in a tooltip on an info icon in the Notes tab
-#: src/components/Notes.tsx:31
 msgid "lameta will not export Notes to MIDI"
 msgstr ""
 
-#: src/components/Notify.tsx:279
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr ""
 
-#: app/model/file/FileStatus.tsx:67
 #~ msgid "undefined"
 #~ msgstr ""
 
-#: app/components/SMRadio.tsx:11
 #~ msgid "{0}"
 #~ msgstr ""
 
-#: src/components/export/ExportChoices.tsx:119
 msgid "{0} Marked Sessions"
 msgstr ""
 
-#: app/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:94
 #~ msgid "{0} will be moved to the Trash"
 #~ msgstr ""
 
-#: app/components/export/ExportDialog.tsx:224
 #~ msgid "{countOfMarkedSessions} Marked Sessions"
 #~ msgstr ""
 
-#: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:89
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
