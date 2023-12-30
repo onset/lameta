@@ -8,7 +8,7 @@ export class FieldDefinition {
   public omitSave?: string; // used for import-only fields
   public omitExport?: boolean;
   public importType?: "languageCodeOrName";
-  public tooltip?: string;
+  public description?: string;
   public tipOnUsingThisField?: string;
   public default?: string;
   public persist: boolean;

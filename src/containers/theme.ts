@@ -5,6 +5,7 @@ export const lameta_blue = "#becde4";
 export const lameta_green = "#cff09f";
 export const lameta_dark_green = "#86cb20";
 export const error_color = "#DC322F";
+export const tooltipBackground = "#3D5E90";
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
 export function createLametaTheme(): Theme {

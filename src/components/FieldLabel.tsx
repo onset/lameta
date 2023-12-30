@@ -10,13 +10,14 @@ import userSettingsSingleton from "../other/UserSettings";
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
+import { tooltipBackground } from "../containers/theme";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
   htmlFor?: string; // aria for accessibility (react requires 'htmlFor')
   omitInfoAffordances?: boolean;
 }> = observer((props) => {
-  const tooltip = useMemo(() => translateTip(props.fieldDef.tooltip), [
+  const tooltip = useMemo(() => translateTip(props.fieldDef.description), [
     props.fieldDef
   ]);
 
@@ -41,7 +42,8 @@ export const FieldLabel: React.FunctionComponent<{
         tagName={"span"}
         className={"tooltipWrapper"} // would have no wrapper, but at least reminds us why it is there
         styles={{ display: "inline" }}
-        background={"#FDFFB1"}
+        background={tooltipBackground}
+        color={"white"}
         // wrapping in a span prevents an error when the tooltip text has problematic characters
         content={<span>{tooltip}</span>}
       >

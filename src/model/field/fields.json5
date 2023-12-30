@@ -108,7 +108,7 @@
       key: "contactPerson",
       englishLabel: "Contact Person",
       tagInSayMoreClassic: "ContactPerson",
-      tooltip: "Contact information about the person or institution responsible for the project.",
+      description: "Contact information about the person or institution responsible for the project.",
       tabIndex: 10
     },
     /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
@@ -227,7 +227,7 @@
     {
       key: "location",
       englishLabel: "Neighborhood/Town/Village",
-      tooltip: "A location that is relevant within the group you are studying",
+      description: "A location that is relevant within the group you are studying",
       tabIndex: 12
     },
     {
@@ -237,7 +237,7 @@
     {
       key: "accessDescription", // this was the inherited key... but really it's an explanation
       englishLabel: "Access Explanation",
-      tooltip: "If the access is not open/free, use this to explain why.",
+      description: "If the access is not open/free, use this to explain why.",
       tabIndex: 9
     },
     {
@@ -399,7 +399,7 @@
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
       // we're retaining that key to allow migration, but
       englishLabel: "Details", // in lameta we extend this to be more general
-      tooltip: "Relevant details such as where they learned it",
+      description: "Relevant details such as where they learned it",
       omitExport: "true",
       deprecated: "migrated to description by lameta"
     },
@@ -503,7 +503,7 @@
       key: "howToContact",
       englishLabel: "How to Contact",
       multipleLines: true,
-      tooltip: "This is only for the use of the researcher.",
+      description: "This is only for the use of the researcher.",
       personallyIdentifiableInformation: true,
       markAsNotImdi: true
     },

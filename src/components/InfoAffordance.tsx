@@ -6,7 +6,8 @@ import piiIcon from "@assets/pii.svg";
 import willNotBeArchivedIcon from "@assets/not-archive.svg";
 import notImportantToArchiveIcon from "@assets/archive-unimportant.svg";
 import { Trans } from "@lingui/macro";
-const tooltipBackground = "#3D5E90";
+import { tooltipBackground } from "../containers/theme";
+
 // just a little 🛈 with a tooltip of whatever children you give it
 export const InfoAffordance: React.FunctionComponent<{
   children;
@@ -81,7 +82,6 @@ export const NotImportantToArchive: React.FunctionComponent<{
       <Tooltip
         styles={{ display: "inline" }}
         background={tooltipBackground}
-        className="rounded-tooltip"
         color={"white"}
         content={
           <Trans>Not important to the archive, but will be included</Trans>

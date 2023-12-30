@@ -40,9 +40,6 @@ export const TextFieldEdit: React.FunctionComponent<
     }
     return text.text;
   }
-  console.log(
-    `${props.field.definition.key} ---- ${props.field.definition.multipleLines}`
-  );
 
   return (
     <div
