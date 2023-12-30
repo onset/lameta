@@ -109,6 +109,7 @@
     "sass": "^1.54.8",
     "sass-loader": "^7.0.3",
     "sinon": "^4.0.0",
+    "ts-node": "^10.9.2",
     "vite": "^5.0.2",
     "vite-electron-plugin": "^0.8.2",
     "vite-plugin-electron-renderer": "^0.12.1",

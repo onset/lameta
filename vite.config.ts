@@ -2,7 +2,6 @@ import path from "path";
 import { defineConfig } from "vite";
 //import react from "@vitejs/plugin-react-swc";
 import react from "@vitejs/plugin-react";
-import { lingui } from "@lingui/vite-plugin";
 import electron from "vite-electron-plugin";
 import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
@@ -18,7 +17,10 @@ export default defineConfig({
     }
   },
   build: {
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      external: ["ts-node"]
+    }
   },
   plugins: [
     timeReporter(),
