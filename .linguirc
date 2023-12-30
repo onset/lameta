@@ -29,5 +29,8 @@
     "jsescOption": {
       "minimal": false
     }
+  },
+  "formatOptions": {
+    "origins": false
   }
 }
