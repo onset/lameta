@@ -1,3 +1,17 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /V3/fields.po\n"
+"X-Crowdin-File-ID: 70\n"
+"Project-Id-Version: saymorex\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2023-12-31 15:22\n"
+
 msgctxt "ELAR/project/collectionSteward/description"
 msgid "This is usually the same person as the Depositor."
 msgstr ""
@@ -8,11 +22,11 @@ msgstr ""
 
 msgctxt "lameta/project/title"
 msgid "Project ID"
-msgstr ""
+msgstr "ID do projeto"
 
 msgctxt "lameta/project/projectDescription"
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
@@ -20,23 +34,23 @@ msgstr ""
 
 msgctxt "lameta/project/analysisIso3CodeAndName"
 msgid "Working Language"
-msgstr ""
+msgstr "Língua de trabalho"
 
 msgctxt "lameta/project/location"
 msgid "Location/Address"
-msgstr ""
+msgstr "Localização/Endereço"
 
 msgctxt "lameta/project/grantId"
 msgid "Grant ID"
-msgstr ""
+msgstr "ID do Financiamento"
 
 msgctxt "lameta/project/fundingProjectTitle"
 msgid "Funding Project Title"
-msgstr ""
+msgstr "Título do Projeto Patrocinador"
 
 msgctxt "lameta/project/accessProtocol"
 msgid "Access Protocol used by this project"
-msgstr ""
+msgstr "Protocolo de Acesso Usado Por Esse Projeto"
 
 msgctxt "lameta/project/customAccessChoices"
 msgid "Custom access choices"
@@ -44,11 +58,11 @@ msgstr ""
 
 msgctxt "lameta/project/contactPerson"
 msgid "Contact Person"
-msgstr ""
+msgstr "Pessoa de Contato"
 
 msgctxt "lameta/project/contactPerson/description"
 msgid "Contact information about the person or institution responsible for the project."
-msgstr ""
+msgstr "Informações de contato sobre a pessoa ou instituição responsável pelo projeto."
 
 msgctxt "lameta/project/collectionName"
 msgid "Collection Name"
@@ -76,79 +90,79 @@ msgstr ""
 
 msgctxt "lameta/project/depositor"
 msgid "Depositor"
-msgstr ""
+msgstr "Depositante"
 
 msgctxt "lameta/session/id"
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 msgctxt "lameta/session/languages"
 msgid "Subject Languages"
-msgstr ""
+msgstr "Línguas temáticas"
 
 msgctxt "lameta/session/workingLanguages"
 msgid "Working Languages"
-msgstr ""
+msgstr "Línguas de trabalho"
 
 msgctxt "lameta/session/participants"
 msgid "People"
-msgstr ""
+msgstr "Pessoas"
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
-msgstr ""
+msgstr "Subgênero"
 
 msgctxt "lameta/session/location"
 msgid "Neighborhood/Town/Village"
-msgstr ""
+msgstr "Bairro/Cidade"
 
 msgctxt "lameta/session/location/description"
 msgid "A location that is relevant within the group you are studying"
-msgstr ""
+msgstr "Um local que seja relevante dentro do grupo que você está estudando"
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
-msgstr ""
+msgstr "Explicação de Acesso"
 
 msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
-msgstr ""
+msgstr "Se o acesso não for aberto/gratuito, use isto para explicar o motivo."
 
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
-msgstr ""
+msgstr "Envolvimento do Pesquisador"
 
 msgctxt "lameta/session/locationRegion"
 msgid "Region"
-msgstr ""
+msgstr "Região"
 
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
-msgstr ""
+msgstr "País"
 
 msgctxt "lameta/session/locationContinent"
 msgid "Continent"
-msgstr ""
+msgstr "Continente"
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
-msgstr ""
+msgstr "Separar com vírgulas. Note que palavras-chave individuais não podem conter uma vírgula."
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual topics cannot contain a comma."
-msgstr ""
+msgstr "Separar com vírgulas. Observe que tópicos individuais não podem conter uma vírgula."
 
 msgctxt "lameta/person/name"
 msgid "Full Name"
-msgstr ""
+msgstr "Nome Completo"
 
 msgctxt "lameta/person/nickname"
 msgid "Nickname"
-msgstr ""
+msgstr "Apelido"
 
 msgctxt "lameta/person/code"
 msgid "Code"
-msgstr ""
+msgstr "Código"
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
 msgid "Details"
@@ -156,7 +170,7 @@ msgstr ""
 
 msgctxt "lameta/person/primaryLanguageLearnedIn/description"
 msgid "Relevant details such as where they learned it"
-msgstr ""
+msgstr "Detalhes relevantes, tais como onde eles aprenderam"
 
 msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
@@ -172,7 +186,7 @@ msgstr ""
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
-msgstr ""
+msgstr "Ano de nascimento"
 
 msgctxt "lameta/person/birthYear/tipOnUsingThisField"
 msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
@@ -184,8 +198,9 @@ msgstr ""
 
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
-msgstr ""
+msgstr "Grupo Étnico"
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
-msgstr ""
+msgstr "Ocupação Principal"
+

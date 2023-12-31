@@ -1,3 +1,17 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /V3/fields.po\n"
+"X-Crowdin-File-ID: 70\n"
+"Project-Id-Version: saymorex\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2023-12-31 15:22\n"
+
 msgctxt "ELAR/project/collectionSteward/description"
 msgid "This is usually the same person as the Depositor."
 msgstr ""
@@ -8,11 +22,11 @@ msgstr ""
 
 msgctxt "lameta/project/title"
 msgid "Project ID"
-msgstr ""
+msgstr "项目ID"
 
 msgctxt "lameta/project/projectDescription"
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
@@ -20,23 +34,23 @@ msgstr ""
 
 msgctxt "lameta/project/analysisIso3CodeAndName"
 msgid "Working Language"
-msgstr ""
+msgstr "工作语言"
 
 msgctxt "lameta/project/location"
 msgid "Location/Address"
-msgstr ""
+msgstr "位置/地址"
 
 msgctxt "lameta/project/grantId"
 msgid "Grant ID"
-msgstr ""
+msgstr "基金ID"
 
 msgctxt "lameta/project/fundingProjectTitle"
 msgid "Funding Project Title"
-msgstr ""
+msgstr "资助项目标题"
 
 msgctxt "lameta/project/accessProtocol"
 msgid "Access Protocol used by this project"
-msgstr ""
+msgstr "该项目访问协议"
 
 msgctxt "lameta/project/customAccessChoices"
 msgid "Custom access choices"
@@ -44,7 +58,7 @@ msgstr ""
 
 msgctxt "lameta/project/contactPerson"
 msgid "Contact Person"
-msgstr ""
+msgstr "联系人"
 
 msgctxt "lameta/project/contactPerson/description"
 msgid "Contact information about the person or institution responsible for the project."
@@ -76,31 +90,31 @@ msgstr ""
 
 msgctxt "lameta/project/depositor"
 msgid "Depositor"
-msgstr ""
+msgstr "上传者"
 
 msgctxt "lameta/session/id"
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 msgctxt "lameta/session/languages"
 msgid "Subject Languages"
-msgstr ""
+msgstr "目标记录语言"
 
 msgctxt "lameta/session/workingLanguages"
 msgid "Working Languages"
-msgstr ""
+msgstr "工作语言"
 
 msgctxt "lameta/session/participants"
 msgid "People"
-msgstr ""
+msgstr "人员"
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
-msgstr ""
+msgstr "子种类"
 
 msgctxt "lameta/session/location"
 msgid "Neighborhood/Town/Village"
-msgstr ""
+msgstr "区/城镇/村庄"
 
 msgctxt "lameta/session/location/description"
 msgid "A location that is relevant within the group you are studying"
@@ -108,7 +122,7 @@ msgstr ""
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
-msgstr ""
+msgstr "访问限制说明"
 
 msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
@@ -116,19 +130,19 @@ msgstr ""
 
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
-msgstr ""
+msgstr "研究者参与度"
 
 msgctxt "lameta/session/locationRegion"
 msgid "Region"
-msgstr ""
+msgstr "地区"
 
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
-msgstr ""
+msgstr "国家/地区"
 
 msgctxt "lameta/session/locationContinent"
 msgid "Continent"
-msgstr ""
+msgstr "洲"
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
@@ -140,15 +154,15 @@ msgstr ""
 
 msgctxt "lameta/person/name"
 msgid "Full Name"
-msgstr ""
+msgstr "全称"
 
 msgctxt "lameta/person/nickname"
 msgid "Nickname"
-msgstr ""
+msgstr "昵称"
 
 msgctxt "lameta/person/code"
 msgid "Code"
-msgstr ""
+msgstr "代码"
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
 msgid "Details"
@@ -172,7 +186,7 @@ msgstr ""
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
-msgstr ""
+msgstr "出生年份"
 
 msgctxt "lameta/person/birthYear/tipOnUsingThisField"
 msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
@@ -184,8 +198,9 @@ msgstr ""
 
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
-msgstr ""
+msgstr "族群"
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
-msgstr ""
+msgstr "主要职业"
+
