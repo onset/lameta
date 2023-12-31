@@ -22,7 +22,7 @@ interface ILangTag {
 }
 
 const json: string = fs.readFileSync(
-  "./app/languageFinder/langtags.json",
+  "./src/languageFinder/langtags.json",
   "utf8"
 );
 const allEntries = JSON.parse(json);
@@ -84,7 +84,7 @@ const indexEntries = firstEntryOfEachLanguage.map((entry) => {
 console.log(`${multipleTagsCount} languages had more than one tag.`);
 
 fs.writeFileSync(
-  "./app/languageFinder/langindex.json",
+  "./src/languageFinder/langindex.json",
   JSON.stringify(indexEntries, null, 4),
   {}
 );
