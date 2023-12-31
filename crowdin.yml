@@ -7,6 +7,7 @@ files: [
       "source": /en/messages.po,
       "translation": /%two_letters_code%/messages.po,
     },
+    { "source": /en/fields.po, "translation": /%two_letters_code%/fields.po },
     {
       "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
