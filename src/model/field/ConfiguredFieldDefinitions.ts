@@ -2,7 +2,7 @@ import fs from "fs";
 import { IFolderType } from "../Folder/Folder";
 import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
-import raw from "../../configurations/lameta/fields.json5?raw";
+import raw from "../../../configurations/lameta/fields.json5?raw";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
 const catalogOfAllAvailableKnownFields = JSON5.parse(raw);
