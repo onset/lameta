@@ -8,7 +8,7 @@ msgstr ""
 "Language: fa\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-12-31 15:11\n"
+"PO-Revision-Date: 2024-01-01 16:48\n"
 "Last-Translator: \n"
 "Language-Team: Persian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -693,3 +693,4 @@ msgstr "نشستهای مشخص شده"
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
+
