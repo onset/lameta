@@ -182,6 +182,10 @@ msgctxt "lameta/session/description"
 msgid "Description"
 msgstr ""
 
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr ""
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr ""
@@ -240,6 +244,10 @@ msgstr ""
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
+msgstr ""
+
+msgctxt "lameta/session/title"
+msgid "Title"
 msgstr ""
 
 msgctxt "lameta/session/topic"

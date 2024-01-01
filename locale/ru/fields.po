@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
-"PO-Revision-Date: 2024-01-01 17:28\n"
+"PO-Revision-Date: 2024-01-01 21:27\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -196,6 +196,10 @@ msgctxt "lameta/session/description"
 msgid "Description"
 msgstr ""
 
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "Жанр"
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr ""
@@ -254,7 +258,11 @@ msgstr "Статус"
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
-msgstr ""
+msgstr "Поджанры"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "Название"
 
 msgctxt "lameta/session/topic"
 msgid "Topic"

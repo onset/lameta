@@ -182,6 +182,7 @@
     },
     {
       key: "title",
+      englishLabel: "Title",
       tabIndex: 4
     },
     {
@@ -203,6 +204,7 @@
     },
     {
       key: "genre",
+      englishLabel: "Genre",
       tagInSayMoreClassic: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
       tabIndex: 6

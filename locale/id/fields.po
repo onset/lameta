@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
-"PO-Revision-Date: 2024-01-01 17:28\n"
+"PO-Revision-Date: 2024-01-01 21:27\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -46,7 +46,7 @@ msgstr "Jenis Kelamin"
 
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
-msgstr ""
+msgstr "Bagaimana dihubungi"
 
 msgctxt "lameta/person/languages"
 msgid "Languages"
@@ -174,7 +174,7 @@ msgstr "ID Proyek"
 
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
-msgstr ""
+msgstr "Bahasa yang didokumentasi"
 
 msgctxt "lameta/session/access"
 msgid "Access"
@@ -196,6 +196,10 @@ msgctxt "lameta/session/description"
 msgid "Description"
 msgstr "Deskripsi"
 
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "Genre"
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr "ID"
@@ -206,7 +210,7 @@ msgstr "Keterlibatan Peneliti"
 
 msgctxt "lameta/session/keyword"
 msgid "Keywords"
-msgstr ""
+msgstr "Kata kunci"
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
@@ -255,6 +259,10 @@ msgstr "Status"
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
 msgstr "Sub-Genre"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "Judul"
 
 msgctxt "lameta/session/topic"
 msgid "Topic"
