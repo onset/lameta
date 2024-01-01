@@ -78,7 +78,6 @@ function loadOneCatalog(code: string, set: string) {
 // I didn't originally have a way of making the lingui-extract scanner scan our fields.json5, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
 // These days linguijs can be given a custom scanner, so we will eventually be able to simplify things.
-import fields from "../../locale/fields.csv";
 import choices from "../../locale/choices.csv";
 import roles from "../../locale/roles.csv";
 import genres from "../../locale/genres.csv";
@@ -87,6 +86,7 @@ import genres from "../../locale/genres.csv";
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import tips from "../../locale/tips.csv"; // tooltips and specialinfo
 import { locateDependencyForFilesystemCall } from "./locateDependency";
+import { fi } from "date-fns/locale";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
@@ -111,10 +111,8 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
   if (fieldDef === undefined) {
     return "LABEL ERROR";
   }
-  return (
-    i18n._(fieldDef.englishLabel) ?? // we're transitioning to using lingui and po files for field labels
-    getMatch(fields, fieldDef.englishLabel, "fields.csv") // but if it's not there yet, we look in the fields.csv
-  );
+
+  return i18n._(fieldDef.englishLabel);
 }
 
 export function translateTip(tip?: string): string {

@@ -22,12 +22,6 @@ files: [
       "scheme": "context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
     },
     {
-      "source": /fields.csv,
-      "translation": /%original_file_name%,
-      "first_line_contains_header": true,
-      "scheme": "identifier,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-    },
-    {
       "source": /genres.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
