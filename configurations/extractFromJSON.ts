@@ -17,6 +17,8 @@ function harvestMessagesFromFile(
   relativePath: string,
   currentMessages: Message[]
 ): void {
+  let totalString = 0;
+  let newStrings = 0;
   const root = JSON5.parse(fs.readFileSync(relativePath, "utf8"));
   // for each of project, sessions, people
   for (const area of Object.keys(root)) {
@@ -38,9 +40,11 @@ function harvestMessagesFromFile(
           const context = `${parent}/${area}/${field.key}/${
             prop === "englishLabel" ? "" : prop
           }`.replace(/\/$/, "");
+          ++totalString;
           if (existingMessage) {
             existingMessage.context = `${existingMessage.context}, ${context}`;
           } else {
+            ++newStrings;
             currentMessages.push({
               context: context,
               message: field[prop]
@@ -50,6 +54,9 @@ function harvestMessagesFromFile(
       }
     }
   }
+  console.log(
+    `Gathered ${totalString} (${newStrings} new) strings from ${relativePath}.`
+  );
 }
 
 /*
@@ -76,6 +83,19 @@ export function createAllPoFilesFromJsons() {
 
 function createPoFilesFromOneSetOfJsons(set: string) {
   const messages = collectMessageFromOneSetOfFiles(set);
+
+  // Review: it's not clear what sort order will give us the least amount of churn in the po files. Should context be included or not?
+  // Should we retain the field id and use that?
+  // For now I'm going with starting with just context, which includes the id.
+  messages.sort((a, b) => {
+    const aKey = a.context.replace("lameta/", "@"); // I want the main catalog first
+    const bKey = b.context.replace("lameta/", "@");
+    return aKey.localeCompare(bKey);
+  });
+
+  console.log(
+    `extractFromJSON: Gathered ${messages.length} strings from ${set}.`
+  );
   const content = messages
     .map((m) => {
       return `msgctxt "${m.context}"\nmsgid "${m.message}"\nmsgstr ""\n`;
@@ -96,6 +116,16 @@ export function collectMessageFromOneSetOfFiles(set: string): Message[] {
   const findFilesRecursively = (dir: string): string[] => {
     let files: string[] = [];
     const entries = fs.readdirSync(dir, { withFileTypes: true });
+    // sort so that the entry named "lameta" comes first (makes everything cleaner to read)
+    entries.sort((a, b) => {
+      if (a.name === "lameta") {
+        return -1;
+      } else if (b.name === "lameta") {
+        return 1;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {

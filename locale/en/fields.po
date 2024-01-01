@@ -1,141 +1,29 @@
-msgctxt "ELAR/project/collectionSteward/description"
-msgid "This is usually the same person as the Depositor."
+msgctxt "lameta/person/birthYear"
+msgid "Birth Year"
 msgstr ""
 
-msgctxt "ELAR/project/depositor/description"
-msgid "This is usually the same person as the Collection Steward."
+msgctxt "lameta/person/birthYear/tipOnUsingThisField"
+msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
 msgstr ""
 
-msgctxt "lameta/project/title"
-msgid "Project ID"
+msgctxt "lameta/person/code"
+msgid "Code"
 msgstr ""
 
-msgctxt "lameta/project/projectDescription"
-msgid "Description"
+msgctxt "lameta/person/ethnicGroup"
+msgid "Ethnic Group"
 msgstr ""
 
-msgctxt "lameta/project/vernacularIso3CodeAndName"
-msgid "Subject Language"
+msgctxt "lameta/person/fathersLanguage"
+msgid "Father's Language"
 msgstr ""
 
-msgctxt "lameta/project/analysisIso3CodeAndName"
-msgid "Working Language"
+msgctxt "lameta/person/howToContact"
+msgid "How to Contact"
 msgstr ""
 
-msgctxt "lameta/project/location"
-msgid "Location/Address"
-msgstr ""
-
-msgctxt "lameta/project/grantId"
-msgid "Grant ID"
-msgstr ""
-
-msgctxt "lameta/project/fundingProjectTitle"
-msgid "Funding Project Title"
-msgstr ""
-
-msgctxt "lameta/project/accessProtocol"
-msgid "Access Protocol used by this project"
-msgstr ""
-
-msgctxt "lameta/project/customAccessChoices"
-msgid "Custom access choices"
-msgstr ""
-
-msgctxt "lameta/project/contactPerson"
-msgid "Contact Person"
-msgstr ""
-
-msgctxt "lameta/project/contactPerson/description"
-msgid "Contact information about the person or institution responsible for the project."
-msgstr ""
-
-msgctxt "lameta/project/collectionName"
-msgid "Collection Name"
-msgstr ""
-
-msgctxt "lameta/project/collectionTitle"
-msgid "Collection Title"
-msgstr ""
-
-msgctxt "lameta/project/collectionDescription"
-msgid "Collection Description"
-msgstr ""
-
-msgctxt "lameta/project/collectionSteward"
-msgid "Collection Steward"
-msgstr ""
-
-msgctxt "lameta/project/deputyCollectionSteward"
-msgid "Deputy Collection Stewards"
-msgstr ""
-
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions, lameta/project/depositor/separatorWithCommaInstructions"
-msgid "For multiple people, separate with commas"
-msgstr ""
-
-msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr ""
-
-msgctxt "lameta/session/id"
-msgid "ID"
-msgstr ""
-
-msgctxt "lameta/session/languages"
-msgid "Subject Languages"
-msgstr ""
-
-msgctxt "lameta/session/workingLanguages"
-msgid "Working Languages"
-msgstr ""
-
-msgctxt "lameta/session/participants"
-msgid "People"
-msgstr ""
-
-msgctxt "lameta/session/subgenre"
-msgid "Subgenre"
-msgstr ""
-
-msgctxt "lameta/session/location"
-msgid "Neighborhood/Town/Village"
-msgstr ""
-
-msgctxt "lameta/session/location/description"
-msgid "A location that is relevant within the group you are studying"
-msgstr ""
-
-msgctxt "lameta/session/accessDescription"
-msgid "Access Explanation"
-msgstr ""
-
-msgctxt "lameta/session/accessDescription/description"
-msgid "If the access is not open/free, use this to explain why."
-msgstr ""
-
-msgctxt "lameta/session/involvement"
-msgid "Researcher Involvement"
-msgstr ""
-
-msgctxt "lameta/session/locationRegion"
-msgid "Region"
-msgstr ""
-
-msgctxt "lameta/session/locationCountry"
-msgid "Country"
-msgstr ""
-
-msgctxt "lameta/session/locationContinent"
-msgid "Continent"
-msgstr ""
-
-msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
-msgid "Separate with commas. Note that individual keywords cannot contain a comma."
-msgstr ""
-
-msgctxt "lameta/session/topic/separatorWithCommaInstructions"
-msgid "Separate with commas. Note that individual topics cannot contain a comma."
+msgctxt "lameta/person/mothersLanguage"
+msgid "Mother's Language"
 msgstr ""
 
 msgctxt "lameta/person/name"
@@ -146,8 +34,8 @@ msgctxt "lameta/person/nickname"
 msgid "Nickname"
 msgstr ""
 
-msgctxt "lameta/person/code"
-msgid "Code"
+msgctxt "lameta/person/otherLanguages"
+msgid "Other Languages"
 msgstr ""
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
@@ -158,34 +46,146 @@ msgctxt "lameta/person/primaryLanguageLearnedIn/description"
 msgid "Relevant details such as where they learned it"
 msgstr ""
 
-msgctxt "lameta/person/fathersLanguage"
-msgid "Father's Language"
-msgstr ""
-
-msgctxt "lameta/person/mothersLanguage"
-msgid "Mother's Language"
-msgstr ""
-
-msgctxt "lameta/person/otherLanguages"
-msgid "Other Languages"
-msgstr ""
-
-msgctxt "lameta/person/birthYear"
-msgid "Birth Year"
-msgstr ""
-
-msgctxt "lameta/person/birthYear/tipOnUsingThisField"
-msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
-msgstr ""
-
-msgctxt "lameta/person/howToContact"
-msgid "How to Contact"
-msgstr ""
-
-msgctxt "lameta/person/ethnicGroup"
-msgid "Ethnic Group"
-msgstr ""
-
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
+msgstr ""
+
+msgctxt "lameta/project/accessProtocol"
+msgid "Access Protocol used by this project"
+msgstr ""
+
+msgctxt "lameta/project/analysisIso3CodeAndName"
+msgid "Working Language"
+msgstr ""
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Collection Description"
+msgstr ""
+
+msgctxt "lameta/project/collectionName"
+msgid "Collection Name"
+msgstr ""
+
+msgctxt "lameta/project/collectionSteward"
+msgid "Collection Steward"
+msgstr ""
+
+msgctxt "lameta/project/collectionTitle"
+msgid "Collection Title"
+msgstr ""
+
+msgctxt "lameta/project/contactPerson"
+msgid "Contact Person"
+msgstr ""
+
+msgctxt "lameta/project/contactPerson/description"
+msgid "Contact information about the person or institution responsible for the project."
+msgstr ""
+
+msgctxt "lameta/project/customAccessChoices"
+msgid "Custom access choices"
+msgstr ""
+
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr ""
+
+msgctxt "lameta/project/deputyCollectionSteward"
+msgid "Deputy Collection Stewards"
+msgstr ""
+
+msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions, lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
+msgctxt "lameta/project/fundingProjectTitle"
+msgid "Funding Project Title"
+msgstr ""
+
+msgctxt "lameta/project/grantId"
+msgid "Grant ID"
+msgstr ""
+
+msgctxt "lameta/project/location"
+msgid "Location/Address"
+msgstr ""
+
+msgctxt "lameta/project/projectDescription"
+msgid "Description"
+msgstr ""
+
+msgctxt "lameta/project/title"
+msgid "Project ID"
+msgstr ""
+
+msgctxt "lameta/project/vernacularIso3CodeAndName"
+msgid "Subject Language"
+msgstr ""
+
+msgctxt "lameta/session/accessDescription"
+msgid "Access Explanation"
+msgstr ""
+
+msgctxt "lameta/session/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr ""
+
+msgctxt "lameta/session/id"
+msgid "ID"
+msgstr ""
+
+msgctxt "lameta/session/involvement"
+msgid "Researcher Involvement"
+msgstr ""
+
+msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual keywords cannot contain a comma."
+msgstr ""
+
+msgctxt "lameta/session/languages"
+msgid "Subject Languages"
+msgstr ""
+
+msgctxt "lameta/session/location"
+msgid "Neighborhood/Town/Village"
+msgstr ""
+
+msgctxt "lameta/session/location/description"
+msgid "A location that is relevant within the group you are studying"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent"
+msgid "Continent"
+msgstr ""
+
+msgctxt "lameta/session/locationCountry"
+msgid "Country"
+msgstr ""
+
+msgctxt "lameta/session/locationRegion"
+msgid "Region"
+msgstr ""
+
+msgctxt "lameta/session/participants"
+msgid "People"
+msgstr ""
+
+msgctxt "lameta/session/subgenre"
+msgid "Subgenre"
+msgstr ""
+
+msgctxt "lameta/session/topic/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual topics cannot contain a comma."
+msgstr ""
+
+msgctxt "lameta/session/workingLanguages"
+msgid "Working Languages"
+msgstr ""
+
+msgctxt "ELAR/project/collectionSteward/description"
+msgid "This is usually the same person as the Depositor."
+msgstr ""
+
+msgctxt "ELAR/project/depositor/description"
+msgid "This is usually the same person as the Collection Steward."
 msgstr ""

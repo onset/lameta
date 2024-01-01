@@ -111,7 +111,10 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
   if (fieldDef === undefined) {
     return "LABEL ERROR";
   }
-  return getMatch(fields, fieldDef.englishLabel, "fields.csv");
+  return (
+    i18n._(fieldDef.englishLabel) ?? // we're transitioning to using lingui and po files for field labels
+    getMatch(fields, fieldDef.englishLabel, "fields.csv") // but if it's not there yet, we look in the fields.csv
+  );
 }
 
 export function translateTip(tip?: string): string {
