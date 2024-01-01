@@ -14,6 +14,10 @@ msgctxt "lameta/person/description"
 msgid "Description"
 msgstr ""
 
+msgctxt "lameta/person/description/description"
+msgid "Relevant details such as where they learned the language(s)"
+msgstr ""
+
 msgctxt "lameta/person/education"
 msgid "Education"
 msgstr ""
@@ -52,18 +56,6 @@ msgstr ""
 
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
-msgstr ""
-
-msgctxt "lameta/person/primaryLanguage"
-msgid "Primary Language"
-msgstr ""
-
-msgctxt "lameta/person/primaryLanguageLearnedIn"
-msgid "Details"
-msgstr ""
-
-msgctxt "lameta/person/primaryLanguageLearnedIn/description"
-msgid "Relevant details such as where they learned it"
 msgstr ""
 
 msgctxt "lameta/person/primaryOccupation"

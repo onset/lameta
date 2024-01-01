@@ -33,10 +33,4 @@ files: [
       "first_line_contains_header": true,
       "scheme": "key,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
     },
-    {
-      "source": /tips.csv,
-      "translation": /%original_file_name%,
-      "first_line_contains_header": true,
-      "scheme": "context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-    },
   ]

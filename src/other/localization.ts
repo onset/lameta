@@ -84,9 +84,7 @@ import genres from "../../locale/genres.csv";
 // note: accessProtocols.csv is pretty confusing because it's not the list of choices, but rather a mix
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
-import tips from "../../locale/tips.csv"; // tooltips and specialinfo
 import { locateDependencyForFilesystemCall } from "./locateDependency";
-import { fi } from "date-fns/locale";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
@@ -117,10 +115,7 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
 
 export function translateTip(tip?: string): string {
   if (!tip) return "";
-  return (
-    i18n._(tip) ?? // we're transitioning to using lingui and po files for tips
-    getMatch(tips, tip, "tips.csv") // but if it's not there yet, we look in the tips.csv
-  );
+  return i18n._(tip);
 }
 export function translateAccessProtocolLabelOrDescription(
   englishLabel: string

@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
-"PO-Revision-Date: 2024-01-01 21:27\n"
+"PO-Revision-Date: 2024-01-01 21:51\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -27,6 +27,10 @@ msgstr "Kode"
 msgctxt "lameta/person/description"
 msgid "Description"
 msgstr "Deskripsi"
+
+msgctxt "lameta/person/description/description"
+msgid "Relevant details such as where they learned the language(s)"
+msgstr ""
 
 msgctxt "lameta/person/education"
 msgid "Education"
@@ -67,18 +71,6 @@ msgstr "Nama Panggilan"
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
 msgstr ""
-
-msgctxt "lameta/person/primaryLanguage"
-msgid "Primary Language"
-msgstr ""
-
-msgctxt "lameta/person/primaryLanguageLearnedIn"
-msgid "Details"
-msgstr ""
-
-msgctxt "lameta/person/primaryLanguageLearnedIn/description"
-msgid "Relevant details such as where they learned it"
-msgstr "Detail yang relevan seperti di mana mereka mempelajarinya"
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
@@ -134,7 +126,7 @@ msgstr "Penabung/Depositor"
 
 msgctxt "lameta/project/depositor"
 msgid "Depositor"
-msgstr "Penabung/Depositor"
+msgstr ""
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"

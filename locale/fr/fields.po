@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
-"PO-Revision-Date: 2024-01-01 21:27\n"
+"PO-Revision-Date: 2024-01-01 21:51\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -27,6 +27,10 @@ msgstr "Code"
 msgctxt "lameta/person/description"
 msgid "Description"
 msgstr "Description"
+
+msgctxt "lameta/person/description/description"
+msgid "Relevant details such as where they learned the language(s)"
+msgstr ""
 
 msgctxt "lameta/person/education"
 msgid "Education"
@@ -67,18 +71,6 @@ msgstr "Surnom"
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
 msgstr "Autres langues"
-
-msgctxt "lameta/person/primaryLanguage"
-msgid "Primary Language"
-msgstr "Langue principale"
-
-msgctxt "lameta/person/primaryLanguageLearnedIn"
-msgid "Details"
-msgstr "Informations"
-
-msgctxt "lameta/person/primaryLanguageLearnedIn/description"
-msgid "Relevant details such as where they learned it"
-msgstr "Détails pertinents tels que l'endroit où ils l'ont appris"
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
@@ -134,7 +126,7 @@ msgstr "Déposant"
 
 msgctxt "lameta/project/depositor"
 msgid "Depositor"
-msgstr "Déposant"
+msgstr ""
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"

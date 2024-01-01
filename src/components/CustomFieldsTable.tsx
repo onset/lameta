@@ -195,7 +195,7 @@ class CustomFieldsTable extends React.Component<IProps> {
     const def: FieldDefinition = new FieldDefinition({
       key: "Custom Fields",
       markAsNotImdi: true,
-      specialInfo:
+      tipOnUsingThisField:
         "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
     });
 

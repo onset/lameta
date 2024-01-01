@@ -407,7 +407,7 @@
     },
     {
       key: "primaryLanguage",
-      englishLabel: "Primary Language",
+      // Leave this out because it is deprecated. englishLabel: "Primary Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
@@ -415,15 +415,14 @@
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
       // we're retaining that key to allow migration, but
-      englishLabel: "Details", // in lameta we extend this to be more general
-      description: "Relevant details such as where they learned it",
+      // Leave this out because it is deprecated. englishLabel: "Details", // in lameta we extend this to be more general
       omitExport: "true",
       deprecated: "migrated to description by lameta"
     },
     {
       key: "otherLanguage0",
       omitExport: "true",
-      deprecated: "migrated to languages by lameta",
+      // Leave this out because it is deprecated. deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
     },
     {
@@ -537,7 +536,8 @@
     },
     {
       key: "description",
-      englishLabel: "Description"
+      englishLabel: "Description",
+      description: "Relevant details such as where they learned the language(s)"
     }
   ]
 }
