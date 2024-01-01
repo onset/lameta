@@ -14,7 +14,6 @@ import { Folder } from "../Folder/Folder";
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
     const f = this.getValueOrThrow(key);
-    assert.ok(f, `setText(${key}) assumes the value is already there.`);
     f.setValueFromString(value);
   }
   public removeProperty(key: string) {

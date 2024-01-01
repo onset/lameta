@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, expect, afterEach } from "vitest";
 import fs from "fs";
 import Path from "path";
 import { SessionMetadataFile, Session } from "../Project/Session/Session";
@@ -24,8 +25,8 @@ describe("Duplicate Folder", () => {
     const original = Session.fromDirectory(dir, new CustomFieldRegistry());
     original.properties.setText("id", "foox");
     original.saveFolderMetaData();
-    expect(original.metadataFile.metadataFilePath).toBeTruthy();
-    expect(fs.existsSync(original.metadataFile.metadataFilePath)).toBeTruthy();
+    expect(original.metadataFile!.metadataFilePath).toBeTruthy();
+    expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
     const { success, metadataFilePath, directory } = duplicateFolder(original);
     expect(success).toBeTruthy();
     expect(Path.basename(metadataFilePath)).toBe("foox - Copy 1.session");
