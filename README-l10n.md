@@ -47,37 +47,39 @@ This format uses our own wrapper. Note that you still have to include the commen
 }
 ```
 
+# Our own extractor for json5 files
+
+Our `extractFromJSON.ts` file extracts the translatable fields from all the json5 files (currently just "configurations/<theconfig>/fields.json5"). It creates english `.po` files, which then go to crowdin. Crowdin gives back all the po files for all the languages, and `lingui compile` creates `.js` catalogs of all of them, which we load up in `localization.ts`.
+
 # Steps to Syncing
 
 ## 1) Build the string catalog
 
-`yarn lingui-extract` reads .linguirc to know what files to include. It creates `po` files.
+`yarn strings:extract` reads .linguirc to know what files to include. It creates `po` files.
 
 ## 2) Sync with Crowdin
 
-`yarn crowdin:sync` will send everything and pull the translations from Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
+`yarn strings:sync` will send everything and pull the translations from Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
 
-## 3) Let lingui create its `messages.js` files
+## 3) Let lingui create its js files (`messages.js`, `fields.js`, etc.)
 
-`yarn lingui-compile`
+`yarn strings:compile`
 
 # Checking for new strings using pseudo localization
 
 Under Help:Registration, make sure you are listed as a "Developer". Next, under View Menu, choose "pseudo". Things that go through lingui will show letters with lots of accents: https://i.imgur.com/Mc1dX8Y.png.
 
-Strings in fields.json5 and genres.json do not (yet) go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
+Strings in genres.json do not (yet) go through lingui, and should show with the label with "✓" appended to the English name. If you still need to add the string somewhere, it should instead be prepended with "MISSING-". Meanwhile, the console log has messages that are formatted to easy pasting into excel columns (https://i.imgur.com/EsoUHyq.png).
 
 # Non-code Lookups in CSV
 
-Currently we have lingui v2, and it does not have a way of extracting strings from anything but code. Since our field names and choice lists aren't in code, it can't be used (yet... maybe in lingui v3). So for now we have CSV files `locale/fields.csv` with all the field names, and `locale/choices.csv` with things like genres, statuses, etc. These are currently manually uploaded to https://crowdin.com/project/saymorex and then downloaded with the columns filled in from translations.
+In lameta 1 and 2, we used a combination of linguijs for code strings and our own lookup in csv files for other strings (fields, genres, etc). CSV turns out to be painful both in crowdin and seeing changes in git. For lameta V3, we are moving towards localizing everything with po files. We do our own extraction of non-code strings to po, then let linguijs "compile" to its js files and serve them at runtime.
 
 # How to add a language
 
 1. In Crowdin:settings:translations:Target Languages, add the language. That will make it available for translation.
 
-1. To .linguirc, add the code to `locales`
-
-1. `yarn lingui-extract` (note: this will fail if the program is running, including JEST. So in vscode ctrl-shift-p, "Jest: Stop Runner")
+1. To .linguirc, add the code to `locales`. When translations come back from crowdin, that will creat the directory for this locale, and this entry will cause lingui read the correct directory.
 
 1. For each csv: a) add a column for the new language b) add the language to the scheme in crowdin.yml c) in Crowdin:Content, do a "change scheme" (NOT "update"!!!!) and choose your local copy of the csv. For the new column, choose the language.
 
@@ -98,17 +100,3 @@ Be sure that whatever you open with notices the UTF8 encoding! If necessary, vsc
    `const languages = ["en", "es", "fr", "xyz"];`
 
 1. Finally, in the menu.ts, add the new language option.
-
-# Problems
-
-I have not found a way to get the default string out to the extracted files. I would expect
-
-```
-<Trans id="ProjectTab.OtherDocuments">Other Documents</Trans>
-```
-
-To put "Other Documents" in at least the English PO file, but no. So I can see no way that a Translator can actually translate. So for now all the ids are just the English. Sigh again...
-
-"po" was the only format of lingui's three options that Crowdin could handle.
-
-Using the CSV format with Crowdin is PAINFUL (see above on adding a language). I should have found a better way.

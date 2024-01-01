@@ -48,8 +48,8 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
-  loadOneCatalog(folder, "messages");
-  loadOneCatalog(folder, "fields");
+  loadOneCatalog(folder, "messages"); // these come from code
+  loadOneCatalog(folder, "fields"); // these come from the fields.json5 files
   i18n.activate(code);
   userSettings.UILanguage = code;
 
@@ -115,7 +115,11 @@ export function translateFieldLabel(fieldDef: FieldDefinition): string {
 }
 
 export function translateTip(tip?: string): string {
-  return tip ? getMatch(tips, tip, "tips.csv") : "";
+  if (!tip) return "";
+  return (
+    i18n._(tip) ?? // we're transitioning to using lingui and po files for tips
+    getMatch(tips, tip, "tips.csv") // but if it's not there yet, we look in the tips.csv
+  );
 }
 export function translateAccessProtocolLabelOrDescription(
   englishLabel: string

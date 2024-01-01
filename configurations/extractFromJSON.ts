@@ -52,33 +52,7 @@ function harvestMessagesFromFile(
   }
 }
 
-function collectAllMessage(): Message[] {
-  const messages: Message[] = [];
-  const configurationDirectory = path.join(__dirname, "configurations");
-
-  const findFilesRecursively = (dir: string): string[] => {
-    let files: string[] = [];
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        files = files.concat(findFilesRecursively(fullPath));
-      } else if (entry.isFile() && entry.name === "fields.json5") {
-        files.push(fullPath);
-      }
-    }
-    return files;
-  };
-
-  const files = findFilesRecursively(configurationDirectory);
-
-  for (const file of files) {
-    harvestMessagesFromFile(file, messages);
-  }
-
-  return messages;
-}
-
+/*
 // I originally was making this for the linguijs extractor, but until we upgrade to linguijs r, there's no way to give the proper context (msgctxt)
 // so now we're just making our own po files.
 function extractAllToJsForLingui() {
@@ -92,19 +66,54 @@ function extractAllToJsForLingui() {
   const jsFilePath = path.join(__dirname, "./extracted-messages.js");
   fs.writeFileSync(jsFilePath, `import { t } from "@lingui/macro"; \n${js}`);
 }
+*/
+export function createAllPoFilesFromJsons() {
+  const sets = ["fields" /* "vocabularies" */];
+  for (const set of sets) {
+    createPoFilesFromOneSetOfJsons(set);
+  }
+}
 
-function extractAllPoFile() {
-  const messages = collectAllMessage();
+function createPoFilesFromOneSetOfJsons(set: string) {
+  const messages = collectMessageFromOneSetOfFiles(set);
   const content = messages
     .map((m) => {
       return `msgctxt "${m.context}"\nmsgid "${m.message}"\nmsgstr ""\n`;
     })
     .join("\n");
-  console.log(content);
-  const jsFilePath = path.join(__dirname, "locale/en/fields.po");
+  //console.log(content);
+  const jsFilePath = path.join(/*__dirname*/ "./", `locale/en/${set}.po`);
   fs.writeFileSync(jsFilePath, content);
 }
 
+export function collectMessageFromOneSetOfFiles(set: string): Message[] {
+  const messages: Message[] = [];
+  const configurationDirectory = path.join(
+    /*__dirname*/ "./",
+    "configurations"
+  );
+
+  const findFilesRecursively = (dir: string): string[] => {
+    let files: string[] = [];
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        files = files.concat(findFilesRecursively(fullPath));
+      } else if (entry.isFile() && entry.name === set + ".json5") {
+        files.push(fullPath);
+      }
+    }
+    return files;
+  };
+  const files = findFilesRecursively(configurationDirectory);
+  for (const file of files) {
+    harvestMessagesFromFile(file, messages);
+  }
+  return messages;
+}
+
+/*
 import { describe, it } from "vitest";
 import { fi } from "make-plural";
 
@@ -126,6 +135,9 @@ describe("collectAllMessage", () => {
 
 describe("extractAllPoFile", () => {
   it("should extract all messages", () => {
-    extractAllPoFile();
+    createAllPoFiles();
   });
 });
+*/
+
+createAllPoFilesFromJsons(); // run from packages.json "strings:extract"

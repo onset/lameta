@@ -11,7 +11,8 @@
       ]
     },
     {
-      "path": "<rootDir>/locale/{locale}/fields"
+      "path": "<rootDir>/locale/{locale}/fields",
+      "include": "wont match anything and thats ok"
     }
   ],
   "format": "po",
