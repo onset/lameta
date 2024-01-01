@@ -18,39 +18,21 @@ msgstr ""
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
 
-#~ msgid "\"Open in program associated with this file type"
-#~ msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
 msgstr ""
 
-#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
 msgid "A folder with an IMDI file for the project and each session."
 msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست."
-
-#~ msgid "A single ISLE Meta Data Initiative XML file."
-#~ msgstr ""
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
 "بسیاری از فیلدهای لامتا حذف شده است."
 
-#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
-#~ msgstr ""
-
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr "یک فایل zip که حاوی یک پرونده جدا شده با ویرگول برای پروژه ها، نشست‌ها و افراد است."
-
-#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
-#~ msgid "A zip file with an IMDI file for the project and each session."
-#~ msgstr ""
 
 msgid "Abandon files that are still copying"
 msgstr "از فایل هایی که در حال کپی شدن هستند، صرف نظر کنید"
@@ -82,9 +64,6 @@ msgstr "فایلهایی را اینجا اضافه کنید که به نظر ن
 msgid "All Sessions"
 msgstr "همه جلسات"
 
-#~ msgid "As Personally Identifiable Information, this will not be exported to other formats."
-#~ msgstr ""
-
 msgid "As a curator"
 msgstr "به عنوان سرپرست"
 
@@ -97,21 +76,6 @@ msgstr "به عنوان مربی"
 msgid "Audio"
 msgstr "فایل صوتی"
 
-#~ msgid "Audio Bit Depth"
-#~ msgstr ""
-
-#~ msgid "Audio Bit Rate"
-#~ msgstr ""
-
-#~ msgid "Audio Channels"
-#~ msgstr ""
-
-#~ msgid "Audio Codec"
-#~ msgstr ""
-
-#~ msgid "Audio Sample Rate"
-#~ msgstr ""
-
 msgid "Cancel"
 msgstr "کنسل/لغو"
 
@@ -123,9 +87,6 @@ msgstr "تغییر نام به:"
 
 msgid "Change..."
 msgstr ""
-
-#~ msgid "Check for new version"
-#~ msgstr ""
 
 msgid "Choose File"
 msgstr ""
@@ -202,14 +163,8 @@ msgstr "انتخاب دسترسی سفارشی"
 msgid "Custom Field"
 msgstr "فیلد سفارشی"
 
-#~ msgid "Custom Fields"
-#~ msgstr ""
-
 msgid "Cut"
 msgstr "برش"
-
-#~ msgid "Date"
-#~ msgstr ""
 
 msgid "Delete"
 msgstr "حذف"
@@ -255,9 +210,6 @@ msgstr "شخص تکراری"
 
 msgid "Duplicate Session"
 msgstr "نشست تکراری"
-
-#~ msgid "ELAN"
-#~ msgstr ""
 
 msgid "Edit"
 msgstr "ویرایش"
@@ -307,17 +259,11 @@ msgstr "برای مستندسازی یک زبان دیگر"
 msgid "For documenting my own language"
 msgstr "برای مستندسازی زبان خودم"
 
-#~ msgid "Format"
-#~ msgstr ""
-
 msgid "Found file with a name containing 'Consent'"
 msgstr "یافتن فایل رضایت  نامه "
 
 msgid "Found no file with a name containing 'Consent'"
 msgstr "فایل رضایت نامه پیدا نشد"
-
-#~ msgid "Frame rate"
-#~ msgstr ""
 
 msgid "Full Name"
 msgstr "نام کامل"
@@ -339,12 +285,6 @@ msgstr "چگونه از لمتا استفاده میکنید؟"
 
 msgid "ID"
 msgstr "مشخصات هویتی/ID"
-
-#~ msgid "IMDI"
-#~ msgstr ""
-
-#~ msgid "IMDI + Files"
-#~ msgstr ""
 
 msgid "IMDI Mode"
 msgstr "حالت IMDI"
@@ -379,17 +319,11 @@ msgstr "زبان ارتباط"
 msgid "Language Code"
 msgstr "کد زبانی"
 
-#~ msgid "Languages"
-#~ msgstr ""
-
 msgid "Larger"
 msgstr "بزرگتر"
 
 msgid "Learner"
 msgstr "یادگیرنده"
-
-#~ msgid "Length"
-#~ msgstr ""
 
 msgid "Linked to {p}"
 msgstr ""
@@ -406,17 +340,11 @@ msgstr "علامت گذاری به عنوان زبان اول مادر."
 msgid "Mark for Deletion or Export"
 msgstr ""
 
-#~ msgid "Mark for Export"
-#~ msgstr ""
-
 msgid "Mark for Export or Deletion"
 msgstr ""
 
 msgid "Media Folder"
 msgstr ""
-
-#~ msgid "Media Folder Settings"
-#~ msgstr ""
 
 msgid "Media Folder Settings..."
 msgstr ""
@@ -435,9 +363,6 @@ msgstr "فرد جدید"
 
 msgid "New Session"
 msgstr "نشست جدید"
-
-#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
-#~ msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr ""
@@ -469,9 +394,6 @@ msgstr "باز کردن پروژه"
 msgid "Open Project..."
 msgstr "باز کردن پروژه"
 
-#~ msgid "Open SayMore Project"
-#~ msgstr ""
-
 msgid "Open in ELAN"
 msgstr "باز کردن در ایلان"
 
@@ -480,9 +402,6 @@ msgstr "برنامه مرتبط با این نوع پرونده را باز کن
 
 msgid "Other Documents"
 msgstr "اسناد دیگر"
-
-#~ msgid "Other Languages"
-#~ msgstr ""
 
 msgid "PARADISEC Mode"
 msgstr "حالت PARADISEC"
@@ -510,12 +429,6 @@ msgstr "لطفا منتظر بمانید تا همه پرونده ها در ای
 
 msgid "Project"
 msgstr "پروژه"
-
-#~ msgid "Project will be created in: {folderPath}"
-#~ msgstr ""
-
-#~ msgid "Project will be created in: {path}"
-#~ msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr "پروژه در {path} ایجاد خواهد شد."
@@ -556,9 +469,6 @@ msgstr "تغییر نام انجام نشد زیرا در حال حاضر فای
 msgid "Report a problem"
 msgstr "گزارش یک مشکل"
 
-#~ msgid "Resolution"
-#~ msgstr ""
-
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "لمتا را دوباره راه اندازی کنید، نام فایل را قبل از نمایش ویدئو تغییر دهید."
 
@@ -573,9 +483,6 @@ msgstr "در حال ذخیره فایل"
 
 msgid "Saving before rename..."
 msgstr ""
-
-#~ msgid "SayMore/SayMore Project Files"
-#~ msgstr ""
 
 msgid "Select All"
 msgstr "انتخاب همه"
@@ -637,9 +544,6 @@ msgstr "متن"
 msgid "That name would lead to an empty filename."
 msgstr "این نام منجر به یک پرونده خالی می شود."
 
-#~ msgid "That would lead to an empty filename"
-#~ msgstr ""
-
 msgid "The IMDI files were validated."
 msgstr ""
 
@@ -655,35 +559,17 @@ msgstr ""
 msgid "There is a problem with {displayName}. Click for more information."
 msgstr ""
 
-#~ msgid "There is already a Person with that name or code"
-#~ msgstr ""
-
 msgid "There is already a Person with that name or code."
 msgstr "در حال حاضر شخصی با آن نام یا کد وجود دارد."
 
 msgid "There is already a file here with the name"
 msgstr "در اینجا فایلی با این نام وجود دارد"
 
-#~ msgid "There is already a project at: {path}"
-#~ msgstr ""
-
 msgid "There is already a project at: {path}."
 msgstr "در اینجا پروژه ای با این نام وجود دارد، {path}"
 
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "در اینجا {folderKind} {value} وجود دارد"
-
-#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with the name '{value}'"
-#~ msgstr ""
 
 msgid "There was a problem exporting:"
 msgstr "مشکلی در خروجی فایل وجود داشت:"
@@ -703,12 +589,6 @@ msgstr ""
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
-#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
-#~ msgstr ""
-
-#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
-#~ msgstr ""
-
 msgid "Type"
 msgstr "تایپ کردن"
 
@@ -723,9 +603,6 @@ msgstr "ارزش"
 
 msgid "Video"
 msgstr "ویدئو"
-
-#~ msgid "Video Codec"
-#~ msgstr ""
 
 msgid "View"
 msgstr "دیدن"
@@ -744,20 +621,8 @@ msgstr ""
 msgid "What would you like to call this project?"
 msgstr "دوست دارید نام این پروژه چه باشد؟"
 
-#~ msgid "Width"
-#~ msgstr ""
-
 msgid "You are running lameta version:"
 msgstr ""
-
-#~ msgid "You are running lameta version: {v}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {0}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {version}"
-#~ msgstr ""
 
 msgid "You cannot add files of that type"
 msgstr "نمی توانید پرونده هایی از این نوع اضافه کنید"
@@ -774,17 +639,11 @@ msgstr "زیپ کردن فایلهای CSV"
 msgid "choose..."
 msgstr "انتخاب کنید"
 
-#~ msgid "height"
-#~ msgstr ""
-
 msgid "lameta"
 msgstr "لمتا"
 
 msgid "lameta  was not able to rename that file."
 msgstr "لمتا قادر به تغییر نام این فایل نبود."
-
-#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
-#~ msgstr ""
 
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr ""
@@ -819,9 +678,6 @@ msgstr "لمتا قادر به حذف این فایل نیست."
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr "لمتا قادر به تغییر نام فایل یا فولدر نیست."
 
-#~ msgid "lameta was not able to rename that file."
-#~ msgstr ""
-
 msgid "lameta was not able to rename the folder."
 msgstr "لمتا قادر به تغییر نام این فایل نبود."
 
@@ -832,21 +688,8 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr ""
 
-#~ msgid "undefined"
-#~ msgstr ""
-
-#~ msgid "{0}"
-#~ msgstr ""
-
 msgid "{0} Marked Sessions"
 msgstr "نشستهای مشخص شده"
 
-#~ msgid "{0} will be moved to the Trash"
-#~ msgstr ""
-
-#~ msgid "{countOfMarkedSessions} Marked Sessions"
-#~ msgstr ""
-
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
-

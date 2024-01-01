@@ -18,38 +18,20 @@ msgstr ""
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
 
-#~ msgid "\"Open in program associated with this file type"
-#~ msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr "Sebuah file dengan nama yang sama sudah ada di lokasi tersebut."
 
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
 msgstr "Sebuah folder yang berisi semua file arsip proyek, dengan IMDI yang dibungkus untuk OPEX."
 
-#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
 msgid "A folder with an IMDI file for the project and each session."
 msgstr "Sebuah folder dengan file IMDI untuk proyek dan setiap sesi."
-
-#~ msgid "A single ISLE Meta Data Initiative XML file."
-#~ msgstr ""
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr "Sebuah file yang dipisahkan oleh koma dengan informasi proyek dengan satu baris untuk setiap sesi. Banyak kotak lameta dihilangkan."
 
-#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
-#~ msgstr ""
-
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr "Satu arsip zip yang berisi satu file yang dipisahkan oleh koma untuk masing-masing Proyek, Sesi, dan Orang."
-
-#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
-#~ msgid "A zip file with an IMDI file for the project and each session."
-#~ msgstr ""
 
 msgid "Abandon files that are still copying"
 msgstr "Abaikan file-file yang sedang disalin"
@@ -81,9 +63,6 @@ msgstr "Tambahkan dokumen-dokumen di sini yang tampaknya tidak cocok di tempat l
 msgid "All Sessions"
 msgstr "Semua Sesi"
 
-#~ msgid "As Personally Identifiable Information, this will not be exported to other formats."
-#~ msgstr ""
-
 msgid "As a curator"
 msgstr "Sebagai seorang kurator"
 
@@ -96,21 +75,6 @@ msgstr "Sebagai pelatih"
 msgid "Audio"
 msgstr "Audio"
 
-#~ msgid "Audio Bit Depth"
-#~ msgstr ""
-
-#~ msgid "Audio Bit Rate"
-#~ msgstr ""
-
-#~ msgid "Audio Channels"
-#~ msgstr ""
-
-#~ msgid "Audio Codec"
-#~ msgstr ""
-
-#~ msgid "Audio Sample Rate"
-#~ msgstr ""
-
 msgid "Cancel"
 msgstr "Batal"
 
@@ -122,9 +86,6 @@ msgstr "Ubah Nama Menjadi:"
 
 msgid "Change..."
 msgstr "Ubah..."
-
-#~ msgid "Check for new version"
-#~ msgstr ""
 
 msgid "Choose File"
 msgstr "Pilih File"
@@ -201,14 +162,8 @@ msgstr "Pilihan Akses yang disesuaikan"
 msgid "Custom Field"
 msgstr "Kotak yang disesuaikan"
 
-#~ msgid "Custom Fields"
-#~ msgstr ""
-
 msgid "Cut"
 msgstr "Potong"
-
-#~ msgid "Date"
-#~ msgstr ""
 
 msgid "Delete"
 msgstr "Hapus"
@@ -254,9 +209,6 @@ msgstr "Duplikasi orang"
 
 msgid "Duplicate Session"
 msgstr "Duplikasi Sesi"
-
-#~ msgid "ELAN"
-#~ msgstr ""
 
 msgid "Edit"
 msgstr "Edit"
@@ -306,17 +258,11 @@ msgstr "Untuk dokumentasi bahasa lain"
 msgid "For documenting my own language"
 msgstr "Untuk dokumentasi bahasa saya"
 
-#~ msgid "Format"
-#~ msgstr ""
-
 msgid "Found file with a name containing 'Consent'"
 msgstr "Ada file dengan nama yang mengandung 'Consent'"
 
 msgid "Found no file with a name containing 'Consent'"
 msgstr "Tidak ada file dengan nama yang mengandung 'Consent'"
-
-#~ msgid "Frame rate"
-#~ msgstr ""
 
 msgid "Full Name"
 msgstr "Nama Lengkap"
@@ -338,12 +284,6 @@ msgstr "Bagaimana Anda menggunakan lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-#~ msgid "IMDI"
-#~ msgstr ""
-
-#~ msgid "IMDI + Files"
-#~ msgstr ""
 
 msgid "IMDI Mode"
 msgstr "Modus IMDI"
@@ -378,17 +318,11 @@ msgstr "Bahasa Antarmuka"
 msgid "Language Code"
 msgstr "Kode Bahasa"
 
-#~ msgid "Languages"
-#~ msgstr ""
-
 msgid "Larger"
 msgstr "Lebih besar"
 
 msgid "Learner"
 msgstr "Pembelajar"
-
-#~ msgid "Length"
-#~ msgstr ""
 
 msgid "Linked to {p}"
 msgstr "Terhubung ke {p}"
@@ -405,17 +339,11 @@ msgstr "Tandai sebagai bahasa utama ayah."
 msgid "Mark for Deletion or Export"
 msgstr "Tandai untuk Dihapus atau Diekspor"
 
-#~ msgid "Mark for Export"
-#~ msgstr ""
-
 msgid "Mark for Export or Deletion"
 msgstr "Tandai untuk Diekspor atau Dihapus"
 
 msgid "Media Folder"
 msgstr "Folder Media"
-
-#~ msgid "Media Folder Settings"
-#~ msgstr ""
 
 msgid "Media Folder Settings..."
 msgstr "Pengaturan Folder Media..."
@@ -434,9 +362,6 @@ msgstr "Orang Baru"
 
 msgid "New Session"
 msgstr "Sesi Baru"
-
-#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
-#~ msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr "Biasanya, ketika Anda menambahkan file ke proyek, sesi, atau orang, file tersebut disalin ke dalam folder yang sama dengan proyek lameta Anda. Untuk beberapa file, mungkin Anda lebih suka tidak menyalin file tersebut dari lokasi asalnya dan hanya membuat 'tautan' ke file tersebut."
@@ -468,9 +393,6 @@ msgstr "Buka Proyek"
 msgid "Open Project..."
 msgstr "Buka Proyek..."
 
-#~ msgid "Open SayMore Project"
-#~ msgstr ""
-
 msgid "Open in ELAN"
 msgstr "Buka di ELAN"
 
@@ -479,9 +401,6 @@ msgstr "Buka dengan program yang terkait dengan jenis file ini"
 
 msgid "Other Documents"
 msgstr "Dokumen Lainnya"
-
-#~ msgid "Other Languages"
-#~ msgstr ""
 
 msgid "PARADISEC Mode"
 msgstr "Modus PARADISEC"
@@ -509,12 +428,6 @@ msgstr "Tunggu sampai semua file-file selesai disalin ke dalam folder ini"
 
 msgid "Project"
 msgstr "Proyek"
-
-#~ msgid "Project will be created in: {folderPath}"
-#~ msgstr ""
-
-#~ msgid "Project will be created in: {path}"
-#~ msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr "Proyek akan dibuat di: {path}."
@@ -555,9 +468,6 @@ msgstr "Penggantian nama gagal karena sudah ada sebuah file dengan nama tersebut
 msgid "Report a problem"
 msgstr "Laporkan masalah"
 
-#~ msgid "Resolution"
-#~ msgstr ""
-
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "Restart lameta dan lakukan penggantian nama sebelum memutar video lagi."
 
@@ -572,9 +482,6 @@ msgstr "Sedang menyimpan"
 
 msgid "Saving before rename..."
 msgstr "Menyimpan sebelum ubah nama..."
-
-#~ msgid "SayMore/SayMore Project Files"
-#~ msgstr ""
 
 msgid "Select All"
 msgstr "Pilih Semua"
@@ -636,9 +543,6 @@ msgstr "Teks"
 msgid "That name would lead to an empty filename."
 msgstr "Nama itu akan menghasilkan nama file kosong."
 
-#~ msgid "That would lead to an empty filename"
-#~ msgstr ""
-
 msgid "The IMDI files were validated."
 msgstr "File IMDI telah divalidasi."
 
@@ -654,35 +558,17 @@ msgstr "Ada lebih dari satu file dengan jenis \"{projectType}\" di folder ini, p
 msgid "There is a problem with {displayName}. Click for more information."
 msgstr "Ada masalah dengan {displayName}. Klik untuk informasi lebih lanjut."
 
-#~ msgid "There is already a Person with that name or code"
-#~ msgstr ""
-
 msgid "There is already a Person with that name or code."
 msgstr "Sudah ada Orang dengan nama atau kode tersebut."
 
 msgid "There is already a file here with the name"
 msgstr "Sudah ada sebuah file di sini dengan nama tersebut"
 
-#~ msgid "There is already a project at: {path}"
-#~ msgstr ""
-
 msgid "There is already a project at: {path}."
 msgstr "Sudah ada sebuah proyek di: {path}."
 
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "Sudah ada sebuah {folderKind} \"{value}\"."
-
-#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with the name '{value}'"
-#~ msgstr ""
 
 msgid "There was a problem exporting:"
 msgstr "Ada masalah saat mengekspor:"
@@ -702,12 +588,6 @@ msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seoran
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
-#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
-#~ msgstr ""
-
-#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
-#~ msgstr ""
-
 msgid "Type"
 msgstr "Tipe"
 
@@ -722,9 +602,6 @@ msgstr "Nilai"
 
 msgid "Video"
 msgstr "Video"
-
-#~ msgid "Video Codec"
-#~ msgstr ""
 
 msgid "View"
 msgstr "Lihat"
@@ -743,20 +620,8 @@ msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bis
 msgid "What would you like to call this project?"
 msgstr "Koleksi ini akan diberi nama apa?"
 
-#~ msgid "Width"
-#~ msgstr ""
-
 msgid "You are running lameta version:"
 msgstr "Anda menjalankan versi lameta:"
-
-#~ msgid "You are running lameta version: {v}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {0}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {version}"
-#~ msgstr ""
 
 msgid "You cannot add files of that type"
 msgstr "Tidak dapat tambah file jenis itu"
@@ -773,17 +638,11 @@ msgstr "Arsip ZIP dengan semua CSV"
 msgid "choose..."
 msgstr "pilih..."
 
-#~ msgid "height"
-#~ msgstr ""
-
 msgid "lameta"
 msgstr "lameta"
 
 msgid "lameta  was not able to rename that file."
 msgstr "lameta tidak dapat mengubah nama file tersebut."
-
-#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
-#~ msgstr ""
 
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr "lameta memungkinkan Anda untuk menentukan satu 'Folder Media'. Ketika Anda menambahkan file yang berada di dalam folder itu, lameta akan membuat tautan tetapi tidak menyalinnya. Folder ini bisa berada di mana saja, termasuk di root dari drive eksternal di mana Anda menyimpan rekaman video besar."
@@ -818,9 +677,6 @@ msgstr "lameta tidak dapat memindahkan file ini ke tempat sampah"
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr "lameta tidak dapat mengubah nama salah satu file di dalam folder tersebut."
 
-#~ msgid "lameta was not able to rename that file."
-#~ msgstr ""
-
 msgid "lameta was not able to rename the folder."
 msgstr "lameta tidak dapat mengubah nama folder tersebut."
 
@@ -831,21 +687,8 @@ msgstr "lameta tidak akan mengekspor Catatan ke format MIDI"
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Sekarang, lameta akan membuka folder ini di hard disk Anda dan kemudian akan keluar. Anda sebaiknya membuka file-file {projectType} ini di editor teks dan memutuskan mana yang ingin Anda gunakan, kemudian hapus yang lainnya. File yang Anda pilih sebaiknya dinamai {name}."
 
-#~ msgid "undefined"
-#~ msgstr ""
-
-#~ msgid "{0}"
-#~ msgstr ""
-
 msgid "{0} Marked Sessions"
 msgstr "{0} Sesi yang Ditandai"
 
-#~ msgid "{0} will be moved to the Trash"
-#~ msgstr ""
-
-#~ msgid "{countOfMarkedSessions} Marked Sessions"
-#~ msgstr ""
-
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
-
