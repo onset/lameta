@@ -6,7 +6,7 @@ import { Field, IChoice } from "../../model/field/Field";
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { translateAccessProtocolLabelOrDescription } from "../../other/localization";
-const saymore_orange = "#e69664";
+import { lameta_orange } from "../../containers/theme";
 
 export interface IProps {
   field: Field;
@@ -78,9 +78,9 @@ class AccessChooser extends React.Component<
               borderRadius: 0,
               borderColor: "rgb(169, 169, 169)",
               boxShadow: state.isFocused
-                ? "0 0 0 1px " + saymore_orange
+                ? "0 0 0 1px " + lameta_orange
                 : "unset",
-              "&:hover": { borderColor: saymore_orange }
+              "&:hover": { borderColor: lameta_orange }
             }),
             menu: (provided) => ({
               ...provided,
@@ -112,7 +112,7 @@ class AccessChooser extends React.Component<
             option: (provided, state) => ({
               ...provided,
               color: "black",
-              backgroundColor: state.isFocused ? saymore_orange : "white",
+              backgroundColor: state.isFocused ? lameta_orange : "white",
               fontWeight: state.isSelected ? "bold" : "normal"
             })
           }}

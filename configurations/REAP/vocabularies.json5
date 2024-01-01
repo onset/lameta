@@ -1,0 +1,19 @@
+{
+  accessProtocol: [
+    {
+      key: "Public",
+      label: "Public",
+      description: "Open to all users"
+    },
+    {
+      key: "REAP",
+      label: "REAP Users",
+      description: "Restricted to REAP users"
+    },
+    {
+      key: "Entity",
+      label: "Entity",
+      description: "Restricted to Organizational Unit"
+    }
+  ]
+}

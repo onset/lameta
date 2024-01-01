@@ -1,0 +1,18 @@
+{
+  accessProtocol: [
+    {
+      key: "O",
+      label: "O: fully open"
+    },
+    {
+      key: "U",
+      label: "U: open to users",
+      description: "All users can access (requires registration)"
+    },
+    {
+      key: "S",
+      label: "S: open to subscribers",
+      description: "Only Subscribers are allowed access (must apply to Depositor for access)"
+    }
+  ]
+}

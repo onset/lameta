@@ -35,6 +35,7 @@ function harvestMessagesFromFile(
           }
         } else if (
           [
+            "label",
             "englishLabel",
             "description",
             "separatorWithCommaInstructions",
@@ -72,7 +73,7 @@ function extractAllToJsForLingui() {
 }
 */
 export function createAllPoFilesFromJsons() {
-  const sets = ["fields" /* "vocabularies" */];
+  const sets = ["fields", "vocabularies"];
   for (const set of sets) {
     createPoFilesFromOneSetOfJsons(set);
   }

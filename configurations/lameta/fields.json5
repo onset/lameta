@@ -86,7 +86,8 @@
       key: "accessProtocol",
       form: "accessProtocol",
       tagInSayMoreClassic: "AccessProtocol",
-      englishLabel: "Access Protocol used by this project"
+      englishLabel: "Access Protocol used by this project",
+      vocabulary: "accessProtocol"
     },
     {
       key: "customAccessChoices",

@@ -50,6 +50,7 @@ export function setUILanguage(code: string, reload: boolean = true) {
   const folder = fixes[code] || code;
   loadOneCatalog(folder, "messages"); // these come from code
   loadOneCatalog(folder, "fields"); // these come from the fields.json5 files
+  loadOneCatalog(folder, "vocabularies"); // these come from the vocabularies.json5 files
   i18n.activate(code);
   userSettings.UILanguage = code;
 

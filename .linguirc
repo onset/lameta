@@ -12,7 +12,11 @@
     },
     {
       "path": "<rootDir>/locale/{locale}/fields",
-      "include": "wont match anything and thats ok"
+      "include": "wont match anything when scanning and thats ok because we do our own extraction but we need compilation"
+    },
+    {
+      "path": "<rootDir>/locale/{locale}/vocabularies",
+      "include": "wont match anything when scanning and thats ok because we do our own extraction but we need compilation"
     }
   ],
   "format": "po",

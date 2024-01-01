@@ -9,6 +9,10 @@ files: [
     },
     { "source": /en/fields.po, "translation": /%two_letters_code%/fields.po },
     {
+      "source": /en/vocabularies.po,
+      "translation": /%two_letters_code%/vocabularies.po,
+    },
+    {
       "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,

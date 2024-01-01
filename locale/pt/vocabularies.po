@@ -1,0 +1,58 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /V3/vocabularies.po\n"
+"X-Crowdin-File-ID: 84\n"
+"Project-Id-Version: saymorex\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2024-01-01 23:15\n"
+
+msgctxt "ELAR/accessProtocol/O/label"
+msgid "O: fully open"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/S/description"
+msgid "Only Subscribers are allowed access (must apply to Depositor for access)"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/S/label"
+msgid "S: open to subscribers"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/U/description"
+msgid "All users can access (requires registration)"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/U/label"
+msgid "U: open to users"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/Entity/description"
+msgid "Restricted to Organizational Unit"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/Entity/label"
+msgid "Entity"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/Public/description"
+msgid "Open to all users"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/Public/label"
+msgid "Public"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/REAP/description"
+msgid "Restricted to REAP users"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/REAP/label"
+msgid "REAP Users"
+msgstr ""
+
