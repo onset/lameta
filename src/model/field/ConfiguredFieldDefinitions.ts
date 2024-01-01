@@ -349,6 +349,9 @@ function loadFieldChoices(configurationName: string) {
   const path = locateDependencyForFilesystemCall(
     `configurations/${configurationName}/fields.json5`
   );
+  if (configurationName === "default") {
+    return computeMergedCatalog({});
+  }
   if (!fs.existsSync(path)) {
     NotifyNoBigDeal(
       `This version of lameta does not have a field configuration for ${configurationName}.`

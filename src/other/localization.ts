@@ -48,9 +48,15 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
   const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
   const folder = fixes[code] || code;
-  const path = locateDependencyForFilesystemCall(
-    `locale/${folder}/messages.js`
-  );
+  loadOneCatalog(folder, "messages");
+  loadOneCatalog(folder, "fields");
+  i18n.activate(code);
+  userSettings.UILanguage = code;
+
+  //if (reload) remote.getCurrentWindow().reload();
+}
+function loadOneCatalog(code: string, set: string) {
+  const path = locateDependencyForFilesystemCall(`locale/${code}/${set}.js`);
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
@@ -61,10 +67,6 @@ export function setUILanguage(code: string, reload: boolean = true) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { messages } = require(path);
   i18n.load(code, messages);
-  i18n.activate(code);
-  userSettings.UILanguage = code;
-
-  //if (reload) remote.getCurrentWindow().reload();
 }
 
 // This is for strings that are not part of react, e.g. menus. They use this i18n variable to do localization
@@ -120,7 +122,7 @@ export function translateAccessProtocolLabelOrDescription(
 ): { label: string; description: string } {
   // because there is an "ID" but also an "id" (for Indonesian), the loader (dsv at the moment) does this crazy thing to the ID column name
   const keyForTheIDColumn = '\ufeff"ID"';
-  let labelRow = rawAccessProtocols.find((row) => row["en"] === englishLabel);
+  const labelRow = rawAccessProtocols.find((row) => row["en"] === englishLabel);
   if (!labelRow) return { label: "", description: "" };
   const choiceId = labelRow[keyForTheIDColumn];
   const descriptionRowId = choiceId + ".Description";
@@ -132,7 +134,7 @@ export function translateAccessProtocolLabelOrDescription(
     ? descriptionRow[currentUILanguage] || descriptionRow["en"] || ""
     : "";
 
-  let label = labelRow[currentUILanguage] || englishLabel;
+  const label = labelRow[currentUILanguage] || englishLabel;
 
   // some of the descriptions get translated exaclty the same as the label, which is just noise, so we don't want to show them
   if (

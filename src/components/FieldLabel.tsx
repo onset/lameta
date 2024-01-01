@@ -9,7 +9,6 @@ import {
 } from "./FieldIndicators";
 import userSettingsSingleton from "../other/UserSettings";
 import { translateFieldLabel, translateTip } from "../other/localization";
-import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { tooltipBackground } from "../containers/theme";
 

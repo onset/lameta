@@ -9,6 +9,9 @@
         "**/*.spec.*",
         "**/*.e2e.*"
       ]
+    },
+    {
+      "path": "<rootDir>/locale/{locale}/fields"
     }
   ],
   "format": "po",
