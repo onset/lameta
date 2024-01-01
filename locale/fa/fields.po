@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Persian\n"
 "Language: fa_IR\n"
-"PO-Revision-Date: 2024-01-01 16:59\n"
+"PO-Revision-Date: 2024-01-01 17:28\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -24,6 +24,14 @@ msgctxt "lameta/person/code"
 msgid "Code"
 msgstr "کد"
 
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "توصیف"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "تحصیلات"
+
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
 msgstr "قومیت"
@@ -32,9 +40,17 @@ msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
 msgstr ""
 
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "جنسیت"
+
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
 msgstr ""
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
+msgstr "زبانها"
 
 msgctxt "lameta/person/mothersLanguage"
 msgid "Mother's Language"
@@ -50,6 +66,10 @@ msgstr "نام مستعار /انتخابی"
 
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
+msgstr ""
+
+msgctxt "lameta/person/primaryLanguage"
+msgid "Primary Language"
 msgstr ""
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
@@ -96,6 +116,14 @@ msgctxt "lameta/project/contactPerson/description"
 msgid "Contact information about the person or institution responsible for the project."
 msgstr "اطلاعات تماس فرد یا موسسه مسئول پروژه."
 
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "قاره"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "کشور"
+
 msgctxt "lameta/project/customAccessChoices"
 msgid "Custom access choices"
 msgstr ""
@@ -104,11 +132,19 @@ msgctxt "lameta/project/depositor"
 msgid "Depositor"
 msgstr "سپرده گذار"
 
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr "سپرده گذار"
+
+msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
 msgctxt "lameta/project/deputyCollectionSteward"
 msgid "Deputy Collection Stewards"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions, lameta/project/depositor/separatorWithCommaInstructions"
+msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
@@ -128,6 +164,10 @@ msgctxt "lameta/project/projectDescription"
 msgid "Description"
 msgstr "توصیف"
 
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "منطقه"
+
 msgctxt "lameta/project/title"
 msgid "Project ID"
 msgstr "شماره پروژه"
@@ -135,6 +175,10 @@ msgstr "شماره پروژه"
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
 msgstr ""
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "دسترسی"
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
@@ -144,6 +188,14 @@ msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
 msgstr "اگر دسترسی آزاد / باز نیست، در اینجا توضیحات را وارد کنید."
 
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "تاریخ"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "توصیف"
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr "مشخصات هویتی/ID"
@@ -151,6 +203,10 @@ msgstr "مشخصات هویتی/ID"
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
 msgstr "مشارکت پژوهشگران"
+
+msgctxt "lameta/session/keyword"
+msgid "Keywords"
+msgstr ""
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
@@ -184,9 +240,25 @@ msgctxt "lameta/session/participants"
 msgid "People"
 msgstr "مردم"
 
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "نوع برنامه ریزی"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "بافت اجتماعی"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "وضعیت"
+
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
 msgstr "ژانر فرعی"
+
+msgctxt "lameta/session/topic"
+msgid "Topic"
+msgstr "موضوع"
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual topics cannot contain a comma."

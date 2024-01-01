@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
-"PO-Revision-Date: 2024-01-01 16:59\n"
+"PO-Revision-Date: 2024-01-01 17:28\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -24,6 +24,14 @@ msgctxt "lameta/person/code"
 msgid "Code"
 msgstr "Código"
 
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "Descripción"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "Educación"
+
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
 msgstr "Grupo étnico"
@@ -32,9 +40,17 @@ msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
 msgstr ""
 
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "Género"
+
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
 msgstr "Información de contacto"
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
+msgstr "Idiomas"
 
 msgctxt "lameta/person/mothersLanguage"
 msgid "Mother's Language"
@@ -51,6 +67,10 @@ msgstr "Sobrenombre"
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
 msgstr "Otros idiomas"
+
+msgctxt "lameta/person/primaryLanguage"
+msgid "Primary Language"
+msgstr "Idioma principa&l"
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
 msgid "Details"
@@ -96,6 +116,14 @@ msgctxt "lameta/project/contactPerson/description"
 msgid "Contact information about the person or institution responsible for the project."
 msgstr "Información de contacto de la persona o institución responsable del proyecto."
 
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "Continente"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "País"
+
 msgctxt "lameta/project/customAccessChoices"
 msgid "Custom access choices"
 msgstr ""
@@ -104,11 +132,19 @@ msgctxt "lameta/project/depositor"
 msgid "Depositor"
 msgstr "Depositador"
 
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr "Depositador"
+
+msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
 msgctxt "lameta/project/deputyCollectionSteward"
 msgid "Deputy Collection Stewards"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions, lameta/project/depositor/separatorWithCommaInstructions"
+msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
@@ -128,6 +164,10 @@ msgctxt "lameta/project/projectDescription"
 msgid "Description"
 msgstr "Descripción"
 
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "Región"
+
 msgctxt "lameta/project/title"
 msgid "Project ID"
 msgstr "ID del Proyecto"
@@ -135,6 +175,10 @@ msgstr "ID del Proyecto"
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
 msgstr ""
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "Acceso"
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
@@ -144,6 +188,14 @@ msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
 msgstr "Si el acceso no es abierto/libre, use esto para explicar por qué."
 
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "Fecha"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "Descripción"
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr "ID"
@@ -151,6 +203,10 @@ msgstr "ID"
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
 msgstr "Intervención del Investigador"
+
+msgctxt "lameta/session/keyword"
+msgid "Keywords"
+msgstr ""
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
@@ -184,9 +240,25 @@ msgctxt "lameta/session/participants"
 msgid "People"
 msgstr "Personas"
 
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "Tipo de Planificación"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "Contexto social"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "Estado"
+
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
 msgstr "Subgénero"
+
+msgctxt "lameta/session/topic"
+msgid "Topic"
+msgstr "Temática"
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual topics cannot contain a comma."

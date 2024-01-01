@@ -37,11 +37,13 @@
     },
     {
       key: "region",
+      englishLabel: "Region",
       tagInSayMoreClassic: "Region",
       tabIndex: 4
     },
     {
       key: "country",
+      englishLabel: "Country",
       tagInSayMoreClassic: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
@@ -50,6 +52,7 @@
     },
     {
       key: "continent",
+      englishLabel: "Continent",
       tagInSayMoreClassic: "Continent",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       imdiIsClosedVocabulary: true,
@@ -94,6 +97,7 @@
     },
     {
       key: "depositor",
+      englishLabel: "Depositor",
       tagInSayMoreClassic: "Depositor",
       tabIndex: 9
     },
@@ -199,6 +203,7 @@
     },
     {
       key: "genre",
+      tagInSayMoreClassic: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
       tabIndex: 6
     },
@@ -232,6 +237,7 @@
     },
     {
       key: "access",
+      englishLabel: "Access",
       tabIndex: 8
     },
     {
@@ -242,12 +248,14 @@
     },
     {
       key: "description",
+      englishLabel: "Description",
       tagInSayMoreClassic: "synopsis",
       multipleLines: true,
       tabIndex: 5
     },
     {
       key: "status",
+      englishLabel: "Status",
       choices: ["Incoming", "In_Progress", "Finished", "Skipped"],
       default: "Incoming",
       "//": "don't show on main form",
@@ -255,6 +263,7 @@
     },
     {
       key: "date",
+      englishLabel: "Date",
       type: "Date",
       tabIndex: 1
     },
@@ -320,6 +329,7 @@
     // },
     {
       key: "planningType",
+      englishLabel: "Planning Type",
       tagInSayMoreClassic: "Planning_Type",
       additional: true,
       imdiIsClosedVocabulary: true,
@@ -336,6 +346,7 @@
     },
     {
       key: "socialContext",
+      englishLabel: "Social Context",
       tagInSayMoreClassic: "Social_Context",
       additional: true,
       imdiIsClosedVocabulary: true,
@@ -354,6 +365,7 @@
     {
       // added at ELAR request Dec 2019
       key: "keyword",
+      englishLabel: "Keywords",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual keywords cannot contain a comma.",
       tabIndex: 10
@@ -361,6 +373,7 @@
     {
       // added at ELAR request Dec 2019
       key: "topic",
+      englishLabel: "Topic",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
       tabIndex: 11
@@ -387,10 +400,12 @@
     {
       // new for lameta (starting with 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
       key: "languages",
+      englishLabel: "Languages",
       type: "personLanguageList"
     },
     {
       key: "primaryLanguage",
+      englishLabel: "Primary Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
@@ -485,7 +500,8 @@
       importType: "languageCodeOrName"
     },
     {
-      key: "education"
+      key: "education",
+      englishLabel: "Education"
     },
     {
       key: "birthYear",
@@ -494,6 +510,7 @@
     },
     {
       key: "gender",
+      englishLabel: "Gender",
       // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
       choices: ["Unknown", "Male", "Female", "Other"],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
@@ -517,7 +534,8 @@
       markAsNotImdi: true
     },
     {
-      key: "description"
+      key: "description",
+      englishLabel: "Description"
     }
   ]
 }

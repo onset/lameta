@@ -18,7 +18,6 @@ function harvestMessagesFromFile(
   currentMessages: Message[]
 ): void {
   let totalString = 0;
-  let newStrings = 0;
   const root = JSON5.parse(fs.readFileSync(relativePath, "utf8"));
   // for each of project, sessions, people
   for (const area of Object.keys(root)) {
@@ -41,6 +40,7 @@ function harvestMessagesFromFile(
             prop === "englishLabel" ? "" : prop
           }`.replace(/\/$/, "");
           ++totalString;
+          /* I repended of this, as obviously "Description" of a project name may not be the same word as "Description" of a person.
           if (existingMessage) {
             existingMessage.context = `${existingMessage.context}, ${context}`;
           } else {
@@ -49,14 +49,16 @@ function harvestMessagesFromFile(
               context: context,
               message: field[prop]
             });
-          }
+          }*/
+          currentMessages.push({
+            context: context,
+            message: field[prop]
+          });
         }
       }
     }
   }
-  console.log(
-    `Gathered ${totalString} (${newStrings} new) strings from ${relativePath}.`
-  );
+  console.log(`Gathered ${totalString} strings from ${relativePath}.`);
 }
 
 /*

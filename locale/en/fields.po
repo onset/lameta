@@ -10,6 +10,14 @@ msgctxt "lameta/person/code"
 msgid "Code"
 msgstr ""
 
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr ""
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr ""
+
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
 msgstr ""
@@ -18,8 +26,16 @@ msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
 msgstr ""
 
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr ""
+
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
+msgstr ""
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
 msgstr ""
 
 msgctxt "lameta/person/mothersLanguage"
@@ -36,6 +52,10 @@ msgstr ""
 
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
+msgstr ""
+
+msgctxt "lameta/person/primaryLanguage"
+msgid "Primary Language"
 msgstr ""
 
 msgctxt "lameta/person/primaryLanguageLearnedIn"
@@ -82,6 +102,14 @@ msgctxt "lameta/project/contactPerson/description"
 msgid "Contact information about the person or institution responsible for the project."
 msgstr ""
 
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr ""
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr ""
+
 msgctxt "lameta/project/customAccessChoices"
 msgid "Custom access choices"
 msgstr ""
@@ -90,11 +118,19 @@ msgctxt "lameta/project/depositor"
 msgid "Depositor"
 msgstr ""
 
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr ""
+
+msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
 msgctxt "lameta/project/deputyCollectionSteward"
 msgid "Deputy Collection Stewards"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions, lameta/project/depositor/separatorWithCommaInstructions"
+msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
@@ -114,12 +150,20 @@ msgctxt "lameta/project/projectDescription"
 msgid "Description"
 msgstr ""
 
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr ""
+
 msgctxt "lameta/project/title"
 msgid "Project ID"
 msgstr ""
 
 msgctxt "lameta/project/vernacularIso3CodeAndName"
 msgid "Subject Language"
+msgstr ""
+
+msgctxt "lameta/session/access"
+msgid "Access"
 msgstr ""
 
 msgctxt "lameta/session/accessDescription"
@@ -130,12 +174,24 @@ msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
 msgstr ""
 
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr ""
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr ""
+
 msgctxt "lameta/session/id"
 msgid "ID"
 msgstr ""
 
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
+msgstr ""
+
+msgctxt "lameta/session/keyword"
+msgid "Keywords"
 msgstr ""
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
@@ -170,8 +226,24 @@ msgctxt "lameta/session/participants"
 msgid "People"
 msgstr ""
 
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr ""
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr ""
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr ""
+
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
+msgstr ""
+
+msgctxt "lameta/session/topic"
+msgid "Topic"
 msgstr ""
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
