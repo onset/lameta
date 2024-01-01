@@ -23,7 +23,17 @@ function harvestMessagesFromFile(
   for (const area of Object.keys(root)) {
     for (const field of root[area]) {
       for (const prop of Object.keys(field)) {
-        if (
+        const parent = path.basename(path.dirname(relativePath));
+        if (prop === "choices") {
+          for (const choice of field[prop]) {
+            const context = `${parent}/${area}/${field.key}/choices`;
+            ++totalString;
+            currentMessages.push({
+              context: context,
+              message: choice
+            });
+          }
+        } else if (
           [
             "englishLabel",
             "description",
@@ -31,25 +41,10 @@ function harvestMessagesFromFile(
             "tipOnUsingThisField"
           ].includes(prop)
         ) {
-          // if currentMessages already has this message, add this context to it after a comma
-          const existingMessage = currentMessages.find(
-            (m) => m.message === field[prop]
-          );
-          const parent = path.basename(path.dirname(relativePath));
           const context = `${parent}/${area}/${field.key}/${
             prop === "englishLabel" ? "" : prop
           }`.replace(/\/$/, "");
           ++totalString;
-          /* I repended of this, as obviously "Description" of a project name may not be the same word as "Description" of a person.
-          if (existingMessage) {
-            existingMessage.context = `${existingMessage.context}, ${context}`;
-          } else {
-            ++newStrings;
-            currentMessages.push({
-              context: context,
-              message: field[prop]
-            });
-          }*/
           currentMessages.push({
             context: context,
             message: field[prop]

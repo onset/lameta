@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
-"PO-Revision-Date: 2024-01-01 21:51\n"
+"PO-Revision-Date: 2024-01-01 22:29\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -47,6 +47,22 @@ msgstr ""
 msgctxt "lameta/person/gender"
 msgid "Gender"
 msgstr "性别"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr ""
 
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
@@ -112,6 +128,46 @@ msgctxt "lameta/project/continent"
 msgid "Continent"
 msgstr "洲"
 
+msgctxt "lameta/project/continent/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr "非洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr "亚洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr "澳洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr "欧洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Americas"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr "北美洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr "中美洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr "大洋洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
+msgstr "南美洲"
+
 msgctxt "lameta/project/country"
 msgid "Country"
 msgstr "国家/地区"
@@ -126,7 +182,7 @@ msgstr "上传者"
 
 msgctxt "lameta/project/depositor"
 msgid "Depositor"
-msgstr ""
+msgstr "上传者"
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
@@ -200,6 +256,26 @@ msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
 msgstr "研究者参与度"
 
+msgctxt "lameta/session/involvement/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr ""
+
 msgctxt "lameta/session/keyword"
 msgid "Keywords"
 msgstr ""
@@ -224,6 +300,46 @@ msgctxt "lameta/session/locationContinent"
 msgid "Continent"
 msgstr "洲"
 
+msgctxt "lameta/session/locationContinent/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr "非洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Americas"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr "亚洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr "澳洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr "欧洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr "北美洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr "中美洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "大洋洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr "南美洲"
+
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
 msgstr "国家/地区"
@@ -240,13 +356,73 @@ msgctxt "lameta/session/planningType"
 msgid "Planning Type"
 msgstr "规划类型"
 
+msgctxt "lameta/session/planningType/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr ""
+
 msgctxt "lameta/session/socialContext"
 msgid "Social Context"
 msgstr "社会情境"
 
+msgctxt "lameta/session/socialContext/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr "公开"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr ""
+
 msgctxt "lameta/session/status"
 msgid "Status"
 msgstr "状态"
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "In_Progress"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
+msgstr ""
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"

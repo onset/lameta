@@ -16,12 +16,6 @@ files: [
     },
     #"key","Context","en","es","fr","ru","zh-CN","pt-BR","id"
     {
-      "source": /choices.csv,
-      "translation": /%original_file_name%,
-      "first_line_contains_header": true,
-      "scheme": "context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-    },
-    {
       "source": /genres.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,

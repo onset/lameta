@@ -78,7 +78,6 @@ function loadOneCatalog(code: string, set: string) {
 // I didn't originally have a way of making the lingui-extract scanner scan our fields.json5, so I just extracted this csv manually,
 // and it lives as a second file on Crowdin.com that has to be translated.
 // These days linguijs can be given a custom scanner, so we will eventually be able to simplify things.
-import choices from "../../locale/choices.csv";
 import roles from "../../locale/roles.csv";
 import genres from "../../locale/genres.csv";
 // note: accessProtocols.csv is pretty confusing because it's not the list of choices, but rather a mix
@@ -143,8 +142,8 @@ export function translateAccessProtocolLabelOrDescription(
     description = "";
   return { label, description };
 }
-export function translateChoice(choice: string, fieldName?: string): string {
-  return getMatch(choices, choice, "choices.csv", fieldName);
+export function translateChoice(choice: string): string {
+  return i18n._(choice);
 }
 
 export function translateRole(role: string) {

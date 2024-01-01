@@ -34,6 +34,22 @@ msgctxt "lameta/person/gender"
 msgid "Gender"
 msgstr ""
 
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr ""
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr ""
+
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
 msgstr ""
@@ -96,6 +112,46 @@ msgstr ""
 
 msgctxt "lameta/project/continent"
 msgid "Continent"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Americas"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr ""
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
 msgstr ""
 
 msgctxt "lameta/project/country"
@@ -186,6 +242,26 @@ msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
 msgstr ""
 
+msgctxt "lameta/session/involvement/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr ""
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr ""
+
 msgctxt "lameta/session/keyword"
 msgid "Keywords"
 msgstr ""
@@ -210,6 +286,46 @@ msgctxt "lameta/session/locationContinent"
 msgid "Continent"
 msgstr ""
 
+msgctxt "lameta/session/locationContinent/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Americas"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr ""
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr ""
+
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
 msgstr ""
@@ -226,12 +342,72 @@ msgctxt "lameta/session/planningType"
 msgid "Planning Type"
 msgstr ""
 
+msgctxt "lameta/session/planningType/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr ""
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr ""
+
 msgctxt "lameta/session/socialContext"
 msgid "Social Context"
 msgstr ""
 
+msgctxt "lameta/session/socialContext/choices"
+msgid "unspecified"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr ""
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr ""
+
 msgctxt "lameta/session/status"
 msgid "Status"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "In_Progress"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr ""
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
 msgstr ""
 
 msgctxt "lameta/session/subgenre"
