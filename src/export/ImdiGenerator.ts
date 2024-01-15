@@ -926,7 +926,7 @@ export default class ImdiGenerator {
       date === ""
         ? "Unspecified"
         : // all we're really doing here is stripping off the time portion
-          moment(new Date(date)).utcOffset(0).format("YYYY-MM-DD"); // utcOffset prevents changing date based on local time zone
+          new Date(date).toISOString().slice(0, 10);
     this.element(elementName, s);
     this.keysThatHaveBeenOutput.add(this.folderInFocus.type + "." + fieldName);
   }
