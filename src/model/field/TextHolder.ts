@@ -58,13 +58,17 @@ export class TextHolder {
     axisTextDictionary[tag] = textForAxis;
     // console.log(JSON.stringify(axisTextDictionary));
 
-    this._text = this.serializedMultAxisText(axisTextDictionary);
+    this._text = TextHolder.serializedMultAxisText(axisTextDictionary);
     // console.log(`this._text: "${this._text}"`);
   }
   public getTextAxis(tag: string): string {
     const axisTextDictionary = this.deserializeMultiAxisText();
     return axisTextDictionary[tag] || "";
   }
+  // public getAllNonEmptyTextAxes(): MultiAxisText {
+  //   // review this is feeling verbose / janky
+  //   return this.deserializeMultiAxisText();
+  // }
 
   private deserializeMultiAxisText(): MultiAxisText {
     // we store multiple languages in a single field in this format:
@@ -102,16 +106,21 @@ export class TextHolder {
     });
     return result;
   }
+  public getAllNonEmptyTextAxes(): string[] {
+    return TextHolder.getNonEmptyLanguageAxesStatic(
+      this.deserializeMultiAxisText()
+    );
+  }
 
-  private getNonEmptyLanguageAxes(axes: MultiAxisText): string[] {
+  private static getNonEmptyLanguageAxesStatic(axes: MultiAxisText): string[] {
     // console.log(`object keys: "${Object.keys(axes)}"`);
     return Object.keys(axes).filter(
       (language) => axes[language] !== undefined && axes[language].trim() !== ""
     );
   }
 
-  private serializedMultAxisText(axes: MultiAxisText): string {
-    const nonEmptyAxes = this.getNonEmptyLanguageAxes(axes);
+  private static serializedMultAxisText(axes: MultiAxisText): string {
+    const nonEmptyAxes = this.getNonEmptyLanguageAxesStatic(axes);
     //console.log(`nonEmptyAxes: ${nonEmptyAxes} from "${JSON.stringify(axes)}"`);
 
     if (nonEmptyAxes.length === 0) {

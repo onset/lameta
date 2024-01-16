@@ -6,6 +6,10 @@ import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 let resultXml: string;
 let resultDom: Document;
 
+export function printResultXml() {
+  console.log(`resultXml: ${resultXml}`);
+}
+
 export function setResultXml(xml: string) {
   resultXml = xml;
   resultDom = new DOMParser().parseFromString(resultXml);
@@ -45,6 +49,8 @@ export function count(xpath: string): number {
   return select(xpath).length;
 }
 export function value(xpath: string): string {
+  const r = select(xpath);
+  if (r.length === 0) throw new Error(`xpath ${xpath} did not match anything`);
   return (select(xpath)[0] as Node).textContent || "";
 }
 export function select(xpath: string): Node[] {

@@ -1,5 +1,6 @@
 import * as XmlBuilder from "xmlbuilder";
 import { Field } from "../model/field/Field";
+import { fi } from "date-fns/locale";
 
 // public for testing
 export function fieldElement(
@@ -13,44 +14,63 @@ export function fieldElement(
   tail: XmlBuilder.XMLElementOrXMLNode;
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
 } {
-  // TODO at this point, handle multilingual
-  let text = defaultValue;
-  if (
-    fieldOrString &&
-    typeof fieldOrString === "string" &&
-    fieldOrString.length > 0
-  ) {
-    text = fieldOrString;
-    // if value is a field, and it has text, use that
-  } else if (
-    fieldOrString &&
-    fieldOrString instanceof Field &&
-    fieldOrString.text &&
-    fieldOrString.text.length > 0
-  ) {
-    text = fieldOrString.text;
-  } // just return the tail, and the most recent element
-  else {
-    // are we required to output something?
-    if (xmlElementIsRequired) {
-      // yes, so we need to output something, but we don't have anything.
-      // so we'll output the default value
-      text = defaultValue;
-    } else {
-      return { tail, mostRecentElement: mostRecentElement || tail };
+  const field = fieldOrString instanceof Field ? fieldOrString : undefined;
+  const text = typeof fieldOrString === "string" ? fieldOrString : undefined;
+  let lastElementWeAdded: XmlBuilder.XMLElementOrXMLNode = tail;
+
+  if (xmlElementIsRequired) {
+    assert(
+      defaultValue,
+      "defaultValue is required if xmlElementIsRequired is true"
+    );
+    if ((field && field.isEmpty()) || !field) {
+      assert(typeof fieldOrString === "string");
+      lastElementWeAdded = addElementWithMonolingualStringContent(
+        elementName,
+        defaultValue,
+        tail
+      );
     }
+  } else if (text) {
+    lastElementWeAdded = addElementWithMonolingualStringContent(
+      elementName,
+      text,
+      tail
+    );
+  } else if (field && !field.isEmpty()) {
+    lastElementWeAdded = addElementsFromFieldContent(elementName, field, tail);
   }
+  tail = lastElementWeAdded === tail ? tail : lastElementWeAdded.up();
+  return { tail, mostRecentElement: tail }; // review is lastElementWeAdded what mostRecentElement should be?
+}
 
-  tail = tail.element(elementName, text);
+function addElementWithMonolingualStringContent(
+  elementName: string,
+  text: string | undefined,
+  tail: XmlBuilder.XMLElementOrXMLNode
+) {
+  if (text && text.length > 0) return tail.element(elementName, text);
+  else return tail;
+}
 
-  if (fieldOrString instanceof Field && fieldOrString.definition?.imdiRange) {
-    tail.attribute("Link", fieldOrString.definition.imdiRange);
-    const type = fieldOrString.definition.imdiIsClosedVocabulary
+function addElementsFromFieldContent(
+  elementName: string,
+  field: Field,
+  tail: XmlBuilder.XMLElementOrXMLNode
+) {
+  if (field.definition?.imdiRange) {
+    // wer're assuming at this point that we don't have mulilingual vocabularies
+    const element = tail.element(elementName, field.text);
+    element.attribute("Link", field.definition.imdiRange);
+    const type = field.definition.imdiIsClosedVocabulary
       ? "ClosedVocabulary"
       : "OpenVocabulary";
-    tail.attribute("Type", type);
+    element.attribute("Type", type);
+  } else {
+    field.getAllNonEmptyTextAxes().forEach((language) => {
+      const element = tail.element(elementName, field.getTextAxis(language));
+      element.attribute("LanguageId", language);
+    });
   }
-  //this.mostRecentElement = tail;
-  tail = tail.up();
-  return { tail, mostRecentElement: tail };
+  return tail;
 }

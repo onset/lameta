@@ -183,6 +183,9 @@ export class Field {
   public getTextAxis(tag: string): string {
     return this.textHolder.getTextAxis(tag);
   }
+  public getAllNonEmptyTextAxes(): string[] {
+    return this.textHolder.getAllNonEmptyTextAxes();
+  }
   public getTextForSimpleDisplay(): string {
     return this.textHolder.getFirstNonEmptyText([
       "en",
@@ -193,7 +196,13 @@ export class Field {
       "zh"
     ]); // enhance just hard coded for now
   }
+  public isEmpty(): boolean {
+    return this.textHolder.getSerialized().length === 0;
+  }
 
+  public nonEmptyTextAxes(): Map<string, string> {
+    return this.textHolder.nonEmptyTextAxes();
+  }
   public toString(): string {
     return this.text;
   }
