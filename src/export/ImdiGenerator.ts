@@ -22,6 +22,8 @@ import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import { CapitalCase, safeSentenceCase } from "../other/case";
+import { Field } from "../model/field/Field";
+import { fieldElement } from "./Imdi-static-fns";
 
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
@@ -876,17 +878,9 @@ export default class ImdiGenerator {
   private requiredFieldWithUnspecified(
     elementName: string,
     fieldName: string,
-    target?: Folder | File,
-    projectFallbackFieldName?: string
+    target?: Folder | File
   ) {
-    this.field(
-      elementName,
-      fieldName,
-      true,
-      "Unspecified",
-      target,
-      projectFallbackFieldName
-    );
+    this.field(elementName, fieldName, true, "Unspecified", target);
   }
 
   private requiredField(
@@ -939,15 +933,27 @@ export default class ImdiGenerator {
     projectFallbackFieldName?: string
   ) {
     //if they specified a folder, use that, otherwise use the current default
-    const f = target ? target : this.folderInFocus;
+    const folder = target ? target : this.folderInFocus;
 
     sentryBreadCrumb(
       `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} f:{${stringify(
-        f
+        folder
       )}}`
     );
 
-    let value = f.properties.getTextStringOrEmpty(fieldName);
+    let field = folder.properties.getValue(fieldName) as Field;
+
+    // as far as I can tell, this is only used for a case change, e.g "Country" or "country"
+    if (projectFallbackFieldName && (!field || field.text.length === 0)) {
+      field = this.project.properties.getValue(
+        projectFallbackFieldName
+      ) as Field;
+    } else {
+      assert.ok(folder.type, "IMDI field f.type was null");
+      this.keysThatHaveBeenOutput.add(folder.type + "." + fieldName);
+    }
+
+    let value: string | Field = field;
 
     if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
@@ -955,42 +961,25 @@ export default class ImdiGenerator {
       //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
 
       // for some, we may have access to an explicit label. Probably makes no difference, the keys are always just snake case of the label.
-      const label = f.properties
+      const label = folder.properties
         .getLabelOfValue(fieldName)
         // this probably isn't used. The idea is that if we didn't get new label, just replace the underscores
         .replace(/_/g, " ");
 
       value = titleCase(label);
     }
-    if (projectFallbackFieldName && (!value || value.length === 0)) {
-      value = this.project.properties.getTextStringOrEmpty(
-        projectFallbackFieldName
-      );
-    } else {
-      assert.ok(f.type, "IMDI field f.type was null");
-      //if (target) {  <-- I don't know what precipitated this; target is null when we are outputing folder fields, .e.g. session.description
-      this.keysThatHaveBeenOutput.add(f.type + "." + fieldName);
-      //}
-    }
 
-    //ELAR wants these capitalized
-    value = value === "unspecified" ? "Unspecified" : value;
-
-    const text = value && value.length > 0 ? value : defaultValue;
-    if (xmlElementIsRequired || (value && value.length > 0)) {
-      this.tail = this.tail.element(elementName, text);
-      const definition = f.properties.getFieldDefinition(fieldName);
-
-      if (definition.imdiRange) {
-        this.tail.attribute("Link", definition.imdiRange);
-        const type = definition.imdiIsClosedVocabulary
-          ? "ClosedVocabulary"
-          : "OpenVocabulary";
-        this.tail.attribute("Type", type);
-      }
-      this.mostRecentElement = this.tail;
-      this.tail = this.tail.up();
-    }
+    const result = fieldElement(
+      elementName,
+      value,
+      this.tail,
+      this.mostRecentElement,
+      xmlElementIsRequired,
+      defaultValue
+    );
+    this.tail = result.tail;
+    if (result.mostRecentElement)
+      this.mostRecentElement = result.mostRecentElement;
   }
 
   private attribute(attributeName: string, fieldName: string, folder?: Folder) {
