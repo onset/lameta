@@ -41,7 +41,7 @@ export class Field {
   public readonly visibility: FieldVisibility;
   public persist: boolean;
   public readonly cssClass: string;
-  private textHolder = new TextHolder();
+  private textHolder = new TextHolder(); // has to be public for mobx to work
   public choices: string[];
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
@@ -113,6 +113,7 @@ export class Field {
     // imdiIsClosedVocabulary?: boolean
   ) {
     makeObservable(this, {
+      // @ts-expect-error I don't want to make this public, I only want to make it observable by mobx
       textHolder: observable
     });
 
@@ -197,12 +198,10 @@ export class Field {
     ]); // enhance just hard coded for now
   }
   public isEmpty(): boolean {
+    const test = this.textHolder.getSerialized();
     return this.textHolder.getSerialized().length === 0;
   }
 
-  public nonEmptyTextAxes(): Map<string, string> {
-    return this.textHolder.nonEmptyTextAxes();
-  }
   public toString(): string {
     return this.text;
   }
@@ -345,7 +344,7 @@ export class Field {
   private updateDefinitionIfThisIsANewChoice() {
     // for now we're only implementing this for genre, which has complexChoices
     // (choices with examples and definitions).
-    console.assert((this.definition.key = "genre"));
+    console.assert(this.definition.key === "genre");
 
     const v = this.text.toLowerCase();
     if (v) {
