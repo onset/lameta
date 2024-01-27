@@ -2,7 +2,7 @@ import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
-import Dropzone, { ImageFile } from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.scss";
