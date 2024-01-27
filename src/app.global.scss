@@ -110,6 +110,11 @@ select,
   // disable for 0.87 because auto performed better when user makes font size large.
   //     height: $field-height; //match textarea so grid rows are the same height
 }
+.autoForm {
+  a {
+    margin-top: 3px; // helps it line up with label since it doesn't have the same padding as the text boxes
+  }
+}
 textarea {
   border-style: inset;
   resize: none;

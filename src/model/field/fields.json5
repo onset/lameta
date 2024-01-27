@@ -32,7 +32,8 @@
       key: "location",
       englishLabel: "Location/Address",
       tagInSayMoreClassic: "Location",
-      cssClass: "field__newSection",
+      cssClass: "field__newSection, text-block",
+
       multipleLines: true,
       tabIndex: 3
     },
@@ -71,13 +72,13 @@
     {
       key: "grantId",
       englishLabel: "Grant ID",
+      cssClass: "field__newSection",
       tabIndex: 7
     },
     {
       key: "fundingProjectTitle",
       englishLabel: "Funding Project Title",
       tagInSayMoreClassic: "FundingProjectTitle",
-      cssClass: "field__newSection",
       tabIndex: 8
     },
     {
