@@ -49,7 +49,7 @@ class ClosedChoiceEdit extends React.Component<
               <option key={s} value={s}>
                 {s === "unspecified"
                   ? ""
-                  : translateChoice(s, this.props.field.definition.key)}
+                  : translateChoice(s)}
               </option>
             ))
           }
