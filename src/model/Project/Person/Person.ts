@@ -1,7 +1,7 @@
 import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, ensureArray } from "../../file/File";
 import * as Path from "path";
-import fieldDefinitionsOfCurrentConfig from "../../field/ConfiguredFieldDefinitions";
+import { fieldDefinitionsOfCurrentConfig } from "../../field/ConfiguredFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
@@ -93,6 +93,7 @@ export class Person extends Folder {
     customFieldRegistry: CustomFieldRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
+    FolderMetadataFile.loadDefaultConfigIfInUnitTest();
     super(directory, metadataFile, files, customFieldRegistry);
     // we used to not store the name, relying instead on the folder name.
     // However that made it impossible to record someone's actual name if it
@@ -117,7 +118,8 @@ export class Person extends Folder {
       });
       */
     this.knownFields = fieldDefinitionsOfCurrentConfig.person; // for csv export
-    this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
+    this.updateExternalReferencesToThisPerson =
+      updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
     this.migrateFromPreviousVersions();
   }
@@ -276,9 +278,10 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-        language.code
-      );
+      const name =
+        staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+          language.code
+        );
       if (language.code.trim().length > 0) {
         const fieldName =
           fieldNameIndex === 0

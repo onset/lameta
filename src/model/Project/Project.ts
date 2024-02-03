@@ -25,8 +25,9 @@ import * as Sentry from "@sentry/browser";
 
 import genres from "./Session/genres.json";
 
-import fieldDefinitionsOfCurrentConfig, {
-  prepareFieldDefinitionCatalog
+import {
+  fieldDefinitionsOfCurrentConfig,
+  prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
@@ -457,8 +458,9 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol: this.properties.getTextField("accessProtocol").textHolder
-            .textInDefaultLanguage,
+          protocol:
+            this.properties.getTextField("accessProtocol").textHolder
+              .textInDefaultLanguage,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -485,9 +487,8 @@ export class Project extends Folder {
           "en" // currently we only use "en" for this
         ],
       (newValue) => {
-        const currentProtocol = this.properties.getTextStringOrEmpty(
-          "accessProtocol"
-        );
+        const currentProtocol =
+          this.properties.getTextStringOrEmpty("accessProtocol");
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -870,9 +871,8 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
-      "vernacularIso3CodeAndName"
-    );
+    const projectDefaultContentLanguage: string =
+      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project
@@ -898,23 +898,41 @@ export class Project extends Folder {
 
 export class ProjectMetadataFile extends FolderMetadataFile {
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
-    // TODO: should we migrate? Probably duplicate for backwards compat for a while?
-    //const archive = metadataFile.getTextProperty("archiveRepository","default");
-    // For now, using the existing AccessProtocol
-    //const archive = metadataFile.getTextProperty("AccessProtocol", "default");
-
-    //prepareFieldDefinitionCatalog("default"); // todo: load the actual configuration if not the default
-
-    prepareFieldDefinitionCatalog("default"); // todo: load the actual configuration if not the default
+    // here we have a bootstrapping problem; we need to know the name
+    // of the selected configuration
+    // before making the metadataFile for this project, but (the way things
+    // are currently structured) we need to know the configuration
+    // before we can make the metadataFile for this project.
+    const configuration =
+      ProjectMetadataFile.peekIntoSprjForConfigurationName(directory);
+    prepareGlobalFieldDefinitionCatalog(configuration);
     super(
       directory,
       "Project",
       false,
       ".sprj",
-      [], // TODO: as written, it's hard to make the field catalog before we have read the xml, so we have a chicken and egg situation
+      fieldDefinitionsOfCurrentConfig.project,
       customFieldRegistry
     );
     this.finishLoading();
+  }
+
+  // peek into the xml to get the configuration we're supposed to be using
+  // TODO: is this the right approach
+  private static peekIntoSprjForConfigurationName(directory: string): string {
+    const name = Path.basename(directory);
+    const metadataPath = Path.join(directory, name + ".sprj");
+    if (!fs.existsSync(metadataPath)) {
+      return "default";
+    }
+
+    // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
+    const contents = fs.readFileSync(metadataPath, "utf8");
+    // TODO: should we migrate? Probably duplicate for backwards compat for a while?
+    // TODO: change name to "archiveRepository" or "configuration", for now, using the existing AccessProtocol
+
+    const regex = /<AccessProtocol>(.*)<\/AccessProtocol>/gm;
+    return regex.exec(contents)?.[1] || "default";
   }
 }
 

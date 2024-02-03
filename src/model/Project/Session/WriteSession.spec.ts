@@ -14,7 +14,7 @@ import {
   getMimeType,
   getImdiResourceTypeForExtension
 } from "../../file/FileTypeInfo";
-
+import { describe, it, beforeEach, afterEach } from "vitest";
 let projectDirectory;
 let projectName;
 

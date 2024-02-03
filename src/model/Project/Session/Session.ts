@@ -3,7 +3,7 @@ import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { CustomFieldRegistry } from "../CustomFieldRegistry";
-import fieldDefinitionsOfCurrentConfig from "../../field/ConfiguredFieldDefinitions";
+import { fieldDefinitionsOfCurrentConfig } from "../../field/ConfiguredFieldDefinitions";
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
@@ -318,6 +318,8 @@ export class Session extends Folder {
 
 export class SessionMetadataFile extends FolderMetadataFile {
   constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
+    FolderMetadataFile.loadDefaultConfigIfInUnitTest();
+
     super(
       directory,
       "Session",
@@ -326,6 +328,7 @@ export class SessionMetadataFile extends FolderMetadataFile {
       fieldDefinitionsOfCurrentConfig.session,
       customFieldRegistry
     );
+
     this.finishLoading();
     /* I'm not needing it now, but here is an example of how to see what is changing
     a property. Set a breakpoint where the console.log is, look at the call stack,

@@ -17,14 +17,15 @@ export function getFieldDefinition(
   );
 }
 export function isKnownFieldKey(key: string): boolean {
-  return Object.keys(fieldDefinitionsOfCurrentConfig).some((
-    area // e.g. project, session, person
-  ) =>
-    fieldDefinitionsOfCurrentConfig[area].find(
-      (d: any) =>
-        d.key.toLowerCase() === key.toLowerCase() ||
-        d.tagInSayMoreClassic === key
-    )
+  return Object.keys(fieldDefinitionsOfCurrentConfig).some(
+    (
+      area // e.g. project, session, person
+    ) =>
+      fieldDefinitionsOfCurrentConfig[area].find(
+        (d: any) =>
+          d.key.toLowerCase() === key.toLowerCase() ||
+          d.tagInSayMoreClassic === key
+      )
   );
 }
 
@@ -370,13 +371,17 @@ const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {
   session: [],
   person: []
 };
-export function prepareFieldDefinitionCatalog(configurationName: string) {
-  const x = loadFieldChoices(configurationName);
+export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
+  const x = makeFieldDefinitionCatalog(configurationName);
   // copy the contents of x into fieldDefinitionsOfCurrentConfig without
   // changing the identify of fieldDefinitionsOfCurrentConfig, because only
   // the original object is exported.
   Object.assign(fieldDefinitionsOfCurrentConfig, x);
 }
-
+export function makeFieldDefinitionCatalog(
+  configurationName: string
+): FieldDefinitionCatalog {
+  return loadFieldChoices(configurationName);
+}
 // todo: move to Project?
-export default fieldDefinitionsOfCurrentConfig; // does not include custom fields
+export { fieldDefinitionsOfCurrentConfig }; // does not include custom fields

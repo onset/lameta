@@ -4,8 +4,9 @@ import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
 import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
-import fieldDefinitionsOfCurrentConfig, {
-  prepareFieldDefinitionCatalog
+import {
+  fieldDefinitionsOfCurrentConfig,
+  prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
@@ -33,21 +34,6 @@ export class FolderMetadataFile extends File {
       fileExtensionForMetadata,
       false
     );
-    //TODO: this is really only for the project... have a bit of a pulling up by bootstraps problem here
-    if (fieldCatalog.length == 0) {
-      {
-        // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
-        const contents = fs.readFileSync(metadataPath, "utf8");
-        // TODO: should we migrate? Probably duplicate for backwards compat for a while?
-        // TODO: change name to archiveRepository, for now, using the existing AccessProtocol
-
-        const regex = /<AccessProtocol>(.*)<\/AccessProtocol>/gm;
-        const archive = regex.exec(contents)?.[1] || "default";
-
-        prepareFieldDefinitionCatalog(archive);
-        fieldCatalog = fieldDefinitionsOfCurrentConfig.project;
-      }
-    }
 
     this.customFieldNamesRegistry = customFieldRegistry;
     this.readDefinitionsFromJson(fieldCatalog);
@@ -65,6 +51,20 @@ export class FolderMetadataFile extends File {
     The derived class initialized properties are initialized
     The derived class constructor runs
     */
+  }
+
+  public static loadDefaultConfigIfInUnitTest() {
+    // for unit tests only
+    if (process.env.NODE_ENV === "test") {
+      if (
+        fieldDefinitionsOfCurrentConfig.project === undefined ||
+        fieldDefinitionsOfCurrentConfig.project.length === 0 ||
+        fieldDefinitionsOfCurrentConfig.session === undefined ||
+        fieldDefinitionsOfCurrentConfig.session.length === 0
+      ) {
+        prepareGlobalFieldDefinitionCatalog("default");
+      }
+    }
   }
 
   private readDefinitionsFromJson(rawKnownFieldsFromJson: FieldDefinition[]) {

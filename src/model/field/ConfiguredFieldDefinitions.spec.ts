@@ -1,7 +1,12 @@
 import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
-import { computeMergedCatalog } from "./ConfiguredFieldDefinitions";
+import {
+  computeMergedCatalog,
+  makeFieldDefinitionCatalog,
+  prepareGlobalFieldDefinitionCatalog
+} from "./ConfiguredFieldDefinitions";
+import exp from "constants";
 
-describe("computeCurrentProjectFields", () => {
+describe("computeMergedCatalog", () => {
   it("should merge the properties of the choice into the field definition, overriding the defaults", () => {
     const ourCatalog = {
       project: [
@@ -38,5 +43,24 @@ describe("computeCurrentProjectFields", () => {
 
     // todo I don't know why this fails even though the exception is being thrown
     // expect(computeMergedCatalog(ourCatalog)).toThrow();
+  });
+});
+
+describe("prepareFieldDefinitionCatalog", () => {
+  it("should have a project section", () => {
+    const catalog = makeFieldDefinitionCatalog("default");
+    expect(catalog.project).toBeDefined();
+  });
+  it("default session section catalog looks reasonable", () => {
+    const catalog = makeFieldDefinitionCatalog("default");
+    expect(catalog.session).toBeDefined();
+    expect(catalog.session.find((f) => f.key == "date")).toBeDefined();
+    expect(catalog.session.find((f) => f.key == "title")).toBeDefined();
+  });
+  it("default person catalog looks reasonable", () => {
+    const catalog = makeFieldDefinitionCatalog("default");
+    expect(catalog.person).toBeDefined();
+    expect(catalog.person.find((f) => f.key == "name")).toBeDefined();
+    expect(catalog.person.find((f) => f.key == "howToContact")).toBeDefined();
   });
 });

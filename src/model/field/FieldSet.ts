@@ -25,6 +25,9 @@ export class FieldSet extends Dictionary<string, Field> {
   public getValueOrThrow(key: string): Field {
     const f = super.getValue(key);
     if (f === undefined) {
+      console.error(
+        `This FieldSet has no value with key: ${key}. It has [${this.keys()}]`
+      );
       throw Error("This FieldSet has no value with key: " + key);
     } else {
       return f;

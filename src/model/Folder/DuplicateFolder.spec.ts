@@ -6,6 +6,7 @@ import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
 import { duplicateFolder } from "./DuplicateFolder";
 import { Project } from "../Project/Project";
 import temp from "temp";
+import { prepareFieldDefinitionCatalog } from "../field/ConfiguredFieldDefinitions";
 
 temp.track();
 describe("Duplicate Folder", () => {
