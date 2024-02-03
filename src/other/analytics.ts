@@ -89,8 +89,8 @@ function getKey(index: number): string | undefined {
   const path = locateDependencyForFilesystemCall("assets/.segment");
   // this .gitignore'd file, if it exists, should contain a comma-separated list of keys: "testKey, productionKey"
   if (!fs.existsSync(path)) {
-    console.error(
-      `No "assets/.segment" file found at ${path}. Will not send analytics.`
+    console.log(
+      `No "assets/.segment" file found at ${path}. Will not send analytics. This is expected in development mode.`
     );
     return undefined;
   }

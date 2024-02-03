@@ -19,7 +19,7 @@ Stack: Typescript, React, mobx, webpack, electron.
 
 ## Get Started
 
-Make sure [volta](https://github.com/volta-cli/volta) is installed
+Make sure [volta](https://github.com/volta-cli/volta) is installed. Verify that it is working correctly via `volta list`. You should see the same versions of node & yarn as are listed in `packages.json`.
 
 ```bash
 yarn
@@ -44,8 +44,6 @@ More information available in the upstream project:
 yarn test
 ```
 
-If you see something like `TypeError: beforeAll is not a function`, that is caused by explicitly defining of the jest functions, as in `const { describe, it, beforeEach, afterEach } = require("jest");` Just remove that.
-
 ### e2e tests
 
 We are using [playwright](https://playwright.dev/) with "experimental electron support". As of this writing, it does not appear to be possible to make use of the vite dev server for this. While playwright can point to an
@@ -64,8 +62,6 @@ To run just one e2e fixture, name it:
 ```bash
 yarn e2e registration.e2e.ts
 ```
-
-(TODO: There are still old spectron tests around, these need to get cleared out.)
 
 ### l10n
 
