@@ -80,7 +80,7 @@ export class TextHolder {
       return { en: this._text };
     }
     // first divide the text into an array of axis/text pairs
-    const axisTextPairsWithExtra = this._text.split("[[").map((s) => s.trim());
+    const axisTextPairsWithExtra = this._text.split("[["); //.map((s) => s.trim());
     //// console.log(axisTextPairsWithExtra);
 
     if (axisTextPairsWithExtra[0] !== "")
@@ -133,7 +133,7 @@ export class TextHolder {
     }
 
     const serializedParts = nonEmptyAxes.map((language) => {
-      const text = axes[language]!.trim(); // Trim whitespace
+      const text = axes[language]; // can't trim because then you can't type a space !.trim();  Trim whitespace
       return text.length > 0 ? `[[${language}]]${text}` : "";
     });
 
