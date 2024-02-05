@@ -1,12 +1,14 @@
-import { expect } from "vitest";
+import { ExpectStatic, expect } from "vitest";
 
-//const XPATH = require("xpath");
 import XPATH from "xpath";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
-import { N } from "vitest/dist/reporters-5f784f42.js";
 
 let resultXml: string;
 let resultDom: Document;
+
+export function printResultXml() {
+  console.log(`resultXml: ${resultXml}`);
+}
 
 export function setResultXml(xml: string) {
   resultXml = xml;
@@ -47,6 +49,8 @@ export function count(xpath: string): number {
   return select(xpath).length;
 }
 export function value(xpath: string): string {
+  const r = select(xpath);
+  if (r.length === 0) throw new Error(`xpath ${xpath} did not match anything`);
   return (select(xpath)[0] as Node).textContent || "";
 }
 export function select(xpath: string): Node[] {
@@ -68,10 +72,6 @@ export function select(xpath: string): Node[] {
     throw new Error(`error in xpath: ${xpath} ${ex}`);
   }
 }
-
-// I haven't figured out to extend
-// to novel names properly.
-export const xexpect = expect as any;
 
 // This overrides an existing expect function in order to have a convenient
 // check using an xpath and an expected value.
@@ -269,3 +269,23 @@ expect.extend({
     }
   }
 });
+
+// the following is "declaration merging" which automatically retains the originasl and adds the new
+declare module "vitest" {
+  interface Assertion {
+    toMatch(expectedValue: string | RegExp): void;
+    toHaveSomeMatch(expectedValue: string | RegExp): void;
+    toHaveCount(expectedValue: number): void;
+    toNotExist(): void;
+    toDeclareVocabulary(url: string): void;
+    toBeClosed(): void;
+    toBeOpen(): void;
+    toBeOpenList(): void;
+    toHaveAttributeValue(attributeName: string, attributeValue: string): void;
+    toHaveText(text: string): void;
+  }
+}
+
+// NB: clients don't actually need this anymore, they can just get expext from vitest
+// and all the typing will work out. But there are a ton of uses for this already in the code base
+export const xexpect = expect;

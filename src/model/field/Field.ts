@@ -1,16 +1,11 @@
 import { observable, makeObservable } from "mobx";
-import TextHolder from "./TextHolder";
+import { TextHolder } from "./TextHolder";
 import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
-import {
-  translateFieldLabel,
-  currentUILanguage
-} from "../../other/localization";
+import { translateFieldLabel } from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
-import { Folder } from "../Folder/Folder";
 import * as DateFns from "date-fns";
-//import * as assert from "assert";
 
 export interface IChoice {
   id: string;
@@ -22,11 +17,11 @@ export interface IChoice {
 
 export enum FieldType {
   Text,
+  LanguageChoices,
   Date,
   Image,
   // Contributions,
   Language,
-  MultiLanguage,
   PersonLanguageList,
   Function,
   Boolean
@@ -47,7 +42,7 @@ export class Field {
   public readonly visibility: FieldVisibility;
   public persist: boolean;
   public readonly cssClass: string;
-  public textHolder = new TextHolder();
+  private textHolder = new TextHolder(); // has to be public for mobx to work
   public choices: string[];
   public definition: FieldDefinition;
   public contributorsArray: Contribution[]; //review
@@ -72,7 +67,7 @@ export class Field {
         type = FieldType.Language;
         break;
       case "multilanguage":
-        type = FieldType.MultiLanguage;
+        type = FieldType.LanguageChoices;
         break;
       case "personlanguagelist":
         type = FieldType.PersonLanguageList;
@@ -119,6 +114,7 @@ export class Field {
     // imdiIsClosedVocabulary?: boolean
   ) {
     makeObservable(this, {
+      // @ts-expect-error I don't want to make this public, I only want to make it observable by mobx
       textHolder: observable
     });
 
@@ -178,11 +174,35 @@ export class Field {
   }
 
   public get text(): string {
-    return this.textHolder.textInDefaultLanguage;
+    return this.textHolder.combinedText;
   }
   public set text(value: string) {
-    this.textHolder.textInDefaultLanguage = value;
+    this.textHolder.combinedText = value;
   }
+  public setTextAxis(tag: string, textForAxis: string): void {
+    this.textHolder.setTextAxis(tag, textForAxis);
+  }
+  public getTextAxis(tag: string): string {
+    return this.textHolder.getTextAxis(tag);
+  }
+  public getAllNonEmptyTextAxes(): string[] {
+    return this.textHolder.getAllNonEmptyTextAxes();
+  }
+  public getTextForSimpleDisplay(): string {
+    return this.textHolder.getFirstNonEmptyText([
+      "en",
+      "es",
+      "fr",
+      "id",
+      "pt",
+      "zh"
+    ]); // enhance just hard coded for now
+  }
+  public isEmpty(): boolean {
+    const test = this.textHolder.getSerialized();
+    return this.textHolder.getSerialized().length === 0;
+  }
+
   public toString(): string {
     return this.text;
   }
@@ -296,7 +316,7 @@ export class Field {
         return { type: "date", value: this.asISODateString() };
       case FieldType.Language:
         return { type: "language", value: this.text };
-      case FieldType.MultiLanguage:
+      case FieldType.LanguageChoices:
         return { type: "multiLanguage", value: this.text };
       case FieldType.PersonLanguageList:
         return {
@@ -325,7 +345,7 @@ export class Field {
   private updateDefinitionIfThisIsANewChoice() {
     // for now we're only implementing this for genre, which has complexChoices
     // (choices with examples and definitions).
-    console.assert((this.definition.key = "genre"));
+    console.assert(this.definition.key === "genre");
 
     const v = this.text.toLowerCase();
     if (v) {
