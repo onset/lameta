@@ -36,7 +36,9 @@ DateFieldEdit extends React.Component<
             onChange={(newDate) => {
               if (newDate != null) {
                 // TODO: while this is changing the value, it's not propagating back to our props so you don't see the change immediately
-                this.props.field.setValueFromString(newDate.toISOString());
+                this.props.field.setValueFromString(
+                  newDate.toISOString().slice(0, 10) /*remove time portion*/
+                );
               }
             }}
           />
