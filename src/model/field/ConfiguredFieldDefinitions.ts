@@ -2,11 +2,26 @@ import fs from "fs";
 import { IFolderType } from "../Folder/Folder";
 import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
-import raw from "../../../configurations/lameta/fields.json5?raw";
+import jsonOfDefaultFieldConfig from "../../../configurations/lameta/fields.json5?raw";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
-const catalogOfAllAvailableKnownFields = JSON5.parse(raw);
 
+type FieldDefinitionCatalog = {
+  project: FieldDefinition[];
+  session: FieldDefinition[];
+  person: FieldDefinition[];
+};
+const catalogOfAllAvailableKnownFields: FieldDefinitionCatalog = JSON5.parse(
+  jsonOfDefaultFieldConfig
+);
+// for each field definition, if does not explicity set multilingual, set it to false
+for (const area of ["project", "session", "person"]) {
+  for (const field of catalogOfAllAvailableKnownFields[area]) {
+    if (field.multilingual === undefined) {
+      field.multilingual = false;
+    }
+  }
+}
 export function getFieldDefinition(
   folderType: IFolderType,
   key: string
@@ -281,16 +296,11 @@ const countries = [
 
 catalogOfAllAvailableKnownFields.project.find(
   (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
-).choices = countries;
+)!.choices = countries;
 catalogOfAllAvailableKnownFields.session.find(
   (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
-).choices = countries;
+)!.choices = countries;
 
-type FieldDefinitionCatalog = {
-  project: FieldDefinition[];
-  session: FieldDefinition[];
-  person: FieldDefinition[];
-};
 // we can't use the full definition becuase we want every field to be optional
 type FieldDefinitionCustomization = {
   key: string;

@@ -1,4 +1,3 @@
-import { CapitalCase } from "../../other/case";
 import { IChoice } from "./Field";
 
 export class FieldDefinition {
@@ -24,6 +23,7 @@ export class FieldDefinition {
   //reconstitute when we load the files again.
   public complexChoices?: IChoice[];
   public multipleLines?: boolean;
+  public multilingual: boolean = false;
   public tabIndex?: number = 99;
   public markAsNotImdi?: boolean;
   public imdiRange?: string;

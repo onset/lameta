@@ -14,5 +14,11 @@
       visibility: "always",
       description: "This is usually the same person as the Collection Steward."
     }
+  ],
+  session: [
+    {
+      key: "description",
+      multilingual: false
+    }
   ]
 }

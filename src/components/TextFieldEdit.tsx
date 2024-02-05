@@ -15,7 +15,7 @@ export interface IProps {
   validate?: (value: string) => boolean;
   tooltip?: string;
   showAffordancesAfter?: boolean;
-  LanguageAxes?: LanguageAxis[];
+  //LanguageAxes?: LanguageAxis[];
 }
 
 export const TextFieldEdit: React.FunctionComponent<
@@ -53,9 +53,10 @@ export const TextFieldEdit: React.FunctionComponent<
         css={css`
           background-color: white;
           border: 1px solid black;
+          height: -webkit-fill-available;
         `}
       >
-        {["title", "description"].includes(props.field.key) ? (
+        {props.field.definition.multilingual ? (
           testAxes.map((axis) => (
             <>
               <SingleLanguageTextFieldEdit {...props} axis={axis} />
@@ -74,10 +75,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
 > = mobx.observer((props) => {
   const [invalid, setInvalid] = React.useState(false);
   const [previous, setPrevious] = useState(props.field.text);
-  const { current: fieldId } = useRef(
-    "textfield-" +
-      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
-  );
+  // const { current: fieldId } = useRef(
+  //   "textfield-" +
+  //     (Math.random().toString(36) + "00000000000000000").slice(2, 7)
+  // );
 
   function onChange(event: React.FormEvent<HTMLTextAreaElement>, field: Field) {
     // NB: Don't trim value here. It is tempting, because at the end of the day we'd
@@ -109,6 +110,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       {props.axis && (
         <span
           css={css`
+            width: 2em; // it's important to nail down the width so that the following text blocks are aligned
             color: #81c21e; // todo use theme with colors to match the form
           `}
         >
@@ -120,7 +122,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           border: none;
           padding-top: 0;
         `}
-        id={fieldId}
+        id={props.field.key}
         tabIndex={props.tabIndex}
         autoFocus={props.autoFocus}
         className={invalid ? "invalid" : ""}

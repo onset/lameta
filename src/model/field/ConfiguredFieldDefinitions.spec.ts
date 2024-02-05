@@ -13,7 +13,8 @@ describe("computeMergedCatalog", () => {
         {
           key: "title",
           tabIndex: 99,
-          tooltip: "My special tooltip"
+          tooltip: "My special tooltip",
+          multilingual: true
         },
         { key: "region", show: "never" }
       ]
@@ -24,7 +25,8 @@ describe("computeMergedCatalog", () => {
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
       tagInSayMoreClassic: "Title",
       tabIndex: 99, // configuration changed
-      tooltip: "My special tooltip" // configuration added this
+      tooltip: "My special tooltip", // configuration added this
+      multilingual: true // configuration added this
     });
   });
 
@@ -62,5 +64,12 @@ describe("prepareFieldDefinitionCatalog", () => {
     expect(catalog.person).toBeDefined();
     expect(catalog.person.find((f) => f.key == "name")).toBeDefined();
     expect(catalog.person.find((f) => f.key == "howToContact")).toBeDefined();
+  });
+
+  it("desfault session description is monolingual", () => {
+    const catalog = makeFieldDefinitionCatalog("default");
+    expect(
+      catalog.session.find((f) => f.key == "description")!.multilingual
+    ).toBe(false);
   });
 });
