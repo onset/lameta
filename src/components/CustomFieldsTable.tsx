@@ -106,7 +106,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
       //review do this here?
       this.props.file.customFieldNamesRegistry.encountered(
-        this.props.file.type,
+        this.props.file.type + "-customField",
         f.key
       );
 

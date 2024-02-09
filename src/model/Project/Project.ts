@@ -15,7 +15,7 @@ import {
   asyncTrashWithContext
 } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
-import { CustomFieldRegistry } from "./CustomFieldRegistry";
+import { CustomVocabularies } from "./CustomVocabularies";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
@@ -35,7 +35,6 @@ import {
   NotifyWarning
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
-import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 
 let sCurrentProject: Project | null = null;
 
@@ -168,9 +167,9 @@ export class Project extends Folder {
     files: File[],
     descriptionFolder: Folder,
     otherDocsFolder: Folder,
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: CustomVocabularies
   ) {
-    super(directory, metadataFile, files, customFieldRegistry);
+    super(directory, metadataFile, files, customVocabularies);
 
     makeObservable(this, {
       sessions: observable,
@@ -221,28 +220,28 @@ export class Project extends Folder {
   }
   public static fromDirectory(directory: string): Project {
     try {
-      const customFieldRegistry = new CustomFieldRegistry();
+      const customVocabularies = new CustomVocabularies();
       const metadataFile = new ProjectMetadataFile(
         directory,
-        customFieldRegistry
+        customVocabularies
       );
 
       const descriptionFolder = ProjectDocuments.fromDirectory(
         directory,
         "DescriptionDocuments",
-        customFieldRegistry
+        customVocabularies
       );
 
       const otherDocsFolder = ProjectDocuments.fromDirectory(
         directory,
         "OtherDocuments",
-        customFieldRegistry
+        customVocabularies
       );
 
       const files = this.loadChildFiles(
         directory,
         metadataFile,
-        customFieldRegistry
+        customVocabularies
       );
       // console.log(
       //   "Project had " + files.length + " files. " + JSON.stringify(files)
@@ -254,7 +253,7 @@ export class Project extends Folder {
         files,
         descriptionFolder,
         otherDocsFolder,
-        customFieldRegistry
+        customVocabularies
       );
       sCurrentProject = project;
       const sesssionsDir = Path.join(directory, "Sessions");
@@ -265,7 +264,7 @@ export class Project extends Folder {
           // console.log(dir);
           const session = Session.fromDirectory(
             dir,
-            project.customFieldRegistry
+            project.customVocabularies
           );
           project.sessions.items.push(session);
         }
@@ -279,7 +278,7 @@ export class Project extends Folder {
           //console.log(dir);
           const person = Person.fromDirectory(
             dir,
-            project.customFieldRegistry,
+            project.customVocabularies,
             // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
             (o, n) =>
               project.updateSessionReferencesToPersonWhenIdChanges(o, n),
@@ -308,7 +307,7 @@ export class Project extends Folder {
   private makePersonFromDirectory(dir: string): Person {
     return Person.fromDirectory(
       dir,
-      this.customFieldRegistry,
+      this.customVocabularies,
       // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
       (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
       this.languageFinder
@@ -347,7 +346,7 @@ export class Project extends Folder {
           t`New Session`
         );
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
-        const session = Session.fromDirectory(dir, this.customFieldRegistry);
+        const session = Session.fromDirectory(dir, this.customVocabularies);
         session.properties.setText("id", Path.basename(dir));
         // no, not yet this.sessions.items.push(session);
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
@@ -383,7 +382,7 @@ export class Project extends Folder {
       t`New Session`
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
-    const session = Session.fromDirectory(dir, this.customFieldRegistry);
+    const session = Session.fromDirectory(dir, this.customVocabularies);
     session.properties.setText("id", Path.basename(dir));
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
@@ -396,7 +395,7 @@ export class Project extends Folder {
     if (success) {
       const newSession = Session.fromDirectory(
         directory,
-        this.customFieldRegistry
+        this.customVocabularies
       );
       newSession.properties.setText("id", Path.basename(directory));
       this.sessions.items.push(newSession);
@@ -419,7 +418,7 @@ export class Project extends Folder {
   setupPerson(dir: string): Person {
     return Person.fromDirectory(
       dir,
-      this.customFieldRegistry,
+      this.customVocabularies,
       // note: we have to use a fat arrow thing here in order to bind the project to the callback
       (o, n) => this.updateSessionReferencesToPersonWhenIdChanges(o, n),
       this.languageFinder
@@ -453,8 +452,9 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol: this.properties.getTextField("accessProtocol").textHolder
-            .textInDefaultLanguage,
+          protocol:
+            this.properties.getTextField("accessProtocol").textHolder
+              .textInDefaultLanguage,
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -481,9 +481,8 @@ export class Project extends Folder {
           "en" // currently we only use "en" for this
         ],
       (newValue) => {
-        const currentProtocol = this.properties.getTextStringOrEmpty(
-          "accessProtocol"
-        );
+        const currentProtocol =
+          this.properties.getTextStringOrEmpty("accessProtocol");
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -866,9 +865,8 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string = this.properties.getTextStringOrEmpty(
-      "vernacularIso3CodeAndName"
-    );
+    const projectDefaultContentLanguage: string =
+      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
 
     if (projectDefaultContentLanguage.trim().length === 0) {
       // hasn't been defined yet, e.g. a new project
@@ -893,14 +891,14 @@ export class Project extends Folder {
 }
 
 export class ProjectMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
+  constructor(directory: string, customVocabularies: CustomVocabularies) {
     super(
       directory,
       "Project",
       false,
       ".sprj",
       knownFieldDefinitions.project,
-      customFieldRegistry
+      customVocabularies
     );
     this.finishLoading();
   }

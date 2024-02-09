@@ -9,7 +9,7 @@ import { log } from "util";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
-import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
+import { CustomVocabularies } from "../model/Project/CustomVocabularies";
 import { NotifyError } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
@@ -269,10 +269,8 @@ export default class ImdiBundler {
   ): void {
     if (folder.files.length > 0) {
       const generator = new ImdiGenerator(mode, folder, project);
-      const projectDocumentsImdi = generator.makePseudoSessionImdiForOtherFolder(
-        name,
-        folder
-      );
+      const projectDocumentsImdi =
+        generator.makePseudoSessionImdiForOtherFolder(name, folder);
 
       ImdiBundler.WritePseudoSession(
         mode,
@@ -377,7 +375,7 @@ export default class ImdiBundler {
     //   }
     // });
 
-    const dummySession = Session.fromDirectory(dir, new CustomFieldRegistry());
+    const dummySession = Session.fromDirectory(dir, new CustomVocabularies());
 
     dummySession.properties.setText(
       "date",

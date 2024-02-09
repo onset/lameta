@@ -8,7 +8,7 @@ import {
   value
 } from "../../../other/xmlUnitTestUtils";
 import { Field, FieldType } from "../../field/Field";
-import { CustomFieldRegistry } from "../CustomFieldRegistry";
+import { CustomVocabularies } from "../CustomVocabularies";
 import { FieldDefinition } from "../../field/FieldDefinition";
 import {
   getMimeType,
@@ -29,7 +29,7 @@ describe("Session Write", () => {
   it("should write simple text field", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     f.setTextProperty("location", "Centreville, Brazzaville");
     setResultXml(f.getXml());
@@ -38,7 +38,7 @@ describe("Session Write", () => {
   it("should write date of session in YYYY-MM-DD format", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     const d = f.properties.getDateField("date");
     d.setValueFromString("2000-10-22");
@@ -49,7 +49,7 @@ describe("Session Write", () => {
   it("should write custom text field", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     const field = new Field("favoriteColor", FieldType.Text, "orange");
     field.definition = new FieldDefinition({
@@ -65,7 +65,7 @@ describe("Session Write", () => {
   it("should not output an <CustomFields> if there are no children", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     setResultXml(f.getXml());
     expect("Session/CustomFields").toHaveCount(0);
@@ -74,7 +74,7 @@ describe("Session Write", () => {
   it("should not output an <AdditionalFields> if there are none", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     setResultXml(f.getXml());
     expect("Session/AdditionalFields").toHaveCount(0);
@@ -83,7 +83,7 @@ describe("Session Write", () => {
   it("should put 'additional fields' under an <AdditionalFields> parent, as SayMore Windows Classic does", () => {
     const f = new SessionMetadataFile(
       projectDirectory,
-      new CustomFieldRegistry()
+      new CustomVocabularies()
     );
     f.setTextProperty("socialContext", "family");
     setResultXml(f.getXml());

@@ -1,7 +1,7 @@
 import fs from "fs";
 import Path from "path";
 import { SessionMetadataFile, Session } from "../Project/Session/Session";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { CustomVocabularies } from "../Project/CustomVocabularies";
 import { duplicateFolder } from "./DuplicateFolder";
 import { Project } from "../Project/Project";
 import temp from "temp";
@@ -21,7 +21,7 @@ describe("Duplicate Folder", () => {
     fs.mkdirSync(dir);
     const mediaPath = Path.join(dir, "someMedia.txt");
     fs.writeFileSync(mediaPath, "hello");
-    const original = Session.fromDirectory(dir, new CustomFieldRegistry());
+    const original = Session.fromDirectory(dir, new CustomVocabularies());
     original.properties.setText("id", "foox");
     original.saveFolderMetaData();
     expect(original.metadataFile.metadataFilePath).toBeTruthy();
@@ -46,7 +46,7 @@ describe("Duplicate Folder", () => {
 
     // const f = new SessionMetadataFile(
     //   rootDirectory,
-    //   new CustomFieldRegistry()
+    //   new CustomVocabularies()
     // );
 
     */

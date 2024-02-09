@@ -3,7 +3,7 @@ import { getStatusOfFile } from "./FileStatus";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { CustomVocabularies } from "../Project/CustomVocabularies";
 import {
   setCurrentProjectId,
   setMediaFolderOrEmptyForThisProjectAndMachine
@@ -71,7 +71,7 @@ describe("Linked file", () => {
   it("looks right when file is in root", () => {
     const f = OtherFile.CreateLinkFile(
       mp3PathInMediaDirectory,
-      new CustomFieldRegistry(),
+      new CustomVocabularies(),
       testSessionFolder
     );
     expect(Path.dirname(f.pathInFolderToLinkFileOrLocalCopy)).toBe(
@@ -107,7 +107,7 @@ describe("Linked file", () => {
 function getOtherFileForMinorMp3() {
   return OtherFile.CreateLinkFile(
     mp3InChildDirectory,
-    new CustomFieldRegistry(),
+    new CustomVocabularies(),
     testSessionFolder
   );
 }
