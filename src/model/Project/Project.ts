@@ -35,6 +35,8 @@ import {
   NotifyWarning
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
+import { CapitalCase } from "../../other/case";
+import { IChoice } from "../field/Field";
 
 let sCurrentProject: Project | null = null;
 
@@ -193,10 +195,37 @@ export class Project extends Folder {
     // this.persons.selected = new IFolderSelection();
     this.descriptionFolder = descriptionFolder;
     this.otherDocsFolder = otherDocsFolder;
-    this.authorityLists = new AuthorityLists(() =>
-      this.persons.items.map((p) => p.displayName)
-    );
+    this.authorityLists = new AuthorityLists(() => {
+      // review: does this stay up to date? Would it be better to just have
+      // this be a function that gets called when we need it?
+      const peopleWithPersonRecords = this.persons.items.map(
+        (p) =>
+          ({
+            id: p[p.propertyForCheckingId],
+            label: p.displayName,
+            description: ""
+          } as IChoice)
+      );
+      const peopleWithJustAName = this.customVocabularies
+        .getChoices("contributor")
+        .map(
+          (c) =>
+            ({
+              id: c,
+              label: c,
+              description: "-- No person record"
+            } as IChoice)
+        )
+        .filter(
+          (c) =>
+            !peopleWithPersonRecords.some(
+              (p) => p.label.toLowerCase() === c.label.toLowerCase()
+            )
+        );
+      return peopleWithPersonRecords.concat(peopleWithJustAName);
+    });
 
+    this.customVocabularies.setup("contributor", CapitalCase);
     this.setupProtocolChoices();
     this.setupGenreDefinition();
 

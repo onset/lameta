@@ -619,6 +619,11 @@ export /*babel doesn't like this: abstract*/ class File {
       contributionFromXml.comments
     );
     this.contributions.push(n);
+
+    this.encounteredVocabularyRegistry.encountered(
+      "contributor",
+      contributionFromXml.name
+    );
   }
   public removeContribution(index: number) {
     console.assert(index >= 0 && index < this.contributions.length);
@@ -1134,7 +1139,7 @@ export class OtherFile extends File {
     const r = path.replace(kLinkExtensionWithFullStop, "");
     super(path, r + ".meta", "Meta", false, ".meta", true);
 
-    this.customFieldNamesRegistry = customVocabularies;
+    this.encounteredVocabularyRegistry = customVocabularies;
 
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;
