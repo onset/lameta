@@ -4,7 +4,7 @@ import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
-import { CustomVocabularies } from "../CustomVocabularies";
+import { VocabularyRegistry } from "../VocabularyRegistry";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../../other/UserSettings";
 import {
@@ -90,7 +90,7 @@ export class Person extends Folder {
     directory: string,
     metadataFile: FolderMetadataFile,
     files: File[],
-    customVocabularies: CustomVocabularies,
+    customVocabularies: VocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
     super(directory, metadataFile, files, customVocabularies);
@@ -136,7 +136,7 @@ export class Person extends Folder {
 
   public static fromDirectory(
     directory: string,
-    customVocabularies: CustomVocabularies,
+    customVocabularies: VocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     languageFinder: LanguageFinder
@@ -203,7 +203,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
   // only used for people files
   public languages: IPersonLanguage[] = [];
 
-  constructor(directory: string, customVocabularies: CustomVocabularies) {
+  constructor(directory: string, customVocabularies: VocabularyRegistry) {
     super(
       directory,
       "Person",

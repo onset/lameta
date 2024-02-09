@@ -2,7 +2,7 @@ import { ProjectMetadataFile } from "../Project/Project";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
-import { CustomVocabularies } from "./CustomVocabularies";
+import { VocabularyRegistry } from "./VocabularyRegistry";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 
 let projectDirectory: string;
@@ -47,7 +47,7 @@ describe("Project Read", () => {
   it("should read Doondo Project", () => {
     const doondoPath = "c:/dev/Doondo";
     if (fs.existsSync(doondoPath)) {
-      const f = new ProjectMetadataFile(doondoPath, new CustomVocabularies());
+      const f = new ProjectMetadataFile(doondoPath, new VocabularyRegistry());
 
       expect(f.properties.getTextStringOrEmpty("title")).toBe(
         "Doondo Language Documentation Corpus"
@@ -72,5 +72,5 @@ function GetProjectFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Project><${tag}>${content}</${tag}></Project>`
   );
-  return new ProjectMetadataFile(projectDirectory, new CustomVocabularies());
+  return new ProjectMetadataFile(projectDirectory, new VocabularyRegistry());
 }

@@ -2,7 +2,7 @@ import { ProjectMetadataFile } from "./Project";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
-import { CustomVocabularies } from "./CustomVocabularies";
+import { VocabularyRegistry } from "./VocabularyRegistry";
 
 let projectDirectory;
 let projectName;
@@ -85,5 +85,5 @@ function GetProjectFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Project><${tag}>${content}</${tag}></Project>`
   );
-  return new ProjectMetadataFile(projectDirectory, new CustomVocabularies());
+  return new ProjectMetadataFile(projectDirectory, new VocabularyRegistry());
 }

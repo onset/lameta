@@ -3,7 +3,7 @@ import * as Path from "path";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
-import { CustomVocabularies } from "../Project/CustomVocabularies";
+import { VocabularyRegistry } from "../Project/VocabularyRegistry";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -14,7 +14,7 @@ export class FolderMetadataFile extends File {
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     rawKnownFieldsFromJson: FieldDefinition[],
-    customVocabularies: CustomVocabularies
+    customVocabularies: VocabularyRegistry
   ) {
     const name = Path.basename(directory);
     //if the metadata file doesn't yet exist, just make an empty one.
@@ -30,7 +30,7 @@ export class FolderMetadataFile extends File {
       fileExtensionForMetadata,
       false
     );
-    this.customFieldNamesRegistry = customVocabularies;
+    this.encounteredVocabularyRegistry = customVocabularies;
     this.readDefinitionsFromJson(rawKnownFieldsFromJson);
 
     /* NB: don't do this within the constructor. subclass fields are not initialized until after super(): 

@@ -21,7 +21,7 @@ import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
 import { asyncTrash } from "../../other/crossPlatformUtilities";
-import { CustomVocabularies } from "../Project/CustomVocabularies";
+import { VocabularyRegistry } from "../Project/VocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
@@ -90,13 +90,13 @@ export abstract class Folder {
 
   public metadataFile: FolderMetadataFile | null;
   protected safeFileNameBase: string;
-  protected customVocabularies: CustomVocabularies;
+  protected customVocabularies: VocabularyRegistry;
 
   public constructor(
     directory: string,
     metadataFile: FolderMetadataFile | null,
     files: File[],
-    customVocabularies: CustomVocabularies
+    customVocabularies: VocabularyRegistry
   ) {
     makeObservable(this, {
       marked: observable,
@@ -335,7 +335,7 @@ export abstract class Folder {
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
-    customVocabularies: CustomVocabularies
+    customVocabularies: VocabularyRegistry
   ): File[] {
     Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();

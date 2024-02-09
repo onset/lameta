@@ -7,7 +7,8 @@ import { Dictionary } from "typescript-collections";
 // the casing of terms in that vocab. It has a method named "encountered(vocab, term)" which adds
 // a term if it is not already in the list. It has a method named "getTerms" which returns the list of terms, after applying the casefn.
 
-export class CustomVocabularies {
+export class VocabularyRegistry {
+  public static kCustomFieldSuffix = "-customField";
   private vocabularies: Dictionary<string, string[]>;
   private caseFunctions: Dictionary<string, (s: string) => string>;
 
@@ -22,6 +23,9 @@ export class CustomVocabularies {
   }
 
   public encountered(vocab: string, term: string) {
+    if (term.trim().length === 0) {
+      return;
+    }
     let terms = this.vocabularies.getValue(vocab);
     if (!terms) {
       this.vocabularies.setValue(vocab, []);
@@ -32,7 +36,7 @@ export class CustomVocabularies {
     }
   }
 
-  public getTerms(vocab: string): string[] {
+  public getChoices(vocab: string): string[] {
     const terms = this.vocabularies.getValue(vocab);
     if (!terms) {
       throw new Error(`No vocabulary named ${vocab}`);
@@ -44,3 +48,12 @@ export class CustomVocabularies {
     return terms.map(casefn);
   }
 }
+
+// About custom fields, the names of which we track as one of these vocabularies:
+// Users can add custom fields, but we don't make them define them in some central location,
+// and we don't store them in a central either. Instead, when a user adds a new field, this
+// gets told about it (encountered()). Also, when file is being read and it encounters a custom field with a value,
+// that name is registered here (encountered()).
+// Then whenever the UI needs to know what are all the known custom fields for a given file type,
+// we provide that (getKeysForFileType()).
+// Currently we don't have a vocabulary for the *values* of custom fields.

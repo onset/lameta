@@ -4,7 +4,7 @@ import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
-import { CustomVocabularies } from "../Project/CustomVocabularies";
+import { VocabularyRegistry } from "../Project/VocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 
 function getPretendAudioFile(): string {
@@ -41,7 +41,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 
   // note, we are using a session to run these just because we need something
   // concrete. It would be an improvement to do it in some more generic way.
-  const f = new SessionMetadataFile(sessionFolder, new CustomVocabularies());
+  const f = new SessionMetadataFile(sessionFolder, new VocabularyRegistry());
   fs.removeSync(filePath); // remove the old file, just to make sure
   f.save(/*forceSave*/ true);
   try {
@@ -59,7 +59,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 describe("file.save()", () => {
   it("should create a metadata file to go with audio file", () => {
     const mediaFilePath = getPretendAudioFile();
-    new OtherFile(mediaFilePath, new CustomVocabularies()).save();
+    new OtherFile(mediaFilePath, new VocabularyRegistry()).save();
     expect(fs.existsSync(mediaFilePath + ".meta"));
   });
 });
@@ -68,7 +68,7 @@ describe("FolderMetadataFile constructor", () => {
   it("should make the appropriate metadata file if it doesn't exist", () => {
     //temp.track();
     const dir = temp.mkdirSync("blah");
-    const f = new SessionMetadataFile(dir, new CustomVocabularies());
+    const f = new SessionMetadataFile(dir, new VocabularyRegistry());
     const files = fs.readdirSync(dir);
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
@@ -79,11 +79,11 @@ describe("FolderMetadataFile constructor", () => {
 describe("file", () => {
   it("should roundtrip notes with dangerous characters", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath, new CustomVocabularies());
+    const f = new OtherFile(mediaFilePath, new VocabularyRegistry());
     const notes: string = "<you> & me > 1 \"quote\" 'single quote'";
     f.setTextProperty("notes", notes);
     f.save();
-    const f2 = new OtherFile(mediaFilePath, new CustomVocabularies());
+    const f2 = new OtherFile(mediaFilePath, new VocabularyRegistry());
     expect(f2.getTextField("notes").text).toBe(notes);
   });
 });
@@ -91,10 +91,10 @@ describe("file", () => {
 describe("file", () => {
   it("should roundtrip custom field", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath, new CustomVocabularies());
+    const f = new OtherFile(mediaFilePath, new VocabularyRegistry());
     f.setTextProperty("customone", "hello");
     f.save();
-    const f2 = new OtherFile(mediaFilePath, new CustomVocabularies());
+    const f2 = new OtherFile(mediaFilePath, new VocabularyRegistry());
     expect(f2.getTextField("customone").text).toBe("hello");
   });
 
@@ -138,7 +138,7 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "ETR009.session");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new SessionMetadataFile(newDir, new CustomVocabularies());
+    const f = new SessionMetadataFile(newDir, new VocabularyRegistry());
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");
@@ -157,7 +157,7 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "Edolo sample.sprj");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new ProjectMetadataFile(newDir, new CustomVocabularies());
+    const f = new ProjectMetadataFile(newDir, new VocabularyRegistry());
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");

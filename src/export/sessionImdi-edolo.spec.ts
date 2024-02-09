@@ -8,7 +8,7 @@ import {
   count,
   value
 } from "../other/xmlUnitTestUtils";
-import { CustomVocabularies } from "../model/Project/CustomVocabularies";
+import { VocabularyRegistry } from "../model/Project/VocabularyRegistry";
 
 let project: Project;
 let session: Session;
@@ -17,7 +17,7 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   session = Session.fromDirectory(
     "sample data/Edolo sample/Sessions/ETR009",
-    new CustomVocabularies()
+    new VocabularyRegistry()
   );
   // a set of tests below rely on this value
   session.properties.setText("accessDescription", "just because");

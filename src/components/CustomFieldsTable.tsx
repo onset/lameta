@@ -11,6 +11,7 @@ import FieldNameEdit from "./FieldNameEdit";
 import { t } from "@lingui/macro";
 import { i18n } from "../other/localization";
 import { FieldLabel } from "./FieldLabel";
+import { VocabularyRegistry } from "../model/Project/VocabularyRegistry";
 
 export interface IProps {
   file: File;
@@ -40,8 +41,8 @@ class CustomFieldsTable extends React.Component<IProps> {
     let didAddOneOrMoreFields = false;
     //figure out what custom fields are out there on other files of this
     // type that we should make place for
-    file.customFieldNamesRegistry
-      .getKeysForFileType(file.type)
+    file.encounteredVocabularyRegistry
+      .getChoices(file.type + VocabularyRegistry.kCustomFieldSuffix)
       .filter((n) => !customFieldsInThisFileAlready.some((f) => f.key === n))
       .forEach((n) => {
         didAddOneOrMoreFields = true;
@@ -105,8 +106,8 @@ class CustomFieldsTable extends React.Component<IProps> {
 
       // add the name of this field to the list of names shared with all files of this type (e.g. Sessions)
       //review do this here?
-      this.props.file.customFieldNamesRegistry.encountered(
-        this.props.file.type + "-customField",
+      this.props.file.encounteredVocabularyRegistry.encountered(
+        this.props.file.type + VocabularyRegistry.kCustomFieldSuffix,
         f.key
       );
 
