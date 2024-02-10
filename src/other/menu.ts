@@ -15,6 +15,7 @@ import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 export default class LametaMenu {
   private homePage: IHomePageMenuConnections;
@@ -303,6 +304,11 @@ export default class LametaMenu {
           }
         },
         {
+          label: "Soft Reload",
+          accelerator: "CmdOrCtrl+Shift+R",
+          click: () => this.homePage.softReload()
+        },
+        {
           label: "Abandon Copying",
           click() {
             CopyManager.abandonCopying(true);
@@ -408,7 +414,8 @@ export default class LametaMenu {
     if (
       // process.env.NODE_ENV === "development" ||
       // process.env.NODE_ENV === "test" ||
-      userSettings.DeveloperMode
+      userSettings.DeveloperMode ||
+      getTestEnvironment().E2E
     ) {
       template.push(devMenu);
       //template.push(testMenu);

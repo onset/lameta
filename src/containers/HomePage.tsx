@@ -43,6 +43,7 @@ const isDev = require("electron-is-dev");
 // Added this as part of a workaround in typing when upgrading to mobx6.
 // Enhance: would be cleaner to pass the values to the menu constructor.
 export interface IHomePageMenuConnections {
+  softReload(): void;
   projectHolder: ProjectHolder;
   openProject(): void;
   createProject(useSample: boolean): void;
@@ -120,6 +121,15 @@ class HomePage extends React.Component<IProps, IState> {
     });
   }
 
+  // for e2e
+  public softReload() {
+    const dir = this.projectHolder.project?.directory;
+    this.projectHolder.setProject(null);
+
+    const project = Project.fromDirectory(dir!);
+    this.projectHolder.setProject(project);
+  }
+
   public goToStartScreenForTests() {
     //this.projectHolder.setProject(null);
   }
@@ -142,8 +152,7 @@ class HomePage extends React.Component<IProps, IState> {
     if (!this.isRunningFromSource()) {
       ShowMessageDialog({
         title: `Warning`,
-        text:
-          "This is a beta test version, so make sure you have a backup of your work.",
+        text: "This is a beta test version, so make sure you have a backup of your work.",
         width: "300px",
         buttonText: "I understand"
       });
@@ -189,7 +198,8 @@ class HomePage extends React.Component<IProps, IState> {
           this.previousFolderNames !==
             this.projectHolder.project.getFolderNamesForDebugging()
         ) {
-          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
+          this.previousFolderNames =
+            this.projectHolder.project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {

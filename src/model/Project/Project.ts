@@ -28,6 +28,7 @@ import genres from "./Session/genres.json";
 import knownFieldDefinitions from "../field/KnownFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
+import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import {
   NotifyError,
   NotifyException,
@@ -369,8 +370,8 @@ export class Project extends Folder {
   }
   public makeFolderForImport(folderType: IFolderType): Folder {
     switch (folderType) {
-      case "session":
-        var dir = this.getUniqueFolder(
+      case "session": {
+        const dir = this.getUniqueFolder(
           Path.join(this.directory, "Sessions"), // we don't localize the directory name.
           t`New Session`
         );
@@ -382,8 +383,9 @@ export class Project extends Folder {
         analyticsEvent("Create", "Create Session From Import");
         return session;
         break;
-      case "person":
-        dir = this.getUniqueFolder(
+      }
+      case "person": {
+        const dir = this.getUniqueFolder(
           Path.join(this.directory, "People"), // we don't localize the directory name.
           t`New Person`
         );
@@ -392,6 +394,7 @@ export class Project extends Folder {
         analyticsEvent("Create", "Create Person From Import");
         return person;
         break;
+      }
       default:
         throw Error(
           "Unexpected folderType on makeFolderForImport: " + folderType
@@ -650,7 +653,7 @@ export class Project extends Folder {
       async () => {
         const originalFolders = folders.items.slice();
 
-        const isFilled = <T extends {}>(
+        const isFilled = <T extends object>(
           v: PromiseSettledResult<T>
         ): v is PromiseFulfilledResult<T> => v.status === "fulfilled";
 

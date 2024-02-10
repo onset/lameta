@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 // tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
 import { IChoice } from "../../model/field/Field";
+import { CapitalCase } from "../../other/case";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";
@@ -60,11 +61,12 @@ class PersonChooser extends React.Component<IProps> {
     return (
       //<ReactSelect <-- if we didn't want to allow new
       <CreatableSelect
+        className="PersonChooser"
         name={this.props.name}
         styles={customStyles}
         value={{ value: this.props.name, label: this.props.name }}
         onChange={(v: any) => {
-          const s: string = v.value;
+          const s: string = CapitalCase(v.value);
           this.props.onChange(s ? s : "");
         }}
         options={choices}

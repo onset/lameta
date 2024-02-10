@@ -16,7 +16,7 @@
     "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",
     "e2e": "npx playwright test",
     "// This brings up the inspector and record button oh my...": "",
-    "e2edebug": "PWDEBUG=console npx playwright test --debug",
+    "e2edebug": "cross-env PWDEBUG=console  npx playwright test --debug",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
     "build": "npm run lingui-compile && tsc && yarn vite build",

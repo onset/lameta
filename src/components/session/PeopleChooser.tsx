@@ -6,12 +6,13 @@ import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";
 import { translateRole } from "../../other/localization";
 import { titleCase } from "title-case";
+import { IChoice } from "../../model/field/Field";
 //import colors from "../../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 const saymore_orange = "#e69664";
 
 export interface IProps {
   folder: Folder;
-  getPeopleNames: () => string[];
+  getPeopleNames: () => IChoice[];
   onShowContributorsTab: (contributions: Contribution) => void;
 }
 
@@ -54,11 +55,11 @@ export const PeopleChooser: React.FunctionComponent<
   };
 
   //const label: string = props.field.labelInUILanguage;
-  const choices = props.getPeopleNames().map((name, index) => {
+  const choices = props.getPeopleNames().map((choice, index) => {
     return new Object({
       value: "choice" + index, // only function of this is as a unique key
-      contribution: new Contribution(name, "participant", ""),
-      label: name
+      contribution: new Contribution(choice.label, "participant", ""),
+      label: choice
     });
   });
 

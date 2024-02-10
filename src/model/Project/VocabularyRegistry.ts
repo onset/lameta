@@ -39,7 +39,7 @@ export class VocabularyRegistry {
   public getChoices(vocab: string): string[] {
     const terms = this.vocabularies.getValue(vocab);
     if (!terms) {
-      throw new Error(`No vocabulary named ${vocab}`);
+      return [];
     }
     const casefn = this.caseFunctions.getValue(vocab);
     if (!casefn) {
