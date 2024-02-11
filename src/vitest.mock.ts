@@ -18,9 +18,10 @@ vi.mock("@electron/remote", () => ({
 // I think this slows things down and you can see the message
 // "Download the React DevTools for a better development experience..."
 // ButterToast is one of them. I despair at finding them all.
-vi.mock("butter-toast", () => ({
-  default: { raise: vi.fn() }
-}));
+// vi.mock("butter-toast", () => ({
+//   default: { raise: vi.fn() },
+//   Cinnamon: vi.fn()
+// }));
 
 // mock out all @emotion/react methods
 // vi.mock("@emotion/react", () => ({
