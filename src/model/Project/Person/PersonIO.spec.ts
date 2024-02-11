@@ -1,7 +1,7 @@
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
-import { VocabularyRegistry } from "../VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import { PersonMetadataFile } from "./Person";
 import {
   LanguageFinder,
@@ -69,14 +69,20 @@ describe("Person Languages Read", () => {
   });
 
   it("should output languages element", () => {
-    const f = new PersonMetadataFile(personDirectory, new VocabularyRegistry());
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new EncounteredVocabularyRegistry()
+    );
     f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
   });
   it("should output correct defaults for a language", () => {
-    const f = new PersonMetadataFile(personDirectory, new VocabularyRegistry());
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new EncounteredVocabularyRegistry()
+    );
     f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
@@ -103,7 +109,10 @@ describe("Person Languages Read", () => {
   <mothersLanguage type="string">etr</mothersLanguage>
   */
 
-    const f = new PersonMetadataFile(personDirectory, new VocabularyRegistry());
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new EncounteredVocabularyRegistry()
+    );
     f.languages.push({
       code: "fra",
       mother: false,
@@ -136,7 +145,10 @@ describe("Person Languages Read", () => {
   });
 
   it("should output all the fields of a language", () => {
-    const f = new PersonMetadataFile(personDirectory, new VocabularyRegistry());
+    const f = new PersonMetadataFile(
+      personDirectory,
+      new EncounteredVocabularyRegistry()
+    );
     f.languages.push({
       code: "foo",
       mother: true,
@@ -170,7 +182,7 @@ function GetPersonFileWithOneTag(
     `<?xml version="1.0" encoding="utf-8"?>
   <Person><${tag}>${content}</${tag}></Person>`
   );
-  const r = new VocabularyRegistry();
+  const r = new EncounteredVocabularyRegistry();
   return new PersonMetadataFile(personDirectory, r);
 }
 function GetPersonFileWithContents(content: string): PersonMetadataFile {
@@ -179,5 +191,8 @@ function GetPersonFileWithContents(content: string): PersonMetadataFile {
     `<?xml version="1.0" encoding="utf-8"?>
   <Person>${content}</Person>`
   );
-  return new PersonMetadataFile(personDirectory, new VocabularyRegistry());
+  return new PersonMetadataFile(
+    personDirectory,
+    new EncounteredVocabularyRegistry()
+  );
 }

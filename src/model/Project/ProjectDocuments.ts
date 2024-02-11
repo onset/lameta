@@ -3,7 +3,7 @@ import { File, OtherFile } from "../file/File";
 import * as Path from "path";
 import * as glob from "glob";
 import CustomFieldsTable from "../../components/CustomFieldsTable";
-import { VocabularyRegistry } from "./VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 
 export class ProjectDocuments extends Folder {
   public get displayName(): string {
@@ -13,7 +13,7 @@ export class ProjectDocuments extends Folder {
   public constructor(
     directory: string,
     files: File[],
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
     super(directory, null, files, customVocabularies);
   }
@@ -25,7 +25,7 @@ export class ProjectDocuments extends Folder {
   public static fromDirectory(
     rootDirectory: string,
     subDirectory: string,
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ): ProjectDocuments {
     const directory = Path.join(rootDirectory, subDirectory);
     const files = new Array<File>();
@@ -33,7 +33,7 @@ export class ProjectDocuments extends Folder {
     filePaths.forEach((path) => {
       const file = new OtherFile(
         path,
-        new VocabularyRegistry() /* we don't have custom fields on project files yet */
+        new EncounteredVocabularyRegistry() /* we don't have custom fields on project files yet */
       );
       files.push(file);
     });

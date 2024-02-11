@@ -15,7 +15,7 @@ import {
   asyncTrashWithContext
 } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
-import { VocabularyRegistry } from "./VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
@@ -170,7 +170,7 @@ export class Project extends Folder {
     files: File[],
     descriptionFolder: Folder,
     otherDocsFolder: Folder,
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
     super(directory, metadataFile, files, customVocabularies);
 
@@ -250,7 +250,7 @@ export class Project extends Folder {
   }
   public static fromDirectory(directory: string): Project {
     try {
-      const customVocabularies = new VocabularyRegistry();
+      const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
         directory,
         customVocabularies
@@ -923,7 +923,10 @@ export class Project extends Folder {
 }
 
 export class ProjectMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customVocabularies: VocabularyRegistry) {
+  constructor(
+    directory: string,
+    customVocabularies: EncounteredVocabularyRegistry
+  ) {
     super(
       directory,
       "Project",

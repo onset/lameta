@@ -12,7 +12,7 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
-import { VocabularyRegistry } from "../Project/VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import knownFieldDefinitions, {
   isKnownFieldKey
 } from "../field/KnownFieldDefinitions";
@@ -96,7 +96,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
   public contributions = new Array<Contribution>();
 
-  public encounteredVocabularyRegistry: VocabularyRegistry;
+  public encounteredVocabularyRegistry: EncounteredVocabularyRegistry;
 
   public get isMedia(): boolean {
     return ["Image", "Audio", "Video"].indexOf(this.type) > -1;
@@ -525,7 +525,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     if (isCustom && textValue.length > 0) {
       this.encounteredVocabularyRegistry.encountered(
-        this.type + VocabularyRegistry.kCustomFieldSuffix,
+        this.type + EncounteredVocabularyRegistry.kCustomFieldSuffix,
         xmlTag
       );
     }
@@ -1132,7 +1132,7 @@ export /*babel doesn't like this: abstract*/ class File {
 export class OtherFile extends File {
   constructor(
     path: string,
-    customVocabularies: VocabularyRegistry,
+    customVocabularies: EncounteredVocabularyRegistry,
     partialLoadWhileCopyingInThisFile?: boolean
   ) {
     // we want "foo.mp3.meta", not "foo.mp3.link.meta"
@@ -1151,7 +1151,7 @@ export class OtherFile extends File {
 
   public static CreateLinkFile(
     pathToOriginalFile: string,
-    customFileRegistry: VocabularyRegistry,
+    customFileRegistry: EncounteredVocabularyRegistry,
     destinationFolderPath: string
   ) {
     const mediaFolderPath = getMediaFolderOrEmptyForThisProjectAndMachine();

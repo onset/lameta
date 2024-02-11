@@ -9,7 +9,7 @@ import { log } from "util";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
-import { VocabularyRegistry } from "../model/Project/VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
@@ -375,7 +375,10 @@ export default class ImdiBundler {
     //   }
     // });
 
-    const dummySession = Session.fromDirectory(dir, new VocabularyRegistry());
+    const dummySession = Session.fromDirectory(
+      dir,
+      new EncounteredVocabularyRegistry()
+    );
 
     dummySession.properties.setText(
       "date",

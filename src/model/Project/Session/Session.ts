@@ -2,7 +2,7 @@ import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
-import { VocabularyRegistry } from "../VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
@@ -41,7 +41,7 @@ export class Session extends Folder {
     directory: string,
     metadataFile: FolderMetadataFile,
     files: File[],
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
     super(directory, metadataFile, files, customVocabularies);
     // we used to not store the name, relying instead on the folder name.
@@ -98,7 +98,7 @@ export class Session extends Folder {
   }
   public static fromDirectory(
     directory: string,
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ): Session {
     const metadataFile = new SessionMetadataFile(directory, customVocabularies);
     //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
@@ -314,7 +314,10 @@ export class Session extends Folder {
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customVocabularies: VocabularyRegistry) {
+  constructor(
+    directory: string,
+    customVocabularies: EncounteredVocabularyRegistry
+  ) {
     super(
       directory,
       "Session",

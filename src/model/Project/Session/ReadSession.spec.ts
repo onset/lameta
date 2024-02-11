@@ -3,7 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { Field } from "../../field/Field";
-import { VocabularyRegistry } from "../VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 
 let sessionDirectory;
 let sessionName;
@@ -119,5 +119,8 @@ function GetSessionFileWithOneField(
     `<?xml version="1.0" encoding="utf-8"?>
   <Session><${tag} ${typeText}>${content}</${tag}></Session>`
   );
-  return new SessionMetadataFile(sessionDirectory, new VocabularyRegistry());
+  return new SessionMetadataFile(
+    sessionDirectory,
+    new EncounteredVocabularyRegistry()
+  );
 }

@@ -7,7 +7,7 @@ import { Dictionary } from "typescript-collections";
 // the casing of terms in that vocab. It has a method named "encountered(vocab, term)" which adds
 // a term if it is not already in the list. It has a method named "getTerms" which returns the list of terms, after applying the casefn.
 
-export class VocabularyRegistry {
+export class EncounteredVocabularyRegistry {
   public static kCustomFieldSuffix = "-customField";
   private vocabularies: Dictionary<string, string[]>;
   private caseFunctions: Dictionary<string, (s: string) => string>;

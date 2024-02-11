@@ -3,7 +3,7 @@ import * as Path from "path";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { File } from "./File";
-import { VocabularyRegistry } from "../Project/VocabularyRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -14,7 +14,7 @@ export class FolderMetadataFile extends File {
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     rawKnownFieldsFromJson: FieldDefinition[],
-    customVocabularies: VocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
     const name = Path.basename(directory);
     //if the metadata file doesn't yet exist, just make an empty one.
