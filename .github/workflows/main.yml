@@ -31,7 +31,7 @@ jobs:
         uses: volta-cli/action@v4
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --network-timeout 1000000
 
       - name: Write out segment key
         env:

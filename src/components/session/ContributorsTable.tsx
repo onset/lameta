@@ -56,6 +56,10 @@ class ContributorsTable extends React.Component<IProps> {
         name={contribution.personReference}
         onChange={(name) => {
           contribution.personReference = name;
+          this.props.file.encounteredVocabularyRegistry.encountered(
+            "contributor",
+            name
+          );
           this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}

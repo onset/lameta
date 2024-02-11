@@ -2,7 +2,7 @@ import { OtherFile } from "./File";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   setCurrentProjectId,
   setMediaFolderOrEmptyForThisProjectAndMachine
@@ -27,7 +27,7 @@ beforeEach(() => {
   fs.writeFileSync(mp3Path, "pretend contents");
   mp3FileObject = new OtherFile(
     mp3Path,
-    new CustomFieldRegistry(),
+    new EncounteredVocabularyRegistry(),
     testSessionFolder
   );
 });

@@ -48,9 +48,8 @@ export interface IProps {
 }
 
 // avoids a console error every time react-player tries to come up with a preview of the video
-const dummyPreviewImage: string = URL.pathToFileURL(
-  `assets/invisible.png`
-).toString();
+const dummyPreviewImage: string =
+  URL.pathToFileURL(`assets/invisible.png`).toString();
 
 export const FolderPane: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
@@ -109,9 +108,8 @@ const FileTabs: React.FunctionComponent<
   useLingui();
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const [selectedContribution, setSelectedContribution] = React.useState<
-    Contribution | undefined
-  >(undefined);
+  const [selectedContribution, setSelectedContribution] =
+    React.useState<Contribution | undefined>(undefined);
 
   // tabIndex: number,
   // setTabIndex: (index: number) => void,

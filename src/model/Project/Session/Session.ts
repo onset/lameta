@@ -2,8 +2,8 @@ import { Folder, IFolderType } from "../../Folder/Folder";
 import { File, Contribution } from "../../file/File";
 import * as Path from "path";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
-import { CustomFieldRegistry } from "../CustomFieldRegistry";
 import { fieldDefinitionsOfCurrentConfig } from "../../field/ConfiguredFieldDefinitions";
+import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
@@ -41,9 +41,9 @@ export class Session extends Folder {
     directory: string,
     metadataFile: FolderMetadataFile,
     files: File[],
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
-    super(directory, metadataFile, files, customFieldRegistry);
+    super(directory, metadataFile, files, customVocabularies);
     // we used to not store the name, relying instead on the folder name.
     // However that made it impossible to record someone's actual name if it
     // required, for example, unicode characters.
@@ -98,18 +98,15 @@ export class Session extends Folder {
   }
   public static fromDirectory(
     directory: string,
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ): Session {
-    const metadataFile = new SessionMetadataFile(
-      directory,
-      customFieldRegistry
-    );
+    const metadataFile = new SessionMetadataFile(directory, customVocabularies);
     //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
     const files = this.loadChildFiles(
       directory,
       metadataFile,
-      customFieldRegistry
+      customVocabularies
     );
 
     //start autosave mobx.autorunAsync(() => this.save(),    10 * 1000 /* min 10 seconds in between */  );
@@ -118,7 +115,7 @@ export class Session extends Folder {
       directory,
       metadataFile,
       files,
-      customFieldRegistry
+      customVocabularies
     );
     session.handleLegacyParticipants();
     return session;
@@ -317,16 +314,18 @@ export class Session extends Folder {
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
-  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
+  constructor(
+    directory: string,
+    customVocabularies: EncounteredVocabularyRegistry
+  ) {
     FolderMetadataFile.loadDefaultConfigIfInUnitTest();
-
     super(
       directory,
       "Session",
       true,
       ".session",
       fieldDefinitionsOfCurrentConfig.session,
-      customFieldRegistry
+      customVocabularies
     );
 
     this.finishLoading();

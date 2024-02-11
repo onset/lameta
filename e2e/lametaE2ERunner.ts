@@ -86,6 +86,15 @@ export class LametaE2ERunner {
     );
   }
 
+  // a soft reload lets us check what happens when you leave and come back.
+  // it's "soft" becuase we currently lose the user settings you'd need
+  // to do a real reload on the same project and avoid the registration screen with
+  // no idea what the last project was.
+  public async softReload() {
+    await this.clickMenu("Developer", "Soft Reload");
+    await this.page.waitForTimeout(3000);
+  }
+
   public async mockShowOpenDialog(pathsToReturn: string[]) {
     return await this.electronApp.evaluate(async ({ dialog }, filePaths) => {
       dialog.showOpenDialog = async () => {

@@ -2,7 +2,7 @@ import * as Path from "path";
 import { Page } from "playwright-core";
 import { expect as expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-
+const { _electron: electron } = require("playwright");
 export async function createNewProject(
   lameta: LametaE2ERunner,
   name: string
@@ -49,6 +49,15 @@ export class E2eProject {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return w;
+  }
+
+  public async goToNotesOfThisSession() {
+    //  await this.page.getByTestId("notes-tab").click();
+    await this.page.getByRole("tab", { name: "Notes" }).click();
+  }
+  public async goToContributorsOfThisSession() {
+    //await this.page.getByTestId("contributors-tab").click();
+    await this.page.getByRole("tab", { name: "Contributors" }).click();
   }
   public async goToSessions() {
     await this.page.getByTestId("sessions-tab").click();

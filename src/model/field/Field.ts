@@ -245,7 +245,8 @@ export class Field {
 
   public asISODateString(): string {
     // our rule is that we always keep strings in "YYYY-MM-DD" format, and it's always UTC
-    return this.text;
+    // remove time if it's there
+    return this.text.slice(0, 10);
   }
   // public asDateDisplayString(): string {
   //   const m = moment(this.text);

@@ -8,7 +8,7 @@ import {
   count
 } from "../other/xmlUnitTestUtils";
 import * as mobx from "mobx";
-import { CustomFieldRegistry } from "../model/Project/CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { LanguageFinder } from "../languageFinder/LanguageFinder";
 
 mobx.configure({
@@ -28,7 +28,7 @@ beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi Heole",
-    new CustomFieldRegistry(),
+    new EncounteredVocabularyRegistry(),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (oldName, newName) => true,
     languageFinder

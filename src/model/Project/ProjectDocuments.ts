@@ -3,7 +3,7 @@ import { File, OtherFile } from "../file/File";
 import * as Path from "path";
 import * as glob from "glob";
 import CustomFieldsTable from "../../components/CustomFieldsTable";
-import { CustomFieldRegistry } from "./CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 
 export class ProjectDocuments extends Folder {
   public get displayName(): string {
@@ -13,9 +13,9 @@ export class ProjectDocuments extends Folder {
   public constructor(
     directory: string,
     files: File[],
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
-    super(directory, null, files, customFieldRegistry);
+    super(directory, null, files, customVocabularies);
   }
 
   public get folderType(): IFolderType {
@@ -25,7 +25,7 @@ export class ProjectDocuments extends Folder {
   public static fromDirectory(
     rootDirectory: string,
     subDirectory: string,
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ): ProjectDocuments {
     const directory = Path.join(rootDirectory, subDirectory);
     const files = new Array<File>();
@@ -33,11 +33,11 @@ export class ProjectDocuments extends Folder {
     filePaths.forEach((path) => {
       const file = new OtherFile(
         path,
-        new CustomFieldRegistry() /* we don't have custom fields on project files yet */
+        new EncounteredVocabularyRegistry() /* we don't have custom fields on project files yet */
       );
       files.push(file);
     });
-    return new ProjectDocuments(directory, files, customFieldRegistry);
+    return new ProjectDocuments(directory, files, customVocabularies);
   }
   public get propertyForCheckingId(): string {
     throw new Error(

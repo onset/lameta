@@ -21,7 +21,7 @@ import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
 import { asyncTrash } from "../../other/crossPlatformUtilities";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../other/UserSettings";
@@ -90,13 +90,13 @@ export abstract class Folder {
 
   public metadataFile: FolderMetadataFile | null;
   protected safeFileNameBase: string;
-  protected customFieldRegistry: CustomFieldRegistry;
+  protected customVocabularies: EncounteredVocabularyRegistry;
 
   public constructor(
     directory: string,
     metadataFile: FolderMetadataFile | null,
     files: File[],
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ) {
     makeObservable(this, {
       marked: observable,
@@ -104,7 +104,7 @@ export abstract class Folder {
       selectedFile: observable
     });
 
-    this.customFieldRegistry = customFieldRegistry;
+    this.customVocabularies = customVocabularies;
     this.directory = directory;
     this.metadataFile = metadataFile;
     this.files = files;
@@ -176,7 +176,7 @@ export abstract class Folder {
     // note, I can't think of how the .meta file of the consent could be helpful, so
     // I'm not bothering to get it copied, or its contents preserved, except for size.
     fs.copyFileSync(sourceFile.pathInFolderToLinkFileOrLocalCopy, destPath);
-    const destFile = new OtherFile(destPath, this.customFieldRegistry, true);
+    const destFile = new OtherFile(destPath, this.customVocabularies, true);
     destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
     this.files.push(destFile);
   }
@@ -224,13 +224,13 @@ export abstract class Folder {
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(
           pathToOriginalFile,
-          this.customFieldRegistry,
+          this.customVocabularies,
           this.directory
         );
 
         this.files.push(f);
       } else {
-        const f = new OtherFile(dest, this.customFieldRegistry, true);
+        const f = new OtherFile(dest, this.customVocabularies, true);
         f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
         f.copyProgress = t`Copy Requested...`;
         window.setTimeout(
@@ -335,7 +335,7 @@ export abstract class Folder {
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
-    customFieldRegistry: CustomFieldRegistry
+    customVocabularies: EncounteredVocabularyRegistry
   ): File[] {
     Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
@@ -355,7 +355,7 @@ export abstract class Folder {
           Path.normalize(path) !==
             Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
-          const file = new OtherFile(path, customFieldRegistry);
+          const file = new OtherFile(path, customVocabularies);
           files.push(file);
         }
       }
