@@ -42,11 +42,10 @@ export class FieldSet extends Dictionary<string, Field> {
   // Then we map to and from the xml so we still use the same tags for I/O, but maybe
   // someday we will migrate to a format that is consistent.
   public getKeyFromXmlTag(tag: string): string {
-    // In fields.json5, all tags in SayMore Classic which are not camelCase have a "tagInSayMoreClassic".
+    // In fields.json5, all tags in SayMore Classic which are not camelCase have a "xmlTag".
 
     const match = this.values().find(
-      (field) =>
-        field.definition && field.definition.tagInSayMoreClassic === tag
+      (field) => field.definition && field.definition.xmlTag === tag
     );
     if (match) {
       return match.key;

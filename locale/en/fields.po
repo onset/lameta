@@ -78,10 +78,6 @@ msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
 msgstr ""
 
-msgctxt "lameta/project/accessProtocol"
-msgid "Access Protocol used by this project"
-msgstr ""
-
 msgctxt "lameta/project/analysisIso3CodeAndName"
 msgid "Working Language"
 msgstr ""
@@ -100,6 +96,10 @@ msgstr ""
 
 msgctxt "lameta/project/collectionTitle"
 msgid "Collection Title"
+msgstr ""
+
+msgctxt "lameta/project/configurationName"
+msgid "Archive Configuration used by this project"
 msgstr ""
 
 msgctxt "lameta/project/contactPerson"

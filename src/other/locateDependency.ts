@@ -1,7 +1,7 @@
 import * as Path from "path";
 import { app } from "@electron/remote";
 
-// When running from dev server, "locale/"" and "sample datat/" are at the current working directory.
+// When running from dev server, "locale/"" and "sample data/" are at the current working directory.
 //        cwd=C:\dev\lameta
 //        appPath=C:\dev\lameta
 // When installed, they at at the root of the ASAR file.

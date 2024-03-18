@@ -39,9 +39,9 @@ describe("Consent Form Inclusion", () => {
     // NB: this is to test the access protocol used for consent bundles,
     // which has a hard-coded knowledge of the access protocol used for
     // ELAR currently. If/when we add knowledge of what other archives
-    // would want, this will have to become more complicated if we wnat
+    // would want, this will have to become more complicated if we want
     // to unit test ones other than ELAR.
-    project.properties.setText("accessProtocol", "ELAR");
+    project.properties.setText("configurationName", "ELAR");
 
     const person1 = project.addPerson("Person 1");
     await person1.addFileForTestAsync("Person 1_Consent.JPG");

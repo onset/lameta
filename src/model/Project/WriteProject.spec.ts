@@ -3,7 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
-
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 let projectDirectory;
 let projectName;
 
@@ -21,6 +21,13 @@ describe("Project Write", () => {
       "analysisIso3CodeAndName",
       "AnalysisISO3CodeAndName",
       "foo: Foo"
+    );
+  });
+  it("should round-trip ArchiveConfigurationName", () => {
+    AttemptRoundTripOfOneField(
+      "configurationName",
+      "ArchiveConfigurationName",
+      "FooBar"
     );
   });
   it("should write vernacularIso3CodeAndName with same case as SayMore Windows Classic does", () => {

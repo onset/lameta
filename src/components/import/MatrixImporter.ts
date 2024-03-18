@@ -253,7 +253,8 @@ export function makeCustomField(key: string, value: string): Field {
     type: "Text",
     tabIndex: 0,
     isCustom: true,
-    showOnAutoForm: false // we do show it, but in the custom table
+    showOnAutoForm: false, // we do show it, but in the custom table
+    multilingual: false // REVIEW
   };
   const customField = Field.fromFieldDefinition(definition);
   customField.setValueFromString(value);

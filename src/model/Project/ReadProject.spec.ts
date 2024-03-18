@@ -35,6 +35,20 @@ describe("Project Read", () => {
       "dde: Doondo"
     );
   });
+  it("should read ArchiveConfigurationName", () => {
+    const f = GetProjectFileWithOneField("ArchiveConfigurationName", "ELAR");
+    expect(f.properties.getTextStringOrEmpty("configurationName")).toBe("ELAR");
+  });
+  it("should read AccessProtocol into configurationName", () => {
+    const f = GetProjectFileWithOneField("AccessProtocol", "ELAR");
+    expect(f.properties.getTextStringOrEmpty("configurationName")).toBe("ELAR");
+  });
+  it("should read use default if missing configurationName & accessProtocol", () => {
+    const f = GetProjectFileWithOneField("Foo", "bar");
+    expect(f.properties.getTextStringOrEmpty("configurationName")).toBe(
+      "default"
+    );
+  });
   it("should read AnalysisISO3CodeAndName", () => {
     const f = GetProjectFileWithOneField(
       "AnalysisISO3CodeAndName",
@@ -58,7 +72,9 @@ describe("Project Read", () => {
       expect(f.properties.getTextStringOrEmpty("projectDescription")).toBe(
         "This corpus includes 7 hours of original audio recordings in Doondo."
       );
-      expect(f.properties.getTextStringOrEmpty("accessProtocol")).toBe("REAP");
+      expect(f.properties.getTextStringOrEmpty("configurationName")).toBe(
+        "REAP"
+      );
       expect(
         f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")
       ).toBe("dde: Doondo");

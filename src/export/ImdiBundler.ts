@@ -399,7 +399,9 @@ export default class ImdiBundler {
 
     // We could eventually gain knowledge of what other archives
     // would want, but for now we just know tha ELAR wants this on consent bundles.
-    if (project.properties.getTextStringOrEmpty("accessProtocol") === "ELAR") {
+    if (
+      project.properties.getTextStringOrEmpty("configurationName") === "ELAR"
+    ) {
       dummySession.properties.setText("access", "S");
       dummySession.properties.setText("accessDescription", "Consent documents"); // per Notion #241
     }

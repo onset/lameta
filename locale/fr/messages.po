@@ -45,9 +45,6 @@ msgstr "A propos de Lameta"
 msgid "Access"
 msgstr "Accès"
 
-msgid "Access Protocol"
-msgstr "Protocole d'accès"
-
 msgid "Add Files"
 msgstr "Ajouter des fichiers"
 
@@ -62,6 +59,9 @@ msgstr "Ajouter ici des documents qui ne s'accordent pas ailleurs, par exemple i
 
 msgid "All Sessions"
 msgstr "Toutes les sessions"
+
+msgid "Archive Configuration"
+msgstr ""
 
 msgid "As a curator"
 msgstr "En tant que curateur de données"
@@ -612,10 +612,12 @@ msgstr "Consulter les notes de versions"
 msgid "Warning"
 msgstr "Attention"
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
-msgstr "Nous n'avons pas de conseils spécifiques pour cette erreur. Si vous ne pouvez pas la résoudre en\n"
+msgstr ""
+"Nous n'avons pas de conseils spécifiques pour cette erreur. Si vous ne pouvez pas la résoudre en\n"
 "redémarrant votre ordinateur, veuillez signaler le problème à\n"
 "https://github.com/onset/lameta/issues."
 
@@ -694,4 +696,3 @@ msgstr "{0} Sessions Cochées"
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
-

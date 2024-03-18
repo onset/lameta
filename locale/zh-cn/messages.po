@@ -43,9 +43,6 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-msgid "Access Protocol"
-msgstr ""
-
 msgid "Add Files"
 msgstr ""
 
@@ -59,6 +56,9 @@ msgid "Add documents here that don't seem to fit anywhere else. An example would
 msgstr ""
 
 msgid "All Sessions"
+msgstr ""
+
+msgid "Archive Configuration"
 msgstr ""
 
 msgid "As a curator"
