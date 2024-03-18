@@ -10,14 +10,15 @@ export interface IAccessProtocolChoice {
 }
 
 export class AuthorityLists {
-  public getPeopleNames: () => string[];
+  public getPeopleNames: () => IChoice[];
   public accessProtocolChoices: IAccessProtocolChoice[];
   public accessChoicesOfCurrentProtocol: IChoice[];
   public roleChoices: IChoice[];
 
-  public constructor(getPersons: () => string[]) {
+  public constructor(getPersons: () => IChoice[]) {
     this.getPeopleNames = getPersons;
-    this.accessProtocolChoices = (accessProtocols as unknown) as IAccessProtocolChoice[];
+    this.accessProtocolChoices =
+      accessProtocols as unknown as IAccessProtocolChoice[];
     this.accessChoicesOfCurrentProtocol = [];
     this.roleChoices = loadOLACRoles();
   }
@@ -35,7 +36,7 @@ export class AuthorityLists {
         (o: any) => o.protocol === protocolName
       );
       this.accessChoicesOfCurrentProtocol = protocol
-        ? ((protocol.choices as unknown) as IChoice[])
+        ? (protocol.choices as unknown as IChoice[])
         : [];
     }
   }
@@ -62,7 +63,7 @@ export class AuthorityLists {
 
   // Was just run once then copied/pasted into AccessProtocols.json. See Readme-l10n
   private convertAccessProtocolsToCSVForLocalization() {
-    ((accessProtocols as unknown) as IAccessProtocolChoice[]).forEach((p) => {
+    (accessProtocols as unknown as IAccessProtocolChoice[]).forEach((p) => {
       console.log(`"${p.protocol}", "Access Protocol Name", "${p.protocol}"`);
       p.choices.forEach((c) => {
         console.log(

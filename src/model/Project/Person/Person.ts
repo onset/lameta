@@ -4,7 +4,7 @@ import * as Path from "path";
 import knownFieldDefinitions from "../../field/KnownFieldDefinitions";
 import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
-import { CustomFieldRegistry } from "../CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import userSettingsSingleton from "../../../other/UserSettings";
 import {
@@ -90,10 +90,10 @@ export class Person extends Folder {
     directory: string,
     metadataFile: FolderMetadataFile,
     files: File[],
-    customFieldRegistry: CustomFieldRegistry,
+    customVocabularies: EncounteredVocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler
   ) {
-    super(directory, metadataFile, files, customFieldRegistry);
+    super(directory, metadataFile, files, customVocabularies);
     // we used to not store the name, relying instead on the folder name.
     // However that made it impossible to record someone's actual name if it
     // required, for example, unicode characters.
@@ -117,7 +117,8 @@ export class Person extends Folder {
       });
       */
     this.knownFields = knownFieldDefinitions.person; // for csv export
-    this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
+    this.updateExternalReferencesToThisPerson =
+      updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
     this.migrateFromPreviousVersions();
   }
@@ -135,22 +136,22 @@ export class Person extends Folder {
 
   public static fromDirectory(
     directory: string,
-    customFieldRegistry: CustomFieldRegistry,
+    customVocabularies: EncounteredVocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     languageFinder: LanguageFinder
   ): Person {
-    const metadataFile = new PersonMetadataFile(directory, customFieldRegistry);
+    const metadataFile = new PersonMetadataFile(directory, customVocabularies);
     const files = this.loadChildFiles(
       directory,
       metadataFile,
-      customFieldRegistry
+      customVocabularies
     );
     return new Person(
       directory,
       metadataFile,
       files,
-      customFieldRegistry,
+      customVocabularies,
       updateExternalReferencesToThisProjectComponent
     );
   }
@@ -202,14 +203,17 @@ export class PersonMetadataFile extends FolderMetadataFile {
   // only used for people files
   public languages: IPersonLanguage[] = [];
 
-  constructor(directory: string, customFieldRegistry: CustomFieldRegistry) {
+  constructor(
+    directory: string,
+    customVocabularies: EncounteredVocabularyRegistry
+  ) {
     super(
       directory,
       "Person",
       true,
       ".person",
       knownFieldDefinitions.person,
-      customFieldRegistry
+      customVocabularies
     );
 
     makeObservable(this, {
@@ -276,9 +280,10 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-        language.code
-      );
+      const name =
+        staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
+          language.code
+        );
       if (language.code.trim().length > 0) {
         const fieldName =
           fieldNameIndex === 0

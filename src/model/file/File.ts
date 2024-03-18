@@ -12,7 +12,7 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import { FieldSet } from "../field/FieldSet";
 import moment from "moment";
 import getSayMoreXml from "./GetSayMoreXml";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import knownFieldDefinitions, {
   isKnownFieldKey
 } from "../field/KnownFieldDefinitions";
@@ -96,7 +96,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
   public contributions = new Array<Contribution>();
 
-  public customFieldNamesRegistry: CustomFieldRegistry;
+  public encounteredVocabularyRegistry: EncounteredVocabularyRegistry;
 
   public get isMedia(): boolean {
     return ["Image", "Audio", "Video"].indexOf(this.type) > -1;
@@ -524,7 +524,10 @@ export /*babel doesn't like this: abstract*/ class File {
     const textValue: string = value;
 
     if (isCustom && textValue.length > 0) {
-      this.customFieldNamesRegistry.encountered(this.type, xmlTag);
+      this.encounteredVocabularyRegistry.encountered(
+        this.type + EncounteredVocabularyRegistry.kCustomFieldSuffix,
+        xmlTag
+      );
     }
 
     // this is getting messy... we don't want to enforce our casing
@@ -541,14 +544,15 @@ export /*babel doesn't like this: abstract*/ class File {
       // Since we do not expect any new versions of SayMore Classic,
       // (which could theoretically introduce such a situation),
       // I'm living with that risk.
-      Object.keys(knownFieldDefinitions).some((
-        area // e.g. project, session, person
-      ) =>
-        knownFieldDefinitions[area].find(
-          (d: any) =>
-            d.key.toLowerCase() === xmlTag.toLowerCase() ||
-            d.tagInSayMoreClassic === xmlTag
-        )
+      Object.keys(knownFieldDefinitions).some(
+        (
+          area // e.g. project, session, person
+        ) =>
+          knownFieldDefinitions[area].find(
+            (d: any) =>
+              d.key.toLowerCase() === xmlTag.toLowerCase() ||
+              d.tagInSayMoreClassic === xmlTag
+          )
       )
     ) {
       fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
@@ -615,6 +619,11 @@ export /*babel doesn't like this: abstract*/ class File {
       contributionFromXml.comments
     );
     this.contributions.push(n);
+
+    this.encounteredVocabularyRegistry.encountered(
+      "contributor",
+      contributionFromXml.name
+    );
   }
   public removeContribution(index: number) {
     console.assert(index >= 0 && index < this.contributions.length);
@@ -882,10 +891,11 @@ export /*babel doesn't like this: abstract*/ class File {
       //   newFolderName
       // );
     }
-    this.describedFileOrLinkFilePath = this.internalUpdateNameBasedOnNewFolderName(
-      this.describedFileOrLinkFilePath,
-      newFolderName
-    );
+    this.describedFileOrLinkFilePath =
+      this.internalUpdateNameBasedOnNewFolderName(
+        this.describedFileOrLinkFilePath,
+        newFolderName
+      );
     // this.describedFilePath = this.updateFolderOnly(
     //   this.describedFilePath,
     //   newFolderName
@@ -1122,14 +1132,14 @@ export /*babel doesn't like this: abstract*/ class File {
 export class OtherFile extends File {
   constructor(
     path: string,
-    customFieldRegistry: CustomFieldRegistry,
+    customVocabularies: EncounteredVocabularyRegistry,
     partialLoadWhileCopyingInThisFile?: boolean
   ) {
     // we want "foo.mp3.meta", not "foo.mp3.link.meta"
     const r = path.replace(kLinkExtensionWithFullStop, "");
     super(path, r + ".meta", "Meta", false, ".meta", true);
 
-    this.customFieldNamesRegistry = customFieldRegistry;
+    this.encounteredVocabularyRegistry = customVocabularies;
 
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;
@@ -1141,7 +1151,7 @@ export class OtherFile extends File {
 
   public static CreateLinkFile(
     pathToOriginalFile: string,
-    customFileRegistry: CustomFieldRegistry,
+    customFileRegistry: EncounteredVocabularyRegistry,
     destinationFolderPath: string
   ) {
     const mediaFolderPath = getMediaFolderOrEmptyForThisProjectAndMachine();

@@ -4,7 +4,7 @@ import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
-import { CustomFieldRegistry } from "../Project/CustomFieldRegistry";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 
 function getPretendAudioFile(): string {
@@ -13,9 +13,7 @@ function getPretendAudioFile(): string {
   return path;
 }
 
-function writeSessionFile(
-  contents: string
-): {
+function writeSessionFile(contents: string): {
   tmpFolder;
   sessionFolder;
   filePath;
@@ -43,7 +41,10 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 
   // note, we are using a session to run these just because we need something
   // concrete. It would be an improvement to do it in some more generic way.
-  const f = new SessionMetadataFile(sessionFolder, new CustomFieldRegistry());
+  const f = new SessionMetadataFile(
+    sessionFolder,
+    new EncounteredVocabularyRegistry()
+  );
   fs.removeSync(filePath); // remove the old file, just to make sure
   f.save(/*forceSave*/ true);
   try {
@@ -61,7 +62,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 describe("file.save()", () => {
   it("should create a metadata file to go with audio file", () => {
     const mediaFilePath = getPretendAudioFile();
-    new OtherFile(mediaFilePath, new CustomFieldRegistry()).save();
+    new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry()).save();
     expect(fs.existsSync(mediaFilePath + ".meta"));
   });
 });
@@ -70,7 +71,7 @@ describe("FolderMetadataFile constructor", () => {
   it("should make the appropriate metadata file if it doesn't exist", () => {
     //temp.track();
     const dir = temp.mkdirSync("blah");
-    const f = new SessionMetadataFile(dir, new CustomFieldRegistry());
+    const f = new SessionMetadataFile(dir, new EncounteredVocabularyRegistry());
     const files = fs.readdirSync(dir);
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
@@ -81,11 +82,14 @@ describe("FolderMetadataFile constructor", () => {
 describe("file", () => {
   it("should roundtrip notes with dangerous characters", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath, new CustomFieldRegistry());
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     const notes: string = "<you> & me > 1 \"quote\" 'single quote'";
     f.setTextProperty("notes", notes);
     f.save();
-    const f2 = new OtherFile(mediaFilePath, new CustomFieldRegistry());
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
     expect(f2.getTextField("notes").text).toBe(notes);
   });
 });
@@ -93,10 +97,13 @@ describe("file", () => {
 describe("file", () => {
   it("should roundtrip custom field", () => {
     const mediaFilePath = getPretendAudioFile();
-    const f = new OtherFile(mediaFilePath, new CustomFieldRegistry());
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     f.setTextProperty("customone", "hello");
     f.save();
-    const f2 = new OtherFile(mediaFilePath, new CustomFieldRegistry());
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
     expect(f2.getTextField("customone").text).toBe("hello");
   });
 
@@ -140,7 +147,10 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "ETR009.session");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new SessionMetadataFile(newDir, new CustomFieldRegistry());
+    const f = new SessionMetadataFile(
+      newDir,
+      new EncounteredVocabularyRegistry()
+    );
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");
@@ -159,7 +169,10 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "Edolo sample.sprj");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new ProjectMetadataFile(newDir, new CustomFieldRegistry());
+    const f = new ProjectMetadataFile(
+      newDir,
+      new EncounteredVocabularyRegistry()
+    );
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");
