@@ -217,7 +217,7 @@ export class Project extends Folder {
             ({
               id: c,
               label: c,
-              description: "-- No person record"
+              description: "❓"
             } as IChoice)
         )
         .filter(

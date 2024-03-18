@@ -14382,10 +14382,10 @@ react-onclickoutside@^6.13.0:
   resolved "https://registry.npmjs.org/react-onclickoutside/-/react-onclickoutside-6.13.0.tgz#e165ea4e5157f3da94f4376a3ab3e22a565f4ffc"
   integrity sha512-ty8So6tcUpIb+ZE+1HAhbLROvAIJYyJe/1vRrrcmW+jLsaM+/powDRqxzo6hSh9CuRZGSL1Q8mvcF5WRD93a0A==
 
-react-player@^2.9.0:
-  version "2.14.1"
-  resolved "https://registry.npmjs.org/react-player/-/react-player-2.14.1.tgz#fc434c0e1e6161e76f5d5970721596c4acec52b1"
-  integrity sha512-jILj7F9o+6NHzrJ1GqZIxfJgskvGmKeJ05FNhPvgiCpvMZFmFneKEkukywHcULDO2lqITm+zcEkLSq42mX0FbA==
+react-player@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.npmjs.org/react-player/-/react-player-2.9.0.tgz#ef7fe7073434087565f00ff219824e1e02c4b046"
+  integrity sha512-jNUkTfMmUhwPPAktAdIqiBcVUKsFKrVGH6Ocutj6535CNfM91yrvWxHg6fvIX8Y/fjYUPoejddwh7qboNV9vGA==
   dependencies:
     deepmerge "^4.0.0"
     load-script "^1.0.0"
