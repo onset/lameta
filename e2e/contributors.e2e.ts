@@ -19,7 +19,7 @@ test.describe("FileList", () => {
   test.afterAll(async () => {
     await lameta.quit();
   });
-  test("adding a new contributor with name only, then that  contributor is available", async () => {
+  test("adding a new contributor with name only, then that contributor is available", async () => {
     await project.goToSessions();
     await project.addSession();
     await project.goToContributorsOfThisSession();
@@ -28,8 +28,8 @@ test.describe("FileList", () => {
     await page.keyboard.press("Enter");
     await project.goToNotesOfThisSession();
     await project.goToContributorsOfThisSession();
-    // reg exp to match starting with "Foo Bar"
-    const startsWithFooBar = new RegExp("^Foo Bar");
+    // reg exp to match starting with "Foo Bar ❓"
+    const startsWithFooBar = new RegExp("^Foo Bar ❓");
     await page.getByText(startsWithFooBar).click();
 
     // now try to use it in a new session
