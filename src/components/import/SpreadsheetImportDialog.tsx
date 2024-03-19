@@ -25,7 +25,7 @@ import {
 } from "./MatrixImporter";
 import * as Path from "path";
 import fs from "fs";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 const ReactMarkdown = require("react-markdown");
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
@@ -123,11 +123,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
   }
 
-  useEffect(() => countChosenRows(), [
-    props.projectHolder.project,
-    path,
-    matrix
-  ]);
+  useEffect(
+    () => countChosenRows(),
+    [props.projectHolder.project, path, matrix]
+  );
 
   const title =
     folderType === "session"

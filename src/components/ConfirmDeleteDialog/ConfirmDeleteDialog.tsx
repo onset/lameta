@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
 import { Trans } from "@lingui/macro";
 import { t } from "@lingui/macro";
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   LametaDialog
 } from "../LametaDialog";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 
 let staticShowDeleteDialog: (
   descriptionOfWhatWillBeDeleted: string,

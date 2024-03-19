@@ -8,11 +8,12 @@ import {
   TableSelection,
   VirtualTable
 } from "@devexpress/dx-react-grid-material-ui";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 import React, { useMemo, useState } from "react";
-import { Theme, withStyles } from "@material-ui/core/styles";
-import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
-import ErrorRoundedIcon from "@material-ui/icons/ErrorRounded";
+import { Theme } from "@mui/material/styles";
+import withStyles from '@mui/styles/withStyles';
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import {
   CellImportStatus,
   IMappedCell,

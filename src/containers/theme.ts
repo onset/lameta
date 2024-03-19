@@ -1,4 +1,4 @@
-import { createTheme, Theme } from "@material-ui/core";
+import { createTheme, Theme } from "@mui/material";
 
 export const lameta_orange = "#e69664";
 export const lameta_blue = "#becde4";
@@ -11,7 +11,7 @@ export const tooltipBackground = "#3D5E90";
 export function createLametaTheme(): Theme {
   return createTheme({
     palette: {
-      primary: { main: lameta_blue },
+      primary: { main: lameta_dark_green },
       secondary: {
         // NB: if you change this to lameta_green, then we have to figure out how
         // to get the import checkboxes to go to a darker shade
@@ -20,7 +20,6 @@ export function createLametaTheme(): Theme {
       },
       warning: { main: "#F3AA18" },
       info: { main: "#FFFF00" /* todo */ }
-    },
-    props: {}
+    }
   });
 }

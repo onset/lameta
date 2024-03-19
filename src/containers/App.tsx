@@ -12,7 +12,7 @@ import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
 import { createLametaTheme } from "./theme";
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
 export const App: React.FunctionComponent = observer(() => {
