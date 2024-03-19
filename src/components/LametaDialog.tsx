@@ -7,7 +7,7 @@ import * as React from "react";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import { t, Trans } from "@lingui/macro";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 
 // let isWin32: boolean;
 // mainProcessApi.isWindows().then((isWindows: boolean) => {

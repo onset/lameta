@@ -13,7 +13,7 @@ import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
-import Alert from "@material-ui/lab/Alert";
+import Alert from '@mui/material/Alert';
 import { Trans } from "@lingui/macro";
 registerLanguage("xml", xmlLang);
 

@@ -192,15 +192,15 @@ export default class LanguagePickerDialog extends React.Component<
           </div>
           <div className={"bottomButtonRow"}>
             <div className={"reverseOrderOnMac"}>
-              <button onClick={() => this.handleCloseModal(false)}>
-                <Trans>Cancel</Trans>
-              </button>
               <button
                 id="okButton"
                 disabled={!haveValidFields}
                 onClick={() => this.handleCloseModal(true)}
               >
                 <Trans>OK</Trans>
+              </button>
+              <button onClick={() => this.handleCloseModal(false)}>
+                <Trans>Cancel</Trans>
               </button>
             </div>
           </div>

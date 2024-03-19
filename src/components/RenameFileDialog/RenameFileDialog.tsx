@@ -19,7 +19,7 @@ import {
 } from "../LametaDialog";
 import { error_color } from "../../containers/theme";
 import { useEffect, useState } from "react";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 const sanitizeFilename = require("sanitize-filename");
 
 let staticShowRenameDialog: (file: File, folder: Folder) => void = () => {};
