@@ -942,7 +942,30 @@ export class ProjectMetadataFile extends FolderMetadataFile {
       fieldDefinitionsOfCurrentConfig.project,
       customVocabularies
     );
+
     this.finishLoading();
+    this.migrate();
+  }
+
+  private migrate() {
+    // if ArchiveConfigurationName is not found but ArchiveProtocol is, copy it over
+
+    const archiveConfigurationName = this.properties.getTextStringOrEmpty(
+      "archiveConfigurationName"
+    );
+    // the fields.json5 sets the default to "unknown"
+    if (
+      archiveConfigurationName.length === 0 ||
+      archiveConfigurationName === "unknown"
+    ) {
+      const archiveProtocol =
+        this.properties.getTextStringOrEmpty("AccessProtocol");
+      if (archiveProtocol.length > 0) {
+        this.properties.setText("archiveConfigurationName", archiveProtocol);
+        // delete AccessProtocol
+        this.properties.removeProperty("AccessProtocol");
+      }
+    }
   }
 
   // peek into the xml to get the configuration we're supposed to be using

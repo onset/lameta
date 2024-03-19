@@ -25,7 +25,7 @@ describe("Project Write", () => {
   });
   it("should round-trip ArchiveConfigurationName", () => {
     AttemptRoundTripOfOneField(
-      "configurationName",
+      "archiveConfigurationName",
       "ArchiveConfigurationName",
       "FooBar"
     );

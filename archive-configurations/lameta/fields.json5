@@ -84,16 +84,16 @@
       tabIndex: 8
     },
     {
-      key: "configurationName",
-      form: "configurationName",
-      default: "default",
+      key: "archiveConfigurationName",
+      form: "ArchiveConfiguration",
+      default: "unknown",
       xmlTag: "ArchiveConfigurationName",
       englishLabel: "Archive Configuration used by this project",
-      vocabulary: "configurationName"
+      vocabulary: "ArchiveConfigurationName"
     },
     {
       key: "customAccessChoices",
-      form: "configurationName",
+      form: "ArchiveConfiguration",
       "//": "Older Windows SM actually didn't store this in the sprj at all",
       xmlTag: "CustomAccessProtocol",
       englishLabel: "Custom access choices"

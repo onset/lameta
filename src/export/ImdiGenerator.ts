@@ -737,7 +737,7 @@ export default class ImdiGenerator {
         accessDef.description.length > 0
       ) {
         const accessProtocol = this.project.properties.getTextStringOrEmpty(
-          "configurationName"
+          "archiveConfigurationName"
         );
         //  ELAR DOESN'T WANT THIS IN IMDI
         // https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab

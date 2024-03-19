@@ -96,7 +96,7 @@ function writeSimplePropertyElements(
     .forEach((field) => {
       writeField(root, field, doOutputTypeInXmlTags);
       // if the field is configurationName, write it again using "AccessProtocol"
-      if (field.key === "configurationName") {
+      if (field.key === "archiveConfigurationName") {
         writeField(
           root,
           field,

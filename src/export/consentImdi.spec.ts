@@ -41,7 +41,7 @@ describe("Consent Form Inclusion", () => {
     // ELAR currently. If/when we add knowledge of what other archives
     // would want, this will have to become more complicated if we want
     // to unit test ones other than ELAR.
-    project.properties.setText("configurationName", "ELAR");
+    project.properties.setText("archiveConfigurationName", "ELAR");
 
     const person1 = project.addPerson("Person 1");
     await person1.addFileForTestAsync("Person 1_Consent.JPG");

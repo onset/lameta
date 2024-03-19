@@ -96,6 +96,11 @@ export class FieldSet extends Dictionary<string, Field> {
     this.setValue("displayName", new PersonDisplayNameField(person));
   }
   public addTextProperty(key: string, value: string) {
+    if (this.getHasValue(key)) {
+      throw new Error(
+        `Cannot add a new field for ${key} because it already exists`
+      );
+    }
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
 

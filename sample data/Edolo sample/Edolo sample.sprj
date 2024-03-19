@@ -13,6 +13,8 @@
 	<Country>Papua New Guinea</Country>
 	<Continent>Oceania</Continent>
 	<ContactPerson />
+	<ArchiveConfigurationName>custom</ArchiveConfigurationName>
+	<!-- lameta 3 and following prefer ArchiveConfigurationName, this is written for compatibility with SayMore and older versions of lameta -->
 	<AccessProtocol>custom</AccessProtocol>
 	<ContentType />
 	<Applications />

@@ -73,7 +73,7 @@ export const ProjectTab = observer(
           <TabPanel>
             <ArchiveConfigurationForm
               archiveConfigurationField={this.props.project.properties.getTextField(
-                "configurationName"
+                "archiveConfigurationName"
               )}
               // customChoicesField={this.props.project.properties.getTextField(
               //   "customAccessChoices"
