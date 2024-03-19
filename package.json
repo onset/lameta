@@ -32,7 +32,7 @@
     "lingui-add": "lingui add-locale",
     "##note": "lingui extract will overwrite the fields.po so strings:extract-json must be run afterwards",
     "strings:extract-code": "lingui extract --clean",
-    "strings:extract-json": "yarn tsx ./configurations/extractFromJSON.ts",
+    "strings:extract-json": "yarn tsx ./archive-configurations/extractFromJSON.ts",
     "strings:extract": "yarn strings:extract-code && yarn strings:extract-json",
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3",
     "strings:compile": "lingui compile",

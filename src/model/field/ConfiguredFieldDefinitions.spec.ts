@@ -23,7 +23,7 @@ describe("computeMergedCatalog", () => {
     expect(mergedCatalog.project.find((f) => f.key == "title")).toEqual({
       key: "title",
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
-      tagInSayMoreClassic: "Title",
+      xmlTag: "Title",
       tabIndex: 99, // configuration changed
       tooltip: "My special tooltip", // configuration added this
       multilingual: true // configuration added this

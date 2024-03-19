@@ -182,7 +182,8 @@ export /*babel doesn't like this: abstract*/ class File {
       persist,
       type: "Date",
       isCustom: false,
-      showOnAutoForm: false
+      showOnAutoForm: false,
+      multilingual: false
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -197,7 +198,8 @@ export /*babel doesn't like this: abstract*/ class File {
       type: "Text",
       isCustom: false,
       showOnAutoForm: false,
-      multipleLines: true
+      multipleLines: true,
+      multilingual: false
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -240,7 +242,8 @@ export /*babel doesn't like this: abstract*/ class File {
         persist,
         type: "Text",
         isCustom,
-        showOnAutoForm
+        showOnAutoForm,
+        multilingual: false
       };
 
       const f = Field.fromFieldDefinition(definition);
@@ -552,7 +555,7 @@ export /*babel doesn't like this: abstract*/ class File {
           fieldDefinitionsOfCurrentConfig[area].find(
             (d: any) =>
               d.key.toLowerCase() === xmlTag.toLowerCase() ||
-              d.tagInSayMoreClassic === xmlTag
+              d.xmlTag === xmlTag
           )
       )
     ) {

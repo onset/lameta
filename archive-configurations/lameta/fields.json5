@@ -3,12 +3,12 @@
     {
       key: "title",
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
-      tagInSayMoreClassic: "Title",
+      xmlTag: "Title",
       tabIndex: 0
     },
     {
       key: "projectDescription",
-      tagInSayMoreClassic: "ProjectDescription",
+      xmlTag: "ProjectDescription",
       englishLabel: "Description",
       multipleLines: true,
       tabIndex: 11
@@ -16,21 +16,21 @@
     {
       key: "vernacularIso3CodeAndName",
       englishLabel: "Subject Language",
-      tagInSayMoreClassic: "VernacularISO3CodeAndName",
+      xmlTag: "VernacularISO3CodeAndName",
       type: "language",
       tabIndex: 1
     },
     {
       key: "analysisIso3CodeAndName",
       englishLabel: "Working Language",
-      tagInSayMoreClassic: "AnalysisISO3CodeAndName",
+      xmlTag: "AnalysisISO3CodeAndName",
       type: "language",
       tabIndex: 2
     },
     {
       key: "location",
       englishLabel: "Location/Address",
-      tagInSayMoreClassic: "Location",
+      xmlTag: "Location",
       cssClass: "field__newSection, text-block",
 
       multipleLines: true,
@@ -39,13 +39,13 @@
     {
       key: "region",
       englishLabel: "Region",
-      tagInSayMoreClassic: "Region",
+      xmlTag: "Region",
       tabIndex: 4
     },
     {
       key: "country",
       englishLabel: "Country",
-      tagInSayMoreClassic: "Country",
+      xmlTag: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
       tabIndex: 5
@@ -54,7 +54,7 @@
     {
       key: "continent",
       englishLabel: "Continent",
-      tagInSayMoreClassic: "Continent",
+      xmlTag: "Continent",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       imdiIsClosedVocabulary: true,
       choices: [
@@ -80,47 +80,48 @@
     {
       key: "fundingProjectTitle",
       englishLabel: "Funding Project Title",
-      tagInSayMoreClassic: "FundingProjectTitle",
+      xmlTag: "FundingProjectTitle",
       tabIndex: 8
     },
     {
-      key: "accessProtocol",
-      form: "accessProtocol",
-      tagInSayMoreClassic: "AccessProtocol",
-      englishLabel: "Access Protocol used by this project",
-      vocabulary: "accessProtocol"
+      key: "configurationName",
+      form: "configurationName",
+      default: "default",
+      xmlTag: "ArchiveConfigurationName",
+      englishLabel: "Archive Configuration used by this project",
+      vocabulary: "configurationName"
     },
     {
       key: "customAccessChoices",
-      form: "accessProtocol",
+      form: "configurationName",
       "//": "Older Windows SM actually didn't store this in the sprj at all",
-      tagInSayMoreClassic: "CustomAccessProtocol",
+      xmlTag: "CustomAccessProtocol",
       englishLabel: "Custom access choices"
     },
     {
       key: "depositor",
       englishLabel: "Depositor",
-      tagInSayMoreClassic: "Depositor",
+      xmlTag: "Depositor",
       tabIndex: 9
     },
     /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
       is a drag.
     {
       "key": "rightsHolder",
-      "tagInSayMoreClassic": "RightsHolder"
+      "xmlTag": "RightsHolder"
     },
     */
     {
       key: "contactPerson",
       englishLabel: "Contact Person",
-      tagInSayMoreClassic: "ContactPerson",
+      xmlTag: "ContactPerson",
       description: "Contact information about the person or institution responsible for the project.",
       tabIndex: 10
     },
     /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
     {
       "key": "dateAvailable",
-      "tagInSayMoreClassic": "DateAvailable",
+      "xmlTag": "DateAvailable",
       "type": "Date",
       "tabIndex": 11
     }*/
@@ -207,13 +208,13 @@
     {
       key: "genre",
       englishLabel: "Genre",
-      tagInSayMoreClassic: "Genre",
+      xmlTag: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
       tabIndex: 6
     },
     {
       key: "subgenre",
-      tagInSayMoreClassic: "Sub-Genre",
+      xmlTag: "Sub-Genre",
       englishLabel: "Subgenre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       // moved from additional/more Dec 2019 at ELAR request
@@ -253,7 +254,7 @@
     {
       key: "description",
       englishLabel: "Description",
-      tagInSayMoreClassic: "synopsis",
+      xmlTag: "synopsis",
       multipleLines: true,
       tabIndex: 5
     },
@@ -274,7 +275,7 @@
     {
       key: "involvement",
       englishLabel: "Researcher Involvement",
-      tagInSayMoreClassic: "Involvement",
+      xmlTag: "Involvement",
       additional: true,
       imdiIsClosedVocabulary: true,
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Involvement.xml",
@@ -292,13 +293,13 @@
     {
       key: "locationRegion",
       englishLabel: "Region",
-      tagInSayMoreClassic: "Location_Region",
+      xmlTag: "Location_Region",
       additional: true
     },
     {
       key: "locationCountry",
       englishLabel: "Country",
-      tagInSayMoreClassic: "Location_Country",
+      xmlTag: "Location_Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
       additional: true
@@ -307,7 +308,7 @@
     {
       key: "locationContinent",
       englishLabel: "Continent",
-      tagInSayMoreClassic: "Location_Continent",
+      xmlTag: "Location_Continent",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Continents.xml",
       imdiIsClosedVocabulary: true,
       choices: [
@@ -328,13 +329,13 @@
     // Removed Dec 2019 at ELAR request
     //{
     //   "key": "locationAddress",
-    //   "tagInSayMoreClassic": "Location_Address",
+    //   "xmlTag": "Location_Address",
     //   "additional": true
     // },
     {
       key: "planningType",
       englishLabel: "Planning Type",
-      tagInSayMoreClassic: "Planning_Type",
+      xmlTag: "Planning_Type",
       additional: true,
       imdiIsClosedVocabulary: true,
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-PlanningType.xml",
@@ -351,7 +352,7 @@
     {
       key: "socialContext",
       englishLabel: "Social Context",
-      tagInSayMoreClassic: "Social_Context",
+      xmlTag: "Social_Context",
       additional: true,
       imdiIsClosedVocabulary: true,
       choices: [
@@ -394,7 +395,7 @@
     },
     {
       key: "nickname",
-      tagInSayMoreClassic: "nickName",
+      xmlTag: "nickName",
       englishLabel: "Nickname"
     },
     {

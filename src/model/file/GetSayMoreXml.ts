@@ -4,6 +4,7 @@ import { Field } from "../field/Field";
 import { File, Contribution } from "./File";
 import assert from "assert";
 import { NotifyException } from "../../components/Notify";
+import { override } from "mobx";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
@@ -94,6 +95,17 @@ function writeSimplePropertyElements(
     //.filter(field => field.type !== FieldType.Contributions)
     .forEach((field) => {
       writeField(root, field, doOutputTypeInXmlTags);
+      // if the field is configurationName, write it again using "AccessProtocol"
+      if (field.key === "configurationName") {
+        writeField(
+          root,
+          field,
+          doOutputTypeInXmlTags,
+          false,
+          "AccessProtocol",
+          "lameta 3 and following prefer ArchiveConfigurationName, this is written for compatibility with SayMore and older versions of lameta"
+        );
+      }
     });
 }
 
@@ -172,7 +184,9 @@ function writeField(
   root: xmlbuilder.XMLElementOrXMLNode,
   field: Field,
   doOutputTypeInXmlTags: boolean,
-  doOutputEmptyFields: boolean = false
+  doOutputEmptyFields: boolean = false,
+  overrideTag?: string,
+  comment?: string
 ) {
   if (field.definition?.omitSave) return;
   const { type, value } = field.typeAndValueEscapedForXml();
@@ -180,9 +194,10 @@ function writeField(
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
   // for now we just use those same tags when writing so that the file can be opened in that SM
   const tag =
-    field.definition && field.definition.tagInSayMoreClassic
-      ? field.definition.tagInSayMoreClassic
-      : field.key;
+    overrideTag ||
+    (field.definition && field.definition.xmlTag
+      ? field.definition.xmlTag
+      : field.key);
 
   if (type === "date") {
     // console.log(
@@ -194,6 +209,11 @@ function writeField(
       field.key.indexOf("date") === -1 || type === "date",
       "SHOULDN'T " + field.key + " BE A DATE?"
     );
+
+    // output comment
+    if (comment) {
+      root.comment(comment);
+    }
     const attributes: any = {};
     // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
     if (doOutputTypeInXmlTags) attributes.type = type;

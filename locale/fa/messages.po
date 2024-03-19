@@ -28,7 +28,8 @@ msgid "A folder with an IMDI file for the project and each session."
 msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست."
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
-msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
+msgstr ""
+"\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
 "بسیاری از فیلدهای لامتا حذف شده است."
 
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
@@ -46,9 +47,6 @@ msgstr "درباره لامتا"
 msgid "Access"
 msgstr "دسترسی"
 
-msgid "Access Protocol"
-msgstr "پروتکل دسترسی"
-
 msgid "Add Files"
 msgstr "افزودن فایلها"
 
@@ -63,6 +61,9 @@ msgstr "فایلهایی را اینجا اضافه کنید که به نظر ن
 
 msgid "All Sessions"
 msgstr "همه جلسات"
+
+msgid "Archive Configuration"
+msgstr ""
 
 msgid "As a curator"
 msgstr "به عنوان سرپرست"
@@ -613,7 +614,8 @@ msgstr "یادداشتهای انتشار را مشاهده کنید"
 msgid "Warning"
 msgstr "هشدار"
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -693,4 +695,3 @@ msgstr "نشستهای مشخص شده"
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
-

@@ -2,7 +2,7 @@ import fs from "fs";
 import { IFolderType } from "../Folder/Folder";
 import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
-import jsonOfDefaultFieldConfig from "../../../configurations/lameta/fields.json5?raw";
+import jsonOfDefaultFieldConfig from "../../../archive-configurations/lameta/fields.json5?raw";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
 
@@ -27,8 +27,7 @@ export function getFieldDefinition(
   key: string
 ): FieldDefinition {
   return fieldDefinitionsOfCurrentConfig[folderType].find(
-    (d: any) =>
-      d.key.toLowerCase() === key.toLowerCase() || d.tagInSayMoreClassic === key
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
   );
 }
 export function isKnownFieldKey(key: string): boolean {
@@ -38,8 +37,7 @@ export function isKnownFieldKey(key: string): boolean {
     ) =>
       fieldDefinitionsOfCurrentConfig[area].find(
         (d: any) =>
-          d.key.toLowerCase() === key.toLowerCase() ||
-          d.tagInSayMoreClassic === key
+          d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
       )
   );
 }
@@ -358,7 +356,7 @@ export function computeMergedCatalog(
 }
 function loadFieldChoices(configurationName: string) {
   const path = locateDependencyForFilesystemCall(
-    `configurations/${configurationName}/fields.json5`
+    `archive-configurations/${configurationName}`
   );
   if (configurationName === "default") {
     return computeMergedCatalog({});
@@ -371,9 +369,14 @@ function loadFieldChoices(configurationName: string) {
     return computeMergedCatalog({});
   }
 
-  const fieldChoicesText = fs.readFileSync(path, "utf8");
-  const fieldChoices = JSON5.parse(fieldChoicesText);
-  return computeMergedCatalog(fieldChoices);
+  const fieldsPath = path + "/fields.json5";
+  if (!fs.existsSync(fieldsPath)) {
+    return computeMergedCatalog({});
+  } else {
+    const fieldChoicesText = fs.readFileSync(fieldsPath, "utf8");
+    const fieldChoices = JSON5.parse(fieldChoicesText);
+    return computeMergedCatalog(fieldChoices);
+  }
 }
 
 const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {

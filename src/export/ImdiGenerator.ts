@@ -243,9 +243,10 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -258,9 +259,10 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -735,7 +737,7 @@ export default class ImdiGenerator {
         accessDef.description.length > 0
       ) {
         const accessProtocol = this.project.properties.getTextStringOrEmpty(
-          "accessProtocol"
+          "configurationName"
         );
         //  ELAR DOESN'T WANT THIS IN IMDI
         // https://trello.com/c/JAEdatXh/71-access-description-should-only-include-access-explanation#comment-5e3443f825df1f4ba2c87eab

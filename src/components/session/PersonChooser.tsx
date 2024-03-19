@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
 import { IChoice } from "../../model/field/Field";
 import { CapitalCase } from "../../other/case";
-import { I } from "vitest/dist/reporters-5f784f42.js";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";

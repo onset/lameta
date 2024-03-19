@@ -7,7 +7,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-import { AccessProtocolForm } from "./AccessProtocolForm";
+import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
 import { ImdiView } from "../ImdiView";
 import "./ProjectTab.scss";
 import userSettings from "../../other/UserSettings";
@@ -22,7 +22,7 @@ interface IProps {
 export const ProjectTab = observer(
   class ProjectTab extends React.Component<IProps> {
     public render() {
-      const kFirstTabToOpen = 0;
+      const kFirstTabToOpen = 1;
       return (
         <Tabs
           className={"project"}
@@ -33,11 +33,11 @@ export const ProjectTab = observer(
             <Tab className={"tab-project-about"}>
               <Trans>About This Project</Trans>
             </Tab>
+            <Tab className={"tab-project-archive-configuration"}>
+              <Trans>Archive Configuration</Trans>
+            </Tab>
             <Tab className={"tab-project-collection"}>
               <Trans>Collection</Trans>
-            </Tab>
-            <Tab className={"tab-project-access"}>
-              <Trans>Access Protocol</Trans>
             </Tab>
             <Tab className={"tab-project-description-docs"}>
               <Trans>Description Documents</Trans>
@@ -71,23 +71,13 @@ export const ProjectTab = observer(
             />
           </TabPanel>
           <TabPanel>
-            <AutoForm
-              form="collection"
-              formClass="project"
-              folder={this.props.project}
-              authorityLists={this.props.authorityLists}
-              languageFinder={this.props.project.languageFinder}
-              rowStyle={true}
-            />
-          </TabPanel>
-          <TabPanel>
-            <AccessProtocolForm
-              protocolField={this.props.project.properties.getTextField(
-                "accessProtocol"
+            <ArchiveConfigurationForm
+              archiveConfigurationField={this.props.project.properties.getTextField(
+                "configurationName"
               )}
-              customChoicesField={this.props.project.properties.getTextField(
-                "customAccessChoices"
-              )}
+              // customChoicesField={this.props.project.properties.getTextField(
+              //   "customAccessChoices"
+              // )}
               authorityLists={this.props.authorityLists}
               onChange={() => {
                 window.alert(
@@ -96,6 +86,16 @@ export const ProjectTab = observer(
                 this.props.project.saveFolderMetaData();
                 this.props.reload();
               }}
+            />
+          </TabPanel>
+          <TabPanel>
+            <AutoForm
+              form="collection"
+              formClass="project"
+              folder={this.props.project}
+              authorityLists={this.props.authorityLists}
+              languageFinder={this.props.project.languageFinder}
+              rowStyle={true}
             />
           </TabPanel>
           <TabPanel>

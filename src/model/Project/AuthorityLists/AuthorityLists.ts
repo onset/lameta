@@ -1,3 +1,4 @@
+import * as fs from "fs-extra";
 import * as xml2js from "xml2js";
 import { IChoice } from "../../field/Field";
 
@@ -14,6 +15,7 @@ export class AuthorityLists {
   public accessProtocolChoices: IAccessProtocolChoice[];
   public accessChoicesOfCurrentProtocol: IChoice[];
   public roleChoices: IChoice[];
+  public archiveConfigurationChoices: IChoice[];
 
   public constructor(getPersons: () => IChoice[]) {
     this.getPeopleNames = getPersons;
@@ -21,6 +23,24 @@ export class AuthorityLists {
       accessProtocols as unknown as IAccessProtocolChoice[];
     this.accessChoicesOfCurrentProtocol = [];
     this.roleChoices = loadOLACRoles();
+
+    this.archiveConfigurationChoices = [];
+    const path = locateDependencyForFilesystemCall("archive-configurations");
+    fs.readdirSync(path).forEach((filename) => {
+      // "lameta" is a special case that you can't choose
+      if (filename === "lameta") {
+        return;
+      }
+      // if the file is not a directory, skip it
+      if (!fs.lstatSync(`${path}/${filename}`).isDirectory()) {
+        return;
+      }
+      this.archiveConfigurationChoices.push({
+        id: filename,
+        label: filename,
+        description: ""
+      });
+    });
   }
 
   public setAccessProtocol(protocolName: string, customChoices: string) {
@@ -78,6 +98,7 @@ export class AuthorityLists {
 }
 
 import olacRolesRawq from "./olac-roles.xml?raw";
+import { locateDependencyForFilesystemCall } from "../../../other/locateDependency";
 export function loadOLACRoles(): IChoice[] {
   const xml: string = olacRolesRawq;
 

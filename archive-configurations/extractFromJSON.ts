@@ -108,7 +108,7 @@ export function collectMessageFromOneSetOfFiles(set: string): Message[] {
   const messages: Message[] = [];
   const configurationDirectory = path.join(
     /*__dirname*/ "./",
-    "configurations"
+    "archive-configurations"
   );
 
   const findFilesRecursively = (dir: string): string[] => {
@@ -148,7 +148,7 @@ import { fi } from "make-plural";
 describe("harvestMessagesFromFile", () => {
   it("should read the fields.json file", () => {
     const messages: Message[] = [];
-    const filePath = path.join(__dirname, "configurations/lameta/fields.json5");
+    const filePath = path.join(__dirname, "archive-configurations/lameta/fields.json5");
     harvestMessagesFromFile(filePath, messages);
     console.log(JSON.stringify(messages, null, 2));
   });

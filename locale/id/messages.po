@@ -45,9 +45,6 @@ msgstr "Tentang lameta"
 msgid "Access"
 msgstr "Akses"
 
-msgid "Access Protocol"
-msgstr "Protokol Akses"
-
 msgid "Add Files"
 msgstr "Tambah File-File"
 
@@ -62,6 +59,9 @@ msgstr "Tambahkan dokumen-dokumen di sini yang tampaknya tidak cocok di tempat l
 
 msgid "All Sessions"
 msgstr "Semua Sesi"
+
+msgid "Archive Configuration"
+msgstr ""
 
 msgid "As a curator"
 msgstr "Sebagai seorang kurator"
@@ -612,7 +612,8 @@ msgstr "Lihat Catatan Rilis"
 msgid "Warning"
 msgstr "Peringatan"
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bisa memperbaikinya dengan me-restart komputer, harap laporkan masalah ini ke https://github.com/onset/lameta/issues."
@@ -692,4 +693,3 @@ msgstr "{0} Sesi yang Ditandai"
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
-

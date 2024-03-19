@@ -45,9 +45,6 @@ msgstr "Sobre lameta"
 msgid "Access"
 msgstr "Acceso"
 
-msgid "Access Protocol"
-msgstr "Protocolo de acceso"
-
 msgid "Add Files"
 msgstr "Agregar archivos"
 
@@ -62,6 +59,9 @@ msgstr "Agregar documentos aquí que no pertenecen en otro lugar (por ejemplo, d
 
 msgid "All Sessions"
 msgstr "Todas las sesiones"
+
+msgid "Archive Configuration"
+msgstr ""
 
 msgid "As a curator"
 msgstr "Como conservador"
@@ -612,7 +612,8 @@ msgstr "Ver Notas de esta Versión"
 msgid "Warning"
 msgstr "Aviso"
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -692,4 +693,3 @@ msgstr "{0} Sesiones Marcadas"
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} se enviará a la Papelera de reciclaje"
-

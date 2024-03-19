@@ -37,7 +37,7 @@
     },
     "dist/",
     "locale/",
-    "configurations/",
+    "archive-configurations/",
     "schemas/",
     "sample data/"
   ],

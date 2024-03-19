@@ -249,7 +249,7 @@ export class Project extends Folder {
     }
   }
   public get accessProtocol(): string {
-    return this.properties.getTextStringOrEmpty("accessProtocol");
+    return this.properties.getTextStringOrEmpty("configurationName");
   }
   public static fromDirectory(directory: string): Project {
     try {
@@ -479,7 +479,7 @@ export class Project extends Folder {
 
   private setupProtocolChoices() {
     this.authorityLists.setAccessProtocol(
-      this.properties.getTextStringOrEmpty("accessProtocol"),
+      this.properties.getTextStringOrEmpty("configurationName"),
       this.properties.getTextStringOrEmpty("customAccessChoices")
     );
 
@@ -488,21 +488,19 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol:
-            this.properties.getTextField("accessProtocol").textHolder
-              .textInDefaultLanguage,
+          protocol: this.properties.getTextStringOrEmpty("configurationName"),
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
         };
       },
       ({ protocol, customChoices }) => {
-        console.log("accessProtocol changed to " + protocol);
+        console.log("configurationName changed to " + protocol);
         this.authorityLists.setAccessProtocol(protocol, customChoices);
       }
     );
     mobx.reaction(
-      () => this.properties.getValueOrThrow("accessProtocol").text,
+      () => this.properties.getValueOrThrow("configurationName").text,
       (newValue) =>
         //      .textHolder.map.intercept((change) => { mobx6 doesn't have this intercept
         this.authorityLists.setAccessProtocol(
@@ -514,7 +512,7 @@ export class Project extends Folder {
       () => this.properties.getValueOrThrow("customAccessChoices").text,
       (newValue) => {
         const currentProtocol =
-          this.properties.getTextStringOrEmpty("accessProtocol");
+          this.properties.getTextStringOrEmpty("configurationName");
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -523,7 +521,7 @@ export class Project extends Folder {
     //   .getValueOrThrow("customAccessChoices")
     //    .textHolder.map.intercept((change) => {
     //     const currentProtocol = this.properties.getTextStringOrEmpty(
-    //       "accessProtocol"
+    //       "configurationName"
     //     );
     //     // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
     //     this.authorityLists.setAccessProtocol(
@@ -932,9 +930,9 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     // before making the metadataFile for this project, but (the way things
     // are currently structured) we need to know the configuration
     // before we can make the metadataFile for this project.
-    const configuration =
+    const configurationName =
       ProjectMetadataFile.peekIntoSprjForConfigurationName(directory);
-    prepareGlobalFieldDefinitionCatalog(configuration);
+    prepareGlobalFieldDefinitionCatalog(configurationName);
 
     super(
       directory,
@@ -958,11 +956,19 @@ export class ProjectMetadataFile extends FolderMetadataFile {
 
     // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
     const contents = fs.readFileSync(metadataPath, "utf8");
-    // TODO: should we migrate? Probably duplicate for backwards compat for a while?
-    // TODO: change name to "archiveRepository" or "configuration", for now, using the existing AccessProtocol
 
-    const regex = /<AccessProtocol>(.*)<\/AccessProtocol>/gm;
-    return regex.exec(contents)?.[1] || "default";
+    // Initially (up through v2), lameta only had an "Access Protocol", not the full set of configurations
+    // that we have now (which include and access protocol).
+    // Starting with lameta 3, we write to "ArchiveConfigurationName" & "Access Protocol" (for backwards compat).
+    // We fall back to the old "AccessProtocol" if ArchiveConfigurationName is not found (written by an sayjmore or an older lameta).
+    const regex =
+      /<ArchiveConfigurationName>(.*)<\/ArchiveConfigurationName>/gm;
+    let config = regex.exec(contents)?.[1];
+    if (!config) {
+      const legacyRegex = /<AccessProtocol>(.*)<\/AccessProtocol>/gm;
+      config = legacyRegex.exec(contents)?.[1];
+    }
+    return config || "default";
   }
 }
 

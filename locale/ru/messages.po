@@ -45,9 +45,6 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-msgid "Access Protocol"
-msgstr "Протокол доступа"
-
 msgid "Add Files"
 msgstr "Добавление файлов"
 
@@ -61,6 +58,9 @@ msgid "Add documents here that don't seem to fit anywhere else. An example would
 msgstr ""
 
 msgid "All Sessions"
+msgstr ""
+
+msgid "Archive Configuration"
 msgstr ""
 
 msgid "As a curator"
@@ -612,7 +612,8 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -692,4 +693,3 @@ msgstr ""
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
-
