@@ -30,7 +30,7 @@ export const ProjectTab = observer(
           onSelect={() => this.props.project.saveFolderMetaData()}
         >
           <TabList>
-            <Tab className={"tab-project-about"}>
+            <Tab className={"tab-project-about"} data-testid="project-about">
               <Trans>About This Project</Trans>
             </Tab>
             <Tab className={"tab-project-archive-configuration"}>

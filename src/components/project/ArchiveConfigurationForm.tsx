@@ -6,7 +6,7 @@ import { Field } from "../../model/field/Field";
 import { runInAction } from "mobx";
 import ReactSelect from "react-select";
 import { css } from "@emotion/react";
-import Alert from "@material-ui/lab/Alert";
+import Alert from "@mui/material/Alert";
 
 interface IProps {
   archiveConfigurationField: Field;

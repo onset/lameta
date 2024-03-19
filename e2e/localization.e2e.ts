@@ -42,6 +42,7 @@ test.describe("Localization", () => {
     await shouldAtLeastOnce(["pilih..."]);
 
     // main project page
+    await project.goToProjectAbout();
     await shouldSeeExactlyOnce([
       "Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
       "Judul proyek yang didanai" // regression test

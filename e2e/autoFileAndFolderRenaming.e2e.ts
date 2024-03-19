@@ -80,7 +80,7 @@ async function expectFileNameInGrid(name: string) {
   ).toBeVisible({ timeout: 1000 });
 }
 async function setFullName(name: string) {
-  const fullNameField = await page.getByLabel("Full Name");
+  const fullNameField = await page.locator("#name");
   await fullNameField.click();
   await fullNameField.fill(name);
   await page.keyboard.press("Tab");

@@ -63,6 +63,12 @@ To run just one e2e fixture, name it:
 yarn e2e registration.e2e.ts
 ```
 
+To show the Playwright Inspector, use
+
+```bash
+yarn e2edebug
+```
+
 ### l10n
 
 When running lameta, if you see this in the Chrome debug console:

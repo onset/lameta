@@ -59,6 +59,14 @@ export class E2eProject {
     //await this.page.getByTestId("contributors-tab").click();
     await this.page.getByRole("tab", { name: "Contributors" }).click();
   }
+  public async goToProject() {
+    await this.page.getByTestId("project-tab").click();
+  }
+  public async goToProjectAbout() {
+    await this.goToProject();
+    await this.page.getByTestId("project-about").click();
+  }
+
   public async goToSessions() {
     await this.page.getByTestId("sessions-tab").click();
   }
