@@ -26,7 +26,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
         css={css`
           color: black !important;
           border-color: transparent !important;
-          background-color: rgb(202 218 225) !important;
+          background-color: #f6dbcb !important;
           margin-bottom: 10px;
 
           .MuiAlert-icon {

@@ -17,21 +17,13 @@ export const FieldLabel: React.FunctionComponent<{
   htmlFor?: string; // aria for accessibility (react requires 'htmlFor')
   omitInfoAffordances?: boolean;
 }> = observer((props) => {
-  const tooltip = useMemo(() => translateTip(props.fieldDef.description), [
-    props.fieldDef
-  ]);
+  const tooltip = useMemo(
+    () => translateTip(props.fieldDef.description),
+    [props.fieldDef]
+  );
 
   const labelElement = (
-    <label
-      htmlFor={props.htmlFor}
-      style={{ display: "inline-block" }}
-      // at one poitn we greyed out these fields, but the icon with tooltip should be sufficient
-      // className={
-      //   userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi
-      //     ? "markAsNotImdi"
-      //     : ""
-      // }
-    >
+    <label htmlFor={props.htmlFor} style={{ display: "inline-block" }}>
       {translateFieldLabel(props.fieldDef)}
     </label>
   );
@@ -89,7 +81,7 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi && (
+      {userSettingsSingleton.IMDIMode && props.fieldDef.omitFromImdi && (
         <NotConsumedByArchiveIndicator />
       )}
     </div>

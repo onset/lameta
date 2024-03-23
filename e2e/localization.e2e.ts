@@ -30,7 +30,7 @@ test.describe("Localization", () => {
     await lameta.quit();
   });
 
-  test("stuff are in Indonesian", async () => {
+  test("labels are in Indonesian", async () => {
     // menu
     await expectMenuWithLabel(lameta.electronApp, "Lihat");
 

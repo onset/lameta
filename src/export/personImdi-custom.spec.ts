@@ -16,6 +16,8 @@ import {
 } from "../other/xmlUnitTestUtils";
 import * as mobx from "mobx";
 import temp from "temp";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { Field } from "../model/field/Field";
 
 mobx.configure({
   enforceActions: "never"
@@ -50,6 +52,14 @@ describe("actor imdi export", () => {
     generate();
     expect("//Actor/Keys/Key[@Name='Notes']").toNotExist();
   });
+  /*
+  it("should not include custom fields", () => {
+    // anything we don't recognize is a custom field
+    person.properties.addCustomProperty(makeCustomField("Foo", "bar"));
+    generate();
+    expect("//Actor/Keys/Key[@Name='Foo']").toHaveCount(1);
+  });
+  */
   it("should export description in Description element, not in Keys", () => {
     person.properties.setText("description", "likes sour candy");
     generate();
@@ -62,3 +72,16 @@ describe("actor imdi export", () => {
     expect("//Actor/Age").toMatch("Unspecified");
   });
 });
+// function makeCustomField(key: string, value: string) {
+//   const definition: FieldDefinition = {
+//     key,
+//     englishLabel: key,
+//     persist: true,
+//     type: "Text",
+//     tabIndex: 0,
+//     isCustom: true,
+//     showOnAutoForm: false,
+//     multilingual: false
+//   };
+//   return Field.fromFieldDefinition(definition);
+// }

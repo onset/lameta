@@ -10,6 +10,18 @@ msgctxt "lameta/person/code"
 msgid "Code"
 msgstr ""
 
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr ""
+
+msgctxt "lameta/person/customFields/description"
+msgid "A table of labels and values for a person."
+msgstr ""
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr ""
+
 msgctxt "lameta/person/description"
 msgid "Description"
 msgstr ""
@@ -80,6 +92,10 @@ msgstr ""
 
 msgctxt "lameta/project/analysisIso3CodeAndName"
 msgid "Working Language"
+msgstr ""
+
+msgctxt "lameta/project/archiveConfigurationName"
+msgid "Archive Configuration used by this project"
 msgstr ""
 
 msgctxt "lameta/project/collectionDescription"
@@ -220,6 +236,18 @@ msgstr ""
 
 msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
+msgstr ""
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr ""
+
+msgctxt "lameta/session/customFields/description"
+msgid "A table of labels and values for a session."
+msgstr ""
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
 msgstr ""
 
 msgctxt "lameta/session/date"

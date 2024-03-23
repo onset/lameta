@@ -195,16 +195,12 @@ class CustomFieldsTable extends React.Component<IProps> {
         }
       }
     ];
-    const def: FieldDefinition = new FieldDefinition({
-      key: "Custom Fields",
-      markAsNotImdi: true,
-      tipOnUsingThisField:
-        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
-    });
+    const customFieldsDef =
+      this.props.file.properties.getFieldDefinition("customFields");
 
     return (
       <div className="customFieldsBlock">
-        <FieldLabel fieldDef={def} />
+        <FieldLabel fieldDef={customFieldsDef} />
         <ReactTable
           className="customFieldsTable"
           noDataText=""

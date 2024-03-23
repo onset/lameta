@@ -224,13 +224,13 @@
     {
       "key": "situation",
       "multipleLines": true,
-      "markAsNotImdi": true,
+      "omitFromImdi": true,
       "deprecated":"migrated to description by lameta"
     },
     {
       "key": "setting",
       "multipleLines": true,
-      "markAsNotImdi": true,
+      "omitFromImdi": true,
       "deprecated":"migrated to description by lameta"
     },*/
 
@@ -382,6 +382,13 @@
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
       tabIndex: 11
+    },
+    {
+      key: "customFields",
+      englishLabel: "Custom Fields",
+      description: "A table of labels and values for a session.",
+      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+      //omitFromImdi: true
     }
   ],
   person: [
@@ -525,7 +532,7 @@
       englishLabel: "How to Contact",
       multipleLines: true,
       personallyIdentifiableInformation: true,
-      markAsNotImdi: true
+      omitFromImdi: true
     },
 
     {
@@ -535,12 +542,19 @@
     {
       key: "primaryOccupation",
       englishLabel: "Primary Occupation",
-      markAsNotImdi: true
+      omitFromImdi: true
     },
     {
       key: "description",
       englishLabel: "Description",
       description: "Relevant details such as where they learned the language(s)"
+    },
+    {
+      key: "customFields",
+      englishLabel: "Custom Fields",
+      description: "A table of labels and values for a person.",
+      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+      //omitFromImdi: true
     }
   ]
 }

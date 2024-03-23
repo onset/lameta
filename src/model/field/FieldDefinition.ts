@@ -25,7 +25,7 @@ export class FieldDefinition {
   public multipleLines?: boolean;
   public multilingual: boolean = false;
   public tabIndex?: number = 99;
-  public markAsNotImdi?: boolean;
+  public omitFromImdi?: boolean;
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;

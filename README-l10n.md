@@ -49,7 +49,7 @@ This format uses our own wrapper. Note that you still have to include the commen
 
 # Our own extractor for json5 files
 
-Our `extractFromJSON.ts` file extracts the translatable fields from all the json5 files (currently just "archive-configurations/<theconfig>/fields.json5"). It creates english `.po` files, which then go to crowdin. Crowdin gives back all the po files for all the languages, and `lingui compile` creates `.js` catalogs of all of them, which we load up in `localization.ts`.
+Our `strings:extract-json` script extracts the translatable fields from all the json5 files (currently just "archive-configurations/<theconfig>/fields.json5"). It creates english `.po` files, which then go to crowdin. Crowdin gives back all the po files for all the languages, and `lingui compile` creates `.js` catalogs of all of them, which we load up in `localization.ts`.
 
 # Steps to Syncing
 
