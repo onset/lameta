@@ -77,9 +77,9 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             archiveConfigurationField={props.project.properties.getTextField(
               "archiveConfigurationName"
             )}
-            // customChoicesField={props.project.properties.getTextField(
-            //   "customAccessChoices"
-            // )}
+            customChoicesField={props.project.properties.getTextField(
+              "customAccessChoices"
+            )}
             authorityLists={props.authorityLists}
             onChange={() => {
               props.project.saveFolderMetaData();

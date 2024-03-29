@@ -9,6 +9,7 @@ export interface IProps {
   field: Field;
   autoFocus?: boolean;
   hideLabel?: boolean;
+  visibleInstructions?: string;
   attemptFileChanges?: () => boolean;
   onBlurWithValue?: (currentValue: string) => void;
   // this one will prevent the user from moving on
@@ -48,23 +49,25 @@ export const TextFieldEdit: React.FunctionComponent<
           omitInfoAffordances={props.showAffordancesAfter}
         />
       )}
-
-      <div
-        css={css`
-          background-color: white;
-          border: 1px solid black;
-          height: -webkit-fill-available;
-        `}
-      >
-        {props.field.definition.multilingual ? (
-          testAxes.map((axis) => (
-            <>
-              <SingleLanguageTextFieldEdit {...props} axis={axis} />
-            </>
-          ))
-        ) : (
-          <SingleLanguageTextFieldEdit {...props} axis={undefined} />
-        )}
+      <div>
+        {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
+        <div
+          css={css`
+            background-color: white;
+            border: 1px solid black;
+            height: -webkit-fill-available;
+          `}
+        >
+          {props.field.definition.multilingual ? (
+            testAxes.map((axis) => (
+              <>
+                <SingleLanguageTextFieldEdit {...props} axis={axis} />
+              </>
+            ))
+          ) : (
+            <SingleLanguageTextFieldEdit {...props} axis={undefined} />
+          )}
+        </div>
       </div>
     </div>
   );

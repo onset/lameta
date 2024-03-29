@@ -8,11 +8,13 @@ import ReactSelect from "react-select";
 import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
 import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
-import { Button } from "@mui/material";
+import { Button, Collapse } from "@mui/material";
+import { Trans } from "@lingui/macro";
+import { TextFieldEdit } from "../TextFieldEdit";
 
 interface IProps {
   archiveConfigurationField: Field;
-  // customChoicesField: Field;
+  customChoicesField: Field;
   authorityLists: AuthorityLists;
   onChange: () => void;
 }
@@ -28,24 +30,26 @@ const ArchiveConfigurationForm: React.FunctionComponent<
         padding-left: 20px;
       `}
     >
-      <Alert
-        severity="info"
-        variant="outlined"
-        css={css`
-          color: black !important;
-          border-color: transparent !important;
-          background-color: #f6dbcb !important;
-          margin-bottom: 10px;
-
-          .MuiAlert-icon {
+      <Collapse in={archiveConfigurationName == "OTHER"}>
+        <Alert
+          severity="info"
+          variant="outlined"
+          css={css`
             color: black !important;
-          }
-        `}
-      >
-        Lameta projects are normally set up to work with the requirements of a
-        single archiving institution. Choose the name of your archive or "Other"
-        if you don't see it listed.
-      </Alert>
+            border-color: transparent !important;
+            background-color: #f6dbcb !important;
+            margin-bottom: 10px;
+
+            .MuiAlert-icon {
+              color: black !important;
+            }
+          `}
+        >
+          Lameta projects are normally set up to work with the requirements of a
+          single archiving institution. Choose the name of your archive or
+          "Other" if you don't see it listed.
+        </Alert>
+      </Collapse>
       <h1
         css={css`
           margin-bottom: 5px;
@@ -72,9 +76,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           onChange={(event) => {
             setArchiveConfigurationName(event.value);
           }}
-          options={props.authorityLists.archiveConfigurationChoices.map((s) => {
-            return { value: s.id, label: s.label };
-          })}
+          options={props.authorityLists.archiveConfigurationChoices
+            .map((s) => {
+              return { value: s.id, label: s.label };
+            })
+            .concat({ value: "OTHER", label: "Other" })}
         />
         <Button
           variant="contained"
@@ -111,12 +117,35 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           }
         `}
       >
-        <ArchiveConfigurationSummary
-          configurationName={archiveConfigurationName}
-        />
+        {archiveConfigurationName === "OTHER" ? (
+          <CustomArchiveConfiguration
+            customChoicesField={props.customChoicesField}
+          />
+        ) : (
+          <ArchiveConfigurationSummary
+            configurationName={archiveConfigurationName}
+          />
+        )}
       </div>
     </div>
   );
 };
 const x = observer(ArchiveConfigurationForm);
 export { x as ArchiveConfigurationForm };
+
+const CustomArchiveConfiguration: React.FunctionComponent<{
+  customChoicesField: Field;
+}> = (props) => {
+  return (
+    <div
+      css={css`
+        margin-top: 1em;
+      `}
+    >
+      <TextFieldEdit
+        field={props.customChoicesField}
+        visibleInstructions={"Enter each choice, separated by commas"}
+      />
+    </div>
+  );
+};
