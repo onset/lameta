@@ -20,7 +20,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   return (
-    <div>
+    <div
+      css={css`
+        padding-left: 20px;
+      `}
+    >
       <Alert
         severity="info"
         variant="outlined"
@@ -39,13 +43,13 @@ const ArchiveConfigurationForm: React.FunctionComponent<
         single archiving institution. Choose the name of your archive or "Other"
         if you don't see it listed.
       </Alert>
-      <h3
+      <h1
         css={css`
           margin-bottom: 5px;
         `}
       >
         Archive Configuration
-      </h3>
+      </h1>
       <ReactSelect
         css={css`
           width: 200px;
@@ -65,9 +69,26 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           return { value: s.id, label: s.label };
         })}
       />
-      <ArchiveConfigurationSummary
-        chosen={props.archiveConfigurationField.text}
-      />
+      <div
+        css={css`
+          h2,
+          h3 {
+            margin-block-end: 0;
+          }
+          h3 {
+            padding-left: 20px;
+            margin-block-start: 0;
+          }
+          ul {
+            padding-left: 40px;
+            margin-block-start: 0;
+          }
+        `}
+      >
+        <ArchiveConfigurationSummary
+          configurationName={props.archiveConfigurationField.text}
+        />
+      </div>
     </div>
   );
 };

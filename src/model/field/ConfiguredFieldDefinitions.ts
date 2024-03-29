@@ -311,20 +311,21 @@ type FieldDefinitionCustomizationCatalog = {
   session?: FieldDefinitionCustomization[];
   person?: FieldDefinitionCustomization[];
 };
-export type FieldDefinitionCustomizationDescription = {
+export type FieldDefinitionCustomizationRecord = {
   area: string;
   factoryDefinition: FieldDefinition;
-  change: "addition" | "removal" | "other";
-  message: string;
+  customization: FieldDefinitionCustomization;
+  newDefinition: FieldDefinition;
 };
 // exported for unit test use
 export function computeMergedCatalog(
   catalogOfConfiguration: FieldDefinitionCustomizationCatalog
 ): {
   mergedCatalog: FieldDefinitionCatalog;
-  diffs: Array<FieldDefinitionCustomizationDescription>;
+  customizations: Array<FieldDefinitionCustomizationRecord>;
 } {
-  const diffs = [] as Array<FieldDefinitionCustomizationDescription>;
+  // customizations is just used for UI in the ArchiveConfigurationSummary component
+  const customizations = [] as Array<FieldDefinitionCustomizationRecord>;
   const mergedCatalog: FieldDefinitionCatalog = {
     project: [],
     session: [],
@@ -349,53 +350,24 @@ export function computeMergedCatalog(
     mergedCatalog[area] = catalogOfAllAvailableKnownFields[area].map(
       (factoryDefinition: FieldDefinition) => {
         if (catalogOfConfiguration[area]) {
-          const entry = catalogOfConfiguration[area].find(
+          const configurationEntry = catalogOfConfiguration[area].find(
             (d) => d.key == factoryDefinition.key
           );
-          if (entry) {
+          if (configurationEntry) {
             // this archive configuration has an entry for this definition
             // merge the properties of the choice into the field definition, overriding the defaults
 
-            const customized = { ...factoryDefinition, ...entry };
-            // look at every field in the customization and see if it is different from the factory definition
-            // for each difference, add an entry to the diffs array
-            for (const key of Object.keys(entry)) {
-              if (entry[key] !== factoryDefinition[key]) {
-                // if  factoryDefinition.visibility undefined or "never" and entry changes it to always, that's an "addition"
-                if (
-                  factoryDefinition.visibility === "never" &&
-                  entry.visibility === "always"
-                ) {
-                  diffs.push({
-                    factoryDefinition,
-                    area,
-                    change: "addition",
-                    message: `addded ${key}`
-                  });
-                }
-                // if factoryDefinition.visibility is "always" and entry changes it to "never", that's a "removal"
-                else if (
-                  factoryDefinition.visibility !== "never" &&
-                  entry.visibility === "never"
-                ) {
-                  diffs.push({
-                    area,
-                    factoryDefinition,
-                    change: "removal",
-                    message: `removed ${key}`
-                  });
-                } else {
-                  diffs.push({
-                    area,
-                    factoryDefinition,
-                    change: "other",
-                    message: `${area} ${factoryDefinition.englishLabel} changed from ${factoryDefinition[key]} to ${entry[key]}`
-                  });
-                }
-              }
-            }
-
-            return customized;
+            const newDefinition = {
+              ...factoryDefinition,
+              ...configurationEntry
+            };
+            customizations.push({
+              area,
+              factoryDefinition,
+              customization: configurationEntry,
+              newDefinition
+            });
+            return newDefinition;
           }
         }
         // just return the default definition
@@ -403,7 +375,7 @@ export function computeMergedCatalog(
       }
     );
   }
-  return { mergedCatalog, diffs };
+  return { mergedCatalog, customizations: customizations };
 }
 export function loadAndMergeFieldChoices(configurationName: string) {
   const path = locateDependencyForFilesystemCall(

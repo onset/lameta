@@ -17,8 +17,8 @@
   ],
   session: [
     {
-      key: "description",
-      multilingual: false
+      key: "description"
+      //multilingual: true
     },
     {
       key: "customFields",
