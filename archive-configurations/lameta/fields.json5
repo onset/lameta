@@ -388,7 +388,6 @@
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a session.",
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
-      //omitFromImdi: true
     }
   ],
   person: [
@@ -554,7 +553,6 @@
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a person.",
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
-      //omitFromImdi: true
     }
   ]
 }

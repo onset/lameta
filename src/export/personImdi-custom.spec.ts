@@ -52,14 +52,7 @@ describe("actor imdi export", () => {
     generate();
     expect("//Actor/Keys/Key[@Name='Notes']").toNotExist();
   });
-  /*
-  it("should not include custom fields", () => {
-    // anything we don't recognize is a custom field
-    person.properties.addCustomProperty(makeCustomField("Foo", "bar"));
-    generate();
-    expect("//Actor/Keys/Key[@Name='Foo']").toHaveCount(1);
-  });
-  */
+
   it("should export description in Description element, not in Keys", () => {
     person.properties.setText("description", "likes sour candy");
     generate();
