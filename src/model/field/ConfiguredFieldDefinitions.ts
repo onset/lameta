@@ -311,10 +311,20 @@ type FieldDefinitionCustomizationCatalog = {
   session?: FieldDefinitionCustomization[];
   person?: FieldDefinitionCustomization[];
 };
+export type FieldDefinitionCustomizationDescription = {
+  area: string;
+  factoryDefinition: FieldDefinition;
+  change: "addition" | "removal" | "other";
+  message: string;
+};
 // exported for unit test use
 export function computeMergedCatalog(
   catalogOfConfiguration: FieldDefinitionCustomizationCatalog
-): FieldDefinitionCatalog {
+): {
+  mergedCatalog: FieldDefinitionCatalog;
+  diffs: Array<FieldDefinitionCustomizationDescription>;
+} {
+  const diffs = [] as Array<FieldDefinitionCustomizationDescription>;
   const mergedCatalog: FieldDefinitionCatalog = {
     project: [],
     session: [],
@@ -337,24 +347,65 @@ export function computeMergedCatalog(
     }
 
     mergedCatalog[area] = catalogOfAllAvailableKnownFields[area].map(
-      (def: any) => {
+      (factoryDefinition: FieldDefinition) => {
         if (catalogOfConfiguration[area]) {
           const entry = catalogOfConfiguration[area].find(
-            (d) => d.key == def.key
+            (d) => d.key == factoryDefinition.key
           );
           if (entry) {
+            // this archive configuration has an entry for this definition
             // merge the properties of the choice into the field definition, overriding the defaults
-            const m = { ...def, ...entry };
-            return m;
+
+            const customized = { ...factoryDefinition, ...entry };
+            // look at every field in the customization and see if it is different from the factory definition
+            // for each difference, add an entry to the diffs array
+            for (const key of Object.keys(entry)) {
+              if (entry[key] !== factoryDefinition[key]) {
+                // if  factoryDefinition.visibility undefined or "never" and entry changes it to always, that's an "addition"
+                if (
+                  factoryDefinition.visibility === "never" &&
+                  entry.visibility === "always"
+                ) {
+                  diffs.push({
+                    factoryDefinition,
+                    area,
+                    change: "addition",
+                    message: `addded ${key}`
+                  });
+                }
+                // if factoryDefinition.visibility is "always" and entry changes it to "never", that's a "removal"
+                else if (
+                  factoryDefinition.visibility !== "never" &&
+                  entry.visibility === "never"
+                ) {
+                  diffs.push({
+                    area,
+                    factoryDefinition,
+                    change: "removal",
+                    message: `removed ${key}`
+                  });
+                } else {
+                  diffs.push({
+                    area,
+                    factoryDefinition,
+                    change: "other",
+                    message: `${area} ${factoryDefinition.englishLabel} changed from ${factoryDefinition[key]} to ${entry[key]}`
+                  });
+                }
+              }
+            }
+
+            return customized;
           }
         }
-        return def;
+        // just return the default definition
+        return factoryDefinition;
       }
     );
   }
-  return mergedCatalog;
+  return { mergedCatalog, diffs };
 }
-function loadFieldChoices(configurationName: string) {
+export function loadAndMergeFieldChoices(configurationName: string) {
   const path = locateDependencyForFilesystemCall(
     `archive-configurations/${configurationName}`
   );
@@ -394,7 +445,7 @@ export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
 export function makeFieldDefinitionCatalog(
   configurationName: string
 ): FieldDefinitionCatalog {
-  return loadFieldChoices(configurationName);
+  return loadAndMergeFieldChoices(configurationName).mergedCatalog;
 }
 // todo: move to Project?
 export { fieldDefinitionsOfCurrentConfig }; // does not include custom fields

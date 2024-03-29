@@ -7,6 +7,7 @@ import { runInAction } from "mobx";
 import ReactSelect from "react-select";
 import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
+import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
 
 interface IProps {
   archiveConfigurationField: Field;
@@ -63,6 +64,9 @@ const ArchiveConfigurationForm: React.FunctionComponent<
         options={props.authorityLists.archiveConfigurationChoices.map((s) => {
           return { value: s.id, label: s.label };
         })}
+      />
+      <ArchiveConfigurationSummary
+        chosen={props.archiveConfigurationField.text}
       />
     </div>
   );

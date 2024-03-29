@@ -19,6 +19,16 @@
     {
       key: "description",
       multilingual: false
+    },
+    {
+      key: "customFields",
+      visibility: "never"
+    }
+  ],
+  people: [
+    {
+      key: "customFields",
+      visibility: "never"
     }
   ]
 }
