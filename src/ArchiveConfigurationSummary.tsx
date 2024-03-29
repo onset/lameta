@@ -23,7 +23,15 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
       loadAndMergeFieldChoices(props.configurationName).customizations
     );
   }, [props.configurationName]);
-
+  const projectCustomizations = customizations.filter(
+    (c) => c.area === "project"
+  );
+  const sessionCustomizations = customizations.filter(
+    (c) => c.area === "session"
+  );
+  const personCustomizations = customizations.filter(
+    (c) => c.area === "person"
+  );
   return (
     <div>
       <h2>Access Protocols</h2>
@@ -39,45 +47,45 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
       <h2>Field Changes</h2>
       <h3>Project</h3>
       <ul>
-        {customizations
-          .filter((c) => c.area === "project")
-          .map((customization) => (
-            <>
-              {describeChange(
-                customization.area,
-                customization.factoryDefinition,
-                customization.newDefinition
-              )}
-            </>
-          ))}
+        {projectCustomizations.length > 0
+          ? projectCustomizations.map((customization) => (
+              <>
+                {describeChange(
+                  customization.area,
+                  customization.factoryDefinition,
+                  customization.newDefinition
+                )}
+              </>
+            ))
+          : "None"}
       </ul>
       <h3>Session</h3>
       <ul>
-        {customizations
-          .filter((c) => c.area === "session")
-          .map((customization) => (
-            <>
-              {describeChange(
-                customization.area,
-                customization.factoryDefinition,
-                customization.newDefinition
-              )}
-            </>
-          ))}
+        {sessionCustomizations.length > 0
+          ? sessionCustomizations.map((customization) => (
+              <>
+                {describeChange(
+                  customization.area,
+                  customization.factoryDefinition,
+                  customization.newDefinition
+                )}
+              </>
+            ))
+          : "None"}
       </ul>
       <h3>Person</h3>
       <ul>
-        {customizations
-          .filter((c) => c.area === "person")
-          .map((customization) => (
-            <>
-              {describeChange(
-                customization.area,
-                customization.factoryDefinition,
-                customization.newDefinition
-              )}
-            </>
-          ))}
+        {personCustomizations.length > 0
+          ? personCustomizations.map((customization) => (
+              <>
+                {describeChange(
+                  customization.area,
+                  customization.factoryDefinition,
+                  customization.newDefinition
+                )}
+              </>
+            ))
+          : "None"}
       </ul>
     </div>
   );
