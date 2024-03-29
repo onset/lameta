@@ -8,6 +8,7 @@ import ReactSelect from "react-select";
 import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
 import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
+import { Button } from "@mui/material";
 
 interface IProps {
   archiveConfigurationField: Field;
@@ -19,6 +20,8 @@ interface IProps {
 const ArchiveConfigurationForm: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
+  const [archiveConfigurationName, setArchiveConfigurationName] =
+    React.useState<string>(props.archiveConfigurationField.text);
   return (
     <div
       css={css`
@@ -50,25 +53,48 @@ const ArchiveConfigurationForm: React.FunctionComponent<
       >
         Archive Configuration
       </h1>
-      <ReactSelect
+      <div
         css={css`
-          width: 200px;
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
         `}
-        name={props.archiveConfigurationField.labelInUILanguage} //what does this do? Maybe accessibility?
-        value={{
-          value: props.archiveConfigurationField.text,
-          label: props.archiveConfigurationField.text
-        }}
-        onChange={(event) => {
-          runInAction(() => {
-            props.archiveConfigurationField.text = event.value;
-            props.onChange();
-          });
-        }}
-        options={props.authorityLists.archiveConfigurationChoices.map((s) => {
-          return { value: s.id, label: s.label };
-        })}
-      />
+      >
+        <ReactSelect
+          css={css`
+            width: 200px;
+          `}
+          name={archiveConfigurationName} //what does this do? Maybe accessibility?
+          value={{
+            value: archiveConfigurationName,
+            label: archiveConfigurationName
+          }}
+          onChange={(event) => {
+            setArchiveConfigurationName(event.value);
+          }}
+          options={props.authorityLists.archiveConfigurationChoices.map((s) => {
+            return { value: s.id, label: s.label };
+          })}
+        />
+        <Button
+          variant="contained"
+          css={css`
+            font-weight: bold;
+            visibility: ${archiveConfigurationName ===
+            props.archiveConfigurationField.text
+              ? "hidden"
+              : "visible"};
+          `}
+          onClick={() =>
+            runInAction(() => {
+              props.archiveConfigurationField.text = archiveConfigurationName;
+              props.onChange();
+            })
+          }
+        >
+          Change
+        </Button>
+      </div>
       <div
         css={css`
           h2,
@@ -80,13 +106,13 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             margin-block-start: 0;
           }
           ul {
-            padding-left: 40px;
+            padding-left: 20px;
             margin-block-start: 0;
           }
         `}
       >
         <ArchiveConfigurationSummary
-          configurationName={props.archiveConfigurationField.text}
+          configurationName={archiveConfigurationName}
         />
       </div>
     </div>

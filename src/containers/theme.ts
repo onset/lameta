@@ -23,3 +23,19 @@ export function createLametaTheme(): Theme {
     }
   });
 }
+
+export function createProjectTheme(): Theme {
+  return createTheme({
+    palette: {
+      primary: { main: "#f6dbcb" },
+      secondary: {
+        // NB: if you change this to lameta_green, then we have to figure out how
+        // to get the import checkboxes to go to a darker shade
+        main: lameta_orange,
+        contrastText: "white"
+      },
+      warning: { main: "#F3AA18" },
+      info: { main: "#f6dbcb" }
+    }
+  });
+}

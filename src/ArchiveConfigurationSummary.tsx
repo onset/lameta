@@ -39,9 +39,9 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
         {accessProtocols
           .find((p) => p.protocol == props.configurationName)!
           .choices.map((choice) => (
-            <li key={choice.label}>
-              {choice.label} {choice.description}
-            </li>
+            <div key={choice.label}>
+              <b>{choice.label}</b> {choice.description}
+            </div>
           ))}
       </ul>
       <h2>Field Changes</h2>
