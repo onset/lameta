@@ -249,7 +249,7 @@ export class Project extends Folder {
     }
   }
   public get accessProtocol(): string {
-    return this.properties.getTextStringOrEmpty("configurationName");
+    return this.properties.getTextStringOrEmpty("archiveConfigurationName");
   }
   public static fromDirectory(directory: string): Project {
     try {
@@ -479,7 +479,7 @@ export class Project extends Folder {
 
   private setupProtocolChoices() {
     this.authorityLists.setAccessProtocol(
-      this.properties.getTextStringOrEmpty("configurationName"),
+      this.properties.getTextStringOrEmpty("archiveConfigurationName"),
       this.properties.getTextStringOrEmpty("customAccessChoices")
     );
 
@@ -488,7 +488,9 @@ export class Project extends Folder {
     mobx.reaction(
       () => {
         return {
-          protocol: this.properties.getTextStringOrEmpty("configurationName"),
+          protocol: this.properties.getTextStringOrEmpty(
+            "archiveConfigurationName"
+          ),
           customChoices: this.properties.getTextStringOrEmpty(
             "customAccessChoices"
           )
@@ -500,7 +502,7 @@ export class Project extends Folder {
       }
     );
     mobx.reaction(
-      () => this.properties.getValueOrThrow("configurationName").text,
+      () => this.properties.getValueOrThrow("archiveConfigurationName").text,
       (newValue) =>
         //      .textHolder.map.intercept((change) => { mobx6 doesn't have this intercept
         this.authorityLists.setAccessProtocol(
@@ -511,8 +513,9 @@ export class Project extends Folder {
     mobx.reaction(
       () => this.properties.getValueOrThrow("customAccessChoices").text,
       (newValue) => {
-        const currentProtocol =
-          this.properties.getTextStringOrEmpty("configurationName");
+        const currentProtocol = this.properties.getTextStringOrEmpty(
+          "archiveConfigurationName"
+        );
         // a problem with this is that it's going going get called for every keystroke in the Custom Access Choices box
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
@@ -521,7 +524,7 @@ export class Project extends Folder {
     //   .getValueOrThrow("customAccessChoices")
     //    .textHolder.map.intercept((change) => {
     //     const currentProtocol = this.properties.getTextStringOrEmpty(
-    //       "configurationName"
+    //       "archiveConfigurationName"
     //     );
     //     // a problem with this is that it's going going get called for every keystrock in the Custom Access Choices box
     //     this.authorityLists.setAccessProtocol(
