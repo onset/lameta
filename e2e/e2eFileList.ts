@@ -33,6 +33,8 @@ export class E2eFileList {
     // this gets really flaky with the mocking and background copying.
     // for now, if we actualy need this file, let's just put it where we want it
     if (wait) {
+      // pause for a second
+      await this.page.waitForTimeout(500);
       fs.writeFileSync(wait.path, "hello world");
 
       await waitForCondition(wait.page, () => {

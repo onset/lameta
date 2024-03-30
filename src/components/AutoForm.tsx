@@ -170,7 +170,8 @@ class AutoForm extends React.Component<IProps> {
           f.definition.visibility !== "never" &&
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
-          !f.definition.isAdditional
+          !f.definition.isAdditional &&
+          f.definition.key !== "customFields" // this is handled special, below
       )
       .sort((a, b) => {
         const x =
@@ -199,7 +200,7 @@ class AutoForm extends React.Component<IProps> {
         ) : (
           ""
         )}
-        {this.props.folder.hasCustomFieldsTable ? (
+        {this.props.folder.properties.shouldShow("customFields") ? (
           <CustomFieldsTable file={this.props.folder.metadataFile!} />
         ) : (
           ""

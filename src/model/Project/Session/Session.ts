@@ -165,10 +165,6 @@ export class Session extends Folder {
   public get hasMoreFieldsTable(): boolean {
     return true;
   }
-  public get hasCustomFieldsTable(): boolean {
-    return true;
-  }
-
   // A note about name vs. ID. Here "ID" may be the name or the code, since
   // the rule we inherited from SM Classic is that if a Person has something
   // in the "code" field, then that acts as the display name and id around

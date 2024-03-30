@@ -86,7 +86,7 @@
     {
       key: "archiveConfigurationName",
       form: "ArchiveConfiguration",
-      default: "unknown",
+      default: "default",
       xmlTag: "ArchiveConfigurationName",
       englishLabel: "Archive Configuration used by this project",
       vocabulary: "ArchiveConfigurationName"

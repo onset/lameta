@@ -15,20 +15,6 @@
       description: "This is usually the same person as the Collection Steward."
     }
   ],
-  session: [
-    {
-      key: "description"
-      //multilingual: true
-    },
-    {
-      key: "customFields",
-      visibility: "never"
-    }
-  ],
-  people: [
-    {
-      key: "customFields",
-      visibility: "never"
-    }
-  ]
+  session: [],
+  people: []
 }

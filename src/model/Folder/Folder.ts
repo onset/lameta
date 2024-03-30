@@ -128,9 +128,6 @@ export abstract class Folder {
   public get hasMoreFieldsTable(): boolean {
     return false;
   }
-  public get hasCustomFieldsTable(): boolean {
-    return false;
-  }
 
   public abstract importIdMatchesThisFolder(id: string): boolean;
   public abstract get folderType(): IFolderType;

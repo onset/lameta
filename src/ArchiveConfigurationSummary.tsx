@@ -32,6 +32,8 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
   const personCustomizations = customizations.filter(
     (c) => c.area === "person"
   );
+  console.log("****", props.configurationName);
+
   return (
     <div>
       <h2>Session Access Choices</h2>

@@ -125,4 +125,18 @@ export class FieldSet extends Dictionary<string, Field> {
     field.key = newKey;
     this.setValue(field.key, field);
   }
+
+  public shouldShow(key: string): boolean {
+    if (!this.containsKey(key)) {
+      return false;
+    }
+    if (this.getValueOrThrow(key).definition.visibility === "never") {
+      return false;
+    }
+    // support "ifNotEmpty"
+    if (this.getValueOrThrow(key).definition.visibility === "ifNotEmpty") {
+      return this.getHasValue(key);
+    }
+    return true;
+  }
 }
