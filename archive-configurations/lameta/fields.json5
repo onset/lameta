@@ -96,7 +96,7 @@
       form: "ArchiveConfiguration",
       "//": "Older Windows SM actually didn't store this in the sprj at all",
       xmlTag: "CustomAccessProtocol",
-      englishLabel: "Custom access choices"
+      englishLabel: "Custom Session Access Choices"
     },
     /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
       is a drag.

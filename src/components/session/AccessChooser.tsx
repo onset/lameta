@@ -21,25 +21,24 @@ class AccessChooser extends React.Component<
   }
 
   public render() {
-    const options = this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
-      (c: IChoice) => {
-        // console.log(
-        //   `translateAccessProtocol(${c.label})--> ${JSON.stringify(
-        //     translateAccessProtocolLabelOrDescription(c.label),
-        //     null,
-        //     2
-        //   )}`
-        // );
-        const {
-          label,
-          description
-        } = translateAccessProtocolLabelOrDescription(c.label);
-        return new Object({
-          value: c.label, // we use english as the value, that's what we store on disk
-          label: description ? `${label}: ${description}` : label
-        });
-      }
-    );
+    const options =
+      this.props.authorityLists.accessChoicesOfCurrentProtocol.map(
+        (c: IChoice) => {
+          console.log(
+            `translateAccessProtocol(${c.label})--> ${JSON.stringify(
+              translateAccessProtocolLabelOrDescription(c.label),
+              null,
+              2
+            )}`
+          );
+          const { label, description } =
+            translateAccessProtocolLabelOrDescription(c.label);
+          return new Object({
+            value: c.label, // we use english as the value, that's what we store on disk
+            label: description ? `${label}: ${description}` : label
+          });
+        }
+      );
 
     let currentOption: object | null = null;
     if (this.props.field.text.trim().length > 0) {

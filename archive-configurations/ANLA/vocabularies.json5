@@ -1,0 +1,20 @@
+{
+  accessProtocol: [
+    {
+      label: "Level 1",
+      description: "Public Access",
+      id: "Level 1"
+    },
+    { label: "Level 2", description: "Password", id: "Level 2", id: "Level 2" },
+    {
+      label: "Level 3",
+      description: "Time limit",
+      id: "Level 3"
+    },
+    {
+      label: "Level 4",
+      description: "Depositor control",
+      id: "Level 4"
+    }
+  ]
+}

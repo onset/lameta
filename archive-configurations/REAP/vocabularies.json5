@@ -1,17 +1,17 @@
 {
   accessProtocol: [
     {
-      key: "Public",
+      id: "Public",
       label: "Public",
       description: "Open to all users"
     },
     {
-      key: "REAP",
+      id: "REAP",
       label: "REAP Users",
       description: "Restricted to REAP users"
     },
     {
-      key: "Entity",
+      id: "Entity",
       label: "Entity",
       description: "Restricted to Organizational Unit"
     }

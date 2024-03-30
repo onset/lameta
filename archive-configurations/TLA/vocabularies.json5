@@ -1,0 +1,8 @@
+{
+  accessProtocol: [
+    { label: "Open", description: "Open", id: "Open" },
+    { label: "Restricted", description: "Restricted", id: "Restricted" },
+    { label: "Protected", description: "Protected", id: "Protected" },
+    { label: "Closed", description: "Closed", id: "Closed" }
+  ]
+}

@@ -9,7 +9,7 @@ import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
 import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
 import { Button, Collapse } from "@mui/material";
-import { Trans } from "@lingui/macro";
+
 import { TextFieldEdit } from "../TextFieldEdit";
 
 interface IProps {
@@ -22,15 +22,37 @@ interface IProps {
 const ArchiveConfigurationForm: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const [archiveConfigurationName, setArchiveConfigurationName] =
+  const [choices, setChoices] = React.useState<
+    { value: string; label: string }[]
+  >([]);
+  React.useEffect(() => {
+    setChoices(
+      props.authorityLists.archiveConfigurationChoices.map((choice) => ({
+        value: choice.id,
+        label: choice.label
+      }))
+    );
+  }, []);
+  const [archiveConfigurationKey, setArchiveConfigurationKey] =
     React.useState<string>(props.archiveConfigurationField.text);
+  const archiveConfigurationLabel =
+    props.authorityLists.archiveConfigurationChoices.find(
+      (choice) => choice.id === archiveConfigurationKey
+    )?.label;
   return (
     <div
       css={css`
         padding-left: 20px;
       `}
     >
-      <Collapse in={archiveConfigurationName == "OTHER"}>
+      <h1
+        css={css`
+          margin-bottom: 5px;
+        `}
+      >
+        Archive Configuration
+      </h1>
+      <Collapse in={archiveConfigurationKey == "default"}>
         <Alert
           severity="info"
           variant="outlined"
@@ -46,17 +68,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           `}
         >
           Lameta projects are normally set up to work with the requirements of a
-          single archiving institution. Choose the name of your archive or
-          "Other" if you don't see it listed.
+          single archiving institution. If yours is not listed, you can use
+          "Other". This will give you the default fields and vocabularies, and
+          you can enter your own session access choices.
         </Alert>
       </Collapse>
-      <h1
-        css={css`
-          margin-bottom: 5px;
-        `}
-      >
-        Archive Configuration
-      </h1>
       <div
         css={css`
           display: flex;
@@ -68,32 +84,29 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           css={css`
             width: 200px;
           `}
-          name={archiveConfigurationName} //what does this do? Maybe accessibility?
+          name={archiveConfigurationKey} //what does this do? Maybe accessibility?
           value={{
-            value: archiveConfigurationName,
-            label: archiveConfigurationName
+            value: archiveConfigurationKey,
+            label: archiveConfigurationLabel
           }}
           onChange={(event) => {
-            setArchiveConfigurationName(event.value);
+            setArchiveConfigurationKey(event.value);
           }}
-          options={props.authorityLists.archiveConfigurationChoices
-            .map((s) => {
-              return { value: s.id, label: s.label };
-            })
-            .concat({ value: "OTHER", label: "Other" })}
+          options={choices}
         />
         <Button
           variant="contained"
           css={css`
             font-weight: bold;
-            visibility: ${archiveConfigurationName ===
+            // show when we have a new choice read to be made permanent
+            visibility: ${archiveConfigurationKey ===
             props.archiveConfigurationField.text
               ? "hidden"
               : "visible"};
           `}
           onClick={() =>
             runInAction(() => {
-              props.archiveConfigurationField.text = archiveConfigurationName;
+              props.archiveConfigurationField.text = archiveConfigurationKey;
               props.onChange();
             })
           }
@@ -117,13 +130,14 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           }
         `}
       >
-        {archiveConfigurationName === "OTHER" ? (
+        {archiveConfigurationKey === "default" ? (
           <CustomArchiveConfiguration
             customChoicesField={props.customChoicesField}
           />
         ) : (
           <ArchiveConfigurationSummary
-            configurationName={archiveConfigurationName}
+            authorityLists={props.authorityLists}
+            configurationName={archiveConfigurationKey}
           />
         )}
       </div>

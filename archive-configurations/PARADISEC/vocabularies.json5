@@ -1,0 +1,14 @@
+{
+  accessProtocol: [
+    {
+      id: "O",
+      label: "Open",
+      description: "Open (subject to PARADISEC access conditions)"
+    },
+    {
+      id: "C",
+      label: "Closed",
+      description: "Closed (subject to certain specified conditions)"
+    }
+  ]
+}

@@ -123,7 +123,7 @@ export function translateAccessProtocolLabelOrDescription(
   // because there is an "ID" but also an "id" (for Indonesian), the loader (dsv at the moment) does this crazy thing to the ID column name
   const keyForTheIDColumn = '\ufeff"ID"';
   const labelRow = rawAccessProtocols.find((row) => row["en"] === englishLabel);
-  if (!labelRow) return { label: "", description: "" };
+  if (!labelRow) return { label: englishLabel, description: "" };
   const choiceId = labelRow[keyForTheIDColumn];
   const descriptionRowId = choiceId + ".Description";
   const descriptionRow = rawAccessProtocols.find(

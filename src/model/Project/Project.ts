@@ -482,7 +482,7 @@ export class Project extends Folder {
       this.properties.getTextStringOrEmpty("archiveConfigurationName"),
       this.properties.getTextStringOrEmpty("customAccessChoices")
     );
-
+    /* not needed anymore because we reopen the project when the archiveConfigurationName changes
     // when the user changes the chosen access protocol, we need to let the authorityLists
     // object know so that it can provide the correct set of choices to the Settings form.
     mobx.reaction(
@@ -501,6 +501,8 @@ export class Project extends Folder {
         this.authorityLists.setAccessProtocol(protocol, customChoices);
       }
     );
+
+    
     mobx.reaction(
       () => this.properties.getValueOrThrow("archiveConfigurationName").text,
       (newValue) =>
@@ -520,6 +522,7 @@ export class Project extends Folder {
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
     );
+    */
     // this.properties
     //   .getValueOrThrow("customAccessChoices")
     //    .textHolder.map.intercept((change) => {
