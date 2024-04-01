@@ -62,7 +62,7 @@ export class ProjectHolder {
     }
     if (p == null) {
       //console.log("setting project to null");
-      userSettings.PreviousProjectDirectory = null;
+      // removed Apri 2024 but not sure userSettings.PreviousProjectDirectory = null;
     } else {
       //console.log("setting project to " + p.directory);
     }
@@ -478,6 +478,10 @@ export class Project extends Folder {
   }
 
   private setupProtocolChoices() {
+    console.log(
+      "setting up protocol choices. archiveConfigurationName is " +
+        this.properties.getTextStringOrEmpty("archiveConfigurationName")
+    );
     this.authorityLists.setAccessProtocol(
       this.properties.getTextStringOrEmpty("archiveConfigurationName"),
       this.properties.getTextStringOrEmpty("customAccessChoices")

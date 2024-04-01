@@ -84,6 +84,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           css={css`
             width: 200px;
           `}
+          id="archiveConfigurationName-select"
           name={archiveConfigurationKey} //what does this do? Maybe accessibility?
           value={{
             value: archiveConfigurationKey,
@@ -107,6 +108,8 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           onClick={() =>
             runInAction(() => {
               props.archiveConfigurationField.text = archiveConfigurationKey;
+              // nb: the dirty detection system will not notice this change until
+              // the event loop has a chance to run
               props.onChange();
             })
           }

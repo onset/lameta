@@ -85,6 +85,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             )}
             authorityLists={props.authorityLists}
             onChange={() => {
+              props.project.metadataFile!.wasChangeThatMobxDoesNotNotice();
               props.project.saveFolderMetaData();
               props.reload();
             }}

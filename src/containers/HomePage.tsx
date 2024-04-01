@@ -37,6 +37,7 @@ import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 const isDev = require("electron-is-dev");
 
@@ -121,7 +122,7 @@ class HomePage extends React.Component<IProps, IState> {
     });
   }
 
-  // for e2e
+  // for e2e (but not entirely?)
   public softReload() {
     const dir = this.projectHolder.project?.directory;
     this.projectHolder.setProject(null);
@@ -276,7 +277,13 @@ class HomePage extends React.Component<IProps, IState> {
             authorityLists={this.projectHolder.project.authorityLists}
             menu={this.menu}
             reload={() => {
-              remote.getCurrentWindow().reload();
+              // currently, I'm trying to just use softReload because that is more e2e
+              // friendly and having the same behavior in e2e and non-e2e is good.
+
+              //remote.getCurrentWindow().reload();
+              this.softReload();
+              //if (getTestEnvironment().E2E) this.softReload();
+              //else remote.getCurrentWindow().reload();
             }}
           />
         )) || (

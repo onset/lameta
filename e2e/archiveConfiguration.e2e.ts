@@ -34,4 +34,18 @@ test.describe("ArchiveConfiguration", () => {
     await page.locator("#access-chooser").click();
     await shouldSeeExactlyOnce(page, ["good", "bad", "ugly"]);
   });
+  test("Changing to ELAR gives ELAR access protocols", async () => {
+    await project.goToProjectConfiguration();
+    await page.locator("#archiveConfigurationName-select").click();
+    await page.getByText("ELAR", { exact: true }).click();
+    await page.locator("button:has-text('Change')").click(); // will do a soft reload in e2e context
+    project.goToSessions();
+    project.addSession();
+    await page.locator("#access-chooser").click();
+    await shouldSeeExactlyOnce(page, [
+      "O: fully open",
+      "U: open to users",
+      "S: open to subscribers"
+    ]);
+  });
 });
