@@ -35,7 +35,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-about"} data-testid="project-about">
             <Trans>About This Project</Trans>
           </Tab>
-          <Tab className={"tab-project-archive-configuration"}>
+          <Tab
+            className={"tab-project-archive-configuration"}
+            data-testid="project-configuration"
+          >
             <Trans>Archive Configuration</Trans>
           </Tab>
           <Tab className={"tab-project-collection"}>

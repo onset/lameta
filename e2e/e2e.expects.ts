@@ -1,4 +1,4 @@
-import { ElectronApplication, expect } from "@playwright/test";
+import { ElectronApplication, Page, expect } from "@playwright/test";
 
 export async function expectMenuWithLabel(
   app: ElectronApplication,
@@ -16,4 +16,32 @@ export async function expectMenuWithLabel(
     { label }
   );
   expect(menu).toBeTruthy();
+}
+export async function shouldSeeExactlyOnce(
+  page: Page,
+  labels: string[],
+  exact = true
+) {
+  for (const label of labels) {
+    await expect(page.getByText(label, { exact: exact })).toBeVisible();
+  }
+}
+export async function shouldAtLeastOnce(
+  page: Page,
+  labels: string[],
+  exact = true
+) {
+  for (const label of labels) {
+    await expect(page.getByText(label, { exact: exact })).toBeTruthy();
+  }
+}
+export async function shouldHaveMultiple(
+  page: Page,
+  label: string,
+  count: number,
+  exact = true
+) {
+  const x = await page.getByText(label, { exact: exact });
+  const c = await x.count();
+  await expect(c).toBe(count);
 }

@@ -51,7 +51,7 @@ arbitrary URL, the render process in electron is tied up with its own chromium b
 run a built exe of lameta.
 
 ```bash
-yarn vite build --watch
+yarn  e2ebuildwatch
 yarn e2e
 ```
 
@@ -63,10 +63,10 @@ To run just one e2e fixture, name it:
 yarn e2e registration.e2e.ts
 ```
 
-To show the Playwright Inspector, use
+To show the Playwright Inspector (which has a recorder), use
 
 ```bash
-yarn e2edebug
+yarn e2erecord
 ```
 
 ### l10n

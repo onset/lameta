@@ -7,6 +7,7 @@ import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { translateAccessProtocolLabelOrDescription } from "../../other/localization";
 import { lameta_orange } from "../../containers/theme";
+import { FieldLabel } from "../FieldLabel";
 
 export interface IProps {
   field: Field;
@@ -56,11 +57,11 @@ class AccessChooser extends React.Component<
 
     return (
       <div className={"field access-chooser"}>
-        <label>
-          <Trans>Access</Trans>
-        </label>
+        <FieldLabel fieldDef={this.props.field.definition} />
         <ReactSelectClass
-          name={this.props.field.labelInUILanguage}
+          //doesn't work data-testid="access-chooser"
+          // playwright locator can't find name here either: name={"foobar"}
+          id="access-chooser" // for playwright
           tabIndex={this.props.tabIndex ? this.props.tabIndex.toString() : ""}
           value={currentOption}
           placeholder=""

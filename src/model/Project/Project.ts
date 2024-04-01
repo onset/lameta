@@ -512,6 +512,7 @@ export class Project extends Folder {
           this.properties.getTextStringOrEmpty("customAccessChoices")
         )
     );
+    */
     mobx.reaction(
       () => this.properties.getValueOrThrow("customAccessChoices").text,
       (newValue) => {
@@ -522,7 +523,7 @@ export class Project extends Folder {
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       }
     );
-    */
+
     // this.properties
     //   .getValueOrThrow("customAccessChoices")
     //    .textHolder.map.intercept((change) => {

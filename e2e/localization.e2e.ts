@@ -2,7 +2,12 @@ import { E2eProject, createNewProject } from "./e2eProject";
 import { test, expect as expect } from "@playwright/test";
 import { Page } from "playwright-core";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { expectMenuWithLabel } from "./e2e.expects";
+import {
+  expectMenuWithLabel,
+  shouldAtLeastOnce,
+  shouldHaveMultiple,
+  shouldSeeExactlyOnce
+} from "./e2e.expects";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -35,15 +40,15 @@ test.describe("Localization", () => {
     await expectMenuWithLabel(lameta.electronApp, "Lihat");
 
     // Project, Session, People tabs
-    await shouldSeeExactlyOnce(["Proyek", "Sesi", "Orang-Orang"]);
+    await shouldSeeExactlyOnce(page, ["Proyek", "Sesi", "Orang-Orang"]);
     // tabs in Project
-    await shouldSeeExactlyOnce(["Tentang proyek ini"]);
+    await shouldSeeExactlyOnce(page, ["Tentang proyek ini"]);
 
-    await shouldAtLeastOnce(["pilih..."]);
+    await shouldAtLeastOnce(page, ["pilih..."]);
 
     // main project page
     await project.goToProjectAbout();
-    await shouldSeeExactlyOnce([
+    await shouldSeeExactlyOnce(page, [
       "Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
       "Judul proyek yang didanai" // regression test
     ]);
@@ -53,24 +58,24 @@ test.describe("Localization", () => {
     // sessions page
 
     // session list
-    await shouldAtLeastOnce(["Judul"]); // file list header for title
+    await shouldAtLeastOnce(page, ["Judul"]); // file list header for title
 
     // buttons above the file lise
-    await shouldSeeExactlyOnce(["Buka", "Ubah Nama..."]);
+    await shouldSeeExactlyOnce(page, ["Buka", "Ubah Nama..."]);
 
     // files in the session headers
-    await shouldSeeExactlyOnce(["Nama", "Tipe"]);
+    await shouldSeeExactlyOnce(page, ["Nama", "Tipe"]);
     // tabs of the selected file
-    await shouldSeeExactlyOnce(["Catatan"]);
+    await shouldSeeExactlyOnce(page, ["Catatan"]);
     // some fields
-    await shouldSeeExactlyOnce(["Deskripsi", "Kotak-kotak Khusus"]);
+    await shouldSeeExactlyOnce(page, ["Deskripsi", "Kotak-kotak Khusus"]);
 
-    await shouldHaveMultiple("Tanggal", 2); // date
+    await shouldHaveMultiple(page, "Tanggal", 2); // date
 
     await project.goToPeople();
     await project.addPerson();
 
-    await shouldSeeExactlyOnce([
+    await shouldSeeExactlyOnce(page, [
       "Nama Lengkap", //name
       "Tahun Lahir", //birth year
       // TODO not finding this link: "Tambah Bahasa", // add language
@@ -78,19 +83,3 @@ test.describe("Localization", () => {
     ]);
   });
 });
-
-async function shouldSeeExactlyOnce(labels: string[], exact = true) {
-  for (const label of labels) {
-    await expect(page.getByText(label, { exact: exact })).toBeVisible();
-  }
-}
-async function shouldAtLeastOnce(labels: string[], exact = true) {
-  for (const label of labels) {
-    await expect(page.getByText(label, { exact: exact })).toBeTruthy();
-  }
-}
-async function shouldHaveMultiple(label: string, count: number, exact = true) {
-  const x = await page.getByText(label, { exact: exact });
-  const c = await x.count();
-  await expect(c).toBe(count);
-}
