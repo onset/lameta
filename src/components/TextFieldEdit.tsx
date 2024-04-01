@@ -108,6 +108,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         display: flex;
         padding-left: 5px;
         padding-top: 2px;
+        ${props.showAffordancesAfter &&
+        props.field.definition.separatorWithCommaInstructions
+          ? "padding-right: 2px;" // leave a little space after the icon
+          : ""};
       `}
     >
       {props.axis && (

@@ -68,7 +68,11 @@ export class E2eProject {
   }
   public async goToProjectConfiguration() {
     await this.goToProject();
-    await this.page.getByTestId("project-configuration").click();
+    await this.page.getByTestId("project-configuration-tab").click();
+  }
+  public async goToProjectCollection() {
+    await this.goToProject();
+    await this.page.getByTestId("project-collection-tab").click();
   }
   public async goToSessions() {
     await this.page.getByTestId("sessions-tab").click();

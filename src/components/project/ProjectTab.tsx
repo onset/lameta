@@ -24,6 +24,23 @@ interface IProps {
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
   const kFirstTabToOpen = 1;
+
+  const showCollectionTab = props.project.properties.values().some((p) => {
+    console.log(`${p.key}`);
+    if (
+      p.definition &&
+      p.definition.form === "collection" &&
+      p.definition.visibility === "always"
+    ) {
+      console.log(`SHOWING COllection for ${p.key}`);
+    }
+    return (
+      p.definition &&
+      p.definition.form === "collection" &&
+      p.definition.visibility === "always"
+    );
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <Tabs
@@ -37,13 +54,18 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           </Tab>
           <Tab
             className={"tab-project-archive-configuration"}
-            data-testid="project-configuration"
+            data-testid="project-configuration-tab"
           >
             <Trans>Archive Configuration</Trans>
           </Tab>
-          <Tab className={"tab-project-collection"}>
-            <Trans>Collection</Trans>
-          </Tab>
+          {showCollectionTab && (
+            <Tab
+              className={"tab-project-collection"}
+              data-testid="project-collection-tab"
+            >
+              <Trans>Collection</Trans>
+            </Tab>
+          )}
           <Tab className={"tab-project-description-docs"}>
             <Trans>Description Documents</Trans>
           </Tab>
