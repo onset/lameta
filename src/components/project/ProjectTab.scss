@@ -5,7 +5,7 @@
   height: 100%;
   color: black;
   display: flex; // put the tabs on the left
-
+  max-width: 800px;
   //left side
   & > ul {
     width: 200px;

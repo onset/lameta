@@ -28,6 +28,25 @@
       tabIndex: 2
     },
     {
+      key: "collectionSubjectLanguages",
+      englishLabel: "Subject Languages",
+      visibility: "never",
+      form: "primary",
+      type: "languageChoices",
+      controlProps: {
+        canCreateNew: true
+      },
+      tabIndex: 1
+    },
+    {
+      key: "collectionWorkingLanguages",
+      englishLabel: "Working Languages",
+      visibility: "never",
+      form: "primary",
+      type: "languageChoices",
+      tabIndex: 2
+    },
+    {
       key: "location",
       englishLabel: "Location/Address",
       xmlTag: "Location",
@@ -184,13 +203,13 @@
     },
     {
       key: "languages",
-      type: "multiLanguage",
+      type: "languageChoices",
       englishLabel: "Subject Languages",
       tabIndex: 12
     },
     {
       key: "workingLanguages",
-      type: "multiLanguage",
+      type: "languageChoices",
       englishLabel: "Working Languages",
       tabIndex: 14
     },

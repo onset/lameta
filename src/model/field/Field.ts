@@ -66,7 +66,7 @@ export class Field {
       case "language":
         type = FieldType.Language;
         break;
-      case "multilanguage":
+      case "languagechoices":
         type = FieldType.LanguageChoices;
         break;
       case "personlanguagelist":
@@ -318,7 +318,7 @@ export class Field {
       case FieldType.Language:
         return { type: "language", value: this.text };
       case FieldType.LanguageChoices:
-        return { type: "multiLanguage", value: this.text };
+        return { type: "languageChoices", value: this.text };
       case FieldType.PersonLanguageList:
         return {
           type: "personLanguageList",

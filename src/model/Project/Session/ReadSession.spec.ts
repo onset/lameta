@@ -67,7 +67,7 @@ describe("Session Read", () => {
   });
 
   it("should read in a single language", () => {
-    const f = GetSessionFileWithOneField("languages", "fra", "multiLanguage");
+    const f = GetSessionFileWithOneField("languages", "fra", "languageChoices");
     expect(f.properties.getTextStringOrEmpty("languages")).toBe("fra");
   });
 
@@ -75,7 +75,7 @@ describe("Session Read", () => {
     const f = GetSessionFileWithOneField(
       "languages",
       "fra;spa",
-      "multiLanguage"
+      "languageChoices"
     );
     expect(f.properties.getTextStringOrEmpty("languages")).toBe("fra;spa");
   });

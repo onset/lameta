@@ -1,5 +1,8 @@
 {
   project: [
+    { key: "collectionSubjectLanguages", visibility: "always" },
+    { key: "collectionWorkingLanguages", visibility: "always" },
+
     { key: "collectionName", visibility: "always" },
     { key: "collectionTitle", visibility: "always" },
     { key: "collectionDescription", visibility: "always" },

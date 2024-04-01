@@ -44,7 +44,7 @@ class AutoForm extends React.Component<IProps> {
   private makeEdit(field: Field, props: IProps): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
-      case FieldType.Text:
+      case FieldType.Text: {
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return (
@@ -128,6 +128,7 @@ class AutoForm extends React.Component<IProps> {
             />
           );
         }
+      }
       case FieldType.Date:
         return (
           <DateFieldEdit
@@ -153,6 +154,7 @@ class AutoForm extends React.Component<IProps> {
             field={field as Field}
             languageFinder={props.languageFinder}
             tabIndex={field.definition.tabIndex}
+            {...field.definition.controlProps}
           />
         );
 

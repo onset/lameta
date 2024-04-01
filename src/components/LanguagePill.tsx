@@ -32,8 +32,11 @@ export const LanguageOption = (props) => {
     <div
       {...props.innerProps}
       css={css`
-        padding-left: "5px";
-        background-color: ${props.isFocused ? saymore_orange : "white"};
+        padding-left: 5px;
+        color: ${props.isFocused ? "white" : "black"};
+        // TODO: improve this color: the orang looked good, except in the Project where everything is orange
+        // "#dc8deb" // light purple
+        background-color: ${props.isFocused ? "#257598" : "white"};
         .isoCode {
           //font-size: 0.6em;
           margin-left: 5px;

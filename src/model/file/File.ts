@@ -496,7 +496,7 @@ export /*babel doesn't like this: abstract*/ class File {
     const typesWeStoreAsStrings = [
       "string",
       "date",
-      "multiLanguage",
+      "languageChoices",
       "language"
     ];
 

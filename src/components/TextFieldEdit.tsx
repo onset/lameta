@@ -49,7 +49,11 @@ export const TextFieldEdit: React.FunctionComponent<
           omitInfoAffordances={props.showAffordancesAfter}
         />
       )}
-      <div>
+      <div
+        css={css`
+          flex-grow: 1;
+        `}
+      >
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
         <div
           css={css`
@@ -128,6 +132,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         css={css`
           border: none;
           padding-top: 0;
+          flex-grow: 1;
         `}
         id={props.field.key}
         tabIndex={props.tabIndex}

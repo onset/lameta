@@ -17,6 +17,7 @@ export class FieldDefinition {
   public visibility?: "always" | "never" | "ifNotEmpty";
   public cssClass?: string;
   public choices?: string[];
+  public controlProps?: object;
   //note: this is currently used only for genres, and is also an open list,
   //where as the user enters new choices we haven't seen before, we add them to
   //this list. The expanded lists is not persisted anywhere... we just

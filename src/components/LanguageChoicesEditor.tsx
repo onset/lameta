@@ -1,6 +1,7 @@
 import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
+import CreatableAsyncSelect from "react-select/async-creatable";
 import { default as React, useState, useEffect } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
@@ -13,6 +14,7 @@ const saymore_orange = "#e69664";
 export interface IProps {
   field: Field;
   languageFinder: LanguageFinder;
+  canCreateNew?: boolean; // comes in via definition.controlProps
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
@@ -90,33 +92,38 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       )
     );
   };
+  const selectProps = {
+    tabIndex: props.tabIndex ? props.tabIndex.toString() : "",
+    name: props.field.labelInUILanguage,
+    components: {
+      MultiValueLabel: LanguagePill,
+      Option: LanguageOption,
+      // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
+      DropdownIndicator: null
+    },
+    className: "select flex-grow",
+    placeholder: "",
+    isClearable: false, // don't need the extra "x"
+    loadOptions: _.debounce(loadMatchingOptions, 100),
+    value: currentValueArray,
+    styles: customStyles,
+    onChange: (v: any[]) => {
+      // if you delete the last member, you get null instead of []
+      const newChoices = v ? v : [];
+      const s: string = newChoices.map((o) => o.value).join(";");
+      props.field.setValueFromString(s);
+    },
+    isMulti: true
+  };
+
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
-
-      <AsyncSelect
-        tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
-        name={props.field.labelInUILanguage}
-        components={{
-          MultiValueLabel: LanguagePill,
-          Option: LanguageOption,
-          // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
-          DropdownIndicator: null
-        }}
-        className="select"
-        placeholder=""
-        isClearable={false} // don't need the extra "x"
-        loadOptions={_.debounce(loadMatchingOptions, 100)}
-        value={currentValueArray}
-        styles={customStyles}
-        onChange={(v: any[]) => {
-          // if you delete the last member, you get null instead of []
-          const newChoices = v ? v : [];
-          const s: string = newChoices.map((o) => o.value).join(";");
-          props.field.setValueFromString(s);
-        }}
-        isMulti
-      />
+      {props.canCreateNew ? (
+        <CreatableAsyncSelect {...selectProps}></CreatableAsyncSelect>
+      ) : (
+        <AsyncSelect {...selectProps} />
+      )}
     </div>
   );
 });
