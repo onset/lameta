@@ -6,6 +6,7 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
+import { describe, it } from "vitest";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -34,10 +35,7 @@ function writeSessionFile(contents: string): {
 }
 
 function runTestsOnMetadataFile(contents: string, tests: () => any) {
-  let sessionFolder;
-  let filePath;
-  let tmpFolder;
-  ({ tmpFolder, sessionFolder, filePath } = writeSessionFile(contents));
+  const { tmpFolder, sessionFolder, filePath } = writeSessionFile(contents);
 
   // note, we are using a session to run these just because we need something
   // concrete. It would be an improvement to do it in some more generic way.
@@ -92,9 +90,7 @@ describe("file", () => {
     );
     expect(f2.getTextField("notes").text).toBe(notes);
   });
-});
 
-describe("file", () => {
   it("should roundtrip custom field", () => {
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
