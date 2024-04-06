@@ -7,6 +7,7 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
+import { describe, it } from "vitest";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -90,9 +91,7 @@ describe("file", () => {
     );
     expect(f2.getTextField("notes").text).toBe(notes);
   });
-});
 
-describe("file", () => {
   it("should roundtrip custom field", () => {
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());

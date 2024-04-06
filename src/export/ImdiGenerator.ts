@@ -515,7 +515,13 @@ export default class ImdiGenerator {
   }
 
   private resourcesOfType(folder: Folder, type: string) {
-    folder.files.forEach((f: File) => {
+    const sortedByFileNames = folder.files.sort((a, b) =>
+      a.getRelativePathForExportingTheActualFile() <
+      b.getRelativePathForExportingTheActualFile()
+        ? -1
+        : 1
+    );
+    sortedByFileNames.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
         if (getStatusOfFile(f).missing) {
           // At the moment we're not even exporting metadata if the file is

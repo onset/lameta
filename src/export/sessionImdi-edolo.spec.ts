@@ -37,11 +37,9 @@ describe("session imdi export", () => {
   });
   it("should contain Session/Name", () => {
     expect(count("METATRANSCRIPT/Session/Name")).toBe(1);
-  });
-
-  it("should contain Session/Name", () => {
     expect(value("METATRANSCRIPT/Session/Name")).toBe("ETR009");
   });
+
   it("should contain Session/Title", () => {
     expect(count("METATRANSCRIPT/Session/Title")).toBe(1);
   });
@@ -106,7 +104,21 @@ it("should contain Actors", () => {
 });
 it("should contain MediaFiles", () => {
   expect(count("METATRANSCRIPT/Session/Resources/MediaFile")).toBe(4);
-  expect("METATRANSCRIPT/Session/Resources/MediaFile/Type").toMatch("Audio"); // ELAR needs upper case
+  expect(
+    count(
+      "METATRANSCRIPT/Session/Resources/MediaFile[ResourceLink='ETR009/ETR009_Careful.mp3' and Type='Audio']"
+    )
+  ).toBe(1); // ELAR needs upper case
+  expect(
+    count(
+      "METATRANSCRIPT/Session/Resources/MediaFile[ResourceLink='ETR009/SceneAroundCamera.JPG' and Type='Image']"
+    )
+  ).toBe(1);
+  expect(
+    count(
+      "METATRANSCRIPT/Session/Resources/MediaFile[ResourceLink='ETR009/ETR009_Tiny.mp4' and Type='Video']"
+    )
+  ).toBe(1);
 });
 it("should give a good record for an ELAN file", () => {
   expect("METATRANSCRIPT/Session/Resources/WrittenResource[2]/Type").toMatch(
