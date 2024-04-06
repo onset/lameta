@@ -13,7 +13,7 @@ test.describe("FileList", () => {
     lameta = new LametaE2ERunner();
     page = await lameta.launch();
     await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "FileList");
+    project = await createNewProject(lameta, "FileList[don't break]");
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
   test.afterAll(async ({}) => {
@@ -31,6 +31,11 @@ test.describe("FileList", () => {
     await project.goToPeople();
     await project.goToSessions();
     await expect(match()).toBeVisible();
+    // the "[don't break]" in the path would break after a reload in lameta 2.3 due to changes in glob behavior
+    await lameta.softReload();
+    await project.goToSessions();
+    await expect(match()).toBeVisible();
+
     // NOT POSSIBLE YET
     //await project.deleteFile("foo.txt");
     //await expect(match()).toBeUndefined();

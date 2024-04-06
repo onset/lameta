@@ -68,7 +68,7 @@ export default defineConfig({
     renderer({
       nodeIntegration: true,
       optimizeDeps: {
-        include: ["xml2js", "glob", "fs-extra", "graceful-fs"]
+        include: ["xml2js", /*"glob",*/ "fs-extra", "graceful-fs"]
       }
     }),
     dsv() // for importing csv

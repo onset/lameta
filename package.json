@@ -2,7 +2,7 @@
   "main": "dist/src/mainProcess/main.js",
   "name": "lameta",
   "productName": "lameta",
-  "version": "2.3.0-alpha",
+  "version": "2.3.1-alpha",
   "author": {
     "name": "lameta",
     "email": "sorryno@email.org"
@@ -146,7 +146,6 @@
     "@types/filesize": "^5.0.0",
     "@types/fluent-ffmpeg": "^2.1.8",
     "@types/fs-extra": "^9.0.13",
-    "@types/glob": "^5.0.33",
     "@types/image-size": "^0.0.29",
     "@types/json5": "^2.2.0",
     "@types/lodash": "^4.14.165",
@@ -195,7 +194,7 @@
     "fold-to-ascii": "^5.0.0",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.1.0",
-    "glob": "^7.1.2",
+    "glob": "^9.3.3",
     "graceful-fs": "^4.2.4",
     "history": "^4.6.1",
     "hotkeys-js": "^3.3.1",
