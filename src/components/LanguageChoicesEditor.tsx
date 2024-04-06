@@ -8,6 +8,7 @@ import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
 import { observer } from "mobx-react";
+import { c } from "vitest/dist/reporters-5f784f42.js";
 
 const saymore_orange = "#e69664";
 
@@ -72,10 +73,20 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     .split(";")
     .filter((c) => c.length > 0)
     .map((c) => c.trim())
-    .map((code) => ({
-      value: code,
-      label: getName(props.languageFinder, code)
-    }));
+    .map((code) => {
+      if (code.indexOf("|") > 0) {
+        const parts = code.split("|");
+        console.log("parts: " + JSON.stringify(parts));
+        return {
+          value: parts[0],
+          label: parts[1]
+        };
+      }
+      return {
+        value: code,
+        label: getName(props.languageFinder, code)
+      };
+    });
 
   const loadMatchingOptions = (inputValue, callback) => {
     const matches =
@@ -107,10 +118,25 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     loadOptions: _.debounce(loadMatchingOptions, 100),
     value: currentValueArray,
     styles: customStyles,
-    onChange: (v: any[]) => {
-      // if you delete the last member, you get null instead of []
-      const newChoices = v ? v : [];
-      const s: string = newChoices.map((o) => o.value).join(";");
+    onChange: (
+      v: Array<{ value: string; label: string; __isNew__: boolean }>
+    ) => {
+      console.log("onChange: " + JSON.stringify(v));
+      // if any are new, change the value to "new"
+      const newChoices = v
+        ? v.map((o) =>
+            o.__isNew__ ? { label: o.label, value: `qaa-x-${o.label}` } : o
+          )
+        : []; // if you delete the last member, you get null instead of []
+
+      const s: string = newChoices
+        .map((o) => {
+          if (o.value.startsWith("qaa-x-") && !o.label.startsWith("qaa")) {
+            return `${o.value}|${o.label}`;
+          } else return o.value;
+        })
+        .join(";");
+      console.log("saving: " + s);
       props.field.setValueFromString(s);
     },
     isMulti: true
@@ -120,7 +146,12 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
       {props.canCreateNew ? (
-        <CreatableAsyncSelect {...selectProps}></CreatableAsyncSelect>
+        <CreatableAsyncSelect
+          {...selectProps}
+          onCreatableOptionCreate={(newOption) => {
+            window.alert("You created " + newOption.label);
+          }}
+        ></CreatableAsyncSelect>
       ) : (
         <AsyncSelect {...selectProps} />
       )}
