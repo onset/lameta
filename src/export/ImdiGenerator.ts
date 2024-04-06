@@ -241,9 +241,10 @@ export default class ImdiGenerator {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
           languages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -256,9 +257,10 @@ export default class ImdiGenerator {
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
           workingLanguages.forEach((code) => {
-            const langName = this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-              code
-            );
+            const langName =
+              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                code
+              );
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -511,7 +513,13 @@ export default class ImdiGenerator {
   }
 
   private resourcesOfType(folder: Folder, type: string) {
-    folder.files.forEach((f: File) => {
+    const sortedByFileNames = folder.files.sort((a, b) =>
+      a.getRelativePathForExportingTheActualFile() <
+      b.getRelativePathForExportingTheActualFile()
+        ? -1
+        : 1
+    );
+    sortedByFileNames.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
         if (getStatusOfFile(f).missing) {
           // At the moment we're not even exporting metadata if the file is

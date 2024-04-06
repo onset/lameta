@@ -84,7 +84,7 @@ describe("people csv export", () => {
   it("should contain expected notes", () => {
     expect(people(1, "notes")).toBe("");
   });
-  it("should contain expected notes", () => {
+  it("should contain expected education", () => {
     expect(people(1, "education")).toBe("Grade 2");
   });
   it("should not contain internal fields", () => {

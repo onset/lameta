@@ -17,10 +17,12 @@ import {
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import * as glob from "glob";
 import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
-import { asyncTrash } from "../../other/crossPlatformUtilities";
+import {
+  asyncTrash,
+  getAllFilesSync
+} from "../../other/crossPlatformUtilities";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
@@ -343,7 +345,8 @@ export abstract class Folder {
     files.push(folderMetaDataFile);
 
     //collect the other files and the metdata files they are paired with
-    const filePaths = glob.sync(Path.join(directory, "*.*"));
+    // get all the files in the directory without using glob
+    const filePaths = getAllFilesSync(directory);
     filePaths.forEach((path) => {
       if (path !== folderMetaDataFile.metadataFilePath) {
         // We don't explicitly do anything with the the .meta companion files here,

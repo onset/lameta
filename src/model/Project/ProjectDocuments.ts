@@ -1,9 +1,10 @@
 import { Folder, IFolderType } from "../Folder/Folder";
 import { File, OtherFile } from "../file/File";
 import * as Path from "path";
-import * as glob from "glob";
+import { globSync } from "glob";
 import CustomFieldsTable from "../../components/CustomFieldsTable";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
+import { getAllFilesSync } from "../../other/crossPlatformUtilities";
 
 export class ProjectDocuments extends Folder {
   public get displayName(): string {
@@ -29,7 +30,7 @@ export class ProjectDocuments extends Folder {
   ): ProjectDocuments {
     const directory = Path.join(rootDirectory, subDirectory);
     const files = new Array<File>();
-    const filePaths = glob.sync(Path.join(directory, "*.*"));
+    const filePaths = getAllFilesSync(directory);
     filePaths.forEach((path) => {
       const file = new OtherFile(
         path,
