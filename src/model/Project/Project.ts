@@ -1030,7 +1030,7 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     // the fields.json5 sets the default to "unknown"
     if (
       archiveConfigurationName.length === 0 ||
-      archiveConfigurationName === "unknown"
+      archiveConfigurationName === "default"
     ) {
       const archiveProtocol =
         this.properties.getTextStringOrEmpty("AccessProtocol");

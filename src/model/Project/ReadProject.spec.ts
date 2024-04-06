@@ -50,7 +50,7 @@ describe("Project Read", () => {
   it("archiveConfigurationName should be 'unknown' if missing configurationName & accessProtocol", () => {
     const f = GetProjectFileWithOneField("Foo", "bar");
     expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
-      "unknown"
+      "default"
     );
   });
   it("should read AnalysisISO3CodeAndName", () => {

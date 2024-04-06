@@ -103,7 +103,7 @@ function writeSimplePropertyElements(
           doOutputTypeInXmlTags,
           false,
           "AccessProtocol",
-          "lameta 3 and following prefer ArchiveConfigurationName, this is written for compatibility with SayMore and older versions of lameta"
+          "lameta 3 and following prefer archiveConfigurationName, this is written for compatibility with SayMore and older versions of lameta"
         );
       }
     });

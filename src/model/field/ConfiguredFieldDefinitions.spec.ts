@@ -19,7 +19,7 @@ describe("computeMergedCatalog", () => {
         { key: "region", show: "never" }
       ]
     };
-    const mergedCatalog = computeMergedCatalog(ourCatalog);
+    const { mergedCatalog } = computeMergedCatalog(ourCatalog);
     expect(mergedCatalog.project.find((f) => f.key == "title")).toEqual({
       key: "title",
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
