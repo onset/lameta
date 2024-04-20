@@ -30,6 +30,7 @@
     {
       key: "collectionSubjectLanguages",
       englishLabel: "Subject Languages",
+      xmlTag: "CollectionSubjectLanguages",
       visibility: "never",
       form: "primary",
       type: "languageChoices",
@@ -40,6 +41,7 @@
     },
     {
       key: "collectionWorkingLanguages",
+      xmlTag: "CollectionWorkingLanguages",
       englishLabel: "Working Languages",
       visibility: "never",
       form: "primary",

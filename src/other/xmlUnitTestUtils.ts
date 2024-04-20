@@ -147,7 +147,7 @@ expect.extend({
   toHaveCount(xpath, expectedValue) {
     const matchCount = select(xpath).length;
     if (matchCount !== expectedValue) {
-      //      console.log(resultXml);
+      console.log(resultXml);
       return {
         message: () =>
           `expected ${xpath} to have ${expectedValue} matches, but got ${matchCount}`,

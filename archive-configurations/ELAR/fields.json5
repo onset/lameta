@@ -1,5 +1,7 @@
 {
   project: [
+    { key: "vernacularIso3CodeAndName", visibility: "never" },
+    { key: "analysisIso3CodeAndName", visibility: "never" },
     { key: "collectionSubjectLanguages", visibility: "always" },
     { key: "collectionWorkingLanguages", visibility: "always" },
 

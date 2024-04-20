@@ -70,7 +70,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
   };
 
   const currentValueArray = props.field.text
-    .split(";")
+    .split(";") // TODO: move this serialization logic into the Field class
     .filter((c) => c.length > 0)
     .map((c) => c.trim())
     .map((code) => {
@@ -129,13 +129,12 @@ export const LanguageChoicesEditor: React.FunctionComponent<
           )
         : []; // if you delete the last member, you get null instead of []
 
+      // TODO: move this serialization logic into the Field class
       const s: string = newChoices
         .map((o) => {
-          if (o.value.startsWith("qaa-x-") && !o.label.startsWith("qaa")) {
-            return `${o.value}|${o.label}`;
-          } else return o.value;
+          return o.value;
         })
-        .join(";");
+        .join(";"); // why semicolong instead of comma? The particpants field as used semicolon for years.
       console.log("saving: " + s);
       props.field.setValueFromString(s);
     },

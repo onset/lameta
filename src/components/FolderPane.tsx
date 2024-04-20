@@ -302,7 +302,7 @@ const FileTabs: React.FunctionComponent<
           {paradisecPanel}
         </Tabs>
       );
-    case "Person":
+    case "Person": {
       const kFirstPersonTabToOpen = 0;
       return (
         <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
