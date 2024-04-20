@@ -11,10 +11,11 @@ import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
 import { ImdiView } from "../ImdiView";
 import "./ProjectTab.scss";
 import userSettings from "../../other/UserSettings";
-import { ParadisecView } from "../ParadisecView";
 import { ThemeProvider } from "@mui/material";
 import { useState } from "react";
 import { createProjectTheme } from "../../containers/theme";
+import { ParadisecView } from "../ParadisecView";
+import { LametaXmlView } from "../lametaXmlView";
 
 interface IProps {
   project: Project;
@@ -82,6 +83,13 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           {userSettings.ParadisecMode ? (
             <Tab className={"tab-project-paradisec"}>
               PARADISEC {/* don't translate  */}
+            </Tab>
+          ) : (
+            <></>
+          )}
+          {userSettings.DeveloperMode ? (
+            <Tab className={"tab-project-lameta"}>
+              LaMeta {/* don't translate  */}
             </Tab>
           ) : (
             <></>
@@ -172,6 +180,18 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         {userSettings.ParadisecMode ? (
           <TabPanel>
             <ParadisecView
+              target={props.project}
+              project={props.project}
+              folder={props.project}
+            />
+          </TabPanel>
+        ) : (
+          <></>
+        )}
+        {/* if in developer mode, show LametaXmlView */}
+        {userSettings.DeveloperMode ? (
+          <TabPanel>
+            <LametaXmlView
               target={props.project}
               project={props.project}
               folder={props.project}
