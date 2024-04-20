@@ -80,7 +80,7 @@ export default function getSayMoreXml(
     throw error;
   }
 }
-//function writeElementsWeDontUnderstand() {}
+
 function writeSimplePropertyElements(
   root: xmlbuilder.XMLElementOrXMLNode,
   properties: Field[],
@@ -103,7 +103,23 @@ function writeSimplePropertyElements(
           doOutputTypeInXmlTags,
           false,
           "AccessProtocol",
-          "lameta 3 and following prefer archiveConfigurationName, this is written for compatibility with SayMore and older versions of lameta"
+          "lameta 3 and following use <ArchiveConfigurationName> as that matches what we're actually doing with it now. We still emit <AccessProtocol> for compatibility with SayMore and older versions of lameta"
+        );
+      }
+      if (field.key === "collectionSubjectLanguages") {
+        writeLanguageFieldForBackwardsCompat(
+          root,
+          field,
+          "VernacularISO3CodeAndName",
+          "lameta 3 and following use <CollectionSubjectLanguages> to store multiple languages. We still emit the first language as <VernacularISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
+        );
+      }
+      if (field.key === "collectionWorkingLanguages") {
+        writeLanguageFieldForBackwardsCompat(
+          root,
+          field,
+          "AnalysisISO3CodeAndName",
+          "lameta 3 and following use <CollectionWorkingLanguages> to store multiple languages. We still emit the first language as <AnalysisISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
         );
       }
     });
@@ -178,6 +194,30 @@ function writeContributions(
       }
     }
   });
+}
+
+function writeLanguageFieldForBackwardsCompat(
+  root: xmlbuilder.XMLElementOrXMLNode,
+  field: Field,
+  overrideTag?: string,
+  comment?: string
+) {
+  const { type, value } = field.typeAndValueEscapedForXml();
+
+  // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
+  // for now we just use those same tags when writing so that the file can be opened in that SM
+  const tag =
+    overrideTag ||
+    (field.definition && field.definition.xmlTag
+      ? field.definition.xmlTag
+      : field.key);
+
+  if (comment) {
+    root.comment(comment);
+  }
+  const attributes: any = {};
+
+  root.element(tag, attributes, value.split(";")[0] || "").up();
 }
 
 function writeField(
