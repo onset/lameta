@@ -262,7 +262,7 @@
   },
   "//remember to match this with github actions in main.yml": "",
   "engines": {
-    "node": "18.16.0"
+    "node": "20.12.2"
   },
   "debug": {
     "env": {
@@ -270,7 +270,7 @@
     }
   },
   "volta": {
-    "node": "18.16.0",
+    "node": "20.12.2",
     "yarn": "1.22.19"
   },
   "packageManager": "yarn@1.22.19"

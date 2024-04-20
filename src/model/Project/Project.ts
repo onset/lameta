@@ -157,8 +157,9 @@ export class Project extends Folder {
     return this[folderType + "s"];
   }
   public migrateFromPreviousVersions(): void {
-    //nothing to do, yet
+    // nothing here but see migrate() on ProjectMetadataFile
   }
+
   public findFolderById(
     folderType: IFolderType,
     id: string
@@ -1039,6 +1040,35 @@ export class ProjectMetadataFile extends FolderMetadataFile {
         // delete AccessProtocol
         this.properties.removeProperty("AccessProtocol");
       }
+    }
+
+    // Before lameta 3, we could store a single language for the vernacular. If we
+    // find a file using that but no modern collectionSubjectLanguage, collectionSubjectLanguage
+    // should be loaded with the value from vernacularIso3CodeAndName.
+    // If instead we do have a non-empty collectionSubjectLanguage, then we should set
+    // vernacularIso3CodeAndName to the first item in it.
+    this.migrateLanguageFields(
+      "vernacularIso3CodeAndName",
+      "collectionSubjectLanguages"
+    );
+    // same for the anlysis language
+    this.migrateLanguageFields(
+      "analysisIso3CodeAndName",
+      "collectionWorkingLanguages"
+    );
+  }
+
+  private migrateLanguageFields(legacySingle: string, modernMultiple: string) {
+    if (this.properties.getTextStringOrEmpty(modernMultiple).length === 0) {
+      this.properties.setText(
+        modernMultiple,
+        this.properties.getTextStringOrEmpty(legacySingle)
+      );
+    } else {
+      const parts = this.properties
+        .getTextStringOrEmpty(modernMultiple)
+        .split(";");
+      this.properties.setText(legacySingle, parts[0] || "");
     }
   }
 
