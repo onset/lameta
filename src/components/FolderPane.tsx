@@ -353,6 +353,7 @@ const FileTabs: React.FunctionComponent<
           {imdiPanel}
         </Tabs>
       );
+    }
     case "Audio":
       return (
         <Tabs key={tabsKey}>
