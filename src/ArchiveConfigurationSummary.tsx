@@ -56,6 +56,10 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
         display: flex;
         flex-direction: column;
         gap: 10px;
+        li {
+          // don't show a bullet point
+          list-style-type: none;
+        }
       `}
     >
       <div css={sectionBoxStyle}>
@@ -70,8 +74,6 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
           css={css`
             li {
               margin-bottom: 1em;
-              // don't show a bullet point
-              list-style-type: none;
             }
           `}
         >
@@ -94,13 +96,18 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
           <ul>
             {projectCustomizations.length > 0
               ? projectCustomizations.map((customization) => (
-                  <>
+                  <div
+                    key={
+                      customization.area +
+                      customization.factoryDefinition.englishLabel
+                    }
+                  >
                     {describeChange(
                       customization.area,
                       customization.factoryDefinition,
                       customization.newDefinition
                     )}
-                  </>
+                  </div>
                 ))
               : "None"}
           </ul>
@@ -187,15 +194,15 @@ function describeChange(
   // Multilingualism
   if (factory.multilingual !== newDef.multilingual) {
     diffs.push(
-      <span>
+      <span key={`${label}-${diffs.length}`}>
         {`${label} multilingual changed from ${factory.multilingual} to ${newDef.multilingual}`}
       </span>
     );
   }
   return (
     <React.Fragment>
-      {diffs.map((diff) => (
-        <div>{diff}</div>
+      {diffs.map((diff, index) => (
+        <div key={index}>{diff}</div>
       ))}
     </React.Fragment>
   );
