@@ -7,7 +7,6 @@ import {
   NotConsumedByArchiveIndicator,
   PiiIndicator
 } from "./FieldIndicators";
-import userSettingsSingleton from "../other/UserSettings";
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { observer } from "mobx-react";
 import { tooltipBackground } from "../containers/theme";
@@ -82,7 +81,7 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {Project.OtherConfigurationSettings.showImdi &&
+      {Project.OtherConfigurationSettings.showImdiPreview &&
         props.fieldDef.omitFromImdi && <NotConsumedByArchiveIndicator />}
     </div>
   );

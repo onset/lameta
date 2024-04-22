@@ -744,13 +744,13 @@ export /*babel doesn't like this: abstract*/ class File {
       this.dirty === false &&
       fs.existsSync(this.metadataFilePath)
     ) {
-      console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
+      //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
-    console.log(`Saving ${this.metadataFilePath}`);
+    //console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 

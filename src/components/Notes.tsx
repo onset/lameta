@@ -3,17 +3,12 @@ import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { InfoIndicator } from "./FieldIndicators";
-import userSettingsSingleton from "../other/UserSettings";
 import { css } from "@emotion/react";
 import { Trans, t } from "@lingui/macro";
 import { Project } from "../model/Project/Project";
-interface IProps {
-  field: Field;
-}
 
 export const Notes: React.FunctionComponent<{
   field: Field;
-  project: Project;
 }> = (props) => {
   return (
     <div
@@ -24,14 +19,14 @@ export const Notes: React.FunctionComponent<{
         overflow: auto;
       `}
     >
-      {Project.OtherConfigurationSettings.showImdi && (
+      {Project.OtherConfigurationSettings.showImdiPreview && (
         <InfoIndicator
           css={css`
             margin-left: auto;
           `}
         >
           <Trans comment="Shows in a tooltip on an info icon in the Notes tab">
-            lameta will not export Notes to MIDI
+            lameta will not export Notes to IMDI
           </Trans>
         </InfoIndicator>
       )}

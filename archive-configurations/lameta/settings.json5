@@ -1,5 +1,6 @@
 {
   configurationFullName: "unknown",
-  showParadisec: false
+  showImdiPreview: false,
+  showParadisec: false,
   fileNameRules: "ASCII"
 }

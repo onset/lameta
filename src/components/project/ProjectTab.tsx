@@ -10,7 +10,6 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
 import { ImdiView } from "../ImdiView";
 import "./ProjectTab.scss";
-import userSettings from "../../other/UserSettings";
 import { ParadisecView } from "../ParadisecView";
 import { ThemeProvider } from "@mui/material";
 import { useState } from "react";
@@ -26,13 +25,13 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const kFirstTabToOpen = 0;
 
   const showCollectionTab = props.project.properties.values().some((p) => {
-    console.log(`${p.key}`);
+    //    console.log(`${p.key}`);
     if (
       p.definition &&
       p.definition.form === "collection" &&
       p.definition.visibility === "always"
     ) {
-      console.log(`SHOWING COllection for ${p.key}`);
+      //console.log(`SHOWING COllection for ${p.key}`);
     }
     return (
       p.definition &&
@@ -72,7 +71,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {Project.OtherConfigurationSettings.showImdi ? (
+          {Project.OtherConfigurationSettings.showImdiPreview ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
             </Tab>
@@ -160,7 +159,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <br />
           </FolderPane>
         </TabPanel>
-        {Project.OtherConfigurationSettings.showImdi ? (
+        {Project.OtherConfigurationSettings.showImdiPreview ? (
           <TabPanel>
             <ImdiView
               target={props.project}

@@ -13,6 +13,7 @@ export interface IChoice {
   description: string;
   examples?: string[];
   source?: string;
+  extra?: object;
 }
 
 export enum FieldType {

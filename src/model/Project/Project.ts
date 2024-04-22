@@ -74,6 +74,7 @@ export class ProjectHolder {
 }
 type OtherConfigurationSettings = {
   configurationFullName: string;
+  showImdiPreview: boolean;
   showParadisec: boolean;
   fileNameRules: "ASCII" | "unicode";
 };
@@ -94,7 +95,8 @@ export class Project extends Folder {
 
   public otherConfigurationSettings: OtherConfigurationSettings = {
     configurationFullName: "",
-    showParadisec: false
+    showImdiPreview: false,
+    showParadisec: false,
     fileNameRules: "ASCII"
   };
 
@@ -104,9 +106,12 @@ export class Project extends Folder {
 
   public static get OtherConfigurationSettings(): OtherConfigurationSettings {
     return sCurrentProject === null
-      ? { showImdi: false, showParadisec: false }
+      ? {
+          showImdiPreview: false,
+          showParadisec: false,
           configurationFullName: "",
           fileNameRules: "ASCII"
+        }
       : sCurrentProject.otherConfigurationSettings;
   }
 

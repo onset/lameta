@@ -1,4 +1,4 @@
 {
   configurationFullName: "ELAR - Endangered Languages Archive",
-  showParadisec: false
+  showImdiPreview: true
 }
