@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import ReactModal from "react-modal";
@@ -14,7 +14,6 @@ import { showInExplorer } from "../../other/crossPlatformUtilities";
 import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../../other/localization";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
@@ -69,10 +68,8 @@ export const ExportDialog: React.FunctionComponent<{
   const [error, setError] = useState<string | undefined>(undefined);
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
 
-  const [
-    rulesBasedValidationResult,
-    SetRulesBasedValidationResult
-  ] = React.useState<string | undefined>();
+  const [rulesBasedValidationResult, SetRulesBasedValidationResult] =
+    React.useState<string | undefined>();
 
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(
@@ -82,7 +79,8 @@ export const ExportDialog: React.FunctionComponent<{
   const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
   React.useEffect(() => {
     if (props.projectHolder && props.projectHolder.project) {
-      const count = props.projectHolder!.project!.sessions.countOfMarkedFolders();
+      const count =
+        props.projectHolder!.project!.sessions.countOfMarkedFolders();
       setCountOfMarkedSessions(count);
       // guess what they will want based on if they have checked anything
       setWhichSessionsOption(count === 0 ? "all" : "marked");
@@ -141,9 +139,10 @@ export const ExportDialog: React.FunctionComponent<{
                   whichSessionsOption === "all"
                     ? () => true
                     : (f: Folder) => f.marked;
-                const sessions: Session[] = (props.projectHolder.project!.sessions.items.filter(
-                  folderFilter
-                ) as unknown) as Session[];
+                const sessions: Session[] =
+                  props.projectHolder.project!.sessions.items.filter(
+                    folderFilter
+                  ) as unknown as Session[];
                 // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
                 let rulesBasedValidationResult = "";
                 for (const session of sessions) {

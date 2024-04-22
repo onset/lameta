@@ -9,7 +9,6 @@ import { File, kLinkExtensionWithFullStop } from "../../model/file/File";
 import { Folder } from "../../model/Folder/Folder";
 import _ from "lodash";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
-import userSettingsSingleton from "../../other/UserSettings";
 import {
   DialogBottomButtons,
   DialogCancelButton,
@@ -86,10 +85,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
 
   function determineValidationProblemsMessage() {
     const pendingNewName = getNewFileName();
-    const sanitizedForArchive = sanitizeForArchive(
-      pendingNewName,
-      Project.OtherConfigurationSettings.showImdi
-    );
+    const sanitizedForArchive = sanitizeForArchive(pendingNewName);
     let m = "";
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {
       m = t`Some operating systems would not allow that name.`;

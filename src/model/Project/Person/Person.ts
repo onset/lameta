@@ -6,7 +6,6 @@ import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
-import userSettingsSingleton from "../../../other/UserSettings";
 import {
   LanguageFinder,
   staticLanguageFinder
@@ -106,8 +105,7 @@ export class Person extends Folder {
     this.properties.addDisplayNameProperty(this);
 
     this.safeFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("name"),
-      Project.OtherConfigurationSettings.showImdi
+      this.properties.getTextStringOrEmpty("name")
     );
     /* what did this ever do?
     this.properties

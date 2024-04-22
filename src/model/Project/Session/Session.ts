@@ -7,7 +7,6 @@ import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry"
 import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
-import userSettingsSingleton from "../../../other/UserSettings";
 import { runInAction } from "mobx";
 import { i18n } from "../../../other/localization";
 import { t } from "@lingui/macro";
@@ -51,8 +50,7 @@ export class Session extends Folder {
       this.properties.setText("id", Path.basename(directory));
     }
     this.safeFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("id"),
-      Project.OtherConfigurationSettings.showImdi
+      this.properties.getTextStringOrEmpty("id")
     );
     this.knownFields = fieldDefinitionsOfCurrentConfig.session; // for csv export
 

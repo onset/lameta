@@ -1,11 +1,6 @@
-import {
-  File,
-  getStandardMessageAboutLockedFiles,
-  kLinkExtensionWithFullStop,
-  OtherFile
-} from "../file/File";
+import { File, OtherFile } from "../file/File";
 import { observable, makeObservable, runInAction } from "mobx";
-import { Field, FieldType, FieldVisibility } from "../field/Field";
+import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
 
 import {
@@ -26,7 +21,6 @@ import {
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
-import userSettingsSingleton from "../../other/UserSettings";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
 import { t } from "@lingui/macro";
@@ -35,7 +29,6 @@ import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
-import { Project } from "../Project/Project";
 
 // There are two `FolderGroup` instances, one for projects and one for sessions.
 export class FolderGroup {
@@ -205,8 +198,7 @@ export abstract class Folder {
         return;
       }
       const n = sanitizeForArchive(
-        newFileName ? newFileName : Path.basename(pathToOriginalFile),
-        Project.OtherConfigurationSettings.showImdi
+        newFileName ? newFileName : Path.basename(pathToOriginalFile)
       );
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
@@ -517,8 +509,7 @@ export abstract class Folder {
     // Then if that failed, we would need to rename the files that had already been changed, and then
     // change the id/name field back to what it was previously.
     const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName(),
-      Project.OtherConfigurationSettings.showImdi
+      this.textValueThatControlsFolderName()
     );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
