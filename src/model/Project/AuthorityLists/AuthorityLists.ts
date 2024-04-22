@@ -37,10 +37,24 @@ export class AuthorityLists {
       if (!fs.lstatSync(`${path}/${directoryName}`).isDirectory()) {
         return;
       }
+      // read in description from the settings.json5 file in the directory, the institutionNaem field
+      let description = "";
+      let settings: any = {};
+      if (fs.existsSync(`${path}/${directoryName}/settings.json5`)) {
+        const settingsText = fs.readFileSync(
+          `${path}/${directoryName}/settings.json5`,
+          "utf8"
+        );
+        settings = JSON5.parse(settingsText);
+        description = settings.configurationFullName || "??";
+        delete settings.configurationFullName;
+      }
+
       this.archiveConfigurationChoices.push({
         id: directoryName,
         label: directoryName,
-        description: ""
+        description: description,
+        extra: settings
       });
       // read in vocabularies.json5 from the directory, parse it, and add the accessProtocol member to the accessProtocolChoices array
       const vocabulariesText = fs.readFileSync(

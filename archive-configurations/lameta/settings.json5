@@ -1,5 +1,5 @@
 {
-  showImdi: false,
+  configurationFullName: "unknown",
   showParadisec: false
   fileNameRules: "ASCII"
 }
