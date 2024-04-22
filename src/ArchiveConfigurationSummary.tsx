@@ -6,11 +6,13 @@ import {
 } from "./model/field/ConfiguredFieldDefinitions";
 import { FieldDefinition } from "./model/field/FieldDefinition";
 import { AuthorityLists } from "./model/Project/AuthorityLists/AuthorityLists";
+import { IChoice } from "./model/field/Field";
 
 // a react functional component that takes displays the diffs between the default and the merged configurations
 const ArchiveConfigurationSummary: React.FunctionComponent<
   {
     configurationName: string;
+    configurationChoice: IChoice;
     authorityLists: AuthorityLists;
   } & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
@@ -34,79 +36,115 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
   );
   console.log("****", props.configurationName);
 
-  const currentConfiguration:
-    | { choices: Array<{ label: string; description: string }> }
-    | undefined = props.authorityLists.accessProtocolLists.find(
-    (p) => p.archiveConfigurationName == props.configurationName
-  );
+  const currentConfiguration: { choices: IChoice[] } | undefined =
+    props.authorityLists.accessProtocolLists.find(
+      (p) => p.archiveConfigurationName == props.configurationName
+    );
 
   if (!currentConfiguration) {
     return <div>Configuration not found</div>;
   }
+  const sectionBoxStyle = css`
+    border: solid thin;
+    border-radius: 4px;
+    padding: 10px;
+    border-color: #0000005e;
+  `;
   return (
-    <div>
-      <h2>Session Access Choices</h2>
-      <ul
-        css={css`
-          li {
-            margin-bottom: 1em;
-            // don't show a bullet point
-            list-style-type: none;
-          }
-        `}
-      >
-        {currentConfiguration.choices.map((choice) => (
-          <li key={choice.label}>
-            <div>
-              <b>{choice.label}</b>
-            </div>
-            {choice.description}
-          </li>
-        ))}
-      </ul>
-      <h2>Field Changes</h2>
-      <h3>Project</h3>
-      <ul>
-        {projectCustomizations.length > 0
-          ? projectCustomizations.map((customization) => (
-              <>
-                {describeChange(
-                  customization.area,
-                  customization.factoryDefinition,
-                  customization.newDefinition
-                )}
-              </>
-            ))
-          : "None"}
-      </ul>
-      <h3>Session</h3>
-      <ul>
-        {sessionCustomizations.length > 0
-          ? sessionCustomizations.map((customization) => (
-              <>
-                {describeChange(
-                  customization.area,
-                  customization.factoryDefinition,
-                  customization.newDefinition
-                )}
-              </>
-            ))
-          : "None"}
-      </ul>
-      <h3>Person</h3>
-      <ul>
-        {personCustomizations.length > 0
-          ? personCustomizations.map((customization) => (
-              <>
-                {describeChange(
-                  customization.area,
-                  customization.factoryDefinition,
-                  customization.newDefinition
-                )}
-              </>
-            ))
-          : "None"}
-      </ul>
+    <div
+      css={css`
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      `}
+    >
+      <div css={sectionBoxStyle}>
+        <h3
+          css={css`
+            margin-block-end: 1em;
+          `}
+        >
+          Session Access Choices
+        </h3>
+        <ul
+          css={css`
+            li {
+              margin-bottom: 1em;
+              // don't show a bullet point
+              list-style-type: none;
+            }
+          `}
+        >
+          {currentConfiguration.choices.map((choice) => (
+            <li key={choice.label}>
+              <div>
+                <b>{choice.label}</b>
+              </div>
+              {choice.description}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {projectCustomizations.length > 0 ||
+      sessionCustomizations.length > 0 ||
+      personCustomizations.length > 0 ? (
+        <div css={sectionBoxStyle}>
+          <h3>Field Changes</h3>
+          <h4>Project</h4>
+          <ul>
+            {projectCustomizations.length > 0
+              ? projectCustomizations.map((customization) => (
+                  <>
+                    {describeChange(
+                      customization.area,
+                      customization.factoryDefinition,
+                      customization.newDefinition
+                    )}
+                  </>
+                ))
+              : "None"}
+          </ul>
+          <h4>Session</h4>
+          <ul>
+            {sessionCustomizations.length > 0
+              ? sessionCustomizations.map((customization) => (
+                  <>
+                    {describeChange(
+                      customization.area,
+                      customization.factoryDefinition,
+                      customization.newDefinition
+                    )}
+                  </>
+                ))
+              : "None"}
+          </ul>
+          <h4>Person</h4>
+          <ul>
+            {personCustomizations.length > 0
+              ? personCustomizations.map((customization) => (
+                  <>
+                    {describeChange(
+                      customization.area,
+                      customization.factoryDefinition,
+                      customization.newDefinition
+                    )}
+                  </>
+                ))
+              : "None"}
+          </ul>
+        </div>
+      ) : null}
+      {props.configurationChoice.extra &&
+        Object.entries(props.configurationChoice.extra).length > 0 && (
+          <div css={sectionBoxStyle}>
+            <h3>User Interface</h3>
+            {Object.entries(props.configurationChoice.extra).map(
+              (setting: [string, any]) => (
+                <li key={setting[0]}>{`${setting[0]}: ${setting[1]}`}</li>
+              )
+            )}
+          </div>
+        )}
     </div>
   );
 };

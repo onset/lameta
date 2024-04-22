@@ -23,22 +23,23 @@ const ArchiveConfigurationForm: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   const [choices, setChoices] = React.useState<
-    { value: string; label: string }[]
+    { value: string; label: string; configurationFullName: string }[]
   >([]);
   React.useEffect(() => {
     setChoices(
       props.authorityLists.archiveConfigurationChoices.map((choice) => ({
         value: choice.id,
-        label: choice.label
+        label: choice.label,
+        configurationFullName: choice.description
       }))
     );
   }, []);
   const [archiveConfigurationKey, setArchiveConfigurationKey] =
     React.useState<string>(props.archiveConfigurationField.text);
-  const archiveConfigurationLabel =
+  const archiveConfigurationChoice =
     props.authorityLists.archiveConfigurationChoices.find(
       (choice) => choice.id === archiveConfigurationKey
-    )?.label;
+    );
   return (
     <div
       css={css`
@@ -88,7 +89,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           name={archiveConfigurationKey} //what does this do? Maybe accessibility?
           value={{
             value: archiveConfigurationKey,
-            label: archiveConfigurationLabel
+            label: archiveConfigurationChoice?.label
           }}
           onChange={(event) => {
             setArchiveConfigurationKey(event.value);
@@ -117,6 +118,12 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           Change
         </Button>
       </div>
+      <h2>
+        {
+          choices.find((c) => c.value === archiveConfigurationKey)
+            ?.configurationFullName
+        }
+      </h2>
       <div
         css={css`
           h2,
@@ -124,11 +131,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             margin-block-end: 0;
           }
           h3 {
-            padding-left: 20px;
+            padding-left: 0;
             margin-block-start: 0;
           }
           ul {
-            padding-left: 20px;
+            padding-left: 0;
             margin-block-start: 0;
           }
         `}
@@ -141,6 +148,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           <ArchiveConfigurationSummary
             authorityLists={props.authorityLists}
             configurationName={archiveConfigurationKey}
+            configurationChoice={archiveConfigurationChoice!}
           />
         )}
       </div>
