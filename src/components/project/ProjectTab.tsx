@@ -72,14 +72,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {userSettings.IMDIMode ? (
+          {Project.OtherConfigurationSettings.showImdi ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
             </Tab>
           ) : (
             <></>
           )}
-          {userSettings.ParadisecMode ? (
+          {Project.OtherConfigurationSettings.showParadisec ? (
             <Tab className={"tab-project-paradisec"}>
               PARADISEC {/* don't translate  */}
             </Tab>
@@ -113,16 +113,18 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        <TabPanel>
-          <AutoForm
-            form="collection"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-          />
-        </TabPanel>
+        {showCollectionTab && (
+          <TabPanel>
+            <AutoForm
+              form="collection"
+              formClass="project"
+              folder={props.project}
+              authorityLists={props.authorityLists}
+              languageFinder={props.project.languageFinder}
+              rowStyle={true}
+            />
+          </TabPanel>
+        )}
         <TabPanel>
           <FolderPane
             project={props.project}
@@ -158,7 +160,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <br />
           </FolderPane>
         </TabPanel>
-        {userSettings.IMDIMode ? (
+        {Project.OtherConfigurationSettings.showImdi ? (
           <TabPanel>
             <ImdiView
               target={props.project}
@@ -169,7 +171,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         ) : (
           <></>
         )}
-        {userSettings.ParadisecMode ? (
+        {Project.OtherConfigurationSettings.showParadisec ? (
           <TabPanel>
             <ParadisecView
               target={props.project}

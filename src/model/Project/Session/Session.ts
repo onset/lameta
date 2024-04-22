@@ -52,7 +52,7 @@ export class Session extends Folder {
     }
     this.safeFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("id"),
-      userSettingsSingleton.IMDIMode
+      Project.OtherConfigurationSettings.showImdi
     );
     this.knownFields = fieldDefinitionsOfCurrentConfig.session; // for csv export
 

@@ -152,18 +152,19 @@ const FileTabs: React.FunctionComponent<
       />
     </TabPanel>
   );
-  const imdiTab = userSettings.IMDIMode ? (
+  const imdiTab = Project.OtherConfigurationSettings.showImdi ? (
     <Tab>IMDI {/* don't translate  */}</Tab>
   ) : (
     <></>
   );
-  const paradisecTab = userSettings.ParadisecMode ? (
+  const paradisecTab = props.project.otherConfigurationSettings
+    .showParadisec ? (
     <Tab>PARADISEC {/* don't translate  */}</Tab>
   ) : (
     <></>
   );
 
-  const imdiPanel = userSettings.IMDIMode ? (
+  const imdiPanel = Project.OtherConfigurationSettings.showImdi ? (
     <TabPanel>
       <ErrorBoundary>
         <ImdiView
@@ -180,7 +181,8 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
-  const paradisecPanel = userSettings.ParadisecMode ? (
+  const paradisecPanel = props.project.otherConfigurationSettings
+    .showParadisec ? (
     <TabPanel>
       <ErrorBoundary>
         <ParadisecView
@@ -302,7 +304,7 @@ const FileTabs: React.FunctionComponent<
           {paradisecPanel}
         </Tabs>
       );
-    case "Person":
+    case "Person": {
       const kFirstPersonTabToOpen = 0;
       return (
         <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
@@ -353,6 +355,7 @@ const FileTabs: React.FunctionComponent<
           {imdiPanel}
         </Tabs>
       );
+    }
     case "Audio":
       return (
         <Tabs key={tabsKey}>

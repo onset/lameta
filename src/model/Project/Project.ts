@@ -1,3 +1,4 @@
+import JSON5 from "json5";
 import * as fs from "fs-extra";
 import { makeObservable, observable, runInAction } from "mobx";
 import * as mobx from "mobx";
@@ -41,6 +42,7 @@ import {
 import { setCurrentProjectId } from "./MediaFolderAccess";
 import { CapitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
+import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 
 let sCurrentProject: Project | null = null;
 
@@ -70,7 +72,10 @@ export class ProjectHolder {
     sCurrentProject = p;
   }
 }
-
+type OtherConfigurationSettings = {
+  showImdi: boolean;
+  showParadisec: boolean;
+};
 export class Project extends Folder {
   public loadingError: string;
 
@@ -86,8 +91,19 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
 
+  public otherConfigurationSettings: OtherConfigurationSettings = {
+    showImdi: false,
+    showParadisec: false
+  };
+
   public get folderType(): IFolderType {
     return "project";
+  }
+
+  public static get OtherConfigurationSettings(): OtherConfigurationSettings {
+    return sCurrentProject === null
+      ? { showImdi: false, showParadisec: false }
+      : sCurrentProject.otherConfigurationSettings;
   }
 
   public static getDefaultContentLanguageCode() {
@@ -238,6 +254,8 @@ export class Project extends Folder {
     this.languageFinder = new LanguageFinder(() =>
       this.getContentLanguageCodeAndName()
     );
+    this.loadSettingsFromConfiguration();
+
     if (directory.indexOf("sample data") > -1) {
       window.setTimeout(
         () =>
@@ -928,6 +946,42 @@ export class Project extends Folder {
   }
   public getWorkingLanguageCode(): string {
     return this.properties.getTextStringOrEmpty("analysisIso3CodeAndName");
+  }
+
+  private loadSettingsFromConfiguration() {
+    const factoryPath = locateDependencyForFilesystemCall(
+      `archive-configurations/lameta/settings.json5`
+    );
+    this.otherConfigurationSettings = JSON5.parse(
+      fs.readFileSync(factoryPath, "utf8")
+    );
+
+    // now see if there are any settings in the confuration that
+    // can override the defaults
+
+    const configurationName = this.properties.getTextStringOrEmpty(
+      "archiveConfigurationName"
+    );
+    if (
+      configurationName === "default" ||
+      configurationName === undefined ||
+      configurationName.trim() === ""
+    ) {
+      return;
+    }
+    const path = locateDependencyForFilesystemCall(
+      `archive-configurations/${configurationName}/settings.json5`
+    );
+
+    if (!fs.existsSync(path)) {
+      return;
+    }
+    // read in these settings and merge them with the defaults
+    const settings = JSON5.parse(fs.readFileSync(path, "utf8"));
+    this.otherConfigurationSettings = {
+      ...this.otherConfigurationSettings,
+      ...settings
+    };
   }
 }
 

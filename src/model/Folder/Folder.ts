@@ -35,6 +35,7 @@ import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
+import { Project } from "../Project/Project";
 
 // There are two `FolderGroup` instances, one for projects and one for sessions.
 export class FolderGroup {
@@ -205,7 +206,7 @@ export abstract class Folder {
       }
       const n = sanitizeForArchive(
         newFileName ? newFileName : Path.basename(pathToOriginalFile),
-        userSettingsSingleton.IMDIMode
+        Project.OtherConfigurationSettings.showImdi
       );
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
@@ -517,7 +518,7 @@ export abstract class Folder {
     // change the id/name field back to what it was previously.
     const newFileName = sanitizeForArchive(
       this.textValueThatControlsFolderName(),
-      userSettingsSingleton.IMDIMode
+      Project.OtherConfigurationSettings.showImdi
     );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.

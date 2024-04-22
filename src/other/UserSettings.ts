@@ -22,8 +22,6 @@ const kFontZoomStepSize = 0.2;
 export class UserSettings {
   private store: Store | FakeStore;
 
-  private imdiMode: boolean;
-  private paradisecMode: boolean;
   private howUsing: string;
   public uiFontZoom: number;
   private sendErrors: boolean;
@@ -31,12 +29,7 @@ export class UserSettings {
   private clientId: string;
 
   constructor() {
-    makeObservable<
-      UserSettings,
-      "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors"
-    >(this, {
-      imdiMode: observable,
-      paradisecMode: observable,
+    makeObservable<UserSettings, "howUsing" | "sendErrors">(this, {
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
@@ -48,8 +41,8 @@ export class UserSettings {
     // Also, if we copy getTestEnvironment() into this file, it doesn't work.
     // Only works if we call from the other file. As if that file is in a different module with different acces to process.env.
     // We know that vite is vicious about breaking process.env, so it has to be something to do with that.
-    const E2E_USER_SETTINGS_STORE_NAME = getTestEnvironment()
-      .E2E_USER_SETTINGS_STORE_NAME;
+    const E2E_USER_SETTINGS_STORE_NAME =
+      getTestEnvironment().E2E_USER_SETTINGS_STORE_NAME;
 
     this.store =
       process.env.NODE_ENV === "test" || E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
@@ -59,8 +52,6 @@ export class UserSettings {
           });
     this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
 
-    this.imdiMode = this.store.get("imdiMode") || false;
-    this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
@@ -77,20 +68,6 @@ export class UserSettings {
     this.sendErrors = doSend;
   }
 
-  public get IMDIMode() {
-    return this.store.get("imdiMode", false);
-  }
-  public set IMDIMode(show: boolean) {
-    this.imdiMode = show;
-    this.store.set("imdiMode", this.imdiMode);
-  }
-  public get ParadisecMode() {
-    return this.paradisecMode;
-  }
-  public set ParadisecMode(show: boolean) {
-    this.paradisecMode = show;
-    this.store.set("paradisecMode", this.ParadisecMode);
-  }
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person
   public get ClientId() {

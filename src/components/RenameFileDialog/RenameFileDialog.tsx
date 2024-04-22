@@ -20,6 +20,7 @@ import {
 import { error_color } from "../../containers/theme";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import { Project } from "../../model/Project/Project";
 const sanitizeFilename = require("sanitize-filename");
 
 let staticShowRenameDialog: (file: File, folder: Folder) => void = () => {};
@@ -87,7 +88,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     const pendingNewName = getNewFileName();
     const sanitizedForArchive = sanitizeForArchive(
       pendingNewName,
-      userSettingsSingleton.IMDIMode
+      Project.OtherConfigurationSettings.showImdi
     );
     let m = "";
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {

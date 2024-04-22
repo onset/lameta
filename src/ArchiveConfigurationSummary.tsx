@@ -34,6 +34,15 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
   );
   console.log("****", props.configurationName);
 
+  const currentConfiguration:
+    | { choices: Array<{ label: string; description: string }> }
+    | undefined = props.authorityLists.accessProtocolLists.find(
+    (p) => p.archiveConfigurationName == props.configurationName
+  );
+
+  if (!currentConfiguration) {
+    return <div>Configuration not found</div>;
+  }
   return (
     <div>
       <h2>Session Access Choices</h2>
@@ -46,16 +55,14 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
           }
         `}
       >
-        {props.authorityLists.accessProtocolLists
-          .find((p) => p.archiveConfigurationName == props.configurationName)!
-          .choices.map((choice) => (
-            <li key={choice.label}>
-              <div>
-                <b>{choice.label}</b>
-              </div>
-              {choice.description}
-            </li>
-          ))}
+        {currentConfiguration.choices.map((choice) => (
+          <li key={choice.label}>
+            <div>
+              <b>{choice.label}</b>
+            </div>
+            {choice.description}
+          </li>
+        ))}
       </ul>
       <h2>Field Changes</h2>
       <h3>Project</h3>

@@ -6,12 +6,14 @@ import { InfoIndicator } from "./FieldIndicators";
 import userSettingsSingleton from "../other/UserSettings";
 import { css } from "@emotion/react";
 import { Trans, t } from "@lingui/macro";
+import { Project } from "../model/Project/Project";
 interface IProps {
   field: Field;
 }
 
 export const Notes: React.FunctionComponent<{
   field: Field;
+  project: Project;
 }> = (props) => {
   return (
     <div
@@ -22,7 +24,7 @@ export const Notes: React.FunctionComponent<{
         overflow: auto;
       `}
     >
-      {userSettingsSingleton.IMDIMode && (
+      {Project.OtherConfigurationSettings.showImdi && (
         <InfoIndicator
           css={css`
             margin-left: auto;

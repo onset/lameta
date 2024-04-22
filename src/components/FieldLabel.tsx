@@ -11,6 +11,7 @@ import userSettingsSingleton from "../other/UserSettings";
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { observer } from "mobx-react";
 import { tooltipBackground } from "../containers/theme";
+import { Project } from "../model/Project/Project";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
@@ -81,9 +82,8 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {userSettingsSingleton.IMDIMode && props.fieldDef.omitFromImdi && (
-        <NotConsumedByArchiveIndicator />
-      )}
+      {Project.OtherConfigurationSettings.showImdi &&
+        props.fieldDef.omitFromImdi && <NotConsumedByArchiveIndicator />}
     </div>
   );
 });
