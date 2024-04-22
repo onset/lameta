@@ -1,4 +1,5 @@
 {
   showImdi: false,
   showParadisec: false
+  fileNameRules: "ASCII"
 }

@@ -546,7 +546,6 @@
       personallyIdentifiableInformation: true,
       omitFromImdi: true
     },
-
     {
       key: "ethnicGroup",
       englishLabel: "Ethnic Group"

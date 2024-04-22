@@ -75,6 +75,7 @@ export class ProjectHolder {
 type OtherConfigurationSettings = {
   showImdi: boolean;
   showParadisec: boolean;
+  fileNameRules: "ASCII" | "unicode";
 };
 export class Project extends Folder {
   public loadingError: string;
@@ -94,6 +95,7 @@ export class Project extends Folder {
   public otherConfigurationSettings: OtherConfigurationSettings = {
     showImdi: false,
     showParadisec: false
+    fileNameRules: "ASCII"
   };
 
   public get folderType(): IFolderType {
@@ -103,6 +105,7 @@ export class Project extends Folder {
   public static get OtherConfigurationSettings(): OtherConfigurationSettings {
     return sCurrentProject === null
       ? { showImdi: false, showParadisec: false }
+          fileNameRules: "ASCII"
       : sCurrentProject.otherConfigurationSettings;
   }
 
