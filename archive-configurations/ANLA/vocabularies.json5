@@ -1,20 +1,19 @@
 {
   accessProtocol: [
     {
-      label: "Level 1",
-      description: "Public Access",
+      label: "Unrestricted access",
+      description: "Any member of the public may access the material for non-profit use.",
       id: "Level 1"
     },
-    { label: "Level 2", description: "Password", id: "Level 2", id: "Level 2" },
     {
-      label: "Level 3",
-      description: "Time limit",
-      id: "Level 3"
+      label: "Time limit",
+      description: "When you deposit with the archive, you will specify a date. After that data, access will change to Unrestricted access.",
+      id: "Level 2"
     },
     {
-      label: "Level 4",
-      description: "Depositor control",
-      id: "Level 4"
+      label: "Restricted access",
+      description: "When you deposit with the archive, you will specify restrictions on access. For example, 'access only with permission of village council', 'access only with permission of descendants', etc.",
+      id: "Level 3"
     }
   ]
 }

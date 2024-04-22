@@ -25,6 +25,7 @@
       id: "", // intentionally blank
       label: "private", // this label is not official... I just need somethign for the UI
       description: "only the Depositor and delegate can access"
+      // the original had this as **(unspecified)**
     }
   ]
 }
