@@ -17,24 +17,17 @@ import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./session/ContributorsTable";
 import { Project } from "../model/Project/Project";
 import { ImdiView } from "./ImdiView";
-import { File, Contribution } from "../model/file/File";
+import { Contribution } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.scss";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/macro";
-import userSettings from "../other/UserSettings";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 
 import * as URL from "url";
-import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
-import {
-  FileStatusBlock,
-  getLinkStatusIconPath,
-  getStatusOfFile
-} from "../model/file/FileStatus";
-import { useEffect } from "react";
+import { FileStatusBlock } from "../model/file/FileStatus";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
@@ -158,8 +151,7 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
-  const paradisecTab = props.project.otherConfigurationSettings
-    .showParadisec ? (
+  const paradisecTab = GetOtherConfigurationSettings().showParadisec ? (
     <Tab>PARADISEC {/* don't translate  */}</Tab>
   ) : (
     <></>
@@ -182,8 +174,7 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
-  const paradisecPanel = props.project.otherConfigurationSettings
-    .showParadisec ? (
+  const paradisecPanel = GetOtherConfigurationSettings().showParadisec ? (
     <TabPanel>
       <ErrorBoundary>
         <ParadisecView
