@@ -10,13 +10,13 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
 import { ImdiView } from "../ImdiView";
 import "./ProjectTab.scss";
-import { ParadisecView } from "../ParadisecView";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
 import { useState } from "react";
 import { createProjectTheme } from "../../containers/theme";
 import { ParadisecView } from "../ParadisecView";
 import { LametaXmlView } from "../lametaXmlView";
+import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 
 interface IProps {
   project: Project;
@@ -74,14 +74,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {Project.OtherConfigurationSettings.showImdiPreview ? (
+          {GetOtherConfigurationSettings().showImdiPreview ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
             </Tab>
           ) : (
             <></>
           )}
-          {Project.OtherConfigurationSettings.showParadisec ? (
+          {GetOtherConfigurationSettings().showParadisec ? (
             <Tab className={"tab-project-paradisec"}>
               PARADISEC {/* don't translate  */}
             </Tab>
@@ -169,7 +169,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <br />
           </FolderPane>
         </TabPanel>
-        {Project.OtherConfigurationSettings.showImdiPreview ? (
+        {GetOtherConfigurationSettings().showImdiPreview ? (
           <TabPanel>
             <ImdiView
               target={props.project}
@@ -180,7 +180,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         ) : (
           <></>
         )}
-        {Project.OtherConfigurationSettings.showParadisec ? (
+        {GetOtherConfigurationSettings().showParadisec ? (
           <TabPanel>
             <ParadisecView
               target={props.project}

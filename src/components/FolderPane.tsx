@@ -37,6 +37,7 @@ import {
 import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export interface IProps {
   folder: Folder;
@@ -152,7 +153,7 @@ const FileTabs: React.FunctionComponent<
       />
     </TabPanel>
   );
-  const imdiTab = Project.OtherConfigurationSettings.showImdiPreview ? (
+  const imdiTab = GetOtherConfigurationSettings().showImdiPreview ? (
     <Tab>IMDI {/* don't translate  */}</Tab>
   ) : (
     <></>
@@ -164,7 +165,7 @@ const FileTabs: React.FunctionComponent<
     <></>
   );
 
-  const imdiPanel = Project.OtherConfigurationSettings.showImdiPreview ? (
+  const imdiPanel = GetOtherConfigurationSettings().showImdiPreview ? (
     <TabPanel>
       <ErrorBoundary>
         <ImdiView

@@ -43,6 +43,10 @@ import { setCurrentProjectId } from "./MediaFolderAccess";
 import { CapitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
+import {
+  GetOtherConfigurationSettings,
+  SetOtherConfigurationSettings
+} from "./OtherConfigurationSettings";
 
 let sCurrentProject: Project | null = null;
 
@@ -72,12 +76,7 @@ export class ProjectHolder {
     sCurrentProject = p;
   }
 }
-type OtherConfigurationSettings = {
-  configurationFullName: string;
-  showImdiPreview: boolean;
-  showParadisec: boolean;
-  fileNameRules: "ASCII" | "unicode";
-};
+
 export class Project extends Folder {
   public loadingError: string;
 
@@ -93,26 +92,8 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
 
-  public otherConfigurationSettings: OtherConfigurationSettings = {
-    configurationFullName: "",
-    showImdiPreview: false,
-    showParadisec: false,
-    fileNameRules: "ASCII"
-  };
-
   public get folderType(): IFolderType {
     return "project";
-  }
-
-  public static get OtherConfigurationSettings(): OtherConfigurationSettings {
-    return sCurrentProject === null
-      ? {
-          showImdiPreview: false,
-          showParadisec: false,
-          configurationFullName: "",
-          fileNameRules: "ASCII"
-        }
-      : sCurrentProject.otherConfigurationSettings;
   }
 
   public static getDefaultContentLanguageCode() {
@@ -962,8 +943,8 @@ export class Project extends Folder {
     const factoryPath = locateDependencyForFilesystemCall(
       `archive-configurations/lameta/settings.json5`
     );
-    this.otherConfigurationSettings = JSON5.parse(
-      fs.readFileSync(factoryPath, "utf8")
+    SetOtherConfigurationSettings(
+      JSON5.parse(fs.readFileSync(factoryPath, "utf8"))
     );
 
     // now see if there are any settings in the confuration that
@@ -988,10 +969,10 @@ export class Project extends Folder {
     }
     // read in these settings and merge them with the defaults
     const settings = JSON5.parse(fs.readFileSync(path, "utf8"));
-    this.otherConfigurationSettings = {
-      ...this.otherConfigurationSettings,
+    SetOtherConfigurationSettings({
+      ...GetOtherConfigurationSettings(),
       ...settings
-    };
+    });
   }
 }
 

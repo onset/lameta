@@ -1,11 +1,11 @@
-import { Project } from "../model/Project/Project";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 const sanitizeFilename = require("sanitize-filename");
 const ASCIIFolder = require("fold-to-ascii");
 
-export function sanitizeForArchive(name: string): string {
+export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
   let n = name;
-  switch (Project.OtherConfigurationSettings.fileNameRules) {
+  switch (forceRules || GetOtherConfigurationSettings().fileNameRules) {
     case "ASCII": {
       // first, get to ascii only
       n = ASCIIFolder.foldReplacing(n, "X");
@@ -19,14 +19,14 @@ export function sanitizeForArchive(name: string): string {
       n = n.replace(regex, "_");
       break;
     }
-    case "unicode": {
+    case "unicode":
       // nothing more to do?
       break;
-    }
+
     default:
       throw new Error(
         "Unknown fileNameRules: " +
-          Project.OtherConfigurationSettings.fileNameRules
+          GetOtherConfigurationSettings().fileNameRules
       );
   }
   // finally, make sure it is safe for filesystems

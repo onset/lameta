@@ -108,7 +108,7 @@ function AttemptRoundTripOfOneField(
   }
 }
 
-function GetProjectFileWithOneField(
+export function GetProjectFileWithOneField(
   tag: string,
   content: string
 ): ProjectMetadataFile {

@@ -157,7 +157,7 @@ export default class ImdiBundler {
               imdiMode === IMDIMode.OPEX
                 ? Path.basename(session.directory)
                 : "", // with opex, the metadata file goes into the folder it describes. Else, on the level above.
-              sanitizeForArchive(imdiFileName, true)
+              sanitizeForArchive(imdiFileName, "ASCII")
             ),
             sessionImdi
           );
@@ -234,7 +234,7 @@ export default class ImdiBundler {
               // that renames that change the link name are used.
               sanitizeForArchive(
                 f.getNameToUseWhenExportingUsingTheActualFile(),
-                true
+                "ASCII"
               )
             ),
             (progressMessage) => {}
@@ -327,7 +327,7 @@ export default class ImdiBundler {
     fs.writeFileSync(
       Path.join(
         directoryForMetadataXmlFile,
-        sanitizeForArchive(imdiFileName, true)
+        sanitizeForArchive(imdiFileName, "ASCII")
       ),
       imdiXml
     );

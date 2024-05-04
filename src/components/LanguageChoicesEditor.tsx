@@ -8,7 +8,6 @@ import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
 import { observer } from "mobx-react";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 
 const saymore_orange = "#e69664";
 
