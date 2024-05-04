@@ -115,7 +115,7 @@ export default class ImdiGenerator {
     }
     return this.makeString();
   }
-  private projectXmlForPreview(): string {
+  public projectXmlForPreview(): string {
     this.tail = XmlBuilder.create("Project");
     this.addProjectInfo();
     return this.makeString();
@@ -595,7 +595,7 @@ export default class ImdiGenerator {
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
     // that to the file name we use for it in the xml.
-    const filename = sanitizeForArchive(Path.basename(path), true);
+    const filename = sanitizeForArchive(Path.basename(path), "ASCII");
     const immediateParentDirectoryName = Path.basename(Path.dirname(path));
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)

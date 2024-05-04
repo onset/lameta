@@ -17,6 +17,7 @@
       key: "vernacularIso3CodeAndName",
       englishLabel: "Subject Language",
       xmlTag: "VernacularISO3CodeAndName",
+      visibility: "never", // replaced by collectionWorkingLanguages
       type: "language",
       tabIndex: 1
     },
@@ -24,13 +25,14 @@
       key: "analysisIso3CodeAndName",
       englishLabel: "Working Language",
       xmlTag: "AnalysisISO3CodeAndName",
+      visibility: "never", // replaced by collectionSubjectLanguages
       type: "language",
       tabIndex: 2
     },
     {
       key: "collectionSubjectLanguages",
       englishLabel: "Subject Languages",
-      visibility: "never",
+      xmlTag: "CollectionSubjectLanguages",
       form: "primary",
       type: "languageChoices",
       controlProps: {
@@ -40,8 +42,8 @@
     },
     {
       key: "collectionWorkingLanguages",
+      xmlTag: "CollectionWorkingLanguages",
       englishLabel: "Working Languages",
-      visibility: "never",
       form: "primary",
       type: "languageChoices",
       tabIndex: 2

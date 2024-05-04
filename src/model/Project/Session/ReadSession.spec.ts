@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SessionMetadataFile } from "./Session";
 import * as temp from "temp";
 import fs from "fs";

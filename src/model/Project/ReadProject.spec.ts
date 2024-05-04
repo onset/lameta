@@ -35,6 +35,45 @@ describe("Project Read", () => {
       "dde: Doondo"
     );
   });
+
+  // Before lameta 3, we could store a single language for the vernacular. If we
+  // find a file using that but no modern collectionSubjectLanguage, collectionSubjectLanguage
+  // should be loaded with the value from vernacularIso3CodeAndName.
+  it("should load vernacularIso3CodeAndName into collectionSubjectLanguage if missing or empty", () => {
+    const f = GetProjectFileWithOneField(
+      "VernacularISO3CodeAndName",
+      "abc:Abracadabra"
+    );
+    expect(
+      f.properties.getTextStringOrEmpty("collectionSubjectLanguages")
+    ).toBe("abc:Abracadabra");
+    // do same for AnaylsisISO3CodeAndName and collectionWorkingLanguages
+    const f2 = GetProjectFileWithOneField(
+      "AnalysisISO3CodeAndName",
+      "abc:Abracadabra"
+    );
+    expect(
+      f2.properties.getTextStringOrEmpty("collectionWorkingLanguages")
+    ).toBe("abc:Abracadabra");
+  });
+  it("fill legacy language fields from modern collectionLanguages", () => {
+    const f = GetProjectFileWithOneField(
+      "CollectionSubjectLanguages",
+      "foo:FooBar;abc:Abracadabra"
+    );
+    expect(f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")).toBe(
+      "foo:FooBar"
+    );
+    // do same for AnaylsisISO3CodeAndName and collectionWorkingLanguages
+    const f2 = GetProjectFileWithOneField(
+      "CollectionWorkingLanguages",
+      "foo:FooBar;aby:Abracadabra"
+    );
+    expect(f2.properties.getTextStringOrEmpty("analysisIso3CodeAndName")).toBe(
+      "foo:FooBar"
+    );
+  });
+
   it("should read archiveConfigurationName", () => {
     const f = GetProjectFileWithOneField("ArchiveConfigurationName", "ELAR");
     expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
@@ -50,7 +89,7 @@ describe("Project Read", () => {
   it("archiveConfigurationName should be 'unknown' if missing configurationName & accessProtocol", () => {
     const f = GetProjectFileWithOneField("Foo", "bar");
     expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
-      "unknown"
+      "default"
     );
   });
   it("should read AnalysisISO3CodeAndName", () => {

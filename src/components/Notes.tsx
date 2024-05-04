@@ -5,7 +5,7 @@ import { TextFieldEdit } from "./TextFieldEdit";
 import { InfoIndicator } from "./FieldIndicators";
 import { css } from "@emotion/react";
 import { Trans, t } from "@lingui/macro";
-import { Project } from "../model/Project/Project";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export const Notes: React.FunctionComponent<{
   field: Field;
@@ -19,7 +19,7 @@ export const Notes: React.FunctionComponent<{
         overflow: auto;
       `}
     >
-      {Project.OtherConfigurationSettings.showImdiPreview && (
+      {GetOtherConfigurationSettings().showImdiPreview && (
         <InfoIndicator
           css={css`
             margin-left: auto;

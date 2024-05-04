@@ -10,7 +10,7 @@ import {
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { observer } from "mobx-react";
 import { tooltipBackground } from "../containers/theme";
-import { Project } from "../model/Project/Project";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
@@ -81,7 +81,7 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {Project.OtherConfigurationSettings.showImdiPreview &&
+      {GetOtherConfigurationSettings().showImdiPreview &&
         props.fieldDef.omitFromImdi && <NotConsumedByArchiveIndicator />}
     </div>
   );

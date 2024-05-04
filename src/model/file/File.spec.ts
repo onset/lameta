@@ -1,4 +1,3 @@
-import { beforeEach, afterEach, describe, it } from "vitest";
 import { OtherFile } from "./File";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -156,6 +155,11 @@ describe("FolderMetadataFile", () => {
     expect(newXml).toBe(originalXml);
   });
   it("can roundtrip sample project file", () => {
+    // TODO: this is broken because we are migrating from single language to multiple project languages.
+    // How to make a reasonable test? Maybe get
+    // all the properties of the original and then verify
+    // that after writing and reading back in, they are the same?
+
     const originalPath = "./sample data/Edolo sample/Edolo sample.sprj";
     const originalXml: string = fs.readFileSync(originalPath, "utf8");
     const newDir = Path.join(temp.dir, "Edolo sample");

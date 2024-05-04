@@ -69,13 +69,23 @@ export const LanguageChoicesEditor: React.FunctionComponent<
   };
 
   const currentValueArray = props.field.text
-    .split(";")
+    .split(";") // TODO: move this serialization logic into the Field class
     .filter((c) => c.length > 0)
     .map((c) => c.trim())
-    .map((code) => ({
-      value: code,
-      label: getName(props.languageFinder, code)
-    }));
+    .map((code) => {
+      if (code.indexOf("|") > 0) {
+        const parts = code.split("|");
+        console.log("parts: " + JSON.stringify(parts));
+        return {
+          value: parts[0],
+          label: parts[1]
+        };
+      }
+      return {
+        value: code,
+        label: getName(props.languageFinder, code)
+      };
+    });
 
   const loadMatchingOptions = (inputValue, callback) => {
     const matches =
@@ -107,10 +117,24 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     loadOptions: _.debounce(loadMatchingOptions, 100),
     value: currentValueArray,
     styles: customStyles,
-    onChange: (v: any[]) => {
-      // if you delete the last member, you get null instead of []
-      const newChoices = v ? v : [];
-      const s: string = newChoices.map((o) => o.value).join(";");
+    onChange: (
+      v: Array<{ value: string; label: string; __isNew__: boolean }>
+    ) => {
+      console.log("onChange: " + JSON.stringify(v));
+      // if any are new, change the value to "new"
+      const newChoices = v
+        ? v.map((o) =>
+            o.__isNew__ ? { label: o.label, value: `qaa-x-${o.label}` } : o
+          )
+        : []; // if you delete the last member, you get null instead of []
+
+      // TODO: move this serialization logic into the Field class
+      const s: string = newChoices
+        .map((o) => {
+          return o.value;
+        })
+        .join(";"); // why semicolong instead of comma? The particpants field as used semicolon for years.
+      console.log("saving: " + s);
       props.field.setValueFromString(s);
     },
     isMulti: true
@@ -120,7 +144,12 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
       {props.canCreateNew ? (
-        <CreatableAsyncSelect {...selectProps}></CreatableAsyncSelect>
+        <CreatableAsyncSelect
+          {...selectProps}
+          onCreatableOptionCreate={(newOption) => {
+            window.alert("You created " + newOption.label);
+          }}
+        ></CreatableAsyncSelect>
       ) : (
         <AsyncSelect {...selectProps} />
       )}

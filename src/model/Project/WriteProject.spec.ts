@@ -4,6 +4,12 @@ import fs from "fs";
 import Path from "path";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import {
+  setResultXml,
+  xexpect,
+  count,
+  value
+} from "../../other/xmlUnitTestUtils";
 let projectDirectory;
 let projectName;
 
@@ -51,6 +57,25 @@ describe("Project Write", () => {
         )
     ).toBeGreaterThan(-1);
   });
+  it("should write languages", () => {
+    const f = GetProjectFileWithOneField("unused", "x");
+    f.properties.setText("collectionSubjectLanguages", "ab;cd;ef");
+    f.properties.setText("collectionWorkingLanguages", "gh;ij");
+    setResultXml(f.getXml());
+    xexpect("Project/CollectionSubjectLanguages").toHaveCount(1);
+    xexpect(
+      "Project/CollectionSubjectLanguages[text()='ab;cd;ef']"
+    ).toHaveCount(1);
+    xexpect("Project/CollectionWorkingLanguages").toHaveCount(1);
+    xexpect("Project/CollectionWorkingLanguages[text()='gh;ij']").toHaveCount(
+      1
+    );
+    // and these we output for backwards compatibility
+    xexpect("Project/VernacularISO3CodeAndName").toHaveCount(1);
+    xexpect("Project/VernacularISO3CodeAndName[text()='ab']").toHaveCount(1);
+    xexpect("Project/AnalysisISO3CodeAndName").toHaveCount(1);
+    xexpect("Project/AnalysisISO3CodeAndName[text()='gh']").toHaveCount(1);
+  });
 });
 
 function AttemptRoundTripOfOneField(
@@ -83,7 +108,7 @@ function AttemptRoundTripOfOneField(
   }
 }
 
-function GetProjectFileWithOneField(
+export function GetProjectFileWithOneField(
   tag: string,
   content: string
 ): ProjectMetadataFile {

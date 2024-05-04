@@ -17,7 +17,6 @@ import {
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 import { makeObservable, observable } from "mobx";
-import { Project } from "../Project";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
