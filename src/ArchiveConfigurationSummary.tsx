@@ -47,6 +47,7 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
   const sectionBoxStyle = css`
     border: solid thin;
     border-radius: 4px;
+    background-color: white;
     padding: 10px;
     border-color: #0000005e;
   `;
