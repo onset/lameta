@@ -58,7 +58,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             className={"tab-project-archive-configuration"}
             data-testid="project-configuration-tab"
           >
-            <Trans>Archive Configuration</Trans>
+            <Trans>Archive</Trans>
           </Tab>
           {showCollectionTab && (
             <Tab
@@ -68,6 +68,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
               <Trans>Collection</Trans>
             </Tab>
           )}
+          <Tab
+            className={"tab-project-funding-project"}
+            data-testid="project-funding-project-tab"
+          >
+            <Trans>Funding Project</Trans>
+          </Tab>
           <Tab className={"tab-project-description-docs"}>
             <Trans>Description Documents</Trans>
           </Tab>
@@ -134,6 +140,16 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             />
           </TabPanel>
         )}
+        <TabPanel>
+          <AutoForm
+            form="fundingProject"
+            formClass="project"
+            folder={props.project}
+            authorityLists={props.authorityLists}
+            languageFinder={props.project.languageFinder}
+            rowStyle={true}
+          />
+        </TabPanel>
         <TabPanel>
           <FolderPane
             project={props.project}

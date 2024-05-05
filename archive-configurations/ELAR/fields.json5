@@ -1,8 +1,16 @@
 {
   project: [
     //    { key: "collectionName", visibility: "always" },
-    { key: "collectionTitle", visibility: "always" },
-    { key: "collectionDescription", visibility: "always" },
+    {
+      key: "fundingProjectTitle",
+      englishLabel: "Collection Title", // just renaming and moving the collection tab
+      form: "collection"
+    },
+    {
+      key: "projectDescription",
+      englishLabel: "Collection Description", // just renaming and moving the collection tab
+      form: "collection"
+    },
     {
       key: "collectionSteward",
       visibility: "always",

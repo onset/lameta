@@ -1,11 +1,43 @@
 {
   project: [
+    /* ------ Funding Project --------- */
     {
-      key: "title",
+      key: "title", // TODO: fundingProjectId?
       englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
-      xmlTag: "Title",
-      tabIndex: 0
+      xmlTag: "Title", // TODO: migrate to "FundingProjectId" while leaving a deprectated "Title" for backward compatibility
+      form: "fundingProject",
+      tabIndex: 0,
+      imdiPath: "Corpus/MDGroup/Project/Id"
     },
+    {
+      key: "fundingProjectTitle",
+      englishLabel: "Funding Project Title",
+      xmlTag: "FundingProjectTitle",
+      form: "fundingProject",
+      imdiPath: "Corpus/MDGroup/Project/Title"
+    },
+    {
+      key: "fundingProjectfunder",
+      englishLabel: "Funder",
+      xmlTag: "FundingProjectFunder",
+      form: "fundingProject",
+      imdiPath: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']"
+    },
+    {
+      key: "fundingProjectAffiliation",
+      englishLabel: "Project Affiliation",
+      xmlTag: "FundingProjectAffiliation",
+      form: "fundingProject",
+      imdiPath: "Corpus/MDGroup/Project/Contact/Organisation"
+    },
+    {
+      key: "fundingProjectLead",
+      englishLabel: "Project Lead",
+      xmlTag: "FundingProjectLead",
+      form: "fundingProject",
+      imdiPath: "Corpus/MDGroup/Project/Contact/Name"
+    },
+    /* ------ Collection --------- */
     {
       key: "projectDescription",
       xmlTag: "ProjectDescription",
@@ -13,6 +45,7 @@
       multipleLines: true,
       tabIndex: 11
     },
+
     {
       key: "vernacularIso3CodeAndName",
       englishLabel: "Subject Language",
@@ -96,6 +129,7 @@
       key: "grantId",
       englishLabel: "Grant ID",
       cssClass: "field__newSection",
+      form: "fundingProject",
       tabIndex: 7
     },
     {
@@ -142,6 +176,7 @@
     }*/
 
     // This section added in V3 to support fields ELAR uses. See ELAR/fields.json5
+    /*
     {
       key: "collectionName",
       englishLabel: "Collection Name",
@@ -149,21 +184,7 @@
       form: "collection",
       tabIndex: 1
     },
-    {
-      key: "collectionTitle",
-      englishLabel: "Collection Title",
-      visibility: "never",
-      form: "collection",
-      tabIndex: 2
-    },
-    {
-      key: "collectionDescription",
-      englishLabel: "Collection Description",
-      visibility: "never",
-      form: "collection",
-      multipleLines: true,
-      tabIndex: 3
-    },
+    */
     {
       key: "collectionSteward",
       englishLabel: "Collection Steward",
