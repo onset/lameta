@@ -1,24 +1,13 @@
 {
   project: [
-    //    { key: "collectionName", visibility: "always" },
-    {
-      key: "fundingProjectTitle",
-      englishLabel: "Collection Title", // just renaming and moving the collection tab
-      form: "collection"
-    },
-    {
-      key: "projectDescription",
-      englishLabel: "Collection Description", // just renaming and moving the collection tab
-      form: "collection"
-    },
     {
       key: "collectionSteward",
       visibility: "always",
       description: "This is usually the same person as the Depositor."
     },
-    { key: "deputyCollectionSteward", visibility: "always" },
+    { key: "collectionDeputySteward", visibility: "always" },
     {
-      key: "depositor",
+      key: "collectionDepositor",
       visibility: "always",
       description: "This is usually the same person as the Collection Steward."
     }

@@ -178,13 +178,13 @@ export default class ImdiBundler {
         //childrenSubpaths.push(..something for consent if we have it---);
 
         // ---  Now that we know what all the child imdi's are, we can output the root  ---
-        const projectImdi = ImdiGenerator.generateCorpus(
+        const corpusImdi = ImdiGenerator.generateCorpus(
           imdiMode,
           project,
           childrenSubpaths,
           false
         );
-        await this.validateImdiOrThrow(projectImdi, project.displayName);
+        await this.validateImdiOrThrow(corpusImdi, project.displayName);
         const targetDirForProjectFile = Path.join(
           rootDirectory,
           imdiMode === IMDIMode.OPEX
@@ -197,7 +197,7 @@ export default class ImdiBundler {
             targetDirForProjectFile,
             `${project.displayName}${extensionWithDot}`
           ),
-          projectImdi
+          corpusImdi
         );
         // const waitForCopying = () => {
         //   if (filesAreStillCopying()) {

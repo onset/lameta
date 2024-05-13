@@ -1,3 +1,4 @@
+import { css } from "@emotion/react";
 import * as React from "react";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
@@ -49,11 +50,19 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         className={"project"}
         defaultIndex={kFirstTabToOpen}
         onSelect={() => props.project.saveFolderMetaData()}
+        css={css`
+          // selection doesn't work if we these on the tabs themselves
+          .tab-project-funding-project,
+          .tab-project-collection-languages,
+          .tab-project-collection-location {
+            margin-left: 15px;
+          }
+        `}
       >
         <TabList>
-          <Tab className={"tab-project-about"} data-testid="project-about">
+          {/* <Tab className={"tab-project-about"} data-testid="project-about">
             <Trans>About This Project</Trans>
-          </Tab>
+          </Tab> */}
           <Tab
             className={"tab-project-archive-configuration"}
             data-testid="project-configuration-tab"
@@ -73,6 +82,18 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             data-testid="project-funding-project-tab"
           >
             <Trans>Funding Project</Trans>
+          </Tab>
+          <Tab
+            className={"tab-project-collection-languages"}
+            data-testid="project-collection-languages-tab"
+          >
+            <Trans>Languages</Trans>
+          </Tab>{" "}
+          <Tab
+            className={"tab-project-collection-location"}
+            data-testid="project-collection-location-tab"
+          >
+            <Trans>Location</Trans>
           </Tab>
           <Tab className={"tab-project-description-docs"}>
             <Trans>Description Documents</Trans>
@@ -102,7 +123,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <></>
           )}
         </TabList>
-        <TabPanel>
+        {/* <TabPanel>
           <AutoForm
             form="primary"
             formClass="project"
@@ -111,7 +132,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             languageFinder={props.project.languageFinder}
             rowStyle={true}
           />
-        </TabPanel>
+        </TabPanel> */}
         <TabPanel>
           <ArchiveConfigurationForm
             archiveConfigurationField={props.project.properties.getTextField(
@@ -143,6 +164,26 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         <TabPanel>
           <AutoForm
             form="fundingProject"
+            formClass="project"
+            folder={props.project}
+            authorityLists={props.authorityLists}
+            languageFinder={props.project.languageFinder}
+            rowStyle={true}
+          />
+        </TabPanel>
+        <TabPanel>
+          <AutoForm
+            form="languages"
+            formClass="project"
+            folder={props.project}
+            authorityLists={props.authorityLists}
+            languageFinder={props.project.languageFinder}
+            rowStyle={true}
+          />
+        </TabPanel>{" "}
+        <TabPanel>
+          <AutoForm
+            form="collectionLocation"
             formClass="project"
             folder={props.project}
             authorityLists={props.authorityLists}

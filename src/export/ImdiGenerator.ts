@@ -102,8 +102,29 @@ export default class ImdiGenerator {
       "Title",
       project.properties.getTextStringOrEmpty("fundingProjectTitle")
     );
+    this.element(
+      "Id",
+      project.properties.getTextStringOrEmpty("fundingProjectId")
+    );
+    //this.requiredField("Description", "projectDescription");
+    this.element(
+      "Description",
+      project.properties.getTextStringOrEmpty("projectDescription")
+    );
+    this.attributeLiteral("Name", "short_description"); // Review: this is from ELAR email, I'm not clear why it is needed
 
-    this.requiredField("Description", "projectDescription");
+    this.startGroup("MDGroup");
+    this.addProjectInfo();
+
+    this.group("Keys", () => {
+      this.element(
+        "Key",
+        project.properties.getTextStringOrEmpty("fundingProjectFunder")
+      );
+      this.attributeLiteral("Name", "Funding Body");
+    });
+    this.exitGroup(); // MDGroup
+
     for (const subpath of childrenSubpaths) {
       this.element("CorpusLink", subpath);
       // this element looks like this:
@@ -115,6 +136,7 @@ export default class ImdiGenerator {
     }
     return this.makeString();
   }
+
   public projectXmlForPreview(): string {
     this.tail = XmlBuilder.create("Project");
     this.addProjectInfo();
@@ -1082,19 +1104,18 @@ export default class ImdiGenerator {
     this.element("Name", name);
     this.element("Title", name);
     this.element("Date", this.nowDate());
-    this.tail.element("MDGroup").raw(
+    this.startGroup("MDGroup");
+    this.addProjectInfo();
+
+    this.tail.element("Location").raw(
       `<Location>
       <Continent Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Continents.xml" />
       <Country Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Countries.xml" />
-    </Location>
-    <Project>
-      <Name />
-      <Title />
-      <Id />
-      <Contact />
-    </Project>
-    <Keys />
-    <Content>
+    </Location>`
+    );
+    this.tail.element("Keys").raw("");
+    this.tail.element("Content").raw(
+      `<Content>
       <Genre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" />
       <SubGenre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml" />
       <Task Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Task.xml" />
@@ -1116,11 +1137,10 @@ export default class ImdiGenerator {
       </CommunicationContext>
       <Languages />
       <Keys />
-    </Content>
-    <Actors />
-  `
+    </Content>`
     );
-
+    this.tail.element("Actors").raw("");
+    this.exitGroup(); //MDGroup
     this.resourcesGroup(folder);
     this.exitGroup(); //Session
     return this.makeString();
