@@ -298,7 +298,9 @@ export class Session extends Folder {
       }
     });
     contributors.forEach((c) => {
-      if (!existingPersonIds.includes(c)) {
+      if (
+        !existingPersonIds.some((id) => id.toLowerCase() == c.toLowerCase())
+      ) {
         const roles = contributorRoles.get(c)!.join(", ");
         violations.push(`${c} (${roles})`);
       }
