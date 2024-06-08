@@ -86,16 +86,16 @@ function getEBUSYProblemsTips(): JSX.Element {
   return (
     <ul>
       <li>
+        Are your files managed by a synchronization software like OneDrive or
+        Dropbox? These programs can grab onto lameta files and interfere.
+      </li>
+      <li>
         Is the file open in another program? If not, try restarting your
         computer.
       </li>
       <li>
         Is your anti-virus interfering with lameta? Normally there is a way to
         tell it that lameta is safe.
-      </li>
-      <li>
-        Are your files managed by a synchronization software like Dropbox?
-        Normally this kind of problem will resolve itself.
       </li>
     </ul>
   );
@@ -105,6 +105,11 @@ function getEBUSYProblemsTips(): JSX.Element {
 function getEACCESProblemsTips(): JSX.Element {
   return (
     <ul>
+      {/* I get this error with file meddler grabbing, thus this message */}
+      <li>
+        Are your files managed by a synchronization software like OneDrive or
+        Dropbox? These programs can grab onto lameta files and interfere.
+      </li>
       <li>
         Is your anti-virus interfering with lameta? Normally there is a way to
         tell it that lameta is safe.
@@ -199,6 +204,12 @@ export function NotifyNoBigDeal(message: string, onClick?: () => void) {
       }),
     0
   );
+  // remove any existing messages of this type
+  window.setTimeout(() => {
+    ButterToast.dismissAll((toast) => {
+      return toast.scheme === Cinnamon.Crunch.SCHEME_GREY;
+    });
+  }, 0);
 }
 
 export function NotifyWarning(message: string, onClick?: () => void) {
@@ -269,7 +280,7 @@ export function NotifyMultipleProjectFiles(
   window.setTimeout(
     () =>
       NotifyWarning(
-        t`There is a problem with ${displayName}. Click for more information.`,
+        t`There is a problem with the files in the folder for ${displayName}. Click for more information.`,
         () => {
           electron.ipcRenderer
             .invoke("showMessageBox", {
