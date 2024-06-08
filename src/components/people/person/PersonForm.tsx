@@ -34,9 +34,14 @@ class PersonForm extends React.Component<IProps> {
           validate={(value: string) => this.props.validateFullName(value)}
           field={this.props.fields.getTextField("name")}
           onBlur={() => {
-            this.props.person.nameMightHaveChanged();
-            // ID is s function of the name and the code
-            this.props.person.IdMightHaveChanged();
+            if (this.props.person.getNeedRenameOfFolder()) {
+              // todo: show a dialog that says we're working
+              setTimeout(() => {
+                this.props.person.nameMightHaveChanged();
+                // ID is s function of the name and the code
+                this.props.person.IdMightHaveChanged();
+              }, 100);
+            }
           }}
           className="full-name left-side"
         />

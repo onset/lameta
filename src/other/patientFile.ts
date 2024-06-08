@@ -100,21 +100,21 @@ export class PatientFS {
   }
   private static patientFileOperationSync(operation: () => any): any {
     // note, graceful-fs is already pausing up to 60 seconds on each attempt.
-    const kattempts = 5;
+    const kretryAttempts = 15; // I wish i could visibly show something if we're going to wait...
     let attempt = 1;
-    for (; attempt <= kattempts; attempt++) {
+    for (; attempt <= kretryAttempts; attempt++) {
       try {
-        const result = operation();
+        const result = operation(); // this can throw, causing us to loop
         if (attempt > 1) {
           // there is no way to asynchronously show any UI, but after a long wait in which we finally got through, it might help to tell people what caused the a delay.
           NotifyNoBigDeal(
-            `There was a delay in accessing a file... perhaps another program, file sync service, or antivirus is interfering.`
+            `There was a delay in accessing a file... perhaps a file-sync service, or antivirus is interfering.`
           );
         }
         return result;
       } catch (err) {
         if (err.code === "EBUSY" || err.code === "EPERM") {
-          if (attempt === kattempts) {
+          if (attempt === kretryAttempts) {
             throw err; // give up
           }
           console.log("patientReadFileSync: Sleeping...");
@@ -127,7 +127,9 @@ export class PatientFS {
   }
 
   private static sleepForShortWhile() {
-    console.error("patientFile:sleepForShortWhile");
+    console.error(
+      "patientFile:sleepForShortWhile because file wasn't available..."
+    );
     //"sleep" would probably work on mac/linux. But the equivalent "timeout" on windows fails when there is no keyboad input.
     // So we're doing a ping. Note that a ping of "-n 1" is 0ms on windows, oddly, while "-n 2" takes about a second
     child_process.spawnSync("ping", ["-n 2 127.0.0.1"], {

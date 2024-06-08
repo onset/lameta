@@ -512,12 +512,19 @@ export abstract class Folder {
     return "UNUSED-IN-THIS-CLASS";
   }
 
+  public getNeedRenameOfFolder(): boolean {
+    const newFileName = sanitizeForArchive(
+      this.textValueThatControlsFolderName(),
+      userSettingsSingleton.IMDIMode
+    );
+
+    // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
+    // Windows is always case-insensitive, and macos usually (but not always!) is. This method
+    // so far gets by with being case sensitive.
+    return newFileName.length > 0 && newFileName !== this.safeFileNameBase;
+  }
+
   public nameMightHaveChanged(): boolean {
-    // Enhance: If something goes wrong here, we're going to have things out of sync. Is there some
-    // way to do this atomically (that is, as a transaction), or at least do the most dangerous
-    // part first (i.e. the file renaming)?
-    // Then if that failed, we would need to rename the files that had already been changed, and then
-    // change the id/name field back to what it was previously.
     const newFileName = sanitizeForArchive(
       this.textValueThatControlsFolderName(),
       userSettingsSingleton.IMDIMode

@@ -37,7 +37,8 @@ import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
-
+import { Slide, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const isDev = require("electron-is-dev");
 
 // Added this as part of a workaround in typing when upgrading to mobx6.
@@ -329,6 +330,13 @@ class HomePage extends React.Component<IProps, IState> {
         <ExportDialog projectHolder={this.projectHolder} />
         <SpreadsheetImportDialog projectHolder={this.projectHolder} />
         <MessageDialog />
+        <ToastContainer
+          position="top-right"
+          theme="light"
+          autoClose={10 * 1000}
+          limit={3}
+          transition={Slide}
+        />
       </div>
     );
   }

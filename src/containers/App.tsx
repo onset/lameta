@@ -7,7 +7,6 @@ import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialo
 import { I18nProvider } from "@lingui/react";
 import { i18n } from "../other/localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import ButterToast from "butter-toast";
 import userSettingsSingleton from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
@@ -42,7 +41,6 @@ export const App: React.FunctionComponent = observer(() => {
       <I18nProvider i18n={i18n}>
         <ThemeProvider theme={theme}>
           <HomePage />
-          <ButterToast className={"notificationTray"} />
           <ConfirmDeleteDialog />
           <LanguagePickerDialog />
           <RenameFileDialog />

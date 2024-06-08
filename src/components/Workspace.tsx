@@ -194,9 +194,9 @@ class Home extends React.Component<IProps> {
       click: () => {
         if (this.props.project) {
           if (
-            (this.props.project.getFolderArrayFromType(
-              folderType
-            ) as any).countOfMarkedFolders() === 0
+            (
+              this.props.project.getFolderArrayFromType(folderType) as any
+            ).countOfMarkedFolders() === 0
           ) {
             ShowMessageDialog({
               title: ``,
