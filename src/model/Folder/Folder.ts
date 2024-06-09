@@ -622,7 +622,13 @@ export abstract class Folder {
       // will sometimes be false for things like DescriptionDocuments
       const dir = fs.readdirSync(this.directory);
       const x = dir.filter((elm) =>
-        elm.match(new RegExp(`.*(${this.metadataFileExtensionWithDot})$`, "ig"))
+        // about ^(?!~)
+        //  opening a file in ms word creates a hidden file that starts with ~
+        // the fact that it's open with Word is probably going to cause problems,
+        // but this temp file is not a problem, don't want to give a misleading error message.
+        elm.match(
+          new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")
+        )
       );
       if (x.length > 1) {
         NotifyMultipleProjectFiles(
