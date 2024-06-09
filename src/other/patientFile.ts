@@ -100,7 +100,7 @@ export class PatientFS {
   }
   private static patientFileOperationSync(operation: () => any): any {
     // note, graceful-fs is already pausing up to 60 seconds on each attempt.
-    const kretryAttempts = 15; // I wish i could visibly show something if we're going to wait...
+    const kretryAttempts = 10; // I wish i could visibly show something if we're going to wait...
     let attempt = 1;
     for (; attempt <= kretryAttempts; attempt++) {
       try {

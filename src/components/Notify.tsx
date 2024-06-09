@@ -47,7 +47,9 @@ function notify(
           </div>
         </React.Fragment>,
         {
+          draggable: false, // makes it possible to select text in the message
           ...options,
+
           onClose: () => {
             activeToasts.splice(activeToasts.indexOf(key), 1);
           }
