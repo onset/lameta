@@ -76,8 +76,10 @@ then you need to do `yarn lingui-compile`.
 The current process, which I don't love, is this:
 
 1. Change the version in `package.json`
-2. Commit, push. A github action will build installers for Mac and Windows and create an unpublished "Release" on github.
-3. Find that release, type in the description, and publish it.
+2. Commit.
+3. Add a tag matching that number, e.g. v2.3.4-beta
+4. push the commit and tag. The GitHub Action in main.yml will run if you are on one of the branches listed there. It will build installers for Mac and Windows, get Apple to notarize the mac version, and create an unpublished "Release" on github. We do not currently have a way of "signing" the Windows version.
+5. Find that release, type in the description, and publish it.
 
 ## License
 
