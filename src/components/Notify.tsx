@@ -4,72 +4,62 @@ import { css } from "@emotion/react";
 import { showInExplorer } from "../other/crossPlatformUtilities";
 //import { store } from "react-notifications-component";
 import * as React from "react";
-import ButterToast, { Cinnamon, POS_BOTTOM, POS_RIGHT } from "butter-toast";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { t } from "@lingui/macro";
 import * as remote from "@electron/remote";
 import { ipcRenderer } from "electron";
 
+import { Theme, ToastOptions, toast } from "react-toastify";
 const activeToasts: string[] = [];
-const autoCloseTicks = 60 * 1000;
-export function NotifyError(message: string, details?: string) {
-  const key = message + details;
 
-  // don't show a message again if it's still showing
-  if (activeToasts.indexOf(key) < 0) {
-    activeToasts.push(key);
-    // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-    window.setTimeout(
-      () =>
-        ButterToast.raise({
-          content: (
-            // expand to fit the insides
-            <Cinnamon.Crunch
-              title={t`Error`}
-              content={
-                <React.Fragment>
-                  <div>{message}</div>
-                  <div
-                    css={css`
-                      font-size: 8pt;
-                      margin-top: 1em;
-                      overflow-wrap: anywhere;
-                      * {
-                        overflow-wrap: anywhere;
-                      }
-                    `}
-                  >
-                    {details}
-                  </div>
-                </React.Fragment>
+const errorToastProps: ToastOptions = {
+  type: "error",
+  theme: "colored" as Theme,
+  autoClose: 10000
+};
+
+function notify(
+  message: string,
+  details?: string | React.ReactNode,
+  options?: ToastOptions
+) {
+  // the delay helps with messages that we wouldn't see on startup becuase the react window isn't ready for it
+  window.setTimeout(() => {
+    const key = message + details;
+    // don't show a message again if it's still showing
+    if (activeToasts.indexOf(key) < 0) {
+      activeToasts.push(key);
+      toast(
+        <React.Fragment>
+          <div>{message}</div>
+          <div
+            css={css`
+              font-size: 8pt;
+              margin-top: 1em;
+              overflow-wrap: anywhere;
+              * {
+                overflow-wrap: anywhere;
               }
-              scheme={Cinnamon.Crunch.SCHEME_RED}
-            />
-          ),
-          onclick: () => {
-            try {
-              const index = activeToasts.indexOf(message);
-              if (index > -1) activeToasts.splice(index, 1);
-            } catch (err) {
-              //swallow
-            }
-          },
-          timeout: autoCloseTicks
-        }),
-      0
-    );
-    // we don't have a callback from butter-toast, but we know when we told it to hide.
+            `}
+          >
+            {details}
+          </div>
+        </React.Fragment>,
+        {
+          draggable: false, // makes it possible to select text in the message
+          ...options,
 
-    window.setTimeout(() => {
-      try {
-        const index = activeToasts.indexOf(key);
-        if (index > -1) activeToasts.splice(index, 1);
-      } catch (err) {
-        console.error(err);
-      }
-    }, autoCloseTicks);
-  }
+          onClose: () => {
+            activeToasts.splice(activeToasts.indexOf(key), 1);
+          }
+        }
+      );
+    }
+  }, 0);
+}
+export function NotifyError(message: string, details?: string) {
+  notify(message, details, errorToastProps);
 }
 export function getCannotRenameFileMsg() {
   return t`lameta  was not able to rename that file.`;
@@ -86,16 +76,16 @@ function getEBUSYProblemsTips(): JSX.Element {
   return (
     <ul>
       <li>
+        Are your files managed by a synchronization software like OneDrive or
+        Dropbox? These programs can grab onto lameta files and interfere.
+      </li>
+      <li>
         Is the file open in another program? If not, try restarting your
         computer.
       </li>
       <li>
         Is your anti-virus interfering with lameta? Normally there is a way to
         tell it that lameta is safe.
-      </li>
-      <li>
-        Are your files managed by a synchronization software like Dropbox?
-        Normally this kind of problem will resolve itself.
       </li>
     </ul>
   );
@@ -105,6 +95,11 @@ function getEBUSYProblemsTips(): JSX.Element {
 function getEACCESProblemsTips(): JSX.Element {
   return (
     <ul>
+      {/* I get this error with file meddler grabbing, thus this message */}
+      <li>
+        Are your files managed by a synchronization software like OneDrive or
+        Dropbox? These programs can grab onto lameta files and interfere.
+      </li>
       <li>
         Is your anti-virus interfering with lameta? Normally there is a way to
         tell it that lameta is safe.
@@ -142,37 +137,27 @@ export function NotifyFileAccessProblem(message: string, err: any) {
           https://github.com/onset/lameta/issues.`}
     </div>
   );
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      ButterToast.raise({
-        content: (
-          <Cinnamon.Crunch
-            title={t`Error`}
-            css={css``}
-            content={
-              <div>
-                <p>{message}</p>
 
-                {/* Enhance: can we get this html into the localization system somehow? For now I think the benefit of the structure outweigh the English-only nature. */}
-                {tips}
-                <div
-                  css={css`
-                    font-size: 8pt;
-                    margin-top: 1em;
-                  `}
-                >
-                  {err && <div>{err.toString()}</div>}
-                </div>
-              </div>
-            }
-            scheme={Cinnamon.Crunch.SCHEME_RED}
-          />
-        ),
-        timeout: 60 * 1000
-      }),
-    0
-  );
+  notify(message, err.toString(), errorToastProps);
+  //     toast.error(
+  //       <div>
+  //         <p>{message}</p>
+
+  //         {/* Enhance: can we get this html into the localization system somehow? For now I think the benefit of the structure outweigh the English-only nature. */}
+  //         {tips}
+  //         <div
+  //           css={css`
+  //             font-size: 8pt;
+  //             margin-top: 1em;
+  //           `}
+  //         >
+  //           {err && <div>{err.toString()}</div>}
+  //         </div>
+  //       </div>,
+  //       {
+  //         ...errorToastProps
+  //       }
+  //     );
 }
 
 export function NotifyException(
@@ -184,79 +169,34 @@ export function NotifyException(
   NotifyError(message ? message : errWas, details ?? "" + errWas);
   sentryException(err);
 }
-export function NotifyNoBigDeal(message: string, onClick?: () => void) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      ButterToast.raise({
-        onClick,
-        content: (
-          <Cinnamon.Crunch
-            content={message}
-            scheme={Cinnamon.Crunch.SCHEME_GREY}
-          />
-        )
-      }),
-    0
-  );
+export function NotifyNoBigDeal(message: string) {
+  notify(message, "", {
+    type: "warning",
+    autoClose: 2000,
+    hideProgressBar: true,
+    closeButton: false
+  });
 }
 
-export function NotifyWarning(message: string, onClick?: () => void) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      ButterToast.raise({
-        onClick,
-        content: (
-          <Cinnamon.Crunch
-            title={t`Warning`}
-            content={message}
-            scheme={Cinnamon.Crunch.SCHEME_ORANGE}
-          />
-        )
-      }),
-    0
-  );
+export function NotifyErrorWithClick(message: string, onClick: () => void) {
+  notify(message, "", { ...errorToastProps, onClick: onClick });
+}
+export function NotifyWarning(message: string) {
+  notify(message, "", { type: "warning" });
 }
 export function NotifySuccess(message: string, onClick?: () => void) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      ButterToast.raise({
-        content: (
-          <Cinnamon.Crunch
-            //title={translateMessage(/*i18n*/ { id: "" })}
-            content={message}
-            scheme={Cinnamon.Crunch.SCHEME_GREEN}
-          />
-        )
-      }),
-    0
-  );
+  notify(message, "", {
+    type: "success",
+    onClick: onClick,
+    autoClose: 2000,
+    hideProgressBar: true
+  });
 }
 export function NotifyUpdateAvailable(
   open: () => void
   //download: DownloadFunction
 ) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(() => {
-    ButterToast.raise({
-      content: (
-        <Cinnamon.Crisp
-          title={t`Update available`}
-          //title={translateMessage(/*i18n*/ { id: "" })}
-          content={
-            <div>
-              {/* I would like to dismiss the toast when you click, but the current ButterToast docs don't seem to match what we
-            actually get if we provide an OnClick to raise. At this time, it does not give a dismiss function as claimed. */}
-              <a onClick={open}>{t`View Release Notes`}</a>
-            </div>
-          }
-        />
-      ),
-      timeout: 10 * 1000
-    });
-  }, 0);
+  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>);
 }
 
 export function NotifyMultipleProjectFiles(
@@ -265,29 +205,24 @@ export function NotifyMultipleProjectFiles(
   name: string,
   folder: string
 ) {
-  // the delay helps with messages that we wouldn't see on startup becuase the rect window isn't ready for it
-  window.setTimeout(
-    () =>
-      NotifyWarning(
-        t`There is a problem with ${displayName}. Click for more information.`,
-        () => {
-          ipcRenderer
-            .invoke("showMessageBox", {
-              buttons: [t`Cancel`, t`Show me the folder with the problem`],
-              title: t`Something is wrong here...`,
-              message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
-              detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
-            })
-            .then((response) => {
-              if (response > 0) {
-                showInExplorer(folder);
-                if (!userSettings.DeveloperMode) {
-                  window.setTimeout(() => remote.app.quit(), 1000);
-                }
-              }
-            });
-        }
-      ),
-    0
+  NotifyErrorWithClick(
+    t`There is a problem with the files in the folder for ${displayName}. Click for more information.`,
+    () => {
+      ipcRenderer
+        .invoke("showMessageBox", {
+          buttons: [t`Cancel`, t`Show me the folder with the problem`],
+          title: t`Something is wrong here...`,
+          message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
+          detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
+        })
+        .then((response) => {
+          if (response > 0) {
+            showInExplorer(folder);
+            if (!userSettings.DeveloperMode) {
+              window.setTimeout(() => remote.app.quit(), 1000);
+            }
+          }
+        });
+    }
   );
 }

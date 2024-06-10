@@ -750,7 +750,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
-    //console.log(`Saving ${this.metadataFilePath}`);
+    console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 

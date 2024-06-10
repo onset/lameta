@@ -8,6 +8,7 @@ import {
   fieldDefinitionsOfCurrentConfig,
   prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
+import { PatientFS } from "../../other/patientFile";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -21,10 +22,38 @@ export class FolderMetadataFile extends File {
     customVocabularies: EncounteredVocabularyRegistry
   ) {
     const name = Path.basename(directory);
-    //if the metadata file doesn't yet exist, just make an empty one.
-    const metadataPath = Path.join(directory, name + fileExtensionForMetadata);
+
+    let metadataPath = Path.join(directory, name + fileExtensionForMetadata);
+    //if the metadata file doesn't exist yet or has the wrong name
     if (!fs.existsSync(metadataPath)) {
-      fs.writeFileSync(metadataPath, `<${xmlRootName}></${xmlRootName}>`); // NO: break SayMore Classic <${xmlRootName}/>
+      // does a file exist here with the right extension but the wrong name?
+      const files = fs.readdirSync(directory);
+      const possibleFiles = files.filter((f) =>
+        f.endsWith(fileExtensionForMetadata)
+      );
+      if (possibleFiles.length > 0) {
+        // use the first one. The next save will try to sort out the names
+        const pathToFileWithUnexpectedName = Path.join(
+          directory,
+          possibleFiles[0]
+        );
+        try {
+          PatientFS.renameSync(pathToFileWithUnexpectedName, metadataPath);
+          console.log(
+            `renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`
+          );
+          // ok good, we're all set
+        } catch (err) {
+          // ah well
+          console.error(
+            `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`
+          );
+          metadataPath = pathToFileWithUnexpectedName;
+        }
+      } else {
+        // ok, just make an empty one.
+        fs.writeFileSync(metadataPath, `<${xmlRootName}></${xmlRootName}>`); // NO: break SayMore Classic <${xmlRootName}/>
+      }
     }
     super(
       metadataPath,
