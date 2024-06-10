@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - V2
-      - master
       - beta
       - release
   workflow_dispatch:
