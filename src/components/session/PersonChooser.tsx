@@ -75,8 +75,10 @@ class PersonChooser extends React.Component<IProps> {
           label: person ? person.label : this.props.name
         }}
         onChange={(v: any) => {
-          const s: string = CapitalCase(v.value);
-          this.props.onChange(s ? s : "");
+          // ELAR complained about this
+          // const s: string = CapitalCase(v.value);
+          // this.props.onChange(s ? s : "");
+          this.props.onChange(v.value);
         }}
         options={choices}
         // this is what shows if you start typing, see it until you type a match of a person
