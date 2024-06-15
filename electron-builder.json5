@@ -60,13 +60,29 @@
     artifactName: "${productName} Windows Setup ${version}.${ext}"
   },
   mac: {
-    target: "dmg",
+    target: { target: "default", arch: ["universal"] },
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
     extraResources: [
-      "node_modules/ffprobe-static/bin/darwin/x64",
-      "node_modules/ffprobe-static/bin/darwin/arm64"
+      {
+        filter: ["**"],
+        from: "node_modules/ffprobe-static/bin/darwin/x64",
+        to: "Resources/bin/x64/ffprobe"
+      },
+      {
+        filter: ["**"],
+        from: "node_modules/ffprobe-static/bin/darwin/arm64",
+        to: "Resources/bin/arm64/ffprobe"
+      }
+    ],
+    x64ArchFiles: [
+      "Resources/bin/x64/ffprobe/**",
+      "!Resources/bin/arm64/ffprobe/**"
+    ],
+    arm64ArchFiles: [
+      "Resources/bin/arm64/ffprobe/**",
+      "!Resources/bin/x64/ffprobe/**"
     ],
     fileAssociations: [
       {
