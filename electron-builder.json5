@@ -1,7 +1,7 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
-  asarUnpack: ["node_modules/ffprobe-static/*"],
+  //asarUnpack: ["node_modules/ffprobe-static/*"],
   afterSign: "electron-builder-notarize",
   dmg: {
     contents: [
@@ -26,8 +26,7 @@
     "node_modules/electron-store",
     "node_modules/@electron-toolkit",
     "node_modules/conf",
-    */
-    "index.html",
+    */ "index.html",
     "package.json",
     "index*.js",
     {
@@ -48,7 +47,6 @@
   win: {
     target: "nsis",
     icon: "build/windows.ico",
-    extraResources: ["node_modules/ffprobe-static/bin/win32/x64"],
     fileAssociations: [
       {
         ext: "sprj",
@@ -60,24 +58,10 @@
     artifactName: "${productName} Windows Setup ${version}.${ext}"
   },
   mac: {
-    mergeASARs: true,
     target: { target: "default", arch: ["universal"] },
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
-    extraResources: [
-      {
-        from: "node_modules/ffprobe-static/bin/darwin/x64",
-        to: "Resources/ffprobe/x64",
-        filter: ["**"]
-      },
-      {
-        from: "node_modules/ffprobe-static/bin/darwin/arm64",
-        to: "Resources/ffprobe/arm64",
-        filter: ["**"]
-      }
-    ],
-    x64ArchFiles: "Resources/ffprobe/x64/**",
 
     fileAssociations: [
       {
@@ -92,7 +76,6 @@
   },
   linux: {
     target: ["deb", "AppImage"],
-    extraResources: ["node_modules/ffprobe-static/bin/linux/x64"],
     category: "science",
     description: "A metadata tool to help with organising collections of files. It is mainly aimed at collections made in the course of documenting language, music, and other cultural expressions.",
     fileAssociations: [
