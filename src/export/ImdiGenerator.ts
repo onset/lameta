@@ -452,8 +452,9 @@ export default class ImdiGenerator {
               : [fieldContents.trim()];
             valueElements.forEach((v) => {
               //https://trello.com/c/GdRJamgi/83-export-of-topic-field
-              if (["topic", "status", "keyword"].indexOf(key) > -1) {
-                //capitalize the first letter of each word
+              // Hanna asks that we not do this to topic and keyword
+              if (["status" /*, "keyword", "topic",*/].indexOf(key) > -1) {
+                // capitalize the first letter of each word
                 v = safeSentenceCase(v);
               }
 
