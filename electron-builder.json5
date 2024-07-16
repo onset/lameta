@@ -1,7 +1,6 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
-  //asarUnpack: ["node_modules/ffprobe-static/*"],
   afterSign: "electron-builder-notarize",
   dmg: {
     contents: [
@@ -26,7 +25,20 @@
     "node_modules/electron-store",
     "node_modules/@electron-toolkit",
     "node_modules/conf",
-    */ "index.html",
+    */
+
+    // Note, I have so far not been able to prevent two copies of all 5 ffprobe.exe's from being
+    // included, despite much effort. One copy of each goes into app.asar,
+    // one goes into app.asar.unpacked (this is the default electron-builder for all exe files,
+    // I haven't figured out how to override that.)
+    // electron-builder just doesn't seem to honor the filter rules.
+
+    // some of the bigger packages that we don't need. Drops installer by about 9 meg
+    "!node_modules/@mui",
+    "!node_modules/@reduxjs",
+    "!node_modules/xlsx",
+    "!node_modules/trie-search",
+    "index.html",
     "package.json",
     "index*.js",
     {
