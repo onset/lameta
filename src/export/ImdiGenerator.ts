@@ -102,10 +102,6 @@ export default class ImdiGenerator {
       "Title",
       project.properties.getTextStringOrEmpty("fundingProjectTitle")
     );
-    this.element(
-      "Id",
-      project.properties.getTextStringOrEmpty("fundingProjectId")
-    );
     //this.requiredField("Description", "projectDescription");
     this.element(
       "Description",
@@ -114,8 +110,11 @@ export default class ImdiGenerator {
     this.attributeLiteral("Name", "short_description"); // Review: this is from ELAR email, I'm not clear why it is needed
 
     this.startGroup("MDGroup");
-    this.addProjectInfo();
 
+    // Location is required by the schema. I'm not clear if I should include it here or on on session
+    this.sessionLocation();
+    // Project is required by the schema
+    this.addProjectInfo();
     this.group("Keys", () => {
       this.element(
         "Key",
@@ -123,6 +122,29 @@ export default class ImdiGenerator {
       );
       this.attributeLiteral("Name", "Funding Body");
     });
+
+    // Content is required by the schema
+    this.group("Content", () => {
+      this.element("Genre", "Unspecified");
+      // this.element("SubGenre", "Unspecified");
+      // Modalities, Subject, CommunicationContext
+      // this.element("Task", "Unspecified");
+      // this.element("Modalities", "Unspecified");
+      // this.element("Subject", "Unspecified");
+
+      this.group("CommunicationContext", () => {
+        // this.element("Interactivity", "Unspecified");
+        // this.element("PlanningType", "Unspecified");
+        // this.element("Involvement", "Unspecified");
+        // this.element("SocialContext", "Unspecified");
+        // this.element("EventStructure", "Unspecified");
+        // this.element("Channel", "Unspecified");
+      });
+      this.group("Languages", () => {});
+      this.group("Keys", () => {});
+    });
+
+    this.group("Actors", () => {});
     this.exitGroup(); // MDGroup
 
     for (const subpath of childrenSubpaths) {
@@ -148,7 +170,12 @@ export default class ImdiGenerator {
 
     this.requiredField("Name", "title", this.project);
     this.requiredField("Title", "fundingProjectTitle", this.project);
-    this.requiredField("Id", "grantId", this.project);
+
+    // FWIW, we have:
+    // key: "fundingProjectId",
+    // lameta2Tag: "grantId",
+    this.requiredField("Id", "fundingProjectId", this.project);
+
     this.group("Contact", () => {
       this.optionalField("Name", "contactPerson", this.project);
       //<Address> We don't currently have this field.
