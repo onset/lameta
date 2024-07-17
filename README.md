@@ -63,6 +63,8 @@ To run just one e2e fixture, name it:
 yarn e2e registration.e2e.ts
 ```
 
+If you see `ENOENT: no such file or directory, scandir "<path>\archive-configurations"`, you may have forgotten to do the `build` step.
+
 ### l10n
 
 When running lameta, if you see this in the Chrome debug console:

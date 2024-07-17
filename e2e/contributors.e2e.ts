@@ -28,8 +28,8 @@ test.describe("FileList", () => {
     await page.keyboard.press("Enter");
     await project.goToNotesOfThisSession();
     await project.goToContributorsOfThisSession();
-    // reg exp to match starting with "Foo Bar ❓"
-    const startsWithFooBar = new RegExp("^Foo Bar ❓");
+    // reg exp to match starting with "foo bar ❓"
+    const startsWithFooBar = new RegExp("^foo bar ❓");
     await page.getByText(startsWithFooBar).click();
 
     // now try to use it in a new session

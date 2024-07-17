@@ -5,7 +5,7 @@ import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
 import { E2eFileList } from "./e2eFileList";
 
-let lameta: Lameta;
+let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
 let fileList: E2eFileList;

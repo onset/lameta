@@ -33,6 +33,11 @@ export class E2eFileList {
     // this gets really flaky with the mocking and background copying.
     // for now, if we actualy need this file, let's just put it where we want it
     if (wait) {
+      // wait for the directory containing the file to exist
+      await waitForCondition(wait.page, () => {
+        return fs.existsSync(Path.dirname(wait.path));
+      });
+
       fs.writeFileSync(wait.path, "hello world");
 
       await waitForCondition(wait.page, () => {
