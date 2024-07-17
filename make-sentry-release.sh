@@ -9,8 +9,7 @@
 export SENTRY_AUTH_TOKEN=$LAMETA_SENTRY_AUTH_TOKEN
 
 commitSHA=$(sentry-cli releases propose-version)
-# notice that we keep the current version in a different package.json, on under app/
-VERSION=$(grep version app/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
+VERSION=$(grep version package.json | sed 's/.*"version": "\(.*\)".*/\1/')
 # I don't know if this works, suddenly started getting an error about a missing --org in the Action
 ORG=onset-org
 

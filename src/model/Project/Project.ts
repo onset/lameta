@@ -236,7 +236,10 @@ export class Project extends Folder {
       return peopleWithPersonRecords.concat(peopleWithJustAName);
     });
 
-    this.customVocabularies.setup("contributor", CapitalCase);
+    this.customVocabularies.setup(
+      "contributor",
+      (x) => x /* ELAR asked for no changes ever */
+    );
     this.setupProtocolChoices();
     this.setupGenreDefinition();
 

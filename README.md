@@ -21,6 +21,8 @@ Stack: Typescript, React, mobx, webpack, electron.
 
 Make sure [volta](https://github.com/volta-cli/volta) is installed. Verify that it is working correctly via `volta list`. You should see the same versions of node & yarn as are listed in `packages.json`.
 
+Note that due to a common failure of nodejs.org to deliver node to the github actions, we are currently using a mirror. See `.volta/hooks.json`.
+
 ```bash
 yarn
 yarn lingui compile  <-- just once, before dev will work
@@ -62,6 +64,8 @@ To run just one e2e fixture, name it:
 ```bash
 yarn e2e registration.e2e.ts
 ```
+
+If you see `ENOENT: no such file or directory, scandir "<path>\archive-configurations"`, you may have forgotten to do the `build` step.
 
 To show the Playwright Inspector (which has a recorder), use
 
