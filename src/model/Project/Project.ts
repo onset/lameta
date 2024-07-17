@@ -196,7 +196,7 @@ export class Project extends Folder {
     }
 
     if (this.properties.getTextStringOrEmpty("title").length === 0) {
-      this.properties.setText("title", Path.basename(directory));
+      this.properties.setText("collectionTitle", Path.basename(directory));
     }
     // Note, we'd rather have an id that cannot change, but don't have one to
     // work with at the moment.

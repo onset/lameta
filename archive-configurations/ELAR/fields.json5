@@ -1,16 +1,13 @@
 {
   project: [
-    //    { key: "collectionName", visibility: "always" },
-    { key: "collectionTitle", visibility: "always" },
-    { key: "collectionDescription", visibility: "always" },
     {
       key: "collectionSteward",
       visibility: "always",
       description: "This is usually the same person as the Depositor."
     },
-    { key: "deputyCollectionSteward", visibility: "always" },
+    { key: "collectionDeputySteward", visibility: "always" },
     {
-      key: "depositor",
+      key: "collectionDepositor",
       visibility: "always",
       description: "This is usually the same person as the Collection Steward."
     }

@@ -1,79 +1,186 @@
 {
   project: [
     {
-      key: "title",
-      englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
-      xmlTag: "Title",
-      tabIndex: 0
+      key: "archiveConfigurationName",
+      form: "ArchiveConfiguration",
+      default: "default",
+      xmlTag: "ArchiveConfigurationName",
+      englishLabel: "Archive Configuration used by this project",
+      vocabulary: "ArchiveConfigurationName"
     },
     {
-      key: "projectDescription",
+      key: "customAccessChoices",
+      form: "ArchiveConfiguration",
+      "//": "Older Windows SM actually didn't store this in the sprj at all",
+      xmlTag: "CustomAccessProtocol",
+      englishLabel: "Custom Session Access Choices"
+    },
+
+    /* ------ Funding Project --------- */
+    {
+      key: "fundingProjectId",
+      lameta2Tag: "grantId",
+      englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
+      form: "fundingProject",
+      tabIndex: 0,
+      imdiComment: "Corpus/MDGroup/Project/Id"
+    },
+    {
+      key: "fundingProjectTitle",
+      lameta2Tag: "Title", // REVIEW.. this should probably be copied to here and also to the collection title
+      englishLabel: "Funding Project Title",
+      xmlTag: "FundingProjectTitle",
+      form: "fundingProject",
+      imdiComment: "Corpus/MDGroup/Project/Title"
+    },
+    {
+      key: "fundingProjectFunder",
+      lameta2Tag: "NONE",
+      englishLabel: "Funder",
+      xmlTag: "FundingProjectFunder",
+      form: "fundingProject",
+      // ELAR would like to put this under MDGroup/Project/Funder but that will need a new schema
+      imdiComment: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']"
+    },
+    {
+      key: "fundingProjectAffiliation",
+      lameta2Tag: "NONE",
+      englishLabel: "Project Affiliation",
+      xmlTag: "FundingProjectAffiliation",
+      form: "fundingProject",
+      imdiComment: "Corpus/MDGroup/Project/Contact/Organisation"
+    },
+    {
+      key: "fundingProjectLead",
+      lameta2Tag: "NONE",
+      englishLabel: "Project Lead",
+      xmlTag: "FundingProjectLead",
+      form: "fundingProject",
+      imdiComment: "Corpus/MDGroup/Project/Contact/Name"
+    },
+    // {
+    //   key: "contactPerson",
+    //   englishLabel: "Contact Person",
+    //   xmlTag: "ContactPerson",
+    //   imdiComment: "Project/Contact/Name",
+    //   form: "fundingProject",
+    //   description: "Contact information about the person or institution responsible for the project.",
+    //   tabIndex: 10
+    // },
+    /* ------ Collection --------- */
+
+    {
+      key: "collectionTitle",
+      lameta2Tag: "title",
+      englishLabel: "Title", // changed to Project ID at ELAR request Dec 2019
+      xmlTag: "CollectionTitle",
+      form: "collection",
+      tabIndex: 0,
+      imdiComment: "Corpus/Title"
+    },
+    {
+      key: "collectionKey",
+      englishLabel: "Collection Key",
+      xmlTag: "CollectionKey",
+      form: "collection",
+      tabIndex: 1,
+      imdiComment: "Corpus/MDGroup/Keys/Key[@Name='CorpusId']"
+    },
+    {
+      key: "collectionDescription",
+      lameta2Tag: "projectDescription",
       xmlTag: "ProjectDescription",
       englishLabel: "Description",
       multipleLines: true,
-      tabIndex: 11
-    },
-    {
-      key: "vernacularIso3CodeAndName",
-      englishLabel: "Subject Language",
-      xmlTag: "VernacularISO3CodeAndName",
-      visibility: "never", // replaced by collectionWorkingLanguages
-      type: "language",
-      tabIndex: 1
-    },
-    {
-      key: "analysisIso3CodeAndName",
-      englishLabel: "Working Language",
-      xmlTag: "AnalysisISO3CodeAndName",
-      visibility: "never", // replaced by collectionSubjectLanguages
-      type: "language",
+      form: "collection",
+      imdiComment: "Corpus/Description[@Name='short_description']",
       tabIndex: 2
     },
     {
-      key: "collectionSubjectLanguages",
-      englishLabel: "Subject Languages",
-      xmlTag: "CollectionSubjectLanguages",
-      form: "primary",
-      type: "languageChoices",
-      controlProps: {
-        canCreateNew: true
-      },
-      tabIndex: 1
-    },
-    {
-      key: "collectionWorkingLanguages",
-      xmlTag: "CollectionWorkingLanguages",
-      englishLabel: "Working Languages",
-      form: "primary",
-      type: "languageChoices",
-      tabIndex: 2
-    },
-    {
-      key: "location",
-      englishLabel: "Location/Address",
-      xmlTag: "Location",
-      cssClass: "field__newSection, text-block",
-
-      multipleLines: true,
-      tabIndex: 3
-    },
-    {
-      key: "region",
-      englishLabel: "Region",
-      xmlTag: "Region",
+      key: "collectionSteward",
+      englishLabel: "Steward",
+      visibility: "never",
+      form: "collection",
+      cssClass: "field__newSection",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Collection Steward']",
       tabIndex: 4
     },
     {
+      key: "collectionDeputySteward",
+      englishLabel: "Deputy Stewards",
+      separatorWithCommaInstructions: "For multiple people, separate with commas",
+      visibility: "never",
+      form: "collection",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward'] - can be repeated",
+      tabIndex: 5
+    },
+    {
+      key: "collectionDepositor",
+      englishLabel: "Depositors",
+      separatorWithCommaInstructions: "For multiple people, separate with commas",
+      visibility: "never",
+      form: "collection",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Depositor'] - can be repeated",
+      tabIndex: 6
+    },
+    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
+      is a drag.
+    {
+      "key": "rightsHolder",
+      "xmlTag": "RightsHolder"
+    },
+    */
+
+    /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
+    {
+      "key": "dateAvailable",
+      "xmlTag": "DateAvailable",
+      "type": "Date",
+      "tabIndex": 11
+    }*/
+
+    // This section added in V3 to support fields ELAR uses. See ELAR/fields.json5
+    /*
+    {
+      key: "collectionName",
+      englishLabel: "Collection Name",
+      visibility: "never",
+      form: "collection",
+      tabIndex: 1
+    },
+    */
+
+    // ----------- Location
+    // ------------This could eventually be its own kind of object. Currently is is just part of the Collection
+    {
+      key: "location",
+      form: "collectionLocation",
+      englishLabel: "Location/Address",
+      xmlTag: "Location",
+      multipleLines: true,
+      tabIndex: 18
+    },
+    {
+      key: "region",
+
+      form: "collectionLocation",
+      englishLabel: "Region",
+      xmlTag: "Region",
+      tabIndex: 19
+    },
+    {
       key: "country",
+      form: "collectionLocation",
       englishLabel: "Country",
       xmlTag: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
-      tabIndex: 5
+      tabIndex: 20
       //choices are filled in by KnownFieldDefinitions.ts
     },
     {
       key: "continent",
+      form: "collectionLocation",
       englishLabel: "Continent",
       xmlTag: "Continent",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Continents.xml",
@@ -90,102 +197,46 @@
         "Oceania",
         "South-America"
       ],
-      tabIndex: 6
+      tabIndex: 21
     },
-    {
-      key: "grantId",
-      englishLabel: "Grant ID",
-      cssClass: "field__newSection",
-      tabIndex: 7
-    },
-    {
-      key: "fundingProjectTitle",
-      englishLabel: "Funding Project Title",
-      xmlTag: "FundingProjectTitle",
-      tabIndex: 8
-    },
-    {
-      key: "archiveConfigurationName",
-      form: "ArchiveConfiguration",
-      default: "default",
-      xmlTag: "ArchiveConfigurationName",
-      englishLabel: "Archive Configuration used by this project",
-      vocabulary: "ArchiveConfigurationName"
-    },
-    {
-      key: "customAccessChoices",
-      form: "ArchiveConfiguration",
-      "//": "Older Windows SM actually didn't store this in the sprj at all",
-      xmlTag: "CustomAccessProtocol",
-      englishLabel: "Custom Session Access Choices"
-    },
-    /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
-      is a drag.
-    {
-      "key": "rightsHolder",
-      "xmlTag": "RightsHolder"
-    },
-    */
-    {
-      key: "contactPerson",
-      englishLabel: "Contact Person",
-      xmlTag: "ContactPerson",
-      description: "Contact information about the person or institution responsible for the project.",
-      tabIndex: 10
-    },
-    /* Removed My 2020 https://trello.com/c/yxCLMvme/98-explain-dateavailable
-    {
-      "key": "dateAvailable",
-      "xmlTag": "DateAvailable",
-      "type": "Date",
-      "tabIndex": 11
-    }*/
 
-    // This section added in V3 to support fields ELAR uses. See ELAR/fields.json5
+    // -------------------- undecided as to what form these will live on when the re-org is complete
     {
-      key: "collectionName",
-      englishLabel: "Collection Name",
-      visibility: "never",
-      form: "collection",
+      key: "vernacularIso3CodeAndName",
+      englishLabel: "Subject Language",
+      xmlTag: "VernacularISO3CodeAndName",
+      visibility: "never", // replaced by collectionWorkingLanguages
+      form: "languages",
+      type: "language",
       tabIndex: 1
     },
     {
-      key: "collectionTitle",
-      englishLabel: "Collection Title",
-      visibility: "never",
-      form: "collection",
+      key: "analysisIso3CodeAndName",
+      englishLabel: "Working Language",
+      xmlTag: "AnalysisISO3CodeAndName",
+      visibility: "never", // replaced by collectionSubjectLanguages
+      type: "language",
+      form: "languages",
       tabIndex: 2
     },
     {
-      key: "collectionDescription",
-      englishLabel: "Collection Description",
-      visibility: "never",
-      form: "collection",
-      multipleLines: true,
-      tabIndex: 3
+      key: "collectionSubjectLanguages",
+      englishLabel: "Subject Languages",
+      xmlTag: "CollectionSubjectLanguages",
+      form: "languages",
+      type: "languageChoices",
+      controlProps: {
+        canCreateNew: true
+      },
+      tabIndex: 1
     },
     {
-      key: "collectionSteward",
-      englishLabel: "Collection Steward",
-      visibility: "never",
-      form: "collection",
-      tabIndex: 4
-    },
-    {
-      key: "deputyCollectionSteward",
-      englishLabel: "Deputy Collection Stewards",
-      separatorWithCommaInstructions: "For multiple people, separate with commas",
-      visibility: "never",
-      form: "collection",
-      tabIndex: 5
-    },
-    {
-      key: "depositor",
-      englishLabel: "Depositor",
-      separatorWithCommaInstructions: "For multiple people, separate with commas",
-      visibility: "never",
-      form: "collection",
-      tabIndex: 6
+      key: "collectionWorkingLanguages",
+      xmlTag: "CollectionWorkingLanguages",
+      englishLabel: "Working Languages",
+      form: "languages",
+      type: "languageChoices",
+      tabIndex: 2
     }
   ],
   session: [

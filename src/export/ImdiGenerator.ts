@@ -97,13 +97,81 @@ export default class ImdiGenerator {
     // we don't have a separate title vs. name field
     this.element("Name", project.displayName);
 
-    // this mapping, funding--> title, is per Vera at ELAR 23/8/2019
     this.element(
       "Title",
-      project.properties.getTextStringOrEmpty("fundingProjectTitle")
+      project.properties.getTextStringOrEmpty("collectionTitle") // Hanna 2024: Collection Title --> Corpus/Title
+      // REVIEW previously, this was "fundingProjectTitle" per Vera at ELAR 23/8/2019
     );
 
-    this.requiredField("Description", "projectDescription");
+    // this.element(
+    //   "Title",
+    //   project.properties.getTextStringOrEmpty("fundingProjectTitle")
+    // );
+    //this.requiredField("Description", "projectDescription");
+    this.element(
+      "Description",
+      project.properties.getTextStringOrEmpty("collectionDescription")
+    );
+    this.attributeLiteral("Name", "short_description"); // Review: this is from ELAR email, I'm not clear why it is needed
+
+    this.startGroup("MDGroup");
+
+    // Location is required by the schema. I'm not clear if I should include it here or on on session
+    this.sessionLocation();
+    // Project is required by the schema
+    this.addProjectInfo();
+    this.group("Keys", () => {
+      this.keyElement(
+        "CorpusId",
+        project.properties.getTextStringOrEmpty("collectionKey")
+      );
+      this.keyElement(
+        "Funding Body",
+        project.properties.getTextStringOrEmpty("fundingProjectFunder")
+      );
+    });
+
+    // Content is required by the schema
+    this.group("Content", () => {
+      this.element("Genre", "Unspecified");
+      // this.element("SubGenre", "Unspecified");
+      // Modalities, Subject, CommunicationContext
+      // this.element("Task", "Unspecified");
+      // this.element("Modalities", "Unspecified");
+      // this.element("Subject", "Unspecified");
+
+      this.group("CommunicationContext", () => {
+        // this.element("Interactivity", "Unspecified");
+        // this.element("PlanningType", "Unspecified");
+        // this.element("Involvement", "Unspecified");
+        // this.element("SocialContext", "Unspecified");
+        // this.element("EventStructure", "Unspecified");
+        // this.element("Channel", "Unspecified");
+      });
+      this.group("Languages", () => {});
+      this.group("Keys", () => {});
+    });
+
+    this.group("Actors", () => {
+      this.addSimpleActor(
+        "Collection Steward",
+        project.properties.getTextStringOrEmpty("collectionSteward")
+      );
+      // split "Deputy Collection Stewards" into multiple actors
+      const deputyCollectionStewards = project.properties.getTextStringOrEmpty(
+        "collectionDeputySteward"
+      );
+      this.addSimpleActorMultiple(
+        "Deputy Collection Steward",
+        deputyCollectionStewards
+      );
+      this.addSimpleActorMultiple(
+        "Depositor",
+        project.properties.getTextStringOrEmpty("collectionDepositor")
+      );
+    });
+    this.exitGroup(); // MDGroup
+
     for (const subpath of childrenSubpaths) {
       this.element("CorpusLink", subpath);
       // this element looks like this:
@@ -115,6 +183,37 @@ export default class ImdiGenerator {
     }
     return this.makeString();
   }
+  public keyElement(name: string, value: string) {
+    this.element("Key", value);
+    this.attributeLiteral("Name", name);
+  }
+  public addSimpleActorMultiple(role: string, names: string) {
+    if (names.length > 0) {
+      names.split(",").forEach((name) => {
+        this.addSimpleActor(role, name.trim());
+      });
+    }
+  }
+  public addSimpleActor(role: string, name: string) {
+    this.startGroup("Actor");
+    this.element("Role", role);
+    this.element("Name", name);
+    this.element("FullName", name);
+    this.element("Code", "");
+    this.element("FamilySocialRole", "");
+    this.element("Languages", "");
+    this.element("EthnicGroup", "");
+    this.element("Age", "Unspecified");
+    this.element("BirthDate", "Unspecified");
+    this.element("Sex", "");
+    this.element("Education", "");
+    this.element("Anonymized", "false");
+    this.element("Contact", "");
+    this.element("Keys", "");
+    this.element("Description", "");
+    this.exitGroup();
+  }
+
   public projectXmlForPreview(): string {
     this.tail = XmlBuilder.create("Project");
     this.addProjectInfo();
@@ -122,19 +221,32 @@ export default class ImdiGenerator {
   }
 
   private addProjectInfo() {
-    this.startGroup("Project");
+    this.group("Project", () => {
+      // Projects have names, titles, and ids too! Sigh.
 
-    this.requiredField("Name", "title", this.project);
-    this.requiredField("Title", "fundingProjectTitle", this.project);
-    this.requiredField("Id", "grantId", this.project);
-    this.group("Contact", () => {
-      this.optionalField("Name", "contactPerson", this.project);
-      //<Address> We don't currently have this field.
-      //<Email> We don't currently have this field.
-      //<Organization> We don't currently have this field.
-      this.exitGroup(); // Contact
-      //"An elaborate description of the scope and goals of the project."
-      this.optionalField("Description", "projectDescription", this.project);
+      this.requiredField("Name", "title", this.project);
+      this.requiredField("Title", "fundingProjectTitle", this.project);
+      // ELAR would like to put some of fundingProjectFunder, fundingProjectAffiliation, fundingProjectLead, and fundingProjectContact under MDGroup/Project/Funder but that will need a new schema
+      // for now, they have specified places for them *all over* (see fields.json5 & ImdiGenerator-courpus-metadata.spec.ts)
+
+      // FWIW, we have:
+      // key: "fundingProjectId",
+      // lameta2Tag: "grantId",
+      this.requiredField("Id", "fundingProjectId", this.project);
+
+      this.group("Contact", () => {
+        this.optionalField("Name", "fundingProjectLead", this.project);
+        //<Address> We don't currently have this field.
+        //<Email> We don't currently have this field.
+        //<Organization> We don't currently have this field.
+        //"An elaborate description of the scope and goals of the project."
+        this.optionalField("Description", "projectDescription", this.project);
+        this.optionalField(
+          "Organisation",
+          "fundingProjectAffiliation",
+          this.project
+        );
+      });
     });
   }
   private addActorsOfSession() {
@@ -1083,19 +1195,18 @@ export default class ImdiGenerator {
     this.element("Name", name);
     this.element("Title", name);
     this.element("Date", this.nowDate());
-    this.tail.element("MDGroup").raw(
+    this.startGroup("MDGroup");
+    this.addProjectInfo();
+
+    this.tail.element("Location").raw(
       `<Location>
       <Continent Type="ClosedVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Continents.xml" />
       <Country Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Countries.xml" />
-    </Location>
-    <Project>
-      <Name />
-      <Title />
-      <Id />
-      <Contact />
-    </Project>
-    <Keys />
-    <Content>
+    </Location>`
+    );
+    this.tail.element("Keys").raw("");
+    this.tail.element("Content").raw(
+      `<Content>
       <Genre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" />
       <SubGenre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml" />
       <Task Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Task.xml" />
@@ -1117,11 +1228,10 @@ export default class ImdiGenerator {
       </CommunicationContext>
       <Languages />
       <Keys />
-    </Content>
-    <Actors />
-  `
+    </Content>`
     );
-
+    this.tail.element("Actors").raw("");
+    this.exitGroup(); //MDGroup
     this.resourcesGroup(folder);
     this.exitGroup(); //Session
     return this.makeString();
