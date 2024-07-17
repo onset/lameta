@@ -1,12 +1,6 @@
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value,
-  xexpect
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 import * as fs from "fs-extra";
 import assert from "assert";
@@ -21,7 +15,6 @@ import {
   beforeEach
 } from "vitest";
 import { GetProjectFileWithOneField } from "../model/Project/WriteProject.spec";
-import { fi } from "date-fns/locale";
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -41,35 +34,33 @@ describe("Imdi generation Funding Project", () => {
 
   it("should export collection and funding project data correctly", () => {
     TestFields([
-      { key: "collectionTitle", xpath: "Corpus/MDGroup/Title" },
+      { key: "collectionTitle", xpath: "Corpus/Title" },
+      {
+        key: "collectionDescription",
+        xpath: "Corpus/Description[@Name='short_description']"
+      },
       {
         key: "collectionKey",
         xpath: "Corpus/MDGroup/Keys/Key[@Name='CorpusId']"
       },
-      {
-        key: "collectionDescription",
-        xpath: "Corpus/MDGroup/Description[@Name='short_description']"
-      },
+
       {
         key: "collectionSteward",
-        xpath: "Corpus/MDGroup/Actors/Actor[@Role='Collection Steward']/Name"
+        xpath: "Corpus/MDGroup/Actors/Actor[Role='Collection Steward']/Name"
       },
       {
         key: "collectionDeputySteward",
         xpath:
-          "Corpus/MDGroup/Actors/Actor[@Role='Deputy Collection Steward']/Name"
+          "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward']/Name"
       },
       {
         key: "collectionDepositor",
-        xpath: "Corpus/MDGroup/Actors/Actor[@Role='Depositor']/Name",
+        xpath: "Corpus/MDGroup/Actors/Actor[Role='Depositor']/Name",
         value: "Jane"
       },
-      // {
-      //   key: "collectionDepositor",
-      //   xpath: "Corpus/MDGroup/Actors/Actor[@Role='Depositor']/Name",
-      //   value: "JOE"
-      // TODO: test multiple. Would need to make toMatch() match any
-      // },
+      // TODO: if the DeputySteward or Depositor has a comma-delimited list, then multiple Actors are emitted
+      // We don't have a way to test that yet.
+
       { key: "fundingProjectId", xpath: "Corpus/MDGroup/Project/Id" },
       { key: "fundingProjectTitle", xpath: "Corpus/MDGroup/Project/Title" },
       {
@@ -83,8 +74,7 @@ describe("Imdi generation Funding Project", () => {
       {
         key: "fundingProjectLead",
         xpath: "Corpus/MDGroup/Project/Contact/Name"
-      },
-      { key: "contactPerson", xpath: "Project/Contact/Name" }
+      }
     ]);
   });
 });
@@ -101,6 +91,8 @@ function TestFields(fields: { key: string; xpath: string; value?: string }[]) {
   // for multiple depositors
 
   fields.forEach((f) =>
-    expect(f.xpath).toMatch(f.value || "a value for " + f.key)
+    expect("METATRANSCRIPT/" + f.xpath).toMatch(
+      f.value || "a value for " + f.key
+    )
   );
 }

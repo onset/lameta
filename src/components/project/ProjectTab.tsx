@@ -26,7 +26,9 @@ interface IProps {
 }
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
-  const kFirstTabToOpen = 0;
+
+  // NOCOMMIT should be 0
+  const kFirstTabToOpen = 7;
 
   const showCollectionTab = props.project.properties.values().some((p) => {
     //    console.log(`${p.key}`);

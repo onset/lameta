@@ -39,6 +39,7 @@
       englishLabel: "Funder",
       xmlTag: "FundingProjectFunder",
       form: "fundingProject",
+      // ELAR would like to put this under MDGroup/Project/Funder but that will need a new schema
       imdiComment: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']"
     },
     {
@@ -57,15 +58,15 @@
       form: "fundingProject",
       imdiComment: "Corpus/MDGroup/Project/Contact/Name"
     },
-    {
-      key: "contactPerson",
-      englishLabel: "Contact Person",
-      xmlTag: "ContactPerson",
-      imdiComment: "Project/Contact/Name",
-      form: "fundingProject",
-      description: "Contact information about the person or institution responsible for the project.",
-      tabIndex: 10
-    },
+    // {
+    //   key: "contactPerson",
+    //   englishLabel: "Contact Person",
+    //   xmlTag: "ContactPerson",
+    //   imdiComment: "Project/Contact/Name",
+    //   form: "fundingProject",
+    //   description: "Contact information about the person or institution responsible for the project.",
+    //   tabIndex: 10
+    // },
     /* ------ Collection --------- */
 
     {
@@ -101,7 +102,7 @@
       visibility: "never",
       form: "collection",
       cssClass: "field__newSection",
-      imdiComment: "Corpus/MDGroup/Actors/Actor[@Role='Collection Steward']",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Collection Steward']",
       tabIndex: 4
     },
     {
@@ -110,16 +111,16 @@
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
       form: "collection",
-      imdiComment: "Corpus/MDGroup/Actors/Actor[@Role='Deputy Collection Steward'] - can be repeated",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward'] - can be repeated",
       tabIndex: 5
     },
     {
       key: "collectionDepositor",
-      englishLabel: "Depositor",
+      englishLabel: "Depositors",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
       form: "collection",
-      imdiComment: "Corpus/MDGroup/Actors/Actor[@Role='Depositor'] - can be repeated",
+      imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Depositor'] - can be repeated",
       tabIndex: 6
     },
     /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
