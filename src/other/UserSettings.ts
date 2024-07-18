@@ -51,8 +51,9 @@ export class UserSettings {
     if (E2E_USER_SETTINGS_STORE_NAME?.length > 0) {
       name = E2E_USER_SETTINGS_STORE_NAME;
     } else {
-      // at some point during 2.3 beta, we broke the file name here
       if (app.getPath) {
+        // false in unit tests
+        // at some point during 2.3 beta, we broke the file name here,
         // leaving it named ".json"
         // So here we fix it up if we find that.
         const brokenPath = Path.join(app.getPath("userData"), ".json");

@@ -1,3 +1,4 @@
+import { app } from "electron";
 import { beforeAll, vi } from "vitest";
 
 vi.mock("@electron/remote", () => ({

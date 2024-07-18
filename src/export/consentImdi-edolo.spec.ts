@@ -11,6 +11,7 @@ import temp from "temp";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { IMDIMode } from "./ImdiGenerator";
+import { c } from "vitest/dist/reporters-5f784f42.js";
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -18,6 +19,7 @@ temp.track(); // cleanup on exit: doesn't work
   wouldn't normally have that file since imdi's don't come with the sample, they need to be generated.*/
 
 let rootDirectory: string;
+let lock = false;
 describe("Consent Form Inclusion", () => {
   afterAll(() => {
     try {
@@ -26,29 +28,41 @@ describe("Consent Form Inclusion", () => {
     } catch (e) {
       // was having trouble cleaning up when running all tests
       console.warn(`consentImdi-edolo.spec.ts: afterAll: ${e}`);
+    } finally {
+      lock = false;
     }
   });
   beforeAll(async () => {
-    const project = Project.fromDirectory("sample data/Edolo sample");
-    // including "fssync" in the path tells our file copy thing to just do the copy synchronously
-    rootDirectory = temp.mkdirSync("ImdiBundlerTest-fssync");
-    await ImdiBundler.addConsentBundle(
-      project,
-      rootDirectory,
-      "",
-      [],
-      IMDIMode.RAW_IMDI,
-      true, //<-- copy in files
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (f) => true,
-      true
-    );
-    const xml = fs.readFileSync(
-      Path.join(rootDirectory, "ConsentDocuments.imdi"),
-      "utf8"
-    );
-    expect(xml).toBeTruthy();
-    setResultXml(xml);
+    // I was getting errors that appeared to be related to parallel tests
+    while (lock) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    lock = true;
+    try {
+      const project = Project.fromDirectory("sample data/Edolo sample");
+      // including "fssync" in the path tells our file copy thing to just do the copy synchronously
+      rootDirectory = temp.mkdirSync("ImdiBundlerTest-fssync");
+      await ImdiBundler.addConsentBundle(
+        project,
+        rootDirectory,
+        "",
+        [],
+        IMDIMode.RAW_IMDI,
+        true, //<-- copy in files
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (f) => true,
+        true
+      );
+      const xml = fs.readFileSync(
+        Path.join(rootDirectory, "ConsentDocuments.imdi"),
+        "utf8"
+      );
+      expect(xml).toBeTruthy();
+      setResultXml(xml);
+    } finally {
+      lock = false;
+    }
   });
   it("The consent form dummy session to look reasonable", () => {
     expect(count("METATRANSCRIPT")).toBe(1);
