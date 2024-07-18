@@ -99,7 +99,7 @@ export default class ImdiGenerator {
 
     this.element(
       "Title",
-      project.properties.getTextStringOrEmpty("collectionTitle") // Hanna 2024: Collection Title --> Corpus/Title
+      project.properties.getTextStringOrEmpty("title") // Hanna 2024: Collection Title --> Corpus/Title
       // REVIEW previously, this was "fundingProjectTitle" per Vera at ELAR 23/8/2019
     );
 

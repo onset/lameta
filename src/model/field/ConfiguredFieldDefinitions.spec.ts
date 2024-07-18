@@ -5,6 +5,7 @@ import {
   prepareGlobalFieldDefinitionCatalog
 } from "./ConfiguredFieldDefinitions";
 import exp from "constants";
+import { ensurePluginOrder } from "react-table";
 
 describe("computeMergedCatalog", () => {
   it("should merge the properties of the choice into the field definition, overriding the defaults", () => {
@@ -22,8 +23,11 @@ describe("computeMergedCatalog", () => {
     const { mergedCatalog } = computeMergedCatalog(ourCatalog);
     expect(mergedCatalog.project.find((f) => f.key == "title")).toEqual({
       key: "title",
-      englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
-      xmlTag: "Title",
+      //englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
+      englishLabel: "Title", // changed back for lameta 3 since projectID has its own field now
+      form: "collection",
+      imdiComment: "Corpus/Title",
+
       tabIndex: 99, // configuration changed
       tooltip: "My special tooltip", // configuration added this
       multilingual: true // configuration added this

@@ -34,7 +34,7 @@ describe("Imdi generation Funding Project", () => {
 
   it("should export collection and funding project data correctly", () => {
     TestFields([
-      { key: "collectionTitle", xpath: "Corpus/Title" },
+      { key: "title", xpath: "Corpus/Title" },
       {
         key: "collectionDescription",
         xpath: "Corpus/Description[@Name='short_description']"
@@ -54,14 +54,14 @@ describe("Imdi generation Funding Project", () => {
           "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward']/Name"
       },
       {
-        key: "collectionDepositor",
+        key: "depositor",
         xpath: "Corpus/MDGroup/Actors/Actor[Role='Depositor']/Name",
         value: "Jane"
       },
       // TODO: if the DeputySteward or Depositor has a comma-delimited list, then multiple Actors are emitted
       // We don't have a way to test that yet.
 
-      { key: "fundingProjectId", xpath: "Corpus/MDGroup/Project/Id" },
+      { key: "grantId", xpath: "Corpus/MDGroup/Project/Id" },
       { key: "fundingProjectTitle", xpath: "Corpus/MDGroup/Project/Title" },
       {
         key: "fundingProjectFunder",
@@ -72,7 +72,7 @@ describe("Imdi generation Funding Project", () => {
         xpath: "Corpus/MDGroup/Project/Contact/Organisation"
       },
       {
-        key: "fundingProjectLead",
+        key: "contactPerson",
         xpath: "Corpus/MDGroup/Project/Contact/Name"
       }
     ]);
