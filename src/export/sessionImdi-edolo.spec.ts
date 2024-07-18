@@ -134,10 +134,10 @@ it("should make separate keys for each topic separated by a comma", () => {
     "Incoming"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[2]").toMatch(
-    "Fishing"
+    "fishing"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Content/Keys/Key[3]").toMatch(
-    "Poison"
+    "poison"
   );
 });
 

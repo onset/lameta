@@ -71,9 +71,9 @@ describe("session imdi export", () => {
         true /*omit namespace*/
       )
     );
-    expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("One two UN");
+    expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("one two UN");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("FLEx");
-    expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("Foo");
+    expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("foo");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("XYZ");
   });
 

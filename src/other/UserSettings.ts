@@ -58,30 +58,38 @@ export class UserSettings {
     if (E2E_USER_SETTINGS_STORE_NAME?.length > 0) {
       name = E2E_USER_SETTINGS_STORE_NAME;
     } else {
-      // at some point during 2.3 beta, we broke the file name here,
-      // leaving it named ".json"
-      // So here we fix it up if we find that.
-      const brokenPath = Path.join(app.getPath("userData"), ".json");
-      if (fs.existsSync(brokenPath)) {
-        const correctPath = Path.join(app.getPath("userData"), name + ".json");
-        try {
-          if (!fs.existsSync(correctPath)) {
-            fs.renameSync(brokenPath, correctPath);
-          } else {
-            fs.rmSync(brokenPath); // we have two files, bad and good names. Remove incorrectly named one (note, it could be the more recent, ah well)
+      if (app.getPath) {
+        // false in unit tests
+        // at some point during 2.3 beta, we broke the file name here,
+        // leaving it named ".json"
+        // So here we fix it up if we find that.
+        const brokenPath = Path.join(app.getPath("userData"), ".json");
+        if (fs.existsSync(brokenPath)) {
+          const correctPath = Path.join(
+            app.getPath("userData"),
+            name + ".json"
+          );
+          try {
+            if (!fs.existsSync(correctPath)) {
+              fs.renameSync(brokenPath, correctPath);
+            } else {
+              fs.rmSync(brokenPath); // we have two files, bad and good names. Remove incorrectly named one (note, it could be the more recent, ah well)
+            }
+          } catch (e) {
+            // ah well
           }
-        } catch (e) {
-          // ah well
         }
       }
     }
     this.store =
-      process.env.NODE_ENV === "test" || E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
+      process.env == undefined || // unit tests
+      process.env.NODE_ENV === "test" ||
+      E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
         : new Store({
             name: name
           });
-    this.sendErrors = process.env.NODE_ENV === "production"; // developer has a menu that can toggle this
+    this.sendErrors = process.env?.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     this.imdiMode = this.store.get("imdiMode") || false;
     this.paradisecMode = this.store.get("paradisecMode") || false;
