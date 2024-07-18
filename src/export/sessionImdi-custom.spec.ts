@@ -21,7 +21,7 @@ beforeAll(async () => {
   session = project.addSession();
   // set the session date to a known value so that the test results are predictable
 
-  session.addFileForTestAsync(randomFileName());
+  await session.addFileForTestAsync(randomFileName());
   const mary = project.addPerson("Mary");
   mary.properties.setText("birthYear", "1980");
 });
@@ -162,5 +162,5 @@ describe("session imdi export", () => {
 });
 
 function randomFileName() {
-  return Math.random().toString(36).substring(7) + ".test.txt";
+  return Math.random().toString(36).substring(7) + ".fssync.test.txt";
 }

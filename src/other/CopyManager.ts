@@ -68,8 +68,8 @@ export class CopyManager {
       fs.mkdirSync(Path.dirname(destPath));
     // it's too hard to write tests with the async copying happening (see the test "There should be 2 consent files in the ConsentDocuments folder")
     if (
-      process.env.JEST_WORKER_ID !== undefined &&
-      destPath.indexOf("fssync") > -1
+      process.env.VITEST_WORKER_ID !== undefined &&
+      destPath.indexOf("fssync") > -1 // you have to put fssync in the path to engage this
     ) {
       fs.copyFileSync(sourcePath, destPath);
       // preserve the modified time, which may be helpful to the user

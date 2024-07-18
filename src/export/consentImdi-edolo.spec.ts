@@ -11,7 +11,6 @@ import temp from "temp";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { IMDIMode } from "./ImdiGenerator";
-import { c } from "vitest/dist/reporters-5f784f42.js";
 
 temp.track(); // cleanup on exit: doesn't work
 
@@ -77,12 +76,17 @@ describe("Consent Form Inclusion", () => {
     expect(count("METATRANSCRIPT/Session/MDGroup/Actors/Actor")).toBe(2);
   });
 
-  it("There should be 2 consent files in the ConsentDocuments folder", () => {
-    expect(
-      fs.existsSync(
+  it("There should be 2 consent files in the ConsentDocuments folder", async () => {
+    await waitForCondition(() => {
+      return fs.existsSync(
         Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG")
-      )
-    ).toBeTruthy();
+      );
+    });
+    await waitForCondition(() => {
+      return fs.existsSync(
+        Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
+      );
+    });
     expect(
       fs.existsSync(
         Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
@@ -97,3 +101,14 @@ describe("Consent Form Inclusion", () => {
     expect("METATRANSCRIPT/Session/Date").toMatch(/20..-..-../);
   });
 });
+
+async function waitForCondition(conditionFunction: () => boolean) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (conditionFunction()) {
+      return;
+    }
+    //sleep for before checking the condition again
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+}
