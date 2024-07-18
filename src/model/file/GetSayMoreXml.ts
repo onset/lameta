@@ -160,9 +160,7 @@ function writeContributions(
   root: xmlbuilder.XMLElementOrXMLNode,
   contributions: Contribution[]
 ) {
-  const contributionsElement = root.element("contributions", {
-    type: "xml"
-  });
+  const contributionsElement = root.element("Contributions");
   contributions.forEach((contribution) => {
     if (
       contribution.personReference &&

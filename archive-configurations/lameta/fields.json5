@@ -26,7 +26,7 @@
       // "Project ID" under "Funding Project" in lameta 3.x
       key: "grantId",
       //lameta2Tag: "grantId",
-      xmlTag: "grantId",
+      xmlTag: "GrantId",
       englishLabel: "Project ID",
       form: "fundingProject",
       tabIndex: 0,
@@ -111,6 +111,7 @@
     },
     {
       key: "collectionSteward",
+      xmlTag: "CollectionSteward",
       englishLabel: "Steward",
       visibility: "never",
       form: "collection",
@@ -120,6 +121,7 @@
     },
     {
       key: "collectionDeputySteward",
+      xmlTag: "CollectionDeputySteward",
       englishLabel: "Deputy Stewards",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
@@ -129,6 +131,7 @@
     },
     {
       key: "depositor",
+      xmlTag: "Depositor",
       englishLabel: "Depositors",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
@@ -264,23 +267,27 @@
     },
     {
       key: "title",
+      xmlTag: "Title",
       englishLabel: "Title",
       tabIndex: 4
     },
     {
       key: "languages",
+      xmlTag: "languages",
       type: "languageChoices",
       englishLabel: "Subject Languages",
       tabIndex: 12
     },
     {
       key: "workingLanguages",
+      xmlTag: "WorkingLanguages",
       type: "languageChoices",
       englishLabel: "Working Languages",
       tabIndex: 14
     },
     {
       key: "participants",
+      xmlTag: "Participants",
       englishLabel: "People",
       tabIndex: 3
     },
@@ -315,23 +322,27 @@
 
     {
       key: "location",
+      xmlTag: "Location",
       englishLabel: "Neighborhood/Town/Village",
       description: "A location that is relevant within the group you are studying",
       tabIndex: 12
     },
     {
       key: "access",
+      xmlTag: "Access",
       englishLabel: "Access",
       tabIndex: 8
     },
     {
       key: "accessDescription", // this was the inherited key... but really it's an explanation
+      xmlTag: "AccessExplanation",
       englishLabel: "Access Explanation",
       description: "If the access is not open/free, use this to explain why.",
       tabIndex: 9
     },
     {
       key: "description",
+      xmlTag: "Description",
       englishLabel: "Description",
       xmlTag: "synopsis",
       multipleLines: true,
@@ -339,6 +350,7 @@
     },
     {
       key: "status",
+      xmlTag: "Status",
       englishLabel: "Status",
       choices: ["Incoming", "In_Progress", "Finished", "Skipped"],
       default: "Incoming",
@@ -347,6 +359,7 @@
     },
     {
       key: "date",
+      xmlTag: "Date",
       englishLabel: "Date",
       type: "Date",
       tabIndex: 1
@@ -449,6 +462,7 @@
     {
       // added at ELAR request Dec 2019
       key: "keyword",
+      xmlTag: "Keywords",
       englishLabel: "Keywords",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual keywords cannot contain a comma.",
@@ -457,6 +471,7 @@
     {
       // added at ELAR request Dec 2019
       key: "topic",
+      xmlTag: "Topic",
       englishLabel: "Topic",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
@@ -464,6 +479,7 @@
     },
     {
       key: "customFields",
+      xmlTag: "CustomFields",
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a session.",
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
@@ -472,6 +488,7 @@
   person: [
     {
       key: "name",
+      xmlTag: "FullName",
       englishLabel: "Full Name"
       /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
@@ -480,16 +497,18 @@
     },
     {
       key: "nickname",
-      xmlTag: "nickName",
+      xmlTag: "NickName",
       englishLabel: "Nickname"
     },
     {
       key: "code",
+      xmlTag: "Code",
       englishLabel: "Code"
     },
     {
       // new for lameta (starting with 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
       key: "languages",
+      xmlTag: "Languages",
       englishLabel: "Languages",
       type: "personLanguageList"
     },
@@ -590,15 +609,18 @@
     },
     {
       key: "education",
+      xmlTag: "Education",
       englishLabel: "Education"
     },
     {
       key: "birthYear",
+      xmlTag: "BirthYear",
       englishLabel: "Birth Year",
       tipOnUsingThisField: "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
     },
     {
       key: "gender",
+      xmlTag: "Gender",
       englishLabel: "Gender",
       // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
       choices: ["Unknown", "Male", "Female", "Other"],
@@ -607,6 +629,7 @@
     },
     {
       key: "howToContact",
+      xmlTag: "HowToContact",
       englishLabel: "How to Contact",
       multipleLines: true,
       personallyIdentifiableInformation: true,
@@ -614,20 +637,24 @@
     },
     {
       key: "ethnicGroup",
+      xmlTag: "EthnicGroup",
       englishLabel: "Ethnic Group"
     },
     {
       key: "primaryOccupation",
+      xmlTag: "PrimaryOccupation",
       englishLabel: "Primary Occupation",
       omitFromImdi: true
     },
     {
       key: "description",
+      xmlTag: "Description",
       englishLabel: "Description",
       description: "Relevant details such as where they learned the language(s)"
     },
     {
       key: "customFields",
+      xmlTag: "CustomFields",
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a person.",
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
