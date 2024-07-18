@@ -167,7 +167,7 @@ export default class ImdiGenerator {
       );
       this.addSimpleActorMultiple(
         "Depositor",
-        project.properties.getTextStringOrEmpty("collectionDepositor")
+        project.properties.getTextStringOrEmpty("depositor")
       );
     });
     this.exitGroup(); // MDGroup
@@ -229,13 +229,10 @@ export default class ImdiGenerator {
       // ELAR would like to put some of fundingProjectFunder, fundingProjectAffiliation, fundingProjectLead, and fundingProjectContact under MDGroup/Project/Funder but that will need a new schema
       // for now, they have specified places for them *all over* (see fields.json5 & ImdiGenerator-courpus-metadata.spec.ts)
 
-      // FWIW, we have:
-      // key: "fundingProjectId",
-      // lameta2Tag: "grantId",
-      this.requiredField("Id", "fundingProjectId", this.project);
+      this.requiredField("Id", "grantId", this.project);
 
       this.group("Contact", () => {
-        this.optionalField("Name", "fundingProjectLead", this.project);
+        this.optionalField("Name", "contactPerson", this.project);
         //<Address> We don't currently have this field.
         //<Email> We don't currently have this field.
         //<Organization> We don't currently have this field.

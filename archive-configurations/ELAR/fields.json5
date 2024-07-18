@@ -7,7 +7,7 @@
     },
     { key: "collectionDeputySteward", visibility: "always" },
     {
-      key: "collectionDepositor",
+      key: "depositor",
       visibility: "always",
       description: "This is usually the same person as the Collection Steward."
     }

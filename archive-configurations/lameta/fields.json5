@@ -18,16 +18,30 @@
 
     /* ------ Funding Project --------- */
     {
-      key: "fundingProjectId",
-      lameta2Tag: "grantId",
-      englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
+      // confusing because, as ELAR's request, the lameta project title
+      // was labled as "Project ID" in lameta 2.x, but it also had a
+      // "grant id" field which is what actually went out to IMDI Project/Id!
+      // For now we're going to just stick with the "grantId" key
+      // and change the UI only, so what is "Grant ID" in lameta 2.x becomes
+      // "Project ID" under "Funding Project" in lameta 3.x
+      key: "grantId",
+      //lameta2Tag: "grantId",
+      xmlTag: "grantId",
+      englishLabel: "Project ID",
       form: "fundingProject",
       tabIndex: 0,
       imdiComment: "Corpus/MDGroup/Project/Id"
     },
+    // {
+    //   key: "grantId",
+    //   xmlTag: "grantId",
+    //   xmlComment: "deprecated in 3.x, copied to fundingProjectId",
+    //   deprecated: true,
+    //   outputForOlderVersionsFrom: "fundingProjectId"
+    // },
+
     {
       key: "fundingProjectTitle",
-      lameta2Tag: "Title", // REVIEW.. this should probably be copied to here and also to the collection title
       englishLabel: "Funding Project Title",
       xmlTag: "FundingProjectTitle",
       form: "fundingProject",
@@ -51,10 +65,10 @@
       imdiComment: "Corpus/MDGroup/Project/Contact/Organisation"
     },
     {
-      key: "fundingProjectLead",
+      key: "contactPerson",
       lameta2Tag: "NONE",
       englishLabel: "Project Lead",
-      xmlTag: "FundingProjectLead",
+      xmlTag: "ContactPerson",
       form: "fundingProject",
       imdiComment: "Corpus/MDGroup/Project/Contact/Name"
     },
@@ -70,10 +84,8 @@
     /* ------ Collection --------- */
 
     {
-      key: "collectionTitle",
-      lameta2Tag: "title",
+      key: "title",
       englishLabel: "Title", // changed to Project ID at ELAR request Dec 2019
-      xmlTag: "CollectionTitle",
       form: "collection",
       tabIndex: 0,
       imdiComment: "Corpus/Title"
@@ -115,7 +127,7 @@
       tabIndex: 5
     },
     {
-      key: "collectionDepositor",
+      key: "depositor",
       englishLabel: "Depositors",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
@@ -620,4 +632,10 @@
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
     }
   ]
+  // an idea, I don't know if it's worth it:
+  // migrations:[
+  //   {
+  //     oldXmlTag: "grantId",
+  //     toField: "fundingProjectId",
+  //   },
 }

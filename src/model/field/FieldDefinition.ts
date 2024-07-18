@@ -4,6 +4,7 @@ export class FieldDefinition {
   public key: string;
   public englishLabel: string = "";
   public deprecated?: string;
+  public xmlComment?: string;
   public omitSave?: string; // used for import-only fields
   public omitExport?: boolean;
   public importType?: "languageCodeOrName";

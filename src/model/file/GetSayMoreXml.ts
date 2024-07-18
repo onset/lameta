@@ -258,6 +258,8 @@ function writeField(
     // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
     if (doOutputTypeInXmlTags) attributes.type = type;
     if (field.definition?.deprecated) attributes.deprecated = "true";
+    if (field.definition?.xmlComment)
+      attributes.comment = field.definition.xmlComment;
     if (doOutputEmptyFields || value.trim().length > 0) {
       root.element(tag, attributes, value.trim()).up();
     }
