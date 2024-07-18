@@ -30,6 +30,7 @@ describe("computeMergedCatalog", () => {
 
       tabIndex: 99, // configuration changed
       tooltip: "My special tooltip", // configuration added this
+      xmlTag: "Title", // configuration added this
       multilingual: true // configuration added this
     });
   });

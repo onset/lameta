@@ -85,6 +85,7 @@
 
     {
       key: "title",
+      xmlTag: "Title",
       englishLabel: "Title", // changed to Project ID at ELAR request Dec 2019
       form: "collection",
       tabIndex: 0,
