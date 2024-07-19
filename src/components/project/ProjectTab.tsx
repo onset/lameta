@@ -27,18 +27,12 @@ interface IProps {
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
 
-  // NOCOMMIT should be 0
-  const kFirstTabToOpen = 7;
+  const kFirstTabToOpen = 0;
 
+  // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
+  // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
+  // institutional preferences that will need it.
   const showCollectionTab = props.project.properties.values().some((p) => {
-    //    console.log(`${p.key}`);
-    if (
-      p.definition &&
-      p.definition.form === "collection" &&
-      p.definition.visibility === "always"
-    ) {
-      //console.log(`SHOWING COllection for ${p.key}`);
-    }
     return (
       p.definition &&
       p.definition.form === "collection" &&

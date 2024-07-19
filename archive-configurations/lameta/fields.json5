@@ -97,6 +97,7 @@
       xmlTag: "CollectionKey",
       form: "collection",
       tabIndex: 1,
+      visibility: "never",
       imdiComment: "Corpus/MDGroup/Keys/Key[@Name='CorpusId']"
     },
     {
@@ -106,6 +107,7 @@
       englishLabel: "Description",
       multipleLines: true,
       form: "collection",
+      visibility: "always",
       imdiComment: "Corpus/Description[@Name='short_description']",
       tabIndex: 2
     },
@@ -134,7 +136,7 @@
       xmlTag: "Depositor",
       englishLabel: "Depositors",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
-      visibility: "never",
+      visibility: "always",
       form: "collection",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Depositor'] - can be repeated",
       tabIndex: 6
