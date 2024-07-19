@@ -7,7 +7,6 @@ import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
 import dsv from "@rollup/plugin-dsv";
-import timeReporter from "vite-plugin-time-reporter";
 
 export default defineConfig({
   resolve: {
@@ -23,7 +22,6 @@ export default defineConfig({
     }
   },
   plugins: [
-    timeReporter(),
     //lingui(),
     react({
       // TODO: linguijs V4 will allow us to get rid of babel and use swc, using

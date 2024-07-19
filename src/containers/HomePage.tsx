@@ -41,7 +41,6 @@ import { getTestEnvironment } from "../getTestEnvironment";
 
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const isDev = require("electron-is-dev");
 
 // Added this as part of a workaround in typing when upgrading to mobx6.
 // Enhance: would be cleaner to pass the values to the menu constructor.
