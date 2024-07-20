@@ -360,7 +360,7 @@ export default class ImdiGenerator {
           });
         } else {
           this.addMissingSessionLanguage(
-            "vernacularIso3CodeAndName",
+            "collectionSubjectLanguages",
             "Subject Language"
           );
         }
@@ -376,7 +376,7 @@ export default class ImdiGenerator {
           });
         } else {
           this.addMissingSessionLanguage(
-            "analysisISO3CodeAndName",
+            "collectionWorkingLanguages",
             "Working Language"
           );
         }

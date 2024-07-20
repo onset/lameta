@@ -106,7 +106,7 @@ describe("actor imdi export", () => {
   });
 
   it("unlisted language handling", () => {
-    project.setContentLanguageCodeAndName("qaa", "Foo Bar");
+    project.setCollectionSubjectLanguages("qaa:Foo Bar");
     const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     person.languages.splice(0, 10);
     person.languages.push({ code: "qaa", mother: true, primary: true });
@@ -115,7 +115,7 @@ describe("actor imdi export", () => {
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
     expect("Actor/Languages/Language[1]/Name").toHaveText("Foo Bar");
 
-    project.setContentLanguageCodeAndName("qoo", "Blah blah");
+    project.setCollectionSubjectLanguages("qoo:Blah blah");
     person.languages.splice(0, 10);
     person.languages.push({ code: "qoo", mother: true, primary: true });
     const gen2 = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);

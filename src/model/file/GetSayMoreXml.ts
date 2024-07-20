@@ -16,6 +16,12 @@ export default function getSayMoreXml(
   doOutputEmptyCustomFields: boolean // used for watching empty custom fields
 ): string {
   try {
+    /* Note, if this is called during load from recomputeChangeWatcher, we haven't migrated yet.
+    if (properties.containsKey("VernacularISO3CodeAndName")) {
+      throw new Error("VernacularISO3CodeAndName should not be in properties.");
+    }
+      */
+
     const root = xmlbuilder.create(xmlRootName, {
       version: "1.0",
       encoding: "utf-8"

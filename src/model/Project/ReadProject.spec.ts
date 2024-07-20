@@ -26,20 +26,20 @@ describe("Project Read", () => {
   // In SayMore we don't want to deal with timezones, so we convert that to
   // UTC, which is actually the previous day, drop the time, drop the time offset.
 
-  it("should read vernacularISO3CodeAndName", () => {
+  it("should read collectionSubjectLanguages", () => {
     const f = GetProjectFileWithOneField(
-      "VernacularISO3CodeAndName",
-      "dde: Doondo"
+      "CollectionSubjectLanguages",
+      "dde: Doondo;etr: Edolo"
     );
-    expect(f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")).toBe(
-      "dde: Doondo"
-    );
+    expect(
+      f.properties.getTextStringOrEmpty("collectionSubjectLanguages")
+    ).toBe("dde: Doondo;etr: Edolo");
   });
 
   // Before lameta 3, we could store a single language for the vernacular. If we
   // find a file using that but no modern collectionSubjectLanguage, collectionSubjectLanguage
-  // should be loaded with the value from vernacularIso3CodeAndName.
-  it("should load vernacularIso3CodeAndName into collectionSubjectLanguage if missing or empty", () => {
+  // should be loaded with the value from VernacularISO3CodeAndName.
+  it("should load/migrate old VernacularISO3CodeAndName into collectionSubjectLanguage if missing or empty", () => {
     const f = GetProjectFileWithOneField(
       "VernacularISO3CodeAndName",
       "abc:Abracadabra"
@@ -50,29 +50,30 @@ describe("Project Read", () => {
     // do same for AnaylsisISO3CodeAndName and collectionWorkingLanguages
     const f2 = GetProjectFileWithOneField(
       "AnalysisISO3CodeAndName",
-      "abc:Abracadabra"
+      "xyz:Xabradabra"
     );
     expect(
       f2.properties.getTextStringOrEmpty("collectionWorkingLanguages")
-    ).toBe("abc:Abracadabra");
+    ).toBe("xyz:Xabradabra");
   });
-  it("fill legacy language fields from modern collectionLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "CollectionSubjectLanguages",
-      "foo:FooBar;abc:Abracadabra"
-    );
-    expect(f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")).toBe(
-      "foo:FooBar"
-    );
-    // do same for AnaylsisISO3CodeAndName and collectionWorkingLanguages
-    const f2 = GetProjectFileWithOneField(
-      "CollectionWorkingLanguages",
-      "foo:FooBar;aby:Abracadabra"
-    );
-    expect(f2.properties.getTextStringOrEmpty("analysisIso3CodeAndName")).toBe(
-      "foo:FooBar"
-    );
-  });
+  // REVIEW why? Why do we want to keep that old field around in memory?
+  // it("fill legacy language fields from modern collectionLanguages", () => {
+  //   const f = GetProjectFileWithOneField(
+  //     "CollectionSubjectLanguages",
+  //     "foo:FooBar;abc:Abracadabra"
+  //   );
+  //   expect(f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")).toBe(
+  //     "foo:FooBar"
+  //   );
+  //   // do same for AnaylsisISO3CodeAndName and collectionWorkingLanguages
+  //   const f2 = GetProjectFileWithOneField(
+  //     "CollectionWorkingLanguages",
+  //     "foo:FooBar;aby:Abracadabra"
+  //   );
+  //   expect(f2.properties.getTextStringOrEmpty("analysisIso3CodeAndName")).toBe(
+  //     "foo:FooBar"
+  //   );
+  // });
 
   it("should read archiveConfigurationName", () => {
     const f = GetProjectFileWithOneField("ArchiveConfigurationName", "ELAR");
@@ -92,14 +93,14 @@ describe("Project Read", () => {
       "default"
     );
   });
-  it("should read AnalysisISO3CodeAndName", () => {
+  it("should read legacy AnalysisISO3CodeAndName into collectionWorkingLanguages", () => {
     const f = GetProjectFileWithOneField(
       "AnalysisISO3CodeAndName",
       "dde: Doondo"
     );
-    expect(f.properties.getTextStringOrEmpty("analysisIso3CodeAndName")).toBe(
-      "dde: Doondo"
-    );
+    expect(
+      f.properties.getTextStringOrEmpty("collectionWorkingLanguages")
+    ).toBe("dde: Doondo");
   });
   it("should read Doondo Project", () => {
     const doondoPath = "c:/dev/Doondo";
@@ -119,7 +120,7 @@ describe("Project Read", () => {
         f.properties.getTextStringOrEmpty("archiveConfigurationName")
       ).toBe("REAP");
       expect(
-        f.properties.getTextStringOrEmpty("vernacularIso3CodeAndName")
+        f.properties.getTextStringOrEmpty("collectionSubjectLanguages")
       ).toBe("dde: Doondo");
     }
   });

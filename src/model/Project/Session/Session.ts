@@ -58,7 +58,7 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("languages") === "") {
       this.properties.setText(
         "languages",
-        Project.getDefaultContentLanguageCode()
+        Project.getDefaultSubjectLanguages()
       );
     }
 
@@ -66,7 +66,7 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("workingLanguages") === "") {
       this.properties.setText(
         "workingLanguages",
-        Project.getDefaultWorkingLanguageCode()
+        Project.getDefaultWorkingLanguages()
       );
     }
     this.migrateFromPreviousVersions();

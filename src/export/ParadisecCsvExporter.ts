@@ -60,8 +60,8 @@ export function makeParadisecProjectFields(project: Project): string[][] {
     projectDescriptionBlacklist,
     (key) =>
       key
-        .replace("vernacularIso3CodeAndName", "subject-lang")
-        .replace("analysisIso3CodeAndName", "working-lang")
+        .replace("collectionSubjectLanguages", "subject-lang")
+        .replace("workingLanguages", "working-lang")
   );
 
   rows.push(["Collection Description", descriptionWithHomelessFields]);

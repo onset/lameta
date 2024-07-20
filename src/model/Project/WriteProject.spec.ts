@@ -22,11 +22,28 @@ describe("Project Write", () => {
     temp.cleanupSync();
   });
 
-  it("should round-trip AnalysisISO3CodeAndName", () => {
+  it("should round-trip CollectionSubjectLanguages", () => {
     AttemptRoundTripOfOneField(
-      "analysisIso3CodeAndName",
-      "AnalysisISO3CodeAndName",
+      "collectionSubjectLanguages",
+      "CollectionSubjectLanguages",
       "foo: Foo"
+    );
+    AttemptRoundTripOfOneField(
+      "collectionSubjectLanguages",
+      "CollectionSubjectLanguages",
+      "foo: Foo;bar: Bar"
+    );
+  });
+  it("should round-trip CollectionWorkingLanguages", () => {
+    AttemptRoundTripOfOneField(
+      "collectionWorkingLanguages",
+      "CollectionWorkingLanguages",
+      "foo: Foo"
+    );
+    AttemptRoundTripOfOneField(
+      "collectionWorkingLanguages",
+      "CollectionWorkingLanguages",
+      "foo: Foo;bar: Bar"
     );
   });
   it("should round-trip ArchiveConfigurationName", () => {
@@ -36,27 +53,17 @@ describe("Project Write", () => {
       "FooBar"
     );
   });
-  it("should write vernacularIso3CodeAndName with same case as SayMore Windows Classic does", () => {
+  it("should write deprecated VernacularISO3CodeAndName with first language in collectionSubjectLanguages", () => {
     const f = GetProjectFileWithOneField(
-      "VernacularISO3CodeAndName",
-      "foo: Foo"
+      "CollectionSubjectLanguages",
+      "foo: Foo; bar: Bar"
     );
-    f.properties.setText("vernacularIso3CodeAndName", "bar: Bar");
-    f.save(true);
-    expect(
-      fs.readFileSync(f.metadataFilePath).indexOf("VernacularISO3CodeAndName")
-    ).toBeGreaterThan(-1);
-
-    //console.log("abc:" + fs.readFileSync(f.metadataFilePath));
-
-    expect(
-      fs
-        .readFileSync(f.metadataFilePath)
-        .indexOf(
-          "<VernacularISO3CodeAndName>bar: Bar</VernacularISO3CodeAndName>"
-        )
-    ).toBeGreaterThan(-1);
+    setResultXml(f.getXml(true));
+    // saving old field here for versions before lameta 3
+    xexpect("Project/VernacularISO3CodeAndName").toMatch("foo: Foo");
+    xexpect("Project/CollectionSubjectLanguages").toMatch("foo: Foo; bar: Bar");
   });
+
   it("should write languages", () => {
     const f = GetProjectFileWithOneField("unused", "x");
     f.properties.setText("collectionSubjectLanguages", "ab;cd;ef");

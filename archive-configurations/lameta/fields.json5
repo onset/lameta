@@ -218,25 +218,6 @@
       tabIndex: 21
     },
 
-    // -------------------- undecided as to what form these will live on when the re-org is complete
-    {
-      key: "vernacularIso3CodeAndName",
-      englishLabel: "Subject Language",
-      xmlTag: "VernacularISO3CodeAndName",
-      visibility: "never", // replaced by collectionWorkingLanguages
-      form: "languages",
-      type: "language",
-      tabIndex: 1
-    },
-    {
-      key: "analysisIso3CodeAndName",
-      englishLabel: "Working Language",
-      xmlTag: "AnalysisISO3CodeAndName",
-      visibility: "never", // replaced by collectionSubjectLanguages
-      type: "language",
-      form: "languages",
-      tabIndex: 2
-    },
     {
       key: "collectionSubjectLanguages",
       englishLabel: "Subject Languages",

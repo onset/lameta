@@ -96,15 +96,12 @@ export class Project extends Folder {
     return "project";
   }
 
-  public static getDefaultContentLanguageCode() {
-    const codeAndName =
-      sCurrentProject === null
-        ? ""
-        : sCurrentProject.properties.getTextStringOrEmpty(
-            "vernacularIso3CodeAndName"
-          );
-
-    return codeAndName.split(":")[0].trim();
+  public static getDefaultSubjectLanguages() {
+    return sCurrentProject === null
+      ? ""
+      : sCurrentProject.properties.getTextStringOrEmpty(
+          "collectionSubjectLanguages"
+        );
   }
 
   // trying to find https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
@@ -155,15 +152,12 @@ export class Project extends Folder {
     folders.items.forEach((f: Folder) => console.log(f.displayName));
   }
 
-  public static getDefaultWorkingLanguageCode() {
-    const codeAndName =
-      sCurrentProject === null
-        ? ""
-        : sCurrentProject.properties.getTextStringOrEmpty(
-            "analysisIso3CodeAndName"
-          );
-
-    return codeAndName.split(":")[0].trim();
+  public static getDefaultWorkingLanguages(): string {
+    return sCurrentProject === null
+      ? ""
+      : sCurrentProject.properties.getTextStringOrEmpty(
+          "collectionWorkingLanguages"
+        );
   }
 
   public importIdMatchesThisFolder(id: string): boolean {
@@ -245,8 +239,8 @@ export class Project extends Folder {
 
     this.knownFields = fieldDefinitionsOfCurrentConfig.project; // for csv export
 
-    this.languageFinder = new LanguageFinder(() =>
-      this.getContentLanguageCodeAndName()
+    this.languageFinder = new LanguageFinder(
+      () => this.getFirstSubjectLanguageCodeAndName() // REVIEW now that we have multiple languages
     );
     this.loadSettingsFromConfiguration();
 
@@ -898,48 +892,51 @@ export class Project extends Folder {
   //   );
   // }
 
-  /*  public getContentLanguageName(): string {
-    return this.getContentLanguageCode()
-      .split(":")
-      .slice(-1)[0]
-      .trim(); // last element (will be the name , if there is a ':')
-  }
-  public getContentLanguageCode(): string {
-    return this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
-  }*/
-
   // used only by unit tests
-  public setContentLanguageCodeAndName(code: string, name: string) {
-    this.properties.setText("vernacularIso3CodeAndName", `${code}:${name}`);
+  public setCollectionSubjectLanguages(content: string) {
+    this.properties.setText("collectionSubjectLanguages", content);
   }
-  public getContentLanguageCodeAndName():
+
+  private getFirstLanguageCodeAndName(fieldName: string):
     | {
         iso639_3: string;
         englishName: string;
       }
     | undefined {
-    const projectDefaultContentLanguage: string =
-      this.properties.getTextStringOrEmpty("vernacularIso3CodeAndName");
+    const languages: string = this.properties.getTextStringOrEmpty(fieldName);
 
-    if (projectDefaultContentLanguage.trim().length === 0) {
-      // hasn't been defined yet, e.g. a new project
+    if (languages.trim().length === 0) {
+      return undefined; // hasn't been defined yet, e.g. a new project
+    }
+    const firstCodeLangPair = languages.split(";")[0].trim();
+    if (!firstCodeLangPair) {
       return undefined;
     }
-    const parts = projectDefaultContentLanguage.split(":").map((p) => p.trim());
-    if (!parts[0]) {
-      return undefined; // hasn't been defined yet, e.g. a new project (but somehow still has a colon)
-    }
-    // In the degenerate case in which there was no ":" in the <vernacularIso3CodeAndName> element,
+    const parts = firstCodeLangPair.split(":");
+    // In the degenerate case in which there was no ":" in the incoming xml element,
     // use the code as the name.
     const langName = parts.length > 1 ? parts[1] : parts[0];
-    return { iso639_3: parts[0].toLowerCase(), englishName: langName };
+    return {
+      iso639_3: parts[0].trim().toLowerCase(),
+      englishName: langName.trim()
+    };
+  }
+  public getFirstSubjectLanguageCodeAndName():
+    | {
+        iso639_3: string;
+        englishName: string;
+      }
+    | undefined {
+    return this.getFirstLanguageCodeAndName("collectionSubjectLanguages");
   }
 
-  public getWorkingLanguageName(): string {
-    return this.getWorkingLanguageCode().split(":").slice(-1)[0].trim(); // last element (will be the name , if there is a ':')
+  public getWorkingLanguageName(): string | undefined {
+    return this.getFirstLanguageCodeAndName("collectionWorkingLanguages")
+      ?.englishName;
   }
-  public getWorkingLanguageCode(): string {
-    return this.properties.getTextStringOrEmpty("analysisIso3CodeAndName");
+  public getWorkingLanguageCode(): string | undefined {
+    return this.getFirstLanguageCodeAndName("collectionWorkingLanguages")
+      ?.iso639_3;
   }
 
   private loadSettingsFromConfiguration() {
@@ -1028,32 +1025,40 @@ export class ProjectMetadataFile extends FolderMetadataFile {
 
     // Before lameta 3, we could store a single language for the vernacular. If we
     // find a file using that but no modern collectionSubjectLanguage, collectionSubjectLanguage
-    // should be loaded with the value from vernacularIso3CodeAndName.
+    // should be loaded with the value from VernacularISO3CodeAndName.
     // If instead we do have a non-empty collectionSubjectLanguage, then we should set
-    // vernacularIso3CodeAndName to the first item in it.
-    this.migrateLanguageFields(
-      "vernacularIso3CodeAndName",
+    // VernacularISO3CodeAndName to the first item in it.
+    this.migrateLanguageField(
+      "VernacularISO3CodeAndName", // note, uppercase because it is unknown to our field definitions, so it keeps the same case as the xml tag
       "collectionSubjectLanguages"
     );
     // same for the anlysis language
-    this.migrateLanguageFields(
-      "analysisIso3CodeAndName",
+    this.migrateLanguageField(
+      "AnalysisISO3CodeAndName", // note, uppercase because it is unknown to our field definitions, so it keeps the same case as the xml tag
       "collectionWorkingLanguages"
     );
   }
 
-  private migrateLanguageFields(legacySingle: string, modernMultiple: string) {
+  private migrateLanguageField(legacySingle: string, modernMultiple: string) {
     if (this.properties.getTextStringOrEmpty(modernMultiple).length === 0) {
       this.properties.setText(
         modernMultiple,
         this.properties.getTextStringOrEmpty(legacySingle)
       );
-    } else {
-      const parts = this.properties
-        .getTextStringOrEmpty(modernMultiple)
-        .split(";");
-      this.properties.setText(legacySingle, parts[0] || "");
     }
+    // remove the legacy value if it is there
+    this.properties.removeProperty(legacySingle);
+
+    this.properties.removeProperty("VernacularISO3CodeAndName");
+
+    // otheriwse, ignore the legacy value
+
+    // else {
+    //   const parts = this.properties
+    //     .getTextStringOrEmpty(modernMultiple)
+    //     .split(";");
+    //   this.properties.setText(legacySingle, parts[0] || "");
+    // }
   }
 
   // peek into the xml to get the configuration we're supposed to be using
