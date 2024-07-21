@@ -39,7 +39,7 @@
     "strings:extract": "yarn strings:extract-code && yarn strings:extract-json",
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3",
     "strings:compile": "lingui compile",
-    "make-langindex": "ts-node --dir src/languageFinder --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" make-langindex",
+    "make-langindex": "yarn tsx src/languageFinder/make-langindex.ts && yarn vitest run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
