@@ -34,10 +34,11 @@ DateFieldEdit extends React.Component<
             selected={m?.toDate()}
             //onChange={d => console.log("change " + d)}
             onChange={(newDate) => {
+              console.log("today's time and date: " + new Date());
+
               if (newDate != null) {
-                // TODO: while this is changing the value, it's not propagating back to our props so you don't see the change immediately
                 this.props.field.setValueFromString(
-                  newDate.toISOString().slice(0, 10) /*remove time portion*/
+                  toISOIgnoreTimezone(newDate)
                 );
               }
             }}
@@ -47,6 +48,21 @@ DateFieldEdit extends React.Component<
       </div>
     );
   }
+}
+
+// https://github.com/Hacker0x01/react-datepicker/issues/3652
+// To test, manually set the computer's timezone to UTC+1, Berlin time
+// Without it, the datepicker will show the date as the day before,
+// immediately after you have selected a day.
+function toISOIgnoreTimezone(inputDate: Date) {
+  return (
+    inputDate.getFullYear() +
+    "-" +
+    ("0" + (inputDate.getMonth() /* zero based */ + 1)).slice(-2) +
+    "-" +
+    ("0" + inputDate.getDate()).slice(-2) +
+    "T00:00:00.000Z"
+  );
 }
 
 export default observer(
