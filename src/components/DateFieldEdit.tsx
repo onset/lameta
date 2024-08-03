@@ -36,7 +36,9 @@ DateFieldEdit extends React.Component<
             onChange={(newDate) => {
               console.log("today's time and date: " + new Date());
 
-              if (newDate != null) {
+              if (newDate == null) {
+                this.props.field.setValueFromString("");
+              } else {
                 this.props.field.setValueFromString(
                   toISOIgnoreTimezone(newDate)
                 );
