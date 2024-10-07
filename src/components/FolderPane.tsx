@@ -31,6 +31,8 @@ import { FileStatusBlock } from "../model/file/FileStatus";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import { RoCrateView } from "./RoCrateView";
+import userSettingsSingleton from "../other/UserSettings";
 
 export interface IProps {
   folder: Folder;
@@ -156,6 +158,13 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
+  const roCrateTab =
+    userSettingsSingleton.DeveloperMode ||
+    GetOtherConfigurationSettings().showRoCrate ? (
+      <Tab>Ro-Crate {/* don't translate  */}</Tab>
+    ) : (
+      <></>
+    );
 
   const imdiPanel = GetOtherConfigurationSettings().showImdiPreview ? (
     <TabPanel>
@@ -191,6 +200,25 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
+  const roCratePanel =
+    userSettingsSingleton.DeveloperMode ||
+    GetOtherConfigurationSettings().showRoCrate ? (
+      <TabPanel>
+        <ErrorBoundary>
+          <RoCrateView
+            target={
+              file.type === "Session" || file.type === "Person"
+                ? directoryObject
+                : file
+            }
+            folder={props.folder}
+            project={props.project}
+          />
+        </ErrorBoundary>
+      </TabPanel>
+    ) : (
+      <></>
+    );
 
   const standardMetaTabs = props.showStandardMetaTabs ? (
     <>
@@ -214,6 +242,7 @@ const FileTabs: React.FunctionComponent<
       {notesPanel}
       {imdiPanel}
       {paradisecPanel}
+      {roCratePanel}
     </>
   ) : null;
 
@@ -252,7 +281,7 @@ const FileTabs: React.FunctionComponent<
             <Tab>
               <Trans>Notes</Trans>
             </Tab>
-            {imdiTab} {paradisecTab}
+            {imdiTab} {paradisecTab} {roCrateTab}
           </TabList>
           <TabPanel>
             <ErrorBoundary
@@ -294,6 +323,7 @@ const FileTabs: React.FunctionComponent<
           {notesPanel}
           {imdiPanel}
           {paradisecPanel}
+          {roCratePanel}
         </Tabs>
       );
     case "Person": {

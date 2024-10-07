@@ -15,7 +15,7 @@ lameta was previously known as SayMoreX.
 
 # For Developers
 
-Stack: Typescript, React, mobx, webpack, electron.
+Stack: Typescript, React, mobx, vite, electron.
 
 ## Get Started
 

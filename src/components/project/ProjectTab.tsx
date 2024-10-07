@@ -18,6 +18,7 @@ import { createProjectTheme } from "../../containers/theme";
 import { ParadisecView } from "../ParadisecView";
 import { LametaXmlView } from "../lametaXmlView";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
+import { RoCrateView } from "../RoCrateView";
 
 interface IProps {
   project: Project;
@@ -27,7 +28,9 @@ interface IProps {
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
 
-  const kFirstTabToOpen = 0;
+  const kFirstTabToOpen = userSettings.DeveloperMode
+    ? 9 /*working on ro-crate */
+    : 0;
 
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
@@ -114,6 +117,13 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           {userSettings.DeveloperMode ? (
             <Tab className={"tab-project-lameta"}>
               LaMeta {/* don't translate  */}
+            </Tab>
+          ) : (
+            <></>
+          )}
+          {userSettings.DeveloperMode ? (
+            <Tab className={"tab-project-rocrate"}>
+              Ro-Crate {/* don't translate  */}
             </Tab>
           ) : (
             <></>
@@ -248,6 +258,18 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         {userSettings.DeveloperMode ? (
           <TabPanel>
             <LametaXmlView
+              target={props.project}
+              project={props.project}
+              folder={props.project}
+            />
+          </TabPanel>
+        ) : (
+          <></>
+        )}
+        {/* if in developer mode, show RoCrate Export */}
+        {userSettings.DeveloperMode ? (
+          <TabPanel>
+            <RoCrateView
               target={props.project}
               project={props.project}
               folder={props.project}
