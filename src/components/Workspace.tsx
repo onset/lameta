@@ -35,7 +35,7 @@ export interface IProps {
 }
 
 class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = 0; // nocommit
+  private kFirstTabToOpen = userSettings.DeveloperMode ? 1 : 0;
 
   public constructor(props: IProps) {
     super(props);

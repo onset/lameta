@@ -2,19 +2,13 @@ import * as React from "react";
 import { css } from "@emotion/react";
 import { Folder } from "../model/Folder/Folder";
 import { Project } from "../model/Project/Project";
-import {
-  JsonView,
-  allExpanded,
-  darkStyles,
-  defaultStyles
-} from "react-json-view-lite";
+import { lameta_green, lameta_orange } from "../containers/theme";
 import "react-json-view-lite/dist/index.css";
 import { getRoCrate } from "../export/RoCrateExporter";
 import { Session } from "../model/Project/Session/Session";
+import { JsonViewer } from "@textea/json-viewer";
 
 export const RoCrateView: React.FunctionComponent<{
-  target: any;
-
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
   project: Project;
@@ -24,16 +18,8 @@ export const RoCrateView: React.FunctionComponent<{
   const [json, setJson] = React.useState<object>({});
 
   React.useEffect(() => {
-    if (props.target instanceof Project) {
-      setJson(getRoCrate(props.target as Project));
-    }
-  }, [props.target, props.project, props.folder]);
-
-  React.useEffect(() => {
-    if (props.target instanceof Session) {
-      setJson(getRoCrate(props.target as Session));
-    }
-  }, [props.target, props.project, props.folder]);
+    setJson(getRoCrate(props.folder));
+  }, [props.project, props.folder]);
 
   return (
     <div
@@ -55,7 +41,28 @@ export const RoCrateView: React.FunctionComponent<{
         }
       `}
     >
-      <JsonView data={json} shouldExpandNode={allExpanded} style={darkStyles} />
+      {/* <JsonView data={json} shouldExpandNode={allExpanded} style={darkStyles} /> */}
+      <JsonViewer
+        value={json}
+        theme={"dark"}
+        quotesOnKeys={false}
+        displayDataTypes={false}
+        displaySize={false}
+        css={css`
+          height: 100%;
+          overflow-y: scroll;
+          .data-key {
+            color: #ff934f; /*${lameta_orange};*/
+            font-weight: bold;
+          }
+          .data-type-label {
+            color: #becde4;
+          }
+          .string-value {
+            color: white;
+          }
+        `}
+      />
     </div>
   );
 };

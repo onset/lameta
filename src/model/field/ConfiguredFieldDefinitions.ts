@@ -7,6 +7,7 @@ import { locateDependencyForFilesystemCall } from "../../other/locateDependency"
 import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
 
 type FieldDefinitionCatalog = {
+  common: FieldDefinition[];
   project: FieldDefinition[];
   session: FieldDefinition[];
   person: FieldDefinition[];
@@ -15,7 +16,7 @@ const catalogOfAllAvailableKnownFields: FieldDefinitionCatalog = JSON5.parse(
   jsonOfDefaultFieldConfig
 );
 // for each field definition, if does not explicity set multilingual, set it to false
-for (const area of ["project", "session", "person"]) {
+for (const area of ["common", "project", "session", "person"]) {
   for (const field of catalogOfAllAvailableKnownFields[area]) {
     if (field.multilingual === undefined) {
       field.multilingual = false;
@@ -307,6 +308,7 @@ type FieldDefinitionCustomization = {
 };
 
 type FieldDefinitionCustomizationCatalog = {
+  common?: FieldDefinitionCustomization[];
   project?: FieldDefinitionCustomization[];
   session?: FieldDefinitionCustomization[];
   person?: FieldDefinitionCustomization[];
@@ -327,11 +329,12 @@ export function computeMergedCatalog(
   // customizations is just used for UI in the ArchiveConfigurationSummary component
   const customizations = [] as Array<FieldDefinitionCustomizationRecord>;
   const mergedCatalog: FieldDefinitionCatalog = {
+    common: [],
     project: [],
     session: [],
     person: []
   };
-  for (const area of ["project", "session", "person"]) {
+  for (const area of ["common", "project", "session", "person"]) {
     // check for any keys that aren't in the official catalog, and throw an error
     if (catalogOfConfiguration[area]) {
       for (const customization of catalogOfConfiguration[area]) {
@@ -403,6 +406,7 @@ export function loadAndMergeFieldChoices(configurationName: string) {
 }
 
 const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {
+  common: [],
   project: [],
   session: [],
   person: []

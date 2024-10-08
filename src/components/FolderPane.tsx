@@ -102,7 +102,9 @@ const FileTabs: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
   useLingui();
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [tabIndex, setTabIndex] = React.useState(
+    userSettingsSingleton.DeveloperMode ? 4 : 0
+  );
 
   const [selectedContribution, setSelectedContribution] =
     React.useState<Contribution | undefined>(undefined);
@@ -205,15 +207,7 @@ const FileTabs: React.FunctionComponent<
     GetOtherConfigurationSettings().showRoCrate ? (
       <TabPanel>
         <ErrorBoundary>
-          <RoCrateView
-            target={
-              file.type === "Session" || file.type === "Person"
-                ? directoryObject
-                : file
-            }
-            folder={props.folder}
-            project={props.project}
-          />
+          <RoCrateView folder={props.folder} project={props.project} />
         </ErrorBoundary>
       </TabPanel>
     ) : (

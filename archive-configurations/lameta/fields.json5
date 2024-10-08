@@ -1,4 +1,18 @@
 {
+  common: [
+    {
+      key: "language",
+      rocrate: {
+        key: "language",
+        value: {
+          "@id": "#language_[v]",
+          "@type": "Language",
+          code: "[v]",
+          name: "[languageName]"
+        }
+      }
+    }
+  ],
   project: [
     {
       key: "archiveConfigurationName",
@@ -259,6 +273,11 @@
       xmlTag: "languages",
       type: "languageChoices",
       englishLabel: "Subject Languages",
+      rocrate: {
+        key: "subjectLanguages",
+        value: { "@id": "#language_[v]" },
+        array: true
+      },
       tabIndex: 12
     },
     {
@@ -266,6 +285,11 @@
       xmlTag: "WorkingLanguages",
       type: "languageChoices",
       englishLabel: "Working Languages",
+      rocrate: {
+        key: "contentLanguages",
+        value: { "@id": "#language_[v]" },
+        array: true
+      },
       tabIndex: 14
     },
     {
@@ -308,7 +332,11 @@
       xmlTag: "Location",
       englishLabel: "Neighborhood/Town/Village",
       description: "A location that is relevant within the group you are studying",
-      tabIndex: 12
+      tabIndex: 12,
+      rocrate: {
+        key: "contentLocation",
+        value: { "@id": "#[v]", "@type": "Place", name: "[v]" }
+      }
     },
     {
       key: "access",
