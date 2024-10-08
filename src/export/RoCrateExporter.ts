@@ -1,8 +1,11 @@
-import { ro } from "date-fns/locale";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
+import * as Path from "path";
+import * as fs from "fs-extra";
+import { getMimeType } from "../model/file/FileTypeInfo";
+//import { getModifiedDate } from "../model/file/FileTypeInfo";
 
 // Convert project data to RO-Crate JSON-LD
 export function getRoCrate(folder: Folder): object {
@@ -50,6 +53,7 @@ export function getRoCrate(folder: Folder): object {
       folderEntry[propertyKey] = values[0];
     }
   });
+  addChildFileInfo(folder, folderEntry);
 
   roCrate["@graph"].push(...leaves);
   roCrate["@graph"].push(folderEntry);
@@ -87,4 +91,25 @@ function processRoCrateTemplate(template: object, value: string): any {
     }
   });
   return output;
+}
+function addChildFileInfo(folder: Folder, folderEntry: object): void {
+  if (folder.files.length === 0) return;
+  folderEntry["hasPart"] = [];
+  folder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    const fileName = Path.basename(path);
+
+    const fileEntry = {
+      "@id": fileName,
+      "@type": "File",
+      contentSize: fs.statSync(path).size,
+      dateCreated: fs.statSync(path).birthtime.toISOString(),
+      dateModified: file.getModifiedDate()?.toISOString(),
+      encodingFormat: getMimeType(
+        Path.extname(fileName).toLowerCase().replace(/\./g, "")
+      ),
+      name: fileName
+    };
+    folderEntry["hasPart"].push(fileEntry);
+  });
 }

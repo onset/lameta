@@ -162,6 +162,9 @@ customMimeTypes.setValue("eaf", "text/x-eaf+xml");
 customMimeTypes.setValue("cha", "text/x-chat");
 customMimeTypes.setValue("chat", "text/x-chat"); // I think this is wrong?
 customMimeTypes.setValue("trs", "text/x-trs");
+customMimeTypes.setValue("session", "application/lameta-session");
+customMimeTypes.setValue("person", "application/lameta-person");
+customMimeTypes.setValue("sprj", "application/lameta-project");
 
 //customMimeTypes.setValue("", "");
 
