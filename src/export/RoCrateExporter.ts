@@ -2,6 +2,7 @@ import { ro } from "date-fns/locale";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
 import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
+import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 
 // Convert project data to RO-Crate JSON-LD
 export function getRoCrate(folder: Folder): object {
@@ -23,51 +24,55 @@ export function getRoCrate(folder: Folder): object {
     name: folder.metadataFile?.getTextProperty("title")
   };
 
-  // review this might have to be normalized across the project?
-  const atoms: any[] = [];
-
-  const data = folder.metadataFile!;
-  const roCrateForLanguages = fieldDefinitionsOfCurrentConfig.common.find(
-    (f) => f.key === "language"
-  )!.rocrate;
+  const leaves: any[] = [];
 
   folder.knownFields.forEach((field) => {
-    const value = data.getTextProperty(field.key, undefined);
-    if (!value) return; // we have the property but it is empty
-    if (value === "unspecified") return; // review
+    const values: string[] = getFieldValues(folder, field);
+    if (values.length === 0 || values[0] === "unspecified") return;
+    const propertyKey = field.rocrate?.key || field.key;
+    folderEntry[propertyKey] = [];
 
-    // e.g. "FUnding Project Title"
-    // if (field.rocrate?.type) {
-    //   roCrateEntry["@type"] = field.rocrate?.type;
-    // }
-
+    // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
-      const x = processRoCrateTemplate(
-        field.rocrate.value,
-        data.getTextProperty(field.key, "MISSING")
-      );
-      atoms.push(x);
-
-      if (
-        field.key.indexOf("languages") > -1 &&
-        folder.folderType === "session"
-      ) {
-        const langCodes = (folder as Session).getLanguageCodes(field.key);
-
-        langCodes.forEach((c: string) => {
-          atoms.push(processRoCrateTemplate(roCrateForLanguages.value, c));
-        });
-      } else {
-        if (field.rocrate.array) folderEntry[field.rocrate.key] = [x["@id"]];
-        else folderEntry[field.rocrate.key] = x["@id"];
-      }
-    } else {
-      folderEntry[field.key] = value;
+      const leafTemplate = getLeafTemplate(field);
+      values.forEach((c: string) => {
+        // For each value, create a graph entry that is the template, filled in with the value
+        const leaf = processRoCrateTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
+        leaves.push(leaf);
+        // Now create the links to those from the parent object
+        if (field.rocrate.array) folderEntry[propertyKey].push(leaf["@id"]);
+        // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
+        else folderEntry[propertyKey] = leaf["@id"];
+      });
+    }
+    // there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
+    else {
+      folderEntry[propertyKey] = values[0];
     }
   });
-  roCrate["@graph"].push(...atoms);
+
+  roCrate["@graph"].push(...leaves);
   roCrate["@graph"].push(folderEntry);
   return roCrate;
+}
+
+function getLeafTemplate(field: any): any {
+  if (field.rocrate?.handler === "languages")
+    return fieldDefinitionsOfCurrentConfig.common.find(
+      (f) => f.key === "language"
+    )!.rocrate.template;
+
+  // no handler specified, assume this is just a normal value but one that we want to list as "[ {@id:'#blah'} ]"
+  return field.rocrate.template;
+}
+
+function getFieldValues(folder: Folder, field: any): string[] {
+  if (field.rocrate?.handler === "languages") {
+    return (folder as Session).getLanguageCodes(field.key);
+  } else {
+    const value = folder.metadataFile?.getTextProperty(field.key, "").trim();
+    return value ? [value] : [];
+  }
 }
 
 function processRoCrateTemplate(template: object, value: string): any {
@@ -75,6 +80,11 @@ function processRoCrateTemplate(template: object, value: string): any {
   Object.keys(template).forEach((key) => {
     const val = template[key];
     output[key] = val.replace("[v]", value);
+    if (val.includes("[languageName]")) {
+      const name =
+        staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(value);
+      output[key] = output[key].replace("[languageName]", name);
+    }
   });
   return output;
 }
