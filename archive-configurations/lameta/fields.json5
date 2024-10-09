@@ -11,6 +11,28 @@
           name: "[languageName]"
         }
       }
+    },
+    {
+      key: "participant",
+      rocrate: {
+        key: "participant",
+        template: {
+          "@id": "[v]",
+          "@type": "Person",
+          name: "[v]"
+        }
+      }
+    },
+    {
+      key: "role",
+      rocrate: {
+        key: "role",
+        template: {
+          "@id": "#role_[v]",
+          "@type": "Role",
+          name: "[v]"
+        }
+      }
     }
   ],
   project: [
@@ -298,6 +320,11 @@
       key: "participants",
       xmlTag: "Participants",
       englishLabel: "People",
+      rocrate: {
+        key: "contributors",
+        handler: "participants",
+        array: true
+      },
       tabIndex: 3
     },
     {

@@ -2,10 +2,8 @@ import * as React from "react";
 import { css } from "@emotion/react";
 import { Folder } from "../model/Folder/Folder";
 import { Project } from "../model/Project/Project";
-import { lameta_green, lameta_orange } from "../containers/theme";
-import "react-json-view-lite/dist/index.css";
+import { lameta_orange } from "../containers/theme";
 import { getRoCrate } from "../export/RoCrateExporter";
-import { Session } from "../model/Project/Session/Session";
 import { JsonViewer } from "@textea/json-viewer";
 
 export const RoCrateView: React.FunctionComponent<{
