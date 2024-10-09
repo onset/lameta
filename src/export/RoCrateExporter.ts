@@ -58,9 +58,11 @@ export function getRoCrate(folder: Folder): object {
   });
 
   roCrate["@graph"].push(folderEntry);
-  folderEntry["contributor"] = makeParticipantPointers(folder as Session);
-  roCrate["@graph"].push(...getSessionPersonElements(folder as Session));
-  roCrate["@graph"].push(...getRoles(folder as Session));
+  if (folder instanceof Session) {
+    folderEntry["contributor"] = makeParticipantPointers(folder as Session);
+    roCrate["@graph"].push(...getSessionPersonElements(folder as Session));
+    roCrate["@graph"].push(...getRoles(folder as Session));
+  }
   roCrate["@graph"].push(...leaves);
   addChildFileInfo(folder, folderEntry);
   return roCrate;
@@ -125,9 +127,9 @@ function getLeafTemplate(field: any): any {
       (f) => f.key === "language"
     )!.rocrate.template;
 
-  if (field.rocrate?.handler === "participants") {
+  if (field.rocrate?.handler === "person") {
     return fieldDefinitionsOfCurrentConfig.common.find(
-      (f) => f.key === "participant"
+      (f) => f.key === "person"
     )!.rocrate.template;
   }
 

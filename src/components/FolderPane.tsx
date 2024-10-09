@@ -335,6 +335,7 @@ const FileTabs: React.FunctionComponent<
               <Trans>Notes</Trans>
             </Tab>
             {imdiTab}
+            {roCrateTab}
           </TabList>
           <TabPanel>
             <ErrorBoundary
@@ -369,6 +370,7 @@ const FileTabs: React.FunctionComponent<
           </TabPanel>
           {notesPanel}
           {imdiPanel}
+          {roCratePanel}
         </Tabs>
       );
     }
