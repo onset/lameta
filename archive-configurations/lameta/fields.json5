@@ -5,9 +5,9 @@
       rocrate: {
         key: "language",
         template: {
-          "@id": "#language_[v]",
+          "@id": "#language_[code]",
           "@type": "Language",
-          code: "[v]",
+          code: "[code]",
           name: "[languageName]"
         }
       }

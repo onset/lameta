@@ -72,7 +72,7 @@ const FindInPage = () => {
           }
         }}
       />
-      <IconButton color="primary" onClick={handleFind}>
+      <IconButton color="black" onClick={handleFind}>
         <SearchIcon />
       </IconButton>
     </Box>

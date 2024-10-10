@@ -6,11 +6,22 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import { getMimeType } from "../model/file/FileTypeInfo";
 import { Project } from "../model/Project/Project";
-import { ro } from "date-fns/locale";
-//import { getModifiedDate } from "../model/file/FileTypeInfo";
+import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
+import { IPersonLanguage } from "../model/PersonLanguage";
 
-// Convert project data to RO-Crate JSON-LD
-export function getRoCrate(folder: Folder): object {
+// Info:
+// https://www.researchobject.org/ro-crate/
+// https://github.com/Language-Research-Technology/ldac-profile
+// https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md
+// https://www.researchobject.org/ro-crate/profiles.html#paradisec-profile
+
+export function getRoCrate(project: Project, folder: Folder): object {
+  if (folder instanceof Person) {
+    const entry = {};
+    const otherEntries: object[] = [];
+    makeEntriesFromObjectFields(folder, entry, otherEntries);
+    return { entry: entry, ...otherEntries };
+  }
   const roCrate: { "@context": string[]; "@graph": any[] } = {
     "@context": ["https://w3id.org/ro/crate/1.1/context"],
     "@graph": []
@@ -23,49 +34,72 @@ export function getRoCrate(folder: Folder): object {
   };
   roCrate["@graph"].push(rootDataset);
 
-  const folderEntry = {
+  const mainEntry = {
     "@id": "./", // TODO
     "@type": "Dataset", // TODO
     name: folder.metadataFile?.getTextProperty("title")
   };
 
-  const leaves: any[] = [];
+  const otherEntries: any[] = [];
 
-  // for every field in fields.json5, if it's in the folder, add it to the rocrate
+  makeEntriesFromObjectFields(folder, mainEntry, otherEntries);
+
+  roCrate["@graph"].push(mainEntry);
+  if (folder instanceof Session) {
+    mainEntry["contributor"] = makeParticipantPointers(folder as Session);
+    roCrate["@graph"].push(
+      ...makeEntriesFromParticipant(project, folder as Session)
+    );
+    roCrate["@graph"].push(...getRoles(folder as Session));
+  }
+  roCrate["@graph"].push(...otherEntries);
+  addChildFileInfo(folder, mainEntry);
+  return roCrate;
+}
+
+// for every field in fields.json5, if it's in the folder, add it to the rocrate
+function makeEntriesFromObjectFields(
+  folder: Folder,
+  folderEntry: object,
+  otherEntries: object[]
+) {
   folder.knownFields.forEach((field) => {
     const values: string[] = getFieldValues(folder, field);
     if (values.length === 0 || values[0] === "unspecified") return;
     const propertyKey = field.rocrate?.key || field.key;
-    folderEntry[propertyKey] = [];
+
+    // REVIEW: for some reason languages of a person aren't in the normal field system?
+    if (folder instanceof Person) {
+      (folder.metadataFile as PersonMetadataFile).languages.forEach(
+        (personLanguageObject) => {
+          otherEntries.push(getPersonLanguageElement(personLanguageObject));
+        }
+      );
+    }
 
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
-      const leafTemplate = getLeafTemplate(field);
+      const leafTemplate = getRoCrateTemplate(field);
       values.forEach((c: string) => {
+        console.log("value:", c);
         // For each value, create a graph entry that is the template, filled in with the value
-        const leaf = processRoCrateTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
-        leaves.push(leaf);
+        const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
+        otherEntries.push(leaf);
+        const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
         // Now create the links to those from the parent object
-        if (field.rocrate.array) folderEntry[propertyKey].push(leaf["@id"]);
-        // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
-        else folderEntry[propertyKey] = leaf["@id"];
+        if (field.rocrate.array) {
+          if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
+          // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
+          folderEntry[propertyKey].push(reference);
+        } else folderEntry[propertyKey] = reference;
       });
     }
-    // there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
+
+    // if there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
     else {
       folderEntry[propertyKey] = values[0];
     }
   });
-
-  roCrate["@graph"].push(folderEntry);
-  if (folder instanceof Session) {
-    folderEntry["contributor"] = makeParticipantPointers(folder as Session);
-    roCrate["@graph"].push(...getSessionPersonElements(folder as Session));
-    roCrate["@graph"].push(...getRoles(folder as Session));
-  }
-  roCrate["@graph"].push(...leaves);
-  addChildFileInfo(folder, folderEntry);
-  return roCrate;
 }
 
 function makeParticipantPointers(session: Session): any[] {
@@ -78,9 +112,7 @@ function makeParticipantPointers(session: Session): any[] {
     .map((name) => ({ "@id": name }));
 }
 
-function getSessionPersonElements(session: Session) {
-  // return an array of objects, each of which is a person in the session. As part of each person object, include an array of the roles they made to the session. Don't list the same person twice, even if they have multiple roles.
-  // Don't list a contribution role for a person twice, even if they have multiple contributions of that role.
+function makeEntriesFromParticipant(project: Project, session: Session) {
   const uniqueContributors: { [key: string]: Set<string> } = {};
 
   session.getAllContributionsToAllFiles().forEach((contribution) => {
@@ -92,21 +124,40 @@ function getSessionPersonElements(session: Session) {
     }
     uniqueContributors[personName].add(role);
   });
-  const template = getLeafTemplate(
-    fieldDefinitionsOfCurrentConfig.session.find(
-      (f) => f.key === "participants"
-    )!
+  const template = getRoCrateTemplate(
+    fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "person")!
   );
 
-  return Object.keys(uniqueContributors).map((name) => {
-    const personElement = processRoCrateTemplate(template, name);
+  const entriesForAllContributors: object[] = [];
+
+  Object.keys(uniqueContributors).forEach((name) => {
+    const person = project.findPerson(name)!;
+
+    // add in the ro-crate stuff like @id and @type
+    const personElement = getElementUsingTemplate(
+      template,
+      person.getIdToUseForReferences()
+    );
+
+    // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
+    makeEntriesFromObjectFields(
+      person,
+      personElement,
+      entriesForAllContributors
+    );
+
+    // remember we're building up a session object, so in this context, a person is just another entry in the session's graph
+    entriesForAllContributors.push(personElement);
+
     // add the roles this person has in the session
     personElement["role"] = Array.from(uniqueContributors[name]).map((role) => {
       return { "@id": `role_${role}` };
     });
-    return personElement;
+    entriesForAllContributors.push(personElement);
   });
+  return entriesForAllContributors;
 }
+
 // now we need an array of role elements, one for each unique role in the session
 function getRoles(session: Session) {
   const uniqueRoles = new Set<string>();
@@ -121,7 +172,7 @@ function getRoles(session: Session) {
     };
   });
 }
-function getLeafTemplate(field: any): any {
+function getRoCrateTemplate(field: any): any {
   if (field.rocrate?.handler === "languages")
     return fieldDefinitionsOfCurrentConfig.common.find(
       (f) => f.key === "language"
@@ -138,27 +189,61 @@ function getLeafTemplate(field: any): any {
 }
 
 function getFieldValues(folder: Folder, field: any): string[] {
+  if (field.omitExport) return [];
+  //console.log("getFieldValues(", field.key);
+
   if (field.rocrate?.handler === "languages") {
     return (folder as Session).getLanguageCodes(field.key);
   } else {
-    const value = folder.metadataFile?.getTextProperty(field.key, "").trim();
-    return value ? [value] : [];
+    const v = folder.metadataFile?.properties.getHasValue(field.key)
+      ? folder.metadataFile?.getTextProperty(field.key, "").trim()
+      : "";
+    return v ? [v] : [];
   }
 }
 
-function processRoCrateTemplate(template: object, value: string): any {
+function getElementUsingTemplate(template: object, value: string): object {
   const output = {};
   Object.keys(template).forEach((key) => {
-    const val = template[key];
-    output[key] = val.replace("[v]", value);
-    if (val.includes("[languageName]")) {
-      const name =
-        staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(value);
-      output[key] = output[key].replace("[languageName]", name);
-    }
+    // when we're handling person languages, those are whole objects with various properties
+    // and we handle them in getPersonLanguageElement(). But other places we just have
+    // the code, and end up in this function, where we do use the same template for languages
+    // but insted of [v], that template has [code] which we replace with the value
+    output[key] = template[key].replace("[v]", value).replace("[code]", value);
   });
+
   return output;
 }
+
+function getPersonLanguageElement(value: IPersonLanguage): object {
+  const template = fieldDefinitionsOfCurrentConfig.common.find(
+    (f) => f.key === "language"
+  )!.rocrate.template;
+  const output = {};
+  Object.keys(template).forEach((key) => {
+    let val = template[key];
+
+    // Find placeholders in the format [property]
+    val = val.replace(/\[([^\]]+)\]/g, (match, property) => {
+      let replacement;
+      if (property === "languageName") {
+        const name =
+          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+            value.code
+          );
+        replacement = val.replace("[languageName]", name);
+      } else replacement = value[property];
+      return replacement !== undefined && replacement !== ""
+        ? replacement
+        : undefined;
+    });
+
+    output[key] = val;
+  });
+
+  return output;
+}
+
 function addChildFileInfo(folder: Folder, folderEntry: object): void {
   if (folder.files.length === 0) return;
   folderEntry["hasPart"] = [];
