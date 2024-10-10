@@ -26,6 +26,9 @@ if (!app.requestSingleInstanceLock()) {
 Store.initRenderer();
 
 let win: BrowserWindow | null = null;
+
+export { win as mainWindow };
+
 // Here, you can also use other preload
 //const preload = join(__dirname, "../preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;

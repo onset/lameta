@@ -5,6 +5,7 @@ import { Project } from "../model/Project/Project";
 import { lameta_orange } from "../containers/theme";
 import { getRoCrate } from "../export/RoCrateExporter";
 import { JsonViewer } from "@textea/json-viewer";
+import FindInPage from "./FindInPage";
 
 export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
@@ -16,7 +17,7 @@ export const RoCrateView: React.FunctionComponent<{
   const [json, setJson] = React.useState<object>({});
 
   React.useEffect(() => {
-    setJson(getRoCrate(props.folder));
+    setJson(getRoCrate(props.project, props.folder));
   }, [props.project, props.folder]);
 
   return (
@@ -39,6 +40,7 @@ export const RoCrateView: React.FunctionComponent<{
         }
       `}
     >
+      <FindInPage />
       {/* <JsonView data={json} shouldExpandNode={allExpanded} style={darkStyles} /> */}
       <JsonViewer
         value={json}
@@ -46,6 +48,7 @@ export const RoCrateView: React.FunctionComponent<{
         quotesOnKeys={false}
         displayDataTypes={false}
         displaySize={false}
+        
         css={css`
           height: 100%;
           overflow-y: scroll;

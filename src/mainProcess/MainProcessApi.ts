@@ -4,6 +4,7 @@ import { app, shell } from "electron";
 import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
+import { mainWindow } from "./main";
 
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
   throw new Error(
@@ -30,6 +31,30 @@ export class MainProcessApi {
     imdiContents: string
   ): Promise<XMLValidationResult> {
     return await validateImdiAsyncInternal(app.getAppPath(), imdiContents);
+  }
+
+  private isFirstSearch: boolean = true;
+  private currentSearchText: string = "";
+
+  public findInPage(pattern: string) {
+    if (this.currentSearchText !== pattern) {
+      // New search term, start from the beginning
+      this.isFirstSearch = true;
+      this.currentSearchText = pattern;
+    }
+
+    mainWindow!.webContents.findInPage(pattern, {
+      forward: true,
+      findNext: !this.isFirstSearch
+    });
+
+    this.isFirstSearch = false;
+  }
+
+  public stopFindInPage(
+    action: "clearSelection" | "keepSelection" | "activateSelection"
+  ) {
+    mainWindow!.webContents.stopFindInPage(action);
   }
 }
 
