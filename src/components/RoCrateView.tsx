@@ -4,7 +4,7 @@ import { Folder } from "../model/Folder/Folder";
 import { Project } from "../model/Project/Project";
 import { lameta_orange } from "../containers/theme";
 import { getRoCrate } from "../export/RoCrateExporter";
-import { JsonViewer } from "@textea/json-viewer";
+import { JsonViewer, JsonViewerKeyRenderer } from "@textea/json-viewer";
 import FindInPage from "./FindInPage";
 
 export const RoCrateView: React.FunctionComponent<{
@@ -19,6 +19,12 @@ export const RoCrateView: React.FunctionComponent<{
   React.useEffect(() => {
     setJson(getRoCrate(props.project, props.folder));
   }, [props.project, props.folder]);
+
+  const KeyRenderer: JsonViewerKeyRenderer = ({ path }) => {
+    const last = path[path.length - 1];
+    return Number.isInteger(last) ? null : last;
+  };
+  KeyRenderer.when = () => true;
 
   return (
     <div
@@ -48,7 +54,11 @@ export const RoCrateView: React.FunctionComponent<{
         quotesOnKeys={false}
         displayDataTypes={false}
         displaySize={false}
-        
+        rootName={false}
+        // hide index numbers for arrays
+        keyRenderer={KeyRenderer}
+        // don't show copy buttons
+        copyButton={false}
         css={css`
           height: 100%;
           overflow-y: scroll;

@@ -45,29 +45,20 @@ const FindInPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "flex-end",
-        p: 1
+        p: 0
       }}
     >
       <TextField
         id="find-in-page"
-        variant="outlined"
+        variant="standard"
         value={searchText}
         onChange={handleChange}
         onKeyPress={handleKeyPress}
         size="small"
-        sx={{
-          mr: 1,
-          p: 0,
-          "& .MuiOutlinedInput-root": {
-            padding: "2px" // Reduce padding inside the input
-          },
-          "& .MuiInputLabel-root": {
-            transform: "translate(12px, 8px) scale(1)" // Adjust label position for compactness
-          }
-        }}
         inputRef={inputRef}
         InputProps={{
           sx: {
+            width: "100px",
             padding: "0px" // Reduce padding for the input element itself
           }
         }}

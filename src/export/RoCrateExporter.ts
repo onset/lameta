@@ -8,6 +8,7 @@ import { getMimeType } from "../model/file/FileTypeInfo";
 import { Project } from "../model/Project/Project";
 import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
 import { IPersonLanguage } from "../model/PersonLanguage";
+import _ from "lodash";
 
 // Info:
 // https://www.researchobject.org/ro-crate/
@@ -19,11 +20,18 @@ export function getRoCrate(project: Project, folder: Folder): object {
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
-    makeEntriesFromObjectFields(folder, entry, otherEntries);
-    return { entry: entry, ...otherEntries };
+    addFieldEntries(folder, entry, otherEntries);
+    addChildFileEntries(folder, entry, otherEntries);
+    removeDuplicateEntries(otherEntries);
+    return [entry, ...otherEntries];
   }
-  const roCrate: { "@context": string[]; "@graph": any[] } = {
-    "@context": ["https://w3id.org/ro/crate/1.1/context"],
+  const roCrate: { "@context": any[]; "@graph": object[] } = {
+    "@context": [
+      "https://w3id.org/ro/crate/1.2-DRAFT/context",
+      { "@vocab": "http://schema.org/" },
+      "http://purl.archive.org/language-data-commons/context.json",
+      "https://w3id.org/ldac/context"
+    ],
     "@graph": []
   };
 
@@ -42,7 +50,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
 
   const otherEntries: any[] = [];
 
-  makeEntriesFromObjectFields(folder, mainEntry, otherEntries);
+  addFieldEntries(folder, mainEntry, otherEntries);
 
   roCrate["@graph"].push(mainEntry);
   if (folder instanceof Session) {
@@ -52,13 +60,23 @@ export function getRoCrate(project: Project, folder: Folder): object {
     );
     roCrate["@graph"].push(...getRoles(folder as Session));
   }
+
+  addChildFileEntries(folder, mainEntry, otherEntries);
+  addEndingBoilerplateEntries(otherEntries);
   roCrate["@graph"].push(...otherEntries);
-  addChildFileInfo(folder, mainEntry);
   return roCrate;
+}
+function addEndingBoilerplateEntries(entries: any[]) {
+  entries.push({
+    "@id": "ro-crate-metadata.json",
+    "@type": "CreativeWork",
+    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" }
+    //"about": { "@id": "http://example.org/repository/NT1/Kalsarap" }
+  });
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
-function makeEntriesFromObjectFields(
+function addFieldEntries(
   folder: Folder,
   folderEntry: object,
   otherEntries: object[]
@@ -140,14 +158,8 @@ function makeEntriesFromParticipant(project: Project, session: Session) {
     );
 
     // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
-    makeEntriesFromObjectFields(
-      person,
-      personElement,
-      entriesForAllContributors
-    );
-
-    // remember we're building up a session object, so in this context, a person is just another entry in the session's graph
-    entriesForAllContributors.push(personElement);
+    addFieldEntries(person, personElement, entriesForAllContributors);
+    addChildFileEntries(person, personElement, entriesForAllContributors);
 
     // add the roles this person has in the session
     personElement["role"] = Array.from(uniqueContributors[name]).map((role) => {
@@ -244,7 +256,11 @@ function getPersonLanguageElement(value: IPersonLanguage): object {
   return output;
 }
 
-function addChildFileInfo(folder: Folder, folderEntry: object): void {
+function addChildFileEntries(
+  folder: Folder,
+  folderEntry: object,
+  otherEntries: object[]
+): void {
   if (folder.files.length === 0) return;
   folderEntry["hasPart"] = [];
   folder.files.forEach((file) => {
@@ -262,6 +278,33 @@ function addChildFileInfo(folder: Folder, folderEntry: object): void {
       ),
       name: fileName
     };
-    folderEntry["hasPart"].push(fileEntry);
+    otherEntries.push(fileEntry);
+    folderEntry["hasPart"].push({
+      "@id": fileName
+    });
   });
+}
+
+// e.g. we're likely to have many entries for the same language(s)
+function removeDuplicateEntries(otherEntries: object[]) {
+  const unique = _.uniqWith(otherEntries, (entry1, entry2) => {
+    if (entry1["@id"] !== entry2["@id"]) {
+      return false;
+    }
+    // OK, so the @id is the same. Are the contents the same?
+    if (!_.isEqual(entry1, entry2)) {
+      // I can't immediately think of a way to make this happen,
+      // so just leaving this here to point it out if it ever does.
+      throw new Error(`Conflicting entries found for id ${entry1["@id"]}`);
+      // If this became a problem, I think semantically we would have to
+      // do something more complicated in coming up with the @ids. E.g.
+      // as we add each new entry, we could check if an entry with that
+      // @id already exists, If it does but has a different value, then
+      // we could append/increment an index to the @id.
+    }
+    return true;
+  });
+
+  otherEntries.length = 0;
+  otherEntries.push(...unique);
 }

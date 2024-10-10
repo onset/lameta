@@ -37,6 +37,11 @@ export class MainProcessApi {
   private currentSearchText: string = "";
 
   public findInPage(pattern: string) {
+    if (pattern.trim() === "") {
+      this.currentSearchText = "";
+      mainWindow!.webContents.stopFindInPage("clearSelection");
+      return;
+    }
     if (this.currentSearchText !== pattern) {
       // New search term, start from the beginning
       this.isFirstSearch = true;

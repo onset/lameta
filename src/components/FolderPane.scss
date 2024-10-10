@@ -11,7 +11,7 @@
     background-color: transparent;
   }
   .react-tabs__tab-panel--selected {
-    padding: 8px;
+    padding-left: 8px;
     flex-grow: 1;
 
     display: flex;
@@ -33,5 +33,4 @@
     object-position: top;
     max-height: 100%; // <-- this is key to fitting within the available space
   }
-
 }
