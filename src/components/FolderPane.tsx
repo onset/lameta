@@ -31,7 +31,7 @@ import { FileStatusBlock } from "../model/file/FileStatus";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
-import { RoCrateView } from "./RoCrateView";
+import { RoCrateView } from "./RoCrate/RoCrateView";
 import userSettingsSingleton from "../other/UserSettings";
 
 export interface IProps {

@@ -42,10 +42,15 @@ export function getRoCrate(project: Project, folder: Folder): object {
   // roCrate["@graph"].push(rootDataset);
 
   const mainEntry = {
-    "@id": `${project.filePrefix}/${folder.filePrefix}`,
-    "@type": ["Data", "Object", "RepositoryObject"],
-    conformsTo: { "@id": "https://w3id.org/ldac/profile#Object" },
-    name: folder.metadataFile?.getTextProperty("title")
+    "@id": "./", //`${project.filePrefix}/${folder.filePrefix}`,
+    "@type": ["Dataset", "Object", "RepositoryObject"],
+    conformsTo: {
+      "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+    },
+    name: folder.metadataFile?.getTextProperty("title"),
+    publisher: { "@id": "https://github.com/onset/lameta" }, // review: we're not actually publishing
+
+    datePublished: new Date().toISOString() // review: we're not actually publishing
   };
 
   const otherEntries: any[] = [];
@@ -72,8 +77,8 @@ function addEndingBoilerplateEntries(entries: any[]) {
   entries.push({
     "@id": "ro-crate-metadata.json",
     "@type": "CreativeWork",
-    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" }
-    //"about": { "@id": "http://example.org/repository/NT1/Kalsarap" }
+    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+    about: { "@id": "./" }
   });
 }
 
@@ -101,7 +106,6 @@ function addFieldEntries(
     if (field.rocrate) {
       const leafTemplate = getRoCrateTemplate(field);
       values.forEach((c: string) => {
-        console.log("value:", c);
         // For each value, create a graph entry that is the template, filled in with the value
         const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
         otherEntries.push(leaf);
@@ -310,7 +314,5 @@ function getUniqueEntries(otherEntries: object[]) {
     return true;
   });
 
-  console.log("Removed duplicate entries");
-  console.log(JSON.stringify(otherEntries, null, 2));
   return unique;
 }

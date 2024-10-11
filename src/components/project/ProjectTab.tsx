@@ -18,7 +18,7 @@ import { createProjectTheme } from "../../containers/theme";
 import { ParadisecView } from "../ParadisecView";
 import { LametaXmlView } from "../lametaXmlView";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
-import { RoCrateView } from "../RoCrateView";
+import { RoCrateView } from "../RoCrate/RoCrateView";
 
 interface IProps {
   project: Project;
