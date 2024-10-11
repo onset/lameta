@@ -14,11 +14,12 @@ export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
   project: Project;
-
   folder: Folder;
+  doValidate: boolean;
 }> = (props) => {
   const [json, setJson] = React.useState<object>({});
-  const [validation, setValidation] = React.useState<object[]>([]);
+  const [validation, setValidation] =
+    React.useState<object[] | undefined>(undefined);
 
   React.useEffect(() => {
     const json = getRoCrate(props.project, props.folder);
@@ -27,15 +28,17 @@ export const RoCrateView: React.FunctionComponent<{
       "c:/dev/ldac-profile/lameta.json",
       JSON.stringify(json, null, 2)
     );
-    let errors;
-    try {
-      errors = validate(json);
-    } catch (e) {
-      //throw e;
-      errors = [{ message: `${e.message} ${e.stack}` }];
+    if (props.doValidate) {
+      let errors;
+      try {
+        errors = validate(json);
+      } catch (e) {
+        //throw e;
+        errors = [{ message: `${e.message} ${e.stack}` }];
+      }
+      setValidation(errors);
     }
-    setValidation(errors);
-  }, [props.project, props.folder]);
+  }, [props.project, props.folder, props.doValidate]);
 
   return (
     <div
@@ -58,17 +61,31 @@ export const RoCrateView: React.FunctionComponent<{
       `}
     >
       <FindInPage />
-      <Tabs>
+      <Tabs
+        css={css`
+          height: 100%;
+        `}
+      >
         <TabList>
           <Tab>Ro-Crate</Tab>
-          <Tab>{`Validation Results ⛔${validation?.errors?.length} / ⚠️${validation?.warnings?.length} / ℹ️ ${validation?.info?.length}`}</Tab>
+
+          {validation && (
+            <Tab>{`Validation Results  ⛔${validation?.errors?.length} / ⚠️${validation?.warnings?.length} / ℹ️ ${validation?.info?.length}`}</Tab>
+          )}
         </TabList>
 
         <TabPanel>
           <JsonView value={json} />
         </TabPanel>
         <TabPanel>
-          <ValidationResultsList list={validation} />
+          <div
+            css={css`
+              max-height: 600px; // todo. The parent container seems to not be bounded so 100% here just takes us off the screen
+              overflow-y: auto;
+            `}
+          >
+            <ValidationResultsList list={validation} />
+          </div>
         </TabPanel>
       </Tabs>
     </div>

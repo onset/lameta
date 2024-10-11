@@ -1,11 +1,14 @@
 @import "../../colors";
 
+form.project {
+  max-width: 600px; // beyond that, the fields get hard to read
+}
 .project {
   //background-color: #F0F0F0;
   height: 100%;
   color: black;
   display: flex; // put the tabs on the left
-  max-width: 800px;
+  //max-width: 800px;
   //left side
   & > ul {
     width: 200px;
@@ -18,7 +21,7 @@
       width: 100%;
     }
   }
-  .react-tabs__tab-list {
+  & > .react-tabs__tab-list {
     background-color: white;
     width: 200px;
     flex-shrink: 0;

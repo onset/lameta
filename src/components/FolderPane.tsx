@@ -207,7 +207,11 @@ const FileTabs: React.FunctionComponent<
     GetOtherConfigurationSettings().showRoCrate ? (
       <TabPanel>
         <ErrorBoundary>
-          <RoCrateView folder={props.folder} project={props.project} />
+          <RoCrateView
+            folder={props.folder}
+            project={props.project}
+            doValidate={props.folder instanceof Session}
+          />
         </ErrorBoundary>
       </TabPanel>
     ) : (

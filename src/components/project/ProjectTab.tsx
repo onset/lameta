@@ -270,9 +270,9 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         {userSettings.DeveloperMode ? (
           <TabPanel>
             <RoCrateView
-              target={props.project}
               project={props.project}
               folder={props.project}
+              doValidate={true}
             />
           </TabPanel>
         ) : (

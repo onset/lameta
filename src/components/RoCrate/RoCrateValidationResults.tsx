@@ -16,9 +16,9 @@ const ValidationResult: React.FC<{
   problem: ResultEntry;
 }> = (props) => {
   return (
-    <Card style={{ width: "100%", marginBottom: "20px" }}>
-      <CardContent>
-        <Grid container spacing={1} wrap="wrap">
+    <Card style={{ maxWidth: "600px", marginBottom: "10px" }}>
+      <CardContent style={{ padding: "10px", width: "100%" }}>
+        <Grid container spacing={1} wrap="wrap" style={{ width: "100%" }}>
           <Grid item>
             {props.kind === "error" && <ErrorIcon color="error" />}
             {props.kind === "info" && <InfoIcon color="success" />}
@@ -35,7 +35,7 @@ const ValidationResult: React.FC<{
             </Typography>
           </Grid>
         </Grid>
-        <Typography variant="body2" color="textSecondary">
+        <Typography variant="body2" color="black">
           {props.problem.clause}
         </Typography>
       </CardContent>
@@ -47,7 +47,18 @@ const ValidationResultsList: React.FC<{ list: { errors; info; warnings } }> = (
   props
 ) => {
   return (
-    <Grid container spacing={0} style={{ width: "100%", margin: 0 }}>
+    <Grid
+      container
+      direction="column"
+      spacing={0}
+      style={{
+        width: "100%",
+        margin: 0,
+        maxHeight: "100%",
+        overflowY: "auto"
+      }}
+      wrap="nowrap"
+    >
       {props.list.errors.map((item, index) => (
         <Grid item key={index}>
           <ValidationResult kind={"error"} problem={item as ResultEntry} />
