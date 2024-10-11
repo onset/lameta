@@ -57,8 +57,6 @@ export const RoCrateView: React.FunctionComponent<{
         rootName={false}
         // hide index numbers for arrays
         keyRenderer={KeyRenderer}
-        // don't show copy buttons
-        copyButton={false}
         css={css`
           height: 100%;
           overflow-y: scroll;

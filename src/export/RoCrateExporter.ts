@@ -22,8 +22,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
     const otherEntries: object[] = [];
     addFieldEntries(folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
-    removeDuplicateEntries(otherEntries);
-    return [entry, ...otherEntries];
+    return [entry, ...getUniqueEntries(otherEntries)];
   }
   const roCrate: { "@context": any[]; "@graph": object[] } = {
     "@context": [
@@ -35,16 +34,17 @@ export function getRoCrate(project: Project, folder: Folder): object {
     "@graph": []
   };
 
-  const rootDataset = {
-    "@type": "Dataset",
-    "@id": "./",
-    name: folder.metadataFile?.getTextProperty("title")
-  };
-  roCrate["@graph"].push(rootDataset);
+  // const rootDataset = {
+  //   "@type": "Dataset",
+  //   "@id": "./",
+  //   name: folder.metadataFile?.getTextProperty("title")
+  // };
+  // roCrate["@graph"].push(rootDataset);
 
   const mainEntry = {
-    "@id": "./", // TODO
-    "@type": "Dataset", // TODO
+    "@id": `${project.filePrefix}/${folder.filePrefix}`,
+    "@type": ["Data", "Object", "RepositoryObject"],
+    conformsTo: { "@id": "https://w3id.org/ldac/profile#Object" },
     name: folder.metadataFile?.getTextProperty("title")
   };
 
@@ -63,7 +63,9 @@ export function getRoCrate(project: Project, folder: Folder): object {
 
   addChildFileEntries(folder, mainEntry, otherEntries);
   addEndingBoilerplateEntries(otherEntries);
+
   roCrate["@graph"].push(...otherEntries);
+  roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
   return roCrate;
 }
 function addEndingBoilerplateEntries(entries: any[]) {
@@ -285,26 +287,30 @@ function addChildFileEntries(
   });
 }
 
-// e.g. we're likely to have many entries for the same language(s)
-function removeDuplicateEntries(otherEntries: object[]) {
-  const unique = _.uniqWith(otherEntries, (entry1, entry2) => {
-    if (entry1["@id"] !== entry2["@id"]) {
+function getUniqueEntries(otherEntries: object[]) {
+  const seen = new Map();
+  const unique = otherEntries.filter((entry) => {
+    const id = entry["@id"];
+    if (seen.has(id)) {
+      //      const existingEntry = seen.get(id);
+      // OK, so the @id is the same. Are the contents the same?
+      // if (!_.isEqual(existingEntry, entry)) {
+      //   // I can't immediately think of a way to make this happen,
+      //   // so just leaving this here to point it out if it ever does.
+      //   throw new Error(`Conflicting entries found for id ${id}`);
+      //   // If this became a problem, I think semantically we would have to
+      //   // do something more complicated in coming up with the @ids. E.g.
+      //   // as we add each new entry, we could check if an entry with that
+      //   // @id already exists, If it does but has a different value, then
+      //   // we could append/increment an index to the @id.
+      // }
       return false;
     }
-    // OK, so the @id is the same. Are the contents the same?
-    if (!_.isEqual(entry1, entry2)) {
-      // I can't immediately think of a way to make this happen,
-      // so just leaving this here to point it out if it ever does.
-      throw new Error(`Conflicting entries found for id ${entry1["@id"]}`);
-      // If this became a problem, I think semantically we would have to
-      // do something more complicated in coming up with the @ids. E.g.
-      // as we add each new entry, we could check if an entry with that
-      // @id already exists, If it does but has a different value, then
-      // we could append/increment an index to the @id.
-    }
+    seen.set(id, entry);
     return true;
   });
 
-  otherEntries.length = 0;
-  otherEntries.push(...unique);
+  console.log("Removed duplicate entries");
+  console.log(JSON.stringify(otherEntries, null, 2));
+  return unique;
 }

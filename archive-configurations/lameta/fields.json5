@@ -291,6 +291,14 @@
       tabIndex: 4
     },
     {
+      key: "description",
+      xmlTag: "Description",
+      englishLabel: "Description",
+      xmlTag: "synopsis",
+      multipleLines: true,
+      tabIndex: 5
+    },
+    {
       key: "languages",
       xmlTag: "languages",
       type: "languageChoices",
@@ -380,14 +388,7 @@
       description: "If the access is not open/free, use this to explain why.",
       tabIndex: 9
     },
-    {
-      key: "description",
-      xmlTag: "Description",
-      englishLabel: "Description",
-      xmlTag: "synopsis",
-      multipleLines: true,
-      tabIndex: 5
-    },
+
     {
       key: "status",
       xmlTag: "Status",
