@@ -9,6 +9,8 @@ import { Project } from "../model/Project/Project";
 import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import _ from "lodash";
+import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
+import { IChoice } from "../model/field/Field";
 
 // Info:
 // https://www.researchobject.org/ro-crate/
@@ -24,6 +26,18 @@ export function getRoCrate(project: Project, folder: Folder): object {
     addChildFileEntries(folder, entry, otherEntries);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
+
+  if (folder instanceof Project) {
+    // TODO
+    const entry = {};
+    const otherEntries: object[] = [];
+    addFieldEntries(folder, entry, otherEntries);
+    addChildFileEntries(folder, entry, otherEntries);
+    return [entry, ...getUniqueEntries(otherEntries)];
+  }
+
+  // otherwise, it's a session
+  const session = folder as Session;
   const roCrate: { "@context": any[]; "@graph": object[] } = {
     "@context": [
       "https://w3id.org/ro/crate/1.2-DRAFT/context",
@@ -58,11 +72,6 @@ export function getRoCrate(project: Project, folder: Folder): object {
   };
   const boilerplateSessionGraph = [
     {
-      "@id": "#license",
-      "@type": "CreativeWork",
-      name: "See access condition details"
-    },
-    {
       "@id": "ro-crate-metadata.json",
       "@type": "CreativeWork",
       conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
@@ -85,11 +94,40 @@ export function getRoCrate(project: Project, folder: Folder): object {
     roCrate["@graph"].push(...getRoles(folder as Session));
   }
 
+  // REVIEW: not clear really what we're going to do with license
+  const license: any = {
+    "@id": "#license",
+    "@type": "CreativeWork",
+    name: session.metadataFile?.getTextProperty("access")
+  };
+  const access = session.metadataFile?.getTextProperty("access");
+  if (access === "unspecified" || access === "" || access === undefined) {
+    license.name = "unspecified";
+  } else {
+    addFieldIfNotEmpty(folder, "access", "access", license);
+    addFieldIfNotEmpty(folder, "accessDescription", "explanation", license);
+    const accessDescription = getDescriptionFromAccessChoice(
+      access,
+      project.authorityLists
+    );
+    license.description = accessDescription;
+  }
+
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  roCrate["@graph"].push(...boilerplateSessionGraph, ...otherEntries);
+  roCrate["@graph"].push(license, ...boilerplateSessionGraph, ...otherEntries);
   roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
   return roCrate;
+}
+
+function addFieldIfNotEmpty(
+  folder: Folder,
+  fieldKey: string,
+  outputProperty: string,
+  entry: any
+) {
+  const value = folder.metadataFile?.getTextProperty(fieldKey, "").trim();
+  if (value) entry[outputProperty] = value;
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
@@ -325,4 +363,15 @@ function getUniqueEntries(otherEntries: object[]) {
   });
 
   return unique;
+}
+
+function getDescriptionFromAccessChoice(
+  choiceLabel: string,
+  authorityLists: AuthorityLists
+): string {
+  const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
+    (c: IChoice) => c.label === choiceLabel
+  );
+  if (!choice) return "";
+  return choice.description;
 }
