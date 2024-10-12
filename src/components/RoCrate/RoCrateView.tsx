@@ -9,6 +9,7 @@ import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { ValidationResultsList } from "./RoCrateValidationResults";
 import { validate } from "./LDAC-RoCrate-Profile.es.js";
 import * as fs from "fs";
+import { Box, Divider, Grid } from "@mui/material";
 
 export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
@@ -61,29 +62,58 @@ export const RoCrateView: React.FunctionComponent<{
       `}
     >
       <FindInPage />
-      <Tabs
-        css={css`
-          height: 100%;
-          .react-tabs__tab-panel {
-            max-height: 100%;
-          }
-        `}
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          maxHeight: "100%",
+          overflow: "hidden" // Prevents overflow from the container
+        }}
       >
-        <TabList>
-          <Tab>Ro-Crate</Tab>
+        <Grid
+          container
+          spacing={0}
+          sx={{
+            flexGrow: 1,
+            //maxHeight: "100%",
+            overflowY: "hidden"
+          }}
+        >
+          {/* First column */}
+          <Grid
+            item
+            xs={12}
+            md={6}
+            sx={{
+              flexGrow: 1,
+              maxHeight: "100%",
+              overflowY: "auto" // Makes the column scrollable if content overflows
+            }}
+          >
+            <JsonView value={json} />
+          </Grid>
 
-          {validation && (
-            <Tab>{`Validation Results  ⛔${validation?.errors?.length} / ⚠️${validation?.warnings?.length} / ℹ️ ${validation?.info?.length}`}</Tab>
-          )}
-        </TabList>
-
-        <TabPanel>
-          <JsonView value={json} />
-        </TabPanel>
-        <TabPanel>
-          <ValidationResultsList list={validation} />
-        </TabPanel>
-      </Tabs>
+          {/* Second column */}
+          <Grid
+            item
+            xs={12}
+            md={6}
+            sx={{
+              paddingLeft: 2,
+              flexGrow: 1,
+              maxHeight: "100%",
+              overflowY: "auto" // Makes the column scrollable if content overflows
+            }}
+          >
+            {validation && (
+              <div>
+                <div>{`Validation Results  ⛔${validation?.errors?.length} / ⚠️${validation?.warnings?.length} / ℹ️ ${validation?.info?.length}`}</div>
+                <ValidationResultsList list={validation} />
+              </div>
+            )}
+          </Grid>
+        </Grid>
+      </Box>
     </div>
   );
 };
