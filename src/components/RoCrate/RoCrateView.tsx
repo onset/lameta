@@ -24,14 +24,14 @@ export const RoCrateView: React.FunctionComponent<{
   React.useEffect(() => {
     const json = getRoCrate(props.project, props.folder);
     setJson(json);
-    fs.writeFileSync(
-      "c:/dev/ldac-profile/lameta.json",
-      JSON.stringify(json, null, 2)
-    );
     if (props.doValidate) {
       let errors;
       try {
         errors = validate(json);
+        // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
+        errors.errors = errors.errors.filter((error) => {
+          return error.property !== "license";
+        });
       } catch (e) {
         //throw e;
         errors = [{ message: `${e.message} ${e.stack}` }];
@@ -64,6 +64,9 @@ export const RoCrateView: React.FunctionComponent<{
       <Tabs
         css={css`
           height: 100%;
+          .react-tabs__tab-panel {
+            max-height: 100%;
+          }
         `}
       >
         <TabList>
@@ -78,14 +81,7 @@ export const RoCrateView: React.FunctionComponent<{
           <JsonView value={json} />
         </TabPanel>
         <TabPanel>
-          <div
-            css={css`
-              max-height: 600px; // todo. The parent container seems to not be bounded so 100% here just takes us off the screen
-              overflow-y: auto;
-            `}
-          >
-            <ValidationResultsList list={validation} />
-          </div>
+          <ValidationResultsList list={validation} />
         </TabPanel>
       </Tabs>
     </div>

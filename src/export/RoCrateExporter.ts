@@ -41,7 +41,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
   // };
   // roCrate["@graph"].push(rootDataset);
 
-  const mainEntry = {
+  const mainSessionEntry = {
     "@id": "./", //`${project.filePrefix}/${folder.filePrefix}`,
     "@type": ["Dataset", "Object", "RepositoryObject"],
     conformsTo: {
@@ -50,36 +50,46 @@ export function getRoCrate(project: Project, folder: Folder): object {
     name: folder.metadataFile?.getTextProperty("title"),
     publisher: { "@id": "https://github.com/onset/lameta" }, // review: we're not actually publishing
 
-    datePublished: new Date().toISOString() // review: we're not actually publishing
+    datePublished: new Date().toISOString(), // review: we're not actually publishing
+
+    license: {
+      "@id": "#license"
+    }
   };
+  const boilerplateSessionGraph = [
+    {
+      "@id": "#license",
+      "@type": "CreativeWork",
+      name: "See access condition details"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+      about: { "@id": "./" }
+    }
+  ];
 
   const otherEntries: any[] = [];
 
-  addFieldEntries(folder, mainEntry, otherEntries);
+  addFieldEntries(folder, mainSessionEntry, otherEntries);
 
-  roCrate["@graph"].push(mainEntry);
+  roCrate["@graph"].push(mainSessionEntry);
   if (folder instanceof Session) {
-    mainEntry["contributor"] = makeParticipantPointers(folder as Session);
+    mainSessionEntry["contributor"] = makeParticipantPointers(
+      folder as Session
+    );
     roCrate["@graph"].push(
       ...makeEntriesFromParticipant(project, folder as Session)
     );
     roCrate["@graph"].push(...getRoles(folder as Session));
   }
 
-  addChildFileEntries(folder, mainEntry, otherEntries);
-  addEndingBoilerplateEntries(otherEntries);
+  addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  roCrate["@graph"].push(...otherEntries);
+  roCrate["@graph"].push(...boilerplateSessionGraph, ...otherEntries);
   roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
   return roCrate;
-}
-function addEndingBoilerplateEntries(entries: any[]) {
-  entries.push({
-    "@id": "ro-crate-metadata.json",
-    "@type": "CreativeWork",
-    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
-    about: { "@id": "./" }
-  });
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
