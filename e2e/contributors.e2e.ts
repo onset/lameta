@@ -24,20 +24,21 @@ test.describe("FileList", () => {
     await project.addSession();
     await project.goToContributorsOfThisSession();
     await page.keyboard.press("Tab");
-    await page.keyboard.type("foo bar");
+    await page.keyboard.type("foo");
     await page.keyboard.press("Enter");
     await project.goToNotesOfThisSession();
     await project.goToContributorsOfThisSession();
-    // reg exp to match starting with "foo bar ❓"
-    const startsWithFooBar = new RegExp("^foo bar ❓");
-    await page.getByText(startsWithFooBar).click();
+    // open the dropdown
+    const name = "foo ❓";
+    await page.getByRole("gridcell", { name: name }).click();
+    await page.getByRole("option", { name: name }).click();
 
-    // now try to use it in a new session
+    //    now try to use it in a new session
     await project.addSession();
     await project.goToContributorsOfThisSession();
     await page.keyboard.press("Tab");
     await page.keyboard.press("Control+ArrowDown");
-    await page.getByText(startsWithFooBar).click();
+    await page.getByText(name).click();
 
     await lameta.softReload();
 
@@ -49,6 +50,6 @@ test.describe("FileList", () => {
     // using the locator, find the first element with class "PersonChooser"
     await page.locator(".PersonChooser").click();
     await page.keyboard.press("Control+ArrowDown");
-    await page.getByText(startsWithFooBar).click();
+    await page.getByText(name).click();
   });
 });
