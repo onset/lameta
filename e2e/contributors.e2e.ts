@@ -26,6 +26,12 @@ test.describe("FileList", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.type("foo");
     await page.keyboard.press("Enter");
+
+    // regression test that there is not a second item named just "foo" instead of "foo ?"
+    await page.locator(".PersonChooser").first().click();
+    await page.keyboard.press("Control+ArrowDown");
+    await expect(page.getByText("foo", { exact: true })).toHaveCount(0);
+
     await project.goToNotesOfThisSession();
     await project.goToContributorsOfThisSession();
     // open the dropdown
@@ -38,11 +44,10 @@ test.describe("FileList", () => {
     await project.goToContributorsOfThisSession();
     await page.keyboard.press("Tab");
     await page.keyboard.press("Control+ArrowDown");
+
     await page.getByText(name).click();
 
     await lameta.softReload();
-
-    // pause for a moment to see the result
 
     await project.goToSessions();
     await project.addSession();
