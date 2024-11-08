@@ -1,6 +1,4 @@
 import { css } from "@emotion/react";
-/* removed emotion jsx declaration */
-
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
