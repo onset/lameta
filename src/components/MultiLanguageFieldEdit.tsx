@@ -40,17 +40,18 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
         backgroundColor: "white",
 
         border: "none",
-        color: "transparent", // hide the "x" unless the mouse is in us
+        '[role="button"]': {
+          color: "transparent" // hide the "x" unless we are hovering
+        },
         div: {
           paddingLeft: 0,
           fontSize: "1rem" //should match $default-font-size: 13px;
         },
 
         ":hover": {
-          color: "lightgray" // show the "x"
-          // span: {
-          //   color: "lightgray", //go ahead and show it
-          // },
+          '[role="button"]': {
+            color: "lightgray" // show the "x"
+          }
         }
       };
     },
