@@ -34,6 +34,7 @@ export const OptionWithTooltip = (
       styles={{ display: "inline" }}
       background={"#486BAD"}
       color={"white"}
+      hoverDelay={500}
     >
       <div
         {...innerProps} // Add this line to handle clicks and other events

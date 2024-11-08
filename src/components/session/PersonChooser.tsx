@@ -23,7 +23,7 @@ class PersonChooser extends React.Component<IProps> {
 
   public render() {
     const customStyles = {
-      container: (styles, { data }) => {
+      container: (styles: any) => {
         return {
           ...styles,
           border: this.props.highlight ? "solid 2px " + saymore_orange : "none"

@@ -1,9 +1,19 @@
 import { css } from "@emotion/react";
-/* removed emotion jsx declaration */
-
 import { default as React } from "react";
+import { MultiValueGenericProps } from "react-select";
+
 const saymore_orange = "#e69664";
-export const LanguagePill = ({ children, data, innerProps, isDisabled }) => {
+
+interface LanguageData {
+  label: string;
+  value: string;
+}
+
+export const LanguagePill = ({
+  children,
+  data,
+  innerProps
+}: MultiValueGenericProps<LanguageData>) => {
   return (
     <div
       {...innerProps}

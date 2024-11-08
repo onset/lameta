@@ -95,7 +95,7 @@ export const MultiLanguageFieldEdit: React.FunctionComponent<
       <label>{props.field.labelInUILanguage}</label>
 
       <AsyncSelect
-        tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
+        tabIndex={props.tabIndex || undefined}
         name={props.field.labelInUILanguage}
         components={{
           MultiValueLabel: LanguagePill,
