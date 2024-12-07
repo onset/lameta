@@ -13,15 +13,15 @@ import {
 } from "../other/localization";
 import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
+import { archiveUsesImdi } from "../model/Project/Project";
 
 export const FieldLabel: React.FunctionComponent<{
   fieldDef: FieldDefinition;
   htmlFor?: string; // aria for accessibility (react requires 'htmlFor')
 }> = observer((props) => {
   let tooltip = translateTooltip(props.fieldDef);
-  if (userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi) {
-    tooltip =
-      ("" && tooltip) + " " + translateTooltipNotice("Not important for IMDI.");
+  if (archiveUsesImdi() && props.fieldDef.markAsNotImdi) {
+    tooltip = tooltip + " " + translateTooltipNotice("Not important for IMDI.");
   }
   const specialInfo = translateSpecialInfo(props.fieldDef);
 
@@ -30,9 +30,7 @@ export const FieldLabel: React.FunctionComponent<{
       htmlFor={props.htmlFor}
       style={{ display: "inline-block" }}
       className={
-        userSettingsSingleton.IMDIMode && props.fieldDef.markAsNotImdi
-          ? "markAsNotImdi"
-          : ""
+        archiveUsesImdi() && props.fieldDef.markAsNotImdi ? "markAsNotImdi" : ""
       }
     >
       {translateFieldLabel(props.fieldDef)}

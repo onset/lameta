@@ -85,10 +85,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
 
   function determineValidationProblemsMessage() {
     const pendingNewName = getNewFileName();
-    const sanitizedForArchive = sanitizeForArchive(
-      pendingNewName,
-      userSettingsSingleton.IMDIMode
-    );
+    const sanitizedForArchive = sanitizeForArchive(pendingNewName);
     let m = "";
     if (pendingNewName !== sanitizeFilename(pendingNewName)) {
       m = t`Some operating systems would not allow that name.`;

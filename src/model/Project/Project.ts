@@ -38,6 +38,7 @@ import { setCurrentProjectId } from "./MediaFolderAccess";
 import { CapitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
 
 let sCurrentProject: Project | null = null;
 
@@ -568,7 +569,7 @@ export class Project extends Folder {
     folderKind: string
   ) {
     let msg = "";
-    const wouldBeFolderName = sanitize(value);
+    const wouldBeFolderName = sanitizeForArchive(value);
 
     if (value.trim().length === 0) {
       msg = t`The ${fieldNameInUiLanguage} cannot be empty`;
@@ -994,3 +995,9 @@ function NewGuid() {
 //   }
 //   return setMediaFolderOrEmptyForProjectAndMachine(id, path);
 // }
+
+export function archiveUsesImdi(): boolean {
+  return sCurrentProject?.accessProtocol === "ELAR";
+}
+
+initializeSanitizeForArchive(archiveUsesImdi);

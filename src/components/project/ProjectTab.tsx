@@ -41,7 +41,7 @@ export const ProjectTab = observer(
             <Tab className={"tab-project-other-docs"}>
               <Trans>Other Documents</Trans>
             </Tab>
-            {userSettings.IMDIMode ? (
+            {userSettings.ShowIMDI ? (
               <Tab className={"tab-project-imdi"}>
                 IMDI {/* don't translate  */}
               </Tab>
@@ -111,7 +111,7 @@ export const ProjectTab = observer(
               <br />
             </FolderPane>
           </TabPanel>
-          {userSettings.IMDIMode ? (
+          {userSettings.ShowIMDI ? (
             <TabPanel>
               <ImdiView
                 target={this.props.project}

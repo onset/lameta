@@ -152,7 +152,7 @@ const FileTabs: React.FunctionComponent<
       />
     </TabPanel>
   );
-  const imdiTab = userSettings.IMDIMode ? (
+  const imdiTab = userSettings.ShowIMDI ? (
     <Tab>IMDI {/* don't translate  */}</Tab>
   ) : (
     <></>
@@ -163,7 +163,7 @@ const FileTabs: React.FunctionComponent<
     <></>
   );
 
-  const imdiPanel = userSettings.IMDIMode ? (
+  const imdiPanel = userSettings.ShowIMDI ? (
     <TabPanel>
       <ErrorBoundary>
         <ImdiView

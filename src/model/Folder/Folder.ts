@@ -207,8 +207,7 @@ export abstract class Folder {
         return;
       }
       const n = sanitizeForArchive(
-        newFileName ? newFileName : Path.basename(pathToOriginalFile),
-        userSettingsSingleton.IMDIMode
+        newFileName ? newFileName : Path.basename(pathToOriginalFile)
       );
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
@@ -514,8 +513,7 @@ export abstract class Folder {
 
   public getNeedRenameOfFolder(): boolean {
     const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName(),
-      userSettingsSingleton.IMDIMode
+      this.textValueThatControlsFolderName()
     );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
@@ -526,8 +524,7 @@ export abstract class Folder {
 
   public nameMightHaveChanged(): boolean {
     const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName(),
-      userSettingsSingleton.IMDIMode
+      this.textValueThatControlsFolderName()
     );
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.

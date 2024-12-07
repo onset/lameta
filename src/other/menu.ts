@@ -272,16 +272,16 @@ export default class LametaMenu {
           ]
         },
         {
-          label: t`IMDI Mode`,
+          label: t`Show IMDI previews`,
           // tooltip only works in macos
           tooltip:
-            "Show IMDI output preview panels, restrict filenames, and indicate which fields don't have direct IMDI mappings",
+            "Show IMDI output preview panels and indicate which fields don't have direct IMDI mappings",
           type: "checkbox",
-          checked: userSettings.IMDIMode,
-          click: () => (userSettings.IMDIMode = !userSettings.IMDIMode)
+          checked: userSettings.ShowIMDI,
+          click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI)
         },
         {
-          label: t`PARADISEC Mode`,
+          label: t`Show PARADISEC previews`,
           // tooltip only works in macos
           tooltip: "Show PARADISEC output preview panels",
           type: "checkbox",

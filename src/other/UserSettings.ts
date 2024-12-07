@@ -25,7 +25,7 @@ const kFontZoomStepSize = 0.2;
 export class UserSettings {
   private store: Store | FakeStore;
 
-  private imdiMode: boolean;
+  private showIMDI: boolean; // don't confuse this with the IMDI-related behavior that comes with ELAR. This should only be used for viewing, not behavior.
   private paradisecMode: boolean;
   private howUsing: string;
   public uiFontZoom: number;
@@ -36,9 +36,9 @@ export class UserSettings {
   constructor() {
     makeObservable<
       UserSettings,
-      "imdiMode" | "paradisecMode" | "howUsing" | "sendErrors"
+      "showIMDI" | "paradisecMode" | "howUsing" | "sendErrors"
     >(this, {
-      imdiMode: observable,
+      showIMDI: observable,
       paradisecMode: observable,
       howUsing: observable,
       uiFontZoom: observable,
@@ -91,7 +91,8 @@ export class UserSettings {
           });
     this.sendErrors = process.env?.NODE_ENV === "production"; // developer has a menu that can toggle this
 
-    this.imdiMode = this.store.get("imdiMode") || false;
+    // the "imdiMode" here is legacy, so we don't want to break it by changing to "showIMDI"
+    this.showIMDI = this.store.get("imdiMode") || false;
     this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
@@ -109,12 +110,12 @@ export class UserSettings {
     this.sendErrors = doSend;
   }
 
-  public get IMDIMode() {
+  public get ShowIMDI() {
     return this.store.get("imdiMode", false);
   }
-  public set IMDIMode(show: boolean) {
-    this.imdiMode = show;
-    this.store.set("imdiMode", this.imdiMode);
+  public set ShowIMDI(show: boolean) {
+    this.showIMDI = show;
+    this.store.set("imdiMode", this.showIMDI);
   }
   public get ParadisecMode() {
     return this.paradisecMode;

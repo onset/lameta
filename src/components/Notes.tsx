@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { InfoAffordance } from "./InfoAffordance";
-import userSettingsSingleton from "../other/UserSettings";
 import { css } from "@emotion/react";
 import { Trans, t } from "@lingui/macro";
+import { archiveUsesImdi } from "../model/Project/Project";
 interface IProps {
   field: Field;
 }
@@ -22,7 +22,7 @@ export const Notes: React.FunctionComponent<{
         overflow: auto;
       `}
     >
-      {userSettingsSingleton.IMDIMode && (
+      {archiveUsesImdi() && (
         <InfoAffordance
           css={css`
             margin-left: auto;

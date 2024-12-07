@@ -1,9 +1,6 @@
 import { expect } from "vitest";
-
-//const XPATH = require("xpath");
 import XPATH from "xpath";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
-import { N } from "vitest/dist/reporters-5f784f42.js";
 
 let resultXml: string;
 let resultDom: Document;

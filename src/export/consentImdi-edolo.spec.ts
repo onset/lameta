@@ -77,7 +77,10 @@ describe("Consent Form Inclusion", () => {
     expect(count("METATRANSCRIPT/Session/MDGroup/Actors/Actor")).toBe(2);
   });
 
-  it("There should be 2 consent files in the ConsentDocuments folder", () => {
+  it("There should be 2 consent files in the ConsentDocuments folder", async () => {
+    // pause for 2 seconds
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     expect(
       fs.existsSync(
         Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG")

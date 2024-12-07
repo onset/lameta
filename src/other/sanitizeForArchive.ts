@@ -1,12 +1,21 @@
 const sanitizeFilename = require("sanitize-filename");
 const ASCIIFolder = require("fold-to-ascii");
 
+// This weirdness is to break a circular dependency that we get if we just import the function directly.
+let _archiveUsesImdi: () => boolean = () => false;
+export function initializeSanitizeForArchive(fn: () => boolean) {
+  _archiveUsesImdi = fn;
+}
+
 export function sanitizeForArchive(
   name: string,
-  allowOnlyImdiChars: boolean
+  allowOnlyImdiChars?: boolean
 ): string {
   let n = name;
-  if (allowOnlyImdiChars) {
+  // Use the function reference instead of direct import
+  const imdi =
+    allowOnlyImdiChars === undefined ? _archiveUsesImdi() : allowOnlyImdiChars;
+  if (imdi) {
     // first, get to ascii only
     n = ASCIIFolder.foldReplacing(n, "X");
     n = n.trim().replace(/\s/g, "_");
