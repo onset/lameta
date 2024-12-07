@@ -1,43 +1,195 @@
-msgctxt "ELAR/accessProtocol/O/label"
-msgid "O: fully open"
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "access is Free to all"
 msgstr ""
 
-msgctxt "ELAR/accessProtocol/S/description"
-msgid "Only Subscribers are allowed access (must apply to Depositor for access)"
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "all Users can access (requires registration)"
 msgstr ""
 
-msgctxt "ELAR/accessProtocol/S/label"
-msgid "S: open to subscribers"
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "Researchers and Community members are allowed access"
 msgstr ""
 
-msgctxt "ELAR/accessProtocol/U/description"
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "only Community members are allowed access (normally requires application to Depositor)"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "only Subscribers are allowed access (requires application to Depositor)"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/description"
+msgid "only the Depositor and delegate can access"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "F: Free to All"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "U: All Registered Users"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "RC: Registered Users and Community members"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "C: Community members only"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "S: Subscribers only"
+msgstr ""
+
+msgctxt "AILCA/accessProtocol/undefined/label"
+msgid "private"
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/description"
+msgid "Archive users will have full access to these materials after agreeing to AILLA's Terms and Conditions and logging in. Choose this level for all non-sensitive materials. This is the default level."
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/description"
+msgid "When you deposit with the archive, you will define a password with an optional hint. You will be able to provide access to others by sharing the password with them. This is the most flexible option."
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/description"
+msgid "When you deposit with the archive, you will specify a date. After that date, access will change to Level 1. This option is good for resources that are only sensitive for a period of time; for example, the lifetime of the narrator or the five years until you finish your thesis. You will still be able to access these materials yourself with the password."
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/description"
+msgid "Archive users must contact you directly to ask for the password. AILLA will provide contact information. Note that you must maintain your contact information and be prepared to respond to requests from people you do not know."
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/label"
+msgid "1: Public Access"
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/label"
+msgid "2: Password"
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/label"
+msgid "3: Time Limit"
+msgstr ""
+
+msgctxt "AILLA/accessProtocol/undefined/label"
+msgid "4: Depositor control"
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/description"
+msgid "Any member of the public may access the material for non-profit use."
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/description"
+msgid "When you deposit with the archive, you will specify a date. After that data, access will change to Unrestricted access."
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/description"
+msgid "When you deposit with the archive, you will specify restrictions on access. For example, 'access only with permission of village council', 'access only with permission of descendants', etc."
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/label"
+msgid "Unrestricted access"
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/label"
+msgid "Time limit"
+msgstr ""
+
+msgctxt "ANLA/accessProtocol/undefined/label"
+msgid "Restricted access"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/undefined/description"
 msgid "All users can access (requires registration)"
 msgstr ""
 
-msgctxt "ELAR/accessProtocol/U/label"
+msgctxt "ELAR/accessProtocol/undefined/description"
+msgid "Only Subscribers are allowed access (must apply to Depositor for access)"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/undefined/label"
+msgid "O: fully open"
+msgstr ""
+
+msgctxt "ELAR/accessProtocol/undefined/label"
 msgid "U: open to users"
 msgstr ""
 
-msgctxt "REAP/accessProtocol/Entity/description"
-msgid "Restricted to Organizational Unit"
+msgctxt "ELAR/accessProtocol/undefined/label"
+msgid "S: open to subscribers"
 msgstr ""
 
-msgctxt "REAP/accessProtocol/Entity/label"
-msgid "Entity"
+msgctxt "PARADISEC/accessProtocol/undefined/description"
+msgid "Open (subject to PARADISEC access conditions)"
 msgstr ""
 
-msgctxt "REAP/accessProtocol/Public/description"
+msgctxt "PARADISEC/accessProtocol/undefined/description"
+msgid "Closed (subject to certain specified conditions)"
+msgstr ""
+
+msgctxt "PARADISEC/accessProtocol/undefined/label"
+msgid "Open"
+msgstr ""
+
+msgctxt "PARADISEC/accessProtocol/undefined/label"
+msgid "Closed"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/undefined/description"
 msgid "Open to all users"
 msgstr ""
 
-msgctxt "REAP/accessProtocol/Public/label"
-msgid "Public"
-msgstr ""
-
-msgctxt "REAP/accessProtocol/REAP/description"
+msgctxt "REAP/accessProtocol/undefined/description"
 msgid "Restricted to REAP users"
 msgstr ""
 
-msgctxt "REAP/accessProtocol/REAP/label"
+msgctxt "REAP/accessProtocol/undefined/description"
+msgid "Restricted to Organizational Unit"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/undefined/label"
+msgid "Public"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/undefined/label"
 msgid "REAP Users"
+msgstr ""
+
+msgctxt "REAP/accessProtocol/undefined/label"
+msgid "Entity"
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/description"
+msgid "Resources can be accessed immediately."
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/description"
+msgid "Resources can be accessed by registered users which possibly (as in the case of DOBES) have to agree with a Code of Conduct."
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/description"
+msgid "In addition to the conditions that hold for restricted resources, protected resources can be accessed on request only. The responsibles (usually the depositors) will examine the request and, if they grant access, they may do so for a specific use or limited amount of time, which may have to be agreed upon in a usage declaration."
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/description"
+msgid "Can be accessed only by the depositors (and, e.g., members of the respective speech community)."
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/label"
+msgid "Open"
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/label"
+msgid "Restricted"
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/label"
+msgid "Protected"
+msgstr ""
+
+msgctxt "TLA/accessProtocol/undefined/label"
+msgid "Closed"
 msgstr ""

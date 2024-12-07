@@ -5,12 +5,23 @@ import { Project } from "../../model/Project/Project";
 import { getRoCrate } from "../../export/RoCrateExporter";
 import FindInPage from "../FindInPage";
 import { JsonView } from "./JsonView";
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { ValidationResultsList } from "./RoCrateValidationResults";
-import { validate } from "./LDAC-RoCrate-Profile.es.js";
-import * as fs from "fs";
-import { Box, Divider, Grid } from "@mui/material";
+//import { validate } from "./LDAC-RoCrate-Profile.es.js";
+import { Box, Grid } from "@mui/material";
+import rocrate from "ro-crate";
+import { set } from "lodash";
 
+type ValidationEntry = {
+  id: string;
+  status: "error" | "warning" | "info";
+  message: string;
+  clause: string;
+};
+type ValidationResult = {
+  errors: ValidationEntry[];
+  warnings: ValidationEntry[];
+  info: ValidationEntry[];
+};
 export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
@@ -19,26 +30,46 @@ export const RoCrateView: React.FunctionComponent<{
   doValidate: boolean;
 }> = (props) => {
   const [json, setJson] = React.useState<object>({});
-  const [validation, setValidation] =
-    React.useState<object[] | undefined>(undefined);
+  const [validationResults, setValidationResults] =
+    React.useState<ValidationResult | undefined>(undefined);
 
   React.useEffect(() => {
+    const validate = async () => {
+      if (props.doValidate) {
+        try {
+          const entries = rocrate.validate(json);
+          // separate errors, warnings, and info
+          setValidationResults({
+            errors: entries.filter((entry) => entry.status === "error"),
+            warnings: entries.filter((entry) => entry.status === "warning"),
+            info: entries.filter((entry) => entry.status === "info")
+          });
+
+          // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
+          // errors.errors = errors.errors.filter((error) => {
+          //   return error.property !== "license";
+          // });
+        } catch (e) {
+          //throw e;
+          setValidationResults({
+            errors: [
+              {
+                message: `${e.message} ${e.stack}`,
+                id: "error",
+                status: "error",
+                clause: "error"
+              }
+            ],
+            warnings: [],
+            info: []
+          });
+        }
+      }
+    };
+
     const json = getRoCrate(props.project, props.folder);
     setJson(json);
-    if (props.doValidate) {
-      let errors;
-      try {
-        errors = validate(json);
-        // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
-        errors.errors = errors.errors.filter((error) => {
-          return error.property !== "license";
-        });
-      } catch (e) {
-        //throw e;
-        errors = [{ message: `${e.message} ${e.stack}` }];
-      }
-      setValidation(errors);
-    }
+    validate();
   }, [props.project, props.folder, props.doValidate]);
 
   return (
@@ -105,10 +136,10 @@ export const RoCrateView: React.FunctionComponent<{
               overflowY: "auto" // Makes the column scrollable if content overflows
             }}
           >
-            {validation && (
+            {validationResults && (
               <div>
-                <div>{`Validation Results  ⛔${validation?.errors?.length} / ⚠️${validation?.warnings?.length} / ℹ️ ${validation?.info?.length}`}</div>
-                <ValidationResultsList list={validation} />
+                <div>{`Validation Results  ⛔${validationResults?.errors?.length} / ⚠️${validationResults?.warnings?.length} / ℹ️ ${validationResults?.info?.length}`}</div>
+                <ValidationResultsList list={validationResults} />
               </div>
             )}
           </Grid>

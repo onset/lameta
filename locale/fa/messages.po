@@ -38,14 +38,8 @@ msgstr "یک فایل zip که حاوی یک پرونده جدا شده با و�
 msgid "Abandon files that are still copying"
 msgstr "از فایل هایی که در حال کپی شدن هستند، صرف نظر کنید"
 
-msgid "About This Project"
-msgstr "درباره این پروژه"
-
 msgid "About lameta"
 msgstr "درباره لامتا"
-
-msgid "Access"
-msgstr "دسترسی"
 
 msgid "Add Files"
 msgstr "افزودن فایلها"
@@ -62,7 +56,7 @@ msgstr "فایلهایی را اینجا اضافه کنید که به نظر ن
 msgid "All Sessions"
 msgstr "همه جلسات"
 
-msgid "Archive Configuration"
+msgid "Archive"
 msgstr ""
 
 msgid "As a curator"
@@ -158,9 +152,6 @@ msgstr "ایجاد پروژه"
 msgid "Credits"
 msgstr "اعتبار"
 
-msgid "Custom Access Choices"
-msgstr "انتخاب دسترسی سفارشی"
-
 msgid "Custom Field"
 msgstr "فیلد سفارشی"
 
@@ -218,12 +209,6 @@ msgstr "ویرایش"
 msgid "Email Address"
 msgstr "آدرس ایمیل"
 
-msgid "Enter each choice, separated by commas"
-msgstr "هر انتخاب را وارد کنید و با ویرگول جدا بنویسید."
-
-msgid "Error"
-msgstr "خطا"
-
 msgid "Export"
 msgstr "خروجی"
 
@@ -269,6 +254,9 @@ msgstr "فایل رضایت نامه پیدا نشد"
 msgid "Full Name"
 msgstr "نام کامل"
 
+msgid "Funding Project"
+msgstr ""
+
 msgid "Help"
 msgstr "راهنما"
 
@@ -286,9 +274,6 @@ msgstr "چگونه از لمتا استفاده میکنید؟"
 
 msgid "ID"
 msgstr "مشخصات هویتی/ID"
-
-msgid "IMDI Mode"
-msgstr "حالت IMDI"
 
 msgid "IMDI Only"
 msgstr "فقط IMDI"
@@ -320,6 +305,9 @@ msgstr "زبان ارتباط"
 msgid "Language Code"
 msgstr "کد زبانی"
 
+msgid "Languages"
+msgstr ""
+
 msgid "Larger"
 msgstr "بزرگتر"
 
@@ -327,6 +315,9 @@ msgid "Learner"
 msgstr "یادگیرنده"
 
 msgid "Linked to {p}"
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Mark as a primary language of the mother."
@@ -403,9 +394,6 @@ msgstr "برنامه مرتبط با این نوع پرونده را باز کن
 
 msgid "Other Documents"
 msgstr "اسناد دیگر"
-
-msgid "PARADISEC Mode"
-msgstr "حالت PARADISEC"
 
 msgid "Paradisec CSV"
 msgstr "Paradisec CSV"
@@ -557,7 +545,7 @@ msgstr "این فایل {fieldNameInUiLanguage} نمیتواند خالی باش
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr ""
 
-msgid "There is a problem with {displayName}. Click for more information."
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
 msgid "There is already a Person with that name or code."
@@ -610,9 +598,6 @@ msgstr "دیدن"
 
 msgid "View Release Notes"
 msgstr "یادداشتهای انتشار را مشاهده کنید"
-
-msgid "Warning"
-msgstr "هشدار"
 
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
@@ -684,7 +669,7 @@ msgid "lameta was not able to rename the folder."
 msgstr "لمتا قادر به تغییر نام این فایل نبود."
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
+msgid "lameta will not export Notes to IMDI"
 msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."

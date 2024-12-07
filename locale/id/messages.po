@@ -36,14 +36,8 @@ msgstr "Satu arsip zip yang berisi satu file yang dipisahkan oleh koma untuk mas
 msgid "Abandon files that are still copying"
 msgstr "Abaikan file-file yang sedang disalin"
 
-msgid "About This Project"
-msgstr "Tentang proyek ini"
-
 msgid "About lameta"
 msgstr "Tentang lameta"
-
-msgid "Access"
-msgstr "Akses"
 
 msgid "Add Files"
 msgstr "Tambah File-File"
@@ -60,7 +54,7 @@ msgstr "Tambahkan dokumen-dokumen di sini yang tampaknya tidak cocok di tempat l
 msgid "All Sessions"
 msgstr "Semua Sesi"
 
-msgid "Archive Configuration"
+msgid "Archive"
 msgstr ""
 
 msgid "As a curator"
@@ -156,9 +150,6 @@ msgstr "Buat Proyek..."
 msgid "Credits"
 msgstr "Kredit/Penghargaan"
 
-msgid "Custom Access Choices"
-msgstr "Pilihan Akses yang disesuaikan"
-
 msgid "Custom Field"
 msgstr "Kotak yang disesuaikan"
 
@@ -216,12 +207,6 @@ msgstr "Edit"
 msgid "Email Address"
 msgstr "Alamat Email"
 
-msgid "Enter each choice, separated by commas"
-msgstr "Masukkan setiap pilihan dipisahkan dengan koma"
-
-msgid "Error"
-msgstr "Eror"
-
 msgid "Export"
 msgstr "Ekspor"
 
@@ -267,6 +252,9 @@ msgstr "Tidak ada file dengan nama yang mengandung 'Consent'"
 msgid "Full Name"
 msgstr "Nama Lengkap"
 
+msgid "Funding Project"
+msgstr ""
+
 msgid "Help"
 msgstr "Bantuan"
 
@@ -284,9 +272,6 @@ msgstr "Bagaimana Anda menggunakan lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "IMDI Mode"
-msgstr "Modus IMDI"
 
 msgid "IMDI Only"
 msgstr "Hanya IMDI"
@@ -318,6 +303,9 @@ msgstr "Bahasa Antarmuka"
 msgid "Language Code"
 msgstr "Kode Bahasa"
 
+msgid "Languages"
+msgstr ""
+
 msgid "Larger"
 msgstr "Lebih besar"
 
@@ -326,6 +314,9 @@ msgstr "Pembelajar"
 
 msgid "Linked to {p}"
 msgstr "Terhubung ke {p}"
+
+msgid "Location"
+msgstr ""
 
 msgid "Mark as a primary language of the mother."
 msgstr "Tandai sebagai bahasa utama ibu."
@@ -401,9 +392,6 @@ msgstr "Buka dengan program yang terkait dengan jenis file ini"
 
 msgid "Other Documents"
 msgstr "Dokumen Lainnya"
-
-msgid "PARADISEC Mode"
-msgstr "Modus PARADISEC"
 
 msgid "Paradisec CSV"
 msgstr "CSV PARADISEC"
@@ -555,8 +543,8 @@ msgstr "{fieldNameInUiLanguage} tidak boleh kosong"
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr "Ada lebih dari satu file dengan jenis \"{projectType}\" di folder ini, padahal hanya boleh ada satu."
 
-msgid "There is a problem with {displayName}. Click for more information."
-msgstr "Ada masalah dengan {displayName}. Klik untuk informasi lebih lanjut."
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
+msgstr ""
 
 msgid "There is already a Person with that name or code."
 msgstr "Sudah ada Orang dengan nama atau kode tersebut."
@@ -608,9 +596,6 @@ msgstr "Lihat"
 
 msgid "View Release Notes"
 msgstr "Lihat Catatan Rilis"
-
-msgid "Warning"
-msgstr "Peringatan"
 
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
@@ -682,8 +667,8 @@ msgid "lameta was not able to rename the folder."
 msgstr "lameta tidak dapat mengubah nama folder tersebut."
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
-msgstr "lameta tidak akan mengekspor Catatan ke format MIDI"
+msgid "lameta will not export Notes to IMDI"
+msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Sekarang, lameta akan membuka folder ini di hard disk Anda dan kemudian akan keluar. Anda sebaiknya membuka file-file {projectType} ini di editor teks dan memutuskan mana yang ingin Anda gunakan, kemudian hapus yang lainnya. File yang Anda pilih sebaiknya dinamai {name}."

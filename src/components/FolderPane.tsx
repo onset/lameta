@@ -103,7 +103,7 @@ const FileTabs: React.FunctionComponent<
 > = observer((props) => {
   useLingui();
   const [tabIndex, setTabIndex] = React.useState(
-    userSettingsSingleton.DeveloperMode ? 4 : 0
+    userSettingsSingleton.DeveloperMode ? 5 : 0
   );
 
   const [selectedContribution, setSelectedContribution] =

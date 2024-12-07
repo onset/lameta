@@ -31,13 +31,7 @@ msgstr ""
 msgid "Abandon files that are still copying"
 msgstr ""
 
-msgid "About This Project"
-msgstr ""
-
 msgid "About lameta"
-msgstr ""
-
-msgid "Access"
 msgstr ""
 
 msgid "Add Files"
@@ -55,7 +49,7 @@ msgstr ""
 msgid "All Sessions"
 msgstr ""
 
-msgid "Archive Configuration"
+msgid "Archive"
 msgstr ""
 
 msgid "As a curator"
@@ -151,9 +145,6 @@ msgstr ""
 msgid "Credits"
 msgstr ""
 
-msgid "Custom Access Choices"
-msgstr ""
-
 msgid "Custom Field"
 msgstr ""
 
@@ -211,12 +202,6 @@ msgstr ""
 msgid "Email Address"
 msgstr ""
 
-msgid "Enter each choice, separated by commas"
-msgstr ""
-
-msgid "Error"
-msgstr ""
-
 msgid "Export"
 msgstr ""
 
@@ -262,6 +247,9 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
+msgid "Funding Project"
+msgstr ""
+
 msgid "Help"
 msgstr ""
 
@@ -278,9 +266,6 @@ msgid "How are you using lameta?"
 msgstr ""
 
 msgid "ID"
-msgstr ""
-
-msgid "IMDI Mode"
 msgstr ""
 
 msgid "IMDI Only"
@@ -313,6 +298,9 @@ msgstr ""
 msgid "Language Code"
 msgstr ""
 
+msgid "Languages"
+msgstr ""
+
 msgid "Larger"
 msgstr ""
 
@@ -320,6 +308,9 @@ msgid "Learner"
 msgstr ""
 
 msgid "Linked to {p}"
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Mark as a primary language of the mother."
@@ -395,9 +386,6 @@ msgid "Open in program associated with this file type"
 msgstr ""
 
 msgid "Other Documents"
-msgstr ""
-
-msgid "PARADISEC Mode"
 msgstr ""
 
 msgid "Paradisec CSV"
@@ -550,7 +538,7 @@ msgstr ""
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr ""
 
-msgid "There is a problem with {displayName}. Click for more information."
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
 msgid "There is already a Person with that name or code."
@@ -602,9 +590,6 @@ msgid "View"
 msgstr ""
 
 msgid "View Release Notes"
-msgstr ""
-
-msgid "Warning"
 msgstr ""
 
 msgid ""
@@ -677,7 +662,7 @@ msgid "lameta was not able to rename the folder."
 msgstr ""
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
+msgid "lameta will not export Notes to IMDI"
 msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."

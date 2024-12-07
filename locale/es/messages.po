@@ -36,14 +36,8 @@ msgstr "Un solo archivo zip que contiene un archivo separado por comas para cada
 msgid "Abandon files that are still copying"
 msgstr "Abandonar archivos que aún se están copiando"
 
-msgid "About This Project"
-msgstr "Acerca de este proyecto"
-
 msgid "About lameta"
 msgstr "Sobre lameta"
-
-msgid "Access"
-msgstr "Acceso"
 
 msgid "Add Files"
 msgstr "Agregar archivos"
@@ -60,7 +54,7 @@ msgstr "Agregar documentos aquí que no pertenecen en otro lugar (por ejemplo, d
 msgid "All Sessions"
 msgstr "Todas las sesiones"
 
-msgid "Archive Configuration"
+msgid "Archive"
 msgstr ""
 
 msgid "As a curator"
@@ -156,9 +150,6 @@ msgstr "Crear proyecto..."
 msgid "Credits"
 msgstr "Créditos"
 
-msgid "Custom Access Choices"
-msgstr "Opciones de acceso personalizadas"
-
 msgid "Custom Field"
 msgstr "Campo personalizado"
 
@@ -216,12 +207,6 @@ msgstr "Editar"
 msgid "Email Address"
 msgstr "Correo electrónico"
 
-msgid "Enter each choice, separated by commas"
-msgstr "Escriba las opciones separadas por comas."
-
-msgid "Error"
-msgstr "Error"
-
 msgid "Export"
 msgstr "Exportar"
 
@@ -267,6 +252,9 @@ msgstr "No se ha encontrado ningún archivo que contenga 'Consent'"
 msgid "Full Name"
 msgstr "Nombre completo"
 
+msgid "Funding Project"
+msgstr ""
+
 msgid "Help"
 msgstr "Ayuda"
 
@@ -284,9 +272,6 @@ msgstr "¿Cómo está usando lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "IMDI Mode"
-msgstr "Modo IMDI"
 
 msgid "IMDI Only"
 msgstr "Solo IMDI"
@@ -318,6 +303,9 @@ msgstr "Idioma de la Interfaz"
 msgid "Language Code"
 msgstr "Código de la lengua"
 
+msgid "Languages"
+msgstr ""
+
 msgid "Larger"
 msgstr "Más grande"
 
@@ -325,6 +313,9 @@ msgid "Learner"
 msgstr "Aprendiz"
 
 msgid "Linked to {p}"
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Mark as a primary language of the mother."
@@ -401,9 +392,6 @@ msgstr "Abrir en un programa asociado a este tipo de archivo"
 
 msgid "Other Documents"
 msgstr "Otros documentos"
-
-msgid "PARADISEC Mode"
-msgstr "Modo PARADISEC"
 
 msgid "Paradisec CSV"
 msgstr "Paradisec CSV"
@@ -555,7 +543,7 @@ msgstr "El {fieldNameInUiLanguage} no puede estar vacío"
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr ""
 
-msgid "There is a problem with {displayName}. Click for more information."
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
 msgid "There is already a Person with that name or code."
@@ -608,9 +596,6 @@ msgstr "Vista"
 
 msgid "View Release Notes"
 msgstr "Ver Notas de esta Versión"
-
-msgid "Warning"
-msgstr "Aviso"
 
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
@@ -682,7 +667,7 @@ msgid "lameta was not able to rename the folder."
 msgstr "lameta no pudo cambiar el nombre de la carpeta."
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
+msgid "lameta will not export Notes to IMDI"
 msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
