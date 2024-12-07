@@ -7,7 +7,6 @@ import { Folder, IFolderType, FolderGroup } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
-const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
 import {
@@ -38,6 +37,7 @@ import {
 import { setCurrentProjectId } from "./MediaFolderAccess";
 import { CapitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 
 let sCurrentProject: Project | null = null;
 
@@ -363,7 +363,7 @@ export class Project extends Folder {
     let name = baseName;
     while (fs.existsSync(Path.join(directory, name))) {
       i++;
-      name = baseName + " " + i;
+      name = baseName + i;
     }
     const dir = Path.join(directory, name);
 
@@ -376,11 +376,11 @@ export class Project extends Folder {
       case "session": {
         const dir = this.getUniqueFolder(
           Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-          t`New Session`
+          sanitizeForArchive(t`New Session`)
         );
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
         const session = Session.fromDirectory(dir, this.customVocabularies);
-        session.properties.setText("id", Path.basename(dir));
+        session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
         // no, not yet this.sessions.items.push(session);
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
@@ -390,10 +390,13 @@ export class Project extends Folder {
       case "person": {
         const dir = this.getUniqueFolder(
           Path.join(this.directory, "People"), // we don't localize the directory name.
-          t`New Person`
+          sanitizeForArchive(t`New Person`)
         );
         const person = this.makePersonFromDirectory(dir);
-        person.properties.setText("name", Path.basename(dir));
+        person.properties.setText(
+          "name",
+          Path.basename(dir).replace(/_/g, " ")
+        );
         analyticsEvent("Create", "Create Person From Import");
         return person;
         break;
@@ -414,11 +417,11 @@ export class Project extends Folder {
   public addSession(): Session {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-      t`New Session`
+      sanitizeForArchive(t`New Session`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customVocabularies);
-    session.properties.setText("id", Path.basename(dir));
+    session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
@@ -463,11 +466,14 @@ export class Project extends Folder {
   public addPerson(name?: string): Person {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "People"), // we don't localize the directory name.
-      t`New Person`
+      sanitizeForArchive(t`New Person`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
-    person.properties.setText("name", name ?? t`New Person`);
+    person.properties.setText(
+      "name",
+      name ?? Path.basename(dir).replace(/_/g, " ")
+    );
     this.persons.items.push(person);
     person.nameMightHaveChanged();
     person.saveFolderMetaData;
