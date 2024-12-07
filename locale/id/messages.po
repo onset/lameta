@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-12-23 17:20\n"
+"PO-Revision-Date: 2024-11-06 16:56\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -835,7 +835,7 @@ msgstr "Tampilkan di File Explorer"
 
 #: src/components/FileList.tsx:278
 msgid "Show in Finder"
-msgstr "Tampilkan di Finder"
+msgstr "Tampilkan di Pencarian"
 
 #: src/components/Notify.tsx:276
 msgid "Show me the folder with the problem"
@@ -951,7 +951,7 @@ msgstr "Ada masalah saat mengekspor:"
 
 #: src/components/ImdiView.tsx:132
 msgid "This XML conforms to the IMDI schema."
-msgstr ""
+msgstr "."
 
 #: src/model/file/FileStatus.tsx:66
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
@@ -1094,7 +1094,7 @@ msgstr "lameta tidak dapat menemukan Folder Media {m}. Lihat Berkas: Pengaturan 
 
 #: src/model/Project/Session/Session.ts:312
 msgid "lameta could not find a matching Person for the following contributors:"
-msgstr ""
+msgstr "lameta tidak dapat menemukan Orang yang sesuai dengan kontributor berikut:"
 
 #: src/model/Folder/Folder.ts:433
 msgid "lameta could not rename the directory."

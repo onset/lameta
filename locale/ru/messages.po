@@ -8,7 +8,7 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2023-11-24 21:51\n"
+"PO-Revision-Date: 2024-11-06 16:56\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
@@ -119,7 +119,7 @@ msgid "As a trainer"
 msgstr ""
 
 #: src/components/FolderPane.tsx:361
-#: src/other/localization.ts:112
+#: src/other/localization.ts:125
 msgid "Audio"
 msgstr "Аудио"
 
@@ -143,7 +143,7 @@ msgstr "Аудио"
 #~ msgid "Audio Sample Rate"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:400
+#: src/components/export/ExportDialog.tsx:440
 #: src/components/LametaDialog.tsx:213
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:196
 #: src/components/Notify.tsx:276
@@ -151,7 +151,7 @@ msgstr "Аудио"
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/model/Folder/Folder.ts:195
+#: src/model/Folder/Folder.ts:202
 msgid "Cannot add files of that type"
 msgstr ""
 
@@ -191,14 +191,14 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:384
-#: src/components/export/ExportDialog.tsx:410
+#: src/components/export/ExportDialog.tsx:424
+#: src/components/export/ExportDialog.tsx:450
 #: src/components/ReleasesDialog.tsx:234
 msgid "Close"
 msgstr "Закрыть"
 
 #: src/components/PersonContributions.tsx:39
-#: src/components/session/ContributorsTable.tsx:128
+#: src/components/session/ContributorsTable.tsx:127
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -219,11 +219,11 @@ msgstr "Составители"
 msgid "Copy"
 msgstr "Копия"
 
-#: src/model/Folder/Folder.ts:228
+#: src/model/Folder/Folder.ts:235
 msgid "Copy Requested..."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:359
+#: src/components/export/ExportDialog.tsx:399
 msgid "Copying in Files..."
 msgstr ""
 
@@ -231,23 +231,23 @@ msgstr ""
 msgid "Copying..."
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:125
+#: src/components/project/CreateProjectDialog.tsx:127
 msgid "Create"
 msgstr ""
 
-#: src/containers/HomePage.tsx:279
+#: src/containers/HomePage.tsx:282
 msgid "Create New Project"
 msgstr ""
 
-#: src/containers/HomePage.tsx:294
+#: src/containers/HomePage.tsx:297
 msgid "Create New Project with Sample Data"
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:73
+#: src/components/project/CreateProjectDialog.tsx:75
 msgid "Create New lameta Project"
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:72
+#: src/components/project/CreateProjectDialog.tsx:74
 msgid "Create Project Using Sample Data"
 msgstr ""
 
@@ -255,7 +255,7 @@ msgstr ""
 msgid "Create Project..."
 msgstr ""
 
-#: src/other/menu.ts:370
+#: src/other/menu.ts:378
 msgid "Credits"
 msgstr ""
 
@@ -324,7 +324,7 @@ msgstr "Документы описания"
 msgid "Do not quit"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:347
+#: src/components/export/ExportDialog.tsx:392
 msgid "Done"
 msgstr ""
 
@@ -361,11 +361,11 @@ msgstr "Введите каждый выбор разделяя запятыми
 msgid "Error"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:394
+#: src/components/export/ExportDialog.tsx:434
 msgid "Export"
 msgstr "Экспортировать"
 
-#: src/components/export/ExportDialog.tsx:295
+#: src/components/export/ExportDialog.tsx:324
 msgid "Export Project"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgstr ""
 msgid "Export Project..."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:335
+#: src/components/export/ExportDialog.tsx:374
 msgid "Exporting..."
 msgstr "Экспорт..."
 
@@ -382,12 +382,12 @@ msgstr "Экспорт..."
 msgid "Field"
 msgstr "Поле"
 
-#: src/components/FolderPane.tsx:455
+#: src/components/FolderPane.tsx:460
 #: src/other/menu.ts:122
 msgid "File"
 msgstr ""
 
-#: src/model/file/File.ts:1165
+#: src/model/file/File.ts:1179
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
@@ -432,11 +432,11 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: src/other/menu.ts:352
+#: src/other/menu.ts:360
 msgid "Help"
 msgstr "Справка"
 
-#: src/other/menu.ts:258
+#: src/other/menu.ts:266
 msgid "Help translate"
 msgstr ""
 
@@ -465,7 +465,7 @@ msgstr ""
 #~ msgid "IMDI + Files"
 #~ msgstr ""
 
-#: src/other/menu.ts:266
+#: src/other/menu.ts:274
 msgid "IMDI Mode"
 msgstr ""
 
@@ -474,7 +474,7 @@ msgid "IMDI Only"
 msgstr ""
 
 #: src/components/FolderPane.tsx:403
-#: src/other/localization.ts:110
+#: src/other/localization.ts:123
 msgid "Image"
 msgstr "Изображение"
 
@@ -529,7 +529,7 @@ msgstr ""
 #~ msgid "Length"
 #~ msgstr ""
 
-#: src/model/file/FileStatus.tsx:42
+#: src/model/file/FileStatus.tsx:43
 msgid "Linked to {p}"
 msgstr ""
 
@@ -580,7 +580,7 @@ msgstr ""
 
 #: src/components/FileList.tsx:65
 #: src/components/LanguagePickerDialog/LanguagePickerDialog.tsx:157
-#: src/components/session/ContributorsTable.tsx:112
+#: src/components/session/ContributorsTable.tsx:111
 msgid "Name"
 msgstr "Имя"
 
@@ -637,11 +637,11 @@ msgstr ""
 msgid "Open"
 msgstr "Открыть"
 
-#: src/containers/HomePage.tsx:284
+#: src/containers/HomePage.tsx:287
 msgid "Open Project"
 msgstr ""
 
-#: src/containers/HomePage.tsx:330
+#: src/containers/HomePage.tsx:333
 #: src/other/menu.ts:125
 msgid "Open Project..."
 msgstr ""
@@ -650,7 +650,7 @@ msgstr ""
 #~ msgid "Open SayMore Project"
 #~ msgstr ""
 
-#: src/components/FolderPane.tsx:444
+#: src/components/FolderPane.tsx:449
 msgid "Open in ELAN"
 msgstr ""
 
@@ -666,7 +666,7 @@ msgstr "Другие документы"
 #~ msgid "Other Languages"
 #~ msgstr ""
 
-#: src/other/menu.ts:275
+#: src/other/menu.ts:283
 msgid "PARADISEC Mode"
 msgstr ""
 
@@ -686,7 +686,7 @@ msgstr "Люди"
 
 #: src/components/FolderPane.tsx:311
 #: src/model/Project/Project.ts:573
-#: src/other/localization.ts:106
+#: src/other/localization.ts:119
 msgid "Person"
 msgstr "Лицо"
 
@@ -698,12 +698,12 @@ msgstr ""
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:412
+#: src/model/Folder/Folder.ts:419
 msgid "Please wait until all files are finished copying into this folder"
 msgstr ""
 
 #: src/components/Workspace.tsx:302
-#: src/other/localization.ts:102
+#: src/other/localization.ts:115
 msgid "Project"
 msgstr "Проект"
 
@@ -715,7 +715,7 @@ msgstr "Проект"
 #~ msgid "Project will be created in: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:68
+#: src/components/project/CreateProjectDialog.tsx:70
 msgid "Project will be created in: {path}."
 msgstr "Проект будет создан в: {path}."
 
@@ -735,7 +735,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: src/other/menu.ts:355
+#: src/other/menu.ts:363
 msgid "Registration..."
 msgstr ""
 
@@ -760,11 +760,11 @@ msgstr ""
 msgid "Rename..."
 msgstr "Переименовать"
 
-#: src/model/file/File.ts:1022
+#: src/model/file/File.ts:1036
 msgid "Renaming failed because there is already a file with that name."
 msgstr ""
 
-#: src/other/menu.ts:361
+#: src/other/menu.ts:369
 msgid "Report a problem"
 msgstr ""
 
@@ -777,11 +777,11 @@ msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
 #: src/components/PersonContributions.tsx:32
-#: src/components/session/ContributorsTable.tsx:117
+#: src/components/session/ContributorsTable.tsx:116
 msgid "Role"
 msgstr "Роль"
 
-#: src/components/export/ExportDialog.tsx:112
+#: src/components/export/ExportDialog.tsx:120
 msgid "Save As"
 msgstr ""
 
@@ -809,7 +809,7 @@ msgstr ""
 #: src/components/PersonContributions.tsx:26
 #: src/components/Workspace.tsx:68
 #: src/model/Project/Project.ts:564
-#: src/other/localization.ts:104
+#: src/other/localization.ts:117
 msgid "Session"
 msgstr "Событие"
 
@@ -821,11 +821,11 @@ msgstr "Элементы проекта"
 msgid "Show All"
 msgstr ""
 
-#: src/other/menu.ts:374
+#: src/other/menu.ts:382
 msgid "Show Release Notes"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:421
+#: src/components/export/ExportDialog.tsx:461
 msgid "Show export"
 msgstr ""
 
@@ -873,7 +873,7 @@ msgstr ""
 msgid "Status"
 msgstr "Статус"
 
-#: src/components/FolderPane.tsx:418
+#: src/components/FolderPane.tsx:422
 msgid "Text"
 msgstr ""
 
@@ -885,11 +885,11 @@ msgstr ""
 #~ msgid "That would lead to an empty filename"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:351
+#: src/components/export/ExportDialog.tsx:387
 msgid "The IMDI files were validated."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:96
+#: src/model/file/FileStatus.tsx:98
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr ""
 
@@ -913,7 +913,7 @@ msgstr ""
 msgid "There is already a Person with that name or code."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:209
+#: src/model/Folder/Folder.ts:216
 msgid "There is already a file here with the name"
 msgstr ""
 
@@ -921,7 +921,7 @@ msgstr ""
 #~ msgid "There is already a project at: {path}"
 #~ msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:64
+#: src/components/project/CreateProjectDialog.tsx:66
 msgid "There is already a project at: {path}."
 msgstr ""
 
@@ -945,11 +945,15 @@ msgstr ""
 #~ msgid "There is already a {folderKind} with the name '{value}'"
 #~ msgstr ""
 
-#: src/components/export/ExportDialog.tsx:138
+#: src/components/export/ExportDialog.tsx:167
 msgid "There was a problem exporting:"
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:65
+#: src/components/ImdiView.tsx:132
+msgid "This XML conforms to the IMDI schema."
+msgstr ""
+
+#: src/model/file/FileStatus.tsx:66
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr ""
 
@@ -983,7 +987,7 @@ msgid "Value"
 msgstr "Значение"
 
 #: src/components/FolderPane.tsx:378
-#: src/other/localization.ts:108
+#: src/other/localization.ts:121
 msgid "Video"
 msgstr "Видео"
 
@@ -1004,13 +1008,12 @@ msgid "Warning"
 msgstr ""
 
 #: src/components/Notify.tsx:140
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
 
-#: src/components/project/CreateProjectDialog.tsx:94
+#: src/components/project/CreateProjectDialog.tsx:96
 msgid "What would you like to call this project?"
 msgstr "Как назвать этот проект?"
 
@@ -1035,15 +1038,15 @@ msgstr ""
 #~ msgid "You are running lameta {version}"
 #~ msgstr ""
 
-#: src/components/FileList.tsx:346
+#: src/components/FileList.tsx:345
 msgid "You cannot add files of that type"
 msgstr ""
 
-#: src/components/FileList.tsx:350
+#: src/components/FileList.tsx:349
 msgid "You cannot add folders."
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:119
+#: src/components/export/ExportDialog.tsx:127
 msgid "ZIP Archive"
 msgstr ""
 
@@ -1065,7 +1068,7 @@ msgid "lameta"
 msgstr ""
 
 #: src/components/Notify.tsx:75
-#: src/model/file/File.ts:41
+#: src/model/file/File.ts:40
 msgid "lameta  was not able to rename that file."
 msgstr ""
 
@@ -1077,39 +1080,43 @@ msgstr ""
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr ""
 
-#: src/containers/HomePage.tsx:337
+#: src/containers/HomePage.tsx:340
 msgid "lameta and SayMore Project Files"
 msgstr ""
 
-#: src/components/export/ExportDialog.tsx:255
+#: src/components/export/ExportDialog.tsx:284
 msgid "lameta cannot export files while files are still being copied in."
 msgstr ""
 
-#: src/model/file/FileStatus.tsx:68
+#: src/model/file/FileStatus.tsx:69
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:426
-msgid "lameta could not rename the directory."
-msgstr ""
-
-#: src/model/file/FileStatus.tsx:84
-msgid "lameta expected to find a .link file at {e}"
+#: src/model/Project/Session/Session.ts:312
+msgid "lameta could not find a matching Person for the following contributors:"
 msgstr ""
 
 #: src/model/Folder/Folder.ts:433
+msgid "lameta could not rename the directory."
+msgstr ""
+
+#: src/model/file/FileStatus.tsx:86
+msgid "lameta expected to find a .link file at {e}"
+msgstr ""
+
+#: src/model/Folder/Folder.ts:440
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
 msgstr ""
 
-#: src/other/crossPlatformUtilities.ts:28
+#: src/other/crossPlatformUtilities.ts:25
 msgid "lameta was not able to delete the file."
 msgstr ""
 
-#: src/model/Folder/Folder.ts:385
+#: src/model/Folder/Folder.ts:392
 msgid "lameta was not able to put this file in the trash"
 msgstr ""
 
-#: src/model/Folder/Folder.ts:466
+#: src/model/Folder/Folder.ts:473
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr ""
 
@@ -1117,7 +1124,7 @@ msgstr ""
 #~ msgid "lameta was not able to rename that file."
 #~ msgstr ""
 
-#: src/model/Folder/Folder.ts:481
+#: src/model/Folder/Folder.ts:488
 msgid "lameta was not able to rename the folder."
 msgstr ""
 
@@ -1153,3 +1160,4 @@ msgstr ""
 #: src/components/ConfirmDeleteDialog/ConfirmDeleteDialog.tsx:89
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""
+
