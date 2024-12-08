@@ -79,7 +79,9 @@ describe("session imdi export", () => {
 
   it("should  output an Actor for a contributor with a matching person", () => {
     session.removeAllContributionsForUnitTest();
-    session.addContribution(new Contribution("Mary", "Speaker", ""));
+    session.addContribution(
+      new Contribution("Mary", "careful_speech_speaker", "")
+    );
     setResultXml(
       ImdiGenerator.generateSession(
         IMDIMode.RAW_IMDI,
@@ -91,6 +93,7 @@ describe("session imdi export", () => {
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Name").toHaveText("Mary");
     expect("//Actor/Age").toHaveText("30");
+    expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
   });
 
   /* the actual policy is in discussion in Notion #238

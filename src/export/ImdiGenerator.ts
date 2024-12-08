@@ -777,7 +777,15 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
-      this.element("Role", role && role.length > 0 ? role : "Unspecified");
+      let roleOutput = "Unspecified";
+      if (role && role.length > 0) {
+        // replace underscores with spaces
+        roleOutput = role.replace(/_/g, " ");
+        // upper case the first letter of the first word only (per ELAR's Hanna)
+        roleOutput = roleOutput.charAt(0).toUpperCase() + roleOutput.slice(1);
+      }
+
+      this.element("Role", roleOutput);
       this.requiredField("Name", "name", person);
       this.requiredField("FullName", "name", person);
 
