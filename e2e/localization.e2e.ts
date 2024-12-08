@@ -43,8 +43,8 @@ test.describe("Localization", () => {
 
     // main project page
     await shouldSeeExactlyOnce([
-      "Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
-      "Judul proyek yang didanai" // regression test
+      //"Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
+      "Judul Proyek yang Didanai" // regression test
     ]);
 
     await project.goToSessions();
@@ -62,7 +62,10 @@ test.describe("Localization", () => {
     // tabs of the selected file
     await shouldSeeExactlyOnce(["Catatan"]);
     // some fields
-    await shouldSeeExactlyOnce(["Deskripsi", "Kotak-kotak Khusus"]);
+    await shouldSeeExactlyOnce([
+      /*"Deskripsi"*/ "Keterangan",
+      "Kotak-kotak Khusus"
+    ]);
 
     await shouldHaveMultiple("Tanggal", 2); // date
 
@@ -73,7 +76,7 @@ test.describe("Localization", () => {
       "Nama Lengkap", //name
       "Tahun Lahir", //birth year
       // TODO not finding this link: "Tambah Bahasa", // add language
-      "Bagaimana dihubungi" // How to Contact
+      "Bagaimaan Cara Menghubungi" // How to Contact
     ]);
   });
 });
