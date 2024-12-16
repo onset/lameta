@@ -1,7 +1,7 @@
 "key","Context","en","es-ES","fr","ru","zh-CN","pt-BR","id","fa"
 "project.id","project","Project ID","ID del Proyecto","ID du Projet","","项目ID","ID do projeto","Kode Proyek","شماره پروژه"
 "project.grantId","project","Grant ID","ID de la Beca","ID de Subvention","","基金ID","ID do Financiamento","Kode Hibah","شماره گرنت"
-"project.projectDescription","project","Description","Descripción","Description","","说明","Descrição","Keterangan","توضیحات"
+"project.projectDescription","project","Description","Descripción","Description","","说明","Descrição","Deskripsi","توضیحات"
 "project.vernacularIso3CodeAndName","project","Content Language","Idioma del Contenido","Langue de contenu","","内容语言","Língua do conteúdo","Bahasa Konten","زبان بافت"
 "project.analysisISO3CodeAndName","project","Working Language","Idioma de Trabajo","Langue d'Analyse","","工作语言","Língua de trabalho","Bahasa Komunikasi","زبان کاری"
 "project.location","project","Location/Address","Ubicación/Dirección","Adresse","","位置/地址","Localização/Endereço","Lokasi/Alamat","موقعیت مکانی/ آدرس"
