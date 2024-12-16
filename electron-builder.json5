@@ -1,7 +1,6 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
-  //asarUnpack: ["node_modules/ffprobe-static/*"],
   afterSign: "electron-builder-notarize",
   dmg: {
     contents: [
@@ -37,7 +36,10 @@
     "dist/",
     "locale/",
     "schemas/",
-    "sample data/"
+    "sample data/",
+    // we only want ffprobe, not ffmpeg
+    "!node_modules/ffmpeg-ffprobe-static/ffmpeg*",
+    "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*"
   ],
   extraFiles: [],
   directories: {
