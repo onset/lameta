@@ -1,6 +1,4 @@
 import { css } from "@emotion/react";
-/* removed emotion jsx declaration */
-
 import { default as React, useState, useEffect } from "react";
 import ReactTable from "react-table-6";
 import { File } from "../model/file/File";
@@ -27,18 +25,21 @@ type Stats = object;
 // );
 
 // ffmpeg.setFfmpegPath(ffmpegPath);
-const x = require("ffprobe-static").path;
-console.log(`ffprobe-static.path=${x}`);
+//const x = require("ffprobe-static").path;
+//console.log(`ffprobe-static.path=${x}`);
+
+const ffprobePath = require("ffmpeg-ffprobe-static").ffprobePath;
+console.log(ffprobePath);
+
 // during a dev run, this is just going to point to node_modules, fine.
 // during release (installed) run, on window and mac this is resources/app.asar/node_modules/ffprobe-static/bin/<platformstuff>/ffprobe.exe
 // we want /resources/app.asar.unpacked/node_modules/ffprobe-static/bin/<platformstuff>/ffprobe.exe
 
-const ffprobePath = require("ffprobe-static")
-  .path // during run from release (win-unpacked or installed)
-  .replace("app.asar", "app.asar.unpacked"); // on windows, both installed and not installed, win-unpacked/resources/node_modules/ffprobe-static exists
-//console.log(`adjusted ffprobe-static.path=${ffprobePath}`);
+// const ffprobePath = require("ffprobe-static")
+//   .path // during run from release (win-unpacked or installed)
+//   .replace("app.asar", "app.asar.unpacked"); // on windows, both installed and not installed, win-unpacked/resources/node_modules/ffprobe-static exists
+console.log(`setting ffmpeg.setFfprobPath(${ffprobePath})`);
 ffmpeg.setFfprobePath(ffprobePath);
-console.log(`changed to ffprobe-static.path=${x}`);
 
 export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
   const [message, setMessage] = useState<string>("Processing...");
