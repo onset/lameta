@@ -25,7 +25,7 @@ import { Trans } from "@lingui/macro";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
-
+import userSettings from "../other/UserSettings";
 import * as URL from "url";
 import { FileStatusBlock } from "../model/file/FileStatus";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -146,18 +146,18 @@ const FileTabs: React.FunctionComponent<
       />
     </TabPanel>
   );
-  const imdiTab = GetOtherConfigurationSettings().showImdiPreview ? (
+  const imdiTab = userSettings.ShowIMDI ? (
     <Tab>IMDI {/* don't translate  */}</Tab>
   ) : (
     <></>
   );
-  const paradisecTab = GetOtherConfigurationSettings().showParadisec ? (
+  const paradisecTab = GetOtherConfigurationSettings().archiveUsesParadisec ? (
     <Tab>PARADISEC {/* don't translate  */}</Tab>
   ) : (
     <></>
   );
 
-  const imdiPanel = GetOtherConfigurationSettings().showImdiPreview ? (
+  const imdiPanel = userSettings.ShowIMDI ? (
     <TabPanel>
       <ErrorBoundary>
         <ImdiView
@@ -174,7 +174,8 @@ const FileTabs: React.FunctionComponent<
   ) : (
     <></>
   );
-  const paradisecPanel = GetOtherConfigurationSettings().showParadisec ? (
+  const paradisecPanel = GetOtherConfigurationSettings()
+    .archiveUsesParadisec ? (
     <TabPanel>
       <ErrorBoundary>
         <ParadisecView

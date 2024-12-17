@@ -16,6 +16,7 @@ import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export default class LametaMenu {
   private homePage: IHomePageMenuConnections;
@@ -270,6 +271,26 @@ export default class LametaMenu {
               }
             }
           ]
+        },
+        {
+          label: t`Show IMDI previews`,
+          visible: GetOtherConfigurationSettings().archiveUsesImdi,
+          // tooltip only works in macos
+          tooltip:
+            "Show IMDI output preview panels and indicate which fields don't have direct IMDI mappings",
+          type: "checkbox",
+          checked: userSettings.ShowIMDI,
+          click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI)
+        },
+        {
+          label: t`Show PARADISEC previews`,
+          visible: GetOtherConfigurationSettings().archiveUsesParadisec,
+          // tooltip only works in macos
+          tooltip: "Show PARADISEC output preview panels",
+          type: "checkbox",
+          checked: userSettings.ParadisecMode,
+          click: () =>
+            (userSettings.ParadisecMode = !userSettings.ParadisecMode)
         }
       ]
     };

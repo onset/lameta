@@ -1,14 +1,14 @@
 export type OtherConfigurationSettings = {
   configurationFullName: string;
-  showImdiPreview: boolean;
-  showParadisec: boolean;
+  archiveUsesImdi: boolean;
+  archiveUsesParadisec: boolean;
   fileNameRules: "ASCII" | "unicode";
 };
 
 let otherConfigurationSettings: OtherConfigurationSettings = {
   configurationFullName: "",
-  showImdiPreview: false,
-  showParadisec: false,
+  archiveUsesImdi: false,
+  archiveUsesParadisec: false,
   fileNameRules: "ASCII"
 };
 
@@ -22,8 +22,8 @@ export function GetOtherConfigurationSettings(): OtherConfigurationSettings {
 }
 export function resetOtherConfigurationSettings() {
   otherConfigurationSettings = {
-    showImdiPreview: false,
-    showParadisec: false,
+    archiveUsesImdi: false,
+    archiveUsesParadisec: false,
     configurationFullName: "",
     fileNameRules: "ASCII"
   };

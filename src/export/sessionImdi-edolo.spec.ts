@@ -179,13 +179,13 @@ it("media resources must precede written resources", () => {
 
   const kNumberOfMediaFiles = 4;
   const kNumberOfWrittenResources = 3;
-  for (var i = 0; i < kNumberOfMediaFiles; i++) {
+  for (let i = 0; i < kNumberOfMediaFiles; i++) {
     expect(
       `METATRANSCRIPT/Session/Resources/*[${i + 1}][name()='MediaFile']`
     ).toHaveCount(1);
   }
   for (
-    i = kNumberOfMediaFiles;
+    let i = kNumberOfMediaFiles;
     i < kNumberOfMediaFiles + kNumberOfWrittenResources;
     i++
   ) {

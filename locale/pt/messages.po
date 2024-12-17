@@ -8,7 +8,7 @@ msgstr ""
 "Language: pt\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-01 21:27\n"
+"PO-Revision-Date: 2024-12-08 00:02\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -18,20 +18,38 @@ msgstr ""
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
 
+#~ msgid "\"Open in program associated with this file type"
+#~ msgstr ""
+
 msgid "A file with the same name already exists at that location."
-msgstr ""
+msgstr "Já existe um arquivo com o mesmo nome nesse local."
 
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
-msgstr ""
+msgstr "Uma pasta que contém todos os arquivos do projeto, com o IMDI agrupado para o OPEX."
+
+#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
 
 msgid "A folder with an IMDI file for the project and each session."
 msgstr "Uma pasta com um arquivo IMDI para o projeto e cada sessão."
 
+#~ msgid "A single ISLE Meta Data Initiative XML file."
+#~ msgstr ""
+
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr "Um único arquivo (separado por vírgula) com informações do projeto seguido de uma linha por sessão. Muitos campos do lameta são omitidos."
 
+#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
+#~ msgstr ""
+
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr "Um único arquivo zip que contém um arquivo (separado por vírgula) para cada um dos Projetos, Sessões e Pessoas."
+
+#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
+
+#~ msgid "A zip file with an IMDI file for the project and each session."
+#~ msgstr ""
 
 msgid "Abandon files that are still copying"
 msgstr "Abandonar arquivos que ainda estão sendo copiados"
@@ -63,6 +81,9 @@ msgstr "Adicione aqui documentos que não parecem se encaixar em nenhum outro lu
 msgid "All Sessions"
 msgstr "Todas as sessões"
 
+msgid "As Personally Identifiable Information, this will not be exported to other formats."
+msgstr "Como são Dados Pessoais de Identificação, estes não serão exportados para outros formatos."
+
 msgid "As a curator"
 msgstr "Como curador"
 
@@ -75,6 +96,21 @@ msgstr "Como treinador"
 msgid "Audio"
 msgstr "Áudio"
 
+#~ msgid "Audio Bit Depth"
+#~ msgstr ""
+
+#~ msgid "Audio Bit Rate"
+#~ msgstr ""
+
+#~ msgid "Audio Channels"
+#~ msgstr ""
+
+#~ msgid "Audio Codec"
+#~ msgstr ""
+
+#~ msgid "Audio Sample Rate"
+#~ msgstr ""
+
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -85,16 +121,19 @@ msgid "Change Name To:"
 msgstr "Alterar o nome para:"
 
 msgid "Change..."
-msgstr ""
+msgstr "Alterar..."
+
+#~ msgid "Check for new version"
+#~ msgstr ""
 
 msgid "Choose File"
-msgstr ""
+msgstr "Escolha o Arquivo"
 
 msgid "Choose Language"
 msgstr "Escolha a língua"
 
 msgid "Choose Spreadsheet Mapping:"
-msgstr ""
+msgstr "Selecione o Mapeamento de Planilhas:"
 
 msgid "Choose an export format:"
 msgstr "Escolha um formato de exportação:"
@@ -103,13 +142,10 @@ msgid "Choose which Sessions to export:"
 msgstr "Escolha quais sessões a serem exportadas:"
 
 msgid "Clear"
-msgstr ""
+msgstr "Limpar"
 
 msgid "Close"
 msgstr "Fechar"
-
-msgid "Collection"
-msgstr ""
 
 msgid "Comments"
 msgstr "Comentários"
@@ -136,7 +172,7 @@ msgid "Copying..."
 msgstr "Copiando..."
 
 msgid "Create"
-msgstr ""
+msgstr "Criar"
 
 msgid "Create New Project"
 msgstr "Criar Novo Projeto"
@@ -162,17 +198,23 @@ msgstr "Opções Personalizadas de Acesso"
 msgid "Custom Field"
 msgstr "Campo personalizado"
 
+#~ msgid "Custom Fields"
+#~ msgstr ""
+
 msgid "Cut"
 msgstr "Recortar"
+
+#~ msgid "Date"
+#~ msgstr ""
 
 msgid "Delete"
 msgstr "Excluir"
 
 msgid "Delete All Marked People..."
-msgstr ""
+msgstr "Excluir todas as pessoas marcadas..."
 
 msgid "Delete All Marked Sessions..."
-msgstr ""
+msgstr "Excluir todas as sessões marcadas..."
 
 msgid "Delete File..."
 msgstr "Apague Arquivo..."
@@ -187,10 +229,10 @@ msgid "Delete Session..."
 msgstr "Apague Sessão..."
 
 msgid "Delete link to file..."
-msgstr ""
+msgstr "Excluir o link para o arquivo..."
 
 msgid "Deleting..."
-msgstr ""
+msgstr "Excluindo..."
 
 msgid "Description Documents"
 msgstr "Documentos de Descrição"
@@ -210,6 +252,9 @@ msgstr "Duplicar Pessoa"
 msgid "Duplicate Session"
 msgstr "Duplicar Sessão"
 
+#~ msgid "ELAN"
+#~ msgstr ""
+
 msgid "Edit"
 msgstr "Editar"
 
@@ -219,8 +264,8 @@ msgstr "Endereço de E-mail"
 msgid "Enter each choice, separated by commas"
 msgstr "Introduza cada escolha, separada por vírgulas"
 
-msgid "Error"
-msgstr "Erro"
+#~ msgid "Error"
+#~ msgstr ""
 
 msgid "Export"
 msgstr "Exportar"
@@ -244,7 +289,7 @@ msgid "File locking can happen when a media player is holding on to a video file
 msgstr "O travamento de arquivos pode acontecer quando um reprodutor de mídia está segurando um arquivo de vídeo. Também pode ser causado por anti-vírus ou sincronização de arquivos. Se o problema continuar, por favor reinicie o lameta e tente novamente."
 
 msgid "File to Import:"
-msgstr ""
+msgstr "Arquivo para importação:"
 
 msgid "Font Size"
 msgstr "Tamanho de fonte"
@@ -258,11 +303,17 @@ msgstr "Para documentar uma outra língua"
 msgid "For documenting my own language"
 msgstr "Para documentar minha própria língua"
 
+#~ msgid "Format"
+#~ msgstr ""
+
 msgid "Found file with a name containing 'Consent'"
 msgstr "Arquivo encontrado com um nome contendo \"Consent\"(imento)"
 
 msgid "Found no file with a name containing 'Consent'"
 msgstr "Nenhum arquivo encontrado com um nome contendo \"Consent\"(imento)"
+
+#~ msgid "Frame rate"
+#~ msgstr ""
 
 msgid "Full Name"
 msgstr "Nome Completo"
@@ -285,8 +336,14 @@ msgstr "Como você está usando lameta?"
 msgid "ID"
 msgstr "ID"
 
-msgid "IMDI Mode"
-msgstr "Modo IMDI"
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr "Somente IMDI"
@@ -295,19 +352,19 @@ msgid "Image"
 msgstr "Imagem"
 
 msgid "Import Spreadsheet of People"
-msgstr ""
+msgstr "Importar planilha de pessoas"
 
 msgid "Import Spreadsheet of Sessions"
-msgstr ""
+msgstr "Importar planilha de sessões"
 
 msgid "Import {chosenCount} People"
-msgstr ""
+msgstr "Importar {chosenCount} Pessoas"
 
 msgid "Import {chosenCount} Sessions"
-msgstr ""
+msgstr "Importar {chosenCount} Sessões"
 
 msgid "Importing..."
-msgstr ""
+msgstr "Importando..."
 
 msgid "Indicates that this is the father or mother's primary language."
 msgstr "Indica que esta é a língua principal do pai ou da mãe."
@@ -318,14 +375,20 @@ msgstr "Idioma da Interface"
 msgid "Language Code"
 msgstr "Código da língua"
 
+#~ msgid "Languages"
+#~ msgstr ""
+
 msgid "Larger"
 msgstr "Maior"
 
 msgid "Learner"
 msgstr "Aprendiz"
 
+#~ msgid "Length"
+#~ msgstr ""
+
 msgid "Linked to {p}"
-msgstr ""
+msgstr "Vinculado a {p}"
 
 msgid "Mark as a primary language of the mother."
 msgstr "Marcar como língua principal da mãe."
@@ -337,16 +400,22 @@ msgid "Mark as primary language of the father."
 msgstr "Marcar como língua principal do pai."
 
 msgid "Mark for Deletion or Export"
-msgstr ""
+msgstr "Marcar para excluir ou exportar"
+
+#~ msgid "Mark for Export"
+#~ msgstr ""
 
 msgid "Mark for Export or Deletion"
-msgstr ""
+msgstr "Marcar para exportar ou excluir"
 
 msgid "Media Folder"
-msgstr ""
+msgstr "Pasta de Mídia"
+
+#~ msgid "Media Folder Settings"
+#~ msgstr ""
 
 msgid "Media Folder Settings..."
-msgstr ""
+msgstr "Configurações da pasta de mídia..."
 
 msgid "Modified"
 msgstr "Modificado"
@@ -363,14 +432,14 @@ msgstr "Nova Pessoa"
 msgid "New Session"
 msgstr "Nova Sessão"
 
-msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
-msgstr ""
+#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
+#~ msgstr ""
 
-msgid "Not important to the archive, but will be included"
-msgstr ""
+msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
+msgstr "Normalmente, quando você adiciona um arquivo a um projeto, sessão ou pessoa, esse arquivo é copiado para a mesma pasta do projeto lameta. Para alguns dos arquivos, talvez prefira deixá-los onde estão e apenas criar um \"link\" para eles."
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
-msgstr ""
+msgstr "Observe que esse é um link para um arquivo no diretório \"Arquivos de Mídia\". Aqui, você renomeia esse link, não o arquivo original para o qual ele aponta. Se você criar posteriormente uma exportação que inclua esse arquivo, a exportação usará esse nome."
 
 msgid "Notes"
 msgstr "Anotações"
@@ -379,7 +448,7 @@ msgid "OK"
 msgstr "OK"
 
 msgid "OPEX + Files"
-msgstr ""
+msgstr "OPEX + Arquivos"
 
 msgid "One or more files are still being copied into your project."
 msgstr "Um ou mais arquivos ainda estão sendo copiados em seu projeto."
@@ -393,6 +462,9 @@ msgstr "Abrir Projeto"
 msgid "Open Project..."
 msgstr "Abrir Projeto..."
 
+#~ msgid "Open SayMore Project"
+#~ msgstr ""
+
 msgid "Open in ELAN"
 msgstr "Abrir em ELAN"
 
@@ -402,8 +474,11 @@ msgstr "Abrir em programa associado a este tipo de arquivo"
 msgid "Other Documents"
 msgstr "Outros Documentos"
 
-msgid "PARADISEC Mode"
-msgstr "Modo PARADISEC"
+#~ msgid "Other Languages"
+#~ msgstr ""
+
+#~ msgid "PARADISEC Mode"
+#~ msgstr ""
 
 msgid "Paradisec CSV"
 msgstr "CSV Paradisec"
@@ -421,13 +496,19 @@ msgid "Please Register"
 msgstr "Por Favor, Registre-se"
 
 msgid "Please remove characters that not allowed by the Archive Settings."
-msgstr ""
+msgstr "Remova os caracteres que não são permitidos pelas configurações de arquivo."
 
 msgid "Please wait until all files are finished copying into this folder"
 msgstr "Por favor, aguarde até que todos os arquivos tenham terminado de copiar para esta pasta"
 
 msgid "Project"
 msgstr "Projeto"
+
+#~ msgid "Project will be created in: {folderPath}"
+#~ msgstr ""
+
+#~ msgid "Project will be created in: {path}"
+#~ msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr "O projeto será criado em: {path}."
@@ -468,6 +549,9 @@ msgstr "A renomeação falhou porque já existe um arquivo com esse nome."
 msgid "Report a problem"
 msgstr "Reportar um problema"
 
+#~ msgid "Resolution"
+#~ msgstr ""
+
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "Reinicie lameta e faça a renomeação antes de reproduzir o vídeo novamente."
 
@@ -481,7 +565,10 @@ msgid "Saving"
 msgstr "Salvando"
 
 msgid "Saving before rename..."
-msgstr ""
+msgstr "Salvando antes de renomear..."
+
+#~ msgid "SayMore/SayMore Project Files"
+#~ msgstr ""
 
 msgid "Select All"
 msgstr "Selecionar Todos"
@@ -498,6 +585,12 @@ msgstr "Sessões"
 msgid "Show All"
 msgstr "Mostrar tudo"
 
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
+msgstr ""
+
 msgid "Show Release Notes"
 msgstr "Mostrar as Notas de Lançamento"
 
@@ -511,7 +604,7 @@ msgid "Show in Finder"
 msgstr "Mostrar no Finder"
 
 msgid "Show me the folder with the problem"
-msgstr ""
+msgstr "Mostre-me a pasta com o problema"
 
 msgid "Show more releases"
 msgstr "Mostrar mais lançamentos"
@@ -523,13 +616,13 @@ msgid "Smaller"
 msgstr "Menor"
 
 msgid "Some operating systems would not allow that name."
-msgstr ""
+msgstr "Alguns sistemas operacionais não permitem esse nome."
 
 msgid "Something is wrong here..."
-msgstr ""
+msgstr "Há algo errado aqui..."
 
 msgid "Sorry, no slashes are allowed"
-msgstr ""
+msgstr "Desculpe, mas não são permitidos travessões"
 
 msgid "Start Screen"
 msgstr "Tela inicial"
@@ -543,20 +636,29 @@ msgstr "Texto"
 msgid "That name would lead to an empty filename."
 msgstr "Esse nome resultaria em um nome de arquivo vazio."
 
+#~ msgid "That would lead to an empty filename"
+#~ msgstr ""
+
 msgid "The IMDI files were validated."
-msgstr ""
+msgstr "Os arquivos IMDI foram validados."
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
-msgstr ""
+msgstr "O arquivo está ausente do local esperado na pasta de mídia. A pasta de mídia está definida como {m} e esse arquivo deveria estar em {e}"
 
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr "O {fieldNameInUiLanguage} não pode estar vazio"
 
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
+msgstr "Há mais de um arquivo do tipo \"{projectType}\" nessa pasta, e só pode haver um."
+
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
-msgid "There is a problem with {displayName}. Click for more information."
-msgstr ""
+#~ msgid "There is a problem with {displayName}. Click for more information."
+#~ msgstr ""
+
+#~ msgid "There is already a Person with that name or code"
+#~ msgstr ""
 
 msgid "There is already a Person with that name or code."
 msgstr "Já existe uma Pessoa com esse nome ou código."
@@ -564,29 +666,44 @@ msgstr "Já existe uma Pessoa com esse nome ou código."
 msgid "There is already a file here with the name"
 msgstr "Já existe aqui um arquivo com o nome"
 
+#~ msgid "There is already a project at: {path}"
+#~ msgstr ""
+
 msgid "There is already a project at: {path}."
 msgstr "Já existe um projeto em: {path}."
 
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "Já existe um {folderKind} \"{value}\"."
 
+#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with that name or code '{value}'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with the name '{value}'"
+#~ msgstr ""
+
 msgid "There was a problem exporting:"
 msgstr "Houve um problema na exportação:"
 
-msgid "This Personally Identifiable Information may not be exported by some formats."
-msgstr ""
-
 msgid "This XML conforms to the IMDI schema."
-msgstr ""
+msgstr "Esse XML está em conformidade com o esquema IMDI."
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
-msgstr ""
+msgstr "Esse é um link, mas o lameta não sabe onde encontrar a pasta de mídia para esse projeto. Consulte Arquivo: Configurações da Pasta de Mídia."
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
-msgstr ""
+msgstr "Essa configuração é exclusiva da conta que você está usando neste computador. Um colega em outro computador precisará definir esse valor para o local correto no computador dele."
 
-msgid "This will not be consumed by the archive. It is only for the use of the researcher."
-msgstr ""
+#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+#~ msgstr ""
+
+#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
+#~ msgstr ""
 
 msgid "Type"
 msgstr "Tipo"
@@ -603,25 +720,42 @@ msgstr "Valor"
 msgid "Video"
 msgstr "Vídeo"
 
+#~ msgid "Video Codec"
+#~ msgstr ""
+
 msgid "View"
 msgstr "Visualizar"
 
 msgid "View Release Notes"
 msgstr "Ver notas de lançamento"
 
-msgid "Warning"
-msgstr "Alerta"
+#~ msgid "Warning"
+#~ msgstr ""
 
 msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
-msgstr ""
+msgstr "Não temos dicas específicas para esse erro. Se você não conseguir solucioná-lo\n"
+"reiniciando o computador, informe o problema em \n"
+"https://github.com/onset/lameta/issues."
 
 msgid "What would you like to call this project?"
 msgstr "Como você gostaria de chamar este projeto?"
 
+#~ msgid "Width"
+#~ msgstr ""
+
 msgid "You are running lameta version:"
-msgstr ""
+msgstr "Você está usando a versão lameta:"
+
+#~ msgid "You are running lameta version: {v}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {0}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {version}"
+#~ msgstr ""
 
 msgid "You cannot add files of that type"
 msgstr "Você não pode adicionar arquivos desse tipo"
@@ -638,14 +772,20 @@ msgstr "Zip de CSVs"
 msgid "choose..."
 msgstr "escolha..."
 
+#~ msgid "height"
+#~ msgstr ""
+
 msgid "lameta"
 msgstr "lameta"
 
 msgid "lameta  was not able to rename that file."
 msgstr "lameta não conseguiu renomear aquele arquivo."
 
+#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
+#~ msgstr ""
+
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
-msgstr ""
+msgstr "lameta permite que você especifique uma \"pasta de mídia\". Quando você adiciona arquivos que estão em algum lugar dentro dessa pasta, lameta criará um link em vez de fazer uma cópia. Essa pasta pode estar em qualquer lugar, inclusive na raiz de uma unidade externa onde você mantém gravações de vídeo grandes."
 
 msgid "lameta and SayMore Project Files"
 msgstr "Arquivos de Projeto lameta e SayMore"
@@ -654,19 +794,19 @@ msgid "lameta cannot export files while files are still being copied in."
 msgstr "lameta não pode exportar arquivos enquanto os arquivos ainda estão sendo copiados."
 
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
-msgstr ""
+msgstr "o lameta não consegue localizar a pasta de mídia {m}. Veja o arquivo: Configurações da Pasta de Mídia."
 
 msgid "lameta could not find a matching Person for the following contributors:"
-msgstr ""
+msgstr "lameta não conseguiu encontrar uma pessoa correspondente para os seguintes colaboradores:"
 
 msgid "lameta could not rename the directory."
 msgstr "lameta não conseguiu renomear o diretório."
 
 msgid "lameta expected to find a .link file at {e}"
-msgstr ""
+msgstr "lameta espera encontrar um arquivo .link em {e}"
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
-msgstr ""
+msgstr "lameta tentou renomear a pasta \"{oldFolderName}\" para \"{newFolderName}\", mas já existe uma pasta com esse nome."
 
 msgid "lameta was not able to delete the file."
 msgstr "lameta não conseguiu excluir o arquivo."
@@ -677,19 +817,34 @@ msgstr "lameta não conseguiu colocar este arquivo na lixeira"
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr "lameta não conseguiu renomear um dos arquivos da pasta."
 
+#~ msgid "lameta was not able to rename that file."
+#~ msgstr ""
+
 msgid "lameta was not able to rename the folder."
 msgstr "lameta não conseguiu renomear a pasta."
 
 #. Shows in a tooltip on an info icon in the Notes tab
 msgid "lameta will not export Notes to MIDI"
-msgstr ""
+msgstr "lameta não exportará notas para MIDI"
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
-msgstr ""
+msgstr "o lameta abrirá essa pasta no disco rígido e, em seguida, sairá. Você deve abrir esses arquivos {projectType} em um editor de texto, decidir qual deles deseja e excluir os outros. Aquele que você escolher será chamado de {name}."
+
+#~ msgid "undefined"
+#~ msgstr ""
+
+#~ msgid "{0}"
+#~ msgstr ""
 
 msgid "{0} Marked Sessions"
 msgstr "{0} Sessões Marcadas"
 
+#~ msgid "{0} will be moved to the Trash"
+#~ msgstr ""
+
+#~ msgid "{countOfMarkedSessions} Marked Sessions"
+#~ msgstr ""
+
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
-msgstr ""
+msgstr "{descriptionOfWhatWillBeDeleted} será movido para a lixeira"
 

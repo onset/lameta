@@ -3,8 +3,14 @@ import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurati
 const sanitizeFilename = require("sanitize-filename");
 const ASCIIFolder = require("fold-to-ascii");
 
-export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
-  let n = name;
+
+// This weirdness is to break a circular dependency that we get if we just import the function directly.
+let _archiveUsesImdi: () => boolean = () => false;
+export function initializeSanitizeForArchive(fn: () => boolean) {
+  _archiveUsesImdi = fn;
+}
+  export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
+    let n = name;
   switch (forceRules || GetOtherConfigurationSettings().fileNameRules) {
     case "ASCII": {
       // first, get to ascii only

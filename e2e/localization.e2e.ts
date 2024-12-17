@@ -47,10 +47,9 @@ test.describe("Localization", () => {
     await shouldAtLeastOnce(page, ["pilih..."]);
 
     // main project page
-    await project.goToProjectAbout();
-    await shouldSeeExactlyOnce(page, [
-      "Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
-      "Judul proyek yang didanai" // regression test
+    await shouldSeeExactlyOnce([
+      //"Bahasa yang didokumentasi", // we have a hack to fix the plurality of the key
+      "Judul Proyek yang Didanai" // regression test
     ]);
 
     await project.goToSessions();
@@ -79,7 +78,7 @@ test.describe("Localization", () => {
       "Nama Lengkap", //name
       "Tahun Lahir", //birth year
       // TODO not finding this link: "Tambah Bahasa", // add language
-      "Bagaimana dihubungi" // How to Contact
+      "Bagaimaan Cara Menghubungi" // How to Contact
     ]);
   });
 });

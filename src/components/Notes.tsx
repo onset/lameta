@@ -19,7 +19,7 @@ export const Notes: React.FunctionComponent<{
         overflow: auto;
       `}
     >
-      {GetOtherConfigurationSettings().showImdiPreview && (
+      {GetOtherConfigurationSettings().archiveUsesImdi && (
         <InfoIndicator
           css={css`
             margin-left: auto;

@@ -1,11 +1,12 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-// tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { Contribution } from "../model/file/File";
 import { translateRole } from "../other/localization";
 import { titleCase } from "title-case";
 import { IChoice } from "../model/field/Field";
+import { OptionWithTooltip } from "./OptionWithTooltip";
+import { css } from "@emotion/react";
 
 export interface IProps {
   contribution: Contribution;
@@ -22,11 +23,11 @@ class RoleChooser extends React.Component<IProps> {
 
     const options = choices.map((c) => {
       const label = translateRole(c.id);
-      return new Object({
-        value: c.id, // this is snake case, as that's what we get from olac-roles.xml
+      return {
+        value: c.id, // snake case, matching olac-roles.xml
         label,
         title: c.description
-      });
+      };
     });
     const currentValueWrappedForSelect = {
       value: this.props.contribution.role,
@@ -43,6 +44,7 @@ class RoleChooser extends React.Component<IProps> {
           this.setState({});
         }}
         options={options}
+        components={{ Option: OptionWithTooltip }}
       />
     );
   }

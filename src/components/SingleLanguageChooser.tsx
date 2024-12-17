@@ -1,14 +1,16 @@
-import { css } from "@emotion/react";
-/* removed emotion jsx declaration */
-
-import { Field } from "../model/field/Field";
-// tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
-import { LanguageOption, LanguagePill } from "./LanguagePill";
+import {
+  LanguageOption,
+  LanguagePill,
+  languagePillHoverStyle,
+  LanguagePillForSingle
+} from "./LanguagePill";
 import { observer } from "mobx-react";
+import { components, SingleValueProps } from "react-select";
+import { css } from "@emotion/react";
 
 const saymore_orange = "#e69664";
 
@@ -73,10 +75,13 @@ export const SingleLanguageChooser: React.FunctionComponent<
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <AsyncSelect
-        tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
+        tabIndex={props.tabIndex ? props.tabIndex : undefined}
         name={props.labelInUILanguage}
+        // this wants to be on the language pill but it doesn't get the hover event
+        // so we have to put it here
+        css={languagePillHoverStyle}
         components={{
-          SingleValue: LanguagePill,
+          SingleValue: LanguagePillForSingle,
           Option: LanguageOption,
           // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
           DropdownIndicator: null

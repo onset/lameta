@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-01 21:27\n"
+"PO-Revision-Date: 2024-12-08 00:02\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -18,20 +18,38 @@ msgstr ""
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
 
+#~ msgid "\"Open in program associated with this file type"
+#~ msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
 msgstr ""
 
+#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
+
 msgid "A folder with an IMDI file for the project and each session."
 msgstr ""
+
+#~ msgid "A single ISLE Meta Data Initiative XML file."
+#~ msgstr ""
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr ""
 
+#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
+#~ msgstr ""
+
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr ""
+
+#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
+
+#~ msgid "A zip file with an IMDI file for the project and each session."
+#~ msgstr ""
 
 msgid "Abandon files that are still copying"
 msgstr ""
@@ -40,19 +58,19 @@ msgid "About This Project"
 msgstr ""
 
 msgid "About lameta"
-msgstr ""
+msgstr "关于 lameta"
 
 msgid "Access"
 msgstr "访问权限"
 
 msgid "Access Protocol"
-msgstr ""
+msgstr "访问协议"
 
 msgid "Add Files"
-msgstr ""
+msgstr "添加文件"
 
 msgid "Add Language"
-msgstr ""
+msgstr "添加语言"
 
 msgid "Add documents here that describe the projects and corpus."
 msgstr ""
@@ -61,247 +79,286 @@ msgid "Add documents here that don't seem to fit anywhere else. An example would
 msgstr ""
 
 msgid "All Sessions"
+msgstr "所有时段"
+
+msgid "As Personally Identifiable Information, this will not be exported to other formats."
 msgstr ""
 
 msgid "As a curator"
-msgstr ""
+msgstr "作为管理员"
 
 msgid "As a developer"
-msgstr ""
+msgstr "作为开发人员"
 
 msgid "As a trainer"
-msgstr ""
+msgstr "作为培训师"
 
 msgid "Audio"
-msgstr ""
+msgstr "音讯"
+
+#~ msgid "Audio Bit Depth"
+#~ msgstr ""
+
+#~ msgid "Audio Bit Rate"
+#~ msgstr ""
+
+#~ msgid "Audio Channels"
+#~ msgstr ""
+
+#~ msgid "Audio Codec"
+#~ msgstr ""
+
+#~ msgid "Audio Sample Rate"
+#~ msgstr ""
 
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgid "Cannot add files of that type"
-msgstr ""
+msgstr "无法添加该类型的文件"
 
 msgid "Change Name To:"
-msgstr ""
+msgstr "更名为："
 
 msgid "Change..."
-msgstr ""
+msgstr "更改..."
+
+#~ msgid "Check for new version"
+#~ msgstr ""
 
 msgid "Choose File"
-msgstr ""
+msgstr "选择文件"
 
 msgid "Choose Language"
-msgstr ""
+msgstr "选择语言"
 
 msgid "Choose Spreadsheet Mapping:"
-msgstr ""
+msgstr "选择工作表映射"
 
 msgid "Choose an export format:"
-msgstr ""
+msgstr "选择导出格式"
 
 msgid "Choose which Sessions to export:"
-msgstr ""
+msgstr "选择要导出的时段"
 
 msgid "Clear"
-msgstr ""
+msgstr "清除"
 
 msgid "Close"
-msgstr ""
-
-msgid "Collection"
-msgstr ""
+msgstr "关闭"
 
 msgid "Comments"
-msgstr ""
+msgstr "评论"
 
 msgid "Confirm Delete"
-msgstr ""
+msgstr "确认删除"
 
 msgid "Contributions"
-msgstr ""
+msgstr "贡献"
 
 msgid "Contributors"
-msgstr ""
+msgstr "贡献者"
 
 msgid "Copy"
-msgstr ""
+msgstr "复制"
 
 msgid "Copy Requested..."
-msgstr ""
+msgstr "已请求复制..."
 
 msgid "Copying in Files..."
-msgstr ""
+msgstr "正在复制文件..."
 
 msgid "Copying..."
-msgstr ""
+msgstr "正在复制..."
 
 msgid "Create"
-msgstr ""
+msgstr "创建"
 
 msgid "Create New Project"
-msgstr ""
+msgstr "创建新项目"
 
 msgid "Create New Project with Sample Data"
-msgstr ""
+msgstr "使用样本数据创建新项目"
 
 msgid "Create New lameta Project"
-msgstr ""
+msgstr "创建新lameta项目"
 
 msgid "Create Project Using Sample Data"
-msgstr ""
+msgstr "使用样本数据创建新项目"
 
 msgid "Create Project..."
-msgstr ""
+msgstr "创建项目..."
 
 msgid "Credits"
-msgstr ""
+msgstr "鸣谢"
 
 msgid "Custom Access Choices"
 msgstr "自定义访问选项"
 
 msgid "Custom Field"
-msgstr ""
+msgstr "自定义字段"
+
+#~ msgid "Custom Fields"
+#~ msgstr ""
 
 msgid "Cut"
-msgstr ""
+msgstr "剪辑"
+
+#~ msgid "Date"
+#~ msgstr ""
 
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 msgid "Delete All Marked People..."
-msgstr ""
+msgstr "删除所有标记的人..."
 
 msgid "Delete All Marked Sessions..."
-msgstr ""
+msgstr "删除所有标记的时段..."
 
 msgid "Delete File..."
-msgstr ""
+msgstr "删除文件..."
 
 msgid "Delete Person..."
-msgstr ""
+msgstr "删除人..."
 
 msgid "Delete Session"
-msgstr ""
+msgstr "删除时段"
 
 msgid "Delete Session..."
-msgstr ""
+msgstr "删除时段..."
 
 msgid "Delete link to file..."
-msgstr ""
+msgstr "删除文件链接..."
 
 msgid "Deleting..."
-msgstr ""
+msgstr "正在删除…"
 
 msgid "Description Documents"
-msgstr ""
+msgstr "说明文档"
 
 msgid "Do not quit"
-msgstr ""
+msgstr "不退出"
 
 msgid "Done"
-msgstr ""
+msgstr "已完成"
 
 msgid "Download"
-msgstr ""
+msgstr "下载"
 
 msgid "Duplicate Person"
-msgstr ""
+msgstr "复制人"
 
 msgid "Duplicate Session"
-msgstr ""
+msgstr "复制时段"
+
+#~ msgid "ELAN"
+#~ msgstr ""
 
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 msgid "Email Address"
-msgstr ""
+msgstr "电邮地址"
 
 msgid "Enter each choice, separated by commas"
-msgstr ""
+msgstr "输入每个选项，用逗号分隔"
 
-msgid "Error"
-msgstr ""
+#~ msgid "Error"
+#~ msgstr ""
 
 msgid "Export"
-msgstr ""
+msgstr "导出"
 
 msgid "Export Project"
-msgstr ""
+msgstr "导出项目"
 
 msgid "Export Project..."
-msgstr ""
+msgstr "导出项目..."
 
 msgid "Exporting..."
-msgstr ""
+msgstr "正在导出..."
 
 msgid "Field"
-msgstr ""
+msgstr "栏位"
 
 msgid "File"
-msgstr ""
+msgstr "文件"
 
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
 msgid "File to Import:"
-msgstr ""
+msgstr "要导入的文件："
 
 msgid "Font Size"
-msgstr ""
+msgstr "字体大小"
 
 msgid "For a course or workshop"
-msgstr ""
+msgstr "用于课程或工作坊"
 
 msgid "For documenting another language"
-msgstr ""
+msgstr "用于记录另一种语言"
 
 msgid "For documenting my own language"
-msgstr ""
+msgstr "用于记录自己的语言"
+
+#~ msgid "Format"
+#~ msgstr ""
 
 msgid "Found file with a name containing 'Consent'"
-msgstr ""
+msgstr "找到名称包含“同意”的文件"
 
 msgid "Found no file with a name containing 'Consent'"
-msgstr ""
+msgstr "未找到名称包含“同意”的文件"
+
+#~ msgid "Frame rate"
+#~ msgstr ""
 
 msgid "Full Name"
 msgstr "全称"
 
 msgid "Help"
-msgstr ""
+msgstr "帮助"
 
 msgid "Help translate"
-msgstr ""
+msgstr "协助翻译"
 
 msgid "Hide Others"
-msgstr ""
+msgstr "隐藏其他"
 
 msgid "Hide lameta"
-msgstr ""
+msgstr "隐藏lameta"
 
 msgid "How are you using lameta?"
-msgstr ""
+msgstr "您是如何使用lameta的？"
 
 msgid "ID"
 msgstr "ID"
 
-msgid "IMDI Mode"
-msgstr ""
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
-msgstr ""
+msgstr "仅用 IMDI"
 
 msgid "Image"
-msgstr ""
+msgstr "图片"
 
 msgid "Import Spreadsheet of People"
-msgstr ""
+msgstr "导入人员表格"
 
 msgid "Import Spreadsheet of Sessions"
-msgstr ""
+msgstr "导入时段表格"
 
 msgid "Import {chosenCount} People"
-msgstr ""
+msgstr "导入 {chosenCount} 人"
 
 msgid "Import {chosenCount} Sessions"
 msgstr ""
@@ -318,11 +375,17 @@ msgstr ""
 msgid "Language Code"
 msgstr ""
 
+#~ msgid "Languages"
+#~ msgstr ""
+
 msgid "Larger"
 msgstr ""
 
 msgid "Learner"
 msgstr ""
+
+#~ msgid "Length"
+#~ msgstr ""
 
 msgid "Linked to {p}"
 msgstr ""
@@ -339,11 +402,17 @@ msgstr ""
 msgid "Mark for Deletion or Export"
 msgstr ""
 
+#~ msgid "Mark for Export"
+#~ msgstr ""
+
 msgid "Mark for Export or Deletion"
 msgstr ""
 
 msgid "Media Folder"
 msgstr ""
+
+#~ msgid "Media Folder Settings"
+#~ msgstr ""
 
 msgid "Media Folder Settings..."
 msgstr ""
@@ -363,10 +432,10 @@ msgstr ""
 msgid "New Session"
 msgstr ""
 
-msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
-msgstr ""
+#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
+#~ msgstr ""
 
-msgid "Not important to the archive, but will be included"
+msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
@@ -393,6 +462,9 @@ msgstr ""
 msgid "Open Project..."
 msgstr ""
 
+#~ msgid "Open SayMore Project"
+#~ msgstr ""
+
 msgid "Open in ELAN"
 msgstr ""
 
@@ -402,8 +474,11 @@ msgstr ""
 msgid "Other Documents"
 msgstr ""
 
-msgid "PARADISEC Mode"
-msgstr ""
+#~ msgid "Other Languages"
+#~ msgstr ""
+
+#~ msgid "PARADISEC Mode"
+#~ msgstr ""
 
 msgid "Paradisec CSV"
 msgstr ""
@@ -428,6 +503,12 @@ msgstr ""
 
 msgid "Project"
 msgstr ""
+
+#~ msgid "Project will be created in: {folderPath}"
+#~ msgstr ""
+
+#~ msgid "Project will be created in: {path}"
+#~ msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr ""
@@ -468,6 +549,9 @@ msgstr ""
 msgid "Report a problem"
 msgstr ""
 
+#~ msgid "Resolution"
+#~ msgstr ""
+
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
@@ -483,6 +567,9 @@ msgstr ""
 msgid "Saving before rename..."
 msgstr ""
 
+#~ msgid "SayMore/SayMore Project Files"
+#~ msgstr ""
+
 msgid "Select All"
 msgstr ""
 
@@ -496,6 +583,12 @@ msgid "Sessions"
 msgstr ""
 
 msgid "Show All"
+msgstr ""
+
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
 msgstr ""
 
 msgid "Show Release Notes"
@@ -543,6 +636,9 @@ msgstr ""
 msgid "That name would lead to an empty filename."
 msgstr ""
 
+#~ msgid "That would lead to an empty filename"
+#~ msgstr ""
+
 msgid "The IMDI files were validated."
 msgstr ""
 
@@ -555,8 +651,14 @@ msgstr ""
 msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
 msgstr ""
 
-msgid "There is a problem with {displayName}. Click for more information."
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
+
+#~ msgid "There is a problem with {displayName}. Click for more information."
+#~ msgstr ""
+
+#~ msgid "There is already a Person with that name or code"
+#~ msgstr ""
 
 msgid "There is already a Person with that name or code."
 msgstr ""
@@ -564,16 +666,28 @@ msgstr ""
 msgid "There is already a file here with the name"
 msgstr ""
 
+#~ msgid "There is already a project at: {path}"
+#~ msgstr ""
+
 msgid "There is already a project at: {path}."
 msgstr ""
 
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr ""
 
-msgid "There was a problem exporting:"
-msgstr ""
+#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
+#~ msgstr ""
 
-msgid "This Personally Identifiable Information may not be exported by some formats."
+#~ msgid "There is already a {folderKind} with that name or code '{value}'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with the name '{value}'"
+#~ msgstr ""
+
+msgid "There was a problem exporting:"
 msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
@@ -585,8 +699,11 @@ msgstr ""
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr ""
 
-msgid "This will not be consumed by the archive. It is only for the use of the researcher."
-msgstr ""
+#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+#~ msgstr ""
+
+#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
+#~ msgstr ""
 
 msgid "Type"
 msgstr ""
@@ -603,14 +720,17 @@ msgstr ""
 msgid "Video"
 msgstr ""
 
+#~ msgid "Video Codec"
+#~ msgstr ""
+
 msgid "View"
 msgstr ""
 
 msgid "View Release Notes"
 msgstr ""
 
-msgid "Warning"
-msgstr ""
+#~ msgid "Warning"
+#~ msgstr ""
 
 msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -620,8 +740,20 @@ msgstr ""
 msgid "What would you like to call this project?"
 msgstr ""
 
+#~ msgid "Width"
+#~ msgstr ""
+
 msgid "You are running lameta version:"
 msgstr ""
+
+#~ msgid "You are running lameta version: {v}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {0}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {version}"
+#~ msgstr ""
 
 msgid "You cannot add files of that type"
 msgstr ""
@@ -638,11 +770,17 @@ msgstr ""
 msgid "choose..."
 msgstr ""
 
+#~ msgid "height"
+#~ msgstr ""
+
 msgid "lameta"
 msgstr ""
 
 msgid "lameta  was not able to rename that file."
 msgstr ""
+
+#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
+#~ msgstr ""
 
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr ""
@@ -677,6 +815,9 @@ msgstr ""
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr ""
 
+#~ msgid "lameta was not able to rename that file."
+#~ msgstr ""
+
 msgid "lameta was not able to rename the folder."
 msgstr ""
 
@@ -687,8 +828,20 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr ""
 
+#~ msgid "undefined"
+#~ msgstr ""
+
+#~ msgid "{0}"
+#~ msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr ""
+
+#~ msgid "{0} will be moved to the Trash"
+#~ msgstr ""
+
+#~ msgid "{countOfMarkedSessions} Marked Sessions"
+#~ msgstr ""
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr ""

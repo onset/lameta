@@ -20,7 +20,7 @@
   },
   {
     "id": "formulaic_discourse",
-    "label": "Formulaic Discourse",
+    "label": "Formulaic discourse",
     "definition": "A ritually or conventionally structured discourse.",
     "examples": [
       "Prayer",
@@ -34,7 +34,7 @@
   },
   {
     "id": "interactive_discourse",
-    "label": "Interactive Discourse",
+    "label": "Interactive discourse",
     "definition": "Linguistic communication between two or more participants.",
     "examples": [
       "Conversation",
@@ -53,13 +53,13 @@
   },
   {
     "id": "language_play",
-    "label": "Language Play",
+    "label": "Language play",
     "definition": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
     "examples": ["Verbal Art", "Joke", "Secret Language", "Speech Disguise"]
   },
   {
     "id": "ludic",
-    "label": "Ludic Discourse",
+    "label": "Ludic discourse",
     "definition": "Language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
     "examples": [
       "play languages",
@@ -114,13 +114,13 @@
   },
   {
     "id": "instrumental_music",
-    "label": "Instrumental Music",
+    "label": "Instrumental music",
     "definition": "Music intended to be performed by a musical instrument or group of instruments.",
     "examples": []
   },
   {
     "id": "unintelligible_speech",
-    "label": "Unintelligible Speech",
+    "label": "Unintelligible speech",
     "definition": "Utterances that are not intended to be interpretable as ordinary language.",
     "examples": [
       "Sacred Language",
@@ -145,7 +145,7 @@
   },
   {
     "id": "oral_history",
-    "label": "Oral History",
+    "label": "Oral history",
     "source": "ELAR genres"
   },
   {
@@ -236,6 +236,11 @@
   {
     "id": "grammar",
     "label": "Grammar",
+    "source": "ELAR genres"
+  },
+  {
+    "id": "collection_description",
+    "label": "Collection description",
     "source": "ELAR genres"
   }
 ]

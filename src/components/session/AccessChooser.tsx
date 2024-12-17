@@ -62,7 +62,7 @@ class AccessChooser extends React.Component<
           //doesn't work data-testid="access-chooser"
           // playwright locator can't find name here either: name={"foobar"}
           id="access-chooser" // for playwright
-          tabIndex={this.props.tabIndex ? this.props.tabIndex.toString() : ""}
+          tabIndex={this.props.tabIndex ? this.props.tabIndex : undefined}
           value={currentOption}
           placeholder=""
           onChange={(s: any) => {

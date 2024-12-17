@@ -92,7 +92,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             label: archiveConfigurationChoice?.label
           }}
           onChange={(event) => {
-            setArchiveConfigurationKey(event.value);
+            setArchiveConfigurationKey(event!.value);
           }}
           options={choices}
         />

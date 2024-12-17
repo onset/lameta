@@ -68,7 +68,6 @@ describe("Consent Form Inclusion", () => {
       [],
       IMDIMode.OPEX,
       true, //<-- copy in files
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (f) => true,
       true
     );

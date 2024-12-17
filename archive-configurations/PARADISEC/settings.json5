@@ -1,4 +1,4 @@
 {
   configurationFullName: "PARADISEC",
-  showParadisec: true
+  archiveUsesParadisec: true
 }
