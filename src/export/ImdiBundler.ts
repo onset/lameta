@@ -111,19 +111,17 @@ export default class ImdiBundler {
           copyInProjectFiles
         );
 
-        // I'm thinking, this only makes sense if we're going to provide the files
-        if (copyInProjectFiles) {
-          await this.addConsentBundle(
-            project,
-            rootDirectory,
-            secondLevel,
-            childrenSubpaths,
-            imdiMode,
-            copyInProjectFiles,
-            folderFilter,
-            omitNamespaces
-          );
-        }
+        // ELAR wants an IMDI for consent files even if we aren't copying them in
+        await this.addConsentBundle(
+          project,
+          rootDirectory,
+          secondLevel,
+          childrenSubpaths,
+          imdiMode,
+          copyInProjectFiles,
+          folderFilter,
+          omitNamespaces
+        );
 
         //---- Sessions ----
 
