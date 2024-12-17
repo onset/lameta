@@ -31,16 +31,7 @@ msgstr ""
 msgid "Abandon files that are still copying"
 msgstr ""
 
-msgid "About This Project"
-msgstr ""
-
 msgid "About lameta"
-msgstr ""
-
-msgid "Access"
-msgstr ""
-
-msgid "Access Protocol"
 msgstr ""
 
 msgid "Add Files"
@@ -58,7 +49,7 @@ msgstr ""
 msgid "All Sessions"
 msgstr ""
 
-msgid "As Personally Identifiable Information, this will not be exported to other formats."
+msgid "Archive"
 msgstr ""
 
 msgid "As a curator"
@@ -106,6 +97,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Collection"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
@@ -149,9 +143,6 @@ msgid "Create Project..."
 msgstr ""
 
 msgid "Credits"
-msgstr ""
-
-msgid "Custom Access Choices"
 msgstr ""
 
 msgid "Custom Field"
@@ -211,12 +202,6 @@ msgstr ""
 msgid "Email Address"
 msgstr ""
 
-msgid "Enter each choice, separated by commas"
-msgstr ""
-
-#~ msgid "Error"
-#~ msgstr ""
-
 msgid "Export"
 msgstr ""
 
@@ -262,6 +247,9 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
+msgid "Funding Project"
+msgstr ""
+
 msgid "Help"
 msgstr ""
 
@@ -279,9 +267,6 @@ msgstr ""
 
 msgid "ID"
 msgstr ""
-
-#~ msgid "IMDI Mode"
-#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr ""
@@ -313,6 +298,9 @@ msgstr ""
 msgid "Language Code"
 msgstr ""
 
+msgid "Languages"
+msgstr ""
+
 msgid "Larger"
 msgstr ""
 
@@ -320,6 +308,9 @@ msgid "Learner"
 msgstr ""
 
 msgid "Linked to {p}"
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid "Mark as a primary language of the mother."
@@ -361,6 +352,9 @@ msgstr ""
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr ""
 
+msgid "Not important to the archive, but will be included"
+msgstr ""
+
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr ""
 
@@ -393,9 +387,6 @@ msgstr ""
 
 msgid "Other Documents"
 msgstr ""
-
-#~ msgid "PARADISEC Mode"
-#~ msgstr ""
 
 msgid "Paradisec CSV"
 msgstr ""
@@ -556,9 +547,6 @@ msgstr ""
 msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
-#~ msgid "There is a problem with {displayName}. Click for more information."
-#~ msgstr ""
-
 msgid "There is already a Person with that name or code."
 msgstr ""
 
@@ -574,6 +562,9 @@ msgstr ""
 msgid "There was a problem exporting:"
 msgstr ""
 
+msgid "This Personally Identifiable Information may not be exported by some formats."
+msgstr ""
+
 msgid "This XML conforms to the IMDI schema."
 msgstr ""
 
@@ -581,6 +572,9 @@ msgid "This is a link, but lameta does not know where to find the Media Folder f
 msgstr ""
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
+msgstr ""
+
+msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
 msgid "Type"
@@ -603,9 +597,6 @@ msgstr ""
 
 msgid "View Release Notes"
 msgstr ""
-
-#~ msgid "Warning"
-#~ msgstr ""
 
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
@@ -677,7 +668,7 @@ msgid "lameta was not able to rename the folder."
 msgstr ""
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
+msgid "lameta will not export Notes to IMDI"
 msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."

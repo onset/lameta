@@ -72,7 +72,7 @@ describe("opex file placement", () => {
     const p = Path.join(
       targetDir,
       projectName,
-      "New Session",
+      "New_Session",
       "New_Session.opex"
     );
     expect(fs.existsSync(p)).toBe(true);

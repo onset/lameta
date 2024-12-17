@@ -90,40 +90,40 @@ msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
 msgstr ""
 
-msgctxt "lameta/project/analysisIso3CodeAndName"
-msgid "Working Language"
-msgstr ""
-
 msgctxt "lameta/project/archiveConfigurationName"
 msgid "Archive Configuration used by this project"
 msgstr ""
 
-msgctxt "lameta/project/collectionDescription"
-msgid "Collection Description"
+msgctxt "lameta/project/collectionDeputySteward"
+msgid "Deputy Stewards"
 msgstr ""
 
-msgctxt "lameta/project/collectionName"
-msgid "Collection Name"
+msgctxt "lameta/project/collectionDeputySteward/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr ""
+
+msgctxt "lameta/project/collectionKey"
+msgid "Collection Key"
 msgstr ""
 
 msgctxt "lameta/project/collectionSteward"
-msgid "Collection Steward"
+msgid "Steward"
 msgstr ""
 
-msgctxt "lameta/project/collectionTitle"
-msgid "Collection Title"
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
 msgstr ""
 
-msgctxt "lameta/project/configurationName"
-msgid "Archive Configuration used by this project"
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
 msgstr ""
 
 msgctxt "lameta/project/contactPerson"
-msgid "Contact Person"
-msgstr ""
-
-msgctxt "lameta/project/contactPerson/description"
-msgid "Contact information about the person or institution responsible for the project."
+msgid "Project Lead"
 msgstr ""
 
 msgctxt "lameta/project/continent"
@@ -175,27 +175,23 @@ msgid "Country"
 msgstr ""
 
 msgctxt "lameta/project/customAccessChoices"
-msgid "Custom access choices"
+msgid "Custom Session Access Choices"
 msgstr ""
 
 msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr ""
-
-msgctxt "lameta/project/depositor"
-msgid "Depositor"
+msgid "Depositors"
 msgstr ""
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward"
-msgid "Deputy Collection Stewards"
+msgctxt "lameta/project/fundingProjectAffiliation"
+msgid "Project Affiliation"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
-msgid "For multiple people, separate with commas"
+msgctxt "lameta/project/fundingProjectFunder"
+msgid "Funder"
 msgstr ""
 
 msgctxt "lameta/project/fundingProjectTitle"
@@ -203,15 +199,11 @@ msgid "Funding Project Title"
 msgstr ""
 
 msgctxt "lameta/project/grantId"
-msgid "Grant ID"
+msgid "Project ID"
 msgstr ""
 
 msgctxt "lameta/project/location"
 msgid "Location/Address"
-msgstr ""
-
-msgctxt "lameta/project/projectDescription"
-msgid "Description"
 msgstr ""
 
 msgctxt "lameta/project/region"
@@ -219,11 +211,7 @@ msgid "Region"
 msgstr ""
 
 msgctxt "lameta/project/title"
-msgid "Project ID"
-msgstr ""
-
-msgctxt "lameta/project/vernacularIso3CodeAndName"
-msgid "Subject Language"
+msgid "Title"
 msgstr ""
 
 msgctxt "lameta/session/access"
