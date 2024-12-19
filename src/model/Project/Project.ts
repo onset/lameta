@@ -35,7 +35,7 @@ import {
   NotifyWarning
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
-import { CapitalCase } from "../../other/case";
+import { capitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";

@@ -95,7 +95,7 @@ it("should contain Actors", () => {
     "1960"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Role").toMatch(
-    "participant"
+    "Participant"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[3]/Name").toMatch(
     "Hatton"

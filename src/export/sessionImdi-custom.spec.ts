@@ -55,9 +55,8 @@ describe("session imdi export", () => {
         true /*omit namespace*/
       )
     );
-    // expect there to be a <Genre> element with text "Academic Output"
     expect(count("//Genre")).toBe(1);
-    expect("//Genre").toHaveText("Academic Output");
+    expect("//Genre").toHaveText("Academic output");
   });
 
   // notion issue #239

@@ -21,7 +21,11 @@ import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { getStatusOfFile } from "../model/file/FileStatus";
-import { CapitalCase, safeSentenceCase } from "../other/case";
+import {
+  capitalCase,
+  sentenceCase,
+  sentenceCaseUnlessAcronym
+} from "../other/case";
 
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
@@ -453,12 +457,12 @@ export default class ImdiGenerator {
               // Hanna asks that we not do this to topic and keyword
               if (["status" /*, "keyword", "topic",*/].indexOf(key) > -1) {
                 // capitalize the first letter of each word
-                v = safeSentenceCase(v);
+                v = sentenceCaseUnlessAcronym(v);
               }
 
               this.tail = this.tail.element("Key", v);
               this.mostRecentElement = this.tail;
-              this.attributeLiteral("Name", CapitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+              this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
               this.tail = this.tail.up();
             });
           }
@@ -968,8 +972,7 @@ export default class ImdiGenerator {
 
     if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
-      // they want "Formulaic Discourse"
-      //https://trello.com/c/3H1oJsWk/66-imdi-save-genre-as-the-full-ui-form-not-the-underlying-token
+      // they want "Formulaic discourse" (Sentence Case)
 
       // for some, we may have access to an explicit label. Probably makes no difference, the keys are always just snake case of the label.
       const label = f.properties
@@ -977,7 +980,7 @@ export default class ImdiGenerator {
         // this probably isn't used. The idea is that if we didn't get new label, just replace the underscores
         .replace(/_/g, " ");
 
-      value = titleCase(label);
+      value = sentenceCase(label);
     }
     if (projectFallbackFieldName && (!value || value.length === 0)) {
       value = this.project.properties.getTextStringOrEmpty(

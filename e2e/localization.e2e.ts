@@ -62,10 +62,7 @@ test.describe("Localization", () => {
     // tabs of the selected file
     await shouldSeeExactlyOnce(["Catatan"]);
     // some fields
-    await shouldSeeExactlyOnce([
-      /*"Deskripsi"*/ "Keterangan",
-      "Kotak-kotak Khusus"
-    ]);
+    await shouldSeeExactlyOnce(["Deskripsi", "Kotak-kotak Khusus"]);
 
     await shouldHaveMultiple("Tanggal", 2); // date
 
