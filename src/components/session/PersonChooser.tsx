@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
 import { IChoice } from "../../model/field/Field";
-import { CapitalCase } from "../../other/case";
+import { capitalCase } from "../../other/case";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";
@@ -82,7 +82,7 @@ class PersonChooser extends React.Component<IProps> {
         }}
         onChange={(v: any) => {
           // ELAR does not want this
-          // const s: string = CapitalCase(v.value);
+          // const s: string = capitalCase(v.value);
           // this.props.onChange(s ? s : "");
           this.props.onChange(v.value);
         }}
