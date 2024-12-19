@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-12-08 00:02\n"
+"PO-Revision-Date: 2024-12-19 22:47\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -586,10 +586,10 @@ msgid "Show All"
 msgstr "Mostrar Todo"
 
 msgid "Show IMDI previews"
-msgstr ""
+msgstr "Mostrar IMDI"
 
 msgid "Show PARADISEC previews"
-msgstr ""
+msgstr "Modo PARADISEC"
 
 msgid "Show Release Notes"
 msgstr "Mostrar Notas de la Versión"
@@ -652,7 +652,7 @@ msgid "There are more than one files of type \"{projectType}\" in this folder, a
 msgstr "Hay más de un archivo de tipo \"{projectType}\" en esta carpeta y solo puede haber uno."
 
 msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
-msgstr ""
+msgstr "Hay un problema con los archivos en la carpeta {displayName}. Haga clic para más información."
 
 #~ msgid "There is a problem with {displayName}. Click for more information."
 #~ msgstr ""
