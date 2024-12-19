@@ -84,6 +84,7 @@ import genres from "../../locale/genres.csv";
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import tips from "../../locale/tips.csv"; // tooltips and specialinfo
 import { locateDependencyForFilesystemCall } from "./locateDependency";
+import { sentenceCase } from "./case";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
@@ -196,6 +197,12 @@ function getMatch(
         return "MISSING-" + s;
       }
     }
+  }
+
+  // If it's English, sentence case it. I think this isn't best practice, but it's what the funder seems prefer. If
+  // they reconsider, we can change it to Title Case, which would be better.
+  if (currentUILanguage === "en") {
+    return sentenceCase(s);
   }
 
   // const currentLanguageWithIndonesianFix =
