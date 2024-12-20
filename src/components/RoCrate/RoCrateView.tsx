@@ -91,7 +91,7 @@ export const RoCrateView: React.FunctionComponent<{
         }
       `}
     >
-      <FindInPage />
+      <FindInPage autoFocus={true} />
       <Box
         sx={{
           height: "100vh",

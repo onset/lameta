@@ -1,30 +1,51 @@
-// Renderer Process (React Component using Material UI)
-import React, { useRef, useState } from "react";
-import { TextField, Button, Box, IconButton } from "@mui/material";
+import React, { useRef, useState, useEffect } from "react";
+import { Box, IconButton } from "@mui/material";
+import { css } from "@emotion/react";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import SearchIcon from "@mui/icons-material/Search";
 
-const FindInPage = () => {
+const FindInPage = ({ autoFocus }: { autoFocus?: boolean }) => {
   const [searchText, setSearchText] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = (event) => {
-    setSearchText(event.target.value);
+  useEffect(() => {
+    if (autoFocus && divRef.current) {
+      divRef.current.focus();
+    }
+  }, [autoFocus]);
+
+  const setCursorToEnd = () => {
+    const div = divRef.current;
+    if (!div) return;
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(div);
+    range.collapse(false); // false means collapse to end
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   };
 
-  const handleKeyPress = (event) => {
+  const handleChange = (event: React.FormEvent<HTMLDivElement>) => {
+    setSearchText(event.currentTarget.textContent || "");
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleFind();
+      // Ensure focus is restored after the Enter key press
+      setTimeout(() => {
+        divRef.current?.focus();
+        setCursorToEnd();
+      }, 10);
     }
   };
 
   const handleFind = () => {
     mainProcessApi.findInPage(searchText);
-    // Use a small timeout to ensure focus is restored after the findInPage operation
     setTimeout(() => {
-      inputRef.current?.focus();
+      divRef.current?.focus();
+      setCursorToEnd();
     }, 10);
   };
 
@@ -37,20 +58,29 @@ const FindInPage = () => {
         p: 0
       }}
     >
-      <TextField
-        id="find-in-page"
-        variant="standard"
-        value={searchText}
-        onChange={handleChange}
-        size="small"
-        inputRef={inputRef}
-        onKeyPress={handleKeyPress}
-        InputProps={{
-          sx: {
-            width: "100px",
-            padding: "0px" // Reduce padding for the input element itself
+      <div
+        ref={divRef}
+        css={css`
+          width: 100px;
+          min-height: 1.4em;
+          padding: 2px 4px;
+          border: none;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+          outline: none;
+          font-size: inherit;
+          font-family: inherit;
+          line-height: inherit;
+
+          &::selection {
+            background-color: transparent;
           }
-        }}
+        `}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={handleChange}
+        onKeyPress={handleKeyPress}
+        role="textbox"
+        tabIndex={0}
       />
       <IconButton color="black" onClick={handleFind}>
         <SearchIcon />
