@@ -9,7 +9,6 @@ import { ValidationResultsList } from "./RoCrateValidationResults";
 //import { validate } from "./LDAC-RoCrate-Profile.es.js";
 import { Box, Grid } from "@mui/material";
 import rocrate from "ro-crate";
-import { set } from "lodash";
 
 type ValidationEntry = {
   id: string;

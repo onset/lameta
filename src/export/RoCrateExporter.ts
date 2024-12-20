@@ -153,18 +153,23 @@ function addFieldEntries(
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
       const leafTemplate = getRoCrateTemplate(field);
-      values.forEach((c: string) => {
-        // For each value, create a graph entry that is the template, filled in with the value
-        const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
-        otherEntries.push(leaf);
-        const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
-        // Now create the links to those from the parent object
-        if (field.rocrate.array) {
-          if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
-          // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
-          folderEntry[propertyKey].push(reference);
-        } else folderEntry[propertyKey] = reference;
-      });
+
+      if (leafTemplate) {
+        values.forEach((c: string) => {
+          // For each value, create a graph entry that is the template, filled in with the value
+          const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
+          otherEntries.push(leaf);
+          const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
+          // Now create the links to those from the parent object
+          if (field.rocrate.array) {
+            if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
+            // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
+            folderEntry[propertyKey].push(reference);
+          } else folderEntry[propertyKey] = reference;
+        });
+      } else {
+        folderEntry[propertyKey] = values[0]; // we have a key, but nothing else. Can use, e.g. to rename "keyword" to "keywords"
+      }
     }
 
     // if there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does

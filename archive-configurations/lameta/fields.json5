@@ -507,7 +507,10 @@
       englishLabel: "Keywords",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual keywords cannot contain a comma.",
-      tabIndex: 10
+      tabIndex: 10,
+      rocrate: {
+        key: "keywords"
+      }
     },
     {
       // added at ELAR request Dec 2019

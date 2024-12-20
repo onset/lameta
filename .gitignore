@@ -62,3 +62,4 @@ locale/_build
 .sentryclirc
 
 *.cjs
+test-results/.last-run.json
