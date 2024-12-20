@@ -3,9 +3,11 @@ import React, { useRef, useState } from "react";
 import { TextField, Button, Box, IconButton } from "@mui/material";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import SearchIcon from "@mui/icons-material/Search";
-import { set } from "lodash";
+
 const FindInPage = () => {
   const [searchText, setSearchText] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (event) => {
     setSearchText(event.target.value);
@@ -13,31 +15,18 @@ const FindInPage = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       handleFind();
     }
   };
+
   const handleFind = () => {
-    // Remember the focus and insertion point
-    const selection = window.getSelection();
-
-    const inputElement = inputRef.current;
-    // Perform the search
     mainProcessApi.findInPage(searchText);
-
-    // this works but then subsequent presses of Enter dont move us through the document becuase we've lost the focus on the previous one
-
-    // setTimeout(() => {
-    //   if (inputElement) {
-    //     inputElement.focus();
-    //     inputElement.setSelectionRange(0, searchText.length);
-    //   }
-    // }, 10);
-
-    // setTimeout(() => {
-    //   if (inputElement) inputElement.focus();
-    // }, 50);
+    // Use a small timeout to ensure focus is restored after the findInPage operation
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
   };
-  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Box
@@ -53,9 +42,9 @@ const FindInPage = () => {
         variant="standard"
         value={searchText}
         onChange={handleChange}
-        onKeyPress={handleKeyPress}
         size="small"
         inputRef={inputRef}
+        onKeyPress={handleKeyPress}
         InputProps={{
           sx: {
             width: "100px",
