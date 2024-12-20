@@ -21,7 +21,7 @@ beforeAll(async () => {
   session = project.addSession();
   // set the session date to a known value so that the test results are predictable
 
-  session.addFileForTestAsync(randomFileName());
+  await session.addFileForTestAsync(randomFileName());
   const mary = project.addPerson("Mary");
   mary.properties.setText("birthYear", "1980");
 });
@@ -92,6 +92,24 @@ describe("session imdi export", () => {
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Name").toHaveText("Mary");
     expect("//Actor/Age").toHaveText("30");
+    expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
+  });
+
+  // Regression Test
+  it("A contribution from a person with a missing Person should still be output correct role", () => {
+    session.removeAllContributionsForUnitTest();
+    session.addContribution(
+      new Contribution("I am made up", "careful_speech_speaker", "")
+    );
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect("//Actor").toHaveCount(1);
     expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
   });
 
