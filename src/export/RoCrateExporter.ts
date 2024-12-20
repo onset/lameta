@@ -136,6 +136,7 @@ function addFieldEntries(
   folderEntry: object,
   otherEntries: object[]
 ) {
+  // First handle the known fields
   folder.knownFields.forEach((field) => {
     const values: string[] = getFieldValues(folder, field);
     if (values.length === 0 || values[0] === "unspecified") return;
@@ -175,6 +176,20 @@ function addFieldEntries(
     // if there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
     else {
       folderEntry[propertyKey] = values[0];
+    }
+  });
+
+  // Now handle any custom fields from the properties
+
+  folder.metadataFile!.properties.forEach((key, field) => {
+    if (!field.definition.isCustom) return;
+    // Skip if this was already handled as a known field
+    if (folder.knownFields.some((k) => k.key === key)) {
+      return;
+    }
+    const value = field.text?.trim();
+    if (value && value !== "unspecified") {
+      folderEntry[key] = value;
     }
   });
 }
