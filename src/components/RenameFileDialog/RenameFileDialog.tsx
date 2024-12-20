@@ -87,17 +87,24 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     const pendingNewName = getNewFileName();
     const sanitizedForArchive = sanitizeForArchive(pendingNewName);
     let m = "";
-    if (pendingNewName !== sanitizeFilename(pendingNewName)) {
-      m = t`Some operating systems would not allow that name.`;
-    }
 
-    if (pendingNewName !== sanitizedForArchive) {
+    if (
+      sanitizeForArchive(fileNameParts!.prefix + ".txt") !==
+      fileNameParts!.prefix + ".txt"
+    ) {
+      m = t`"${
+        fileNameParts!.prefix
+      }" has one or more characters that are not allowed. Please cancel and fix the prefix first.`;
+    } else if (pendingNewName !== sanitizedForArchive) {
       m = t`Please remove characters that not allowed by the Archive Settings.`;
-    }
-    if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
+    } else if (pendingNewName !== sanitizeFilename(pendingNewName)) {
+      m = t`Some operating systems would not allow that name.`;
+    } else if (
+      pendingNewName.indexOf("/") > -1 ||
+      pendingNewName.indexOf("\\") > -1
+    ) {
       m = t`Sorry, no slashes are allowed`;
-    }
-    if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
+    } else if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
       m = t`A file with the same name already exists at that location.`;
     }
     setValidationMessage(m);

@@ -29,11 +29,7 @@ import { NotifyError } from "./Notify";
 
 import * as URL from "url";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
-import {
-  FileStatusBlock,
-  getLinkStatusIconPath,
-  getStatusOfFile
-} from "../model/file/FileStatus";
+import { FileStatusBlock } from "../model/file/FileStatus";
 import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
@@ -90,7 +86,13 @@ export const FolderPane: React.FunctionComponent<
         <div className="folder-bottom-pane">
           {props.folder.selectedFile && (
             <>
-              <FileStatusBlock file={props.folder.selectedFile} />
+              <FileStatusBlock
+                folder={props.folder}
+                file={props.folder.selectedFile}
+                fileName={props.folder.selectedFile?.getTextProperty(
+                  "filename"
+                )}
+              />
               <ErrorBoundary>
                 <FileTabs {...props} />
               </ErrorBoundary>

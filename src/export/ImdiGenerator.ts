@@ -526,11 +526,20 @@ export default class ImdiGenerator {
     );
     sortedByFileNames.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-        if (getStatusOfFile(f).missing) {
+        const status = getStatusOfFile(f);
+        if (status.missing) {
           // At the moment we're not even exporting metadata if the file is
           // missing. With some work to avoid some errors, it would be possible.
-          NotifyWarning(getStatusOfFile(f).info);
+          NotifyWarning(
+            f.getNameToUseWhenExportingUsingTheActualFile() +
+              ": " +
+              getStatusOfFile(f).info
+          );
         } else {
+          if (status.status === "fileNamingProblem") {
+            // enhance would be nicer to have a way to pipe message to the export
+            NotifyWarning(f.getActualFilePath() + ": " + status.info); // but still export it
+          }
           switch (type) {
             case "MediaFile":
               if (this.isMediaFile(f)) {

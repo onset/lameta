@@ -9,13 +9,15 @@ import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaF
 
 import { t } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import { observer } from "mobx-react";
+import { Folder } from "../Folder/Folder";
 
-export function getStatusOfFile(
-  f: File
-): {
+export function getStatusOfFile(f: File): {
   missing: boolean;
   status:
     | "normalFile"
+    | "fileNamingProblem"
     | "missing"
     | "goodLink"
     | "copyInProgress"
@@ -34,7 +36,10 @@ export function getStatusOfFile(
     return {
       missing: true,
       status: "normalFile",
-      info: `Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. ${f.getActualFilePath()}`
+      info: t({
+        id: "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}",
+        values: { path: f.getActualFilePath() }
+      })
     };
   }
 
@@ -48,6 +53,12 @@ export function getStatusOfFile(
         missing: false,
         status: "goodLink",
         info
+      };
+    } else if (hasFileNamingProblem(f.getActualFilePath())) {
+      return {
+        missing: false,
+        status: "fileNamingProblem",
+        info: t`This file does not comply with the file naming rules of the current archive.`
       };
     } else
       return {
@@ -67,8 +78,7 @@ export function getStatusOfFile(
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
-      id:
-        "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+      id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
       values: { m: mediaFolder }
     });
     return {
@@ -96,8 +106,7 @@ export function getStatusOfFile(
     subpath
   );
   const info = t({
-    id:
-      "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+    id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
     values: { m: mediaFolder, e: expected }
   });
   return {
@@ -116,14 +125,19 @@ export function getLinkStatusIconPath(f: File): string {
       return "assets/missingFile.png";
     case "noMediaFolderConnection":
       return "assets/noMediaFolder.png";
+    case "fileNamingProblem":
+      return "assets/error.png";
     default:
       return "";
   }
 }
 
-export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
-  props
-) => {
+const _FileStatusBlock: React.FunctionComponent<{
+  file: File;
+  fileName: string;
+  folder: Folder;
+}> = (props) => {
+  console.log("FileStatusBlock rendering on " + props.fileName);
   const fileStatus = getStatusOfFile(props.file);
 
   const color =
@@ -131,7 +145,7 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
       ? lameta_orange
       : error_color;
 
-  return fileStatus.missing ? (
+  return fileStatus.status === "normalFile" ? null : (
     <div
       css={css`
         display: flex;
@@ -143,14 +157,6 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
         color: white;
       `}
     >
-      {/* <img
-        css={css`
-          height: 20px;
-          width: auto;
-          margin-right: 10px;
-        `}
-        src={getLinkStatusIconPath(props.file)}
-      /> */}
       <p
         css={css`
           margin-block-start: 0;
@@ -159,7 +165,25 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
         `}
       >
         {fileStatus.info}
+        {/* {(props.file.type === "Person" || props.file.type === "Session") && (
+          //  I got this working but then a few minutes later you get
+          //  Pop ups about can't save because the old file is not being found.
+          //  Somehow this doesn't happen if you manually cause the fix by tweaking the name.
+          <button
+            onClick={() => {
+              props.folder.nameMightHaveChanged();
+            }}
+          >
+            Fix
+          </button>
+        )} */}
       </p>
     </div>
-  ) : null;
+  );
 };
+function hasFileNamingProblem(path: string): boolean {
+  return Path.basename(path) !== sanitizeForArchive(Path.basename(path));
+}
+
+const x = observer(_FileStatusBlock);
+export { x as FileStatusBlock };
