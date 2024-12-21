@@ -55,10 +55,16 @@ export function getStatusOfFile(f: File): {
         info
       };
     } else if (hasFileNamingProblem(f.getActualFilePath())) {
+      let message = t`This file does not comply with the file naming rules of the current archive.`;
+      if (f.type === "Person" || f.type === "Session") {
+        message +=
+          " " +
+          t`To fix it, change the ID, click out of the field, and then you can change it back.`;
+      }
       return {
         missing: false,
         status: "fileNamingProblem",
-        info: t`This file does not comply with the file naming rules of the current archive.`
+        info: message
       };
     } else
       return {
@@ -132,14 +138,13 @@ export function getLinkStatusIconPath(f: File): string {
   }
 }
 
-const _FileStatusBlock: React.FunctionComponent<{
+export const FileStatusBlock: React.FunctionComponent<{
   file: File;
   fileName: string;
   folder: Folder;
-}> = (props) => {
-  console.log("FileStatusBlock rendering on " + props.fileName);
+}> = observer((props) => {
+  console.log("Rendering FileStatusBlock " + props.fileName);
   const fileStatus = getStatusOfFile(props.file);
-
   const color =
     fileStatus.status === "noMediaFolderConnection"
       ? lameta_orange
@@ -165,25 +170,11 @@ const _FileStatusBlock: React.FunctionComponent<{
         `}
       >
         {fileStatus.info}
-        {/* {(props.file.type === "Person" || props.file.type === "Session") && (
-          //  I got this working but then a few minutes later you get
-          //  Pop ups about can't save because the old file is not being found.
-          //  Somehow this doesn't happen if you manually cause the fix by tweaking the name.
-          <button
-            onClick={() => {
-              props.folder.nameMightHaveChanged();
-            }}
-          >
-            Fix
-          </button>
-        )} */}
       </p>
     </div>
   );
-};
+});
+
 function hasFileNamingProblem(path: string): boolean {
   return Path.basename(path) !== sanitizeForArchive(Path.basename(path));
 }
-
-const x = observer(_FileStatusBlock);
-export { x as FileStatusBlock };

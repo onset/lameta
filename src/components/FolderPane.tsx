@@ -47,9 +47,16 @@ export interface IProps {
 const dummyPreviewImage: string =
   URL.pathToFileURL(`assets/invisible.png`).toString();
 
+const FileDisplay = observer((props: { folder: Folder }) => {
+  const selectedFile = props.folder.selectedFile;
+  return selectedFile ? (
+    <div>Current File: {selectedFile.getTextProperty("filename")}</div>
+  ) : null;
+});
+
 export const FolderPane: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
-> = (props) => {
+> = observer((props) => {
   //const [tabs, setTabs] = React.useState<JSX.Element>(<React.Fragment />);
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
@@ -89,9 +96,7 @@ export const FolderPane: React.FunctionComponent<
               <FileStatusBlock
                 folder={props.folder}
                 file={props.folder.selectedFile}
-                fileName={props.folder.selectedFile?.getTextProperty(
-                  "filename"
-                )}
+                fileName={props.folder.selectedFile.getTextProperty("filename")}
               />
               <ErrorBoundary>
                 <FileTabs {...props} />
@@ -102,11 +107,12 @@ export const FolderPane: React.FunctionComponent<
       </SplitPane>
     </div>
   );
-};
+});
 
 const FileTabs: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
+  console.log("rendering FileTabs");
   useLingui();
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -480,4 +486,3 @@ const FileTabs: React.FunctionComponent<
       );
   }
 });
-export default observer(FolderPane);
