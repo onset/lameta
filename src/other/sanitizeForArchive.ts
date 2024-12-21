@@ -28,6 +28,8 @@ export function sanitizeForArchive(
   n = sanitizeFilename(n);
   //console.log(`sanitizeForArchive(${name}) --> ${n}`);
 
+  // remove leading underscores
+  n = n.replace(/^_+/, "");
   // remove trailing underscores
   return n.replace(/_+$/, "");
 }
