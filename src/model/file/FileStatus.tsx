@@ -56,12 +56,8 @@ export function getStatusOfFile(f: File): {
         info
       };
     } else if (hasFileNamingProblem(f.getActualFilePath())) {
-      let message = t`This file does not comply with the file naming rules of the current archive.`;
-      if (f.type === "Person" || f.type === "Session") {
-        message +=
-          " " +
-          t`To fix it, change the ID, click out of the field, and then you can change it back.`;
-      }
+      const message = t`This file does not comply with the file naming rules of the current archive.`;
+
       return {
         missing: false,
         status: "fileNamingProblem",
@@ -150,7 +146,8 @@ export const FileStatusBlock: React.FunctionComponent<{
       ? lameta_orange
       : error_color;
 
-  return fileStatus.status === "normalFile" ? null : (
+  return fileStatus.status === "normalFile" ||
+    fileStatus.status === "goodLink" ? null : (
     <div
       css={css`
         display: flex;
@@ -172,29 +169,32 @@ export const FileStatusBlock: React.FunctionComponent<{
       >
         {fileStatus.info}
       </p>
-      {(props.file.type === "Person" || props.file.type === "Session") && (
-        <div
-          css={css`
-            align-self: flex-end;
-            margin-top: 10px;
-          `}
-        >
-          <Button
-            onClick={() => {
-              props.folder.nameMightHaveChanged();
-            }}
-            variant="outlined"
-            size="small"
-            style={{
-              backgroundColor: error_color,
-              color: "white",
-              border: "1px solid white"
-            }}
+      {fileStatus.status === "fileNamingProblem" &&
+        (props.file.type === "Person" || props.file.type === "Session") && (
+          <div
+            css={css`
+              align-self: flex-end;
+              margin-top: 10px;
+            `}
           >
-            <Trans>Fix</Trans>
-          </Button>
-        </div>
-      )}
+            <Button
+              onClick={() => {
+                props.folder.nameMightHaveChanged();
+              }}
+              variant="outlined"
+              size="small"
+              style={{
+                backgroundColor: error_color,
+                color: "white",
+                border: "1px solid white"
+              }}
+            >
+              <Trans comment="label on a button that shows when a Session or Person file name has characters that are not allowed">
+                Attempt Fix
+              </Trans>
+            </Button>
+          </div>
+        )}
     </div>
   );
 });

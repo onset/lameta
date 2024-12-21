@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-12-19 22:47\n"
+"PO-Revision-Date: 2024-12-21 21:58\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -20,6 +20,9 @@ msgstr ""
 
 #~ msgid "\"Open in program associated with this file type"
 #~ msgstr ""
+
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
 
 msgid "A file with the same name already exists at that location."
 msgstr "Un archivo con el mismo nombre ya existe en la misma ubicación."
@@ -92,6 +95,10 @@ msgstr "Como desarrollador"
 
 msgid "As a trainer"
 msgstr "Como instructor"
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
+msgstr ""
 
 msgid "Audio"
 msgstr "Audio"
@@ -170,6 +177,9 @@ msgstr "Copiando en Archivos..."
 
 msgid "Copying..."
 msgstr "Copiando..."
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
+msgstr ""
 
 msgid "Create"
 msgstr "Crear"
@@ -692,6 +702,9 @@ msgstr "Hubo un problema al exportar:"
 
 msgid "This XML conforms to the IMDI schema."
 msgstr "Este archivo XML se ajusta al esquema IMDI."
+
+msgid "This file does not comply with the file naming rules of the current archive."
+msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Este es un enlace, pero Lameta no logra encontrar la carpeta de medios para este proyecto. Vea Archivo: Configuración de carpeta de medios."
