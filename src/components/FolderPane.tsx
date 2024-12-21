@@ -112,7 +112,6 @@ export const FolderPane: React.FunctionComponent<
 const FileTabs: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
-  console.log("rendering FileTabs");
   useLingui();
   const [tabIndex, setTabIndex] = React.useState(0);
 

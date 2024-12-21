@@ -6,8 +6,9 @@ import { File } from "./File";
 import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
+import { Button } from "@material-ui/core"; // Update this import
 
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { observer } from "mobx-react";
@@ -143,7 +144,6 @@ export const FileStatusBlock: React.FunctionComponent<{
   fileName: string;
   folder: Folder;
 }> = observer((props) => {
-  console.log("Rendering FileStatusBlock " + props.fileName);
   const fileStatus = getStatusOfFile(props.file);
   const color =
     fileStatus.status === "noMediaFolderConnection"
@@ -154,6 +154,7 @@ export const FileStatusBlock: React.FunctionComponent<{
     <div
       css={css`
         display: flex;
+        flex-direction: column;
         margin: 10px;
         margin-left: 0;
         padding: 20px;
@@ -171,6 +172,29 @@ export const FileStatusBlock: React.FunctionComponent<{
       >
         {fileStatus.info}
       </p>
+      {(props.file.type === "Person" || props.file.type === "Session") && (
+        <div
+          css={css`
+            align-self: flex-end;
+            margin-top: 10px;
+          `}
+        >
+          <Button
+            onClick={() => {
+              props.folder.nameMightHaveChanged();
+            }}
+            variant="outlined"
+            size="small"
+            style={{
+              backgroundColor: error_color,
+              color: "white",
+              border: "1px solid white"
+            }}
+          >
+            <Trans>Fix</Trans>
+          </Button>
+        </div>
+      )}
     </div>
   );
 });

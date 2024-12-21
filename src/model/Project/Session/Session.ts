@@ -50,7 +50,7 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("id") === "") {
       this.properties.setText("id", Path.basename(directory));
     }
-    this.safeFileNameBase = sanitizeForArchive(
+    this.currentFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("id")
     );
     this.knownFields = knownFieldDefinitions.session; // for csv export

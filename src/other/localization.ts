@@ -37,6 +37,14 @@ export function initializeLocalization() {
   }
   // TODO: lingui has fallback, so maybe we should not default to English above?
 
+  // Load plural rules for all supported languages. We don't actually do plurals, but without this we get a console error.
+  languages.forEach((lang) => {
+    const language = lang.split("-")[0]; // handle cases like zh-CN -> zh
+    if (allPlurals[language]) {
+      i18n.loadLocaleData(lang, { plurals: allPlurals[language] });
+    }
+  });
+
   setUILanguage(currentUILanguage, false);
   olacRoles = loadOLACRoles();
 }

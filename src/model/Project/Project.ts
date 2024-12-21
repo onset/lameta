@@ -999,5 +999,11 @@ function NewGuid() {
 export function archiveUsesImdi(): boolean {
   return sCurrentProject?.accessProtocol === "ELAR";
 }
+export function archiveLimitsToPortableCharacters(): boolean {
+  // We don't know them all, so let's be conservative.
+  // It appears that ELAR, PARADISEC, and REAP all have these restrictions.
 
-initializeSanitizeForArchive(archiveUsesImdi);
+  return !userSettings.IgnoreFileNamingRules; // normally false, dev can turn it on
+}
+
+initializeSanitizeForArchive(archiveLimitsToPortableCharacters);

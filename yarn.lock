@@ -1565,7 +1565,7 @@
     minimatch "^3.0.4"
     plist "^3.0.4"
 
-"@emotion/babel-plugin@^11.10.5", "@emotion/babel-plugin@^11.11.0":
+"@emotion/babel-plugin@^11.11.0":
   version "11.11.0"
   resolved "https://registry.npmjs.org/@emotion/babel-plugin/-/babel-plugin-11.11.0.tgz#c2d872b6a7767a9d176d007f5b31f7d504bb5d6c"
   integrity sha512-m4HEDZleaaCH+XgDDsPF15Ht6wTLsgDTeR3WYj9Q/k76JtWhrJjcP4+/XlG8LGT/Rol9qUfOIztXeA84ATpqPQ==
