@@ -69,7 +69,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
         setMode(validationMessage ? Mode.invalid : Mode.valid);
       }
     }
-  }, [fileNameParts, mode]);
+  }, [fileNameParts, mode, validationMessage]);
 
   const renameAndClose = () => {
     {
@@ -94,7 +94,8 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     ) {
       m = t`"${
         fileNameParts!.prefix
-      }" has one or more characters that are not allowed. Please cancel and fix the prefix first.`;
+        // ughh this is such a bad message.
+      }" has one or more characters that are not allowed. To fix this, first fix the name of this folder.`;
     } else if (pendingNewName !== sanitizedForArchive) {
       m = t`Please remove characters that not allowed by the Archive Settings.`;
     } else if (pendingNewName !== sanitizeFilename(pendingNewName)) {
@@ -194,6 +195,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
             color: ${error_color};
             min-width: 400px;
             min-height: 2em;
+            margin-top: 1em;
           `}
         >
           {validationMessage}
