@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Person>
+  <name type="string">Igali Sagali</name>
   <primaryLanguage type="string">Edolo</primaryLanguage>
   <primaryLanguageLearnedIn type="string">Huya</primaryLanguageLearnedIn>
   <otherLanguage0 type="string">Huli</otherLanguage0>
