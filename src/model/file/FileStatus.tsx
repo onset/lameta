@@ -169,32 +169,38 @@ export const FileStatusBlock: React.FunctionComponent<{
       >
         {fileStatus.info}
       </p>
-      {fileStatus.status === "fileNamingProblem" &&
-        (props.file.type === "Person" || props.file.type === "Session") && (
-          <div
-            css={css`
-              align-self: flex-end;
-              margin-top: 10px;
-            `}
-          >
-            <Button
-              onClick={() => {
+      {fileStatus.status === "fileNamingProblem" && (
+        <div
+          css={css`
+            align-self: flex-end;
+            margin-top: 10px;
+          `}
+        >
+          <Button
+            onClick={() => {
+              if (props.file.type === "Person" || props.file.type === "Session")
                 props.folder.nameMightHaveChanged();
-              }}
-              variant="outlined"
-              size="small"
-              style={{
-                backgroundColor: error_color,
-                color: "white",
-                border: "1px solid white"
-              }}
-            >
-              <Trans comment="label on a button that shows when a Session or Person file name has characters that are not allowed">
-                Attempt Fix
-              </Trans>
-            </Button>
-          </div>
-        )}
+              else {
+                props.folder.renameChildWithFilenameMinusExtension(
+                  props.file,
+                  sanitizeForArchive(Path.parse(props.fileName).name)
+                );
+              }
+            }}
+            variant="outlined"
+            size="small"
+            style={{
+              backgroundColor: error_color,
+              color: "white",
+              border: "1px solid white"
+            }}
+          >
+            <Trans comment="label on a button that shows when a Session or Person file name has characters that are not allowed">
+              Attempt Fix
+            </Trans>
+          </Button>
+        </div>
+      )}
     </div>
   );
 });
