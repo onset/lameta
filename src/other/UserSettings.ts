@@ -30,21 +30,26 @@ export class UserSettings {
   private howUsing: string;
   public uiFontZoom: number;
   private sendErrors: boolean;
+  private ignoreFileNamingRules: boolean; // for testing only
 
   private clientId: string;
 
   constructor() {
     makeObservable<
       UserSettings,
-      "showIMDI" | "paradisecMode" | "howUsing" | "sendErrors"
+      | "showIMDI"
+      | "paradisecMode"
+      | "howUsing"
+      | "sendErrors"
+      | "ignoreFileNamingRules"
     >(this, {
       showIMDI: observable,
       paradisecMode: observable,
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
-      HowUsing: computed,
-      ShowIMDI: computed
+      ignoreFileNamingRules: observable,
+      HowUsing: computed
     });
 
     // NB: something really strange happened here; if we access process here directly, it doesn't get the name.
@@ -159,6 +164,12 @@ export class UserSettings {
   }
   public get DeveloperMode() {
     return this.howUsing === "developer";
+  }
+  public get IgnoreFileNamingRules() {
+    return this.ignoreFileNamingRules;
+  }
+  public set IgnoreFileNamingRules(ignore: boolean) {
+    this.ignoreFileNamingRules = ignore;
   }
   public get Email() {
     return this.store.get("email", "");

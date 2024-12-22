@@ -271,7 +271,7 @@ export default class ImdiGenerator {
       } else {
         this.startGroup("Actor");
         this.tail.comment(`Could not find a person with name "${trimmedName}"`);
-        this.element("Role", contribution.role);
+        this.element("Role", this.getRoleOutput(contribution.role));
         this.element("Name", trimmedName);
         this.element("FullName", trimmedName);
         this.element("Code", "");
@@ -637,11 +637,20 @@ export default class ImdiGenerator {
     );
     sortedByFileNames.forEach((f: File) => {
       if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-        if (getStatusOfFile(f).missing) {
+        const status = getStatusOfFile(f);
+        if (status.missing) {
           // At the moment we're not even exporting metadata if the file is
           // missing. With some work to avoid some errors, it would be possible.
-          NotifyWarning(getStatusOfFile(f).info);
+          NotifyWarning(
+            f.getNameToUseWhenExportingUsingTheActualFile() +
+              ": " +
+              getStatusOfFile(f).info
+          );
         } else {
+          if (status.status === "fileNamingProblem") {
+            // enhance would be nicer to have a way to pipe message to the export
+            NotifyWarning(f.getActualFilePath() + ": " + status.info); // but still export it
+          }
           switch (type) {
             case "MediaFile":
               if (this.isMediaFile(f)) {
@@ -884,6 +893,16 @@ export default class ImdiGenerator {
     //}
   }
 
+  private getRoleOutput(role: string): string {
+    let roleOutput = "Unspecified";
+    if (role && role.length > 0) {
+      // replace underscores with spaces
+      roleOutput = role.replace(/_/g, " ");
+      // upper case the first letter of the first word only (per ELAR's Hanna)
+      roleOutput = roleOutput.charAt(0).toUpperCase() + roleOutput.slice(1);
+    }
+    return roleOutput;
+  }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(
     person: Person,
@@ -892,13 +911,7 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
-      let roleOutput = "Unspecified";
-      if (role && role.length > 0) {
-        // replace underscores with spaces
-        roleOutput = role.replace(/_/g, " ");
-        // upper case the first letter of the first word only (per ELAR's Hanna)
-        roleOutput = roleOutput.charAt(0).toUpperCase() + roleOutput.slice(1);
-      }
+      const roleOutput = this.getRoleOutput(role);
 
       this.element("Role", roleOutput);
       this.requiredField("Name", "name", person);

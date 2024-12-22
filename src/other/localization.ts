@@ -37,6 +37,14 @@ export function initializeLocalization() {
   }
   // TODO: lingui has fallback, so maybe we should not default to English above?
 
+  // Load plural rules for all supported languages. We don't actually do plurals, but without this we get a console error.
+  languages.forEach((lang) => {
+    const language = lang.split("-")[0]; // handle cases like zh-CN -> zh
+    if (allPlurals[language]) {
+      i18n.loadLocaleData(lang, { plurals: allPlurals[language] });
+    }
+  });
+
   setUILanguage(currentUILanguage, false);
   olacRoles = loadOLACRoles();
 }
@@ -85,6 +93,7 @@ import genres from "../../locale/genres.csv";
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
 import { locateDependencyForFilesystemCall } from "./locateDependency";
+import { sentenceCase } from "./case";
 
 export function translateFileType(englishTypeName: string): string {
   switch (englishTypeName) {
@@ -185,6 +194,12 @@ function getMatch(
         return "MISSING-" + s;
       }
     }
+  }
+
+  // If it's English, sentence case it. I think this isn't best practice, but it's what the funder seems prefer. If
+  // they reconsider, we can change it to Title Case, which would be better.
+  if (currentUILanguage === "en") {
+    return sentenceCase(s);
   }
 
   // const currentLanguageWithIndonesianFix =

@@ -27,7 +27,7 @@ const languageFinder = new LanguageFinder(() => ({
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   person = Person.fromDirectory(
-    "sample data/Edolo sample/People/Awi Heole",
+    "sample data/Edolo sample/People/Awi_Heole",
     new EncounteredVocabularyRegistry(),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (oldName, newName) => true,

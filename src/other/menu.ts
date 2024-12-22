@@ -300,6 +300,15 @@ export default class LametaMenu {
       label: "&Developer",
       submenu: [
         {
+          label: "Do not enforce any file naming",
+          type: "checkbox",
+          checked: userSettings.IgnoreFileNamingRules,
+          click() {
+            userSettings.IgnoreFileNamingRules =
+              !userSettings.IgnoreFileNamingRules;
+          }
+        },
+        {
           label: "&Reload",
           accelerator: "CmdOrCtrl+R",
           click() {

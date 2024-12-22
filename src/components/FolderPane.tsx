@@ -27,7 +27,9 @@ import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 import userSettings from "../other/UserSettings";
 import * as URL from "url";
+import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import { FileStatusBlock } from "../model/file/FileStatus";
+import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
@@ -45,9 +47,16 @@ export interface IProps {
 const dummyPreviewImage: string =
   URL.pathToFileURL(`assets/invisible.png`).toString();
 
+const FileDisplay = observer((props: { folder: Folder }) => {
+  const selectedFile = props.folder.selectedFile;
+  return selectedFile ? (
+    <div>Current File: {selectedFile.getTextProperty("filename")}</div>
+  ) : null;
+});
+
 export const FolderPane: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
-> = (props) => {
+> = observer((props) => {
   //const [tabs, setTabs] = React.useState<JSX.Element>(<React.Fragment />);
   if (!props.folder) {
     return <h1>No folder selected.</h1>;
@@ -84,7 +93,11 @@ export const FolderPane: React.FunctionComponent<
         <div className="folder-bottom-pane">
           {props.folder.selectedFile && (
             <>
-              <FileStatusBlock file={props.folder.selectedFile} />
+              <FileStatusBlock
+                folder={props.folder}
+                file={props.folder.selectedFile}
+                fileName={props.folder.selectedFile.getTextProperty("filename")}
+              />
               <ErrorBoundary>
                 <FileTabs {...props} />
               </ErrorBoundary>
@@ -94,7 +107,7 @@ export const FolderPane: React.FunctionComponent<
       </SplitPane>
     </div>
   );
-};
+});
 
 const FileTabs: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
@@ -474,4 +487,3 @@ const FileTabs: React.FunctionComponent<
       );
   }
 });
-export default observer(FolderPane);

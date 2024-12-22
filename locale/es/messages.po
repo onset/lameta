@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-12-08 00:02\n"
+"PO-Revision-Date: 2024-12-21 21:58\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -17,6 +17,9 @@ msgstr ""
 "X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
+
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
 
 msgid "A file with the same name already exists at that location."
 msgstr "Un archivo con el mismo nombre ya existe en la misma ubicación."
@@ -65,6 +68,10 @@ msgstr "Como desarrollador"
 
 msgid "As a trainer"
 msgstr "Como instructor"
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
+msgstr ""
 
 msgid "Audio"
 msgstr "Audio"
@@ -128,6 +135,9 @@ msgstr "Copiando en Archivos..."
 
 msgid "Copying..."
 msgstr "Copiando..."
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
+msgstr ""
 
 msgid "Create"
 msgstr "Crear"
@@ -489,10 +499,10 @@ msgid "Show All"
 msgstr "Mostrar Todo"
 
 msgid "Show IMDI previews"
-msgstr ""
+msgstr "Mostrar IMDI"
 
 msgid "Show PARADISEC previews"
-msgstr ""
+msgstr "Modo PARADISEC"
 
 msgid "Show Release Notes"
 msgstr "Mostrar Notas de la Versión"
@@ -552,7 +562,7 @@ msgid "There are more than one files of type \"{projectType}\" in this folder, a
 msgstr "Hay más de un archivo de tipo \"{projectType}\" en esta carpeta y solo puede haber uno."
 
 msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
-msgstr ""
+msgstr "Hay un problema con los archivos en la carpeta {displayName}. Haga clic para más información."
 
 msgid "There is already a Person with that name or code."
 msgstr "Ya hay una Persona con ese nombre o código."
@@ -574,6 +584,9 @@ msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
 msgstr "Este archivo XML se ajusta al esquema IMDI."
+
+msgid "This file does not comply with the file naming rules of the current archive."
+msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Este es un enlace, pero Lameta no logra encontrar la carpeta de medios para este proyecto. Vea Archivo: Configuración de carpeta de medios."

@@ -78,7 +78,7 @@ describe("csv encoding", () => {
 
 describe("people csv export", () => {
   it("should contain right number of people", () => {
-    expect(peopleMatrix.length).toBe(1 + 4);
+    expect(peopleMatrix.length).toBe(1 + 3);
   });
 
   it("should contain expected notes", () => {
@@ -98,7 +98,7 @@ describe("people csv export", () => {
   it("check Igali", () => {
     // console.log(peopleMatrix[0]);
     // console.log(peopleMatrix[2]);
-    expect(people(2, "name")).toBe("Igali Sagali (Joseph)");
+    expect(people(2, "name")).toBe("Igali Sagali");
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
     expect(people(2, "gender")).toBe("Male");

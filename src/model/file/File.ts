@@ -762,7 +762,11 @@ export /*babel doesn't like this: abstract*/ class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {
-        // console.log(`Saving ${this.metadataFilePath}`);
+        console.debug(
+          `${beforeRename ? "BEFORE RENAME" : ""} Saving ${
+            this.metadataFilePath
+          } `
+        );
         ShowSavingNotifier(Path.basename(this.metadataFilePath), beforeRename);
         PatientFS.writeFileSyncWithNotifyThenRethrow(
           this.metadataFilePath,
@@ -910,6 +914,9 @@ export /*babel doesn't like this: abstract*/ class File {
     this.setFileNameProperty();
   }
   public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
+    console.debug(
+      `this.getFilenameToShowInList updateRecordOfWhatFolderThisIsLocatedIn(${newFolderName})`
+    );
     const hasSeparateMetaDataFile =
       this.metadataFilePath !== this.describedFileOrLinkFilePath;
     if (hasSeparateMetaDataFile) {

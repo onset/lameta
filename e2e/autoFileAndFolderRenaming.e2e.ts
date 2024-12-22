@@ -37,7 +37,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     await expectFileNameInGrid("Paul_Hewson.person");
     // remove dangerous characters
     await setFullName(">Bono?Vox/Paul");
-    await expectFileNameInGrid("_Bono_Vox_Paul.person");
+    await expectFileNameInGrid("Bono_Vox_Paul.person");
   });
   test("changing FullName renames other files that have been renamed to match the person", async () => {
     await project.goToPeople();

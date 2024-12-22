@@ -95,6 +95,24 @@ describe("session imdi export", () => {
     expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
   });
 
+  // Regression Test
+  it("A contribution from a person with a missing Person should still be output correct role", () => {
+    session.removeAllContributionsForUnitTest();
+    session.addContribution(
+      new Contribution("I am made up", "careful_speech_speaker", "")
+    );
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect("//Actor").toHaveCount(1);
+    expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
+  });
+
   /* the actual policy is in discussion in Notion #238
 
   It's not clear what we will do, but at the moment, we're output a minimal Actor
