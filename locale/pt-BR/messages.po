@@ -290,6 +290,12 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
 #~ msgid "IMDI Mode"
 #~ msgstr ""
 

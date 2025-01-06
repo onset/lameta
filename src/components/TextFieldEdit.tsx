@@ -30,6 +30,7 @@ export const TextFieldEdit: React.FunctionComponent<
     // type a space.
     // NO: text.text = event.currentTarget.value.trim();
     text.text = event.currentTarget.value;
+    setPrevious(event.currentTarget.value);
     setInvalid(false);
   }
 
@@ -65,13 +66,17 @@ export const TextFieldEdit: React.FunctionComponent<
           }
         }}
         onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
+          const trimmed = event.currentTarget.value.trim();
+          // put the trimmed value back into the the html element
+          event.currentTarget.value = trimmed;
+
           if (props.onBlurWithValue) {
-            props.onBlurWithValue(event.currentTarget.value);
+            props.onBlurWithValue(trimmed);
           }
           if (props.onBlur) {
             props.onBlur(event as any);
           }
-          if (props.validate && !props.validate(event.currentTarget.value)) {
+          if (props.validate && !props.validate(trimmed)) {
             event.preventDefault();
             const textarea = event.currentTarget;
             window.setTimeout(() => {

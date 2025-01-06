@@ -353,8 +353,7 @@ export default class LametaMenu {
           click() {
             ShowMessageDialog({
               title: `The title`,
-              text: "the text",
-              buttonText: "ok"
+              text: "the text"
             });
           }
         }

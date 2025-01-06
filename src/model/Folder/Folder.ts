@@ -697,8 +697,7 @@ function validateFieldThatControlsFolderName(
   if (msg.length > 0) {
     ShowMessageDialog({
       title: "Cannot use that name",
-      text: msg,
-      buttonText: "OK"
+      text: msg
     });
     return false;
   } else {

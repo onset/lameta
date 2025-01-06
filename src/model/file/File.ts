@@ -1107,8 +1107,7 @@ export /*babel doesn't like this: abstract*/ class File {
           }
           ShowMessageDialog({
             title: `Error`,
-            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `,
-            buttonText: "OK"
+            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `
           });
         }
       }

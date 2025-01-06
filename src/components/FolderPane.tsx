@@ -33,6 +33,7 @@ import { FileStatusBlock } from "../model/file/FileStatus";
 import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
+import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 
 export interface IProps {
   folder: Folder;
@@ -284,12 +285,17 @@ const FileTabs: React.FunctionComponent<
                 fieldThatControlsFileNamesMightHaveChanged={(key) =>
                   (props.folder as Session).nameMightHaveChanged()
                 }
-                validateFieldThatControlsFileNames={(value) =>
-                  props.project.validateSessionId(
+                validateFieldThatControlsFileNames={(value) => {
+                  const msg = props.project.getValidationMessageForSessionId(
                     directoryObject as Session,
                     value
-                  )
-                }
+                  );
+                  if (msg)
+                    ShowMessageDialog({
+                      text: msg
+                    });
+                  return !msg;
+                }}
                 onShowContributorsTab={(c) => {
                   setSelectedContribution(c);
                   setTabIndex(1);
@@ -310,6 +316,7 @@ const FileTabs: React.FunctionComponent<
         </Tabs>
       );
     case "Person":
+      // eslint-disable-next-line no-case-declarations
       const kFirstPersonTabToOpen = 0;
       return (
         <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
@@ -333,16 +340,27 @@ const FileTabs: React.FunctionComponent<
             >
               <PersonForm
                 validateFullName={(value) => {
-                  return props.project.validatePersonFullName(
-                    directoryObject as Person,
-                    value
-                  );
+                  const msg =
+                    props.project.getValidationMessageForPersonFullName(
+                      directoryObject as Person,
+                      value
+                    );
+                  if (msg)
+                    ShowMessageDialog({
+                      text: msg
+                    });
+                  return !msg;
                 }}
                 validateCode={(value) => {
-                  return props.project.validatePersonCode(
+                  const msg = props.project.getValidationMessageForPersonCode(
                     directoryObject as Person,
                     value
                   );
+                  if (msg)
+                    ShowMessageDialog({
+                      text: msg
+                    });
+                  return !msg;
                 }}
                 person={directoryObject as Person}
                 fields={directoryObject.properties}

@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-12-21 21:58\n"
+"PO-Revision-Date: 2025-01-06 23:05\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -345,6 +345,12 @@ msgstr "Bagaimana Anda menggunakan lameta?"
 
 msgid "ID"
 msgstr "ID"
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
 
 #~ msgid "IMDI"
 #~ msgstr ""

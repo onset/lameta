@@ -339,3 +339,14 @@ export class SessionMetadataFile extends FolderMetadataFile {
     });*/
   }
 }
+
+export function getIdValidationMessageOrUndefined(id: string) {
+  const trimmedId = id.trim();
+  if (trimmedId.length === 0) {
+    return i18n._("ID cannot be empty");
+  }
+  if (trimmedId.includes(" ")) {
+    return i18n._("ID cannot contain spaces"); // ELAR, at least
+  }
+  return undefined;
+}
