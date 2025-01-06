@@ -381,7 +381,7 @@ export class Project extends Folder {
         );
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
         const session = Session.fromDirectory(dir, this.customVocabularies);
-        session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
+        session.properties.setText("id", Path.basename(dir));
         // no, not yet this.sessions.items.push(session);
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
@@ -422,7 +422,7 @@ export class Project extends Folder {
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customVocabularies);
-    session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
+    session.properties.setText("id", Path.basename(dir));
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
@@ -605,6 +605,7 @@ export class Project extends Folder {
       t`Session`
     );
   }
+
   public validatePersonFullName(person: Person, name: string): boolean {
     return this.validateFieldThatControlsFolderName(
       this.persons.items,
@@ -614,6 +615,7 @@ export class Project extends Folder {
       t`Person`
     );
   }
+
   public validatePersonCode(person: Person, code: string): boolean {
     if (
       code.trim().length > 0 &&

@@ -35,6 +35,7 @@ import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
+import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 
 // There are two `FolderGroup` instances, one for projects and one for sessions.
 export class FolderGroup {
@@ -668,4 +669,39 @@ export abstract class Folder {
 function isSubDirectory(root: string, path: string) {
   const relative = Path.relative(root, path);
   return relative && !relative.startsWith("..") && !Path.isAbsolute(relative);
+}
+function validateFieldThatControlsFolderName(
+  folderArray: Folder[],
+  folder: Folder,
+  value: string,
+  fieldNameInUiLanguage: string,
+  folderKind: string
+) {
+  let msg = "";
+  const wouldBeFolderName = sanitizeForArchive(value);
+
+  if (value.trim().length === 0) {
+    msg = t`The ${fieldNameInUiLanguage} cannot be empty`;
+  } else if (wouldBeFolderName.trim().length === 0) {
+    msg = t`That name would lead to an empty filename.`;
+  } else if (
+    folderArray.some(
+      (f) =>
+        f !== folder &&
+        (f.filePrefix.toLowerCase() === wouldBeFolderName.toLowerCase() ||
+          f.wouldCollideWithIdFields(value))
+    )
+  ) {
+    msg = t`There is already a ${folderKind} "${value}".`;
+  }
+  if (msg.length > 0) {
+    ShowMessageDialog({
+      title: "Cannot use that name",
+      text: msg,
+      buttonText: "OK"
+    });
+    return false;
+  } else {
+    return true;
+  }
 }
