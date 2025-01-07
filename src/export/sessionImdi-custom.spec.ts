@@ -179,6 +179,19 @@ describe("session imdi export", () => {
     );
     expect("//Content/Keys/Key[@Name='Notes']").toNotExist();
   });
+
+  it("replaces spaces with underscores in IDs", () => {
+    session.properties.setText("id", "my session id");
+    const imdi = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      project,
+      true
+    );
+
+    // should find <Name>my_session_id</Name> in the IMDI output
+    expect(imdi).toContain("<Name>my_session_id</Name>");
+  });
 });
 
 function randomFileName() {

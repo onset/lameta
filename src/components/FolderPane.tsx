@@ -286,7 +286,7 @@ const FileTabs: React.FunctionComponent<
                   (props.folder as Session).nameMightHaveChanged()
                 }
                 validateFieldThatControlsFileNames={(value) =>
-                  props.project.validateSessionId(
+                  props.project.getValidationMessageForSessionId(
                     directoryObject as Session,
                     value
                   )
@@ -334,17 +334,17 @@ const FileTabs: React.FunctionComponent<
             >
               <PersonForm
                 validateFullName={(value) => {
-                  return props.project.validatePersonFullName(
+                  return props.project.getValidationMessageForPersonFullName(
                     directoryObject as Person,
                     value
                   );
                 }}
-                validateCode={(value) => {
-                  return props.project.validatePersonCode(
+                validateCode={(value) =>
+                  props.project.getValidationMessageForPersonCode(
                     directoryObject as Person,
                     value
-                  );
-                }}
+                  )
+                }
                 person={directoryObject as Person}
                 fields={directoryObject.properties}
                 languageFinder={props.project.languageFinder}

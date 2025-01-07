@@ -1098,6 +1098,11 @@ export default class ImdiGenerator {
 
     let value: string | Field = field;
 
+    // ELAR, at least requires spaces to become underscores for IDs
+    if (elementName === "Name" && fieldName === "id") {
+      value = field.text.replace(/ /g, "_");
+    }
+
     if (["genre", "subgenre", "socialContext"].indexOf(fieldName) > -1) {
       // For genre in IMDI export, ELAR doesn't want "formulaic_discourse",
       // they want "Formulaic discourse" (Sentence Case)

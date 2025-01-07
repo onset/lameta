@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import { makeObservable, observable, runInAction } from "mobx";
 import * as mobx from "mobx";
 import * as Path from "path";
-import { Session } from "./Session/Session";
+import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
 import { Folder, IFolderType, FolderGroup } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
@@ -30,7 +30,6 @@ import {
   prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
-import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import {
   NotifyError,
@@ -389,7 +388,7 @@ export class Project extends Folder {
         );
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
         const session = Session.fromDirectory(dir, this.customVocabularies);
-        session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
+        session.properties.setText("id", Path.basename(dir));
         // no, not yet this.sessions.items.push(session);
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
@@ -429,7 +428,7 @@ export class Project extends Folder {
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customVocabularies);
-    session.properties.setText("id", Path.basename(dir).replace(/_/g, " "));
+    session.properties.setText("id", Path.basename(dir));
     this.sessions.items.push(session);
     this.sessions.selectedIndex = this.sessions.items.length - 1;
     analyticsEvent("Create", "Create Session");
@@ -573,13 +572,14 @@ export class Project extends Folder {
     genreFieldDefinition.complexChoices = genreChoices;
   }
 
-  protected validateFieldThatControlsFolderName(
+  // return undefined if there is no error
+  protected getValidationMessageForFieldThatControlsFolderName(
     folderArray: Folder[],
     folder: Folder,
     value: string,
     fieldNameInUiLanguage: string,
     folderKind: string
-  ) {
+  ): string | undefined {
     let msg = "";
     const wouldBeFolderName = sanitizeForArchive(value);
 
@@ -597,28 +597,30 @@ export class Project extends Folder {
     ) {
       msg = t`There is already a ${folderKind} "${value}".`;
     }
-    if (msg.length > 0) {
-      ShowMessageDialog({
-        title: "Cannot use that name",
-        text: msg,
-        buttonText: "OK"
-      });
-      return false;
-    } else {
-      return true;
+    return msg || undefined;
+  }
+  public getValidationMessageForSessionId(
+    session: Session,
+    id: string
+  ): string | undefined {
+    let msg = getIdValidationMessageOrUndefined(id);
+    if (msg === undefined) {
+      msg = this.getValidationMessageForFieldThatControlsFolderName(
+        this.sessions.items,
+        session,
+        id,
+        t`ID`,
+        t`Session`
+      );
     }
+    return msg;
   }
-  public validateSessionId(session: Session, id: string): boolean {
-    return this.validateFieldThatControlsFolderName(
-      this.sessions.items,
-      session,
-      id,
-      t`ID`,
-      t`Session`
-    );
-  }
-  public validatePersonFullName(person: Person, name: string): boolean {
-    return this.validateFieldThatControlsFolderName(
+
+  public getValidationMessageForPersonFullName(
+    person: Person,
+    name: string
+  ): string | undefined {
+    return this.getValidationMessageForFieldThatControlsFolderName(
       this.persons.items,
       person,
       name,
@@ -626,22 +628,20 @@ export class Project extends Folder {
       t`Person`
     );
   }
-  public validatePersonCode(person: Person, code: string): boolean {
+
+  public getValidationMessageForPersonCode(
+    person: Person,
+    code: string
+  ): string | undefined {
     if (
       code.trim().length > 0 &&
       this.persons.items.some(
         (p) => p !== person && p.wouldCollideWithIdFields(code)
       )
     ) {
-      remote.dialog
-        .showMessageBox({
-          title: "lameta",
-          message: t`There is already a Person with that name or code.`
-        })
-        .then(() => {});
-      return false;
+      return t`There is already a Person with that name or code.`;
     }
-    return true;
+    return undefined; // no problem
   }
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();

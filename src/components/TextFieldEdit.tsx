@@ -1,9 +1,11 @@
 import { css } from "@emotion/react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
+import Tooltip from "react-tooltip-lite";
 import { FieldInfoAffordances, FieldLabel } from "./FieldLabel";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LanguageAxis } from "src/model/field/TextHolder";
+import { valid } from "semver";
 
 export interface IProps {
   field: Field;
@@ -12,8 +14,8 @@ export interface IProps {
   visibleInstructions?: string;
   attemptFileChanges?: () => boolean;
   onBlurWithValue?: (currentValue: string) => void;
-  // this one will prevent the user from moving on
-  validate?: (value: string) => boolean;
+  // returns validation message if invalid, undefined if valid
+  validate?: (value: string) => string | undefined;
   tooltip?: string;
   showAffordancesAfter?: boolean;
   //LanguageAxes?: LanguageAxis[];
@@ -80,8 +82,24 @@ export const TextFieldEdit: React.FunctionComponent<
 const SingleLanguageTextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement> & { axis?: LanguageAxis }
 > = mobx.observer((props) => {
-  const [invalid, setInvalid] = React.useState(false);
+  const [validationMessage, setValidationMessage] = useState<string>();
   const [previous, setPrevious] = useState(props.field.text);
+  useEffect(() => {
+    validateValue(props.field.text);
+  }, []); // run once on mount
+
+  const validateValue = (value: string) => {
+    if (props.validate) {
+      const message = props.validate(value);
+      if (message) {
+        setValidationMessage(message);
+        return false;
+      }
+    }
+
+    setValidationMessage(undefined);
+    return true;
+  };
   // const { current: fieldId } = useRef(
   //   "textfield-" +
   //     (Math.random().toString(36) + "00000000000000000").slice(2, 7)
@@ -94,7 +112,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     if (props.axis === undefined)
       field.setValueFromString(event.currentTarget.value);
     else field.setTextAxis(props.axis.tag, event.currentTarget.value);
-    setInvalid(false);
+    validateValue(event.currentTarget.value);
   }
 
   function getValue(field: Field): string {
@@ -128,51 +146,53 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           {props.axis.label}
         </span>
       )}
-      <textarea
-        css={css`
-          border: none;
-          padding-top: 0;
-          flex-grow: 1;
-        `}
-        id={props.field.key}
-        tabIndex={props.tabIndex}
-        autoFocus={props.autoFocus}
-        className={invalid ? "invalid" : ""}
-        name={props.field.definition.englishLabel} //what does this do? Maybe accessibility?
-        value={getValue(props.field)}
-        onChange={(event) => onChange(event, props.field)}
-        onKeyDown={(event) => {
-          if (!props.field.definition.multipleLines && event.key === "Enter") {
-            event.preventDefault();
-          }
-        }}
-        onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
-          if (props.onBlurWithValue) {
-            props.onBlurWithValue(event.currentTarget.value);
-          }
-          if (props.onBlur) {
-            props.onBlur(event as any);
-          }
-          if (props.validate && !props.validate(event.currentTarget.value)) {
-            event.preventDefault();
-            const textarea = event.currentTarget;
-            window.setTimeout(() => {
-              textarea.focus();
-              setInvalid(true);
-            });
-          } else {
-            setInvalid(false);
+
+      <Tooltip
+        content={validationMessage || ""}
+        isOpen={!!validationMessage}
+        direction="down"
+        background="red"
+        color="white"
+      >
+        <textarea
+          id={props.field.key}
+          tabIndex={props.tabIndex}
+          autoFocus={props.autoFocus}
+          className={validationMessage ? "invalid" : ""}
+          name={props.field.definition.englishLabel} //what does this do? Maybe accessibility?
+          value={getValue(props.field)}
+          onChange={(event) => onChange(event, props.field)}
+          onKeyDown={(event) => {
+            if (!props.field.definition.multipleLines && event.keyCode === 13) {
+              event.preventDefault();
+            }
+          }}
+          onBlur={(event: React.FocusEvent<HTMLTextAreaElement>) => {
+            const trimmed = event.currentTarget.value.trim();
+            // put the trimmed value back into the the html element
+            event.currentTarget.value = trimmed;
+
+            if (props.onBlurWithValue) {
+              props.onBlurWithValue(trimmed);
+            }
+            if (props.onBlur) {
+              props.onBlur(event as any);
+            }
+
+            if (!validateValue(trimmed)) {
+              event.preventDefault();
+              return false;
+            }
+
             if (props.attemptFileChanges) {
               if (!props.attemptFileChanges()) {
                 props.field.text = previous;
               }
             }
-          }
-        }}
-      />
-      {props.showAffordancesAfter && (
-        <FieldInfoAffordances fieldDef={props.field.definition} />
-      )}
+            return true;
+          }}
+        />
+      </Tooltip>
     </div>
   );
 });

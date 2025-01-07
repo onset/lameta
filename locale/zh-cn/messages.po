@@ -281,6 +281,21 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
+
 msgid "IMDI Only"
 msgstr ""
 

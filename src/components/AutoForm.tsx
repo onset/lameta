@@ -28,7 +28,7 @@ export interface IProps {
   //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => boolean;
-  validateFieldThatControlsFileNames?: (value: string) => boolean;
+  validateFieldThatControlsFileNames?: (value: string) => string | undefined;
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
   rowStyle?: boolean; // like used in the Properties tab
@@ -44,7 +44,7 @@ class AutoForm extends React.Component<IProps> {
   private makeEdit(field: Field, props: IProps): JSX.Element {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
-      case FieldType.Text: {
+      case FieldType.Text:
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return (
@@ -112,8 +112,9 @@ class AutoForm extends React.Component<IProps> {
                 return true;
               }}
               validate={(value) =>
-                !this.props.validateFieldThatControlsFileNames ||
-                this.props.validateFieldThatControlsFileNames(value)
+                this.props.validateFieldThatControlsFileNames
+                  ? this.props.validateFieldThatControlsFileNames(value)
+                  : undefined
               }
             />
           );
@@ -128,7 +129,7 @@ class AutoForm extends React.Component<IProps> {
             />
           );
         }
-      }
+
       case FieldType.Date:
         return (
           <DateFieldEdit

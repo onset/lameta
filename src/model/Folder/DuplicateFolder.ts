@@ -87,8 +87,7 @@ export function duplicateFolder(folder: Folder): {
   } catch (err) {
     ShowMessageDialog({
       title: `Error`,
-      text: `There was an error while duplicating ${folder.directory}: ${err}`,
-      buttonText: "OK"
+      text: `There was an error while duplicating ${folder.directory}: ${err}`
     });
     return { success: false, directory: "", metadataFilePath: "" };
   }

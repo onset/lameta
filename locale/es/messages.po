@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-12-21 21:58\n"
+"PO-Revision-Date: 2025-01-06 23:05\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -282,6 +282,21 @@ msgstr "¿Cómo está usando Lameta?"
 
 msgid "ID"
 msgstr "ID"
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr "Solo IMDI"
