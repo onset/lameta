@@ -290,10 +290,11 @@ const FileTabs: React.FunctionComponent<
                     directoryObject as Session,
                     value
                   );
-                  if (msg)
+                  if (msg) {
                     ShowMessageDialog({
                       text: msg
                     });
+                  }
                   return !msg;
                 }}
                 onShowContributorsTab={(c) => {

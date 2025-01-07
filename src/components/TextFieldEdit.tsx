@@ -78,11 +78,8 @@ export const TextFieldEdit: React.FunctionComponent<
           }
           if (props.validate && !props.validate(trimmed)) {
             event.preventDefault();
-            const textarea = event.currentTarget;
-            window.setTimeout(() => {
-              textarea.focus();
-              setInvalid(true);
-            });
+            setInvalid(true);
+            return false; // cancel leave
           } else {
             setInvalid(false);
             if (props.attemptFileChanges) {

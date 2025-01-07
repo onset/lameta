@@ -44,6 +44,7 @@ class AutoForm extends React.Component<IProps> {
     //console.log("makeEdit(" + JSON.stringify(field));
     switch (field.type) {
       case FieldType.Text:
+        // eslint-disable-next-line no-case-declarations
         const f = field as Field;
         if (f.choices && f.choices.length > 0) {
           return (
@@ -114,6 +115,11 @@ class AutoForm extends React.Component<IProps> {
                 !this.props.validateFieldThatControlsFileNames ||
                 this.props.validateFieldThatControlsFileNames(value)
               }
+              // validate2={(value) =>
+              //   this.props.validateFieldThatControlsFileNames2
+              //     ? this.props.validateFieldThatControlsFileNames2(value)
+              //     : undefined
+              // }
             />
           );
         } else {
