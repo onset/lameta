@@ -76,6 +76,11 @@ export const TextFieldEdit: React.FunctionComponent<
           if (props.onBlur) {
             props.onBlur(event as any);
           }
+          // Problem: currently the validate() here is showing a message box which messes up the focus (both for it and us)
+          // Enhance: we have focus problems (focus is not returned to the field)
+          // 1) have the validate return a string instead of show UI
+          // 2) a) either show the string in a tooltip, or
+          //   b) show the string with the MessageBox but after closing manually re-focus the field
           if (props.validate && !props.validate(trimmed)) {
             event.preventDefault();
             setInvalid(true);
@@ -87,6 +92,7 @@ export const TextFieldEdit: React.FunctionComponent<
                 props.field.text = previous;
               }
             }
+            return true;
           }
         }}
       />

@@ -1,18 +1,9 @@
 import { css } from "@emotion/react";
-/* removed emotion jsx declaration */
-
 import "./commonDialog.scss";
 import * as React from "react";
-// tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
-import ReactModal from "react-modal";
 import { t, Trans } from "@lingui/macro";
-import { Button } from "@material-ui/core";
-
-// let isWin32: boolean;
-// mainProcessApi.isWindows().then((isWindows: boolean) => {
-//   isWin32 = isWindows;
-// });
+import { Button, Dialog, DialogContent } from "@material-ui/core";
 
 const kDialogTopPadding = "24px";
 const kDialogSidePadding = "24px";
@@ -23,11 +14,11 @@ export const LametaDialog: React.FunctionComponent<{
   open: boolean;
   requestClose: () => void;
 }> = (props) => {
-  if (!open) {
+  if (!props.open) {
     return <React.Fragment />;
   }
   const inner = (
-    <div
+    <DialogContent
       css={css`
         display: flex;
         flex-direction: column;
@@ -36,33 +27,31 @@ export const LametaDialog: React.FunctionComponent<{
         padding-bottom: ${kDialogBottomPadding};
         height: 100%;
       `}
+    >
+      {props.children}
+    </DialogContent>
+  );
+
+  const { requestClose, ...dialogProps } = props;
+  return (
+    <Dialog
+      onClose={() => requestClose()}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
-          // find the button marked as default and click it
           const defaultButton = document.querySelector(
             ".defaultButton"
           ) as HTMLButtonElement;
           if (defaultButton) {
             defaultButton.click();
           }
+        } else if (e.key === "Escape") {
+          requestClose();
         }
       }}
-    >
-      {props.children}
-    </div>
-  );
-
-  return (
-    <ReactModal
-      isOpen={props.open}
-      onRequestClose={() => props.requestClose()}
-      css={css`
-        //  background-color: red;
-      `}
-      {...props} // get css styling given to us by parent
+      {...dialogProps}
     >
       {inner}
-    </ReactModal>
+    </Dialog>
   );
 };
 
@@ -125,7 +114,7 @@ export const DialogTitle: React.FunctionComponent<{
 
 // The height of this is determined by what is inside of it. If the content might grow (e.g. a progress box), then it's up to the
 // client to set maxes or fixed dimensions. See <ProgressDialog> for an example.
-export const DialogMiddle: React.FunctionComponent<{}> = (props) => {
+export const DialogMiddle: React.FunctionComponent = (props) => {
   return (
     <div
       css={css`
@@ -148,7 +137,7 @@ export const DialogMiddle: React.FunctionComponent<{}> = (props) => {
 };
 
 // should be a child of DialogBottomButtons
-export const DialogBottomLeftButtons: React.FunctionComponent<{}> = (props) => (
+export const DialogBottomLeftButtons: React.FunctionComponent = (props) => (
   <div
     css={css`
       margin-right: auto;
@@ -174,7 +163,7 @@ export const DialogBottomLeftButtons: React.FunctionComponent<{}> = (props) => (
 // normally one or two buttons, with the last one being <DialogCancelButton></DialCancelButton>.
 // The 1st child can also be <DialogBottomLeftButtons> if you have left-aligned buttons to show
 // give the order as it would be in Windows, which is Cancel-last. At runtime, this component reverse the order for mac & ubuntu.
-export const DialogBottomButtons: React.FunctionComponent<{}> = (props) => {
+export const DialogBottomButtons: React.FunctionComponent = (props) => {
   return (
     <div
       className="reverseOrderOnMac"
