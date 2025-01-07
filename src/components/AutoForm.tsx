@@ -112,14 +112,10 @@ class AutoForm extends React.Component<IProps> {
                 return true;
               }}
               validate={(value) =>
-                !this.props.validateFieldThatControlsFileNames ||
-                this.props.validateFieldThatControlsFileNames(value)
+                this.props.validateFieldThatControlsFileNames
+                  ? this.props.validateFieldThatControlsFileNames(value)
+                  : undefined
               }
-              // validate2={(value) =>
-              //   this.props.validateFieldThatControlsFileNames2
-              //     ? this.props.validateFieldThatControlsFileNames2(value)
-              //     : undefined
-              // }
             />
           );
         } else {
