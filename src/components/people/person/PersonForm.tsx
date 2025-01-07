@@ -17,8 +17,8 @@ export interface IProps {
   person: Person;
   languageFinder: LanguageFinder;
   fields: FieldSet;
-  validateFullName: (value: string) => boolean;
-  validateCode: (value: string) => boolean;
+  validateFullName: (value: string) => string | undefined;
+  validateCode: (value: string) => string | undefined;
 }
 
 class PersonForm extends React.Component<IProps> {

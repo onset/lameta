@@ -30,7 +30,7 @@ test.describe("ID Validation Tests", () => {
     await expect(idField).not.toBeFocused();
   });
 
-  test("empty ID should show error and maintain focus", async () => {
+  test("empty ID should show tooltip and maintain focus", async () => {
     await project.goToSessions();
     await project.addSession();
     const idField = page.getByLabel("ID");
@@ -38,44 +38,33 @@ test.describe("ID Validation Tests", () => {
     await idField.fill("");
     await page.keyboard.press("Tab");
 
-    // pause 1 second to allow the error dialog to appear
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // verify tooltip appears
+    const tooltip = page.locator(".react-tooltip-lite");
+    await expect(tooltip).toBeVisible();
 
-    // verify error dialog appears
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible({ timeout: 2000 });
-    await page.locator(".defaultButton").click();
-
-    // verify that the dialog is gone
-    await expect(dialog).not.toBeVisible();
+    // verify focus stays in field
+    await expect(idField).toBeFocused();
   });
 
-  test("ID with spaces should show error and maintain focus", async () => {
+  test("ID with spaces should show tooltip and maintain focus", async () => {
     await project.goToSessions();
     await project.addSession();
     const idField = page.getByLabel("ID");
     await idField.click();
     await idField.fill("session 001");
     await page.keyboard.press("Tab");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // verify error dialog appears
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible({ timeout: 2000 });
-    await page.locator(".defaultButton").click();
-
-    // verify that the dialog is gone
-    await expect(dialog).not.toBeVisible();
+    // verify tooltip appears
+    const tooltip = page.locator(".react-tooltip-lite");
+    await expect(tooltip).toBeVisible();
 
     // verify focus returns to ID field
-    // It doesn't do this yet ---------------> await expect(idField).toBeFocused();
+    await expect(idField).toBeFocused();
 
-    // focus on the ID field
-    await idField.click();
-
-    // fix the ID and verify we can move on
+    // fix the ID and verify tooltip disappears
     await idField.fill("session001");
     await page.keyboard.press("Tab");
+    await expect(tooltip).not.toBeVisible();
     await expect(idField).not.toBeFocused();
   });
 });

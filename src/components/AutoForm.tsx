@@ -28,7 +28,7 @@ export interface IProps {
   //customFieldNames: string[];
   fieldThatControlsFileNames?: string;
   fieldThatControlsFileNamesMightHaveChanged?: (fieldName: string) => boolean;
-  validateFieldThatControlsFileNames?: (value: string) => boolean;
+  validateFieldThatControlsFileNames?: (value: string) => string | undefined;
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
 }
