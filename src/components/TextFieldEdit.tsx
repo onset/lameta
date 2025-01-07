@@ -18,7 +18,6 @@ export interface IProps {
 export const TextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = mobx.observer((props) => {
-  const [invalid, setInvalid] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string>();
   const [previous, setPrevious] = useState(props.field.text);
   const { current: fieldId } = useRef(
@@ -34,17 +33,18 @@ export const TextFieldEdit: React.FunctionComponent<
     if (props.validate) {
       const message = props.validate(value);
       if (message) {
-        setInvalid(true);
         setValidationMessage(message);
         return false;
       }
     }
-    setInvalid(false);
     setValidationMessage(undefined);
     return true;
   };
 
   function onChange(event: React.FormEvent<HTMLTextAreaElement>, text: Field) {
+    // NB: Don't trim here. It is tempting, because at the end of the day we'd
+    // like it trimmed, but if you do it here, it's not possible to even
+    // type a space.
     const newValue = event.currentTarget.value;
     text.text = newValue;
     setPrevious(newValue);
@@ -80,7 +80,7 @@ export const TextFieldEdit: React.FunctionComponent<
           id={fieldId}
           tabIndex={props.tabIndex}
           autoFocus={props.autoFocus}
-          className={invalid ? "invalid" : ""}
+          className={validationMessage ? "invalid" : ""}
           name={props.field.definition.englishLabel} //what does this do? Maybe accessibility?
           value={getValue(props.field)}
           onChange={(event) => onChange(event, props.field)}
