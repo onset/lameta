@@ -15019,10 +15019,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-ro-crate@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.npmjs.org/ro-crate/-/ro-crate-3.4.1.tgz#73ff1ac93934f1c6e430e0ee76d44d09e1cfbcee"
-  integrity sha512-OnHmSTw1OV9ukngOxVnAQUTj0GK9+b4MCroMy38oKHLE2U81vCPnkwyrGw8HLendL0xnIOoTIai+lUxCKudyTQ==
+ro-crate@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/ro-crate/-/ro-crate-3.5.1.tgz#e963d91f34a36401cca009c77c39d1a451a67512"
+  integrity sha512-np28szDZLpogycUf+Y+LuoH+jTucjy45DCrzahEuT3lWVfbMRWswuRJUZ3dXobuB7U8IQxIx3jLyI9gjPFNnXQ==
   dependencies:
     commander "^12.0.0"
     cross-fetch "^4.0.0"

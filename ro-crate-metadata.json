@@ -1,0 +1,66 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2-DRAFT/context",
+    {
+      "@vocab": "http://schema.org/"
+    },
+    "http://purl.archive.org/language-data-commons/context.json",
+    "https://w3id.org/ldac/context"
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": ["Dataset", "Object", "RepositoryObject"],
+      "conformsTo": {
+        "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+      },
+      "name": "",
+      "publisher": {
+        "@id": "https://github.com/onset/lameta"
+      },
+      "datePublished": "2025-07-14T20:44:12.369Z",
+      "license": {
+        "@id": "#license"
+      },
+      "id": "a",
+      "subjectLanguages": ["#language_etr: Edolo"],
+      "status": "Incoming",
+      "contributor": [],
+      "hasPart": [
+        {
+          "@id": "a.session"
+        }
+      ]
+    },
+    {
+      "@id": "#license",
+      "@type": "CreativeWork",
+      "name": "unspecified"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2-DRAFT"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "#language_etr: Edolo",
+      "@type": "Language",
+      "code": "etr: Edolo",
+      "name": "[languageName]"
+    },
+    {
+      "@id": "a.session",
+      "@type": "File",
+      "contentSize": 260,
+      "dateCreated": "2025-01-07T17:20:24.799Z",
+      "dateModified": "2025-07-14T20:28:51.476Z",
+      "encodingFormat": "application/lameta-session",
+      "name": "a.session"
+    }
+  ]
+}

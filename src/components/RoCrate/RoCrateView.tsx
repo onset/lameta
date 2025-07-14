@@ -36,7 +36,7 @@ export const RoCrateView: React.FunctionComponent<{
     const validate = async () => {
       if (props.doValidate) {
         try {
-          const entries = rocrate.validate(json);
+          const entries = await rocrate.validate(json);
           // separate errors, warnings, and info
           setValidationResults({
             errors: entries.filter((entry) => entry.status === "error"),
