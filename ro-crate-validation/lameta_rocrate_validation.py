@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive RO-Crate validation script for Lameta/LDAC profiles.
+AI generated RO-Crate validation script for Lameta/LDAC profiles.
 """
 
 import json

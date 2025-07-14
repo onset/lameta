@@ -40,7 +40,7 @@
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3",
     "strings:compile": "lingui compile",
     "make-langindex": "yarn tsx src/languageFinder/make-langindex.ts && yarn vitest run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
-    "validate-rocrate": "C:/dev/lameta/.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py .",
+    "validate-rocrate": "./.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py ro-crate-validation/",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },

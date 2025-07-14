@@ -14,7 +14,8 @@
       "conformsTo": {
         "@id": "https://purl.archive.org/language-data-commons/profile#Object"
       },
-      "name": "",
+      "name": "Lameta RO-Crate Validation Sample",
+      "description": "A sample RO-Crate metadata file for testing and validating Lameta RO-Crate exports with LDAC profile compliance.",
       "publisher": {
         "@id": "https://github.com/onset/lameta"
       },
