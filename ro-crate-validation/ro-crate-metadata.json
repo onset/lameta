@@ -5,7 +5,14 @@
       "@vocab": "http://schema.org/"
     },
     "http://purl.archive.org/language-data-commons/context.json",
-    "https://w3id.org/ldac/context"
+    "https://w3id.org/ldac/context",
+    {
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "http://schema.org/datePublished",
+      "license": "http://schema.org/license"
+    }
   ],
   "@graph": [
     {
@@ -14,22 +21,25 @@
       "conformsTo": {
         "@id": "https://purl.archive.org/language-data-commons/profile#Object"
       },
-      "name": "Lameta RO-Crate Validation Sample",
-      "description": "A sample RO-Crate metadata file for testing and validating Lameta RO-Crate exports with LDAC profile compliance.",
+      "name": "No title provided for this session.",
+      "description": "No description provided for this session.",
       "publisher": {
         "@id": "https://github.com/onset/lameta"
       },
-      "datePublished": "2025-07-14T20:44:12.369Z",
+      "datePublished": "2025-07-14T21:44:20.168Z",
       "license": {
         "@id": "#license"
       },
-      "id": "a",
+      "id": "b",
       "subjectLanguages": ["#language_etr: Edolo"],
       "status": "Incoming",
       "contributor": [],
       "hasPart": [
         {
-          "@id": "a.session"
+          "@id": "b.session"
+        },
+        {
+          "@id": "b_multibook-index.bloompub"
         }
       ]
     },
@@ -55,13 +65,22 @@
       "name": "[languageName]"
     },
     {
-      "@id": "a.session",
+      "@id": "b.session",
       "@type": "File",
       "contentSize": 260,
-      "dateCreated": "2025-01-07T17:20:24.799Z",
-      "dateModified": "2025-07-14T20:28:51.476Z",
+      "dateCreated": "2025-01-06T22:10:37.646Z",
+      "dateModified": "2025-07-14T20:28:51.477Z",
       "encodingFormat": "application/lameta-session",
-      "name": "a.session"
+      "name": "b.session"
+    },
+    {
+      "@id": "b_multibook-index.bloompub",
+      "@type": "File",
+      "contentSize": 345700,
+      "dateCreated": "2025-01-07T14:26:42.464Z",
+      "dateModified": "2024-12-13T23:10:28.161Z",
+      "encodingFormat": "bloompub",
+      "name": "b_multibook-index.bloompub"
     }
   ]
 }

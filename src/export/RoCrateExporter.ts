@@ -43,7 +43,15 @@ export function getRoCrate(project: Project, folder: Folder): object {
       "https://w3id.org/ro/crate/1.2-DRAFT/context",
       { "@vocab": "http://schema.org/" },
       "http://purl.archive.org/language-data-commons/context.json",
-      "https://w3id.org/ldac/context"
+      "https://w3id.org/ldac/context",
+      // The following are needed to make the npm ro-crate package happy
+      {
+        Dataset: "http://schema.org/Dataset",
+        name: "http://schema.org/name",
+        description: "http://schema.org/description",
+        datePublished: "http://schema.org/datePublished",
+        license: "http://schema.org/license"
+      }
     ],
     "@graph": []
   };
@@ -61,7 +69,12 @@ export function getRoCrate(project: Project, folder: Folder): object {
     conformsTo: {
       "@id": "https://purl.archive.org/language-data-commons/profile#Object"
     },
-    name: folder.metadataFile?.getTextProperty("title"),
+    name:
+      folder.metadataFile?.getTextProperty("title") ||
+      "No title provided for this session.",
+    description:
+      folder.metadataFile?.getTextProperty("description") ||
+      "No description provided for this session.",
     publisher: { "@id": "https://github.com/onset/lameta" }, // review: we're not actually publishing
 
     datePublished: new Date().toISOString(), // review: we're not actually publishing
@@ -223,18 +236,21 @@ function makeEntriesFromParticipant(project: Project, session: Session) {
   const entriesForAllContributors: object[] = [];
 
   Object.keys(uniqueContributors).forEach((name) => {
-    const person = project.findPerson(name)!;
+    const person = project.findPerson(name);
+
+    // Review: if the person is not found, currently we output what we can, which is their ID and their roles.
 
     // add in the ro-crate stuff like @id and @type
     const personElement = getElementUsingTemplate(
       template,
-      person.getIdToUseForReferences()
+      person ? person.getIdToUseForReferences() : name
     );
 
-    // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
-    addFieldEntries(person, personElement, entriesForAllContributors);
-    addChildFileEntries(person, personElement, entriesForAllContributors);
-
+    if (person) {
+      // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
+      addFieldEntries(person, personElement, entriesForAllContributors);
+      addChildFileEntries(person, personElement, entriesForAllContributors);
+    }
     // add the roles this person has in the session
     personElement["role"] = Array.from(uniqueContributors[name]).map((role) => {
       return { "@id": `role_${role}` };
