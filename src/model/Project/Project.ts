@@ -3,12 +3,11 @@ import * as fs from "fs-extra";
 import { makeObservable, observable, runInAction } from "mobx";
 import * as mobx from "mobx";
 import * as Path from "path";
-import { Session } from "./Session/Session";
+import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
 import { Folder, IFolderType, FolderGroup } from "../Folder/Folder";
 import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
-const sanitize = require("sanitize-filename");
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import * as remote from "@electron/remote";
 import {
@@ -31,7 +30,6 @@ import {
   prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
-import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import {
   NotifyError,
@@ -40,13 +38,15 @@ import {
   NotifyWarning
 } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
-import { CapitalCase } from "../../other/case";
+import { capitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import {
   GetOtherConfigurationSettings,
   SetOtherConfigurationSettings
 } from "./OtherConfigurationSettings";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
 
 let sCurrentProject: Project | null = null;
 
@@ -370,7 +370,7 @@ export class Project extends Folder {
     let name = baseName;
     while (fs.existsSync(Path.join(directory, name))) {
       i++;
-      name = baseName + " " + i;
+      name = baseName + i;
     }
     const dir = Path.join(directory, name);
 
@@ -384,7 +384,7 @@ export class Project extends Folder {
       case "session": {
         const dir = this.getUniqueFolder(
           Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-          t`New Session`
+          sanitizeForArchive(t`New Session`)
         );
         //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
         const session = Session.fromDirectory(dir, this.customVocabularies);
@@ -398,10 +398,13 @@ export class Project extends Folder {
       case "person": {
         const dir = this.getUniqueFolder(
           Path.join(this.directory, "People"), // we don't localize the directory name.
-          t`New Person`
+          sanitizeForArchive(t`New Person`)
         );
         const person = this.makePersonFromDirectory(dir);
-        person.properties.setText("name", Path.basename(dir));
+        person.properties.setText(
+          "name",
+          Path.basename(dir).replace(/_/g, " ")
+        );
         analyticsEvent("Create", "Create Person From Import");
         return person;
       }
@@ -421,7 +424,7 @@ export class Project extends Folder {
   public addSession(): Session {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "Sessions"), // we don't localize the directory name.
-      t`New Session`
+      sanitizeForArchive(t`New Session`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Session", ".session");
     const session = Session.fromDirectory(dir, this.customVocabularies);
@@ -470,11 +473,14 @@ export class Project extends Folder {
   public addPerson(name?: string): Person {
     const dir = this.getUniqueFolder(
       Path.join(this.directory, "People"), // we don't localize the directory name.
-      t`New Person`
+      sanitizeForArchive(t`New Person`)
     );
     //const metadataFile = new FolderMetadataFile(dir, "Person", ".person");
     const person = this.setupPerson(dir);
-    person.properties.setText("name", name ?? t`New Person`);
+    person.properties.setText(
+      "name",
+      name ?? Path.basename(dir).replace(/_/g, " ")
+    );
     this.persons.items.push(person);
     person.nameMightHaveChanged();
     person.saveFolderMetaData;
@@ -566,15 +572,16 @@ export class Project extends Folder {
     genreFieldDefinition.complexChoices = genreChoices;
   }
 
-  protected validateFieldThatControlsFolderName(
+  // return undefined if there is no error
+  protected getValidationMessageForFieldThatControlsFolderName(
     folderArray: Folder[],
     folder: Folder,
     value: string,
     fieldNameInUiLanguage: string,
     folderKind: string
-  ) {
+  ): string | undefined {
     let msg = "";
-    const wouldBeFolderName = sanitize(value);
+    const wouldBeFolderName = sanitizeForArchive(value);
 
     if (value.trim().length === 0) {
       msg = t`The ${fieldNameInUiLanguage} cannot be empty`;
@@ -590,28 +597,30 @@ export class Project extends Folder {
     ) {
       msg = t`There is already a ${folderKind} "${value}".`;
     }
-    if (msg.length > 0) {
-      ShowMessageDialog({
-        title: "Cannot use that name",
-        text: msg,
-        buttonText: "OK"
-      });
-      return false;
-    } else {
-      return true;
+    return msg || undefined;
+  }
+  public getValidationMessageForSessionId(
+    session: Session,
+    id: string
+  ): string | undefined {
+    let msg = getIdValidationMessageOrUndefined(id);
+    if (msg === undefined) {
+      msg = this.getValidationMessageForFieldThatControlsFolderName(
+        this.sessions.items,
+        session,
+        id,
+        t`ID`,
+        t`Session`
+      );
     }
+    return msg;
   }
-  public validateSessionId(session: Session, id: string): boolean {
-    return this.validateFieldThatControlsFolderName(
-      this.sessions.items,
-      session,
-      id,
-      t`ID`,
-      t`Session`
-    );
-  }
-  public validatePersonFullName(person: Person, name: string): boolean {
-    return this.validateFieldThatControlsFolderName(
+
+  public getValidationMessageForPersonFullName(
+    person: Person,
+    name: string
+  ): string | undefined {
+    return this.getValidationMessageForFieldThatControlsFolderName(
       this.persons.items,
       person,
       name,
@@ -619,22 +628,20 @@ export class Project extends Folder {
       t`Person`
     );
   }
-  public validatePersonCode(person: Person, code: string): boolean {
+
+  public getValidationMessageForPersonCode(
+    person: Person,
+    code: string
+  ): string | undefined {
     if (
       code.trim().length > 0 &&
       this.persons.items.some(
         (p) => p !== person && p.wouldCollideWithIdFields(code)
       )
     ) {
-      remote.dialog
-        .showMessageBox({
-          title: "lameta",
-          message: t`There is already a Person with that name or code.`
-        })
-        .then(() => {});
-      return false;
+      return t`There is already a Person with that name or code.`;
     }
-    return true;
+    return undefined; // no problem
   }
   public saveAllFilesInFolder() {
     this.saveFolderMetaData();
@@ -1134,3 +1141,15 @@ function NewGuid() {
 //   }
 //   return setMediaFolderOrEmptyForProjectAndMachine(id, path);
 // }
+
+export function archiveUsesImdi(): boolean {
+  return sCurrentProject?.accessProtocol === "ELAR";
+}
+export function archiveLimitsToPortableCharacters(): boolean {
+  // We don't know them all, so let's be conservative.
+  // It appears that ELAR, PARADISEC, and REAP all have these restrictions.
+
+  return !userSettings.IgnoreFileNamingRules; // normally false, dev can turn it on
+}
+
+initializeSanitizeForArchive(archiveLimitsToPortableCharacters);

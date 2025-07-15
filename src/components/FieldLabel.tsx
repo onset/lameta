@@ -81,7 +81,7 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {GetOtherConfigurationSettings().showImdiPreview &&
+      {GetOtherConfigurationSettings().archiveUsesImdi &&
         props.fieldDef.omitFromImdi && <NotConsumedByArchiveIndicator />}
     </div>
   );

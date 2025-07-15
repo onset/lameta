@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-01 21:22\n"
+"PO-Revision-Date: 2025-01-06 23:05\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -17,6 +17,9 @@ msgstr ""
 "X-Crowdin-Language: id\n"
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
+
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
 
 msgid "A file with the same name already exists at that location."
 msgstr "Sebuah file dengan nama yang sama sudah ada di lokasi tersebut."
@@ -65,6 +68,10 @@ msgstr "Sebagai seorang pengembang"
 
 msgid "As a trainer"
 msgstr "Sebagai pelatih"
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
+msgstr ""
 
 msgid "Audio"
 msgstr "Audio"
@@ -128,6 +135,9 @@ msgstr "Menyalin ke Files..."
 
 msgid "Copying..."
 msgstr "Menyalin..."
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
+msgstr ""
 
 msgid "Create"
 msgstr "Buat"
@@ -272,6 +282,21 @@ msgstr "Bagaimana Anda menggunakan lameta?"
 
 msgid "ID"
 msgstr "ID"
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr "Hanya IMDI"
@@ -486,6 +511,12 @@ msgstr "Sesi"
 msgid "Show All"
 msgstr "Tampilkan Semua"
 
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
+msgstr ""
+
 msgid "Show Release Notes"
 msgstr "Lihat Catatan Rilis"
 
@@ -496,7 +527,7 @@ msgid "Show in File Explorer"
 msgstr "Tampilkan di File Explorer"
 
 msgid "Show in Finder"
-msgstr "Tampilkan di Finder"
+msgstr "Tampilkan di Pencarian"
 
 msgid "Show me the folder with the problem"
 msgstr "Tampilkan folder yang ada masalah"
@@ -565,6 +596,9 @@ msgid "This Personally Identifiable Information may not be exported by some form
 msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
+msgstr "."
+
+msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
@@ -643,7 +677,7 @@ msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settin
 msgstr "lameta tidak dapat menemukan Folder Media {m}. Lihat Berkas: Pengaturan Folder Media."
 
 msgid "lameta could not find a matching Person for the following contributors:"
-msgstr ""
+msgstr "lameta tidak dapat menemukan Orang yang sesuai dengan kontributor berikut:"
 
 msgid "lameta could not rename the directory."
 msgstr "lameta tidak bisa mengubah nama direktori tersebut."

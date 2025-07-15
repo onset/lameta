@@ -42,17 +42,18 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         backgroundColor: "white",
 
         border: "none",
-        color: "transparent", // hide the "x" unless the mouse is in us
+        '[role="button"]': {
+          color: "transparent" // hide the "x" unless we are hovering
+        },
         div: {
           paddingLeft: 0,
           fontSize: "1rem" //should match $default-font-size: 13px;
         },
 
         ":hover": {
-          color: "lightgray" // show the "x"
-          // span: {
-          //   color: "lightgray", //go ahead and show it
-          // },
+          '[role="button"]': {
+            color: "lightgray" // show the "x"
+          }
         }
       };
     },
@@ -103,7 +104,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     );
   };
   const selectProps = {
-    tabIndex: props.tabIndex ? props.tabIndex.toString() : "",
+    tabIndex: props.tabIndex ? props.tabIndex : undefined,
     name: props.field.labelInUILanguage,
     components: {
       MultiValueLabel: LanguagePill,
@@ -146,8 +147,8 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       {props.canCreateNew ? (
         <CreatableAsyncSelect
           {...selectProps}
-          onCreatableOptionCreate={(newOption) => {
-            window.alert("You created " + newOption.label);
+          onCreateOption={(newOption) => {
+            window.alert("You created " + newOption);
           }}
         ></CreatableAsyncSelect>
       ) : (

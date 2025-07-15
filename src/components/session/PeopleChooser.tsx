@@ -1,5 +1,4 @@
-// tslint:disable-next-line:no-duplicate-imports
-import ReactSelect from "react-select";
+import ReactSelect, { MultiValueProps } from "react-select";
 import { Trans } from "@lingui/macro";
 import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder/Folder";
@@ -71,7 +70,18 @@ export const PeopleChooser: React.FunctionComponent<
       contribution: c
     }));
 
-  const PersonAndRolePill = ({ children, data, innerProps, isDisabled }) => {
+  interface PersonAndRoleOption {
+    value: string;
+    label: string | IChoice;
+    contribution: Contribution;
+  }
+
+  const PersonAndRolePill = ({
+    children,
+    data,
+    innerProps,
+    isDisabled
+  }: MultiValueProps<PersonAndRoleOption>) => {
     return (
       <div
         onClick={(e) => {
@@ -120,7 +130,6 @@ export const PeopleChooser: React.FunctionComponent<
         }}
         options={choices}
         isMulti
-        removeSelected={false}
       />
     </div>
   );

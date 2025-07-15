@@ -31,8 +31,6 @@ export default defineConfig({
         // makes lingui macros work. There is a some performance penalty, but I
         //don't know how much. See https://github.com/skovhus/vite-lingui
         plugins: ["macros"]
-        // I don't know why, but css props work without this or the 'macros' thing above
-        //   plugins: ["@emotion/babel-plugin"],
       }
     }),
     electron({

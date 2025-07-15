@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Person>
+  <name type="string">Ilawi Amosa</name>
   <primaryLanguage type="string">Edolo</primaryLanguage>
-  <primaryLanguageLearnedIn type="string">Huya</primaryLanguageLearnedIn>
+  <primaryLanguageLearnedIn type="string">Aiya</primaryLanguageLearnedIn>
   <otherLanguage0 type="string">Tok Pisin</otherLanguage0>
   <fathersLanguage type="string">Edolo</fathersLanguage>
   <mothersLanguage type="string">Edolo</mothersLanguage>
   <otherLanguage1 type="string">Huli</otherLanguage1>
-  <birthYear type="string">1972</birthYear>
+  <birthYear type="string">1960</birthYear>
   <gender type="string">Male</gender>
-  <education type="string">Grade 2</education>
+  <education type="string">Some bible school, some literacy training</education>
   <primaryOccupation type="string">Subsistence Farmer</primaryOccupation>
-  <CustomFields>
-	<Current_Village type="string">Huya</Current_Village>
-  </CustomFields>
 </Person>

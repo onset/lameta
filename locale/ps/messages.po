@@ -13,6 +13,9 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -59,6 +62,10 @@ msgid "As a developer"
 msgstr ""
 
 msgid "As a trainer"
+msgstr ""
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
 msgstr ""
 
 msgid "Audio"
@@ -122,6 +129,9 @@ msgid "Copying in Files..."
 msgstr ""
 
 msgid "Copying..."
+msgstr ""
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
 msgid "Create"
@@ -267,6 +277,21 @@ msgstr ""
 
 msgid "ID"
 msgstr ""
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr ""
@@ -481,6 +506,12 @@ msgstr ""
 msgid "Show All"
 msgstr ""
 
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
+msgstr ""
+
 msgid "Show Release Notes"
 msgstr ""
 
@@ -560,6 +591,9 @@ msgid "This Personally Identifiable Information may not be exported by some form
 msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
+msgstr ""
+
+msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."

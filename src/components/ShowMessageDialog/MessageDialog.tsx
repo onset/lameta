@@ -14,7 +14,7 @@ import {
 } from "../LametaDialog";
 
 interface IConfig {
-  title: string;
+  title?: string;
   text?: string;
   buttonText?: string;
   iconPath?: string | undefined | /* alert */ null /* none */;

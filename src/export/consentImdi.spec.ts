@@ -15,63 +15,12 @@ import { Contribution } from "../model/file/File";
 
 // find the the temp directory of this computer
 
-describe("Consent Form Inclusion", () => {
+describe("Consent in OPEX+Files export", () => {
   let thisRunDir: string;
   let targetDir: string;
-  afterAll(() => {
-    if (thisRunDir) {
-      // fs.rmdirSync(thisRunDir, { recursive: true });
-    }
-  });
   beforeAll(async () => {
-    const thisSpecDir = Path.join(os.tmpdir(), "consent imdi bundler tests");
-    fs.mkdirSync(thisSpecDir, { recursive: true });
-    const randomStringForFileName = Math.random().toString(36).substring(7);
-    thisRunDir = Path.join(thisSpecDir, "run-" + randomStringForFileName);
-    fs.mkdirSync(thisRunDir);
-    const projectDir = Path.join(thisRunDir, "projectDir");
-    fs.mkdirSync(projectDir);
-    targetDir = Path.join(thisRunDir, "target");
-    fs.mkdirSync(targetDir);
-
-    const project = Project.fromDirectory(projectDir);
-
-    // NB: this is to test the access protocol used for consent bundles,
-    // which has a hard-coded knowledge of the access protocol used for
-    // ELAR currently. If/when we add knowledge of what other archives
-    // would want, this will have to become more complicated if we want
-    // to unit test ones other than ELAR.
-    project.properties.setText("archiveConfigurationName", "ELAR");
-
-    const person1 = project.addPerson("Person 1");
-    await person1.addFileForTestAsync("Person 1_Consent.JPG");
-    const person2 = project.addPerson("Person 2");
-    await person2.addFileForTestAsync("Person 2_Consent.JPG");
-    const person3 = project.addPerson("Person 3");
-    // person 3 has no consent form
-
-    const session = project.addSession();
-    session.addContribution(
-      new Contribution(person1.getIdToUseForReferences(), "Consultant", "blah")
-    );
-    session.addContribution(
-      new Contribution(person2.getIdToUseForReferences(), "Speaker", "blah")
-    );
-    session.addContribution(
-      new Contribution(person3.getIdToUseForReferences(), "Translator", "blah")
-    );
-
-    await ImdiBundler.addConsentBundle(
-      project,
-      targetDir, // review is it this or targetDir?
-      "",
-      [],
-      IMDIMode.OPEX,
-      true, //<-- copy in files
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (f) => true,
-      true
-    );
+    const thisSpecDir = Path.join(os.tmpdir(), "consent opex bundler tests");
+    [thisRunDir, targetDir] = await doExport(IMDIMode.OPEX, thisSpecDir, true);
     const xml = fs.readFileSync(
       Path.join(targetDir, "ConsentDocuments", "ConsentDocuments.opex"),
       "utf8"
@@ -129,3 +78,76 @@ describe("Consent Form Inclusion", () => {
     );
   });
 });
+
+describe("Consent in IMDI-only export", () => {
+  let thisRunDir: string;
+  let targetDir: string;
+  beforeAll(async () => {
+    const thisSpecDir = Path.join(os.tmpdir(), "consent imdi bundler tests");
+    fs.mkdirSync(thisSpecDir, { recursive: true });
+    [thisRunDir, targetDir] = await doExport(
+      IMDIMode.RAW_IMDI,
+      thisSpecDir,
+      false
+    );
+  });
+  it("The file ConsentDocuments.imdi should exist", () => {
+    expect(
+      fs.existsSync(Path.join(targetDir, "ConsentDocuments.imdi"))
+    ).toBeTruthy();
+  });
+});
+
+async function doExport(
+  imdiMode: IMDIMode,
+  thisSpecDir: string,
+  includeFiles: boolean
+): Promise<[thisRunDir: string, targetDir: string]> {
+  fs.mkdirSync(thisSpecDir, { recursive: true });
+  const randomStringForFileName = Math.random().toString(36).substring(7);
+  const thisRunDir = Path.join(thisSpecDir, "run-" + randomStringForFileName);
+  fs.mkdirSync(thisRunDir);
+  const projectDir = Path.join(thisRunDir, "projectDir");
+  fs.mkdirSync(projectDir);
+  const targetDir = Path.join(thisRunDir, "target");
+  fs.mkdirSync(targetDir);
+
+  const project = Project.fromDirectory(projectDir);
+
+  // NB: this is to test the access protocol used for consent bundles,
+  // which has a hard-coded knowledge of the access protocol used for
+  // ELAR currently. If/when we add knowledge of what other archives
+  // would want, this will have to become more complicated if we want
+  // to unit test ones other than ELAR.
+  project.properties.setText("archiveConfigurationName", "ELAR");
+
+  const person1 = project.addPerson("Person 1");
+  await person1.addFileForTestAsync("Person 1_Consent.JPG");
+  const person2 = project.addPerson("Person 2");
+  await person2.addFileForTestAsync("Person 2_Consent.JPG");
+  const person3 = project.addPerson("Person 3");
+  // person 3 has no consent form
+
+  const session = project.addSession();
+  session.addContribution(
+    new Contribution(person1.getIdToUseForReferences(), "Consultant", "blah")
+  );
+  session.addContribution(
+    new Contribution(person2.getIdToUseForReferences(), "Speaker", "blah")
+  );
+  session.addContribution(
+    new Contribution(person3.getIdToUseForReferences(), "Translator", "blah")
+  );
+
+  await ImdiBundler.addConsentBundle(
+    project,
+    targetDir, // review is it this or targetDir?
+    "",
+    [],
+    imdiMode,
+    includeFiles,
+    (f) => true,
+    true
+  );
+  return [thisRunDir, targetDir];
+}

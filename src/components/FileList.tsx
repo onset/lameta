@@ -7,10 +7,7 @@ import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.scss";
 import { showInExplorer } from "../other/crossPlatformUtilities";
-import {
-  RenameFileDialog,
-  ShowRenameDialog
-} from "./RenameFileDialog/RenameFileDialog";
+import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";

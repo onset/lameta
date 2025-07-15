@@ -103,7 +103,7 @@ export class Person extends Folder {
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
 
-    this.safeFileNameBase = sanitizeForArchive(
+    this.currentFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("name")
     );
     /* what did this ever do?

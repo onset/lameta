@@ -39,6 +39,7 @@
     }
   },
   "formatOptions": {
+    "lineNumbers": false,
     "origins": false
   }
 }

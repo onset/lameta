@@ -25,17 +25,30 @@ const kFontZoomStepSize = 0.2;
 export class UserSettings {
   private store: Store | FakeStore;
 
+  private showIMDI: boolean; // don't confuse this with the IMDI-related behavior that comes with ELAR. This should only be used for viewing, not behavior.
+  private paradisecMode: boolean;
   private howUsing: string;
   public uiFontZoom: number;
   private sendErrors: boolean;
+  private ignoreFileNamingRules: boolean; // for testing only
 
   private clientId: string;
 
   constructor() {
-    makeObservable<UserSettings, "howUsing" | "sendErrors">(this, {
+    makeObservable<
+      UserSettings,
+      | "showIMDI"
+      | "paradisecMode"
+      | "howUsing"
+      | "sendErrors"
+      | "ignoreFileNamingRules"
+    >(this, {
+      showIMDI: observable,
+      paradisecMode: observable,
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
+      ignoreFileNamingRules: observable,
       HowUsing: computed
     });
 
@@ -84,6 +97,9 @@ export class UserSettings {
           });
     this.sendErrors = process.env?.NODE_ENV === "production"; // developer has a menu that can toggle this
 
+    // the "imdiMode" here is legacy, so we don't want to break it by changing to "showIMDI"
+    this.showIMDI = this.store.get("imdiMode", false);
+    this.paradisecMode = this.store.get("paradisecMode") || false;
     this.howUsing = this.store.get("howUsing", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
@@ -100,6 +116,20 @@ export class UserSettings {
     this.sendErrors = doSend;
   }
 
+  public get ShowIMDI() {
+    return this.showIMDI; // use the observable property instead of store.get()
+  }
+  public set ShowIMDI(show: boolean) {
+    this.showIMDI = show;
+    this.store.set("imdiMode", this.showIMDI);
+  }
+  public get ParadisecMode() {
+    return this.paradisecMode;
+  }
+  public set ParadisecMode(show: boolean) {
+    this.paradisecMode = show;
+    this.store.set("paradisecMode", this.ParadisecMode);
+  }
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person
   public get ClientId() {
@@ -134,6 +164,12 @@ export class UserSettings {
   }
   public get DeveloperMode() {
     return this.howUsing === "developer";
+  }
+  public get IgnoreFileNamingRules() {
+    return this.ignoreFileNamingRules;
+  }
+  public set IgnoreFileNamingRules(ignore: boolean) {
+    this.ignoreFileNamingRules = ignore;
   }
   public get Email() {
     return this.store.get("email", "");

@@ -55,9 +55,8 @@ describe("session imdi export", () => {
         true /*omit namespace*/
       )
     );
-    // expect there to be a <Genre> element with text "Academic Output"
     expect(count("//Genre")).toBe(1);
-    expect("//Genre").toHaveText("Academic Output");
+    expect("//Genre").toHaveText("Academic output");
   });
 
   // notion issue #239
@@ -79,7 +78,9 @@ describe("session imdi export", () => {
 
   it("should  output an Actor for a contributor with a matching person", () => {
     session.removeAllContributionsForUnitTest();
-    session.addContribution(new Contribution("Mary", "Speaker", ""));
+    session.addContribution(
+      new Contribution("Mary", "careful_speech_speaker", "")
+    );
     setResultXml(
       ImdiGenerator.generateSession(
         IMDIMode.RAW_IMDI,
@@ -91,6 +92,25 @@ describe("session imdi export", () => {
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Name").toHaveText("Mary");
     expect("//Actor/Age").toHaveText("30");
+    expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
+  });
+
+  // Regression Test
+  it("A contribution from a person with a missing Person should still be output correct role", () => {
+    session.removeAllContributionsForUnitTest();
+    session.addContribution(
+      new Contribution("I am made up", "careful_speech_speaker", "")
+    );
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+    expect("//Actor").toHaveCount(1);
+    expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
   });
 
   /* the actual policy is in discussion in Notion #238
@@ -158,6 +178,19 @@ describe("session imdi export", () => {
       )
     );
     expect("//Content/Keys/Key[@Name='Notes']").toNotExist();
+  });
+
+  it("replaces spaces with underscores in IDs", () => {
+    session.properties.setText("id", "my session id");
+    const imdi = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      project,
+      true
+    );
+
+    // should find <Name>my_session_id</Name> in the IMDI output
+    expect(imdi).toContain("<Name>my_session_id</Name>");
   });
 });
 

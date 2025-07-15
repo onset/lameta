@@ -100,14 +100,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {GetOtherConfigurationSettings().showImdiPreview ? (
+          {userSettings.ShowIMDI ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
             </Tab>
           ) : (
             <></>
           )}
-          {GetOtherConfigurationSettings().showParadisec ? (
+          {userSettings.ParadisecMode ? (
             <Tab className={"tab-project-paradisec"}>
               PARADISEC {/* don't translate  */}
             </Tab>
@@ -232,7 +232,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <br />
           </FolderPane>
         </TabPanel>
-        {GetOtherConfigurationSettings().showImdiPreview ? (
+        {GetOtherConfigurationSettings().archiveUsesImdi ? (
           <TabPanel>
             <ImdiView
               target={props.project}
@@ -243,7 +243,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         ) : (
           <></>
         )}
-        {GetOtherConfigurationSettings().showParadisec ? (
+        {GetOtherConfigurationSettings().archiveUsesParadisec ? (
           <TabPanel>
             <ParadisecView
               target={props.project}

@@ -50,7 +50,10 @@
     "locale/",
     "archive-configurations/",
     "schemas/",
-    "sample data/"
+    "sample data/",
+    // we only want ffprobe, not ffmpeg
+    "!node_modules/ffmpeg-ffprobe-static/ffmpeg*",
+    "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*"
   ],
   extraFiles: [],
   directories: {

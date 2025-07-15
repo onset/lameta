@@ -17,7 +17,7 @@ export class E2eFileList {
     name: string,
     wait: { page: Page; path: string } | undefined = undefined
   ) {
-    console.log("e2e root 2: " + process.env.E2ERoot);
+    //console.log("e2e root 2: " + process.env.E2ERoot);
     // first, creating the "original" at our test root, which is a level above the lameta project directory
     const p = Path.join(process.env.E2ERoot!, name);
     fs.writeFileSync(p, "hello world");

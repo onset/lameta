@@ -8,7 +8,7 @@ msgstr ""
 "Language: ru\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-01 21:27\n"
+"PO-Revision-Date: 2025-01-06 23:05\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
@@ -17,6 +17,9 @@ msgstr ""
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
+
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
 
 msgid "A file with the same name already exists at that location."
 msgstr ""
@@ -64,6 +67,10 @@ msgid "As a developer"
 msgstr ""
 
 msgid "As a trainer"
+msgstr ""
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
 msgstr ""
 
 msgid "Audio"
@@ -127,6 +134,9 @@ msgid "Copying in Files..."
 msgstr ""
 
 msgid "Copying..."
+msgstr ""
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
 msgid "Create"
@@ -272,6 +282,21 @@ msgstr ""
 
 msgid "ID"
 msgstr ""
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr ""
@@ -486,6 +511,12 @@ msgstr "Элементы проекта"
 msgid "Show All"
 msgstr ""
 
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
+msgstr ""
+
 msgid "Show Release Notes"
 msgstr ""
 
@@ -565,6 +596,9 @@ msgid "This Personally Identifiable Information may not be exported by some form
 msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
+msgstr ""
+
+msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."

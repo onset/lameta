@@ -6,16 +6,19 @@ import { File } from "./File";
 import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
+import { Button } from "@material-ui/core"; // Update this import
 
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
+import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import { observer } from "mobx-react";
+import { Folder } from "../Folder/Folder";
 
-export function getStatusOfFile(
-  f: File
-): {
+export function getStatusOfFile(f: File): {
   missing: boolean;
   status:
     | "normalFile"
+    | "fileNamingProblem"
     | "missing"
     | "goodLink"
     | "copyInProgress"
@@ -34,7 +37,10 @@ export function getStatusOfFile(
     return {
       missing: true,
       status: "normalFile",
-      info: `Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. ${f.getActualFilePath()}`
+      info: t({
+        id: "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}",
+        values: { path: f.getActualFilePath() }
+      })
     };
   }
 
@@ -48,6 +54,14 @@ export function getStatusOfFile(
         missing: false,
         status: "goodLink",
         info
+      };
+    } else if (hasFileNamingProblem(f.getActualFilePath())) {
+      const message = t`This file does not comply with the file naming rules of the current archive.`;
+
+      return {
+        missing: false,
+        status: "fileNamingProblem",
+        info: message
       };
     } else
       return {
@@ -67,8 +81,7 @@ export function getStatusOfFile(
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
-      id:
-        "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+      id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
       values: { m: mediaFolder }
     });
     return {
@@ -96,8 +109,7 @@ export function getStatusOfFile(
     subpath
   );
   const info = t({
-    id:
-      "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+    id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
     values: { m: mediaFolder, e: expected }
   });
   return {
@@ -116,25 +128,30 @@ export function getLinkStatusIconPath(f: File): string {
       return "assets/missingFile.png";
     case "noMediaFolderConnection":
       return "assets/noMediaFolder.png";
+    case "fileNamingProblem":
+      return "assets/error.png";
     default:
       return "";
   }
 }
 
-export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
-  props
-) => {
+export const FileStatusBlock: React.FunctionComponent<{
+  file: File;
+  fileName: string;
+  folder: Folder;
+}> = observer((props) => {
   const fileStatus = getStatusOfFile(props.file);
-
   const color =
     fileStatus.status === "noMediaFolderConnection"
       ? lameta_orange
       : error_color;
 
-  return fileStatus.missing ? (
+  return fileStatus.status === "normalFile" ||
+    fileStatus.status === "goodLink" ? null : (
     <div
       css={css`
         display: flex;
+        flex-direction: column;
         margin: 10px;
         margin-left: 0;
         padding: 20px;
@@ -143,14 +160,6 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
         color: white;
       `}
     >
-      {/* <img
-        css={css`
-          height: 20px;
-          width: auto;
-          margin-right: 10px;
-        `}
-        src={getLinkStatusIconPath(props.file)}
-      /> */}
       <p
         css={css`
           margin-block-start: 0;
@@ -160,6 +169,42 @@ export const FileStatusBlock: React.FunctionComponent<{ file: File }> = (
       >
         {fileStatus.info}
       </p>
+      {fileStatus.status === "fileNamingProblem" && (
+        <div
+          css={css`
+            align-self: flex-end;
+            margin-top: 10px;
+          `}
+        >
+          <Button
+            onClick={() => {
+              if (props.file.type === "Person" || props.file.type === "Session")
+                props.folder.nameMightHaveChanged();
+              else {
+                props.folder.renameChildWithFilenameMinusExtension(
+                  props.file,
+                  sanitizeForArchive(Path.parse(props.fileName).name)
+                );
+              }
+            }}
+            variant="outlined"
+            size="small"
+            style={{
+              backgroundColor: error_color,
+              color: "white",
+              border: "1px solid white"
+            }}
+          >
+            <Trans comment="label on a button that shows when a Session or Person file name has characters that are not allowed">
+              Attempt Fix
+            </Trans>
+          </Button>
+        </div>
+      )}
     </div>
-  ) : null;
-};
+  );
+});
+
+function hasFileNamingProblem(path: string): boolean {
+  return Path.basename(path) !== sanitizeForArchive(Path.basename(path));
+}

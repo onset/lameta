@@ -69,7 +69,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
         setMode(validationMessage ? Mode.invalid : Mode.valid);
       }
     }
-  }, [fileNameParts, mode]);
+  }, [fileNameParts, mode, validationMessage]);
 
   const renameAndClose = () => {
     {
@@ -87,17 +87,25 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     const pendingNewName = getNewFileName();
     const sanitizedForArchive = sanitizeForArchive(pendingNewName);
     let m = "";
-    if (pendingNewName !== sanitizeFilename(pendingNewName)) {
-      m = t`Some operating systems would not allow that name.`;
-    }
 
-    if (pendingNewName !== sanitizedForArchive) {
+    if (
+      sanitizeForArchive(fileNameParts!.prefix + ".txt") !==
+      fileNameParts!.prefix + ".txt"
+    ) {
+      m = t`"${
+        fileNameParts!.prefix
+        // ughh this is such a bad message.
+      }" has one or more characters that are not allowed. To fix this, first fix the name of this folder.`;
+    } else if (pendingNewName !== sanitizedForArchive) {
       m = t`Please remove characters that not allowed by the Archive Settings.`;
-    }
-    if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
+    } else if (pendingNewName !== sanitizeFilename(pendingNewName)) {
+      m = t`Some operating systems would not allow that name.`;
+    } else if (
+      pendingNewName.indexOf("/") > -1 ||
+      pendingNewName.indexOf("\\") > -1
+    ) {
       m = t`Sorry, no slashes are allowed`;
-    }
-    if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
+    } else if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
       m = t`A file with the same name already exists at that location.`;
     }
     setValidationMessage(m);
@@ -187,6 +195,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
             color: ${error_color};
             min-width: 400px;
             min-height: 2em;
+            margin-top: 1em;
           `}
         >
           {validationMessage}

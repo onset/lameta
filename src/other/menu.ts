@@ -16,6 +16,7 @@ import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export default class LametaMenu {
   private homePage: IHomePageMenuConnections;
@@ -198,7 +199,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "en"
             },
             {
-              label: "Español (Spanish 76%)",
+              label: "Español",
               type: "radio",
               click: () => {
                 setUILanguage("es");
@@ -206,7 +207,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "es"
             },
             {
-              label: "简体中文 (Chinese 10%)",
+              label: "简体中文",
               type: "radio",
               click: () => {
                 setUILanguage("zh-CN");
@@ -214,7 +215,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "zh-CN"
             },
             {
-              label: "Français  (98%)",
+              label: "Français",
               type: "radio",
               click: () => {
                 setUILanguage("fr");
@@ -230,7 +231,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "id"
             },
             {
-              label: "فارسی (Persion 76%)",
+              label: "فارسی",
               type: "radio",
               click: () => {
                 setUILanguage("fa");
@@ -238,7 +239,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "fa"
             },
             {
-              label: "Portuguesa, Brasileiro  (76%)",
+              label: "Portuguesa, Brasileiro",
               type: "radio",
               click: () => {
                 setUILanguage("pt-BR");
@@ -246,7 +247,7 @@ export default class LametaMenu {
               checked: currentUILanguage === "pt-BR"
             },
             {
-              label: "русский язык (Russian 10%)",
+              label: "русский язык",
               type: "radio",
               click: () => {
                 setUILanguage("ru");
@@ -270,6 +271,26 @@ export default class LametaMenu {
               }
             }
           ]
+        },
+        {
+          label: t`Show IMDI previews`,
+          visible: GetOtherConfigurationSettings().archiveUsesImdi,
+          // tooltip only works in macos
+          tooltip:
+            "Show IMDI output preview panels and indicate which fields don't have direct IMDI mappings",
+          type: "checkbox",
+          checked: userSettings.ShowIMDI,
+          click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI)
+        },
+        {
+          label: t`Show PARADISEC previews`,
+          visible: GetOtherConfigurationSettings().archiveUsesParadisec,
+          // tooltip only works in macos
+          tooltip: "Show PARADISEC output preview panels",
+          type: "checkbox",
+          checked: userSettings.ParadisecMode,
+          click: () =>
+            (userSettings.ParadisecMode = !userSettings.ParadisecMode)
         }
       ]
     };
@@ -278,6 +299,15 @@ export default class LametaMenu {
     const devMenu = {
       label: "&Developer",
       submenu: [
+        {
+          label: "Do not enforce any file naming",
+          type: "checkbox",
+          checked: userSettings.IgnoreFileNamingRules,
+          click() {
+            userSettings.IgnoreFileNamingRules =
+              !userSettings.IgnoreFileNamingRules;
+          }
+        },
         {
           label: "&Reload",
           accelerator: "CmdOrCtrl+R",
@@ -326,8 +356,7 @@ export default class LametaMenu {
           click() {
             ShowMessageDialog({
               title: `The title`,
-              text: "the text",
-              buttonText: "ok"
+              text: "the text"
             });
           }
         }

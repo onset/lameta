@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <name type="string">Awi Heole</name>
+  <primaryLanguageLearnedIn type="string" deprecated="true">Huya</primaryLanguageLearnedIn>
+  <education type="string">Grade 2</education>
+  <birthYear type="string">1972</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Subsistence Farmer</primaryOccupation>
+  <description type="string">Edolo learned in Huya.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="hui" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Huli</otherLanguage1>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Current_Village type="string">Huya</Current_Village>
+  </CustomFields>
+</Person>

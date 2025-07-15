@@ -1,9 +1,8 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-// tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
 import { IChoice } from "../../model/field/Field";
-import { CapitalCase } from "../../other/case";
+import { capitalCase } from "../../other/case";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";
@@ -22,7 +21,7 @@ class PersonChooser extends React.Component<IProps> {
 
   public render() {
     const customStyles = {
-      container: (styles, { data }) => {
+      container: (styles: any) => {
         return {
           ...styles,
           border: this.props.highlight ? "solid 2px " + saymore_orange : "none"
@@ -34,6 +33,7 @@ class PersonChooser extends React.Component<IProps> {
     const choices: IChoice[] = this.props
       .getPeopleNames()
       .map((c) => {
+        //console.log("c: " + JSON.stringify(c));
         return new Object({
           value: c.label,
           label: c.description ? `${c.label} ${c.description}` : c.label
@@ -61,6 +61,13 @@ class PersonChooser extends React.Component<IProps> {
         }) as IChoice
       );
     }
+    // remove any duplicates where the values are the same
+    const seen: any = {};
+    const unique = choices.filter((item: any) => {
+      return Object.prototype.hasOwnProperty.call(seen, item.value)
+        ? false
+        : (seen[item.value] = true);
+    });
 
     const person = choices.find((c: any) => c.value === this.props.name);
     return (
@@ -74,12 +81,12 @@ class PersonChooser extends React.Component<IProps> {
           label: person ? person.label : this.props.name
         }}
         onChange={(v: any) => {
-          // ELAR complained about this
-          // const s: string = CapitalCase(v.value);
+          // ELAR does not want this
+          // const s: string = capitalCase(v.value);
           // this.props.onChange(s ? s : "");
           this.props.onChange(v.value);
         }}
-        options={choices}
+        options={unique}
         // this is what shows if you start typing, see it until you type a match of a person
         formatCreateLabel={(inputValue: string) => {
           return `${inputValue} ❓`;

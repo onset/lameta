@@ -86,7 +86,7 @@ export abstract class Folder {
   public selectedFile: File | null;
 
   public metadataFile: FolderMetadataFile | null;
-  protected safeFileNameBase: string;
+  protected currentFileNameBase: string;
   protected customVocabularies: EncounteredVocabularyRegistry;
 
   public constructor(
@@ -436,6 +436,9 @@ export abstract class Folder {
       return false;
     }
     // first, we just do a trial run to see if this will work
+    console.debug(
+      `renameFilesAndFolders() at point where it test the directory name.`
+    );
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       PatientFS.renameSync(newDirPath, this.directory);
@@ -458,6 +461,10 @@ export abstract class Folder {
       return false;
     }
 
+    console.debug(
+      `renameFilesAndFolders() at point where checks for files that have the basename as part of their name.`
+    );
+
     // ok, that worked, so now have all the files rename themselves if their name depends on the folder name
     this.files.forEach((f) => {
       try {
@@ -472,6 +479,9 @@ export abstract class Folder {
       }
     });
     // and actually do the rename
+    console.debug(
+      `renameFilesAndFolders() at point where it actually renames the directory (to ${newDirPath}).`
+    );
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       this.directory = newDirPath;
@@ -487,10 +497,21 @@ export abstract class Folder {
       return false; // don't continue on with telling the folders that they moved.
     }
 
+    console.debug(
+      `renameFilesAndFolders() at point where it tells the file objects in memory about their new location.`
+    );
+
     // ok, only after the folder was successfully renamed do we tell the individual files that they have been moved
     this.files.forEach((f) => {
       // no file i/o here
-      f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
+      try {
+        f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
+      } catch (err) {
+        console.error(
+          `renameFilesAndFolders(): Error updating record of what folder this is located in for ${f.pathInFolderToLinkFileOrLocalCopy}`
+        );
+        throw err;
+      }
     });
 
     // console.log(
@@ -511,7 +532,7 @@ export abstract class Folder {
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
     // so far gets by with being case sensitive.
-    return newFileName.length > 0 && newFileName !== this.safeFileNameBase;
+    return newFileName.length > 0 && newFileName !== this.currentFileNameBase;
   }
 
   public nameMightHaveChanged(): boolean {
@@ -522,14 +543,20 @@ export abstract class Folder {
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
     // so far gets by with being case sensitive.
-    if (newFileName.length > 0 && newFileName !== this.safeFileNameBase) {
-      const renameSucceeded = this.renameFilesAndFolders(newFileName);
-      if (renameSucceeded) {
-        this.safeFileNameBase = newFileName;
+    if (newFileName.length > 0) {
+      const currentFolderName = Path.basename(this.directory);
+      if (newFileName !== currentFolderName) {
+        //newFileName !== this.safeFileNameBase  REVIEW: I don't understand the logic that was here
+
+        const renameSucceeded = this.renameFilesAndFolders(newFileName);
+        if (renameSucceeded) {
+          this.currentFileNameBase = newFileName;
+        }
+        return renameSucceeded;
       }
-      return renameSucceeded;
+      return true; // review not clear if true or false makes more sense if there was no relevant change?
     }
-    return true; // review not clear if true or false makes more sense if there was no relevant change?
+    return false;
   }
 
   public saveFolderMetaData() {

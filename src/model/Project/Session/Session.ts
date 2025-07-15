@@ -49,7 +49,7 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("id") === "") {
       this.properties.setText("id", Path.basename(directory));
     }
-    this.safeFileNameBase = sanitizeForArchive(
+    this.currentFileNameBase = sanitizeForArchive(
       this.properties.getTextStringOrEmpty("id")
     );
     this.knownFields = fieldDefinitionsOfCurrentConfig.session; // for csv export
@@ -335,4 +335,15 @@ export class SessionMetadataFile extends FolderMetadataFile {
       console.log(`** status  '${change.oldValue}' --> '${change.newValue}'`);
     });*/
   }
+}
+
+export function getIdValidationMessageOrUndefined(id: string) {
+  const trimmedId = id.trim();
+  if (trimmedId.length === 0) {
+    return i18n._("ID cannot be empty");
+  }
+  if (trimmedId.includes(" ")) {
+    return i18n._("ID cannot contain spaces"); // ELAR, at least
+  }
+  return undefined;
 }

@@ -95,7 +95,7 @@ it("should contain Actors", () => {
     "1960"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[2]/Role").toMatch(
-    "participant"
+    "Participant"
   );
   expect("METATRANSCRIPT/Session/MDGroup/Actors/Actor[3]/Name").toMatch(
     "Hatton"
@@ -179,13 +179,13 @@ it("media resources must precede written resources", () => {
 
   const kNumberOfMediaFiles = 4;
   const kNumberOfWrittenResources = 3;
-  for (var i = 0; i < kNumberOfMediaFiles; i++) {
+  for (let i = 0; i < kNumberOfMediaFiles; i++) {
     expect(
       `METATRANSCRIPT/Session/Resources/*[${i + 1}][name()='MediaFile']`
     ).toHaveCount(1);
   }
   for (
-    i = kNumberOfMediaFiles;
+    let i = kNumberOfMediaFiles;
     i < kNumberOfMediaFiles + kNumberOfWrittenResources;
     i++
   ) {

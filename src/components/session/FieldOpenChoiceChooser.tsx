@@ -1,12 +1,10 @@
 import * as React from "react";
 import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react";
-// tslint:disable-next-line: no-submodule-imports
 import CreatableSelect from "react-select/creatable";
-import Tooltip from "react-tooltip-lite";
 import { lameta_orange } from "../../containers/theme";
-import { observable } from "mobx";
-import { CapitalCase } from "../../other/case";
+import { capitalCase, sentenceCase } from "../../other/case";
+import { OptionWithTooltip } from "../OptionWithTooltip";
 
 //const Choices = new Dictionary<string, Array<string>>();
 
@@ -61,7 +59,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
     <div className={"field " + props.className}>
       <label>{label}</label>
       <CreatableSelect
-        tabIndex={props.tabIndex ? props.tabIndex.toString() : ""}
+        tabIndex={props.tabIndex ? props.tabIndex : undefined}
         //classNamePrefix="rs" // causes react-select to show you the parts of the control for styling, e.g. "rs-input"
         value={currentOption}
         placeholder=""
@@ -107,10 +105,10 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         }}
         onChange={(s: any) => {
           props.field.setValueFromString(
-            CapitalCase(s && s.value ? s.value : "")
+            sentenceCase(s && s.value ? s.value : "")
           );
         }}
-        components={{ Option: CustomOption }}
+        components={{ Option: OptionWithTooltip }}
         options={options}
       />
     </div>
@@ -118,49 +116,3 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
 };
 
 export default observer(FieldOpenChoiceChooser);
-
-const CustomOption = (optionProps) => {
-  const {
-    cx,
-    data,
-    className,
-    isDisabled,
-    isFocused,
-    isSelected,
-    innerRef,
-    innerProps,
-    getStyles
-  } = optionProps;
-  return (
-    <Tooltip
-      direction="down"
-      content={<div style={{ overflowWrap: "break-word" }}>{data.title}</div>}
-      styles={{ display: "inline" }}
-      background={"#486BAD"}
-      color={"white"}
-    >
-      <div
-        {...innerProps}
-        style={{
-          ...getStyles("option", optionProps),
-          backgroundColor: optionProps.isFocused ? lameta_orange : "white",
-          fontWeight: optionProps.isSelected ? "bold" : "normal",
-          fontStyle: optionProps.data.source === "custom" ? "italic" : "",
-          color: "black"
-        }}
-        className={cx(
-          {
-            option: true,
-            "option--is-disabled": isDisabled,
-            "option--is-focused": isFocused,
-            "option--is-selected": isSelected
-          },
-          className
-        )}
-        ref={innerRef}
-      >
-        {data.label}
-      </div>
-    </Tooltip>
-  );
-};

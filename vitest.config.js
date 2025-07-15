@@ -1,6 +1,7 @@
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
+import dsv from "@rollup/plugin-dsv";
 export default defineConfig({
   resolve: {
     alias: {
@@ -38,6 +39,7 @@ export default defineConfig({
         // I don't know why, but css props work without this or the 'macros' thing above
         //   plugins: ["@emotion/babel-plugin"],
       }
-    })
+    }),
+    dsv() // without this, importing genres.csv causes a failure when it sees `"foo",,"bar"`
   ]
 });
