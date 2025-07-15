@@ -1,0 +1,305 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2-DRAFT/context",
+    {
+      "@vocab": "http://schema.org/"
+    },
+    "http://purl.archive.org/language-data-commons/context.json",
+    "https://w3id.org/ldac/context",
+    {
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "http://schema.org/datePublished",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": ["Dataset", "Object", "RepositoryObject"],
+      "conformsTo": {
+        "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+      },
+      "name": "The story behind how we catch fish with poison bark",
+      "description": "Some guys talking Situation: Walking with Ilawi, we passed the plant they use to make poison for fishing, and I asked him if he'd tell me about how to do it.  We went to his house, where Awi joined us, and the two of them took turns telling parts of the \"whole story\". Setting: Sitting on their front porch",
+      "publisher": {
+        "@id": "https://github.com/onset/lameta"
+      },
+      "datePublished": "2025-07-14",
+      "license": {
+        "@id": "#license"
+      },
+      "id": "ETR009",
+      "title": "The story behind how we catch fish with poison bark",
+      "subjectLanguages": ["#language_etr: Edolo"],
+      "genre": "narrative",
+      "contentLocation": "#Huya",
+      "access": "Open",
+      "status": "Incoming",
+      "date": "2010-06-06",
+      "topic": "fishing, poison",
+      "contributor": [
+        {
+          "@id": "b"
+        },
+        {
+          "@id": "Ilawi Amosa"
+        },
+        {
+          "@id": "Hatton"
+        }
+      ],
+      "hasPart": [
+        {
+          "@id": "ETR009.session"
+        },
+        {
+          "@id": "SceneHouse.JPG"
+        },
+        {
+          "@id": "SceneAroundCamera.JPG"
+        },
+        {
+          "@id": "ETR009_XDoc.docx"
+        },
+        {
+          "@id": "ETR009_Tiny_StandardAudio.wav.annotations.eaf"
+        },
+        {
+          "@id": "ETR009_Tiny.mp4"
+        },
+        {
+          "@id": "ETR009_Careful.mp3"
+        },
+        {
+          "@id": "ETR009_AText.txt"
+        }
+      ]
+    },
+    {
+      "@id": "Awi_Heole2.person",
+      "@type": "File",
+      "contentSize": 249,
+      "dateCreated": "2025-01-06T22:56:13.587Z",
+      "dateModified": "2025-01-07T17:40:22.347Z",
+      "encodingFormat": "application/lameta-person",
+      "name": "Awi_Heole2.person"
+    },
+    {
+      "@id": "b",
+      "@type": "Person",
+      "name": "Awi Heole2",
+      "code": "b",
+      "hasPart": [
+        {
+          "@id": "Awi_Heole2.person"
+        }
+      ],
+      "role": [
+        {
+          "@id": "role_participant"
+        },
+        {
+          "@id": "role_speaker"
+        }
+      ]
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_hui",
+      "@type": "Language",
+      "code": "hui",
+      "name": "Huli"
+    },
+    {
+      "@id": "Ilawi_Amosa.person",
+      "@type": "File",
+      "contentSize": 1699,
+      "dateCreated": "2024-12-22T16:02:25.758Z",
+      "dateModified": "2024-12-22T16:02:27.276Z",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ilawi_Amosa.person"
+    },
+    {
+      "@id": "Ilawi_Amosa_Photo.jpg",
+      "@type": "File",
+      "contentSize": 19968,
+      "dateCreated": "2024-12-22T16:02:25.759Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "image/jpeg",
+      "name": "Ilawi_Amosa_Photo.jpg"
+    },
+    {
+      "@id": "Ilawi_Amosa_Consent.JPG",
+      "@type": "File",
+      "contentSize": 264486,
+      "dateCreated": "2024-12-22T16:02:25.758Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "image/jpeg",
+      "name": "Ilawi_Amosa_Consent.JPG"
+    },
+    {
+      "@id": "Ilawi Amosa",
+      "@type": "Person",
+      "name": "Ilawi Amosa",
+      "education": "Some bible school, some literacy training",
+      "birthYear": "1960",
+      "gender": "Male",
+      "primaryOccupation": "Subsistence Farmer",
+      "description": "Edolo learned in Aiya.",
+      "hasPart": [
+        {
+          "@id": "Ilawi_Amosa.person"
+        },
+        {
+          "@id": "Ilawi_Amosa_Photo.jpg"
+        },
+        {
+          "@id": "Ilawi_Amosa_Consent.JPG"
+        }
+      ],
+      "role": [
+        {
+          "@id": "role_participant"
+        }
+      ]
+    },
+    {
+      "@id": "Hatton",
+      "@type": "Person",
+      "name": "Hatton",
+      "role": [
+        {
+          "@id": "role_recorder"
+        }
+      ]
+    },
+    {
+      "@id": "role_participant",
+      "@type": "Role",
+      "name": "participant"
+    },
+    {
+      "@id": "role_recorder",
+      "@type": "Role",
+      "name": "recorder"
+    },
+    {
+      "@id": "role_speaker",
+      "@type": "Role",
+      "name": "speaker"
+    },
+    {
+      "@id": "#license",
+      "@type": "CreativeWork",
+      "name": "Open",
+      "access": "Open",
+      "description": ""
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2-DRAFT"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "#language_etr: Edolo",
+      "@type": "Language",
+      "code": "etr: Edolo",
+      "name": "[languageName]"
+    },
+    {
+      "@id": "#Huya",
+      "@type": "Place",
+      "name": "Huya"
+    },
+    {
+      "@id": "ETR009.session",
+      "@type": "File",
+      "contentSize": 1137,
+      "dateCreated": "2024-12-22T16:02:25.760Z",
+      "dateModified": "2025-07-14T20:28:51.478Z",
+      "encodingFormat": "application/lameta-session",
+      "name": "ETR009.session"
+    },
+    {
+      "@id": "SceneHouse.JPG",
+      "@type": "File",
+      "contentSize": 89181,
+      "dateCreated": "2024-12-22T16:02:25.766Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "image/jpeg",
+      "name": "SceneHouse.JPG"
+    },
+    {
+      "@id": "SceneAroundCamera.JPG",
+      "@type": "File",
+      "contentSize": 83027,
+      "dateCreated": "2024-12-22T16:02:25.766Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "image/jpeg",
+      "name": "SceneAroundCamera.JPG"
+    },
+    {
+      "@id": "ETR009_XDoc.docx",
+      "@type": "File",
+      "contentSize": 12818,
+      "dateCreated": "2024-12-22T16:02:25.765Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "name": "ETR009_XDoc.docx"
+    },
+    {
+      "@id": "ETR009_Tiny_StandardAudio.wav.annotations.eaf",
+      "@type": "File",
+      "contentSize": 3478,
+      "dateCreated": "2024-12-22T16:02:25.765Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "ETR009_Tiny_StandardAudio.wav.annotations.eaf"
+    },
+    {
+      "@id": "ETR009_Tiny.mp4",
+      "@type": "File",
+      "contentSize": 473348,
+      "dateCreated": "2024-12-22T16:02:25.763Z",
+      "dateModified": "2023-04-07T14:35:25.917Z",
+      "encodingFormat": "video/mp4",
+      "name": "ETR009_Tiny.mp4"
+    },
+    {
+      "@id": "ETR009_Careful.mp3",
+      "@type": "File",
+      "contentSize": 310021,
+      "dateCreated": "2024-12-22T16:02:25.761Z",
+      "dateModified": "2023-04-07T14:35:25.910Z",
+      "encodingFormat": "audio/mpeg",
+      "name": "ETR009_Careful.mp3"
+    },
+    {
+      "@id": "ETR009_AText.txt",
+      "@type": "File",
+      "contentSize": 0,
+      "dateCreated": "2024-12-22T16:02:25.761Z",
+      "dateModified": "2023-04-07T14:35:25.906Z",
+      "encodingFormat": "text/plain",
+      "name": "ETR009_AText.txt"
+    }
+  ]
+}

@@ -40,7 +40,9 @@
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3",
     "strings:compile": "lingui compile",
     "make-langindex": "yarn tsx src/languageFinder/make-langindex.ts && yarn vitest run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
-    "validate-rocrate": "./.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py ro-crate-validation/",
+    "validate-rocrate-python": "./.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py ro-crate-validation/lameta-fishing",
+    "validate-oni-fishing": "yarn tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/lameta-fishing",
+    "validate-oni-farms": "yarn tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/farmstofreeways",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -208,6 +210,7 @@
     "mobx-react-devtools": "^6.1.1",
     "moment": "^2.29.4",
     "musicmetadata": "^2.0.5",
+    "oni-ocfl": "github:Language-Research-Technology/oni-ocfl",
     "papaparse": "^5.3.1",
     "path": "^0.12.7",
     "pupa": "^2.1.1",
@@ -254,7 +257,7 @@
     "xpath": "^0.0.33"
   },
   "engines": {
-    "node": "20.15.1"
+    "node": "22.16.0"
   },
   "debug": {
     "env": {
@@ -262,7 +265,7 @@
     }
   },
   "volta": {
-    "node": "20.15.1",
+    "node": "22.16.0",
     "yarn": "1.22.19"
   },
   "packageManager": "yarn@1.22.19"

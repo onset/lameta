@@ -1,0 +1,9 @@
+{
+  "name": "lameta-rocrate-validator",
+  "version": "1.0.0",
+  "description": "Validator for lameta RO-Crate",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onset/lameta.git"
+  }
+}
