@@ -1,13 +1,70 @@
 #!/usr/bin/env node
 /**
  * TypeScript validation script for Lameta repositories using oni-ocfl library.
- * Validates directories containing ro-crate-metadata.json files against OCFL standards.
  */
 
-import * as fs from "fs-extra";
 import * as path from "path";
 import * as os from "os";
-import { Collector } from "oni-ocfl";
+import { Collector, generateArcpId } from "oni-ocfl";
+import * as fs from "fs-extra";
+
+/**
+ * Main function for command line usage
+ */
+const main = async (): Promise<void> => {
+  if (process.argv.length < 3) {
+    console.log(
+      "Usage: node validate_oni_ocfl.js <path_to_directory_or_json_file> [--mode-validator <file>] [--namespace <name>] [--ignore-files]"
+    );
+    process.exit(1);
+  }
+
+  const cratePath = process.argv[2];
+  const options: {
+    modeValidator?: string;
+    ignoreFiles?: boolean;
+    namespace?: string;
+  } = {};
+
+  // Parse command line options
+  for (let i = 3; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+    switch (arg) {
+      case "--mode-validator":
+        options.modeValidator = process.argv[++i];
+        break;
+      case "--namespace":
+        options.namespace = process.argv[++i];
+        break;
+      case "--ignore-files":
+        options.ignoreFiles = true;
+        break;
+    }
+  }
+
+  try {
+    const resolvedPath = path.resolve(cratePath);
+    const result = await validateRoCrateWithOniOcfl(
+      resolvedPath,
+      options.modeValidator,
+      options.ignoreFiles,
+      options.namespace
+    );
+    const success = printResults(result);
+    process.exit(success ? 0 : 1);
+  } catch (error) {
+    console.error(`❌ Validation script failed: ${error}`);
+    process.exit(1);
+  }
+};
+
+// Run main function if this script is executed directly
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`❌ Unhandled error: ${error}`);
+    process.exit(1);
+  });
+}
 
 interface ValidationError {
   type: "error" | "warning" | "info";
@@ -23,18 +80,12 @@ interface ValidationResult {
   info: ValidationError[];
 }
 
-/**
- * Validate a Lameta RO-Crate using oni-ocfl library
- */
-export const validateRoCrateWithOniOcfl = async (
-  cratePath: string,
-  options: {
-    excelValidator?: string;
-    modeValidator?: string;
-    ignoreFiles?: boolean;
-    namespace?: string;
-  } = {}
-): Promise<ValidationResult> => {
+export async function validateRoCrateWithOniOcfl(
+  crateDirPath: string,
+  modeValidator?: string,
+  ignoreFiles?: boolean,
+  namespace?: string
+): Promise<ValidationResult> {
   const result: ValidationResult = {
     success: false,
     errors: [],
@@ -44,43 +95,18 @@ export const validateRoCrateWithOniOcfl = async (
 
   try {
     // Resolve the crate path
-    const resolvedPath = path.resolve(cratePath);
-    let crateDir: string;
-    let metadataFile: string;
 
-    if (await fs.pathExists(resolvedPath)) {
-      const stat = await fs.stat(resolvedPath);
-      if (stat.isDirectory()) {
-        crateDir = resolvedPath;
-        metadataFile = path.join(crateDir, "ro-crate-metadata.json");
-      } else if (
-        path.basename(resolvedPath) === "ro-crate-metadata.json" ||
-        path.extname(resolvedPath) === ".json"
-      ) {
-        crateDir = path.dirname(resolvedPath);
-        metadataFile = resolvedPath;
-      } else {
-        result.errors.push({
-          type: "error",
-          message: `Invalid path: ${cratePath}. Must be a directory or JSON file`
-        });
-        return result;
-      }
-    } else {
-      result.errors.push({
-        type: "error",
-        message: `Path does not exist: ${cratePath}`
-      });
-      return result;
-    }
+    const metadataFilePath: string = path.join(
+      crateDirPath,
+      "ro-crate-metadata.json"
+    );
 
     result.info.push({
       type: "info",
-      message: `Validating RO-Crate: ${crateDir}`
+      message: `Validating RO-Crate: ${crateDirPath}`
     });
 
-    // Check if metadata file exists
-    if (!(await fs.pathExists(metadataFile))) {
+    if (!(await fs.pathExists(metadataFilePath))) {
       result.errors.push({
         type: "error",
         message: "No ro-crate-metadata.json file found"
@@ -90,7 +116,7 @@ export const validateRoCrateWithOniOcfl = async (
 
     // Load the RO-Crate metadata file
     try {
-      await fs.readJson(metadataFile);
+      await fs.readJson(metadataFilePath);
       result.info.push({
         type: "info",
         message: "Successfully loaded RO-Crate metadata file"
@@ -103,10 +129,8 @@ export const validateRoCrateWithOniOcfl = async (
       return result;
     }
     console.log(
-      `Validating RO-Crate at: ${crateDir} with metadata file: ${metadataFile}`
+      `Validating RO-Crate at: ${crateDirPath} with metadata file: ${metadataFilePath}`
     );
-
-    const workingDir = crateDir;
 
     // Use oni-ocfl Collector for enhanced validation
     try {
@@ -115,97 +139,52 @@ export const validateRoCrateWithOniOcfl = async (
         message: "Running oni-ocfl Collector validation"
       });
 
-      // Ensure there's a package.json with repository info for the validation
-      const validatorPackageJsonPath = path.join(workingDir, "package.json");
-      if (!(await fs.pathExists(validatorPackageJsonPath))) {
-        await fs.writeJson(validatorPackageJsonPath, {
-          name: "lameta-rocrate-validator-temp",
-          version: "1.0.0",
+      // The library requires a package.json file to get a string repository URL
+      const dummyPackagePath = path.join(crateDirPath, "package.json");
+      if (!(await fs.pathExists(dummyPackagePath))) {
+        await fs.writeJson(dummyPackagePath, {
           repository: {
             type: "git",
-            url: "git+https://github.com/onset/lameta.git"
+            url: "https://example.com"
           }
         });
       }
 
-      // Use a simpler temp directory approach to avoid hanging
+      // Create a temporary directory for the OCFL repository
+      // We need to create a path that doesn't exist so the collector can create a new repository
       const tempRepoPath = path.join(
         os.tmpdir(),
-        `.temp-ocfl-repo-${Date.now()}`
+        `oni-ocfl-repo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       );
 
-      result.info.push({
-        type: "info",
-        message: `Creating temporary OCFL repository at: ${tempRepoPath}`
-      });
-
-      console.log(
-        "creating collector with options:",
-        JSON.stringify(
-          {
-            repoPath: tempRepoPath,
-            namespace: options.namespace || "validation-temp",
-            dataDir: workingDir,
-            template: workingDir
-          },
-          null,
-          2
-        )
-      );
-      // Create a temporary collector for validation with minimal options
-      const tempCollector = new Collector({
+      const collectorValidate = new Collector({
         repoPath: tempRepoPath,
-        namespace: options.namespace || "validation-temp",
-        dataDir: workingDir,
-        template: workingDir
+        namespace: namespace || "validation-temp",
+        dataDir: crateDirPath,
+        template: crateDirPath
       });
 
       console.log("connect");
-      // Connect to the repository
-      await tempCollector.connect();
+      await collectorValidate.connect();
 
-      result.info.push({
-        type: "info",
-        message: "✓ Collector created and connected successfully"
-      });
-
-      // Create a temporary object for validation
-      const tempObject = tempCollector.newObject(workingDir);
-
-      // Need to set an ID for the object before adding to repo
-      tempObject.mintArcpId("validation", "temp-object");
-
-      result.info.push({
-        type: "info",
-        message: `✓ Object created with ID: ${tempObject.id}`
-      });
-
+      // Load the existing RO-Crate from the specified directory
+      const corpusRepo = collectorValidate.newObject(crateDirPath);
+      corpusRepo.mintArcpId("corpus", "root");
+      const corpusCrate = corpusRepo.crate;
       console.log("Adding object to repository...");
-      // Run the oni-ocfl validation (this will throw if validation fails)
-      try {
-        await tempObject.addToRepo(options.ignoreFiles || true);
-        result.info.push({
-          type: "info",
-          message: "✓ oni-ocfl Collector validation passed"
-        });
-      } catch (validationError) {
-        // Handle repository URL errors more specifically
-        const errorMessage =
-          validationError instanceof Error
-            ? validationError.message
-            : String(validationError);
-        if (errorMessage.includes("repository.url")) {
-          result.errors.push({
-            type: "error",
-            message: `oni-ocfl Collector validation failed: Missing or incorrect repository.url in package.json. Please ensure your package.json has the correct repository URL.`
-          });
-        } else {
-          result.errors.push({
-            type: "error",
-            message: `oni-ocfl Collector validation failed: ${validationError}`
-          });
-        }
-      }
+
+      const corpusCrateRootId = generateArcpId(collectorValidate.namespace, [
+        "corpus",
+        "root"
+      ]);
+      corpusCrate.rootId = corpusCrateRootId;
+
+      // Use the existing crate data instead of hardcoded values
+      // The crate was already loaded from crateDirPath in newObject() above
+
+      // Only add to repository with the existing crate structure
+      await corpusRepo.addToRepo(ignoreFiles || false);
+
       console.log("cleaning temporary repository...");
 
       // Clean up temporary repo and package.json
@@ -213,28 +192,20 @@ export const validateRoCrateWithOniOcfl = async (
         await fs.remove(tempRepoPath);
       }
 
-      // Remove temporary package.json if we created one
-      const tempPackageJsonPath = path.join(workingDir, "package.json");
-      if (await fs.pathExists(tempPackageJsonPath)) {
-        const packageJson = await fs.readJson(tempPackageJsonPath);
-        if (packageJson.name === "lameta-rocrate-validator-temp") {
-          await fs.remove(tempPackageJsonPath);
-        }
-      }
-
-      // Clean up temporary working directory if we created one
-      if (cleanupTempDir && (await fs.pathExists(workingDir))) {
-        await fs.remove(workingDir);
-        result.info.push({
-          type: "info",
-          message: "Cleaned up temporary working directory"
-        });
-      }
+      await fs.remove(dummyPackagePath);
     } catch (error) {
       result.errors.push({
         type: "error",
         message: `Could not run oni-ocfl Collector validation: ${error}`
       });
+
+      // Add stack trace information if available
+      if (error instanceof Error && error.stack) {
+        result.errors.push({
+          type: "error",
+          message: `Stack trace: ${error.stack}`
+        });
+      }
     }
 
     // Determine overall success
@@ -248,7 +219,7 @@ export const validateRoCrateWithOniOcfl = async (
     });
     return result;
   }
-};
+}
 
 /**
  * Print validation results in a formatted way
@@ -284,59 +255,3 @@ export const printResults = (result: ValidationResult): boolean => {
 
   return result.success;
 };
-
-/**
- * Main function for command line usage
- */
-const main = async (): Promise<void> => {
-  if (process.argv.length < 3) {
-    console.log(
-      "Usage: node validate_oni_ocfl.js <path_to_directory_or_json_file> [--excel-validator <file>] [--mode-validator <file>] [--namespace <name>] [--ignore-files]"
-    );
-    process.exit(1);
-  }
-
-  const cratePath = process.argv[2];
-  const options: {
-    excelValidator?: string;
-    modeValidator?: string;
-    ignoreFiles?: boolean;
-    namespace?: string;
-  } = {};
-
-  // Parse command line options
-  for (let i = 3; i < process.argv.length; i++) {
-    const arg = process.argv[i];
-    switch (arg) {
-      case "--excel-validator":
-        options.excelValidator = process.argv[++i];
-        break;
-      case "--mode-validator":
-        options.modeValidator = process.argv[++i];
-        break;
-      case "--namespace":
-        options.namespace = process.argv[++i];
-        break;
-      case "--ignore-files":
-        options.ignoreFiles = true;
-        break;
-    }
-  }
-
-  try {
-    const result = await validateRoCrateWithOniOcfl(cratePath, options);
-    const success = printResults(result);
-    process.exit(success ? 0 : 1);
-  } catch (error) {
-    console.error(`❌ Validation script failed: ${error}`);
-    process.exit(1);
-  }
-};
-
-// Run main function if this script is executed directly
-if (require.main === module) {
-  main().catch((error) => {
-    console.error(`❌ Unhandled error: ${error}`);
-    process.exit(1);
-  });
-}
