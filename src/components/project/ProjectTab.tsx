@@ -100,14 +100,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           <Tab className={"tab-project-other-docs"}>
             <Trans>Other Documents</Trans>
           </Tab>
-          {userSettings.ShowIMDI ? (
+          {GetOtherConfigurationSettings().archiveUsesImdi ? (
             <Tab className={"tab-project-imdi"}>
               IMDI {/* don't translate  */}
             </Tab>
           ) : (
             <></>
           )}
-          {userSettings.ParadisecMode ? (
+          {GetOtherConfigurationSettings().archiveUsesParadisec ? (
             <Tab className={"tab-project-paradisec"}>
               PARADISEC {/* don't translate  */}
             </Tab>
