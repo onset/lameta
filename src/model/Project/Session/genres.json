@@ -4,7 +4,17 @@
     "label": "Drama",
     "definition": "A planned, creative, rendition of discourse involving two or more participants.",
     "comments": "Usually a drama involves mimesis of events, either real or imagined.",
-    "examples": ["Play", "Skit", "Enacted Scene"]
+    "examples": [
+      "Play",
+      "Skit",
+      "Enacted Scene"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Drama"
+      }
+    ]
   },
   {
     "id": "dialog",
@@ -16,6 +26,12 @@
       "correspondence",
       "consultations",
       "greetings and leave-takings"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Dialogue"
+      }
     ]
   },
   {
@@ -30,6 +46,12 @@
       "Curing Ritual",
       "Marriage Vows",
       "Oath"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Formulaic"
+      }
     ]
   },
   {
@@ -43,6 +65,12 @@
       "Consultation",
       "Greeting",
       "Leave-Takings"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Dialogue"
+      }
     ]
   },
   {
@@ -55,7 +83,18 @@
     "id": "language_play",
     "label": "Language play",
     "definition": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
-    "examples": ["Verbal Art", "Joke", "Secret Language", "Speech Disguise"]
+    "examples": [
+      "Verbal Art",
+      "Joke",
+      "Secret Language",
+      "Speech Disguise"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Ludic"
+      }
+    ]
   },
   {
     "id": "ludic",
@@ -66,13 +105,30 @@
       "jokes",
       "secret languages",
       "speech disguises"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Ludic"
+      }
     ]
   },
   {
     "id": "oratory",
     "label": "Oratory",
     "definition": "Public speaking, or speaking eloquently according to rules or conventions.",
-    "examples": ["Sermon", "Lecture", "Political Speech", "Invocation"]
+    "examples": [
+      "Sermon",
+      "Lecture",
+      "Political Speech",
+      "Invocation"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Oratory"
+      }
+    ]
   },
   {
     "id": "narrative",
@@ -86,31 +142,73 @@
       "Folktale",
       "Fable",
       "Humorous Story"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Narrative"
+      }
     ]
   },
   {
     "id": "procedural_discourse",
     "label": "Procedural discourse",
     "definition": "An explanation or description of a method, process, or situation having ordered steps.",
-    "examples": ["Recipe", "Instructions", "Plan"]
+    "examples": [
+      "Recipe",
+      "Instructions",
+      "Plan"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Procedural"
+      }
+    ]
   },
   {
     "id": "report",
     "label": "Report",
     "definition": "A factual account of some event or circumstance.",
-    "examples": ["News Report", "Essay", "Commentary"]
+    "examples": [
+      "News Report",
+      "Essay",
+      "Commentary"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Report"
+      }
+    ]
   },
   {
     "id": "singing",
     "label": "Singing",
     "definition": "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
-    "examples": ["Chant", "Song", "Chorus"]
+    "examples": [
+      "Chant",
+      "Song",
+      "Chorus"
+    ],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Song"
+      }
+    ]
   },
   {
     "id": "translation",
     "label": "Translation",
     "definition": "",
-    "examples": []
+    "examples": [],
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Translation"
+      }
+    ]
   },
   {
     "id": "instrumental_music",
@@ -131,62 +229,134 @@
   {
     "id": "conversation",
     "label": "Conversation",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Dialogue"
+      }
+    ]
   },
   {
     "id": "interview",
     "label": "Interview",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Interview"
+      }
+    ]
   },
   {
     "id": "personal_narrative",
     "label": "Personal narrative",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Narrative"
+      }
+    ]
   },
   {
     "id": "oral_history",
     "label": "Oral history",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Narrative"
+      }
+    ]
   },
   {
     "id": "folktale",
     "label": "Folktale",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Narrative"
+      }
+    ]
   },
   {
     "id": "verbal_art",
     "label": "Verbal art",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Oratory"
+      }
+    ]
   },
   {
     "id": "mythology",
     "label": "Mythology",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Narrative"
+      }
+    ]
   },
   {
     "id": "procedural_text",
     "label": "Procedural text",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Procedural"
+      }
+    ]
   },
   {
     "id": "description",
     "label": "Description",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Informational"
+      }
+    ]
   },
   {
     "id": "proverb",
     "label": "Proverb",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Formulaic"
+      }
+    ]
   },
   {
     "id": "song",
     "label": "Song",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Song"
+      }
+    ]
   },
   {
     "id": "ritual",
     "label": "Ritual",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Formulaic"
+      }
+    ]
   },
   {
     "id": "stimuli",
@@ -231,7 +401,13 @@
   {
     "id": "dictionary",
     "label": "Dictionary",
-    "source": "ELAR genres"
+    "source": "ELAR genres",
+    "mapping": [
+      {
+        "vocabulary": "LDAC",
+        "term": "ldac:Lexicon"
+      }
+    ]
   },
   {
     "id": "grammar",
