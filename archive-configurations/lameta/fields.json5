@@ -340,6 +340,7 @@
       englishLabel: "Genre",
       xmlTag: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
+      vocabularyFile: "genres.json5",
       tabIndex: 6
     },
     {
@@ -348,6 +349,7 @@
       englishLabel: "Subgenre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       // moved from additional/more Dec 2019 at ELAR request
+      // Ro-Crate note: this is not a controlled vocabulary; we will omit it from ro-crate for now
       tabIndex: 7
     },
     /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
