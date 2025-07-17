@@ -3,7 +3,7 @@ import "./commonDialog.scss";
 import * as React from "react";
 import { useState } from "react";
 import { t, Trans } from "@lingui/macro";
-import { Button, Dialog, DialogContent } from "@material-ui/core";
+import { Button, Dialog, DialogContent } from "@mui/material";
 
 const kDialogTopPadding = "24px";
 const kDialogSidePadding = "24px";

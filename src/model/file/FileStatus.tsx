@@ -6,7 +6,7 @@ import { File } from "./File";
 import fs from "fs";
 import * as Path from "path";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
-import { Button } from "@material-ui/core"; // Update this import
+import { Button } from "@mui/material"; // Update this import
 
 import { t, Trans } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
