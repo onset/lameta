@@ -96,6 +96,21 @@ export const ExportChoices: React.FunctionComponent<{
             wrapped for OPEX.
           </Trans>
         </p>
+        <label>
+          <input
+            type="radio"
+            name="format"
+            value="ro-crate"
+            checked={props.exportFormat === "ro-crate"}
+            onChange={(e) => props.setExportFormat(e.target.value)}
+          />
+          <Trans>RO-Crate</Trans>
+        </label>
+        <p>
+          <Trans>
+            A Research Object Crate (RO-Crate) metadata file for the project.
+          </Trans>
+        </p>
       </fieldset>
       <div id="whichSessions">
         <label>

@@ -4,11 +4,8 @@ import { css } from "@emotion/react";
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
 import { useState } from "react";
-import ReactModal from "react-modal";
 import "./ExportDialog.scss";
-import CloseOnEscape from "react-close-on-escape";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
 import * as remote from "@electron/remote";
@@ -26,8 +23,17 @@ import { ExportChoices } from "./ExportChoices";
 import { CopyManager, ICopyJob } from "../../other/CopyManager";
 import { useInterval } from "../UseInterval";
 import userSettingsSingleton from "../../other/UserSettings";
-import { DialogButton } from "../LametaDialog";
+import {
+  LametaDialog,
+  DialogTitle,
+  DialogMiddle,
+  DialogBottomButtons,
+  DialogCancelButton,
+  useSetupLametaDialog
+} from "../LametaDialog";
+import { Button } from "@mui/material";
 import { IMDIMode } from "../../export/ImdiGenerator";
+import { updateROCrateFile } from "../../export/ROCrateUpdate";
 
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
@@ -40,19 +46,22 @@ let staticShowExportDialog: () => void = () => {};
 export { staticShowExportDialog as ShowExportDialog };
 
 enum Mode {
-  closed = 0,
-  choosing = 1,
-  exporting = 2,
-  copying = 3,
-  finished = 4,
-  error = 5
+  choosing = 0,
+  exporting = 1,
+  copying = 2,
+  finished = 3,
+  error = 4
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
-  const [mode, setMode] = useState<Mode>(Mode.closed);
+  const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
+  const [mode, setMode] = useState<Mode>(Mode.choosing);
+
   staticShowExportDialog = () => {
     setMode(Mode.choosing);
+    showDialog();
+    analyticsLocation("Export Dialog");
   };
   React.useEffect(() => {
     switch (mode) {
@@ -101,6 +110,49 @@ export const ExportDialog: React.FunctionComponent<{
   const handleContinue = (doSave: boolean) => {
     if (doSave) {
       userSettingsSingleton.ExportFormat = exportFormat;
+      
+      // Handle RO-Crate export differently - no file dialog
+      if (exportFormat === "ro-crate") {
+        setMode(Mode.exporting);
+        setTimeout(() => {
+          try {
+            // For RO-Crate, we still need to check for rules violations
+            const folderFilter =
+              whichSessionsOption === "all"
+                ? () => true
+                : (f: Folder) => f.marked;
+            const sessions: Session[] =
+              props.projectHolder.project!.sessions.items.filter(
+                folderFilter
+              ) as unknown as Session[];
+            // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
+            let rulesBasedValidationResult = "";
+            for (const session of sessions) {
+              const result = session.getRulesViolationsString(
+                props.projectHolder.project!.persons.items.map((p) =>
+                  p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
+                )
+              );
+              if (result) {
+                rulesBasedValidationResult += `**${session.displayName}**\n\n${result}\n\n`;
+              }
+            }
+            SetRulesBasedValidationResult(rulesBasedValidationResult);
+
+            const outputPath = Path.join(props.projectHolder.project!.directory, "ro-crate-metadata.json");
+            setOutputPath(outputPath);
+            saveFilesAsync(outputPath);
+          } catch (err) {
+            NotifyException(
+              err,
+              `${t`There was a problem exporting:`} ${err.message}`
+            );
+            closeDialog();
+          }
+        }, 100);
+        return;
+      }
+
       let defaultPath;
       switch (exportFormat) {
         case "csv":
@@ -129,7 +181,7 @@ export const ExportDialog: React.FunctionComponent<{
         })
         .then((result) => {
           if (result.canceled) {
-            setMode(Mode.closed);
+            closeDialog();
           } else {
             setMode(Mode.exporting);
             // setTimeout lets us update the ui before diving in
@@ -165,14 +217,14 @@ export const ExportDialog: React.FunctionComponent<{
                   err,
                   `${t`There was a problem exporting:`} ${err.message}`
                 );
-                setMode(Mode.closed);
+                closeDialog();
               }
             }, 100);
           }
         });
     } else {
       CopyManager.abandonCopying(true); // cancel can be clicked while doing imdi+files.
-      setMode(Mode.closed);
+      closeDialog();
     }
   };
   const getPathForCsvSaving = () => {
@@ -263,6 +315,11 @@ export const ExportDialog: React.FunctionComponent<{
             makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
             setMode(Mode.finished); // don't have to wait for any copying of big files
             break;
+          case "ro-crate":
+            analyticsEvent("Export", "Export RO-Crate");
+            await updateROCrateFile(props.projectHolder.project!);
+            setMode(Mode.finished);
+            break;
           case "imdi":
             analyticsEvent("Export", "Export IMDI Xml");
 
@@ -306,164 +363,155 @@ export const ExportDialog: React.FunctionComponent<{
   };
 
   return (
-    <CloseOnEscape
-      onEscape={() => {
+    <LametaDialog
+      open={currentlyOpen}
+      requestClose={() => {
+        if (mode === Mode.exporting || mode === Mode.copying) {
+          return;
+        }
         handleContinue(false);
       }}
+      css={css`
+        width: 600px;
+        height: 600px;
+      `}
     >
-      <ReactModal
-        className="exportDialog"
-        isOpen={mode !== Mode.closed}
-        shouldCloseOnOverlayClick={true}
-        onRequestClose={() => handleContinue(false)}
-        ariaHideApp={false}
-        onAfterOpen={() => analyticsLocation("Export Dialog")}
-      >
-        <div className={"dialogTitle "}>
-          <Trans>Export Project</Trans>
-        </div>
+      <DialogTitle title={t`Export Project`} />
+      <DialogMiddle>
+        {mode === Mode.choosing && (
+          <ExportChoices
+            exportFormat={exportFormat}
+            setExportFormat={setExportFormat}
+            whichSessionsOption={whichSessionsOption}
+            setWhichSessionsOption={setWhichSessionsOption}
+            countOfMarkedSessions={countOfMarkedSessions}
+            setCountOfMarkedSessions={setCountOfMarkedSessions}
+          />
+        )}
         <div
-          className="dialogContent"
           css={css`
-            height: 420px;
-            max-height: 420px;
-            overflow-y: auto;
+            margin-left: 20px;
           `}
         >
-          {mode === Mode.choosing && (
-            <ExportChoices
-              exportFormat={exportFormat}
-              setExportFormat={setExportFormat}
-              whichSessionsOption={whichSessionsOption}
-              setWhichSessionsOption={setWhichSessionsOption}
-              countOfMarkedSessions={countOfMarkedSessions}
-              setCountOfMarkedSessions={setCountOfMarkedSessions}
-            />
-          )}
-          <div
-            css={css`
-              margin-left: 20px;
-            `}
-          >
-            {rulesBasedValidationResult &&
-              (mode === Mode.error || mode === Mode.finished) && (
-                <>
-                  <Alert severity="warning">
-                    <ReactMarkdown children={rulesBasedValidationResult!} />
-                  </Alert>
-                  <br />
-                </>
-              )}
-            {mode === Mode.error && (
-              <div>
-                <Alert severity="error">
-                  <div css={css``}>{error}</div>
+          {rulesBasedValidationResult &&
+            (mode === Mode.error || mode === Mode.finished) && (
+              <>
+                <Alert severity="warning">
+                  <ReactMarkdown children={rulesBasedValidationResult!} />
                 </Alert>
                 <br />
-                <Button
-                  variant="outlined"
-                  onClick={() => clipboard.writeText(error!)}
-                >
-                  Copy
-                </Button>
-              </div>
+              </>
             )}
-            {mode === Mode.exporting && (
-              <h1>
-                <Trans>Exporting...</Trans>
-              </h1>
-            )}
-            {mode === Mode.finished && (
-              <div
-                css={css`
-                  display: flex;
-                  flex-direction: column;
-                  gap: 10px;
-                `}
+          {mode === Mode.error && (
+            <div>
+              <Alert severity="error">
+                <div css={css``}>{error}</div>
+              </Alert>
+              <br />
+              <Button
+                variant="outlined"
+                onClick={() => clipboard.writeText(error!)}
               >
-                {imdiValidated && (
-                  <Alert severity="success">
-                    {t`The IMDI files were validated.`}
-                  </Alert>
-                )}
+                Copy
+              </Button>
+            </div>
+          )}
+          {mode === Mode.exporting && (
+            <h1>
+              <Trans>Exporting...</Trans>
+            </h1>
+          )}
+          {mode === Mode.finished && (
+            <div
+              css={css`
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+              `}
+            >
+              {imdiValidated && (
+                <Alert severity="success">
+                  {t`The IMDI files were validated.`}
+                </Alert>
+              )}
 
-                <h1>
-                  <Trans>Done</Trans>
-                </h1>
-              </div>
-            )}
-            {mode === Mode.copying && (
-              <div>
-                <h1>
-                  <Trans>Copying in Files...</Trans>
-                </h1>
-                <br />
-                {copyJobsInProgress.map((j) => {
-                  const name = Path.basename(j.destination);
-                  return (
-                    <div key={j.destination}>
-                      {name} {j.progress}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+              <h1>
+                <Trans>Done</Trans>
+              </h1>
+            </div>
+          )}
+          {mode === Mode.copying && (
+            <div>
+              <h1>
+                <Trans>Copying in Files...</Trans>
+              </h1>
+              <br />
+              {copyJobsInProgress.map((j) => {
+                const name = Path.basename(j.destination);
+                return (
+                  <div key={j.destination}>
+                    {name} {j.progress}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
+      </DialogMiddle>
 
-        <div className={"bottomButtonRow"}>
-          {/* List as default last (in the corner), then stylesheet will reverse when used on Windows */}
-          <div className={"reverseOrderOnMac"}>
-            {mode === Mode.error && (
-              <React.Fragment>
-                <DialogButton
-                  default={true}
-                  onClick={() => setMode(Mode.closed)}
-                >
-                  <Trans>Close</Trans>
-                </DialogButton>
-              </React.Fragment>
-            )}
-            {mode === Mode.choosing && (
-              <React.Fragment>
-                <DialogButton
-                  default={true}
-                  onClick={() => handleContinue(true)}
-                >
-                  <Trans>Export</Trans>
-                </DialogButton>
-                <Button
-                  variant="contained"
-                  onClick={() => handleContinue(false)}
-                >
-                  <Trans>Cancel</Trans>
-                </Button>
-              </React.Fragment>
-            )}
-            {mode === Mode.finished && (
-              <React.Fragment>
-                <Button
-                  variant="contained"
-                  onClick={() => setMode(Mode.closed)}
-                >
-                  <Trans>Close</Trans>
-                </Button>
-                <Button
-                  id="okButton"
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => {
-                    setMode(Mode.closed);
-                    showInExplorer(outputPath || "");
-                  }}
-                >
-                  <Trans>Show export</Trans>
-                </Button>
-              </React.Fragment>
-            )}
-          </div>
-        </div>
-      </ReactModal>
-    </CloseOnEscape>
+      <DialogBottomButtons>
+        {mode === Mode.error && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => closeDialog()}
+          >
+            <Trans>Close</Trans>
+          </Button>
+        )}
+        {mode === Mode.choosing && (
+          <>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => handleContinue(true)}
+              css={css`
+                min-width: 80px;
+              `}
+            >
+              <Trans>Export</Trans>
+            </Button>
+            <DialogCancelButton onClick={() => handleContinue(false)} />
+          </>
+        )}
+        {mode === Mode.finished && (
+          <>
+            <Button 
+              variant="contained" 
+              onClick={() => closeDialog()}
+              css={css`
+                min-width: 80px;
+              `}
+            >
+              <Trans>Close</Trans>
+            </Button>
+            <Button
+              id="okButton"
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                closeDialog();
+                showInExplorer(outputPath || "");
+              }}
+              css={css`
+                min-width: 120px;
+              `}
+            >
+              <Trans>Show export</Trans>
+            </Button>
+          </>
+        )}
+      </DialogBottomButtons>
+    </LametaDialog>
   );
 };
