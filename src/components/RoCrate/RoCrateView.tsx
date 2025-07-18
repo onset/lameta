@@ -6,21 +6,9 @@ import { getRoCrate } from "../../export/RoCrateExporter";
 import FindInPage from "../FindInPage";
 import { JsonView } from "./JsonView";
 import { ValidationResultsList } from "./RoCrateValidationResults";
-//import { validate } from "./LDAC-RoCrate-Profile.es.js";
 import { Box, Grid } from "@mui/material";
-import rocrate from "ro-crate";
+import { validateRoCrate, ValidationResult } from "./validation";
 
-type ValidationEntry = {
-  id: string;
-  status: "error" | "warning" | "info";
-  message: string;
-  clause: string;
-};
-type ValidationResult = {
-  errors: ValidationEntry[];
-  warnings: ValidationEntry[];
-  info: ValidationEntry[];
-};
 export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
   // otherwise, folder will be a session or person
@@ -36,7 +24,7 @@ export const RoCrateView: React.FunctionComponent<{
     const validate = async () => {
       if (props.doValidate) {
         try {
-          const entries = await rocrate.validate(json);
+          const entries = await validateRoCrate(json);
           // separate errors, warnings, and info
           setValidationResults({
             errors: entries.filter((entry) => entry.status === "error"),
