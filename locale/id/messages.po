@@ -21,6 +21,9 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
+msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr "Sebuah file dengan nama yang sama sudah ada di lokasi tersebut."
 
@@ -289,15 +292,6 @@ msgstr ""
 msgid "ID cannot contain spaces"
 msgstr ""
 
-#~ msgid "IMDI"
-#~ msgstr ""
-
-#~ msgid "IMDI + Files"
-#~ msgstr ""
-
-#~ msgid "IMDI Mode"
-#~ msgstr ""
-
 msgid "IMDI Only"
 msgstr "Hanya IMDI"
 
@@ -450,6 +444,9 @@ msgstr "Properti"
 
 msgid "Quit"
 msgstr "Keluar"
+
+msgid "RO-Crate"
+msgstr ""
 
 msgid "Redo"
 msgstr "Ulangi"
