@@ -110,7 +110,7 @@ export const ExportDialog: React.FunctionComponent<{
   const handleContinue = (doSave: boolean) => {
     if (doSave) {
       userSettingsSingleton.ExportFormat = exportFormat;
-      
+
       // Handle RO-Crate export differently - no file dialog
       if (exportFormat === "ro-crate") {
         setMode(Mode.exporting);
@@ -139,7 +139,10 @@ export const ExportDialog: React.FunctionComponent<{
             }
             SetRulesBasedValidationResult(rulesBasedValidationResult);
 
-            const outputPath = Path.join(props.projectHolder.project!.directory, "ro-crate-metadata.json");
+            const outputPath = Path.join(
+              props.projectHolder.project!.directory,
+              "ro-crate-metadata.json"
+            );
             setOutputPath(outputPath);
             saveFilesAsync(outputPath);
           } catch (err) {
@@ -373,7 +376,7 @@ export const ExportDialog: React.FunctionComponent<{
       }}
       css={css`
         width: 600px;
-        height: 600px;
+        height: 700px;
       `}
     >
       <DialogTitle title={t`Export Project`} />
@@ -486,8 +489,8 @@ export const ExportDialog: React.FunctionComponent<{
         )}
         {mode === Mode.finished && (
           <>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               onClick={() => closeDialog()}
               css={css`
                 min-width: 80px;

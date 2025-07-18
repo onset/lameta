@@ -4,6 +4,9 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Markdown } from "../Markdown";
+import _ from "lodash";
 
 export const ExportChoices: React.FunctionComponent<{
   exportFormat: string;
@@ -107,33 +110,45 @@ export const ExportChoices: React.FunctionComponent<{
           <Trans>RO-Crate</Trans>
         </label>
         <p>
-          <Trans>
-            A Research Object Crate (RO-Crate) metadata file for the project.
-          </Trans>
+          <Markdown>
+            {i18n._(
+              "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
+            )}
+          </Markdown>
         </p>
       </fieldset>
-      <div id="whichSessions">
-        <label>
-          <Trans>Choose which Sessions to export:</Trans>
-        </label>
-        <select
-          name={"Which sessions to export"}
-          value={props.whichSessionsOption}
-          onChange={(event) => {
-            props.setWhichSessionsOption(event.target.value);
-          }}
+      <div
+        id="whichSessions"
+        css={css`
+          margin-top: 15px;
+        `}
+      >
+        <FormControl
+          fullWidth
+          css={css`
+            max-width: 300px;
+          `}
         >
-          <option key={"all"} value={"all"}>
-            {t`All Sessions`}
-          </option>
-          <option
-            key={"marked"}
-            value={"marked"}
-            disabled={props.countOfMarkedSessions === 0}
+          <InputLabel id="which-sessions-label">
+            <Trans>Choose which Sessions to export:</Trans>
+          </InputLabel>
+          <Select
+            labelId="which-sessions-label"
+            value={props.whichSessionsOption}
+            label="Choose which Sessions to export"
+            onChange={(event) => {
+              props.setWhichSessionsOption(event.target.value);
+            }}
           >
-            {t`${props.countOfMarkedSessions} Marked Sessions`}
-          </option>
-        </select>
+            <MenuItem value="all">{t`All Sessions`}</MenuItem>
+            <MenuItem
+              value="marked"
+              disabled={props.countOfMarkedSessions === 0}
+            >
+              {t`${props.countOfMarkedSessions} Marked Sessions`}
+            </MenuItem>
+          </Select>
+        </FormControl>
       </div>
     </div>
   );
