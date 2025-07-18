@@ -21,42 +21,48 @@ export const RoCrateView: React.FunctionComponent<{
     React.useState<ValidationResult | undefined>(undefined);
 
   React.useEffect(() => {
-    const validate = async () => {
-      if (props.doValidate) {
-        try {
-          const entries = await validateRoCrate(json);
-          // separate errors, warnings, and info
-          setValidationResults({
-            errors: entries.filter((entry) => entry.status === "error"),
-            warnings: entries.filter((entry) => entry.status === "warning"),
-            info: entries.filter((entry) => entry.status === "info")
-          });
+    const loadAndValidate = async () => {
+      try {
+        const json = await getRoCrate(props.project, props.folder);
+        setJson(json);
 
-          // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
-          // errors.errors = errors.errors.filter((error) => {
-          //   return error.property !== "license";
-          // });
-        } catch (e) {
-          //throw e;
-          setValidationResults({
-            errors: [
-              {
-                message: `${e.message} ${e.stack}`,
-                id: "error",
-                status: "error",
-                clause: "error"
-              }
-            ],
-            warnings: [],
-            info: []
-          });
+        if (props.doValidate) {
+          try {
+            const entries = await validateRoCrate(json);
+            // separate errors, warnings, and info
+            setValidationResults({
+              errors: entries.filter((entry) => entry.status === "error"),
+              warnings: entries.filter((entry) => entry.status === "warning"),
+              info: entries.filter((entry) => entry.status === "info")
+            });
+
+            // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
+            // errors.errors = errors.errors.filter((error) => {
+            //   return error.property !== "license";
+            // });
+          } catch (e) {
+            //throw e;
+            setValidationResults({
+              errors: [
+                {
+                  message: `${e.message} ${e.stack}`,
+                  id: "error",
+                  status: "error",
+                  clause: "error"
+                }
+              ],
+              warnings: [],
+              info: []
+            });
+          }
         }
+      } catch (e) {
+        console.error("Error loading RoCrate:", e);
+        setJson({});
       }
     };
 
-    const json = getRoCrate(props.project, props.folder);
-    setJson(json);
-    validate();
+    loadAndValidate();
   }, [props.project, props.folder, props.doValidate]);
 
   return (
