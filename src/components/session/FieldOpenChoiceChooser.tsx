@@ -104,9 +104,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           })
         }}
         onChange={(s: any) => {
-          props.field.setValueFromString(
-            s && s.value ? s.value : ""
-          );
+          props.field.setValueFromString(s && s.value ? s.value : "");
         }}
         components={{ Option: OptionWithTooltip }}
         options={options}
