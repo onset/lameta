@@ -119,6 +119,8 @@ class FolderList extends React.Component<IProps> {
             return (
               <input
                 type="checkbox"
+                // add an id that contains the folder id so that tests can choose and click the correct one
+                data-testid={`${f.propertyForCheckingId}-checkbox`}
                 title={t`Mark for Export or Deletion`}
                 checked={f.marked}
                 onChange={(e) => {

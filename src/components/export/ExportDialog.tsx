@@ -5,6 +5,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
 import { useState } from "react";
+import { observer } from "mobx-react";
 import "./ExportDialog.scss";
 import { ProjectHolder } from "../../model/Project/Project";
 import { showInExplorer } from "../../other/crossPlatformUtilities";
@@ -54,7 +55,7 @@ enum Mode {
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
-}> = (props) => {
+}> = observer((props) => {
   const { currentlyOpen, showDialog, closeDialog } = useSetupLametaDialog();
   const [mode, setMode] = useState<Mode>(Mode.choosing);
 
@@ -85,16 +86,16 @@ export const ExportDialog: React.FunctionComponent<{
     userSettingsSingleton.ExportFormat
   );
   const [whichSessionsOption, setWhichSessionsOption] = useState("all");
-  const [countOfMarkedSessions, setCountOfMarkedSessions] = useState(0);
+
+  // Calculate marked sessions count directly in render - observer will handle reactivity
+  const countOfMarkedSessions = props.projectHolder?.project?.sessions
+    ? props.projectHolder.project.sessions.countOfMarkedFolders()
+    : 0;
+
   React.useEffect(() => {
-    if (props.projectHolder && props.projectHolder.project) {
-      const count =
-        props.projectHolder!.project!.sessions.countOfMarkedFolders();
-      setCountOfMarkedSessions(count);
-      // guess what they will want based on if they have checked anything
-      setWhichSessionsOption(count === 0 ? "all" : "marked");
-    }
-  }, [mode]);
+    // guess what they will want based on if they have checked anything
+    setWhichSessionsOption(countOfMarkedSessions === 0 ? "all" : "marked");
+  }, [countOfMarkedSessions]);
 
   const [copyJobsInProgress, setCopyJobsInProgress] = useState<ICopyJob[]>([]);
   useInterval(() => {
@@ -388,7 +389,7 @@ export const ExportDialog: React.FunctionComponent<{
             whichSessionsOption={whichSessionsOption}
             setWhichSessionsOption={setWhichSessionsOption}
             countOfMarkedSessions={countOfMarkedSessions}
-            setCountOfMarkedSessions={setCountOfMarkedSessions}
+            setCountOfMarkedSessions={() => {}} // No-op since we're using useMemo now
           />
         )}
         <div
@@ -517,4 +518,4 @@ export const ExportDialog: React.FunctionComponent<{
       </DialogBottomButtons>
     </LametaDialog>
   );
-};
+});
