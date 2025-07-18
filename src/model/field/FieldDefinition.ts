@@ -32,12 +32,13 @@ export class FieldDefinition {
   public imdiRange?: string;
   public imdiIsClosedVocabulary?: boolean;
   public isCustom: boolean = false;
-  public rocrate: {
+  public rocrate?: {
     key: string;
     template: any;
     handler?: "languages";
     array?: boolean;
   };
+  public vocabularyFile?: string;
   // this is for the fields in session that appear under "More Fields".
   public isAdditional?: boolean = false;
   //awkward... this is not use for people, where we don't use the autoform

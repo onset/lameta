@@ -17,7 +17,7 @@ describe("RoCrateExporter genre handling", () => {
           key: "genre",
           englishLabel: "Genre",
           xmlTag: "Genre",
-          vocabularyFile: "genres.json5",
+          vocabularyFile: "genres.json",
           tabIndex: 6,
           persist: true,
           type: "Text",
@@ -80,6 +80,7 @@ describe("RoCrateExporter genre handling", () => {
           multilingual: false,
           isCustom: false,
           showOnAutoForm: true,
+          vocabularyFile: "genres.json",
           rocrate: {
             key: "ldac:linguisticGenre",
             array: true,
@@ -113,8 +114,8 @@ describe("RoCrateExporter genre handling", () => {
     } as any;
   });
 
-  it("should convert LDAC-mappable genre to ldac:linguisticGenre with proper structure", () => {
-    const result = getRoCrate(mockProject, mockSession) as any;
+  it("should convert LDAC-mappable genre to ldac:linguisticGenre with proper structure", async () => {
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -148,7 +149,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(termSet.name).toBe("Linguistic Genre Terms");
   });
 
-  it("should handle custom genre that doesn't map to LDAC", () => {
+  it("should handle custom genre that doesn't map to LDAC", async () => {
     // Mock a custom genre
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -166,7 +167,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -199,7 +200,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(termSet.name).toBe("Custom Project Genres");
   });
 
-  it("should handle multiple genres", () => {
+  it("should handle multiple genres", async () => {
     // Mock multiple genres
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -217,7 +218,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -242,7 +243,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(narrativeDefinition).toBeDefined();
   });
 
-  it("should handle mix of LDAC and custom genres", () => {
+  it("should handle mix of LDAC and custom genres", async () => {
     // Mock mix of LDAC and custom genres
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -260,7 +261,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -303,7 +304,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(customTermSet).toBeDefined();
   });
 
-  it("should handle empty or unspecified genre", () => {
+  it("should handle empty or unspecified genre", async () => {
     // Mock empty genre
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -321,7 +322,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -332,7 +333,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(sessionEntry).not.toHaveProperty("ldac:linguisticGenre");
   });
 
-  it("should handle unspecified genre value", () => {
+  it("should handle unspecified genre value", async () => {
     // Mock unspecified genre
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -350,7 +351,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -361,8 +362,8 @@ describe("RoCrateExporter genre handling", () => {
     expect(sessionEntry).not.toHaveProperty("ldac:linguisticGenre");
   });
 
-  it("should validate that LDAC-mapped genres have proper structure in the graph", () => {
-    const result = getRoCrate(mockProject, mockSession) as any;
+  it("should validate that LDAC-mapped genres have proper structure in the graph", async () => {
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Check that the LDAC genre definition has all required properties
     const genreDefinition = result["@graph"].find(
@@ -387,7 +388,7 @@ describe("RoCrateExporter genre handling", () => {
     });
   });
 
-  it("should create unique genre definitions even when same genre appears multiple times", () => {
+  it("should create unique genre definitions even when same genre appears multiple times", async () => {
     // Mock the same genre appearing multiple times (this could happen with multiple values)
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -405,7 +406,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Count how many genre definitions exist
     const genreDefinitions = result["@graph"].filter(
@@ -426,7 +427,7 @@ describe("RoCrateExporter genre handling", () => {
     ]);
   });
 
-  it("should handle complex genre IDs with special characters correctly", () => {
+  it("should handle complex genre IDs with special characters correctly", async () => {
     // Mock a genre with special characters
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -444,7 +445,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -464,7 +465,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(genreDefinition["@type"]).toBe("DefinedTerm");
   });
 
-  it("should produce output that matches the expected ro-crate structure for mixed genres", () => {
+  it("should produce output that matches the expected ro-crate structure for mixed genres", async () => {
     // Test the exact structure from the user's example
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -482,7 +483,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Verify the session has the correct structure
     const sessionEntry = result["@graph"].find(
@@ -521,7 +522,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(result["@context"]).toContain("https://w3id.org/ldac/context");
   });
 
-  it("should correctly map other LDAC genres like narrative and drama", () => {
+  it("should correctly map other LDAC genres like narrative and drama", async () => {
     // Test other LDAC-mapped genres
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -539,7 +540,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Verify both genres are mapped to LDAC terms
     const sessionEntry = result["@graph"].find(
@@ -566,7 +567,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(dramaGenre["@type"]).toBe("DefinedTerm");
   });
 
-  it("should map genres by label when UI passes label instead of id", () => {
+  it("should map genres by label when UI passes label instead of id", async () => {
     // Test the case where the UI passes "Dialog" (the label) instead of "dialog" (the id)
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -584,7 +585,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -614,7 +615,7 @@ describe("RoCrateExporter genre handling", () => {
     expect(customGenreDefinition).toBeUndefined();
   });
 
-  it("should also map Narrative by label", () => {
+  it("should also map Narrative by label", async () => {
     // Test another common case where UI passes "Narrative" (label) instead of "narrative" (id)
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -632,7 +633,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -655,7 +656,7 @@ describe("RoCrateExporter genre handling", () => {
     });
   });
 
-  it("should handle case insensitive label matching", () => {
+  it("should handle case insensitive label matching", async () => {
     // Test that "DIALOG" or "dialog" still maps correctly
     mockSession.metadataFile!.getTextProperty = vi
       .fn()
@@ -673,7 +674,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = getRoCrate(mockProject, mockSession) as any;
+    const result = await getRoCrate(mockProject, mockSession) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(

@@ -11,6 +11,11 @@ import { IPersonLanguage } from "../model/PersonLanguage";
 import _ from "lodash";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import { IChoice } from "../model/field/Field";
+import {
+  getVocabularyMapping,
+  createTermDefinition,
+  getTermSets
+} from "./VocabularyHandler";
 
 // Info:
 // https://www.researchobject.org/ro-crate/
@@ -18,11 +23,14 @@ import { IChoice } from "../model/field/Field";
 // https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md
 // https://www.researchobject.org/ro-crate/profiles.html#paradisec-profile
 
-export function getRoCrate(project: Project, folder: Folder): object {
+export async function getRoCrate(
+  project: Project,
+  folder: Folder
+): Promise<object> {
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
-    addFieldEntries(folder, entry, otherEntries);
+    await addFieldEntries(folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -31,7 +39,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
     // TODO
     const entry = {};
     const otherEntries: object[] = [];
-    addFieldEntries(folder, entry, otherEntries);
+    await addFieldEntries(folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -94,7 +102,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
 
   const otherEntries: any[] = [];
 
-  addFieldEntries(folder, mainSessionEntry, otherEntries);
+  await addFieldEntries(folder, mainSessionEntry, otherEntries);
 
   roCrate["@graph"].push(mainSessionEntry);
   if (folder instanceof Session) {
@@ -102,7 +110,7 @@ export function getRoCrate(project: Project, folder: Folder): object {
       folder as Session
     );
     roCrate["@graph"].push(
-      ...makeEntriesFromParticipant(project, folder as Session)
+      ...(await makeEntriesFromParticipant(project, folder as Session))
     );
     roCrate["@graph"].push(...getRoles(folder as Session));
   }
@@ -144,13 +152,13 @@ function addFieldIfNotEmpty(
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
-function addFieldEntries(
+async function addFieldEntries(
   folder: Folder,
   folderEntry: object,
   otherEntries: object[]
 ) {
   // First handle the known fields
-  folder.knownFields.forEach((field) => {
+  for (const field of folder.knownFields) {
     const values: string[] = getFieldValues(folder, field);
     if (values.length === 0 || values[0] === "unspecified") return;
     const propertyKey = field.rocrate?.key || field.key;
@@ -166,23 +174,82 @@ function addFieldEntries(
 
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
-      const leafTemplate = getRoCrateTemplate(field);
+      // Special handling for fields with vocabularyFile
+      if (field.vocabularyFile) {
+        const termValues = values[0]
+          .split(",")
+          .map((term) => term.trim())
+          .filter((term) => term);
+        const termReferences: any[] = [];
+        const termDefinitions: any[] = [];
+        let hasLdacTerms = false;
+        let hasCustomTerms = false;
 
-      if (leafTemplate) {
-        values.forEach((c: string) => {
-          // For each value, create a graph entry that is the template, filled in with the value
-          const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
-          otherEntries.push(leaf);
-          const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
-          // Now create the links to those from the parent object
-          if (field.rocrate.array) {
-            if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
-            // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
-            folderEntry[propertyKey].push(reference);
-          } else folderEntry[propertyKey] = reference;
-        });
+        for (const termId of termValues) {
+          try {
+            const mapping = await getVocabularyMapping(
+              termId,
+              field.vocabularyFile
+            );
+            termReferences.push({ "@id": mapping.id });
+            termDefinitions.push(createTermDefinition(mapping));
+
+            if (mapping.id.startsWith("ldac:")) {
+              hasLdacTerms = true;
+            } else {
+              hasCustomTerms = true;
+            }
+          } catch (error) {
+            // If vocabulary loading fails, treat as custom term
+            console.warn(`Failed to load vocabulary for ${termId}:`, error);
+            const customId =
+              "#" +
+              termId
+                .split(/[^a-zA-Z0-9]/)
+                .map(
+                  (word) =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                )
+                .join("");
+            termReferences.push({ "@id": customId });
+            termDefinitions.push({
+              "@id": customId,
+              "@type": "DefinedTerm",
+              name: termId,
+              description: `Custom term: ${termId}`,
+              inDefinedTermSet: { "@id": "#CustomGenreTerms" }
+            });
+            hasCustomTerms = true;
+          }
+        }
+
+        // Add term references to the main entry
+        if (termReferences.length > 0) {
+          folderEntry[propertyKey] = termReferences;
+        }
+
+        // Add term definitions and term sets to the graph
+        otherEntries.push(...termDefinitions);
+        otherEntries.push(...getTermSets(hasLdacTerms, hasCustomTerms));
       } else {
-        folderEntry[propertyKey] = values[0]; // we have a key, but nothing else. Can use, e.g. to rename "keyword" to "keywords"
+        const leafTemplate = getRoCrateTemplate(field);
+
+        if (leafTemplate) {
+          values.forEach((c: string) => {
+            // For each value, create a graph entry that is the template, filled in with the value
+            const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
+            otherEntries.push(leaf);
+            const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
+            // Now create the links to those from the parent object
+            if (field.rocrate?.array) {
+              if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
+              // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
+              folderEntry[propertyKey].push(reference);
+            } else folderEntry[propertyKey] = reference;
+          });
+        } else {
+          folderEntry[propertyKey] = values[0]; // we have a key, but nothing else. Can use, e.g. to rename "keyword" to "keywords"
+        }
       }
     }
 
@@ -190,7 +257,7 @@ function addFieldEntries(
     else {
       folderEntry[propertyKey] = values[0];
     }
-  });
+  }
 
   // Now handle any custom fields from the properties
 
@@ -217,7 +284,7 @@ function makeParticipantPointers(session: Session): any[] {
     .map((name) => ({ "@id": name }));
 }
 
-function makeEntriesFromParticipant(project: Project, session: Session) {
+async function makeEntriesFromParticipant(project: Project, session: Session) {
   const uniqueContributors: { [key: string]: Set<string> } = {};
 
   session.getAllContributionsToAllFiles().forEach((contribution) => {
@@ -235,7 +302,7 @@ function makeEntriesFromParticipant(project: Project, session: Session) {
 
   const entriesForAllContributors: object[] = [];
 
-  Object.keys(uniqueContributors).forEach((name) => {
+  for (const name of Object.keys(uniqueContributors)) {
     const person = project.findPerson(name);
 
     // Review: if the person is not found, currently we output what we can, which is their ID and their roles.
@@ -248,7 +315,7 @@ function makeEntriesFromParticipant(project: Project, session: Session) {
 
     if (person) {
       // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
-      addFieldEntries(person, personElement, entriesForAllContributors);
+      await addFieldEntries(person, personElement, entriesForAllContributors);
       addChildFileEntries(person, personElement, entriesForAllContributors);
     }
     // add the roles this person has in the session
@@ -256,7 +323,7 @@ function makeEntriesFromParticipant(project: Project, session: Session) {
       return { "@id": `role_${role}` };
     });
     entriesForAllContributors.push(personElement);
-  });
+  }
   return entriesForAllContributors;
 }
 
@@ -275,19 +342,22 @@ function getRoles(session: Session) {
   });
 }
 function getRoCrateTemplate(field: any): any {
-  if (field.rocrate?.handler === "languages")
-    return fieldDefinitionsOfCurrentConfig.common.find(
+  if (field.rocrate?.handler === "languages") {
+    const languageField = fieldDefinitionsOfCurrentConfig.common.find(
       (f) => f.key === "language"
-    )!.rocrate.template;
+    );
+    return languageField?.rocrate?.template;
+  }
 
   if (field.rocrate?.handler === "person") {
-    return fieldDefinitionsOfCurrentConfig.common.find(
+    const personField = fieldDefinitionsOfCurrentConfig.common.find(
       (f) => f.key === "person"
-    )!.rocrate.template;
+    );
+    return personField?.rocrate?.template;
   }
 
   // no handler specified, assume this is just a normal value but one that we want to list as "[ {@id:'#blah'} ]"
-  return field.rocrate.template;
+  return field.rocrate?.template;
 }
 
 function getFieldValues(folder: Folder, field: any): string[] {
@@ -318,9 +388,15 @@ function getElementUsingTemplate(template: object, value: string): object {
 }
 
 function getPersonLanguageElement(value: IPersonLanguage): object {
-  const template = fieldDefinitionsOfCurrentConfig.common.find(
+  const languageField = fieldDefinitionsOfCurrentConfig.common.find(
     (f) => f.key === "language"
-  )!.rocrate.template;
+  );
+  const template = languageField?.rocrate?.template;
+
+  if (!template) {
+    return {};
+  }
+
   const output = {};
   Object.keys(template).forEach((key) => {
     let val = template[key];
