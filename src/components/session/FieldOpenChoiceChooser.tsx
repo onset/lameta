@@ -3,7 +3,7 @@ import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
 import { lameta_orange } from "../../containers/theme";
-import { capitalCase, sentenceCase } from "../../other/case";
+import { capitalCase } from "../../other/case";
 import { OptionWithTooltip } from "../OptionWithTooltip";
 
 //const Choices = new Dictionary<string, Array<string>>();
@@ -105,7 +105,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         }}
         onChange={(s: any) => {
           props.field.setValueFromString(
-            sentenceCase(s && s.value ? s.value : "")
+            s && s.value ? s.value : ""
           );
         }}
         components={{ Option: OptionWithTooltip }}

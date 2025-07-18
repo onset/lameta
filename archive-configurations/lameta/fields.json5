@@ -340,8 +340,16 @@
       englishLabel: "Genre",
       xmlTag: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-      vocabularyFile: "genres.json5",
-      tabIndex: 6
+      vocabularyFile: "genres.json5", // Nothing actually reads this line, but the RoCrateExporter.ts knows to use this file. We could remove it.
+      tabIndex: 6,
+      rocrate: {
+        key: "ldac:linguisticGenre",
+        array: true,
+        template: {
+          "@id": "[v]",
+          "@type": "DefinedTerm"
+        }
+      }
     },
     {
       key: "subgenre",

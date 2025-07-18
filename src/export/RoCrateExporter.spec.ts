@@ -1,0 +1,697 @@
+import { vi, describe, it, beforeEach, expect } from "vitest";
+import { getRoCrate } from "./RoCrateExporter";
+import { Session } from "../model/Project/Session/Session";
+import { Project } from "../model/Project/Project";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
+
+describe("RoCrateExporter genre handling", () => {
+  let mockProject: Project;
+  let mockSession: Session;
+
+  beforeEach(() => {
+    // Mock the field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      [
+        {
+          key: "genre",
+          englishLabel: "Genre",
+          xmlTag: "Genre",
+          vocabularyFile: "genres.json5",
+          tabIndex: 6,
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "ldac:linguisticGenre",
+            array: true,
+            template: {
+              "@id": "[v]",
+              "@type": "DefinedTerm"
+            }
+          }
+        } as FieldDefinition
+      ]
+    );
+
+    // Mock common field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
+      {
+        key: "person",
+        rocrate: {
+          template: {
+            "@id": "[v]",
+            "@type": "Person"
+          }
+        }
+      } as FieldDefinition,
+      {
+        key: "language",
+        rocrate: {
+          template: {
+            "@id": "[code]",
+            "@type": "Language"
+          }
+        }
+      } as FieldDefinition
+    ]);
+
+    mockProject = {
+      filePrefix: "project1",
+      authorityLists: {
+        accessChoicesOfCurrentProtocol: [
+          {
+            label: "public",
+            description: "Public access"
+          }
+        ]
+      }
+    } as any;
+
+    mockSession = {
+      filePrefix: "session1",
+      knownFields: [
+        {
+          key: "genre",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "ldac:linguisticGenre",
+            array: true,
+            template: {
+              "@id": "[v]",
+              "@type": "DefinedTerm"
+            }
+          }
+        }
+      ],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Test Session";
+          if (key === "description") return "Test Description";
+          if (key === "access") return "public";
+          if (key === "genre") return "dialog"; // This maps to ldac:Dialogue
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockImplementation((key: string) => {
+            if (key === "genre") return true;
+            return false;
+          }),
+          forEach: vi.fn().mockImplementation(() => {
+            // Mock forEach to do nothing for custom fields
+          })
+        }
+      },
+      files: [],
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+    } as any;
+  });
+
+  it("should convert LDAC-mappable genre to ldac:linguisticGenre with proper structure", () => {
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that genre is converted to ldac:linguisticGenre
+    expect(sessionEntry).toHaveProperty("ldac:linguisticGenre");
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" }
+    ]);
+
+    // Check that the genre definition is in the graph
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition["@type"]).toBe("DefinedTerm");
+    expect(genreDefinition.name).toBe("Dialog");
+    expect(genreDefinition.description).toContain("interactive discourse");
+    expect(genreDefinition.inDefinedTermSet).toEqual({
+      "@id": "ldac:LinguisticGenreTerms"
+    });
+
+    // Check that the term set is in the graph
+    const termSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:LinguisticGenreTerms"
+    );
+    expect(termSet).toBeDefined();
+    expect(termSet["@type"]).toBe("DefinedTermSet");
+    expect(termSet.name).toBe("Linguistic Genre Terms");
+  });
+
+  it("should handle custom genre that doesn't map to LDAC", () => {
+    // Mock a custom genre
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "custom_genre_not_in_ldac";
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that genre is converted to ldac:linguisticGenre with custom ID
+    expect(sessionEntry).toHaveProperty("ldac:linguisticGenre");
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "#CustomGenreNotInLdac" }
+    ]);
+
+    // Check that the custom genre definition is in the graph
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "#CustomGenreNotInLdac"
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition["@type"]).toBe("DefinedTerm");
+    expect(genreDefinition.name).toBe("Custom Genre Not In Ldac");
+    expect(genreDefinition.inDefinedTermSet).toEqual({
+      "@id": "#CustomGenreTerms"
+    });
+
+    // Check that the custom term set is in the graph
+    const termSet = result["@graph"].find(
+      (item: any) => item["@id"] === "#CustomGenreTerms"
+    );
+    expect(termSet).toBeDefined();
+    expect(termSet["@type"]).toBe("DefinedTermSet");
+    expect(termSet.name).toBe("Custom Project Genres");
+  });
+
+  it("should handle multiple genres", () => {
+    // Mock multiple genres
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog,narrative"; // Multiple genres
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that both genres are present
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" },
+      { "@id": "ldac:Narrative" }
+    ]);
+
+    // Check that both genre definitions are in the graph
+    const dialogueDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(dialogueDefinition).toBeDefined();
+
+    const narrativeDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Narrative"
+    );
+    expect(narrativeDefinition).toBeDefined();
+  });
+
+  it("should handle mix of LDAC and custom genres", () => {
+    // Mock mix of LDAC and custom genres
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog,avoidance_language"; // One LDAC, one custom
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that both genres are present with correct IDs
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" },
+      { "@id": "#AvoidanceLanguage" }
+    ]);
+
+    // Check that LDAC genre definition is in the graph
+    const dialogueDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(dialogueDefinition).toBeDefined();
+    expect(dialogueDefinition.inDefinedTermSet).toEqual({
+      "@id": "ldac:LinguisticGenreTerms"
+    });
+
+    // Check that custom genre definition is in the graph
+    const customDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "#AvoidanceLanguage"
+    );
+    expect(customDefinition).toBeDefined();
+    expect(customDefinition.inDefinedTermSet).toEqual({
+      "@id": "#CustomGenreTerms"
+    });
+
+    // Check that both term sets are in the graph
+    const ldacTermSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:LinguisticGenreTerms"
+    );
+    expect(ldacTermSet).toBeDefined();
+
+    const customTermSet = result["@graph"].find(
+      (item: any) => item["@id"] === "#CustomGenreTerms"
+    );
+    expect(customTermSet).toBeDefined();
+  });
+
+  it("should handle empty or unspecified genre", () => {
+    // Mock empty genre
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "";
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return false;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that ldac:linguisticGenre is not present
+    expect(sessionEntry).not.toHaveProperty("ldac:linguisticGenre");
+  });
+
+  it("should handle unspecified genre value", () => {
+    // Mock unspecified genre
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "unspecified";
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that ldac:linguisticGenre is not present
+    expect(sessionEntry).not.toHaveProperty("ldac:linguisticGenre");
+  });
+
+  it("should validate that LDAC-mapped genres have proper structure in the graph", () => {
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Check that the LDAC genre definition has all required properties
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(genreDefinition).toMatchObject({
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      name: expect.any(String),
+      description: expect.any(String),
+      inDefinedTermSet: { "@id": "ldac:LinguisticGenreTerms" }
+    });
+
+    // Check that the LDAC term set is properly defined
+    const termSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:LinguisticGenreTerms"
+    );
+    expect(termSet).toMatchObject({
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      name: "Linguistic Genre Terms"
+    });
+  });
+
+  it("should create unique genre definitions even when same genre appears multiple times", () => {
+    // Mock the same genre appearing multiple times (this could happen with multiple values)
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog,dialog"; // Duplicate genres
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Count how many genre definitions exist
+    const genreDefinitions = result["@graph"].filter(
+      (item: any) =>
+        item["@id"] === "ldac:Dialogue" && item["@type"] === "DefinedTerm"
+    );
+
+    // Should only have one definition even though genre was duplicated
+    expect(genreDefinitions).toHaveLength(1);
+
+    // The ldac:linguisticGenre array should have both references though
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" },
+      { "@id": "ldac:Dialogue" }
+    ]);
+  });
+
+  it("should handle complex genre IDs with special characters correctly", () => {
+    // Mock a genre with special characters
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "some-complex_genre.with!special@chars";
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Check that the custom genre ID is properly formatted
+    expect(sessionEntry["ldac:linguisticGenre"]).toHaveLength(1);
+    const genreId = sessionEntry["ldac:linguisticGenre"][0]["@id"];
+    expect(genreId).toMatch(/^#[A-Z][a-zA-Z]*$/); // Should start with # and be camelCase
+
+    // Check that the genre definition exists
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === genreId
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition["@type"]).toBe("DefinedTerm");
+  });
+
+  it("should produce output that matches the expected ro-crate structure for mixed genres", () => {
+    // Test the exact structure from the user's example
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Fishing";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog"; // LDAC-mapped genre
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Verify the session has the correct structure
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(sessionEntry).toMatchObject({
+      "@id": "./",
+      "@type": ["Dataset", "Object", "RepositoryObject"],
+      name: "Fishing",
+      "ldac:linguisticGenre": [{ "@id": "ldac:Dialogue" }]
+    });
+
+    // Verify the genre definition exists with correct structure
+    const dialogueGenre = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(dialogueGenre).toMatchObject({
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      name: "Dialog",
+      description: expect.stringContaining("interactive discourse"),
+      inDefinedTermSet: { "@id": "ldac:LinguisticGenreTerms" }
+    });
+
+    // Verify the LDAC term set exists
+    const ldacTermSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:LinguisticGenreTerms"
+    );
+    expect(ldacTermSet).toMatchObject({
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      name: "Linguistic Genre Terms"
+    });
+
+    // Verify context includes LDAC
+    expect(result["@context"]).toContain("https://w3id.org/ldac/context");
+  });
+
+  it("should correctly map other LDAC genres like narrative and drama", () => {
+    // Test other LDAC-mapped genres
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "narrative,drama"; // Multiple LDAC genres
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Verify both genres are mapped to LDAC terms
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(sessionEntry["ldac:linguisticGenre"]).toContainEqual({
+      "@id": "ldac:Narrative"
+    });
+    expect(sessionEntry["ldac:linguisticGenre"]).toContainEqual({
+      "@id": "ldac:Drama"
+    });
+
+    // Verify both genre definitions exist
+    const narrativeGenre = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Narrative"
+    );
+    expect(narrativeGenre).toBeDefined();
+    expect(narrativeGenre["@type"]).toBe("DefinedTerm");
+
+    const dramaGenre = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Drama"
+    );
+    expect(dramaGenre).toBeDefined();
+    expect(dramaGenre["@type"]).toBe("DefinedTerm");
+  });
+
+  it("should map genres by label when UI passes label instead of id", () => {
+    // Test the case where the UI passes "Dialog" (the label) instead of "dialog" (the id)
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "Dialog"; // UI passes label, not id
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should map to LDAC term, not custom genre
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" }
+    ]);
+
+    // Should have the LDAC genre definition, not custom
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition["@type"]).toBe("DefinedTerm");
+    expect(genreDefinition.name).toBe("Dialog");
+    expect(genreDefinition.inDefinedTermSet).toEqual({
+      "@id": "ldac:LinguisticGenreTerms"
+    });
+
+    // Should NOT have a custom genre definition
+    const customGenreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "#Dialog"
+    );
+    expect(customGenreDefinition).toBeUndefined();
+  });
+
+  it("should also map Narrative by label", () => {
+    // Test another common case where UI passes "Narrative" (label) instead of "narrative" (id)
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "Narrative"; // UI passes label
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should map to LDAC term
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Narrative" }
+    ]);
+
+    // Should have the LDAC genre definition
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Narrative"
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition.name).toBe("Narrative");
+    expect(genreDefinition.inDefinedTermSet).toEqual({
+      "@id": "ldac:LinguisticGenreTerms"
+    });
+  });
+
+  it("should handle case insensitive label matching", () => {
+    // Test that "DIALOG" or "dialog" still maps correctly
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "public";
+        if (key === "genre") return "DIALOG"; // All caps
+        return "";
+      });
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "genre") return true;
+        return false;
+      });
+
+    const result = getRoCrate(mockProject, mockSession) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should still map to LDAC term despite case mismatch
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+      { "@id": "ldac:Dialogue" }
+    ]);
+
+    // Should have the LDAC genre definition
+    const genreDefinition = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Dialogue"
+    );
+    expect(genreDefinition).toBeDefined();
+    expect(genreDefinition.inDefinedTermSet).toEqual({
+      "@id": "ldac:LinguisticGenreTerms"
+    });
+  });
+});
