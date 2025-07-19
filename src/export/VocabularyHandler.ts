@@ -1,4 +1,6 @@
 import * as Path from "path";
+import * as fs from "fs";
+import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 
 export interface VocabularyDefinition {
   id: string;
@@ -140,13 +142,19 @@ async function loadVocabularyFile(
   }
 
   try {
-    // Construct the path to the vocabulary file
-    // Assuming vocabulary files are in the same directory as genres.json
-    const vocabularyPath = `../model/Project/Session/${vocabularyFile}`;
+    // Use the proper path resolution for vocabulary files
+    const vocabularyPath = locateDependencyForFilesystemCall(
+      `dist/vocabularies/${vocabularyFile}`
+    );
 
-    // Use dynamic import to load the vocabulary file
-    const module = await import(vocabularyPath);
-    const data = module.default as VocabularyDefinition[];
+    // Check if the file exists
+    if (!fs.existsSync(vocabularyPath)) {
+      throw new Error(`Vocabulary file not found: ${vocabularyPath}`);
+    }
+
+    // Read and parse the JSON file
+    const fileContent = fs.readFileSync(vocabularyPath, "utf-8");
+    const data = JSON.parse(fileContent) as VocabularyDefinition[];
 
     // Cache the data
     vocabularyCache.set(vocabularyFile, {
@@ -157,11 +165,15 @@ async function loadVocabularyFile(
     return data;
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes("Cannot resolve module")) {
-        throw new Error(`Vocabulary file not found: ${vocabularyFile}`);
-      } else {
+      if (error.message.includes("Vocabulary file not found")) {
+        throw error;
+      } else if (error.message.includes("JSON")) {
         throw new Error(
           `Failed to parse vocabulary file ${vocabularyFile}: ${error.message}`
+        );
+      } else {
+        throw new Error(
+          `Failed to load vocabulary file ${vocabularyFile}: ${error.message}`
         );
       }
     }

@@ -7,6 +7,7 @@ import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
 import dsv from "@rollup/plugin-dsv";
+import { copyFileSync, mkdirSync } from "fs";
 
 export default defineConfig({
   resolve: {
@@ -22,6 +23,20 @@ export default defineConfig({
     }
   },
   plugins: [
+    // Custom plugin to copy vocabulary files to dist/vocabularies
+    {
+      name: "copy-vocabularies",
+      buildStart() {
+        // Ensure the vocabularies directory exists
+        mkdirSync("dist/vocabularies", { recursive: true });
+
+        // Copy vocabulary files
+        copyFileSync(
+          "src/model/Project/Session/genres.json",
+          "dist/vocabularies/genres.json"
+        );
+      }
+    },
     //lingui(),
     react({
       // TODO: linguijs V4 will allow us to get rid of babel and use swc, using
