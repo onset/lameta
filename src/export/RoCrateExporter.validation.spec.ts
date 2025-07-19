@@ -516,4 +516,98 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(validation).toBeDefined();
     });
   });
+
+  describe("Project-level RO-Crate Validation", () => {
+    it("should generate a valid RO-Crate structure for a project with sessions", async () => {
+      // Add sessions to the project mock
+      const mockSessionInProject = {
+        knownFields: [],
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "title") return "Session in Project";
+            if (key === "description") return "Session description";
+            if (key === "access") return "public";
+            return "";
+          }),
+          properties: {
+            getHasValue: vi.fn().mockReturnValue(false),
+            forEach: vi.fn()
+          }
+        },
+        files: [],
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      } as any;
+
+      // Add sessions property to mockProject
+      (mockProject as any).sessions = {
+        items: [mockSessionInProject]
+      };
+
+      const roCrateData = await getRoCrate(mockProject, mockProject);
+      const validation = await validateRoCrateWithCategories(roCrateData);
+
+      // Should have the basic RO-Crate structure
+      expect(roCrateData).toHaveProperty("@context");
+      expect(roCrateData).toHaveProperty("@graph");
+      expect(Array.isArray((roCrateData as any)["@graph"])).toBe(true);
+
+      // Log validation results for debugging
+      if (validation.errors.length > 0) {
+        console.log(
+          "Project validation errors:",
+          validation.errors.map((e) => e.message)
+        );
+      }
+      if (validation.warnings.length > 0) {
+        console.log(
+          "Project validation warnings:",
+          validation.warnings.map((w) => w.message)
+        );
+      }
+
+      // Should have metadata descriptor
+      const graph = (roCrateData as any)["@graph"];
+      const metadataDescriptor = graph.find(
+        (item: any) => item["@id"] === "ro-crate-metadata.json"
+      );
+      expect(metadataDescriptor).toBeDefined();
+      expect(metadataDescriptor["@type"]).toBe("CreativeWork");
+
+      // Should have a root dataset pointing to the project
+      const rootDataset = graph.find((item: any) => item["@id"] === "./");
+      expect(rootDataset).toBeDefined();
+
+      // Validation should complete without throwing
+      expect(validation).toHaveProperty("errors");
+      expect(validation).toHaveProperty("warnings");
+      expect(validation).toHaveProperty("info");
+    });
+
+    it("should generate a valid RO-Crate structure for a project without sessions", async () => {
+      // Set up project without sessions
+      (mockProject as any).sessions = {
+        items: []
+      };
+
+      const roCrateData = await getRoCrate(mockProject, mockProject);
+      const validation = await validateRoCrateWithCategories(roCrateData);
+
+      // Should still have the basic structure
+      expect(roCrateData).toHaveProperty("@context");
+      expect(roCrateData).toHaveProperty("@graph");
+      expect(Array.isArray((roCrateData as any)["@graph"])).toBe(true);
+
+      // Should have metadata descriptor
+      const graph = (roCrateData as any)["@graph"];
+      const metadataDescriptor = graph.find(
+        (item: any) => item["@id"] === "ro-crate-metadata.json"
+      );
+      expect(metadataDescriptor).toBeDefined();
+
+      // Validation should complete
+      expect(validation).toHaveProperty("errors");
+      expect(validation).toHaveProperty("warnings");
+      expect(validation).toHaveProperty("info");
+    });
+  });
 });

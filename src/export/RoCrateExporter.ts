@@ -27,6 +27,45 @@ export async function getRoCrate(
   project: Project,
   folder: Folder
 ): Promise<object> {
+  // For top-level entities (Project or Session when called directly),
+  // we need to create the full RO-Crate structure with context and graph
+  if (
+    folder instanceof Project ||
+    (!(folder instanceof Person) && !(folder instanceof Project))
+  ) {
+    const roCrate: { "@context": any[]; "@graph": object[] } = {
+      "@context": [
+        "https://w3id.org/ro/crate/1.2-DRAFT/context",
+        { "@vocab": "http://schema.org/" },
+        "http://purl.archive.org/language-data-commons/context.json",
+        "https://w3id.org/ldac/context",
+        // The following are needed to make the npm ro-crate package happy
+        {
+          Dataset: "http://schema.org/Dataset",
+          name: "http://schema.org/name",
+          description: "http://schema.org/description",
+          datePublished: "http://schema.org/datePublished",
+          license: "http://schema.org/license"
+        }
+      ],
+      "@graph": []
+    };
+
+    const entries = await getRoCrateInternal(project, folder);
+    roCrate["@graph"] = Array.isArray(entries) ? entries : [entries];
+    roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
+
+    return roCrate;
+  }
+
+  // For other entities (like Person when called recursively), just return the entries
+  return getRoCrateInternal(project, folder);
+}
+
+async function getRoCrateInternal(
+  project: Project,
+  folder: Folder
+): Promise<object | object[]> {
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
@@ -36,40 +75,62 @@ export async function getRoCrate(
   }
 
   if (folder instanceof Project) {
-    // TODO
-    const entry = {};
+    const entry = {
+      "@id": "./",
+      "@type": ["Dataset", "Object", "RepositoryObject"],
+      conformsTo: {
+        "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+      },
+      name:
+        folder.metadataFile?.getTextProperty("title") ||
+        "No title provided for this project.",
+      description:
+        folder.metadataFile?.getTextProperty("description") ||
+        "No description provided for this project.",
+      publisher: { "@id": "https://github.com/onset/lameta" },
+      datePublished: new Date().toISOString(),
+      license: {
+        "@id": "#license"
+      }
+    };
+
+    const boilerplateGraph = [
+      {
+        "@id": "ro-crate-metadata.json",
+        "@type": "CreativeWork",
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+        about: { "@id": "./" }
+      }
+    ];
+
     const otherEntries: object[] = [];
     await addFieldEntries(folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
-    return [entry, ...getUniqueEntries(otherEntries)];
+
+    const sessionEntries = await Promise.all(
+      project.sessions.items.map(async (session) => {
+        return await getRoCrateInternal(project, session);
+      })
+    );
+
+    // Add a basic license for project
+    const license: any = {
+      "@id": "#license",
+      "@type": "CreativeWork",
+      name: "unspecified"
+    };
+
+    return [
+      entry,
+      ...sessionEntries.flat(),
+      ...boilerplateGraph,
+      license,
+      ...getUniqueEntries(otherEntries)
+    ];
   }
 
   // otherwise, it's a session
   const session = folder as Session;
-  const roCrate: { "@context": any[]; "@graph": object[] } = {
-    "@context": [
-      "https://w3id.org/ro/crate/1.2-DRAFT/context",
-      { "@vocab": "http://schema.org/" },
-      "http://purl.archive.org/language-data-commons/context.json",
-      "https://w3id.org/ldac/context",
-      // The following are needed to make the npm ro-crate package happy
-      {
-        Dataset: "http://schema.org/Dataset",
-        name: "http://schema.org/name",
-        description: "http://schema.org/description",
-        datePublished: "http://schema.org/datePublished",
-        license: "http://schema.org/license"
-      }
-    ],
-    "@graph": []
-  };
-
-  // const rootDataset = {
-  //   "@type": "Dataset",
-  //   "@id": "./",
-  //   name: folder.metadataFile?.getTextProperty("title")
-  // };
-  // roCrate["@graph"].push(rootDataset);
 
   const mainSessionEntry = {
     "@id": "./", //`${project.filePrefix}/${folder.filePrefix}`,
@@ -104,15 +165,15 @@ export async function getRoCrate(
 
   await addFieldEntries(folder, mainSessionEntry, otherEntries);
 
-  roCrate["@graph"].push(mainSessionEntry);
+  const allEntries: any[] = [mainSessionEntry];
   if (folder instanceof Session) {
     mainSessionEntry["contributor"] = makeParticipantPointers(
       folder as Session
     );
-    roCrate["@graph"].push(
+    allEntries.push(
       ...(await makeEntriesFromParticipant(project, folder as Session))
     );
-    roCrate["@graph"].push(...getRoles(folder as Session));
+    allEntries.push(...getRoles(folder as Session));
   }
 
   // REVIEW: not clear really what we're going to do with license
@@ -136,9 +197,8 @@ export async function getRoCrate(
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  roCrate["@graph"].push(license, ...boilerplateSessionGraph, ...otherEntries);
-  roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
-  return roCrate;
+  allEntries.push(license, ...boilerplateSessionGraph, ...otherEntries);
+  return allEntries;
 }
 
 function addFieldIfNotEmpty(
