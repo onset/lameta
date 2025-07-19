@@ -8,7 +8,7 @@ export const JsonView: React.FunctionComponent<{ value: object }> = ({
 }) => {
   const KeyRenderer: JsonViewerKeyRenderer = ({ path }) => {
     const last = path[path.length - 1];
-    return Number.isInteger(last) ? null : last;
+    return Number.isInteger(last) ? null : <span>{last}</span>;
   };
   KeyRenderer.when = () => true;
 

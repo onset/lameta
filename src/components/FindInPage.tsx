@@ -82,7 +82,12 @@ const FindInPage = ({ autoFocus }: { autoFocus?: boolean }) => {
         role="textbox"
         tabIndex={0}
       />
-      <IconButton color="black" onClick={handleFind}>
+      <IconButton
+        onClick={handleFind}
+        css={css`
+          color: black;
+        `}
+      >
         <SearchIcon />
       </IconButton>
     </Box>
