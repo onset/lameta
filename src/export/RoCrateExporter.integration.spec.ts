@@ -2,67 +2,342 @@ import { vi, describe, it, beforeEach, expect } from "vitest";
 import { getRoCrate } from "./RoCrateExporter";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
+import { Person } from "../model/Project/Person/Person";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
 
-describe("RoCrateExporter integration tests", () => {
-  it("should properly export genres using real field definitions", () => {
-    // This is a more integration-style test that doesn't mock field definitions
-    // but creates a minimal real session-like object
+// Mock fs-extra module
+vi.mock("fs-extra", () => ({
+  statSync: vi.fn().mockReturnValue({
+    size: 2048,
+    birthtime: new Date("2010-06-06")
+  })
+}));
 
-    const mockProject = {
-      filePrefix: "project1",
-      authorityLists: {
-        accessChoicesOfCurrentProtocol: [
-          { label: "public", description: "Public access" }
-        ]
-      }
+describe("RoCrateExporter LDAC Profile Full Integration", () => {
+  let mockProject: Project;
+  let mockSession: Session;
+  let mockPerson1: Person;
+  let mockPerson2: Person;
+
+  beforeEach(() => {
+    // Mock field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      []
+    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
+      {
+        key: "person",
+        rocrate: {
+          template: {
+            "@id": "[v]",
+            "@type": "Person"
+          }
+        }
+      } as FieldDefinition
+    ]);
+
+    // Create mock files representing the ETR009 session from the report
+    const mockAudioFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009_Careful.mp3",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3"
     } as any;
 
-    const mockSession = {
-      filePrefix: "session1",
-      knownFields: [], // Will be populated by field definitions
+    const mockVideoFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009_Tiny.mp4",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4"
+    } as any;
+
+    const mockSessionXml = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
+    } as any;
+
+    const mockPhoto1 = {
+      getActualFilePath: () => "/people/Awi_Heole/Awi_Heole_Photo.JPG",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG"
+    } as any;
+
+    const mockPersonFile1 = {
+      getActualFilePath: () => "/people/Awi_Heole/Awi_Heole.person",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole.person"
+    } as any;
+
+    const mockPhoto2 = {
+      getActualFilePath: () => "/people/Ilawi_Amosa/Ilawi_Amosa_Photo.JPG",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Ilawi_Amosa_Photo.JPG"
+    } as any;
+
+    // Mock persons from the report
+    mockPerson1 = {
+      filePrefix: "Awi_Heole",
+      directory: "/people/Awi_Heole",
+      getIdToUseForReferences: () => "Awi_Heole",
+      knownFields: [],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title") return "Integration Test Session";
-          if (key === "description") return "Test Description";
-          if (key === "access") return "public";
-          if (key === "genre") return "narrative"; // Test with a genre that should map to LDAC
+          if (key === "name") return "Awi Heole";
           return "";
         }),
         properties: {
-          getHasValue: vi.fn().mockImplementation((key: string) => {
-            if (key === "genre") return true;
-            return false;
-          }),
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockPhoto1, mockPersonFile1]
+    } as any;
+
+    mockPerson2 = {
+      filePrefix: "Ilawi_Amosa",
+      directory: "/people/Ilawi_Amosa",
+      getIdToUseForReferences: () => "Ilawi_Amosa",
+      knownFields: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "name") return "Ilawi Amosa";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockPhoto2]
+    } as any;
+
+    // Mock session ETR009 from the report
+    mockSession = {
+      filePrefix: "ETR009",
+      directory: "/sessions/ETR009",
+      knownFields: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
+          if (key === "description") return "Some guys talking";
+          if (key === "date") return "2010-06-06";
+          if (key === "location") return "huya";
+          if (key === "keyword") return "fishing, poison";
+          if (key === "access") return "public";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockAudioFile, mockVideoFile, mockSessionXml],
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([
+        { personReference: "Awi_Heole", role: "speaker" },
+        { personReference: "Ilawi_Amosa", role: "participant" }
+      ])
+    } as any;
+
+    // Mock project
+    mockProject = {
+      filePrefix: "Edolo_sample",
+      sessions: { items: [mockSession] },
+      findPerson: vi.fn().mockImplementation((name: string) => {
+        if (name === "Awi_Heole") return mockPerson1;
+        if (name === "Ilawi_Amosa") return mockPerson2;
+        return null;
+      }),
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "description")
+            return "Documentation of the Edolo language";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
           forEach: vi.fn()
         }
       },
       files: [],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      knownFields: [],
+      authorityLists: { accessChoicesOfCurrentProtocol: [] }
     } as any;
 
-    // This should work with the actual field definitions if they're properly configured
-    try {
-      const result = getRoCrate(mockProject, mockSession) as any;
+    // Set up prototypes for instanceof checks
+    Object.setPrototypeOf(mockProject, Project.prototype);
+    Object.setPrototypeOf(mockSession, Session.prototype);
+    Object.setPrototypeOf(mockPerson1, Person.prototype);
+    Object.setPrototypeOf(mockPerson2, Person.prototype);
+  });
 
-      // Basic validation that the export worked
-      expect(result).toBeDefined();
-      expect(result["@graph"]).toBeDefined();
-      expect(Array.isArray(result["@graph"])).toBe(true);
+  it("should generate a complete LDAC-compliant RO-Crate structure", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-      // Find the main session entry
-      const sessionEntry = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
-      expect(sessionEntry).toBeDefined();
-      expect(sessionEntry.name).toBe("Integration Test Session");
+    // Verify root dataset structure
+    const rootDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootDataset).toBeDefined();
+    expect(rootDataset["@type"]).toEqual([
+      "Dataset",
+      "Object",
+      "RepositoryObject"
+    ]);
+    expect(rootDataset.name).toBe("Edolo Language Documentation");
+    expect(rootDataset.description).toBe("Documentation of the Edolo language");
 
-      console.log("Integration test passed - genre export working correctly");
-    } catch (error) {
-      console.log(
-        "Integration test - genre might not be configured for ro-crate yet:",
-        error.message
-      );
-      // This is expected if the field definitions aren't loaded properly in the test environment
-    }
+    // Verify root dataset links to main components
+    expect(rootDataset.hasPart).toContainEqual({ "@id": "Sessions/ETR009/" });
+    expect(rootDataset.hasPart).toContainEqual({ "@id": "People/Awi_Heole/" });
+    expect(rootDataset.hasPart).toContainEqual({
+      "@id": "People/Ilawi_Amosa/"
+    });
+
+    // Verify session event entity (central hub)
+    const sessionEvent = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+    );
+    expect(sessionEvent).toBeDefined();
+    expect(sessionEvent["@type"]).toEqual([
+      "Event",
+      "Object",
+      "RepositoryObject"
+    ]);
+    expect(sessionEvent.name).toBe(
+      "The story behind how we catch fish with poison bark"
+    );
+    expect(sessionEvent.description).toBe("Some guys talking");
+    expect(sessionEvent.startDate).toBe("2010-06-06");
+    expect(sessionEvent.keywords).toBe("fishing, poison");
+
+    // Verify session links to participants
+    expect(sessionEvent.participant).toContainEqual({
+      "@id": "People/Awi_Heole/"
+    });
+    expect(sessionEvent.participant).toContainEqual({
+      "@id": "People/Ilawi_Amosa/"
+    });
+
+    // Verify session links to its files
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009_Careful.mp3"
+    });
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
+    });
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009.xml"
+    });
+
+    // Verify Place entity
+    const placeEntity = result["@graph"].find(
+      (item: any) => item["@id"] === "#huya" && item["@type"] === "Place"
+    );
+    expect(placeEntity).toBeDefined();
+    expect(placeEntity.name).toBe("huya");
+    expect(sessionEvent.location).toEqual({ "@id": "#huya" });
+
+    // Verify Person entities with proper IDs
+    const person1 = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "People/Awi_Heole/" && item["@type"] === "Person"
+    );
+    expect(person1).toBeDefined();
+
+    const person2 = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "People/Ilawi_Amosa/" && item["@type"] === "Person"
+    );
+    expect(person2).toBeDefined();
+
+    // Verify specific file types and roles
+    const audioFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+    );
+    expect(audioFile["@type"]).toBe("AudioObject");
+    expect(audioFile.role).toBe("media");
+
+    const videoFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
+    );
+    expect(videoFile["@type"]).toBe("VideoObject");
+    expect(videoFile.role).toBe("media");
+
+    const xmlFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+    );
+    expect(xmlFile["@type"]).toBe("DigitalDocument");
+    expect(xmlFile.role).toBe("documentation");
+
+    const photo1 = result["@graph"].find(
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+    );
+    expect(photo1["@type"]).toBe("ImageObject");
+    expect(photo1.role).toBe("photo");
+
+    const personFile = result["@graph"].find(
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
+    );
+    expect(personFile["@type"]).toBe("DigitalDocument");
+    expect(personFile.role).toBe("documentation");
+
+    // Verify Role entities
+    const speakerRole = result["@graph"].find(
+      (item: any) => item["@id"] === "role_speaker" && item["@type"] === "Role"
+    );
+    expect(speakerRole).toBeDefined();
+    expect(speakerRole.name).toBe("speaker");
+
+    const participantRole = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "role_participant" && item["@type"] === "Role"
+    );
+    expect(participantRole).toBeDefined();
+    expect(participantRole.name).toBe("participant");
+
+    // Verify license entity
+    const license = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "#license" && item["@type"] === "CreativeWork"
+    );
+    expect(license).toBeDefined();
+
+    // Verify metadata file
+    const metadataFile = result["@graph"].find(
+      (item: any) => item["@id"] === "ro-crate-metadata.json"
+    );
+    expect(metadataFile).toBeDefined();
+    expect(metadataFile["@type"]).toBe("CreativeWork");
+    expect(metadataFile.about).toEqual({ "@id": "./" });
+  });
+
+  it("should create a connected graph, not a flat file list", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Count entities that have proper relationships
+    const entitiesWithRelationships = result["@graph"].filter(
+      (item: any) =>
+        item.hasPart || item.participant || item.location || item.about
+    );
+
+    // Should have root dataset, session event, and possibly person entities with relationships
+    expect(entitiesWithRelationships.length).toBeGreaterThan(1);
+
+    // Verify the graph is connected - root links to sessions and people
+    const rootDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootDataset.hasPart.length).toBeGreaterThan(0);
+
+    // Session event links to people and files
+    const sessionEvent = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+    );
+    expect(sessionEvent.participant.length).toBeGreaterThan(0);
+    expect(sessionEvent.hasPart.length).toBeGreaterThan(0);
   });
 });

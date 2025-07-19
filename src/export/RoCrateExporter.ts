@@ -51,7 +51,13 @@ export async function getRoCrate(
       "@graph": []
     };
 
-    const entries = await getRoCrateInternal(project, folder);
+    const isStandaloneSession =
+      !(folder instanceof Project) && !(folder instanceof Person);
+    const entries = await getRoCrateInternal(
+      project,
+      folder,
+      isStandaloneSession
+    );
     roCrate["@graph"] = Array.isArray(entries) ? entries : [entries];
     roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
 
@@ -59,12 +65,13 @@ export async function getRoCrate(
   }
 
   // For other entities (like Person when called recursively), just return the entries
-  return getRoCrateInternal(project, folder);
+  return getRoCrateInternal(project, folder, false);
 }
 
 async function getRoCrateInternal(
   project: Project,
-  folder: Folder
+  folder: Folder,
+  isStandaloneSession: boolean = false
 ): Promise<object | object[]> {
   if (folder instanceof Person) {
     const entry = {};
@@ -75,7 +82,7 @@ async function getRoCrateInternal(
   }
 
   if (folder instanceof Project) {
-    const entry = {
+    const entry: any = {
       "@id": "./",
       "@type": ["Dataset", "Object", "RepositoryObject"],
       conformsTo: {
@@ -91,7 +98,8 @@ async function getRoCrateInternal(
       datePublished: new Date().toISOString(),
       license: {
         "@id": "#license"
-      }
+      },
+      hasPart: []
     };
 
     const boilerplateGraph = [
@@ -109,9 +117,32 @@ async function getRoCrateInternal(
 
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
-        return await getRoCrateInternal(project, session);
+        return await getRoCrateInternal(project, session, false);
       })
     );
+
+    // Link to session events in the root dataset
+    project.sessions.items.forEach((session) => {
+      entry.hasPart.push({ "@id": `Sessions/${session.filePrefix}/` });
+    });
+
+    // Add people to root dataset hasPart
+    const allPeople = new Set<string>();
+    project.sessions.items.forEach((session) => {
+      (session as Session)
+        .getAllContributionsToAllFiles()
+        .forEach((contribution) => {
+          const person = project.findPerson(
+            contribution.personReference.trim()
+          );
+          if (person) {
+            allPeople.add(`People/${person.filePrefix}/`);
+          }
+        });
+    });
+    allPeople.forEach((personId) => {
+      entry.hasPart.push({ "@id": personId });
+    });
 
     // Add a basic license for project
     const license: any = {
@@ -129,12 +160,15 @@ async function getRoCrateInternal(
     ];
   }
 
-  // otherwise, it's a session
+  // otherwise, it's a session - but we need to check if we're being called
+  // from within a project export or as a standalone session export
   const session = folder as Session;
 
-  const mainSessionEntry = {
-    "@id": "./", //`${project.filePrefix}/${folder.filePrefix}`,
-    "@type": ["Dataset", "Object", "RepositoryObject"],
+  const mainSessionEntry: any = {
+    "@id": isStandaloneSession ? "./" : `Sessions/${session.filePrefix}/`,
+    "@type": isStandaloneSession
+      ? ["Dataset", "Object", "RepositoryObject"]
+      : ["Event", "Object", "RepositoryObject"],
     conformsTo: {
       "@id": "https://purl.archive.org/language-data-commons/profile#Object"
     },
@@ -150,8 +184,27 @@ async function getRoCrateInternal(
 
     license: {
       "@id": "#license"
-    }
+    },
+    hasPart: []
   };
+
+  // Add session-specific properties for Events
+  if (!isStandaloneSession) {
+    const startDate = folder.metadataFile?.getTextProperty("date");
+    if (startDate) {
+      mainSessionEntry.startDate = startDate;
+    }
+
+    const location = folder.metadataFile?.getTextProperty("location");
+    if (location) {
+      mainSessionEntry.location = { "@id": `#${location}` };
+    }
+
+    const keywords = folder.metadataFile?.getTextProperty("keyword");
+    if (keywords) {
+      mainSessionEntry.keywords = keywords;
+    }
+  }
   const boilerplateSessionGraph = [
     {
       "@id": "ro-crate-metadata.json",
@@ -167,13 +220,27 @@ async function getRoCrateInternal(
 
   const allEntries: any[] = [mainSessionEntry];
   if (folder instanceof Session) {
-    mainSessionEntry["contributor"] = makeParticipantPointers(
-      folder as Session
+    mainSessionEntry["participant"] = makeParticipantPointers(
+      folder as Session,
+      project
     );
     allEntries.push(
       ...(await makeEntriesFromParticipant(project, folder as Session))
     );
     allEntries.push(...getRoles(folder as Session));
+  }
+
+  // Add files to session hasPart
+  addChildFileEntries(folder, mainSessionEntry, otherEntries);
+
+  // Create Place entity if location is specified
+  const location = folder.metadataFile?.getTextProperty("location");
+  if (location && !isStandaloneSession) {
+    otherEntries.push({
+      "@id": `#${location}`,
+      "@type": "Place",
+      name: location
+    });
   }
 
   // REVIEW: not clear really what we're going to do with license
@@ -334,14 +401,17 @@ async function addFieldEntries(
   });
 }
 
-function makeParticipantPointers(session: Session): any[] {
+function makeParticipantPointers(session: Session, project: Project): any[] {
   const uniqueNames = new Set<string>();
 
   return session
     .getAllContributionsToAllFiles()
     .map((contribution) => contribution.personReference.trim())
     .filter((name) => (uniqueNames.has(name) ? false : uniqueNames.add(name)))
-    .map((name) => ({ "@id": name }));
+    .map((name) => {
+      const person = project.findPerson(name);
+      return { "@id": person ? `People/${person.filePrefix}/` : name };
+    });
 }
 
 async function makeEntriesFromParticipant(project: Project, session: Session) {
@@ -370,7 +440,7 @@ async function makeEntriesFromParticipant(project: Project, session: Session) {
     // add in the ro-crate stuff like @id and @type
     const personElement = getElementUsingTemplate(
       template,
-      person ? person.getIdToUseForReferences() : name
+      person ? `People/${person.filePrefix}/` : name
     );
 
     if (person) {
@@ -492,21 +562,50 @@ function addChildFileEntries(
   folder.files.forEach((file) => {
     const path = file.getActualFilePath();
     const fileName = Path.basename(path);
+    const fileExt = Path.extname(fileName).toLowerCase();
 
-    const fileEntry = {
-      "@id": fileName,
-      "@type": "File",
+    // Determine the appropriate @type based on file extension and context
+    let fileType = "File";
+    let fileRole = "file";
+
+    if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
+      fileType = "AudioObject";
+      fileRole = "media";
+    } else if (fileExt.match(/\.(mp4|avi|mov|mkv|webm)$/)) {
+      fileType = "VideoObject";
+      fileRole = "media";
+    } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
+      fileType = "ImageObject";
+      fileRole = fileName.includes("Photo") ? "photo" : "image";
+    } else if (fileExt.match(/\.(xml|eaf|txt|doc|docx|pdf|person|session)$/)) {
+      fileType = "DigitalDocument";
+      fileRole = "documentation";
+    }
+
+    // Use proper file ID based on folder type
+    let fileId = fileName;
+    if (folder instanceof Session) {
+      fileId = `Sessions/${folder.filePrefix}/${fileName}`;
+    } else if (folder instanceof Person) {
+      fileId = `People/${folder.filePrefix}/${fileName}`;
+    }
+
+    const fileEntry: any = {
+      "@id": fileId,
+      "@type": fileType,
       contentSize: fs.statSync(path).size,
       dateCreated: fs.statSync(path).birthtime.toISOString(),
       dateModified: file.getModifiedDate()?.toISOString(),
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
-      name: fileName
+      name: fileName,
+      role: fileRole
     };
+
     otherEntries.push(fileEntry);
     folderEntry["hasPart"].push({
-      "@id": fileName
+      "@id": fileId
     });
   });
 }
