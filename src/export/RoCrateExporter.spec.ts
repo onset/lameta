@@ -115,7 +115,7 @@ describe("RoCrateExporter genre handling", () => {
   });
 
   it("should convert LDAC-mappable genre to ldac:linguisticGenre with proper structure", async () => {
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -167,7 +167,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -218,7 +218,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -261,7 +261,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -322,7 +322,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -351,7 +351,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -363,7 +363,7 @@ describe("RoCrateExporter genre handling", () => {
   });
 
   it("should validate that LDAC-mapped genres have proper structure in the graph", async () => {
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Check that the LDAC genre definition has all required properties
     const genreDefinition = result["@graph"].find(
@@ -406,7 +406,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Count how many genre definitions exist
     const genreDefinitions = result["@graph"].filter(
@@ -445,7 +445,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -483,7 +483,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Verify the session has the correct structure
     const sessionEntry = result["@graph"].find(
@@ -540,7 +540,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Verify both genres are mapped to LDAC terms
     const sessionEntry = result["@graph"].find(
@@ -585,7 +585,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -633,7 +633,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -674,7 +674,7 @@ describe("RoCrateExporter genre handling", () => {
         return false;
       });
 
-    const result = await getRoCrate(mockProject, mockSession) as any;
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
 
     // Find the main session entry
     const sessionEntry = result["@graph"].find(
@@ -693,6 +693,210 @@ describe("RoCrateExporter genre handling", () => {
     expect(genreDefinition).toBeDefined();
     expect(genreDefinition.inDefinedTermSet).toEqual({
       "@id": "ldac:LinguisticGenreTerms"
+    });
+  });
+});
+
+describe("RoCrateExporter LDAC Profile Compliance", () => {
+  let mockProject: Project;
+  let mockSession: any;
+  let mockPerson: any;
+
+  beforeEach(() => {
+    // Mock session as a plain object that looks like Session
+    mockSession = {
+      filePrefix: "test_session",
+      knownFields: [],
+      files: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          switch (key) {
+            case "title":
+              return "Test Session";
+            case "description":
+              return "Test Session Description";
+            case "date":
+              return "2024-01-01";
+            case "location":
+              return "Test Location";
+            case "access":
+              return "open";
+            default:
+              return "";
+          }
+        }),
+        properties: {
+          getHasValue: vi.fn(() => false),
+          forEach: vi.fn()
+        }
+      },
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([
+        {
+          personReference: "Awi Heole",
+          role: "speaker",
+          comments: "",
+          sessionName: "test"
+        },
+        {
+          personReference: "Hatton",
+          role: "recorder",
+          comments: "",
+          sessionName: "test"
+        }
+      ])
+    };
+
+    // Mock project
+    mockProject = {
+      filePrefix: "project1",
+      sessions: { items: [mockSession] },
+      findPerson: vi.fn(),
+      authorityLists: {
+        accessChoicesOfCurrentProtocol: [
+          {
+            label: "open",
+            description: "Open access"
+          }
+        ]
+      },
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "description") return "Test Project Description";
+          return "";
+        }),
+        properties: {
+          forEach: vi.fn()
+        }
+      },
+      knownFields: [],
+      files: []
+    } as any;
+
+    // Mock person
+    mockPerson = {
+      filePrefix: "Awi_Heole",
+      metadataFile: {
+        getTextProperty: vi.fn(() => ""),
+        properties: {
+          forEach: vi.fn()
+        }
+      },
+      knownFields: [],
+      files: []
+    };
+
+    mockProject.findPerson = vi.fn().mockImplementation((name: string) => {
+      if (name === "Awi Heole") return mockPerson;
+      return null;
+    });
+  });
+
+  describe("conformsTo Profile URI", () => {
+    it("should use correct LDAC profile URI for project", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+      expect(rootDataset.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/ro-crate/1.0"
+      );
+    });
+
+    it("should use correct LDAC profile URI for session", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      // When exporting a project, sessions should be Event entities with correct conformsTo
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"] &&
+          item["@type"].includes("Event")
+      );
+      expect(sessionEvent).toBeDefined();
+      expect(sessionEvent.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/ro-crate/1.0"
+      );
+    });
+  });
+
+  describe("participant roles modeling", () => {
+    it("should model participant roles correctly on Event with Role objects", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+
+      expect(sessionEvent.participant).toBeDefined();
+      expect(Array.isArray(sessionEvent.participant)).toBe(true);
+
+      // Each participant should be a Role object with participant and roleAction
+      sessionEvent.participant.forEach((participant: any) => {
+        expect(participant["@type"]).toBe("Role");
+        expect(participant.participant).toBeDefined();
+        expect(participant.participant["@id"]).toBeDefined();
+        expect(participant.roleAction).toBeDefined();
+        expect(participant.roleAction["@id"]).toBeDefined();
+      });
+    });
+
+    it("should use standard LDAC role URIs for roleAction", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+
+      const speakerRole = sessionEvent.participant.find((p: any) =>
+        p.participant["@id"].includes("Awi_Heole")
+      );
+      expect(speakerRole.roleAction["@id"]).toBe(
+        "https://w3id.org/ldac/models#Speaker"
+      );
+
+      const recorderRole = sessionEvent.participant.find(
+        (p: any) => p.participant["@id"] === "Hatton"
+      );
+      expect(recorderRole.roleAction["@id"]).toBe(
+        "https://w3id.org/ldac/models#Recorder"
+      );
+    });
+
+    it("should not have role property on Person entities", async () => {
+      const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+      const personEntities = result["@graph"].filter(
+        (item: any) =>
+          item["@type"] &&
+          (item["@type"].includes("Person") ||
+            (Array.isArray(item["@type"]) && item["@type"].includes("Person")))
+      );
+
+      personEntities.forEach((person: any) => {
+        expect(person.role).toBeUndefined();
+      });
+    });
+  });
+
+  describe("entity properties cleanup", () => {
+    it("should not have redundant id and title properties on Event", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+
+      expect(sessionEvent.id).toBeUndefined();
+      expect(sessionEvent.title).toBeUndefined();
+      expect(sessionEvent.name).toBeDefined();
     });
   });
 });

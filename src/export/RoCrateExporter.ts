@@ -29,6 +29,7 @@ export async function getRoCrate(
 ): Promise<object> {
   // For top-level entities (Project or Session when called directly),
   // we need to create the full RO-Crate structure with context and graph
+
   if (
     folder instanceof Project ||
     (!(folder instanceof Person) && !(folder instanceof Project))
@@ -81,12 +82,13 @@ async function getRoCrateInternal(
     return [entry, ...getUniqueEntries(otherEntries)];
   }
 
-  if (folder instanceof Project) {
+  // Check if this is a project by looking for sessions property
+  if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     const entry: any = {
       "@id": "./",
       "@type": ["Dataset", "Object", "RepositoryObject"],
       conformsTo: {
-        "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+        "@id": "https://w3id.org/ldac/ro-crate/1.0"
       },
       name:
         folder.metadataFile?.getTextProperty("title") ||
@@ -170,7 +172,7 @@ async function getRoCrateInternal(
       ? ["Dataset", "Object", "RepositoryObject"]
       : ["Event", "Object", "RepositoryObject"],
     conformsTo: {
-      "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+      "@id": "https://w3id.org/ldac/ro-crate/1.0"
     },
     name:
       folder.metadataFile?.getTextProperty("title") ||
@@ -219,7 +221,11 @@ async function getRoCrateInternal(
   await addFieldEntries(folder, mainSessionEntry, otherEntries);
 
   const allEntries: any[] = [mainSessionEntry];
-  if (folder instanceof Session) {
+  // Check if this folder has contribution methods (duck typing for Session)
+  if (
+    folder instanceof Session ||
+    typeof (folder as any).getAllContributionsToAllFiles === "function"
+  ) {
     mainSessionEntry["participant"] = makeParticipantPointers(
       folder as Session,
       project
@@ -227,7 +233,7 @@ async function getRoCrateInternal(
     allEntries.push(
       ...(await makeEntriesFromParticipant(project, folder as Session))
     );
-    allEntries.push(...getRoles(folder as Session));
+    // Note: roles are now embedded in the participant structure, no separate role entities needed
   }
 
   // Add files to session hasPart
@@ -402,16 +408,50 @@ async function addFieldEntries(
 }
 
 function makeParticipantPointers(session: Session, project: Project): any[] {
-  const uniqueNames = new Set<string>();
+  const uniqueContributors: { [key: string]: Set<string> } = {};
 
-  return session
-    .getAllContributionsToAllFiles()
-    .map((contribution) => contribution.personReference.trim())
-    .filter((name) => (uniqueNames.has(name) ? false : uniqueNames.add(name)))
-    .map((name) => {
-      const person = project.findPerson(name);
-      return { "@id": person ? `People/${person.filePrefix}/` : name };
-    });
+  // Collect all contributions and group by person
+  session.getAllContributionsToAllFiles().forEach((contribution) => {
+    const personName = contribution.personReference.trim();
+    const role = contribution.role.trim();
+
+    if (!uniqueContributors[personName]) {
+      uniqueContributors[personName] = new Set();
+    }
+    uniqueContributors[personName].add(role);
+  });
+
+  const participants: any[] = [];
+
+  // Create Role objects for each person-role combination
+  for (const personName of Object.keys(uniqueContributors)) {
+    const person = project.findPerson(personName);
+    const personId = person ? `People/${person.filePrefix}/` : personName;
+
+    // Create a Role object for each role this person has
+    for (const role of uniqueContributors[personName]) {
+      participants.push({
+        "@type": "Role",
+        participant: { "@id": personId },
+        roleAction: { "@id": getRoleActionURI(role) }
+      });
+    }
+  }
+
+  return participants;
+}
+
+function getRoleActionURI(role: string): string {
+  const roleMap: { [key: string]: string } = {
+    speaker: "https://w3id.org/ldac/models#Speaker",
+    recorder: "https://w3id.org/ldac/models#Recorder",
+    interviewer: "https://w3id.org/ldac/models#Interviewer",
+    researcher: "https://w3id.org/ldac/models#Researcher",
+    consultant: "https://w3id.org/ldac/models#Consultant",
+    translator: "https://w3id.org/ldac/models#Translator"
+  };
+
+  return roleMap[role.toLowerCase()] || `#${role}`;
 }
 
 async function makeEntriesFromParticipant(project: Project, session: Session) {
@@ -426,9 +466,14 @@ async function makeEntriesFromParticipant(project: Project, session: Session) {
     }
     uniqueContributors[personName].add(role);
   });
-  const template = getRoCrateTemplate(
-    fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "person")!
+  const personField = fieldDefinitionsOfCurrentConfig.common.find(
+    (f) => f.key === "person"
   );
+  if (!personField) {
+    // If person field definition is not available, skip generating person entries
+    return [];
+  }
+  const template = getRoCrateTemplate(personField);
 
   const entriesForAllContributors: object[] = [];
 
@@ -448,10 +493,7 @@ async function makeEntriesFromParticipant(project: Project, session: Session) {
       await addFieldEntries(person, personElement, entriesForAllContributors);
       addChildFileEntries(person, personElement, entriesForAllContributors);
     }
-    // add the roles this person has in the session
-    personElement["role"] = Array.from(uniqueContributors[name]).map((role) => {
-      return { "@id": `role_${role}` };
-    });
+    // Note: roles are now handled in the participant property of the Event, not on Person entities
     entriesForAllContributors.push(personElement);
   }
   return entriesForAllContributors;
@@ -511,10 +553,28 @@ function getElementUsingTemplate(template: object, value: string): object {
     // and we handle them in getPersonLanguageElement(). But other places we just have
     // the code, and end up in this function, where we do use the same template for languages
     // but insted of [v], that template has [code] which we replace with the value
-    output[key] = template[key].replace("[v]", value).replace("[code]", value);
+    let replacedValue = template[key];
+
+    // Replace [v] with the value
+    if (replacedValue.includes("[v]")) {
+      replacedValue = replacedValue.replace("[v]", value);
+    }
+
+    // Replace [code] with sanitized language code for language templates
+    if (replacedValue.includes("[code]")) {
+      const sanitizedCode = sanitizeLanguageCode(value);
+      replacedValue = replacedValue.replace("[code]", sanitizedCode);
+    }
+
+    output[key] = replacedValue;
   });
 
   return output;
+}
+
+function sanitizeLanguageCode(code: string): string {
+  // Remove spaces and colons, replace with underscores for valid IDs
+  return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
 function getPersonLanguageElement(value: IPersonLanguage): object {
@@ -576,7 +636,12 @@ function addChildFileEntries(
       fileRole = "media";
     } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
       fileType = "ImageObject";
-      fileRole = fileName.includes("Photo") ? "photo" : "image";
+      // Check if this is a consent form
+      if (fileName.toLowerCase().includes("consent")) {
+        fileRole = "consent";
+      } else {
+        fileRole = fileName.includes("Photo") ? "photo" : "image";
+      }
     } else if (fileExt.match(/\.(xml|eaf|txt|doc|docx|pdf|person|session)$/)) {
       fileType = "DigitalDocument";
       fileRole = "documentation";
