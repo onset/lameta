@@ -17,7 +17,7 @@ export async function updateROCrateFile(project: Project): Promise<void> {
   }
 
   // Generate new RO-Crate metadata using the existing exporter
-  const roCrateData = getRoCrate(project, project);
+  const roCrateData = await getRoCrate(project, project);
 
   // Write the new file
   await fs.writeJson(roCrateFilePath, roCrateData, { spaces: 2 });
