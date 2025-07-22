@@ -151,23 +151,23 @@ describe("RoCrateExporter file handling", () => {
     expect(xmlFile["@type"]).toBe("DigitalDocument");
   });
 
-  it("should add role property to files", async () => {
+  it("should not add role property to files", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const audioFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
-    expect(audioFile.role).toBe("media");
+    expect(audioFile.role).toBeUndefined();
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
-    expect(xmlFile.role).toBe("documentation");
+    expect(xmlFile.role).toBeUndefined();
 
     const imageFile = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
     );
-    expect(imageFile.role).toBe("photo");
+    expect(imageFile.role).toBeUndefined();
   });
 
   it("should link session files to session hasPart", async () => {

@@ -261,31 +261,31 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
     expect(audioFile["@type"]).toBe("AudioObject");
-    expect(audioFile.role).toBe("media");
+    expect(audioFile.role).toBeUndefined();
 
     const videoFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
     );
     expect(videoFile["@type"]).toBe("VideoObject");
-    expect(videoFile.role).toBe("media");
+    expect(videoFile.role).toBeUndefined();
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
     expect(xmlFile["@type"]).toBe("DigitalDocument");
-    expect(xmlFile.role).toBe("documentation");
+    expect(xmlFile.role).toBeUndefined();
 
     const photo1 = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
     );
     expect(photo1["@type"]).toBe("ImageObject");
-    expect(photo1.role).toBe("photo");
+    expect(photo1.role).toBeUndefined();
 
     const personFile = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
     );
     expect(personFile["@type"]).toBe("DigitalDocument");
-    expect(personFile.role).toBe("documentation");
+    expect(personFile.role).toBeUndefined();
 
     // Verify that no separate Role entities are created (we use LDAC properties directly)
     const roleEntities = result["@graph"].filter(

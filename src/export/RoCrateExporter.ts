@@ -328,8 +328,17 @@ export async function addFieldEntries(
           continue;
         }
       }
-
-      folderEntry[propertyKey] = values[0];
+      // Skip non-standard properties
+      if (field.key === "status" || field.key === "topic" || field.key === "id") {
+        continue;
+      }
+      
+      // Map 'date' to 'dateCreated' for compliance with the profile
+      if (field.key === "date") {
+        folderEntry["dateCreated"] = values[0];
+      } else {
+        folderEntry[propertyKey] = values[0];
+      }
     }
   }
 
@@ -429,25 +438,15 @@ export function addChildFileEntries(
 
     // Determine the appropriate @type based on file extension and context
     let fileType = "File";
-    let fileRole = "file";
 
     if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
       fileType = "AudioObject";
-      fileRole = "media";
     } else if (fileExt.match(/\.(mp4|avi|mov|mkv|webm)$/)) {
       fileType = "VideoObject";
-      fileRole = "media";
     } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
       fileType = "ImageObject";
-      // Check if this is a consent form
-      if (fileName.toLowerCase().includes("consent")) {
-        fileRole = "consent";
-      } else {
-        fileRole = fileName.includes("Photo") ? "photo" : "image";
-      }
     } else if (fileExt.match(/\.(xml|eaf|txt|doc|docx|pdf|person|session)$/)) {
       fileType = "DigitalDocument";
-      fileRole = "documentation";
     }
 
     // Use proper file ID based on folder type
@@ -468,8 +467,7 @@ export function addChildFileEntries(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
       "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
-      name: fileName,
-      role: fileRole
+      name: fileName
     };
 
     otherEntries.push(fileEntry);
