@@ -185,16 +185,22 @@ async function loadVocabularyFile(
   }
 }
 
-function createCustomTermId(termLabel: string, projectTitle?: string): string {
+export function getCustomUri(path: string, projectTitle?: string): string {
   if (projectTitle) {
-    return `tag:lameta,${projectTitle}:genre/${termLabel}`;
+    return `tag:lameta,${projectTitle}:${path}`;
   }
 
+  // Fallback for when no project title is available - extract the last part for ID generation
+  const lastSegment = path.split("/").pop() || path;
   return (
     "#" +
-    termLabel
+    lastSegment
       .split(/[^a-zA-Z0-9]/)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join("")
   );
+}
+
+function createCustomTermId(termLabel: string, projectTitle?: string): string {
+  return getCustomUri(`genre/${termLabel}`, projectTitle);
 }

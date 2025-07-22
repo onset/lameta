@@ -14,7 +14,8 @@ import { IChoice } from "../model/field/Field";
 import {
   getVocabularyMapping,
   createTermDefinition,
-  getTermSets
+  getTermSets,
+  getCustomUri
 } from "./VocabularyHandler";
 
 // Info:
@@ -343,7 +344,7 @@ async function addFieldEntries(
             const projectTitle =
               project.metadataFile?.getTextProperty("title") ||
               "unknown-project";
-            const customId = `tag:lameta,${projectTitle}:genre/${termId}`;
+            const customId = getCustomUri(`genre/${termId}`, projectTitle);
 
             termReferences.push({ "@id": customId });
             termDefinitions.push({
