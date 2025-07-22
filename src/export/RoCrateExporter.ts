@@ -18,10 +18,9 @@ import {
 } from "./VocabularyHandler";
 
 // Info:
+// ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
 // https://www.researchobject.org/ro-crate/
-// https://github.com/Language-Research-Technology/ldac-profile
 // https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md
-// https://www.researchobject.org/ro-crate/profiles.html#paradisec-profile
 
 export async function getRoCrate(
   project: Project,
@@ -77,7 +76,7 @@ async function getRoCrateInternal(
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
-    await addFieldEntries(folder, entry, otherEntries);
+    await addFieldEntries(project, folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -88,7 +87,7 @@ async function getRoCrateInternal(
       "@id": "./",
       "@type": ["Dataset", "Object", "RepositoryObject"],
       conformsTo: {
-        "@id": "https://w3id.org/ldac/ro-crate/1.0"
+        "@id": "https://w3id.org/ldac/profile#Object"
       },
       name:
         folder.metadataFile?.getTextProperty("title") ||
@@ -114,7 +113,7 @@ async function getRoCrateInternal(
     ];
 
     const otherEntries: object[] = [];
-    await addFieldEntries(folder, entry, otherEntries);
+    await addFieldEntries(project, folder, entry, otherEntries);
     addChildFileEntries(folder, entry, otherEntries);
 
     const sessionEntries = await Promise.all(
@@ -172,7 +171,7 @@ async function getRoCrateInternal(
       ? ["Dataset", "Object", "RepositoryObject"]
       : ["Event", "Object", "RepositoryObject"],
     conformsTo: {
-      "@id": "https://w3id.org/ldac/ro-crate/1.0"
+      "@id": "https://w3id.org/ldac/profile#Object"
     },
     name:
       folder.metadataFile?.getTextProperty("title") ||
@@ -218,7 +217,7 @@ async function getRoCrateInternal(
 
   const otherEntries: any[] = [];
 
-  await addFieldEntries(folder, mainSessionEntry, otherEntries);
+  await addFieldEntries(project, folder, mainSessionEntry, otherEntries);
 
   const allEntries: any[] = [mainSessionEntry];
   // Check if this folder has contribution methods (duck typing for Session)
@@ -226,14 +225,11 @@ async function getRoCrateInternal(
     folder instanceof Session ||
     typeof (folder as any).getAllContributionsToAllFiles === "function"
   ) {
-    mainSessionEntry["participant"] = makeParticipantPointers(
-      folder as Session,
-      project
-    );
+    addParticipantProperties(mainSessionEntry, folder as Session, project);
     allEntries.push(
       ...(await makeEntriesFromParticipant(project, folder as Session))
     );
-    // Note: roles are now embedded in the participant structure, no separate role entities needed
+    // Note: roles are now handled as specific LDAC properties, not generic participant property
   }
 
   // Add files to session hasPart
@@ -286,6 +282,7 @@ function addFieldIfNotEmpty(
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
 async function addFieldEntries(
+  project: Project,
   folder: Folder,
   folderEntry: object,
   otherEntries: object[]
@@ -293,7 +290,7 @@ async function addFieldEntries(
   // First handle the known fields
   for (const field of folder.knownFields) {
     const values: string[] = getFieldValues(folder, field);
-    if (values.length === 0 || values[0] === "unspecified") return;
+    if (values.length === 0 || values[0] === "unspecified") continue;
     const propertyKey = field.rocrate?.key || field.key;
 
     // REVIEW: for some reason languages of a person aren't in the normal field system?
@@ -320,9 +317,15 @@ async function addFieldEntries(
 
         for (const termId of termValues) {
           try {
+            // Get project title for custom ID generation
+            const projectTitle =
+              project.metadataFile?.getTextProperty("title") ||
+              "unknown-project";
+
             const mapping = await getVocabularyMapping(
               termId,
-              field.vocabularyFile
+              field.vocabularyFile,
+              projectTitle
             );
             termReferences.push({ "@id": mapping.id });
             termDefinitions.push(createTermDefinition(mapping));
@@ -335,15 +338,13 @@ async function addFieldEntries(
           } catch (error) {
             // If vocabulary loading fails, treat as custom term
             console.warn(`Failed to load vocabulary for ${termId}:`, error);
-            const customId =
-              "#" +
-              termId
-                .split(/[^a-zA-Z0-9]/)
-                .map(
-                  (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                )
-                .join("");
+
+            // Fallback to creating a custom term directly (this should rarely happen now)
+            const projectTitle =
+              project.metadataFile?.getTextProperty("title") ||
+              "unknown-project";
+            const customId = `tag:lameta,${projectTitle}:genre/${termId}`;
+
             termReferences.push({ "@id": customId });
             termDefinitions.push({
               "@id": customId,
@@ -407,51 +408,42 @@ async function addFieldEntries(
   });
 }
 
-function makeParticipantPointers(session: Session, project: Project): any[] {
-  const uniqueContributors: { [key: string]: Set<string> } = {};
+function addParticipantProperties(
+  sessionEntry: any,
+  session: Session,
+  project: Project
+): void {
+  const roleGroups: { [key: string]: string[] } = {};
 
-  // Collect all contributions and group by person
+  // Collect all contributions and group by role
   session.getAllContributionsToAllFiles().forEach((contribution) => {
     const personName = contribution.personReference.trim();
-    const role = contribution.role.trim();
+    const role = contribution.role.trim().toLowerCase();
 
-    if (!uniqueContributors[personName]) {
-      uniqueContributors[personName] = new Set();
+    if (!roleGroups[role]) {
+      roleGroups[role] = [];
     }
-    uniqueContributors[personName].add(role);
-  });
 
-  const participants: any[] = [];
-
-  // Create Role objects for each person-role combination
-  for (const personName of Object.keys(uniqueContributors)) {
     const person = project.findPerson(personName);
     const personId = person ? `People/${person.filePrefix}/` : personName;
 
-    // Create a Role object for each role this person has
-    for (const role of uniqueContributors[personName]) {
-      participants.push({
-        "@type": "Role",
-        participant: { "@id": personId },
-        roleAction: { "@id": getRoleActionURI(role) }
-      });
+    // Avoid duplicates
+    if (!roleGroups[role].includes(personId)) {
+      roleGroups[role].push(personId);
+    }
+  });
+
+  // Add LDAC-specific role properties
+  for (const role of Object.keys(roleGroups)) {
+    const ldacProperty = `ldac:${role}`;
+    const personIds = roleGroups[role];
+
+    if (personIds.length === 1) {
+      sessionEntry[ldacProperty] = { "@id": personIds[0] };
+    } else if (personIds.length > 1) {
+      sessionEntry[ldacProperty] = personIds.map((id) => ({ "@id": id }));
     }
   }
-
-  return participants;
-}
-
-function getRoleActionURI(role: string): string {
-  const roleMap: { [key: string]: string } = {
-    speaker: "https://w3id.org/ldac/models#Speaker",
-    recorder: "https://w3id.org/ldac/models#Recorder",
-    interviewer: "https://w3id.org/ldac/models#Interviewer",
-    researcher: "https://w3id.org/ldac/models#Researcher",
-    consultant: "https://w3id.org/ldac/models#Consultant",
-    translator: "https://w3id.org/ldac/models#Translator"
-  };
-
-  return roleMap[role.toLowerCase()] || `#${role}`;
 }
 
 async function makeEntriesFromParticipant(project: Project, session: Session) {
@@ -490,7 +482,12 @@ async function makeEntriesFromParticipant(project: Project, session: Session) {
 
     if (person) {
       // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
-      await addFieldEntries(person, personElement, entriesForAllContributors);
+      await addFieldEntries(
+        project,
+        person,
+        personElement,
+        entriesForAllContributors
+      );
       addChildFileEntries(person, personElement, entriesForAllContributors);
     }
     // Note: roles are now handled in the participant property of the Event, not on Person entities

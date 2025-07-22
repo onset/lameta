@@ -275,7 +275,7 @@ describe("RoCrateExporter Validation Tests", () => {
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
       expect(rootDataset.conformsTo).toBeDefined();
       expect(rootDataset.conformsTo["@id"]).toBe(
-        "https://purl.archive.org/language-data-commons/profile#Object"
+        "https://w3id.org/ldac/profile#Object"
       );
 
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -383,11 +383,11 @@ describe("RoCrateExporter Validation Tests", () => {
 
       expect(rootDataset["ldac:linguisticGenre"]).toBeDefined();
 
-      // Should create a custom term definition
+      // Should create a custom term definition with new tag format
       const customGenreDefinition = graph.find(
         (item: any) =>
           item["@type"] === "DefinedTerm" &&
-          item["@id"].includes("CustomSpecialGenre")
+          item["@id"].includes("custom_special_genre")
       );
       expect(customGenreDefinition).toBeDefined();
 

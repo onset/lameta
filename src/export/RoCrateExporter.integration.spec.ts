@@ -135,7 +135,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       files: [mockAudioFile, mockVideoFile, mockSessionXml],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         { personReference: "Awi_Heole", role: "speaker" },
-        { personReference: "Ilawi_Amosa", role: "participant" }
+        { personReference: "Ilawi_Amosa", role: "speaker" } // Both are speakers for the test
       ])
     } as any;
 
@@ -213,13 +213,17 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     expect(sessionEvent.startDate).toBe("2010-06-06");
     expect(sessionEvent.keywords).toBe("fishing, poison");
 
-    // Verify session links to participants
-    expect(sessionEvent.participant).toContainEqual({
-      "@id": "People/Awi_Heole/"
-    });
-    expect(sessionEvent.participant).toContainEqual({
-      "@id": "People/Ilawi_Amosa/"
-    });
+    // Verify session uses LDAC-specific role properties instead of generic participant
+    expect(sessionEvent["ldac:speaker"]).toBeDefined();
+    expect(sessionEvent.participant).toBeUndefined(); // Should not use generic participant
+
+    // Check that speakers are properly referenced
+    const speakers = Array.isArray(sessionEvent["ldac:speaker"])
+      ? sessionEvent["ldac:speaker"]
+      : [sessionEvent["ldac:speaker"]];
+    const speakerIds = speakers.map((s: any) => s["@id"]);
+    expect(speakerIds).toContain("People/Awi_Heole/");
+    expect(speakerIds).toContain("People/Ilawi_Amosa/");
 
     // Verify session links to its files
     expect(sessionEvent.hasPart).toContainEqual({
@@ -284,19 +288,11 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     expect(personFile["@type"]).toBe("DigitalDocument");
     expect(personFile.role).toBe("documentation");
 
-    // Verify Role entities
-    const speakerRole = result["@graph"].find(
-      (item: any) => item["@id"] === "role_speaker" && item["@type"] === "Role"
+    // Verify that no separate Role entities are created (we use LDAC properties directly)
+    const roleEntities = result["@graph"].filter(
+      (item: any) => item["@type"] === "Role"
     );
-    expect(speakerRole).toBeDefined();
-    expect(speakerRole.name).toBe("speaker");
-
-    const participantRole = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "role_participant" && item["@type"] === "Role"
-    );
-    expect(participantRole).toBeDefined();
-    expect(participantRole.name).toBe("participant");
+    expect(roleEntities).toHaveLength(0); // No separate Role entities
 
     // Verify license entity
     const license = result["@graph"].find(
@@ -332,12 +328,20 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     );
     expect(rootDataset.hasPart.length).toBeGreaterThan(0);
 
-    // Session event links to people and files
+    // Session event links to people via LDAC role properties and files
     const sessionEvent = result["@graph"].find(
       (item: any) =>
         item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
     );
-    expect(sessionEvent.participant.length).toBeGreaterThan(0);
+
+    // Count LDAC role properties instead of generic participant
+    const roleCount = Object.keys(sessionEvent).filter(
+      (key) =>
+        key.startsWith("ldac:") &&
+        sessionEvent[key] &&
+        (Array.isArray(sessionEvent[key]) || sessionEvent[key]["@id"])
+    ).length;
+    expect(roleCount).toBeGreaterThan(0);
     expect(sessionEvent.hasPart.length).toBeGreaterThan(0);
   });
 });

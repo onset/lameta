@@ -181,7 +181,7 @@ describe("RoCrateExporter LDAC profile conformance", () => {
     expect(sessionEvent.startDate).toBe("2010-06-06");
   });
 
-  it("should link Session Event to participants", async () => {
+  it("should link Session Event to participants via LDAC role properties", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const sessionEvent = result["@graph"].find(
@@ -189,7 +189,13 @@ describe("RoCrateExporter LDAC profile conformance", () => {
         item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
     );
 
-    expect(sessionEvent.participant).toEqual([{ "@id": "People/Awi_Heole/" }]);
+    // Should NOT use generic participant property
+    expect(sessionEvent.participant).toBeUndefined();
+
+    // Should use specific LDAC role properties
+    expect(sessionEvent["ldac:speaker"]).toEqual({
+      "@id": "People/Awi_Heole/"
+    });
   });
 
   it("should link Session Event to all its files", async () => {

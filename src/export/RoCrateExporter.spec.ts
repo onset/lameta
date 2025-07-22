@@ -60,6 +60,12 @@ describe("RoCrateExporter genre handling", () => {
 
     mockProject = {
       filePrefix: "project1",
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Test-Project";
+          return "";
+        })
+      } as any,
       authorityLists: {
         accessChoicesOfCurrentProtocol: [
           {
@@ -177,16 +183,17 @@ describe("RoCrateExporter genre handling", () => {
     // Check that genre is converted to ldac:linguisticGenre with custom ID
     expect(sessionEntry).toHaveProperty("ldac:linguisticGenre");
     expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
-      { "@id": "#CustomGenreNotInLdac" }
+      { "@id": "tag:lameta,Test-Project:genre/custom_genre_not_in_ldac" }
     ]);
 
     // Check that the custom genre definition is in the graph
     const genreDefinition = result["@graph"].find(
-      (item: any) => item["@id"] === "#CustomGenreNotInLdac"
+      (item: any) =>
+        item["@id"] === "tag:lameta,Test-Project:genre/custom_genre_not_in_ldac"
     );
     expect(genreDefinition).toBeDefined();
     expect(genreDefinition["@type"]).toBe("DefinedTerm");
-    expect(genreDefinition.name).toBe("Custom Genre Not In Ldac");
+    expect(genreDefinition.name).toBe("custom_genre_not_in_ldac");
     expect(genreDefinition.inDefinedTermSet).toEqual({
       "@id": "#CustomGenreTerms"
     });
@@ -271,7 +278,7 @@ describe("RoCrateExporter genre handling", () => {
     // Check that both genres are present with correct IDs
     expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
       { "@id": "ldac:Dialogue" },
-      { "@id": "#AvoidanceLanguage" }
+      { "@id": "tag:lameta,Test-Project:genre/avoidance_language" }
     ]);
 
     // Check that LDAC genre definition is in the graph
@@ -285,7 +292,8 @@ describe("RoCrateExporter genre handling", () => {
 
     // Check that custom genre definition is in the graph
     const customDefinition = result["@graph"].find(
-      (item: any) => item["@id"] === "#AvoidanceLanguage"
+      (item: any) =>
+        item["@id"] === "tag:lameta,Test-Project:genre/avoidance_language"
     );
     expect(customDefinition).toBeDefined();
     expect(customDefinition.inDefinedTermSet).toEqual({
@@ -452,10 +460,12 @@ describe("RoCrateExporter genre handling", () => {
       (item: any) => item["@id"] === "./"
     );
 
-    // Check that the custom genre ID is properly formatted
+    // Check that the custom genre ID is properly formatted with the new tag format
     expect(sessionEntry["ldac:linguisticGenre"]).toHaveLength(1);
     const genreId = sessionEntry["ldac:linguisticGenre"][0]["@id"];
-    expect(genreId).toMatch(/^#[A-Z][a-zA-Z]*$/); // Should start with # and be camelCase
+    expect(genreId).toBe(
+      "tag:lameta,Test-Project:genre/some-complex_genre.with!special@chars"
+    );
 
     // Check that the genre definition exists
     const genreDefinition = result["@graph"].find(
@@ -463,6 +473,7 @@ describe("RoCrateExporter genre handling", () => {
     );
     expect(genreDefinition).toBeDefined();
     expect(genreDefinition["@type"]).toBe("DefinedTerm");
+    expect(genreDefinition.name).toBe("some-complex_genre.with!special@chars");
   });
 
   it("should produce output that matches the expected ro-crate structure for mixed genres", async () => {
@@ -706,7 +717,25 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     // Mock session as a plain object that looks like Session
     mockSession = {
       filePrefix: "test_session",
-      knownFields: [],
+      knownFields: [
+        {
+          key: "genre",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          vocabularyFile: "genres.json",
+          rocrate: {
+            key: "ldac:linguisticGenre",
+            array: true,
+            template: {
+              "@id": "[v]",
+              "@type": "DefinedTerm"
+            }
+          }
+        }
+      ],
       files: [],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
@@ -799,8 +828,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const rootDataset = result["@graph"].find(
         (item: any) => item["@id"] === "./"
       );
+      // For single object crates, should use the Object profile URI
       expect(rootDataset.conformsTo["@id"]).toBe(
-        "https://w3id.org/ldac/ro-crate/1.0"
+        "https://w3id.org/ldac/profile#Object"
       );
     });
 
@@ -816,13 +846,25 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
       expect(sessionEvent).toBeDefined();
       expect(sessionEvent.conformsTo["@id"]).toBe(
-        "https://w3id.org/ldac/ro-crate/1.0"
+        "https://w3id.org/ldac/profile#Object"
+      );
+    });
+
+    it("should use correct LDAC profile URI for standalone session", async () => {
+      const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+      // For single session crates, should use the Object profile URI
+      expect(rootDataset.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/profile#Object"
       );
     });
   });
 
   describe("participant roles modeling", () => {
-    it("should model participant roles correctly on Event with Role objects", async () => {
+    it("should use specific LDAC role properties instead of generic participant", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const sessionEvent = result["@graph"].find(
@@ -831,20 +873,21 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           item["@type"].includes("Event")
       );
 
-      expect(sessionEvent.participant).toBeDefined();
-      expect(Array.isArray(sessionEvent.participant)).toBe(true);
+      // Should NOT have generic participant property
+      expect(sessionEvent.participant).toBeUndefined();
 
-      // Each participant should be a Role object with participant and roleAction
-      sessionEvent.participant.forEach((participant: any) => {
-        expect(participant["@type"]).toBe("Role");
-        expect(participant.participant).toBeDefined();
-        expect(participant.participant["@id"]).toBeDefined();
-        expect(participant.roleAction).toBeDefined();
-        expect(participant.roleAction["@id"]).toBeDefined();
+      // Should have specific LDAC role properties
+      expect(sessionEvent["ldac:speaker"]).toBeDefined();
+      expect(sessionEvent["ldac:recorder"]).toBeDefined();
+
+      // Values should be direct references to Person objects, not Role objects
+      expect(sessionEvent["ldac:speaker"]).toEqual({
+        "@id": "People/Awi_Heole/"
       });
+      expect(sessionEvent["ldac:recorder"]).toEqual({ "@id": "Hatton" });
     });
 
-    it("should use standard LDAC role URIs for roleAction", async () => {
+    it("should use correct LDAC role URIs with ldac: namespace", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const sessionEvent = result["@graph"].find(
@@ -853,19 +896,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           item["@type"].includes("Event")
       );
 
-      const speakerRole = sessionEvent.participant.find((p: any) =>
-        p.participant["@id"].includes("Awi_Heole")
-      );
-      expect(speakerRole.roleAction["@id"]).toBe(
-        "https://w3id.org/ldac/models#Speaker"
-      );
+      // Check that we're using ldac:speaker and ldac:recorder properties
+      // instead of generic participant with roleAction URIs
+      expect(sessionEvent["ldac:speaker"]).toBeDefined();
+      expect(sessionEvent["ldac:recorder"]).toBeDefined();
 
-      const recorderRole = sessionEvent.participant.find(
-        (p: any) => p.participant["@id"] === "Hatton"
-      );
-      expect(recorderRole.roleAction["@id"]).toBe(
-        "https://w3id.org/ldac/models#Recorder"
-      );
+      // The context should define ldac: namespace
+      expect(result["@context"]).toContain("https://w3id.org/ldac/context");
     });
 
     it("should not have role property on Person entities", async () => {
@@ -880,6 +917,48 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       personEntities.forEach((person: any) => {
         expect(person.role).toBeUndefined();
+      });
+    });
+
+    it("should handle multiple people with same role correctly", async () => {
+      // Add another speaker to test multiple people with same role
+      mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
+        {
+          personReference: "Awi Heole",
+          role: "speaker",
+          comments: "",
+          sessionName: "test"
+        },
+        {
+          personReference: "John Doe",
+          role: "speaker",
+          comments: "",
+          sessionName: "test"
+        },
+        {
+          personReference: "Hatton",
+          role: "recorder",
+          comments: "",
+          sessionName: "test"
+        }
+      ]);
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+
+      // Should have array of speakers when multiple people have same role
+      expect(Array.isArray(sessionEvent["ldac:speaker"])).toBe(true);
+      expect(sessionEvent["ldac:speaker"]).toHaveLength(2);
+      expect(sessionEvent["ldac:speaker"]).toContainEqual({
+        "@id": "People/Awi_Heole/"
+      });
+      expect(sessionEvent["ldac:speaker"]).toContainEqual({
+        "@id": "John Doe"
       });
     });
   });
@@ -897,6 +976,56 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent.id).toBeUndefined();
       expect(sessionEvent.title).toBeUndefined();
       expect(sessionEvent.name).toBeDefined();
+    });
+
+    it("should generate custom genre IDs with lameta and project name", async () => {
+      // Mock project with title
+      mockProject.metadataFile = {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Edolo-Research";
+          return "";
+        })
+      } as any;
+
+      // Mock a custom genre that doesn't map to LDAC
+      mockSession.metadataFile!.getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Test Session";
+          if (key === "description") return "Test Description";
+          if (key === "access") return "public";
+          if (key === "genre") return "crazy-talk";
+          return "";
+        });
+      mockSession.metadataFile!.properties.getHasValue = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "genre") return true;
+          return false;
+        });
+
+      const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+      // Find the main session entry
+      const sessionEntry = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      // Check that genre is converted to ldac:linguisticGenre with custom ID including project name
+      expect(sessionEntry).toHaveProperty("ldac:linguisticGenre");
+      expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
+        { "@id": "tag:lameta,Edolo-Research:genre/crazy-talk" }
+      ]);
+
+      // Check that the custom genre definition is in the graph with the new ID format
+      const genreDefinition = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "tag:lameta,Edolo-Research:genre/crazy-talk"
+      );
+      expect(genreDefinition).toBeDefined();
+      expect(genreDefinition["@type"]).toBe("DefinedTerm");
+      expect(genreDefinition.name).toBe("crazy-talk");
+      expect(genreDefinition.description).toBe("Custom term: crazy-talk");
     });
   });
 });

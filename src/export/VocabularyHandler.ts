@@ -20,10 +20,12 @@ const vocabularyCache = new Map<string, CachedVocabulary>();
 
 export async function getVocabularyMapping(
   termId: string,
-  vocabularyFile: string
+  vocabularyFile: string,
+  projectTitle?: string
 ): Promise<{
   id: string;
   term: string;
+  originalTerm: string;
   definition: VocabularyDefinition | null;
 }> {
   const vocabularyData = await loadVocabularyFile(vocabularyFile);
@@ -40,10 +42,11 @@ export async function getVocabularyMapping(
 
   if (!term) {
     // Return custom term ID
-    const customId = createCustomTermId(termId);
+    const customId = createCustomTermId(termId, projectTitle);
     return {
       id: customId,
       term: customId,
+      originalTerm: termId,
       definition: null
     };
   }
@@ -54,15 +57,17 @@ export async function getVocabularyMapping(
     return {
       id: ldacMapping.term,
       term: ldacMapping.term,
+      originalTerm: termId,
       definition: term
     };
   }
 
   // Create custom term ID if no LDAC mapping
-  const customId = createCustomTermId(term.label);
+  const customId = createCustomTermId(term.label, projectTitle);
   return {
     id: customId,
     term: customId,
+    originalTerm: termId,
     definition: term
   };
 }
@@ -70,6 +75,7 @@ export async function getVocabularyMapping(
 export function createTermDefinition(mapping: {
   id: string;
   term: string;
+  originalTerm: string;
   definition: VocabularyDefinition | null;
 }): any {
   if (mapping.definition) {
@@ -90,10 +96,8 @@ export function createTermDefinition(mapping: {
     return result;
   } else {
     // Custom term not in vocabulary file - create a basic definition
-    const name = mapping.id
-      .replace("#", "")
-      .replace(/([A-Z])/g, " $1")
-      .trim();
+    const name = mapping.originalTerm; // Use the original term input
+
     return {
       "@id": mapping.id,
       "@type": "DefinedTerm",
@@ -181,7 +185,11 @@ async function loadVocabularyFile(
   }
 }
 
-function createCustomTermId(termLabel: string): string {
+function createCustomTermId(termLabel: string, projectTitle?: string): string {
+  if (projectTitle) {
+    return `tag:lameta,${projectTitle}:genre/${termLabel}`;
+  }
+
   return (
     "#" +
     termLabel
