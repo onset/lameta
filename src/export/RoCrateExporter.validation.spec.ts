@@ -146,6 +146,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
     // Mock session
     mockSession = {
+      filePrefix: "test-session",
       knownFields: [
         {
           key: "title",
@@ -331,7 +332,9 @@ describe("RoCrateExporter Validation Tests", () => {
       const validation = await validateRoCrateWithCategories(roCrateData);
 
       const graph = roCrateData["@graph"];
-      const license = graph.find((item: any) => item["@id"] === "#license");
+      const license = graph.find(
+        (item: any) => item["@id"] === "#license-test-session"
+      );
 
       expect(license).toBeDefined();
       expect(license.description).toContain("TestArchive-specific term");
@@ -355,7 +358,9 @@ describe("RoCrateExporter Validation Tests", () => {
       const validation = await validateRoCrateWithCategories(roCrateData);
 
       const graph = roCrateData["@graph"];
-      const license = graph.find((item: any) => item["@id"] === "#license");
+      const license = graph.find(
+        (item: any) => item["@id"] === "#license-test-session"
+      );
 
       expect(license).toBeDefined();
       expect(license.description).toContain("TestArchive-specific term");

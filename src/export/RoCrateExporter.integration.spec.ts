@@ -293,10 +293,11 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     );
     expect(roleEntities).toHaveLength(0); // No separate Role entities
 
-    // Verify license entity
+    // Verify license entity (session-specific)
     const license = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "#license" && item["@type"] === "ldac:DataReuseLicense"
+        item["@id"] === "#license-ETR009" &&
+        item["@type"] === "ldac:DataReuseLicense"
     );
     // If license is not defined, log the entire graph
     if (!license) {
