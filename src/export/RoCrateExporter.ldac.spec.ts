@@ -236,7 +236,9 @@ describe("RoCrateExporter LDAC profile conformance", () => {
       (item: any) => item["@id"] === "./"
     );
 
-    expect(rootDataset.hasPart).toContainEqual({ "@id": "Sessions/ETR009/" });
+    expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/ETR009/"
+    });
     expect(rootDataset.hasPart).toContainEqual({ "@id": "People/Awi_Heole/" });
   });
 

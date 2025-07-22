@@ -180,16 +180,15 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (item: any) => item["@id"] === "./"
     );
     expect(rootDataset).toBeDefined();
-    expect(rootDataset["@type"]).toEqual([
-      "Dataset",
-      "Object",
-      "RepositoryObject"
-    ]);
+    expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
     expect(rootDataset.name).toBe("Edolo Language Documentation");
     expect(rootDataset.description).toBe("Documentation of the Edolo language");
 
-    // Verify root dataset links to main components
-    expect(rootDataset.hasPart).toContainEqual({ "@id": "Sessions/ETR009/" });
+    // Verify root dataset uses pcdm:hasMember for sessions
+    expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/ETR009/"
+    });
+    // And hasPart for people
     expect(rootDataset.hasPart).toContainEqual({ "@id": "People/Awi_Heole/" });
     expect(rootDataset.hasPart).toContainEqual({
       "@id": "People/Ilawi_Amosa/"
@@ -322,11 +321,13 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     // Should have root dataset, session event, and possibly person entities with relationships
     expect(entitiesWithRelationships.length).toBeGreaterThan(1);
 
-    // Verify the graph is connected - root links to sessions and people
+    // Verify the graph is connected - root links to sessions via pcdm:hasMember and people via hasPart
     const rootDataset = result["@graph"].find(
       (item: any) => item["@id"] === "./"
     );
-    expect(rootDataset.hasPart.length).toBeGreaterThan(0);
+    expect(
+      rootDataset.hasPart.length + rootDataset["pcdm:hasMember"].length
+    ).toBeGreaterThan(0);
 
     // Session event links to people via LDAC role properties and files
     const sessionEvent = result["@graph"].find(

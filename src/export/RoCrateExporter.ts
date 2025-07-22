@@ -46,7 +46,9 @@ export async function getRoCrate(
           name: "http://schema.org/name",
           description: "http://schema.org/description",
           datePublished: "http://schema.org/datePublished",
-          license: "http://schema.org/license"
+          license: "http://schema.org/license",
+          // PCDM namespace for collection membership
+          pcdm: "http://pcdm.org/models#"
         }
       ],
       "@graph": []
@@ -86,9 +88,9 @@ async function getRoCrateInternal(
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     const entry: any = {
       "@id": "./",
-      "@type": ["Dataset", "Object", "RepositoryObject"],
+      "@type": ["Dataset", "RepositoryCollection"],
       conformsTo: {
-        "@id": "https://w3id.org/ldac/profile#Object"
+        "@id": "https://w3id.org/ldac/profile#Collection"
       },
       name:
         folder.metadataFile?.getTextProperty("title") ||
@@ -101,7 +103,8 @@ async function getRoCrateInternal(
       license: {
         "@id": "#license"
       },
-      hasPart: []
+      hasPart: [],
+      "pcdm:hasMember": []
     };
 
     const boilerplateGraph = [
@@ -123,9 +126,11 @@ async function getRoCrateInternal(
       })
     );
 
-    // Link to session events in the root dataset
+    // Link to session events in the root dataset using pcdm:hasMember
     project.sessions.items.forEach((session) => {
-      entry.hasPart.push({ "@id": `Sessions/${session.filePrefix}/` });
+      entry["pcdm:hasMember"].push({
+        "@id": `Sessions/${session.filePrefix}/`
+      });
     });
 
     // Add people to root dataset hasPart

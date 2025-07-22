@@ -822,16 +822,18 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
   });
 
   describe("conformsTo Profile URI", () => {
-    it("should use correct LDAC profile URI for project", async () => {
+    it("should use correct LDAC profile URI for project collections", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const rootDataset = result["@graph"].find(
         (item: any) => item["@id"] === "./"
       );
-      // For single object crates, should use the Object profile URI
+      // For project collections, should use the Collection profile URI
       expect(rootDataset.conformsTo["@id"]).toBe(
-        "https://w3id.org/ldac/profile#Object"
+        "https://w3id.org/ldac/profile#Collection"
       );
+      // And should be typed as RepositoryCollection
+      expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
     });
 
     it("should use correct LDAC profile URI for session", async () => {
@@ -848,6 +850,12 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent.conformsTo["@id"]).toBe(
         "https://w3id.org/ldac/profile#Object"
       );
+      // And should be typed as RepositoryObject
+      expect(sessionEvent["@type"]).toEqual([
+        "Event",
+        "Object",
+        "RepositoryObject"
+      ]);
     });
 
     it("should use correct LDAC profile URI for standalone session", async () => {
@@ -860,6 +868,100 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(rootDataset.conformsTo["@id"]).toBe(
         "https://w3id.org/ldac/profile#Object"
       );
+    });
+  });
+
+  describe("collection vs object relationships", () => {
+    it("should use pcdm:hasMember to link sessions to collection", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      // Collection should use pcdm:hasMember to link to sessions, not hasPart
+      expect(rootDataset["pcdm:hasMember"]).toBeDefined();
+      expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+        "@id": "Sessions/test_session/"
+      });
+
+      // Collection should still use hasPart for people
+      expect(rootDataset.hasPart).toBeDefined();
+      expect(rootDataset.hasPart).toContainEqual({
+        "@id": "People/Awi_Heole/"
+      });
+    });
+
+    it("should ensure sessions use hasPart for their files, not pcdm:hasMember", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+
+      // Sessions should use hasPart for files, not pcdm:hasMember
+      expect(sessionEvent.hasPart).toBeDefined();
+      expect(Array.isArray(sessionEvent.hasPart)).toBe(true);
+      // Should NOT have pcdm:hasMember on sessions
+      expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
+    });
+
+    it("should include pcdm context for collection membership", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      // Verify context includes pcdm namespace
+      expect(result["@context"]).toContain("https://w3id.org/ldac/context");
+    });
+
+    it("should follow complete LDAC collection-object hierarchy correctly", async () => {
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+      // Root collection should conform to Collection profile
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+      expect(rootDataset.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/profile#Collection"
+      );
+      expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
+
+      // Sessions should conform to Object profile
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+      expect(sessionEvent.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/profile#Object"
+      );
+      expect(sessionEvent["@type"]).toEqual([
+        "Event",
+        "Object",
+        "RepositoryObject"
+      ]);
+
+      // Collection uses pcdm:hasMember for sessions
+      expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+        "@id": "Sessions/test_session/"
+      });
+
+      // Collection uses hasPart for people (supporting entities)
+      expect(rootDataset.hasPart).toContainEqual({
+        "@id": "People/Awi_Heole/"
+      });
+
+      // Sessions use hasPart for their files, not pcdm:hasMember
+      expect(sessionEvent.hasPart).toBeDefined();
+      expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
+
+      // Context should include pcdm namespace
+      const contextObj = result["@context"].find(
+        (ctx: any) => typeof ctx === "object" && ctx.pcdm
+      );
+      expect(contextObj).toBeDefined();
+      expect(contextObj.pcdm).toBe("http://pcdm.org/models#");
     });
   });
 
