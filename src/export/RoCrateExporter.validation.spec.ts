@@ -116,6 +116,7 @@ describe("RoCrateExporter Validation Tests", () => {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
           if (key === "description") return "Test project description";
+          if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
@@ -333,7 +334,8 @@ describe("RoCrateExporter Validation Tests", () => {
       const license = graph.find((item: any) => item["@id"] === "#license");
 
       expect(license).toBeDefined();
-      expect(license.name).toBe("public");
+      expect(license.description).toContain("TestArchive-specific term");
+      expect(license.description).toContain("'public'");
 
       // Validation should run
       expect(validation).toBeDefined();
@@ -356,7 +358,8 @@ describe("RoCrateExporter Validation Tests", () => {
       const license = graph.find((item: any) => item["@id"] === "#license");
 
       expect(license).toBeDefined();
-      expect(license.name).toBe("restricted");
+      expect(license.description).toContain("TestArchive-specific term");
+      expect(license.description).toContain("'restricted'");
 
       // Validation should run
       expect(validation).toBeDefined();

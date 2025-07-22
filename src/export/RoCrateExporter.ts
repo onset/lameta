@@ -276,21 +276,26 @@ async function getRoCrateInternal(
   const license: any = {
     "@id": "#license",
     "@type": "ldac:DataReuseLicense",
-    "ldac:access": { "@id": ldacAccessCategory },
-    name: access || "public" // Use the access value as the name, default to "public"
+    "ldac:access": { "@id": ldacAccessCategory }
   };
 
-  // Add description from access choice
+  // Add description from access choice with archive-specific format
+  const archiveConfigurationName =
+    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
+    "current archive";
+
   if (access && access !== "unspecified" && access !== "") {
     const accessDescription = getDescriptionFromAccessChoice(
       access,
       project.authorityLists
     );
     if (accessDescription) {
-      license.description = accessDescription;
+      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${access}' which means '${accessDescription}'`;
+    } else {
+      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${access}'`;
     }
   } else {
-    license.description = "This is an open access license.";
+    license.description = `Marked with the ${archiveConfigurationName}-specific term, 'public' which means 'This is an open access license.'`;
   }
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);

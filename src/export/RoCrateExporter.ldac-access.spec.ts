@@ -10,7 +10,9 @@ describe("RoCrateExporter LDAC access handling", () => {
 
   beforeEach(() => {
     // Mock the field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      []
+    );
 
     // Mock project
     mockProject = {
@@ -27,7 +29,7 @@ describe("RoCrateExporter LDAC access handling", () => {
           },
           {
             id: "U",
-            label: "U: All Registered Users", 
+            label: "U: All Registered Users",
             description: "all Users can access (requires registration)",
             ldacAccessCategory: "ldac:AuthorizedAccess"
           },
@@ -40,7 +42,10 @@ describe("RoCrateExporter LDAC access handling", () => {
         ]
       },
       metadataFile: {
-        getTextProperty: vi.fn(() => ""),
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "archiveConfigurationName") return "TestArchive";
+          return "";
+        }),
         properties: {
           forEach: vi.fn()
         }
@@ -77,21 +82,25 @@ describe("RoCrateExporter LDAC access handling", () => {
     const license = result["@graph"].find(
       (item: any) => item["@id"] === "#license"
     );
-    
+
     expect(license).toBeDefined();
     expect(license["@type"]).toBe("ldac:DataReuseLicense");
     expect(license["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
-    expect(license.description).toBe("access is Free to all");
+    expect(license.description).toContain("TestArchive-specific term");
+    expect(license.description).toContain("'F: Free to All'");
+    expect(license.description).toContain("'access is Free to all'");
   });
 
   it("should create LDAC-compliant license with AuthorizedAccess for restricted access", async () => {
     // Change the access to restricted
-    mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
-      if (key === "title") return "Test Session";
-      if (key === "description") return "Test Description";
-      if (key === "access") return "U: All Registered Users";
-      return "";
-    });
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "U: All Registered Users";
+        return "";
+      });
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
@@ -99,11 +108,15 @@ describe("RoCrateExporter LDAC access handling", () => {
     const license = result["@graph"].find(
       (item: any) => item["@id"] === "#license"
     );
-    
+
     expect(license).toBeDefined();
     expect(license["@type"]).toBe("ldac:DataReuseLicense");
     expect(license["ldac:access"]).toEqual({ "@id": "ldac:AuthorizedAccess" });
-    expect(license.description).toBe("all Users can access (requires registration)");
+    expect(license.description).toContain("TestArchive-specific term");
+    expect(license.description).toContain("'U: All Registered Users'");
+    expect(license.description).toContain(
+      "'all Users can access (requires registration)'"
+    );
   });
 
   it("should include LDAC access type definitions in the graph", async () => {
@@ -137,17 +150,21 @@ describe("RoCrateExporter LDAC access handling", () => {
     );
     expect(dataReuseLicense).toBeDefined();
     expect(dataReuseLicense["@type"]).toBe("Class");
-    expect(dataReuseLicense.subClassOf).toEqual({ "@id": "http://schema.org/CreativeWork" });
+    expect(dataReuseLicense.subClassOf).toEqual({
+      "@id": "http://schema.org/CreativeWork"
+    });
   });
 
   it("should default to OpenAccess for unspecified access", async () => {
     // Set access to unspecified
-    mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
-      if (key === "title") return "Test Session";
-      if (key === "description") return "Test Description";
-      if (key === "access") return "";
-      return "";
-    });
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "";
+        return "";
+      });
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
@@ -155,7 +172,7 @@ describe("RoCrateExporter LDAC access handling", () => {
     const license = result["@graph"].find(
       (item: any) => item["@id"] === "#license"
     );
-    
+
     expect(license).toBeDefined();
     expect(license["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
   });
@@ -170,12 +187,14 @@ describe("RoCrateExporter LDAC access handling", () => {
       }
     ];
 
-    mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
-      if (key === "title") return "Test Session";
-      if (key === "description") return "Test Description";
-      if (key === "access") return "X: Unknown Access";
-      return "";
-    });
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "access") return "X: Unknown Access";
+        return "";
+      });
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
@@ -183,7 +202,7 @@ describe("RoCrateExporter LDAC access handling", () => {
     const license = result["@graph"].find(
       (item: any) => item["@id"] === "#license"
     );
-    
+
     expect(license).toBeDefined();
     expect(license["ldac:access"]).toEqual({ "@id": "ldac:AuthorizedAccess" });
   });
