@@ -3,17 +3,20 @@
     {
       label: "Unrestricted access",
       description: "Any member of the public may access the material for non-profit use.",
-      id: "Level 1"
+      id: "Level 1",
+      ldacAccessCategory: "ldac:OpenAccess"
     },
     {
       label: "Time limit",
       description: "When you deposit with the archive, you will specify a date. After that data, access will change to Unrestricted access.",
-      id: "Level 2"
+      id: "Level 2",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       label: "Restricted access",
       description: "When you deposit with the archive, you will specify restrictions on access. For example, 'access only with permission of village council', 'access only with permission of descendants', etc.",
-      id: "Level 3"
+      id: "Level 3",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     }
   ]
 }

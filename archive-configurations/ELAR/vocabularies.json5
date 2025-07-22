@@ -2,17 +2,20 @@
   accessProtocol: [
     {
       id: "O",
-      label: "O: fully open"
+      label: "O: fully open",
+      ldacAccessCategory: "ldac:OpenAccess"
     },
     {
       id: "U",
       label: "U: open to users",
-      description: "All users can access (requires registration)"
+      description: "All users can access (requires registration)",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "S",
       label: "S: open to subscribers",
-      description: "Only Subscribers are allowed access (must apply to Depositor for access)"
+      description: "Only Subscribers are allowed access (must apply to Depositor for access)",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     }
   ]
 }

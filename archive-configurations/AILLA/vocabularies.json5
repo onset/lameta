@@ -3,22 +3,26 @@
     {
       id: "Level 1",
       label: "1: Public Access",
-      description: "Archive users will have full access to these materials after agreeing to AILLA's Terms and Conditions and logging in. Choose this level for all non-sensitive materials. This is the default level."
+      description: "Archive users will have full access to these materials after agreeing to AILLA's Terms and Conditions and logging in. Choose this level for all non-sensitive materials. This is the default level.",
+      ldacAccessCategory: "ldac:OpenAccess"
     },
     {
       id: "Level 2",
       label: "2: Password",
-      description: "When you deposit with the archive, you will define a password with an optional hint. You will be able to provide access to others by sharing the password with them. This is the most flexible option."
+      description: "When you deposit with the archive, you will define a password with an optional hint. You will be able to provide access to others by sharing the password with them. This is the most flexible option.",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "Level 3",
       label: "3: Time Limit",
-      description: "When you deposit with the archive, you will specify a date. After that date, access will change to Level 1. This option is good for resources that are only sensitive for a period of time; for example, the lifetime of the narrator or the five years until you finish your thesis. You will still be able to access these materials yourself with the password."
+      description: "When you deposit with the archive, you will specify a date. After that date, access will change to Level 1. This option is good for resources that are only sensitive for a period of time; for example, the lifetime of the narrator or the five years until you finish your thesis. You will still be able to access these materials yourself with the password.",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "Level 4",
       label: "4: Depositor control",
-      description: "Archive users must contact you directly to ask for the password. AILLA will provide contact information. Note that you must maintain your contact information and be prepared to respond to requests from people you do not know."
+      description: "Archive users must contact you directly to ask for the password. AILLA will provide contact information. Note that you must maintain your contact information and be prepared to respond to requests from people you do not know.",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     }
   ]
 }

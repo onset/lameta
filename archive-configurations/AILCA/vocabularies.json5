@@ -1,10 +1,16 @@
 {
   accessProtocol: [
-    { id: "F", label: "F: Free to All", description: "access is Free to all" },
+    {
+      id: "F",
+      label: "F: Free to All",
+      description: "access is Free to all",
+      ldacAccessCategory: "ldac:OpenAccess"
+    },
     {
       id: "U",
       label: "U: All Registered Users",
-      description: "all Users can access (requires registration)"
+      description: "all Users can access (requires registration)",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "RC",
@@ -14,12 +20,14 @@
     {
       id: "C",
       label: "C: Community members only",
-      description: "only Community members are allowed access (normally requires application to Depositor)"
+      description: "only Community members are allowed access (normally requires application to Depositor)",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "S",
       label: "S: Subscribers only",
-      description: "only Subscribers are allowed access (requires application to Depositor)"
+      description: "only Subscribers are allowed access (requires application to Depositor)",
+      ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "", // intentionally blank
