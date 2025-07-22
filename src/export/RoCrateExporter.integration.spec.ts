@@ -296,8 +296,13 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     // Verify license entity
     const license = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "#license" && item["@type"] === "CreativeWork"
+        item["@id"] === "#license" && item["@type"] === "ldac:DataReuseLicense"
     );
+    // If license is not defined, log the entire graph
+    if (!license) {
+      console.log("License not found in the graph, logging the entire graph:");
+      console.log(JSON.stringify(result["@graph"], null, 2));
+    }
     expect(license).toBeDefined();
 
     // Verify metadata file

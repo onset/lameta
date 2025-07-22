@@ -10,7 +10,7 @@
   "description": "File & metadata organization for language documentation projects.",
   "scripts": {
     "lint": "tsc --noemit && eslint",
-    "test": "yarn vitest --run",
+    "test": "yarn vitest",
     "testui": "yarn vitest --ui",
     "test-all": "npm run test-unit && npm run build && npm run test-e2e",
     "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",

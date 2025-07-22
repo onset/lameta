@@ -20,56 +20,10 @@ import {
   getTermSets,
   getCustomUri
 } from "./VocabularyHandler";
-
-/**
- * Creates the boilerplate material type definitions for LDAC compliance.
- * These definitions are added to every RO-Crate export.
- */
-function getMaterialTypeDefinitions(): object[] {
-  return [
-    {
-      "@id": "ldac:MaterialTypes",
-      "@type": "DefinedTermSet",
-      name: "Material Types"
-    },
-    {
-      "@id": "ldac:PrimaryMaterial",
-      "@type": "DefinedTerm",
-      name: "Primary Material",
-      description:
-        "The object of study, such as a literary work, film, or recording of natural discourse.",
-      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
-    },
-    {
-      "@id": "ldac:Annotation",
-      "@type": "DefinedTerm",
-      name: "Annotation",
-      description:
-        "The resource includes material that adds information to some other linguistic record.",
-      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
-    }
-  ];
-}
-
-/**
- * Determines the LDAC material type based on file path.
- * According to LDAC profile, every file should have an ldac:materialType property.
- * @param filePath The path to the file
- * @returns The LDAC material type reference object
- */
-function getLdacMaterialType(filePath: string): { "@id": string } {
-  const fileFormatInfo = GetFileFormatInfoForPath(filePath);
-  const fileType = fileFormatInfo?.type || "unknown";
-
-  switch (fileType) {
-    case "Audio":
-    case "Video":
-    case "Image":
-      return { "@id": "ldac:PrimaryMaterial" };
-    default:
-      return { "@id": "ldac:Annotation" };
-  }
-}
+import {
+  getLdacMaterialTypeForPath,
+  createLdacMaterialTypeDefinitions
+} from "./RoCrateMaterialTypes";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -204,19 +158,26 @@ async function getRoCrateInternal(
       entry.hasPart.push({ "@id": personId });
     });
 
-    // Add a basic license for project
+    // Add LDAC-compliant license for project
     const license: any = {
       "@id": "#license",
-      "@type": "CreativeWork",
-      name: "unspecified"
+      "@type": "ldac:DataReuseLicense",
+      "ldac:access": { "@id": "ldac:OpenAccess" },
+      description:
+        "Project-level license - access depends on individual sessions."
     };
+
+    // Add LDAC access type definitions to other entries
+    const ldacAccessDefinitions = createLdacAccessTypeDefinitions();
+    const ldacMaterialTypeDefinitions = createLdacMaterialTypeDefinitions();
 
     return [
       entry,
       ...sessionEntries.flat(),
       ...boilerplateGraph,
       license,
-      ...getMaterialTypeDefinitions(),
+      ...ldacAccessDefinitions,
+      ...ldacMaterialTypeDefinitions,
       ...getUniqueEntries(otherEntries)
     ];
   }
@@ -305,33 +266,40 @@ async function getRoCrateInternal(
     });
   }
 
-  // REVIEW: not clear really what we're going to do with license
+  // Create LDAC-compliant license
+  const access = session.metadataFile?.getTextProperty("access");
+  const ldacAccessCategory =
+    access && access !== "unspecified" && access !== ""
+      ? getLdacAccessCategory(access, project.authorityLists)
+      : "ldac:OpenAccess"; // Default to OpenAccess for unspecified access
+
   const license: any = {
     "@id": "#license",
-    "@type": "CreativeWork",
-    name: session.metadataFile?.getTextProperty("access")
+    "@type": "ldac:DataReuseLicense",
+    "ldac:access": { "@id": ldacAccessCategory },
+    name: access || "public" // Use the access value as the name, default to "public"
   };
-  const access = session.metadataFile?.getTextProperty("access");
-  if (access === "unspecified" || access === "" || access === undefined) {
-    license.name = "unspecified";
-  } else {
-    addFieldIfNotEmpty(folder, "access", "access", license);
-    addFieldIfNotEmpty(folder, "accessDescription", "explanation", license);
+
+  // Add description from access choice
+  if (access && access !== "unspecified" && access !== "") {
     const accessDescription = getDescriptionFromAccessChoice(
       access,
       project.authorityLists
     );
-    license.description = accessDescription;
+    if (accessDescription) {
+      license.description = accessDescription;
+    }
+  } else {
+    license.description = "This is an open access license.";
   }
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  allEntries.push(
-    license,
-    ...boilerplateSessionGraph,
-    ...getMaterialTypeDefinitions(),
-    ...otherEntries
-  );
+  // Add LDAC access type definitions to the graph
+  otherEntries.push(...createLdacAccessTypeDefinitions());
+  otherEntries.push(...createLdacMaterialTypeDefinitions());
+
+  allEntries.push(license, ...boilerplateSessionGraph, ...otherEntries);
   return allEntries;
 }
 
@@ -726,7 +694,7 @@ function addChildFileEntries(
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
-      "ldac:materialType": getLdacMaterialType(path),
+      "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
       name: fileName,
       role: fileRole
     };
@@ -773,4 +741,63 @@ function getDescriptionFromAccessChoice(
   );
   if (!choice) return "";
   return choice.description;
+}
+
+/**
+ * Gets the LDAC access category from an access choice label
+ * @param choiceLabel The access choice label (e.g., "F: Free to All")
+ * @param authorityLists The authority lists containing access choices
+ * @returns The LDAC access category URI (ldac:OpenAccess or ldac:AuthorizedAccess)
+ */
+function getLdacAccessCategory(
+  choiceLabel: string,
+  authorityLists: AuthorityLists
+): string {
+  const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
+    (c: IChoice) => c.label === choiceLabel
+  );
+
+  // If the choice has an ldacAccessCategory property, use it
+  if (choice && (choice as any).ldacAccessCategory) {
+    return (choice as any).ldacAccessCategory;
+  }
+
+  // Fallback to AuthorizedAccess if no specific category is defined
+  return "ldac:AuthorizedAccess";
+}
+
+/**
+ * Creates LDAC access type definitions for the RO-Crate graph
+ * @returns Array of LDAC access type definition objects
+ */
+function createLdacAccessTypeDefinitions(): object[] {
+  return [
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      name: "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      name: "Open Access",
+      description:
+        "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      inDefinedTermSet: { "@id": "ldac:AccessTypes" }
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      name: "Authorized Access",
+      description:
+        "Data covered by this license requires explicit authorization for access.",
+      inDefinedTermSet: { "@id": "ldac:AccessTypes" }
+    },
+    {
+      "@id": "ldac:DataReuseLicense",
+      "@type": "Class",
+      subClassOf: { "@id": "http://schema.org/CreativeWork" },
+      description: "A license document, setting out terms for reuse of data."
+    }
+  ];
 }

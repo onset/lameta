@@ -208,21 +208,29 @@ describe("RoCrateExporter file handling", () => {
     const audioFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
-    expect(audioFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+    expect(audioFile["ldac:materialType"]).toEqual({
+      "@id": "ldac:PrimaryMaterial"
+    });
 
     const videoFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
     );
-    expect(videoFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+    expect(videoFile["ldac:materialType"]).toEqual({
+      "@id": "ldac:PrimaryMaterial"
+    });
 
     const imageFile = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
     );
-    expect(imageFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+    expect(imageFile["ldac:materialType"]).toEqual({
+      "@id": "ldac:PrimaryMaterial"
+    });
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
-    expect(xmlFile["ldac:materialType"]).toBe("ldac:Annotation");
+    expect(xmlFile["ldac:materialType"]).toEqual({
+      "@id": "ldac:Annotation"
+    });
   });
 });
