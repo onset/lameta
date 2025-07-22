@@ -4,7 +4,20 @@ import { beforeAll, vi } from "vitest";
 // Mock electron bindings and global window object for tests first
 Object.defineProperty(global, "window", {
   value: {
-    __electronCall: vi.fn()
+    __electronCall: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    setTimeout: vi.fn((fn: () => void, delay?: number) => {
+      // Execute immediately in tests
+      fn();
+      return 1; // return a mock timer id
+    }),
+    clearTimeout: vi.fn(),
+    location: { href: "http://localhost:3000" },
+    document: {
+      createElement: vi.fn(() => ({ style: {} })),
+      body: { appendChild: vi.fn() }
+    }
   },
   writable: true
 });

@@ -10,6 +10,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    watch: false, // agents keep getting hung up in watch mode
 
     // "happy-dom" costs us about 1/2 second per test run (including each update)
     // it is the cause of the "Download the React DevTools..." message
