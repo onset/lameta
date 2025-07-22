@@ -4,7 +4,10 @@ import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldD
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { getMimeType, GetFileFormatInfoForPath } from "../model/file/FileTypeInfo";
+import {
+  getMimeType,
+  GetFileFormatInfoForPath
+} from "../model/file/FileTypeInfo";
 import { Project } from "../model/Project/Project";
 import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
 import { IPersonLanguage } from "../model/PersonLanguage";
@@ -33,14 +36,16 @@ function getMaterialTypeDefinitions(): object[] {
       "@id": "ldac:PrimaryMaterial",
       "@type": "DefinedTerm",
       name: "Primary Material",
-      description: "The object of study, such as a literary work, film, or recording of natural discourse.",
+      description:
+        "The object of study, such as a literary work, film, or recording of natural discourse.",
       inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
     },
     {
       "@id": "ldac:Annotation",
       "@type": "DefinedTerm",
       name: "Annotation",
-      description: "The resource includes material that adds information to some other linguistic record.",
+      description:
+        "The resource includes material that adds information to some other linguistic record.",
       inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
     }
   ];
@@ -55,7 +60,7 @@ function getMaterialTypeDefinitions(): object[] {
 function getLdacMaterialType(filePath: string): { "@id": string } {
   const fileFormatInfo = GetFileFormatInfoForPath(filePath);
   const fileType = fileFormatInfo?.type || "unknown";
-  
+
   switch (fileType) {
     case "Audio":
     case "Video":
@@ -321,7 +326,12 @@ async function getRoCrateInternal(
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  allEntries.push(license, ...boilerplateSessionGraph, ...getMaterialTypeDefinitions(), ...otherEntries);
+  allEntries.push(
+    license,
+    ...boilerplateSessionGraph,
+    ...getMaterialTypeDefinitions(),
+    ...otherEntries
+  );
   return allEntries;
 }
 

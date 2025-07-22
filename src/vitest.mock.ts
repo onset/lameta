@@ -2,9 +2,9 @@ import { app } from "electron";
 import { beforeAll, vi } from "vitest";
 
 // Mock electron bindings and global window object for tests first
-Object.defineProperty(global, 'window', {
+Object.defineProperty(global, "window", {
   value: {
-    __electronCall: vi.fn(),
+    __electronCall: vi.fn()
   },
   writable: true
 });
@@ -12,7 +12,7 @@ Object.defineProperty(global, 'window', {
 // Mock the specific file that's causing issues
 vi.mock("@electron/remote/dist/src/common/get-electron-binding", () => ({
   getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => 'test-context-id')
+    getHiddenValue: vi.fn(() => "test-context-id")
   }))
 }));
 
@@ -22,7 +22,7 @@ vi.mock("@electron/remote", () => ({
   process: vi.fn(),
   app: { getAppPath: () => "" },
   getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => 'test-context-id')
+    getHiddenValue: vi.fn(() => "test-context-id")
   }))
 })); //See commit msg for info
 //

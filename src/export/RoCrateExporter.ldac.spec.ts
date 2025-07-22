@@ -12,8 +12,8 @@ import * as fs from "fs-extra";
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z"),
-  }),
+    birthtime: new Date("2023-01-01T00:00:00Z")
+  })
 }));
 
 describe("RoCrateExporter LDAC profile conformance", () => {
@@ -291,8 +291,12 @@ describe("RoCrateExporter LDAC profile conformance", () => {
     expect(primaryMaterial).toBeDefined();
     expect(primaryMaterial["@type"]).toBe("DefinedTerm");
     expect(primaryMaterial.name).toBe("Primary Material");
-    expect(primaryMaterial.description).toBe("The object of study, such as a literary work, film, or recording of natural discourse.");
-    expect(primaryMaterial.inDefinedTermSet).toEqual({ "@id": "ldac:MaterialTypes" });
+    expect(primaryMaterial.description).toBe(
+      "The object of study, such as a literary work, film, or recording of natural discourse."
+    );
+    expect(primaryMaterial.inDefinedTermSet).toEqual({
+      "@id": "ldac:MaterialTypes"
+    });
 
     // Check that Annotation definition exists
     const annotation = result["@graph"].find(
@@ -301,8 +305,12 @@ describe("RoCrateExporter LDAC profile conformance", () => {
     expect(annotation).toBeDefined();
     expect(annotation["@type"]).toBe("DefinedTerm");
     expect(annotation.name).toBe("Annotation");
-    expect(annotation.description).toBe("The resource includes material that adds information to some other linguistic record.");
-    expect(annotation.inDefinedTermSet).toEqual({ "@id": "ldac:MaterialTypes" });
+    expect(annotation.description).toBe(
+      "The resource includes material that adds information to some other linguistic record."
+    );
+    expect(annotation.inDefinedTermSet).toEqual({
+      "@id": "ldac:MaterialTypes"
+    });
   });
 
   it("should include LDAC material type definitions in standalone session export", async () => {
@@ -351,14 +359,18 @@ describe("RoCrateExporter LDAC profile conformance", () => {
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
     expect(audioFileEntity).toBeDefined();
-    expect(audioFileEntity["ldac:materialType"]).toEqual({ "@id": "ldac:PrimaryMaterial" });
+    expect(audioFileEntity["ldac:materialType"]).toEqual({
+      "@id": "ldac:PrimaryMaterial"
+    });
 
-    // Find the XML file entity  
+    // Find the XML file entity
     const xmlFileEntity = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
     expect(xmlFileEntity).toBeDefined();
-    expect(xmlFileEntity["ldac:materialType"]).toEqual({ "@id": "ldac:Annotation" });
+    expect(xmlFileEntity["ldac:materialType"]).toEqual({
+      "@id": "ldac:Annotation"
+    });
 
     // Verify that the material type definitions are referenced by the files
     const primaryMaterialDef = result["@graph"].find(
@@ -367,7 +379,8 @@ describe("RoCrateExporter LDAC profile conformance", () => {
     expect(primaryMaterialDef).toBeDefined();
 
     const annotationDef = result["@graph"].find(
-      (item: any) => item["@id"] === "ldac:Annotation" && item["@type"] === "DefinedTerm"
+      (item: any) =>
+        item["@id"] === "ldac:Annotation" && item["@type"] === "DefinedTerm"
     );
     expect(annotationDef).toBeDefined();
   });
