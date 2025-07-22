@@ -201,4 +201,28 @@ describe("RoCrateExporter file handling", () => {
       "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
     });
   });
+
+  it("should add ldac:materialType property to all files", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    const audioFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+    );
+    expect(audioFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+
+    const videoFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
+    );
+    expect(videoFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+
+    const imageFile = result["@graph"].find(
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+    );
+    expect(imageFile["ldac:materialType"]).toBe("ldac:PrimaryMaterial");
+
+    const xmlFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+    );
+    expect(xmlFile["ldac:materialType"]).toBe("ldac:Annotation");
+  });
 });

@@ -4,7 +4,7 @@ import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldD
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { getMimeType } from "../model/file/FileTypeInfo";
+import { getMimeType, GetFileFormatInfoForPath } from "../model/file/FileTypeInfo";
 import { Project } from "../model/Project/Project";
 import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
 import { IPersonLanguage } from "../model/PersonLanguage";
@@ -17,6 +17,54 @@ import {
   getTermSets,
   getCustomUri
 } from "./VocabularyHandler";
+
+/**
+ * Creates the boilerplate material type definitions for LDAC compliance.
+ * These definitions are added to every RO-Crate export.
+ */
+function getMaterialTypeDefinitions(): object[] {
+  return [
+    {
+      "@id": "ldac:MaterialTypes",
+      "@type": "DefinedTermSet",
+      name: "Material Types"
+    },
+    {
+      "@id": "ldac:PrimaryMaterial",
+      "@type": "DefinedTerm",
+      name: "Primary Material",
+      description: "The object of study, such as a literary work, film, or recording of natural discourse.",
+      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
+    },
+    {
+      "@id": "ldac:Annotation",
+      "@type": "DefinedTerm",
+      name: "Annotation",
+      description: "The resource includes material that adds information to some other linguistic record.",
+      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
+    }
+  ];
+}
+
+/**
+ * Determines the LDAC material type based on file path.
+ * According to LDAC profile, every file should have an ldac:materialType property.
+ * @param filePath The path to the file
+ * @returns The LDAC material type reference object
+ */
+function getLdacMaterialType(filePath: string): { "@id": string } {
+  const fileFormatInfo = GetFileFormatInfoForPath(filePath);
+  const fileType = fileFormatInfo?.type || "unknown";
+  
+  switch (fileType) {
+    case "Audio":
+    case "Video":
+    case "Image":
+      return { "@id": "ldac:PrimaryMaterial" };
+    default:
+      return { "@id": "ldac:Annotation" };
+  }
+}
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -163,6 +211,7 @@ async function getRoCrateInternal(
       ...sessionEntries.flat(),
       ...boilerplateGraph,
       license,
+      ...getMaterialTypeDefinitions(),
       ...getUniqueEntries(otherEntries)
     ];
   }
@@ -272,7 +321,7 @@ async function getRoCrateInternal(
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  allEntries.push(license, ...boilerplateSessionGraph, ...otherEntries);
+  allEntries.push(license, ...boilerplateSessionGraph, ...getMaterialTypeDefinitions(), ...otherEntries);
   return allEntries;
 }
 
@@ -667,6 +716,7 @@ function addChildFileEntries(
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
+      "ldac:materialType": getLdacMaterialType(path),
       name: fileName,
       role: fileRole
     };

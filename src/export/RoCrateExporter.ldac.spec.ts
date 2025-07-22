@@ -8,6 +8,14 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
 import * as fs from "fs-extra";
 
+// Mock fs-extra
+vi.mock("fs-extra", () => ({
+  statSync: vi.fn().mockReturnValue({
+    size: 1024,
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
+}));
+
 describe("RoCrateExporter LDAC profile conformance", () => {
   let mockProject: Project;
   let mockSession: Session;
@@ -263,5 +271,104 @@ describe("RoCrateExporter LDAC profile conformance", () => {
         item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
     );
     expect(sessionEvent.location).toEqual({ "@id": "#huya" });
+  });
+
+  it("should include LDAC material type definitions in the graph", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Check that MaterialTypes term set exists
+    const materialTypesSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:MaterialTypes"
+    );
+    expect(materialTypesSet).toBeDefined();
+    expect(materialTypesSet["@type"]).toBe("DefinedTermSet");
+    expect(materialTypesSet.name).toBe("Material Types");
+
+    // Check that PrimaryMaterial definition exists
+    const primaryMaterial = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+    );
+    expect(primaryMaterial).toBeDefined();
+    expect(primaryMaterial["@type"]).toBe("DefinedTerm");
+    expect(primaryMaterial.name).toBe("Primary Material");
+    expect(primaryMaterial.description).toBe("The object of study, such as a literary work, film, or recording of natural discourse.");
+    expect(primaryMaterial.inDefinedTermSet).toEqual({ "@id": "ldac:MaterialTypes" });
+
+    // Check that Annotation definition exists
+    const annotation = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Annotation"
+    );
+    expect(annotation).toBeDefined();
+    expect(annotation["@type"]).toBe("DefinedTerm");
+    expect(annotation.name).toBe("Annotation");
+    expect(annotation.description).toBe("The resource includes material that adds information to some other linguistic record.");
+    expect(annotation.inDefinedTermSet).toEqual({ "@id": "ldac:MaterialTypes" });
+  });
+
+  it("should include LDAC material type definitions in standalone session export", async () => {
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+    // Check that material type definitions are present even in standalone session export
+    const materialTypesSet = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:MaterialTypes"
+    );
+    expect(materialTypesSet).toBeDefined();
+    expect(materialTypesSet["@type"]).toBe("DefinedTermSet");
+    expect(materialTypesSet.name).toBe("Material Types");
+
+    const primaryMaterial = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+    );
+    expect(primaryMaterial).toBeDefined();
+
+    const annotation = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Annotation"
+    );
+    expect(annotation).toBeDefined();
+  });
+
+  it("should use proper materialType structure with @id for files", async () => {
+    // Add a mock audio file to the session
+    const audioFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009_Careful.mp3",
+      getModifiedDate: () => new Date("2023-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3"
+    } as any;
+
+    const xmlFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
+      getModifiedDate: () => new Date("2023-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
+    } as any;
+
+    // Add files to the session
+    mockSession.files = [audioFile, xmlFile];
+
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Find the audio file entity
+    const audioFileEntity = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+    );
+    expect(audioFileEntity).toBeDefined();
+    expect(audioFileEntity["ldac:materialType"]).toEqual({ "@id": "ldac:PrimaryMaterial" });
+
+    // Find the XML file entity  
+    const xmlFileEntity = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+    );
+    expect(xmlFileEntity).toBeDefined();
+    expect(xmlFileEntity["ldac:materialType"]).toEqual({ "@id": "ldac:Annotation" });
+
+    // Verify that the material type definitions are referenced by the files
+    const primaryMaterialDef = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+    );
+    expect(primaryMaterialDef).toBeDefined();
+
+    const annotationDef = result["@graph"].find(
+      (item: any) => item["@id"] === "ldac:Annotation" && item["@type"] === "DefinedTerm"
+    );
+    expect(annotationDef).toBeDefined();
   });
 });
