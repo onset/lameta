@@ -107,9 +107,10 @@ async function getRoCrateInternal(
       name:
         folder.metadataFile?.getTextProperty("title") ||
         "No title provided for this project.",
-      description:
-        folder.metadataFile?.getTextProperty("description") ||
-        "No description provided for this project.",
+      description: folder.metadataFile?.getTextProperty(
+        "description",
+        "No description provided for this project."
+      ),
       publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
       // TODO: Revisit project-level licensing if needed. For now, each session has its own license.

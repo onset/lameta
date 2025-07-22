@@ -104,6 +104,36 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
   it("should generate unique licenses for different sessions", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
+    // Log the entire graph for debugging
+    console.log("Full graph:", JSON.stringify(result["@graph"], null, 2));
+
+    // Check that project references both sessions
+    const projectDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(projectDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/public_session/"
+    });
+    expect(projectDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/restricted_session/"
+    });
+
+    // Find the session events - both should be in the graph
+    const publicSession = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/public_session/" &&
+        item["@type"].includes("Event")
+    );
+    const restrictedSession = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/restricted_session/" &&
+        item["@type"].includes("Event")
+    );
+
+    // Both sessions should exist in the graph
+    expect(publicSession).toBeDefined();
+    expect(restrictedSession).toBeDefined();
+
     // Find licenses for each session
     const publicLicense = result["@graph"].find(
       (item: any) => item["@id"] === "#license-public_session"
@@ -126,18 +156,6 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     expect(publicLicense.description).toContain("'public'");
     expect(restrictedLicense.description).toContain("'restricted'");
 
-    // Find the session events
-    const publicSession = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "Sessions/public_session/" &&
-        item["@type"].includes("Event")
-    );
-    const restrictedSession = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "Sessions/restricted_session/" &&
-        item["@type"].includes("Event")
-    );
-
     // Sessions should reference their specific licenses
     expect(publicSession.license).toEqual({ "@id": "#license-public_session" });
     expect(restrictedSession.license).toEqual({
@@ -145,9 +163,12 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     });
 
     // Project should NOT have a license (we removed it)
-    const projectDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
     expect(projectDataset.license).toBeUndefined();
+
+    // Count the total number of session events in the graph
+    const sessionEvents = result["@graph"].filter(
+      (item: any) => item["@type"] && item["@type"].includes("Event")
+    );
+    expect(sessionEvents).toHaveLength(2);
   });
 });
