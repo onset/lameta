@@ -296,11 +296,29 @@ describe("RoCrateExporter Validation Tests", () => {
           return "";
         });
 
+      mockSession.metadataFile!.properties = {
+        getHasValue: vi.fn().mockImplementation((key: string) => {
+          return ["title", "description", "access", "genre"].includes(key);
+        }),
+        forEach: vi.fn()
+      } as any;
+
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
 
       const graph = roCrateData["@graph"];
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
+
+      console.log(
+        "mockSession.knownFields:",
+        mockSession.knownFields.map((f) => f.key)
+      );
+      console.log(
+        "genre field:",
+        mockSession.knownFields.find((f) => f.key === "genre")
+      );
+      console.log("rootDataset properties:", Object.keys(rootDataset));
+      console.log("rootDataset content:", JSON.stringify(rootDataset, null, 2));
 
       expect(rootDataset["ldac:linguisticGenre"]).toBeDefined();
       expect(Array.isArray(rootDataset["ldac:linguisticGenre"])).toBe(true);

@@ -30,6 +30,11 @@ import {
   createLdacAccessTypeDefinitions,
   createUniqueLicenses
 } from "./RoCrateLicenses";
+import { createSessionEntry } from "./RoCrateSessions";
+import {
+  makeEntriesFromParticipant,
+  getPersonLanguageElement
+} from "./RoCratePeople";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -134,7 +139,7 @@ async function getRoCrateInternal(
 
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
-        return await getRoCrateInternal(project, session, false);
+        return await createSessionEntry(project, session as Session, false);
       })
     );
 
@@ -188,105 +193,10 @@ async function getRoCrateInternal(
   // from within a project export or as a standalone session export
   const session = folder as Session;
 
-  const mainSessionEntry: any = {
-    "@id": isStandaloneSession ? "./" : `Sessions/${session.filePrefix}/`,
-    "@type": isStandaloneSession
-      ? ["Dataset", "Object", "RepositoryObject"]
-      : ["Event", "Object", "RepositoryObject"],
-    conformsTo: {
-      "@id": "https://w3id.org/ldac/profile#Object"
-    },
-    name:
-      folder.metadataFile?.getTextProperty("title") ||
-      "No title provided for this session.",
-    description:
-      folder.metadataFile?.getTextProperty("description") ||
-      "No description provided for this session.",
-    publisher: { "@id": "https://github.com/onset/lameta" }, // review: we're not actually publishing
-
-    datePublished: new Date().toISOString(), // review: we're not actually publishing
-
-    // License will be set to session-specific license below
-    hasPart: []
-  };
-
-  // Add session-specific properties for Events
-  if (!isStandaloneSession) {
-    const startDate = folder.metadataFile?.getTextProperty("date");
-    if (startDate) {
-      mainSessionEntry.startDate = startDate;
-    }
-
-    const location = folder.metadataFile?.getTextProperty("location");
-    if (location) {
-      mainSessionEntry.location = { "@id": `#${location}` };
-    }
-
-    const keywords = folder.metadataFile?.getTextProperty("keyword");
-    if (keywords) {
-      mainSessionEntry.keywords = keywords;
-    }
-  }
-  const boilerplateSessionGraph = [
-    {
-      "@id": "ro-crate-metadata.json",
-      "@type": "CreativeWork",
-      conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
-      about: { "@id": "./" }
-    }
-  ];
-
-  const otherEntries: any[] = [];
-
-  await addFieldEntries(project, folder, mainSessionEntry, otherEntries);
-
-  const allEntries: any[] = [mainSessionEntry];
-  // Check if this folder has contribution methods (duck typing for Session)
-  if (
-    folder instanceof Session ||
-    typeof (folder as any).getAllContributionsToAllFiles === "function"
-  ) {
-    addParticipantProperties(mainSessionEntry, folder as Session, project);
-    allEntries.push(
-      ...(await makeEntriesFromParticipant(project, folder as Session))
-    );
-    // Note: roles are now handled as specific LDAC properties, not generic participant property
-  }
-
-  // Add files to session hasPart
-  addChildFileEntries(folder, mainSessionEntry, otherEntries);
-
-  // Create Place entity if location is specified
-  const location = folder.metadataFile?.getTextProperty("location");
-  if (location && !isStandaloneSession) {
-    otherEntries.push({
-      "@id": `#${location}`,
-      "@type": "Place",
-      name: location
-    });
-  }
-
-  // Update the session entry to reference the normalized license
-  mainSessionEntry.license = { "@id": getSessionLicenseId(session, project) };
-
-  addChildFileEntries(folder, mainSessionEntry, otherEntries);
-
-  // For standalone sessions, include the license object and LDAC definitions
-  // For project exports, these are handled at the project level
-  if (isStandaloneSession) {
-    const license = createSessionLicense(session, project);
-    allEntries.push(license);
-
-    // Add LDAC access type definitions to the graph
-    otherEntries.push(...createLdacAccessTypeDefinitions());
-    otherEntries.push(...createLdacMaterialTypeDefinitions());
-  }
-
-  allEntries.push(...boilerplateSessionGraph, ...otherEntries);
-  return allEntries;
+  return await createSessionEntry(project, session, isStandaloneSession);
 }
 
-function addFieldIfNotEmpty(
+export function addFieldIfNotEmpty(
   folder: Folder,
   fieldKey: string,
   outputProperty: string,
@@ -297,7 +207,7 @@ function addFieldIfNotEmpty(
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
-async function addFieldEntries(
+export async function addFieldEntries(
   project: Project,
   folder: Folder,
   folderEntry: object,
@@ -405,6 +315,20 @@ async function addFieldEntries(
 
     // if there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
     else {
+      // Skip certain fields that are redundant or handled elsewhere
+      if (field.key === "access") {
+        // Access is now handled through the license system, skip the redundant top-level property
+        continue;
+      }
+      if (field.key === "title" && folderEntry["name"]) {
+        // Skip redundant title property when it's identical to name
+        const titleValue = values[0];
+        const nameValue = folderEntry["name"];
+        if (titleValue === nameValue) {
+          continue;
+        }
+      }
+
       folderEntry[propertyKey] = values[0];
     }
   }
@@ -424,109 +348,7 @@ async function addFieldEntries(
   });
 }
 
-function addParticipantProperties(
-  sessionEntry: any,
-  session: Session,
-  project: Project
-): void {
-  const roleGroups: { [key: string]: string[] } = {};
-
-  // Collect all contributions and group by role
-  session.getAllContributionsToAllFiles().forEach((contribution) => {
-    const personName = contribution.personReference.trim();
-    const role = contribution.role.trim().toLowerCase();
-
-    if (!roleGroups[role]) {
-      roleGroups[role] = [];
-    }
-
-    const person = project.findPerson(personName);
-    const personId = person ? `People/${person.filePrefix}/` : personName;
-
-    // Avoid duplicates
-    if (!roleGroups[role].includes(personId)) {
-      roleGroups[role].push(personId);
-    }
-  });
-
-  // Add LDAC-specific role properties
-  for (const role of Object.keys(roleGroups)) {
-    const ldacProperty = `ldac:${role}`;
-    const personIds = roleGroups[role];
-
-    if (personIds.length === 1) {
-      sessionEntry[ldacProperty] = { "@id": personIds[0] };
-    } else if (personIds.length > 1) {
-      sessionEntry[ldacProperty] = personIds.map((id) => ({ "@id": id }));
-    }
-  }
-}
-
-async function makeEntriesFromParticipant(project: Project, session: Session) {
-  const uniqueContributors: { [key: string]: Set<string> } = {};
-
-  session.getAllContributionsToAllFiles().forEach((contribution) => {
-    const personName = contribution.personReference.trim();
-    const role = contribution.role.trim();
-
-    if (!uniqueContributors[personName]) {
-      uniqueContributors[personName] = new Set();
-    }
-    uniqueContributors[personName].add(role);
-  });
-  const personField = fieldDefinitionsOfCurrentConfig.common.find(
-    (f) => f.key === "person"
-  );
-  if (!personField) {
-    // If person field definition is not available, skip generating person entries
-    return [];
-  }
-  const template = getRoCrateTemplate(personField);
-
-  const entriesForAllContributors: object[] = [];
-
-  for (const name of Object.keys(uniqueContributors)) {
-    const person = project.findPerson(name);
-
-    // Review: if the person is not found, currently we output what we can, which is their ID and their roles.
-
-    // add in the ro-crate stuff like @id and @type
-    const personElement = getElementUsingTemplate(
-      template,
-      person ? `People/${person.filePrefix}/` : name
-    );
-
-    if (person) {
-      // add all the other fields from the person object and create "otherEntries" as needed if the person needs to point to them
-      await addFieldEntries(
-        project,
-        person,
-        personElement,
-        entriesForAllContributors
-      );
-      addChildFileEntries(person, personElement, entriesForAllContributors);
-    }
-    // Note: roles are now handled in the participant property of the Event, not on Person entities
-    entriesForAllContributors.push(personElement);
-  }
-  return entriesForAllContributors;
-}
-
-// now we need an array of role elements, one for each unique role in the session
-function getRoles(session: Session) {
-  const uniqueRoles = new Set<string>();
-  session.getAllContributionsToAllFiles().forEach((contribution) => {
-    uniqueRoles.add(contribution.role.trim());
-  });
-  return Array.from(uniqueRoles).map((role) => {
-    return {
-      "@id": `role_${role}`,
-      "@type": "Role",
-      name: role
-    };
-  });
-}
-function getRoCrateTemplate(field: any): any {
+export function getRoCrateTemplate(field: any): any {
   if (field.rocrate?.handler === "languages") {
     const languageField = fieldDefinitionsOfCurrentConfig.common.find(
       (f) => f.key === "language"
@@ -559,7 +381,10 @@ function getFieldValues(folder: Folder, field: any): string[] {
   }
 }
 
-function getElementUsingTemplate(template: object, value: string): object {
+export function getElementUsingTemplate(
+  template: object,
+  value: string
+): object {
   const output = {};
   Object.keys(template).forEach((key) => {
     // when we're handling person languages, those are whole objects with various properties
@@ -590,42 +415,7 @@ function sanitizeLanguageCode(code: string): string {
   return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
-function getPersonLanguageElement(value: IPersonLanguage): object {
-  const languageField = fieldDefinitionsOfCurrentConfig.common.find(
-    (f) => f.key === "language"
-  );
-  const template = languageField?.rocrate?.template;
-
-  if (!template) {
-    return {};
-  }
-
-  const output = {};
-  Object.keys(template).forEach((key) => {
-    let val = template[key];
-
-    // Find placeholders in the format [property]
-    val = val.replace(/\[([^\]]+)\]/g, (match, property) => {
-      let replacement;
-      if (property === "languageName") {
-        const name =
-          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-            value.code
-          );
-        replacement = val.replace("[languageName]", name);
-      } else replacement = value[property];
-      return replacement !== undefined && replacement !== ""
-        ? replacement
-        : undefined;
-    });
-
-    output[key] = val;
-  });
-
-  return output;
-}
-
-function addChildFileEntries(
+export function addChildFileEntries(
   folder: Folder,
   folderEntry: object,
   otherEntries: object[]

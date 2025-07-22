@@ -304,7 +304,7 @@
       type: "languageChoices",
       englishLabel: "Subject Languages",
       rocrate: {
-        key: "subjectLanguages",
+        key: "ldac:subjectLanguage",
         handler: "languages",
         array: true,
         template: { "@id": "#language_[v]" }
