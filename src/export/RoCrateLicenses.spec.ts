@@ -2,7 +2,8 @@ import { vi, describe, it, beforeEach, expect } from "vitest";
 import {
   createSessionLicense,
   getSessionLicenseId,
-  createLdacAccessTypeDefinitions
+  createLdacAccessTypeDefinitions,
+  createUniqueLicenses
 } from "./RoCrateLicenses";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
@@ -62,7 +63,7 @@ describe("RoCrateLicenses", () => {
       const license = createSessionLicense(mockSession, mockProject);
 
       expect(license).toBeDefined();
-      expect(license["@id"]).toBe("#license-test_session");
+      expect(license["@id"]).toBe("#license-testarchive-f");
       expect(license["@type"]).toBe("ldac:DataReuseLicense");
       expect(license["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
       expect(license.description).toContain("TestArchive-specific term");
@@ -135,9 +136,9 @@ describe("RoCrateLicenses", () => {
   });
 
   describe("getSessionLicenseId", () => {
-    it("should return correct license ID for session", () => {
-      const licenseId = getSessionLicenseId(mockSession);
-      expect(licenseId).toBe("#license-test_session");
+    it("should return correct normalized license ID for session", () => {
+      const licenseId = getSessionLicenseId(mockSession, mockProject);
+      expect(licenseId).toBe("#license-testarchive-f");
     });
   });
 
@@ -182,6 +183,99 @@ describe("RoCrateLicenses", () => {
       expect((dataReuseLicense as any)["@type"]).toBe("Class");
       expect((dataReuseLicense as any).subClassOf).toEqual({
         "@id": "http://schema.org/CreativeWork"
+      });
+    });
+  });
+
+  describe("createUniqueLicenses", () => {
+    it("should create only unique license objects for sessions with same access", () => {
+      // Create multiple sessions with the same access level
+      const session1 = {
+        filePrefix: "session1",
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "access") return "F: Free to All";
+            return "";
+          })
+        }
+      } as any;
+
+      const session2 = {
+        filePrefix: "session2",
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "access") return "F: Free to All";
+            return "";
+          })
+        }
+      } as any;
+
+      const session3 = {
+        filePrefix: "session3",
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "access") return "U: All Registered Users";
+            return "";
+          })
+        }
+      } as any;
+
+      const uniqueLicenses = createUniqueLicenses(
+        [session1, session2, session3],
+        mockProject
+      );
+
+      // Should only have 2 unique licenses (F and U access types)
+      expect(uniqueLicenses).toHaveLength(2);
+
+      // Verify the license IDs are normalized
+      const licenseIds = uniqueLicenses.map((license) => license["@id"]);
+      expect(licenseIds).toContain("#license-testarchive-f");
+      expect(licenseIds).toContain("#license-testarchive-u");
+    });
+
+    it("should create different licenses for different access types", () => {
+      const publicSession = {
+        filePrefix: "public_session",
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "access") return "public";
+            return "";
+          })
+        }
+      } as any;
+
+      const restrictedSession = {
+        filePrefix: "restricted_session",
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "access") return "restricted";
+            return "";
+          })
+        }
+      } as any;
+
+      const uniqueLicenses = createUniqueLicenses(
+        [publicSession, restrictedSession],
+        mockProject
+      );
+
+      expect(uniqueLicenses).toHaveLength(2);
+
+      const publicLicense = uniqueLicenses.find(
+        (license) => license["@id"] === "#license-testarchive-public"
+      );
+      const restrictedLicense = uniqueLicenses.find(
+        (license) => license["@id"] === "#license-testarchive-restricted"
+      );
+
+      expect(publicLicense).toBeDefined();
+      expect(restrictedLicense).toBeDefined();
+      expect(publicLicense["ldac:access"]).toEqual({
+        "@id": "ldac:OpenAccess"
+      });
+      expect(restrictedLicense["ldac:access"]).toEqual({
+        "@id": "ldac:AuthorizedAccess"
       });
     });
   });

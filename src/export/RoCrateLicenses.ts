@@ -4,20 +4,22 @@ import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import { IChoice } from "../model/field/Field";
 
 /**
- * Creates a session-specific license object for RO-Crate
- * @param session The session to create a license for
+ * Creates a normalized license object for RO-Crate based on access type
+ * @param session The session to create a license for (used to get access value)
  * @param project The project containing the session
  * @returns The license object to add to the RO-Crate graph
  */
 export function createSessionLicense(session: Session, project: Project): any {
   const access = session.metadataFile?.getTextProperty("access");
+  const normalizedAccess =
+    access && access !== "unspecified" && access !== "" ? access : "public";
   const ldacAccessCategory =
     access && access !== "unspecified" && access !== ""
       ? getLdacAccessCategory(access, project.authorityLists)
       : "ldac:OpenAccess"; // Default to OpenAccess for unspecified access
 
   const license: any = {
-    "@id": `#license-${session.filePrefix}`,
+    "@id": getNormalizedLicenseId(normalizedAccess, project),
     "@type": "ldac:DataReuseLicense",
     "ldac:access": { "@id": ldacAccessCategory }
   };
@@ -45,12 +47,71 @@ export function createSessionLicense(session: Session, project: Project): any {
 }
 
 /**
- * Gets the license ID for a session
+ * Gets the normalized license ID for a session based on access type and archive
  * @param session The session to get the license ID for
- * @returns The license ID string
+ * @param project The project containing the session
+ * @returns The normalized license ID string
  */
-export function getSessionLicenseId(session: Session): string {
-  return `#license-${session.filePrefix}`;
+export function getSessionLicenseId(
+  session: Session,
+  project: Project
+): string {
+  const access = session.metadataFile?.getTextProperty("access");
+  const normalizedAccess =
+    access && access !== "unspecified" && access !== "" ? access : "public";
+  return getNormalizedLicenseId(normalizedAccess, project);
+}
+
+/**
+ * Creates a normalized license ID based on access type and archive configuration
+ * @param access The access choice label (e.g., "F: Free to All" or "Entity")
+ * @param project The project containing archive configuration
+ * @returns The normalized license ID string
+ */
+function getNormalizedLicenseId(access: string, project: Project): string {
+  const archiveConfigurationName =
+    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
+    "unknown";
+
+  // Extract the key part from complex access labels
+  // For labels like "F: Free to All", extract "F"
+  // For simple labels like "Entity", use as-is
+  const accessKey = access.includes(":") ? access.split(":")[0].trim() : access;
+
+  // Create a normalized ID using archive name and access key
+  const normalizedArchive = archiveConfigurationName
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "-");
+  const normalizedAccessKey = accessKey
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "-");
+
+  return `#license-${normalizedArchive}-${normalizedAccessKey}`;
+}
+
+/**
+ * Creates unique licenses for all sessions in a project
+ * @param sessions Array of sessions to create licenses for
+ * @param project The project containing the sessions
+ * @returns Array of unique license objects
+ */
+export function createUniqueLicenses(
+  sessions: Session[],
+  project: Project
+): any[] {
+  const uniqueLicenses = new Map<string, any>();
+
+  sessions.forEach((session) => {
+    const license = createSessionLicense(session, project);
+    const licenseId = license["@id"];
+
+    // Only add if we haven't seen this license ID before
+    if (!uniqueLicenses.has(licenseId)) {
+      uniqueLicenses.set(licenseId, license);
+    }
+  });
+
+  return Array.from(uniqueLicenses.values());
 }
 
 /**
@@ -87,6 +148,13 @@ function getLdacAccessCategory(
   // If the choice has an ldacAccessCategory property, use it
   if (choice && (choice as any).ldacAccessCategory) {
     return (choice as any).ldacAccessCategory;
+  }
+
+  // Handle common public access terms that might not be in authority lists
+  const publicTerms = ["public", "open", "free", "unrestricted"];
+  const lowerChoice = choiceLabel.toLowerCase();
+  if (publicTerms.some((term) => lowerChoice.includes(term))) {
+    return "ldac:OpenAccess";
   }
 
   // Fallback to AuthorizedAccess if no specific category is defined

@@ -27,7 +27,8 @@ import {
 import {
   createSessionLicense,
   getSessionLicenseId,
-  createLdacAccessTypeDefinitions
+  createLdacAccessTypeDefinitions,
+  createUniqueLicenses
 } from "./RoCrateLicenses";
 
 // Info:
@@ -166,12 +167,19 @@ async function getRoCrateInternal(
     const ldacAccessDefinitions = createLdacAccessTypeDefinitions();
     const ldacMaterialTypeDefinitions = createLdacMaterialTypeDefinitions();
 
+    // Create unique licenses for all sessions
+    const uniqueLicenses = createUniqueLicenses(
+      project.sessions.items as Session[],
+      project
+    );
+
     return [
       entry,
       ...sessionEntries.flat(),
       ...boilerplateGraph,
       ...ldacAccessDefinitions,
       ...ldacMaterialTypeDefinitions,
+      ...uniqueLicenses,
       ...getUniqueEntries(otherEntries)
     ];
   }
@@ -258,19 +266,23 @@ async function getRoCrateInternal(
     });
   }
 
-  // Create LDAC-compliant license for session
-  const license = createSessionLicense(session, project);
-
-  // Update the session entry to reference the session-specific license
-  mainSessionEntry.license = { "@id": getSessionLicenseId(session) };
+  // Update the session entry to reference the normalized license
+  mainSessionEntry.license = { "@id": getSessionLicenseId(session, project) };
 
   addChildFileEntries(folder, mainSessionEntry, otherEntries);
 
-  // Add LDAC access type definitions to the graph
-  otherEntries.push(...createLdacAccessTypeDefinitions());
-  otherEntries.push(...createLdacMaterialTypeDefinitions());
+  // For standalone sessions, include the license object and LDAC definitions
+  // For project exports, these are handled at the project level
+  if (isStandaloneSession) {
+    const license = createSessionLicense(session, project);
+    allEntries.push(license);
 
-  allEntries.push(license, ...boilerplateSessionGraph, ...otherEntries);
+    // Add LDAC access type definitions to the graph
+    otherEntries.push(...createLdacAccessTypeDefinitions());
+    otherEntries.push(...createLdacMaterialTypeDefinitions());
+  }
+
+  allEntries.push(...boilerplateSessionGraph, ...otherEntries);
   return allEntries;
 }
 

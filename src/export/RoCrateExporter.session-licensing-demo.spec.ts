@@ -134,12 +134,12 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     expect(publicSession).toBeDefined();
     expect(restrictedSession).toBeDefined();
 
-    // Find licenses for each session
+    // Find licenses for each session (normalized)
     const publicLicense = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-public_session"
+      (item: any) => item["@id"] === "#license-demoarchive-public"
     );
     const restrictedLicense = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-restricted_session"
+      (item: any) => item["@id"] === "#license-demoarchive-restricted"
     );
 
     // Both licenses should exist
@@ -156,10 +156,12 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     expect(publicLicense.description).toContain("'public'");
     expect(restrictedLicense.description).toContain("'restricted'");
 
-    // Sessions should reference their specific licenses
-    expect(publicSession.license).toEqual({ "@id": "#license-public_session" });
+    // Sessions should reference their normalized licenses
+    expect(publicSession.license).toEqual({
+      "@id": "#license-demoarchive-public"
+    });
     expect(restrictedSession.license).toEqual({
-      "@id": "#license-restricted_session"
+      "@id": "#license-demoarchive-restricted"
     });
 
     // Project should NOT have a license (we removed it)

@@ -333,7 +333,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       const graph = roCrateData["@graph"];
       const license = graph.find(
-        (item: any) => item["@id"] === "#license-test-session"
+        (item: any) => item["@id"] === "#license-testarchive-public"
       );
 
       expect(license).toBeDefined();
@@ -359,7 +359,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       const graph = roCrateData["@graph"];
       const license = graph.find(
-        (item: any) => item["@id"] === "#license-test-session"
+        (item: any) => item["@id"] === "#license-testarchive-restricted"
       );
 
       expect(license).toBeDefined();

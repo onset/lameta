@@ -78,9 +78,9 @@ describe("RoCrateExporter LDAC access handling", () => {
   it("should create LDAC-compliant license with OpenAccess for open access", async () => {
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
-    // Find the license entry (session-specific)
+    // Find the license entry (normalized)
     const license = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-test_session"
+      (item: any) => item["@id"] === "#license-testarchive-f"
     );
 
     expect(license).toBeDefined();
@@ -104,9 +104,9 @@ describe("RoCrateExporter LDAC access handling", () => {
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
-    // Find the license entry (session-specific)
+    // Find the license entry (normalized)
     const license = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-test_session"
+      (item: any) => item["@id"] === "#license-testarchive-u"
     );
 
     expect(license).toBeDefined();
@@ -168,9 +168,9 @@ describe("RoCrateExporter LDAC access handling", () => {
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
-    // Find the license entry (session-specific)
+    // Find the license entry (normalized - unspecified becomes "public")
     const license = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-test_session"
+      (item: any) => item["@id"] === "#license-testarchive-public"
     );
 
     expect(license).toBeDefined();
@@ -198,9 +198,9 @@ describe("RoCrateExporter LDAC access handling", () => {
 
     const result = (await getRoCrate(mockProject, mockSession)) as any;
 
-    // Find the license entry (session-specific)
+    // Find the license entry (normalized)
     const license = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-test_session"
+      (item: any) => item["@id"] === "#license-testarchive-x"
     );
 
     expect(license).toBeDefined();
