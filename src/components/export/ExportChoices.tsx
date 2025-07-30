@@ -121,6 +121,11 @@ export const ExportChoices: React.FunctionComponent<{
         id="whichSessions"
         css={css`
           margin-top: 15px;
+          /* Hide this section when exporting RO-Crate, at this time we're not clear that this would be useful.
+             If it turns out that we do want it, we need to implement the filtering in the ro-crate exporter. */
+          visibility: ${props.exportFormat === "ro-crate"
+            ? "hidden"
+            : "visible"};
         `}
       >
         <FormControl
