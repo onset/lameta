@@ -285,7 +285,8 @@ describe("RoCratePeople", () => {
       expect(description).toContain("Edolo learned in Huya.");
       expect(description).toContain("Primary Occupation: Subsistence Farmer.");
       expect(description).toContain("Education: Grade 2.");
-      expect(description).toContain("Current Village: Huya.");
+      // Custom fields like Current_Village should NOT be in description for privacy
+      expect(description).not.toContain("Current Village: Huya.");
 
       // These should no longer be separate fields
       expect(personEntry!["education"]).toBeUndefined();

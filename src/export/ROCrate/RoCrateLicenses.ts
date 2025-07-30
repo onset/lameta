@@ -8,6 +8,8 @@ import { IChoice } from "../../model/field/Field";
  * @param session The session to create a license for (used to get access value)
  * @param project The project containing the session
  * @returns The license object to add to the RO-Crate graph
+ *
+ * Lameta has different access types for each archive. This has to map them to ldac's two ideas, basically fully-open and other.
  */
 export function createSessionLicense(session: Session, project: Project): any {
   const access = session.metadataFile?.getTextProperty("access");

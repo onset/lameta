@@ -5,7 +5,6 @@ import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFie
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../model/PersonLanguage";
 import {
-  addFieldEntries,
   addChildFileEntries,
   getElementUsingTemplate,
   getRoCrateTemplate
@@ -45,7 +44,7 @@ function makeLdacCompliantPersonEntry(
     descriptionParts.push(existingDescription);
   }
 
-  // Handle birthYear -> ldac:age conversion
+  // determing ldac:age by comparing the birthYear of the person with the date this session was recorded
   const birthYear = person.metadataFile?.getTextProperty("birthYear")?.trim();
   if (birthYear && sessionDate && birthYear !== "?" && birthYear !== "") {
     const age = person.ageOn(sessionDate);
@@ -62,6 +61,11 @@ function makeLdacCompliantPersonEntry(
       continue;
     }
 
+    // Skip PII fields entirely - they should not be exported to RO-Crate
+    if (field.personallyIdentifiableInformation) {
+      continue;
+    }
+
     if (LDAC_COMPLIANT_FIELDS.has(field.key)) {
       // Keep LDAC compliant fields as-is
       personElement[field.key] = value;
@@ -74,7 +78,10 @@ function makeLdacCompliantPersonEntry(
     }
   }
 
-  // Handle custom fields - these should also go to description
+  // Handle custom fields - FILTER THEM OUT since we don't know if they contain PII
+  // Custom fields on Person entities are not exported to RO-Crate because
+  // we cannot determine if they contain personally identifiable information.
+  // This is a conservative approach to protect privacy.
   person.metadataFile?.properties.forEach((key, field) => {
     if (!field.definition.isCustom) return;
 
@@ -83,16 +90,9 @@ function makeLdacCompliantPersonEntry(
       return;
     }
 
-    const value = field.text?.trim();
-    if (value && value !== "unspecified") {
-      // Transform field names like "Current_Village" to "Current Village"
-      const fieldLabel = key
-        .replace(/_/g, " ")
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^\s+/, "")
-        .replace(/\s+/g, " ");
-      descriptionParts.push(`${fieldLabel}: ${value}.`);
-    }
+    // Custom fields are completely filtered out for Person entities
+    // to avoid potential PII exposure
+    // Note: We do not add these to description or export them in any form
   });
 
   // Set the consolidated description

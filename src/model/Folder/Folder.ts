@@ -291,6 +291,9 @@ export abstract class Folder {
   public get /*babel doesn't like this: abstract*/ displayName(): string {
     return "";
   }
+  // Array of field definitions that define the standard/expected metadata fields for this folder type.
+  // This is populated from fieldDefinitionsOfCurrentConfig (loaded from fields.json5) and used by
+  // exporters (like ROCrate) to distinguish between standard fields and custom fields when processing metadata.
   public knownFields: FieldDefinition[];
 
   // renaming failures can lead to ____.meta files that don't match anything, they just gum up the works
