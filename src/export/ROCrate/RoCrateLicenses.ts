@@ -90,28 +90,31 @@ function getNormalizedLicenseId(access: string, project: Project): string {
 }
 
 /**
- * Creates unique licenses for all sessions in a project
+ * Creates a minimal set of distinct licenses for all sessions in a project.
+ * Sessions with the same access type and archive configuration will share the same license.
+ * This reduces duplication in the RO-Crate graph while ensuring all sessions have appropriate licenses.
  * @param sessions Array of sessions to create licenses for
  * @param project The project containing the sessions
- * @returns Array of unique license objects
+ * @returns Array of distinct license objects (one per unique access/archive combination)
  */
-export function createUniqueLicenses(
+export function createDistinctLicenses(
   sessions: Session[],
   project: Project
 ): any[] {
-  const uniqueLicenses = new Map<string, any>();
+  const distinctLicenses = new Map<string, any>();
 
   sessions.forEach((session) => {
     const license = createSessionLicense(session, project);
     const licenseId = license["@id"];
 
     // Only add if we haven't seen this license ID before
-    if (!uniqueLicenses.has(licenseId)) {
-      uniqueLicenses.set(licenseId, license);
+    // Multiple sessions with the same access type will share the same license
+    if (!distinctLicenses.has(licenseId)) {
+      distinctLicenses.set(licenseId, license);
     }
   });
 
-  return Array.from(uniqueLicenses.values());
+  return Array.from(distinctLicenses.values());
 }
 
 /**
