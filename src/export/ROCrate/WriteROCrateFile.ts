@@ -1,9 +1,9 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { Project } from "../model/Project/Project";
-import { getRoCrate } from "../export/RoCrateExporter";
+import { Project } from "../../model/Project/Project";
+import { getRoCrate } from "./RoCrateExporter";
 
-export async function updateROCrateFile(project: Project): Promise<void> {
+export async function writeROCrateFile(project: Project): Promise<void> {
   if (!project || !project.directory) {
     throw new Error("No valid project provided");
   }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { css } from "@emotion/react";
 import { Folder } from "../../model/Folder/Folder";
 import { Project } from "../../model/Project/Project";
-import { getRoCrate } from "../../export/RoCrateExporter";
+import { getRoCrate } from "../../export/ROCrate/RoCrateExporter";
 import FindInPage from "../FindInPage";
 import { JsonView } from "./JsonView";
 import { ValidationResultsList } from "./RoCrateValidationResults";

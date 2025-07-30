@@ -1,9 +1,9 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from "vitest";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { updateROCrateFile } from "./ROCrateUpdate";
+import { writeROCrateFile } from "./WriteROCrateFile";
 import { getRoCrate } from "./RoCrateExporter";
-import { Project } from "../model/Project/Project";
+import { Project } from "../../model/Project/Project";
 
 // Mock fs-extra
 vi.mock("fs-extra", () => ({
@@ -29,7 +29,7 @@ vi.mock("path", async () => {
 const mockFs = fs as any;
 const mockGetRoCrate = getRoCrate as any;
 
-describe("updateROCrateFile", () => {
+describe("writeROCrateFile", () => {
   let mockProject: Project;
   const mockProjectDirectory = "/test/project";
   const expectedRoCrateFilePath = "/test/project/ro-crate-metadata.json";
@@ -67,7 +67,7 @@ describe("updateROCrateFile", () => {
     it("should create a new RO-Crate file when none exists", async () => {
       mockFs.pathExists.mockResolvedValue(false);
 
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(Path.join).toHaveBeenCalledWith(
         mockProjectDirectory,
@@ -86,7 +86,7 @@ describe("updateROCrateFile", () => {
     it("should replace existing RO-Crate file when one exists", async () => {
       mockFs.pathExists.mockResolvedValue(true);
 
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockFs.remove).toHaveBeenCalledWith(expectedRoCrateFilePath);
@@ -99,7 +99,7 @@ describe("updateROCrateFile", () => {
     });
 
     it("should format JSON with 2 spaces indentation", async () => {
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(mockFs.writeJson).toHaveBeenCalledWith(
         expectedRoCrateFilePath,
@@ -132,7 +132,7 @@ describe("updateROCrateFile", () => {
 
       mockGetRoCrate.mockResolvedValue(complexRoCrateData);
 
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(mockFs.writeJson).toHaveBeenCalledWith(
         expectedRoCrateFilePath,
@@ -144,7 +144,7 @@ describe("updateROCrateFile", () => {
 
   describe("when project is invalid", () => {
     it("should throw error when project is null", async () => {
-      await expect(updateROCrateFile(null as any)).rejects.toThrow(
+      await expect(writeROCrateFile(null as any)).rejects.toThrow(
         "No valid project provided"
       );
 
@@ -155,7 +155,7 @@ describe("updateROCrateFile", () => {
     });
 
     it("should throw error when project is undefined", async () => {
-      await expect(updateROCrateFile(undefined as any)).rejects.toThrow(
+      await expect(writeROCrateFile(undefined as any)).rejects.toThrow(
         "No valid project provided"
       );
 
@@ -168,7 +168,7 @@ describe("updateROCrateFile", () => {
     it("should throw error when project directory is null", async () => {
       const projectWithoutDirectory = { directory: null } as any;
 
-      await expect(updateROCrateFile(projectWithoutDirectory)).rejects.toThrow(
+      await expect(writeROCrateFile(projectWithoutDirectory)).rejects.toThrow(
         "No valid project provided"
       );
 
@@ -181,7 +181,7 @@ describe("updateROCrateFile", () => {
     it("should throw error when project directory is undefined", async () => {
       const projectWithoutDirectory = {} as Project;
 
-      await expect(updateROCrateFile(projectWithoutDirectory)).rejects.toThrow(
+      await expect(writeROCrateFile(projectWithoutDirectory)).rejects.toThrow(
         "No valid project provided"
       );
 
@@ -197,7 +197,7 @@ describe("updateROCrateFile", () => {
       const fsError = new Error("Permission denied");
       mockFs.pathExists.mockRejectedValue(fsError);
 
-      await expect(updateROCrateFile(mockProject)).rejects.toThrow(
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
         "Permission denied"
       );
 
@@ -212,7 +212,7 @@ describe("updateROCrateFile", () => {
       const fsError = new Error("Failed to remove file");
       mockFs.remove.mockRejectedValue(fsError);
 
-      await expect(updateROCrateFile(mockProject)).rejects.toThrow(
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
         "Failed to remove file"
       );
 
@@ -226,7 +226,7 @@ describe("updateROCrateFile", () => {
       const exporterError = new Error("Failed to generate RO-Crate");
       mockGetRoCrate.mockRejectedValue(exporterError);
 
-      await expect(updateROCrateFile(mockProject)).rejects.toThrow(
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
         "Failed to generate RO-Crate"
       );
 
@@ -239,7 +239,7 @@ describe("updateROCrateFile", () => {
       const fsError = new Error("Failed to write file");
       mockFs.writeJson.mockRejectedValue(fsError);
 
-      await expect(updateROCrateFile(mockProject)).rejects.toThrow(
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
         "Failed to write file"
       );
 
@@ -273,7 +273,7 @@ describe("updateROCrateFile", () => {
         callOrder.push("writeJson");
       });
 
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(callOrder).toEqual([
         "pathExists",
@@ -299,7 +299,7 @@ describe("updateROCrateFile", () => {
         callOrder.push("writeJson");
       });
 
-      await updateROCrateFile(mockProject);
+      await writeROCrateFile(mockProject);
 
       expect(callOrder).toEqual(["pathExists", "getRoCrate", "writeJson"]);
       expect(mockFs.remove).not.toHaveBeenCalled();

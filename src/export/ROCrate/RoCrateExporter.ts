@@ -1,40 +1,28 @@
-import { Folder } from "../model/Folder/Folder";
-import { Session } from "../model/Project/Session/Session";
-import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
-import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
+import { Folder } from "../../model/Folder/Folder";
+import { Session } from "../../model/Project/Session/Session";
+import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import {
-  getMimeType,
-  GetFileFormatInfoForPath
-} from "../model/file/FileTypeInfo";
-import { Project } from "../model/Project/Project";
-import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
-import { IPersonLanguage } from "../model/PersonLanguage";
+import { getMimeType } from "../../model/file/FileTypeInfo";
+import { Project } from "../../model/Project/Project";
+import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
 import _ from "lodash";
-import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import { IChoice } from "../model/field/Field";
 import {
   getVocabularyMapping,
   createTermDefinition,
   getTermSets,
   getCustomUri
-} from "./VocabularyHandler";
+} from "../VocabularyHandler";
 import {
   getLdacMaterialTypeForPath,
   createLdacMaterialTypeDefinitions
 } from "./RoCrateMaterialTypes";
 import {
-  createSessionLicense,
-  getSessionLicenseId,
   createLdacAccessTypeDefinitions,
   createUniqueLicenses
 } from "./RoCrateLicenses";
 import { createSessionEntry } from "./RoCrateSessions";
-import {
-  makeEntriesFromParticipant,
-  getPersonLanguageElement
-} from "./RoCratePeople";
+import { getPersonLanguageElement } from "./RoCratePeople";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -65,7 +53,7 @@ export async function getRoCrate(
           description: "http://schema.org/description",
           datePublished: "http://schema.org/datePublished",
           license: "http://schema.org/license",
-          // PCDM namespace for collection membership
+          // ldac-profile calls for PCDM namespace for collection membership
           pcdm: "http://pcdm.org/models#"
         }
       ],
@@ -102,7 +90,7 @@ async function getRoCrateInternal(
     return [entry, ...getUniqueEntries(otherEntries)];
   }
 
-  // Check if this is a project by looking for sessions property
+  // Check if this is a project by looking for sessions property (easier on mocks than checking type)
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     const entry: any = {
       "@id": "./",
@@ -119,7 +107,7 @@ async function getRoCrateInternal(
       ),
       publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
-      // TODO: Revisit project-level licensing if needed. For now, each session has its own license.
+      // ENHANCE: Revisit project-level licensing if needed. For now, each session has its own license.
       hasPart: [],
       "pcdm:hasMember": []
     };
@@ -329,10 +317,14 @@ export async function addFieldEntries(
         }
       }
       // Skip non-standard properties
-      if (field.key === "status" || field.key === "topic" || field.key === "id") {
+      if (
+        field.key === "status" ||
+        field.key === "topic" ||
+        field.key === "id"
+      ) {
         continue;
       }
-      
+
       // Map 'date' to 'dateCreated' for compliance with the profile
       if (field.key === "date") {
         folderEntry["dateCreated"] = values[0];

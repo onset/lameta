@@ -1,4 +1,4 @@
-import { GetFileFormatInfoForPath } from "../model/file/FileTypeInfo";
+import { GetFileFormatInfoForPath } from "../../model/file/FileTypeInfo";
 
 /**
  * Determines the LDAC material type based on file type.

@@ -5,8 +5,8 @@ import {
   createLdacAccessTypeDefinitions,
   createUniqueLicenses
 } from "./RoCrateLicenses";
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
 
 describe("RoCrateLicenses", () => {
   let mockProject: Project;

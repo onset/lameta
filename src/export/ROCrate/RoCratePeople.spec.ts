@@ -3,15 +3,15 @@ import {
   makeEntriesFromParticipant,
   getPersonLanguageElement
 } from "./RoCratePeople";
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
-import { Person } from "../model/Project/Person/Person";
-import { FieldDefinition } from "../model/field/FieldDefinition";
-import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
-import { IPersonLanguage } from "../model/PersonLanguage";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
+import { Person } from "../../model/Project/Person/Person";
+import { FieldDefinition } from "../../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { IPersonLanguage } from "../../model/PersonLanguage";
 
 // Mock the staticLanguageFinder
-vi.mock("../languageFinder/LanguageFinder", () => ({
+vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()

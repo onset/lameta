@@ -1,8 +1,8 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import { getRoCrate } from "./RoCrateExporter";
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
-import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
+import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 
 describe("RoCrateExporter LDAC access handling", () => {
   let mockProject: Project;

@@ -1,9 +1,9 @@
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
-import { Person, PersonMetadataFile } from "../model/Project/Person/Person";
-import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
-import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
-import { IPersonLanguage } from "../model/PersonLanguage";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
+import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
+import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
+import { IPersonLanguage } from "../../model/PersonLanguage";
 import {
   addFieldEntries,
   addChildFileEntries,

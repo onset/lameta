@@ -1,7 +1,7 @@
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
-import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
-import { IChoice } from "../model/field/Field";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
+import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
+import { IChoice } from "../../model/field/Field";
 
 /**
  * Creates a normalized license object for RO-Crate based on access type

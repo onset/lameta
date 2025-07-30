@@ -34,7 +34,7 @@ import {
 } from "../LametaDialog";
 import { Button } from "@mui/material";
 import { IMDIMode } from "../../export/ImdiGenerator";
-import { updateROCrateFile } from "../../export/ROCrateUpdate";
+import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
 
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
@@ -321,7 +321,7 @@ export const ExportDialog: React.FunctionComponent<{
             break;
           case "ro-crate":
             analyticsEvent("Export", "Export RO-Crate");
-            await updateROCrateFile(props.projectHolder.project!);
+            await writeROCrateFile(props.projectHolder.project!);
             setMode(Mode.finished);
             break;
           case "imdi":

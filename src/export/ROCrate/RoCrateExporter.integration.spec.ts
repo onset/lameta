@@ -1,10 +1,10 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import { getRoCrate } from "./RoCrateExporter";
-import { Session } from "../model/Project/Session/Session";
-import { Project } from "../model/Project/Project";
-import { Person } from "../model/Project/Person/Person";
-import { FieldDefinition } from "../model/field/FieldDefinition";
-import { fieldDefinitionsOfCurrentConfig } from "../model/field/ConfiguredFieldDefinitions";
+import { Session } from "../../model/Project/Session/Session";
+import { Project } from "../../model/Project/Project";
+import { Person } from "../../model/Project/Person/Person";
+import { FieldDefinition } from "../../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({
