@@ -1,8 +1,7 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import {
   createSessionEntry,
-  addParticipantProperties,
-  getRoles
+  addParticipantProperties
 } from "./RoCrateSessions";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
@@ -128,24 +127,6 @@ describe("RoCrateSessions", () => {
         { "@id": "John Doe" },
         { "@id": "Jane Smith" }
       ]);
-    });
-  });
-
-  describe("getRoles", () => {
-    it("should return unique roles from session contributions", () => {
-      const roles = getRoles(mockSession);
-
-      expect(roles).toHaveLength(2);
-      expect(roles).toContainEqual({
-        "@id": "role_speaker",
-        "@type": "Role",
-        name: "speaker"
-      });
-      expect(roles).toContainEqual({
-        "@id": "role_interviewer",
-        "@type": "Role",
-        name: "interviewer"
-      });
     });
   });
 });

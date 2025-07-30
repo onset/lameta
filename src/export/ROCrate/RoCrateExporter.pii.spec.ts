@@ -168,18 +168,19 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
 
     // Find the person entry
     const personEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+      (item: any) =>
+        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();
-    
+
     // Should include non-PII fields
     expect(personEntry.name).toBe("John Doe");
     expect(personEntry.education).toBeUndefined(); // Should be moved to description by LDAC compliance
-    
+
     // Should NOT include PII fields at all
     expect(personEntry.howToContact).toBeUndefined();
-    
+
     // Should not have the PII field mentioned in description either
     if (personEntry.description) {
       expect(personEntry.description).not.toContain("john.doe@example.com");
@@ -192,15 +193,16 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
 
     // Find the person entry
     const personEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+      (item: any) =>
+        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();
-    
+
     // Should NOT include custom fields as top-level properties
     expect(personEntry.customAddress).toBeUndefined();
     expect(personEntry.customPhoneNumber).toBeUndefined();
-    
+
     // Should not have custom fields in description either, since they could contain PII
     if (personEntry.description) {
       expect(personEntry.description).not.toContain("123 Main St");
@@ -221,19 +223,21 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
       } as FieldDefinition,
       {
         key: "gender",
-        englishLabel: "Gender", 
+        englishLabel: "Gender",
         personallyIdentifiableInformation: false,
         isCustom: false
       } as FieldDefinition
     ];
 
-    (mockPerson.metadataFile as any).getTextProperty = vi.fn().mockImplementation((key: string) => {
-      const properties = {
-        name: "John Doe",
-        gender: "Male"
-      };
-      return properties[key] || "";
-    });
+    (mockPerson.metadataFile as any).getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        const properties = {
+          name: "John Doe",
+          gender: "Male"
+        };
+        return properties[key] || "";
+      });
 
     // Remove custom fields
     (mockPerson.metadataFile as any).properties.forEach = vi.fn();
@@ -241,7 +245,8 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const personEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+      (item: any) =>
+        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();
@@ -253,7 +258,7 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
     // This test ensures the filtering logic includes proper documentation
     // The comment should explain that custom fields on Person are filtered out
     // because we cannot determine if they contain PII
-    
+
     // We'll verify this by checking that the makeLdacCompliantPersonEntry function
     // or similar logic includes appropriate comments in the source code
     // This is more of a documentation requirement than a runtime test

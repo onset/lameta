@@ -1,6 +1,5 @@
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
-import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import {
   createSessionLicense,
   getSessionLicenseId,
@@ -137,19 +136,4 @@ export function addParticipantProperties(
       sessionEntry[ldacProperty] = personIds.map((id) => ({ "@id": id }));
     }
   }
-}
-
-// now we need an array of role elements, one for each unique role in the session
-export function getRoles(session: Session) {
-  const uniqueRoles = new Set<string>();
-  session.getAllContributionsToAllFiles().forEach((contribution) => {
-    uniqueRoles.add(contribution.role.trim());
-  });
-  return Array.from(uniqueRoles).map((role) => {
-    return {
-      "@id": `role_${role}`,
-      "@type": "Role",
-      name: role
-    };
-  });
 }

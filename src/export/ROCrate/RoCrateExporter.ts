@@ -19,7 +19,7 @@ import {
 } from "./RoCrateMaterialTypes";
 import {
   createLdacAccessTypeDefinitions,
-  createUniqueLicenses
+  createDistinctLicenses
 } from "./RoCrateLicenses";
 import { createSessionEntry } from "./RoCrateSessions";
 import { getPersonLanguageElement } from "./RoCratePeople";
@@ -161,7 +161,7 @@ async function getRoCrateInternal(
     const ldacMaterialTypeDefinitions = createLdacMaterialTypeDefinitions();
 
     // Create unique licenses for all sessions
-    const uniqueLicenses = createUniqueLicenses(
+    const uniqueLicenses = createDistinctLicenses(
       project.sessions.items as Session[],
       project
     );
@@ -205,12 +205,12 @@ export async function addFieldEntries(
   for (const field of folder.knownFields) {
     const values: string[] = getFieldValues(folder, field);
     if (values.length === 0 || values[0] === "unspecified") continue;
-    
+
     // For Person entities, skip PII fields entirely
     if (folder instanceof Person && field.personallyIdentifiableInformation) {
       continue;
     }
-    
+
     const propertyKey = field.rocrate?.key || field.key;
 
     // REVIEW: for some reason languages of a person aren't in the normal field system?
@@ -344,12 +344,12 @@ export async function addFieldEntries(
 
   folder.metadataFile!.properties.forEach((key, field) => {
     if (!field.definition.isCustom) return;
-    
+
     // For Person entities, skip custom fields entirely since we don't know if they contain PII
     if (folder instanceof Person) {
       return;
     }
-    
+
     // Skip if this was already handled as a known field
     if (folder.knownFields.some((k) => k.key === key)) {
       return;
