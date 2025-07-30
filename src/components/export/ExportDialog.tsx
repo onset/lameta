@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useState } from "react";
 import { observer } from "mobx-react";
 import "./ExportDialog.scss";
@@ -41,6 +42,7 @@ import { app } from "@electron/remote";
 import { clipboard } from "electron";
 import { Session } from "src/model/Project/Session/Session";
 import ReactMarkdown from "react-markdown";
+import { lameta_dark_green, lameta_green } from "../../containers/theme";
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};
@@ -74,6 +76,13 @@ export const ExportDialog: React.FunctionComponent<{
         document.body.style.cursor = "default";
     }
   }, [mode]);
+
+  // // Temporary debugging: pause when mode changes to exporting
+  // React.useEffect(() => {
+  //   if (mode === Mode.exporting) {
+  //     debugger; // This will pause execution in the browser's dev tools
+  //   }
+  // }, [mode]);
 
   const [error, setError] = useState<string | undefined>(undefined);
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
@@ -294,6 +303,18 @@ export const ExportDialog: React.FunctionComponent<{
   };
 
   const saveFilesAsync = async (path: string) => {
+    const startTime = Date.now();
+    const MIN_EXPORT_TIME = 1000; // 1 seconds minimum to give user some confirmation that we did do something (ro-crate export is very fast)
+
+    const finishExport = async () => {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = MIN_EXPORT_TIME - elapsedTime;
+
+      if (remainingTime > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remainingTime));
+      }
+    };
+
     try {
       const folderFilter =
         whichSessionsOption === "all"
@@ -309,7 +330,8 @@ export const ExportDialog: React.FunctionComponent<{
               path,
               props.projectHolder.project!,
               folderFilter
-            ).then(() => {
+            ).then(async () => {
+              await finishExport();
               setMode(Mode.finished); // don't have to wait for any copying of big files
             });
             break;
@@ -317,11 +339,13 @@ export const ExportDialog: React.FunctionComponent<{
             analyticsEvent("Export", "Export Paradisec CSV");
 
             makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
+            await finishExport();
             setMode(Mode.finished); // don't have to wait for any copying of big files
             break;
           case "ro-crate":
             analyticsEvent("Export", "Export RO-Crate");
             await writeROCrateFile(props.projectHolder.project!);
+            await finishExport();
             setMode(Mode.finished);
             break;
           case "imdi":
@@ -334,6 +358,7 @@ export const ExportDialog: React.FunctionComponent<{
               false,
               folderFilter
             );
+            await finishExport();
             setMode(Mode.finished); // don't have to wait for any copying of big files
             setImdiValidated(true);
             break;
@@ -351,7 +376,8 @@ export const ExportDialog: React.FunctionComponent<{
                 IMDIMode.OPEX,
                 true,
                 folderFilter
-              ).then(() => {
+              ).then(async () => {
+                await finishExport();
                 // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
                 setMode(Mode.copying); // don't have to wait for any copying of big files
                 setImdiValidated(true);
@@ -381,7 +407,12 @@ export const ExportDialog: React.FunctionComponent<{
       `}
     >
       <DialogTitle title={t`Export Project`} />
-      <DialogMiddle>
+      <DialogMiddle
+        css={css`
+          min-width: 400px;
+          min-height: 340px;
+        `}
+      >
         {mode === Mode.choosing && (
           <ExportChoices
             exportFormat={exportFormat}
@@ -394,7 +425,7 @@ export const ExportDialog: React.FunctionComponent<{
         )}
         <div
           css={css`
-            margin-left: 20px;
+            /* margin-left: 20px; */
           `}
         >
           {rulesBasedValidationResult &&
@@ -421,16 +452,18 @@ export const ExportDialog: React.FunctionComponent<{
             </div>
           )}
           {mode === Mode.exporting && (
-            <h1>
+            <h2>
               <Trans>Exporting...</Trans>
-            </h1>
+            </h2>
           )}
           {mode === Mode.finished && (
             <div
               css={css`
                 display: flex;
                 flex-direction: column;
+                justify-content: center;
                 gap: 10px;
+                min-height: 200px;
               `}
             >
               {imdiValidated && (
@@ -439,9 +472,20 @@ export const ExportDialog: React.FunctionComponent<{
                 </Alert>
               )}
 
-              <h1>
+              <h2
+                css={css`
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                `}
+              >
+                <CheckCircleIcon
+                  css={css`
+                    color: ${lameta_dark_green};
+                  `}
+                />
                 <Trans>Done</Trans>
-              </h1>
+              </h2>
             </div>
           )}
           {mode === Mode.copying && (
