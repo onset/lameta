@@ -302,7 +302,7 @@ export class Session extends Folder {
     if (violations.length === 0) return "";
     else {
       const s = i18n._(
-        t`lameta could not find a matching Person for the following contributors:`
+        t`lameta could not find a matching Person for the following contributors: `
       );
       return s + violations.join(" ");
     }

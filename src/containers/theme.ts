@@ -20,6 +20,23 @@ export function createLametaTheme(): Theme {
       },
       warning: { main: "#F3AA18" },
       info: { main: "#FFFF00" /* todo */ }
+    },
+    components: {
+      MuiAlert: {
+        styleOverrides: {
+          standardWarning: {
+            color: "#0c0c0ce1", // black with some transparency
+            backgroundColor: "#f8ea2d",
+            "& .MuiAlert-icon": {
+              color: "#0c0c0ce1" // Your folder orange, keeps theme
+            },
+            "& .MuiAlert-icon svg": {
+              width: "1.5em",
+              height: "1.5em"
+            }
+          }
+        }
+      }
     }
   });
 }
@@ -36,6 +53,19 @@ export function createProjectTheme(): Theme {
       },
       warning: { main: "#F3AA18" },
       info: { main: "#f6dbcb" }
+    },
+    components: {
+      MuiAlert: {
+        styleOverrides: {
+          standardWarning: {
+            color: "#8B4513",
+            backgroundColor: "#FFF8DC",
+            "& .MuiAlert-icon": {
+              color: "#B8860B"
+            }
+          }
+        }
+      }
     }
   });
 }

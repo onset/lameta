@@ -491,7 +491,7 @@ export const ExportDialog: React.FunctionComponent<{
         {mode === Mode.finished && (
           <>
             <Button
-              variant="contained"
+              variant="outlined"
               onClick={() => closeDialog()}
               css={css`
                 min-width: 80px;
