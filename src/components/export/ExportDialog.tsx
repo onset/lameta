@@ -433,7 +433,11 @@ export const ExportDialog: React.FunctionComponent<{
         >
           {rulesBasedValidationResult &&
             (mode === Mode.error || mode === Mode.finished) && (
-              <>
+              <div
+                css={css`
+                  margin-top: 50px; // just looks better
+                `}
+              >
                 <Alert severity="warning">
                   <ReactMarkdown
                     children={rulesBasedValidationResult!}
@@ -443,7 +447,7 @@ export const ExportDialog: React.FunctionComponent<{
                   />
                 </Alert>
                 <br />
-              </>
+              </div>
             )}
           {mode === Mode.error && (
             <div>
