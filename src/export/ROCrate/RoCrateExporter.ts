@@ -102,7 +102,7 @@ async function getRoCrateInternal(
         folder.metadataFile?.getTextProperty("title") ||
         "No title provided for this project.",
       description: folder.metadataFile?.getTextProperty(
-        "description",
+        "collectionDescription",
         "No description provided for this project."
       ),
       publisher: { "@id": "https://github.com/onset/lameta" },
