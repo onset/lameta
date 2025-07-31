@@ -432,7 +432,12 @@ export const ExportDialog: React.FunctionComponent<{
             (mode === Mode.error || mode === Mode.finished) && (
               <>
                 <Alert severity="warning">
-                  <ReactMarkdown children={rulesBasedValidationResult!} />
+                  <ReactMarkdown
+                    children={rulesBasedValidationResult!}
+                    renderers={{
+                      paragraph: ({ children }) => <span>{children}</span>
+                    }}
+                  />
                 </Alert>
                 <br />
               </>
