@@ -1,3 +1,13 @@
+// Fields to exclude from the property display in HTML
+const EXCLUDED_FIELDS = new Set([
+  "name", // Handled separately in the header
+  "conformsTo",
+  "datePublished",
+  "dateCreated",
+  "dateModified",
+  "contentSize"
+]);
+
 export function generateRoCrateHtml(roCrateData: any): string {
   const graph = roCrateData["@graph"] || [];
   const rootDataset = graph.find((item: any) => item["@id"] === "./");
@@ -29,9 +39,9 @@ export function generateRoCrateHtml(roCrateData: any): string {
       background-color: var(--color-background);
     }
     .header { 
-      border-bottom: 2px solid var(--color-primary); 
-      padding-bottom: 20px; 
-      margin-bottom: 30px; 
+    /*   border-bottom: 2px solid var(--color-primary); */
+  /*    padding-bottom: 20px; 
+      margin-bottom: 30px; */
     }
     .entity { 
       border: 1px solid var(--color-border); 
@@ -39,19 +49,37 @@ export function generateRoCrateHtml(roCrateData: any): string {
       padding: 15px; 
       border-radius: 5px; 
       background-color: var(--color-white); 
+      position: relative;
+    }
+    .entity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
     }
     .entity-id { 
       font-weight: bold; 
-      color: var(--color-primary); 
-      margin-bottom: 10px; 
-    }
-    .entity-type { 
       background-color: var(--color-primary); 
       color: var(--color-white); 
       padding: 2px 8px; 
       border-radius: 3px; 
       font-size: 0.9em; 
-      margin-right: 5px; 
+      display: inline-block;
+      flex: 1;
+    }
+    .entity-types {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-left: 10px;
+    }
+    .entity-type { 
+      background-color: transparent; 
+      color: var(--color-primary); 
+      border: 1px solid var(--color-primary);
+      padding: 2px 8px; 
+      border-radius: 3px; 
+      font-size: 0.9em; 
     }
     .property { 
       margin: 8px 0; 
@@ -115,7 +143,15 @@ export function generateRoCrateHtml(roCrateData: any): string {
       margin: 10px 0;
       display: block;
     }
-    .image-entity {
+    .media-player {
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 5px;
+      margin: 10px 0;
+      display: block;
+    }
+    .image-entity, .media-entity {
       text-align: left;
     }
   </style>
@@ -123,8 +159,7 @@ export function generateRoCrateHtml(roCrateData: any): string {
 <body>
   <div class="header">
     <h1>${rootDataset?.name}</h1>
-    <p>This is a human-readable view of the <a href="https://www.researchobject.org/ro-crate/" target="_blank">ro-crate</a> metadata found in the accompanying ro-crate-metadata.json file.</p>
-    <p>It conforms to the <a href="https://w3id.org/ldac/profile" target="_blank">LDAC Profile</a></p>
+    <It>This dataset was created by <a href="https://github.com/onset/lameta">lameta</a>. This page is a simplified, human-readable view of the <a href="https://www.researchobject.org/ro-crate/" target="_blank">ro-crate</a> metadata found in the accompanying ro-crate-metadata.json file, which conforms to the <a href="https://w3id.org/ldac/profile" target="_blank">LDAC Profile</a>. The purpose of this pages is to give you a general idea of what is in the dataset.</p>
   </div>
 
   <div class="main-content">
@@ -136,17 +171,6 @@ export function generateRoCrateHtml(roCrateData: any): string {
     ${graph.map((entity: any) => generateEntityHtml(entity)).join("")}
   </div>
 
-  <button class="json-toggle" onclick="toggleJson()">Show/Hide Raw JSON</button>
-  <div id="json-content" class="json-content">
-    <pre>${JSON.stringify(roCrateData, null, 2)}</pre>
-  </div>
-
-  <script>
-    function toggleJson() {
-      const content = document.getElementById('json-content');
-      content.style.display = content.style.display === 'none' ? 'block' : 'none';
-    }
-  </script>
 </body>
 </html>`;
 }
@@ -168,10 +192,30 @@ function generateEntityHtml(entity: any): string {
     : "unknown";
 
   // Check if this is an image entity
-  const isImage = types.some((type: string) => 
-    type === "ImageObject" || 
-    (entity.encodingFormat && entity.encodingFormat.startsWith("image/")) ||
-    (entity["@id"] && /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(entity["@id"]))
+  const isImage = types.some(
+    (type: string) =>
+      type === "ImageObject" ||
+      (entity.encodingFormat && entity.encodingFormat.startsWith("image/")) ||
+      (entity["@id"] &&
+        /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(entity["@id"]))
+  );
+
+  // Check if this is a video entity
+  const isVideo = types.some(
+    (type: string) =>
+      type === "VideoObject" ||
+      (entity.encodingFormat && entity.encodingFormat.startsWith("video/")) ||
+      (entity["@id"] &&
+        /\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i.test(entity["@id"]))
+  );
+
+  // Check if this is an audio entity
+  const isAudio = types.some(
+    (type: string) =>
+      type === "AudioObject" ||
+      (entity.encodingFormat && entity.encodingFormat.startsWith("audio/")) ||
+      (entity["@id"] &&
+        /\.(mp3|wav|ogg|aac|flac|m4a|wma)$/i.test(entity["@id"]))
   );
 
   if (isImage) {
@@ -179,9 +223,13 @@ function generateEntityHtml(entity: any): string {
     const imageUrl = entity["@id"];
     return `
       <div class="entity image-entity" id="entity_${anchorId}">
-        <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
-        <div>${typeHtml}</div>
-        <img src="${imageUrl}" alt="Image: ${entity.name || entity["@id"]}" class="image-thumbnail" 
+        <div class="entity-header">
+          <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
+          <div class="entity-types">${typeHtml}</div>
+        </div>
+        <img src="${imageUrl}" alt="Image: ${
+      entity.name || entity["@id"]
+    }" class="image-thumbnail" 
              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <div style="display:none; color: var(--color-text-muted); font-style: italic;">
           Image could not be loaded: ${imageUrl}
@@ -190,9 +238,43 @@ function generateEntityHtml(entity: any): string {
     `;
   }
 
+  if (isVideo) {
+    // For videos, show ID and video player
+    const videoUrl = entity["@id"];
+    return `
+      <div class="entity media-entity" id="entity_${anchorId}">
+        <div class="entity-header">
+          <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
+          <div class="entity-types">${typeHtml}</div>
+        </div>
+        <video controls class="media-player">
+          <source src="${videoUrl}" type="${entity.encodingFormat || ""}">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    `;
+  }
+
+  if (isAudio) {
+    // For audio, show ID and audio player
+    const audioUrl = entity["@id"];
+    return `
+      <div class="entity media-entity" id="entity_${anchorId}">
+        <div class="entity-header">
+          <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
+          <div class="entity-types">${typeHtml}</div>
+        </div>
+        <audio controls class="media-player">
+          <source src="${audioUrl}" type="${entity.encodingFormat || ""}">
+          Your browser does not support the audio tag.
+        </audio>
+      </div>
+    `;
+  }
+
   // For non-image entities, show all properties as before
   const properties = Object.entries(entity)
-    .filter(([key]) => !key.startsWith("@"))
+    .filter(([key]) => !key.startsWith("@") && !EXCLUDED_FIELDS.has(key))
     .map(([key, value]) => {
       const displayValue =
         typeof value === "object"
@@ -209,8 +291,10 @@ function generateEntityHtml(entity: any): string {
 
   return `
     <div class="entity" id="entity_${anchorId}">
-      <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
-      <div>${typeHtml}</div>
+      <div class="entity-header">
+        <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
+        <div class="entity-types">${typeHtml}</div>
+      </div>
       ${properties}
     </div>
   `;
