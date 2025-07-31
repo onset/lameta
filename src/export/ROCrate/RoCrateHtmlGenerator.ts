@@ -5,7 +5,8 @@ const EXCLUDED_FIELDS = new Set([
   "datePublished",
   "dateCreated",
   "dateModified",
-  "contentSize"
+  "contentSize",
+  "publisher" // Hide publisher field
 ]);
 
 // Helper function to format property values with hyperlinks for object references
@@ -129,6 +130,20 @@ export function generateRoCrateHtml(roCrateData: any): string {
       background-color: var(--color-white); 
       position: relative;
     }
+    .entity:target {
+      animation: targetHighlight 1s ease-in-out forwards;
+    }
+    @keyframes targetHighlight {
+      0% {
+        background-color: var(--color-white);
+      }
+      50% {
+        background-color: #fff581ff;
+      }
+      100% {
+        background-color: var(--color-white);
+      }
+    }
     .entity-header {
       display: flex;
       justify-content: space-between;
@@ -245,13 +260,11 @@ export function generateRoCrateHtml(roCrateData: any): string {
 <body>
   <div class="header">
     <h1>${rootDataset?.name}</h1>
-    <It>This dataset was created by <a href="https://github.com/onset/lameta">lameta</a>. This page is a simplified, human-readable view of the <a href="https://www.researchobject.org/ro-crate/" target="_blank">ro-crate</a> metadata found in the accompanying ro-crate-metadata.json file, which conforms to the <a href="https://w3id.org/ldac/profile" target="_blank">LDAC Profile</a>. The purpose of this pages is to give you a general idea of what is in the dataset.</p>
+    <p>This dataset was created by <a href="https://github.com/onset/lameta">lameta</a>. This page is a simplified, human-readable view of the <a href="https://www.researchobject.org/ro-crate/" target="_blank">ro-crate</a> metadata found in the accompanying <a href="ro-crate-metadata.json">ro-crate-metadata.json</a> file, which conforms to the <a href="https://w3id.org/ldac/profile" target="_blank">LDAC Profile</a>. The purpose of this page is to give you a general idea of what is in the dataset.</p>
   </div>
 
   <div class="main-content">
-    ${generateEntityHtml(rootDataset, graph)}
-    
-    ${generateSessionsSection(graph)}
+    ${generateEntityHtml(rootDataset, graph, true)}
     
     <h2>All Entities</h2>
     ${graph.map((entity: any) => generateEntityHtml(entity, graph)).join("")}
@@ -261,7 +274,11 @@ export function generateRoCrateHtml(roCrateData: any): string {
 </html>`;
 }
 
-function generateEntityHtml(entity: any, graph: any[]): string {
+function generateEntityHtml(
+  entity: any,
+  graph: any[],
+  isRootDataset = false
+): string {
   if (!entity) return "";
 
   const types = Array.isArray(entity["@type"])
@@ -387,6 +404,51 @@ function generateEntityHtml(entity: any, graph: any[]): string {
     })
     .join("");
 
+  // Add sessions and people sections for root dataset
+  let specialSections = "";
+  if (isRootDataset) {
+    const sessionsSection = generateSessionsList(graph);
+    const peopleSection = generatePeopleList(graph);
+    const descriptionSection = generateDescriptionDocumentsList(graph);
+    const otherDocsSection = generateOtherDocumentsList(graph);
+
+    if (sessionsSection) {
+      specialSections += `
+        <div class="property">
+          <span class="property-name">Sessions:</span>
+          <div class="property-value">${sessionsSection}</div>
+        </div>
+      `;
+    }
+
+    if (peopleSection) {
+      specialSections += `
+        <div class="property">
+          <span class="property-name">People:</span>
+          <div class="property-value">${peopleSection}</div>
+        </div>
+      `;
+    }
+
+    if (descriptionSection) {
+      specialSections += `
+        <div class="property">
+          <span class="property-name">Description Documents:</span>
+          <div class="property-value">${descriptionSection}</div>
+        </div>
+      `;
+    }
+
+    if (otherDocsSection) {
+      specialSections += `
+        <div class="property">
+          <span class="property-name">Other Documents:</span>
+          <div class="property-value">${otherDocsSection}</div>
+        </div>
+      `;
+    }
+  }
+
   return `
     <div class="entity" id="entity_${anchorId}">
       <div class="entity-header">
@@ -399,11 +461,12 @@ function generateEntityHtml(entity: any, graph: any[]): string {
           : ""
       }
       ${properties}
+      ${specialSections}
     </div>
   `;
 }
 
-function generateSessionsSection(graph: any[]): string {
+function generateSessionsList(graph: any[]): string {
   // Find session entities - they have @id starting with "Sessions/" and @type includes "Event"
   const sessions = graph.filter((entity: any) => {
     const id = entity["@id"];
@@ -421,18 +484,81 @@ function generateSessionsSection(graph: any[]): string {
     .map((session: any) => {
       const sessionId = session["@id"];
       const sessionName = session.name || sessionId;
-      // Create anchor link to the entity in the "All Entities" section
       const anchorId = sessionId.replace(/[^a-zA-Z0-9]/g, "_");
       return `<li><a href="#entity_${anchorId}">${sessionName}</a></li>`;
     })
     .join("");
 
-  return `
-    <div class="sessions-section">
-      <h2>Sessions</h2>
-      <ul class="sessions-list">
-        ${sessionLinks}
-      </ul>
-    </div>
-  `;
+  return `<ul class="sessions-list">${sessionLinks}</ul>`;
+}
+
+function generatePeopleList(graph: any[]): string {
+  // Find person entities - they have @type includes "Person"
+  const people = graph.filter((entity: any) => {
+    const types = Array.isArray(entity["@type"])
+      ? entity["@type"]
+      : [entity["@type"]];
+    return types.includes("Person");
+  });
+
+  if (people.length === 0) {
+    return "";
+  }
+
+  const peopleLinks = people
+    .map((person: any) => {
+      const personId = person["@id"];
+      const personName = person.name || personId;
+      const anchorId = personId.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<li><a href="#entity_${anchorId}">${personName}</a></li>`;
+    })
+    .join("");
+
+  return `<ul class="sessions-list">${peopleLinks}</ul>`;
+}
+
+function generateDescriptionDocumentsList(graph: any[]): string {
+  // Find description document entities - they have @id starting with "Description/"
+  const descriptionDocs = graph.filter((entity: any) => {
+    const id = entity["@id"];
+    return id && id.startsWith("Description/");
+  });
+
+  if (descriptionDocs.length === 0) {
+    return "";
+  }
+
+  const docLinks = descriptionDocs
+    .map((doc: any) => {
+      const docId = doc["@id"];
+      const docName = doc.name || docId;
+      const anchorId = docId.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<li><a href="#entity_${anchorId}">${docName}</a></li>`;
+    })
+    .join("");
+
+  return `<ul class="sessions-list">${docLinks}</ul>`;
+}
+
+function generateOtherDocumentsList(graph: any[]): string {
+  // Find other document entities - they have @id starting with "OtherDocs/"
+  const otherDocs = graph.filter((entity: any) => {
+    const id = entity["@id"];
+    return id && id.startsWith("OtherDocs/");
+  });
+
+  if (otherDocs.length === 0) {
+    return "";
+  }
+
+  const docLinks = otherDocs
+    .map((doc: any) => {
+      const docId = doc["@id"];
+      const docName = doc.name || docId;
+      const anchorId = docId.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<li><a href="#entity_${anchorId}">${docName}</a></li>`;
+    })
+    .join("");
+
+  return `<ul class="sessions-list">${docLinks}</ul>`;
 }
