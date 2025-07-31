@@ -3,7 +3,7 @@ import {
   createSessionLicense,
   getSessionLicenseId,
   createLdacAccessTypeDefinitions,
-  createUniqueLicenses
+  createDistinctLicenses
 } from "./RoCrateLicenses";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
@@ -220,7 +220,7 @@ describe("RoCrateLicenses", () => {
         }
       } as any;
 
-      const uniqueLicenses = createUniqueLicenses(
+      const uniqueLicenses = createDistinctLicenses(
         [session1, session2, session3],
         mockProject
       );
@@ -255,7 +255,7 @@ describe("RoCrateLicenses", () => {
         }
       } as any;
 
-      const uniqueLicenses = createUniqueLicenses(
+      const uniqueLicenses = createDistinctLicenses(
         [publicSession, restrictedSession],
         mockProject
       );

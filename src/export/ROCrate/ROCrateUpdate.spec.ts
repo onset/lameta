@@ -9,7 +9,9 @@ import { Project } from "../../model/Project/Project";
 vi.mock("fs-extra", () => ({
   pathExists: vi.fn(),
   remove: vi.fn(),
-  writeJson: vi.fn()
+  writeJson: vi.fn(),
+  writeFile: vi.fn(),
+  stat: vi.fn()
 }));
 
 // Mock the RoCrateExporter
@@ -56,6 +58,8 @@ describe("writeROCrateFile", () => {
     mockFs.pathExists.mockResolvedValue(false);
     mockFs.remove.mockResolvedValue(undefined);
     mockFs.writeJson.mockResolvedValue(undefined);
+    mockFs.writeFile.mockResolvedValue(undefined);
+    mockFs.stat.mockResolvedValue({ mode: 0o666 });
     mockGetRoCrate.mockResolvedValue(mockRoCrateData);
   });
 
@@ -278,6 +282,8 @@ describe("writeROCrateFile", () => {
       expect(callOrder).toEqual([
         "pathExists",
         "remove",
+        "pathExists",
+        "remove",
         "getRoCrate",
         "writeJson"
       ]);
@@ -301,7 +307,12 @@ describe("writeROCrateFile", () => {
 
       await writeROCrateFile(mockProject);
 
-      expect(callOrder).toEqual(["pathExists", "getRoCrate", "writeJson"]);
+      expect(callOrder).toEqual([
+        "pathExists",
+        "pathExists",
+        "getRoCrate",
+        "writeJson"
+      ]);
       expect(mockFs.remove).not.toHaveBeenCalled();
     });
   });
