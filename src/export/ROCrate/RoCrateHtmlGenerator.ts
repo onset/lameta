@@ -99,9 +99,10 @@ export function generateRoCrateHtml(roCrateData: any): string {
   <title>RO-Crate Preview - ${rootDataset?.name || "Research Object"}</title>
   <style>
     :root {
-      --color-primary: #75b01c;
+      --color-primary: #4f7c0c;
+      --color-primary-content: #568115;
       --color-primary-light: #cff09f;
-      --color-background: #e9ffc8;
+      --color-background: #f8ffed;
       --color-white: white;
       --color-text: #333;
       --color-text-muted: #666;
@@ -116,6 +117,16 @@ export function generateRoCrateHtml(roCrateData: any): string {
       padding: 20px; 
       line-height: 1.6; 
       background-color: var(--color-background);
+    }
+    a {
+      color: var(--color-primary);
+      text-decoration: underline;
+    }
+    a:visited {
+      color: var(--color-primary);
+    }
+    a:hover {
+      text-decoration: underline;
     }
     .header { 
     /*   border-bottom: 2px solid var(--color-primary); */
@@ -165,7 +176,7 @@ export function generateRoCrateHtml(roCrateData: any): string {
     }
     .entity-id { 
       font-weight: bold; 
-      background-color: var(--color-primary); 
+      background-color: var(--color-primary-content); 
       color: var(--color-white); 
       padding: 2px 8px; 
       border-radius: 3px; 
@@ -187,8 +198,8 @@ export function generateRoCrateHtml(roCrateData: any): string {
     }
     .entity-type { 
       background-color: transparent; 
-      color: var(--color-primary); 
-      border: 1px solid var(--color-primary);
+      color: var(--color-primary-content); 
+      border: 1px solid var(--color-primary-content);
       padding: 2px 8px; 
       border-radius: 3px; 
       font-size: 0.9em; 
@@ -205,7 +216,7 @@ export function generateRoCrateHtml(roCrateData: any): string {
       margin-left: 10px; 
     }
     .json-toggle { 
-      background-color: var(--color-primary); 
+      background-color: var(--color-primary-content); 
       color: var(--color-white); 
       border: none; 
       padding: 10px 20px; 
@@ -240,9 +251,12 @@ export function generateRoCrateHtml(roCrateData: any): string {
       margin: 8px 0;
     }
     .sessions-list a {
-      color: var(--color-primary);
-      text-decoration: none;
+      color: var(--color-primary-content);
+      text-decoration: underline;
       font-weight: 500;
+    }
+    .sessions-list a:visited {
+      color: var(--color-primary-content);
     }
     .sessions-list a:hover {
       text-decoration: underline;
@@ -284,7 +298,7 @@ export function generateRoCrateHtml(roCrateData: any): string {
       flex: 0 0 auto;
       width: auto;
       box-sizing: border-box;
-      min-height: 250px; /* makes it more uniform */
+      min-height: 260px; /* makes it more uniform */
       min-width: 250px; /* makes it more uniform */
     }
     .entity {
@@ -292,9 +306,12 @@ export function generateRoCrateHtml(roCrateData: any): string {
       padding: 20px;
     }
     .property-value a {
-      color: var(--color-primary);
-      text-decoration: none;
+      color: var(--color-primary-content);
+      text-decoration: underline;
       font-weight: 500;
+    }
+    .property-value a:visited {
+      color: var(--color-primary-content);
     }
     .property-value a:hover {
       text-decoration: underline;
@@ -308,9 +325,6 @@ export function generateRoCrateHtml(roCrateData: any): string {
   </div>
 
   <div class="main-content">
-    ${generateEntityHtml(rootDataset, graph, true)}
-    
-    <h2>All Entities</h2>
     ${generateHierarchicalEntitiesHtml(graph)}
   </div>
 
@@ -635,7 +649,7 @@ function generateHierarchicalEntitiesHtml(graph: any[]): string {
     // Generate the entity HTML
     let entityHtml = generateEntityHtml(entity, graph);
 
-    // Apply child styling based on depth
+    // Apply styling based on depth
     if (depth > 0) {
       console.log(`  Applying child styling at depth ${depth}`);
       // Add 'child' class for child entities - no need for manual indentation
@@ -643,13 +657,13 @@ function generateHierarchicalEntitiesHtml(graph: any[]): string {
         /<div class="entity([^"]*)"([^>]*)>/,
         `<div class="entity$1 child"$2>`
       );
-
-      // Move entity types to bottom right for child entities
-      entityHtml = entityHtml.replace(
-        /<div class="entity-types"([^>]*)>/,
-        `<div class="entity-types bottom-right"$1>`
-      );
     }
+
+    // Move entity types to bottom right for all entities
+    entityHtml = entityHtml.replace(
+      /<div class="entity-types"([^>]*)>/,
+      `<div class="entity-types bottom-right"$1>`
+    );
 
     let html = entityHtml;
 
