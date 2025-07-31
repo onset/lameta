@@ -149,12 +149,13 @@ export const ExportDialog: React.FunctionComponent<{
             }
             SetRulesBasedValidationResult(rulesBasedValidationResult);
 
+            // RO-Crate export writes to a fixed location in the project directory
             const outputPath = Path.join(
               props.projectHolder.project!.directory,
               "ro-crate-metadata.json"
             );
             setOutputPath(outputPath);
-            saveFilesAsync(outputPath);
+            saveFilesAsync("");
           } catch (err) {
             NotifyException(
               err,
@@ -321,7 +322,8 @@ export const ExportDialog: React.FunctionComponent<{
           ? (f: Folder) => true
           : (f: Folder) => f.marked;
 
-      if (path) {
+      // RO-Crate doesn't need a path parameter, other exports do
+      if (path || exportFormat === "ro-crate") {
         switch (exportFormat) {
           case "csv":
             analyticsEvent("Export", "Export CSV");
@@ -344,6 +346,7 @@ export const ExportDialog: React.FunctionComponent<{
             break;
           case "ro-crate":
             analyticsEvent("Export", "Export RO-Crate");
+            // RO-Crate export writes to project directory, path parameter is ignored
             await writeROCrateFile(props.projectHolder.project!);
             await finishExport();
             setMode(Mode.finished);
@@ -387,7 +390,7 @@ export const ExportDialog: React.FunctionComponent<{
         }
       }
     } catch (err) {
-      setError(err);
+      setError(String(err));
       setMode(Mode.error);
     }
   };
@@ -445,12 +448,12 @@ export const ExportDialog: React.FunctionComponent<{
           {mode === Mode.error && (
             <div>
               <Alert severity="error">
-                <div css={css``}>{error}</div>
+                <div css={css``}>{String(error)}</div>
               </Alert>
               <br />
               <Button
                 variant="outlined"
-                onClick={() => clipboard.writeText(error!)}
+                onClick={() => clipboard.writeText(String(error!))}
               >
                 Copy
               </Button>
