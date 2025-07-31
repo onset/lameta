@@ -25,6 +25,6 @@ export async function writeROCrateFile(project: Project): Promise<void> {
   await fs.writeJson(roCrateFilePath, roCrateData, { spaces: 2 });
 
   // Write the HTML file
-  const htmlContent = generateRoCrateHtml(roCrateData);
+  const htmlContent = generateRoCrateHtml(roCrateData as any);
   await fs.writeFile(roCrateHtmlPath, htmlContent, "utf8");
 }

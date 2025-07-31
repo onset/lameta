@@ -208,11 +208,12 @@ const Entity: React.FC<{
     isImage ? "image-entity" : ""
   } ${isVideo || isAudio ? "media-entity" : ""}`.trim();
 
-  const EntityHeader = () => (
-    <div className="entity-header">
-      <div className="entity-id">{id || "Unknown ID"}</div>
-    </div>
-  );
+  const EntityHeader = () =>
+    !isChild ? (
+      <div className="entity-header">
+        <div className="entity-id">{id || "Unknown ID"}</div>
+      </div>
+    ) : null;
   const EntityTypes = () => (
     <div className="entity-types bottom-right">
       {types.filter(Boolean).map((t) => (
@@ -331,13 +332,151 @@ const Entity: React.FC<{
 /**
  * Recursively renders an entity and its children based on ID path hierarchy.
  */
+/**
+ * Pre-compute the hierarchical structure of entities
+ */
+function computeHierarchy(graph: RoCrateEntity[]) {
+  const rootEntities: RoCrateEntity[] = [];
+  const childrenMap = new Map<string, RoCrateEntity[]>();
+
+  // First pass: identify all root entities and build children map
+  graph.forEach((entity) => {
+    const entityId = entity["@id"];
+    if (!entityId) return;
+
+    // Check if this entity is a child of any other entity in the graph
+    const parentEntity = graph.find((parent) => {
+      const parentId = parent["@id"];
+      if (
+        !parentId ||
+        parentId === entityId ||
+        !entityId.startsWith(parentId)
+      ) {
+        return false;
+      }
+
+      // More precise parent-child detection
+      const remainder = entityId.substring(parentId.length);
+
+      // If parent ends with '/', child should have content after that with no more '/'
+      if (parentId.endsWith("/")) {
+        return remainder.length > 0 && !remainder.includes("/");
+      }
+
+      // If parent doesn't end with '/', child should start with '/' and be a direct child
+      if (remainder.startsWith("/")) {
+        const afterSlash = remainder.substring(1);
+        return afterSlash.length > 0 && !afterSlash.includes("/");
+      }
+
+      return false;
+    });
+
+    if (parentEntity) {
+      // This is a child entity
+      const parentId = parentEntity["@id"];
+      if (!childrenMap.has(parentId)) {
+        childrenMap.set(parentId, []);
+      }
+      childrenMap.get(parentId)!.push(entity);
+    } else {
+      // This is a root entity
+      rootEntities.push(entity);
+    }
+  });
+
+  // Sort root entities
+  rootEntities.sort((a, b) => {
+    const getSortPriority = (entity: RoCrateEntity) => {
+      const id = entity["@id"];
+      const types = Array.isArray(entity["@type"])
+        ? entity["@type"]
+        : [entity["@type"]];
+
+      // Project comes first
+      if (id === "./" || types.includes("Dataset")) return 0;
+
+      // Sessions come second
+      if (id?.startsWith("Sessions/") || types.includes("Event")) return 1;
+
+      // People come third
+      if (types.includes("Person")) return 2;
+
+      // Everything else comes last
+      return 3;
+    };
+
+    const priorityA = getSortPriority(a);
+    const priorityB = getSortPriority(b);
+
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    // Within the same priority group, sort alphabetically by @id
+    return a["@id"].localeCompare(b["@id"]);
+  });
+
+  return { rootEntities, childrenMap };
+}
+
+const StaticHierarchicalEntityDisplay: React.FC<{
+  entity: RoCrateEntity;
+  graph: RoCrateEntity[];
+  childrenMap: Map<string, RoCrateEntity[]>;
+  isRootDataset?: boolean;
+  isChild?: boolean;
+}> = ({
+  entity,
+  graph,
+  childrenMap,
+  isRootDataset = false,
+  isChild = false
+}) => {
+  const entityId = entity["@id"];
+  const children = childrenMap.get(entityId) || [];
+
+  return (
+    <>
+      <Entity
+        entity={entity}
+        graph={graph}
+        isRootDataset={isRootDataset}
+        isChild={isChild}
+      />
+      {children.length > 0 && (
+        <div className="entity-children-container">
+          {children.map((child) => (
+            <StaticHierarchicalEntityDisplay
+              key={child["@id"]}
+              entity={child}
+              graph={graph}
+              childrenMap={childrenMap}
+              isRootDataset={false}
+              isChild={true}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
 const HierarchicalEntityDisplay: React.FC<{
   entity: RoCrateEntity;
   graph: RoCrateEntity[];
   processedIds: Set<string>;
   onProcess: (id: string) => void;
   isRootDataset?: boolean;
-}> = ({ entity, graph, processedIds, onProcess, isRootDataset = false }) => {
+  isChild?: boolean;
+}> = ({
+  entity,
+  graph,
+  processedIds,
+  onProcess,
+  isRootDataset = false,
+  isChild = false
+}) => {
   const entityId = entity["@id"];
   if (processedIds.has(entityId)) return null;
   onProcess(entityId);
@@ -347,18 +486,32 @@ const HierarchicalEntityDisplay: React.FC<{
     if (!childId || childId === entityId || processedIds.has(childId))
       return false;
 
+    // Check if child is a direct descendant of this entity
     if (childId.startsWith(entityId)) {
       const remainder = childId.substring(entityId.length);
-      if (entityId.endsWith("/"))
+
+      // If parent ends with '/', child should have content after that with no more '/'
+      if (entityId.endsWith("/")) {
         return remainder.length > 0 && !remainder.includes("/");
-      return remainder.startsWith("/");
+      }
+
+      // If parent doesn't end with '/', child should start with '/' and be a direct child
+      if (remainder.startsWith("/")) {
+        const afterSlash = remainder.substring(1);
+        return afterSlash.length > 0 && !afterSlash.includes("/");
+      }
     }
     return false;
   });
 
   return (
     <>
-      <Entity entity={entity} graph={graph} isRootDataset={isRootDataset} />
+      <Entity
+        entity={entity}
+        graph={graph}
+        isRootDataset={isRootDataset}
+        isChild={isChild}
+      />
       {children.length > 0 && (
         <div className="entity-children-container">
           {children.map((child) => (
@@ -368,6 +521,8 @@ const HierarchicalEntityDisplay: React.FC<{
               graph={graph}
               processedIds={processedIds}
               onProcess={onProcess}
+              isRootDataset={false}
+              isChild={true}
             />
           ))}
         </div>
@@ -376,38 +531,14 @@ const HierarchicalEntityDisplay: React.FC<{
   );
 };
 
-/**
- * The root component for the entire HTML page.
- */
 const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
   roCrateData
 }) => {
   const graph = roCrateData["@graph"] || [];
   const rootDataset = graph.find((item) => item["@id"] === "./");
 
-  const rootEntities = graph
-    .filter((entity) => {
-      const entityId = entity["@id"];
-      if (!entityId) return false;
-      const isChild = graph.some((parent) => {
-        const parentId = parent["@id"];
-        if (
-          !parentId ||
-          parentId === entityId ||
-          !entityId.startsWith(parentId)
-        )
-          return false;
-        const remainder = entityId.substring(parentId.length);
-        if (parentId.endsWith("/"))
-          return remainder.length > 0 && !remainder.includes("/");
-        return remainder.startsWith("/");
-      });
-      return !isChild;
-    })
-    .sort((a, b) => a["@id"].localeCompare(b["@id"]));
-
-  const processedIds = new Set<string>();
-  const onProcess = (id: string) => processedIds.add(id);
+  // Use the new static hierarchy computation
+  const { rootEntities, childrenMap } = computeHierarchy(graph);
 
   return (
     <html lang="en">
@@ -449,26 +580,14 @@ const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
         </div>
         <div className="main-content">
           {rootEntities.map((entity) => (
-            <HierarchicalEntityDisplay
+            <StaticHierarchicalEntityDisplay
               key={entity["@id"]}
               entity={entity}
               graph={graph}
-              processedIds={processedIds}
-              onProcess={onProcess}
+              childrenMap={childrenMap}
               isRootDataset={entity["@id"] === "./"}
             />
           ))}
-          {/* Render any remaining entities not caught by the hierarchy logic as a fallback */}
-          {graph
-            .filter((entity) => !processedIds.has(entity["@id"]))
-            .map((entity) => (
-              <Entity
-                key={entity["@id"]}
-                entity={entity}
-                graph={graph}
-                isRootDataset={entity["@id"] === "./"}
-              />
-            ))}
         </div>
       </body>
     </html>
