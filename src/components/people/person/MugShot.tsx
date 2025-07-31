@@ -20,7 +20,7 @@ export const MugShot: React.FunctionComponent<{
       onDrop={(accepted, rejected) => {
         if (accepted.length > 0) {
           props.person
-            .copyInMugshot(accepted[0].path)
+            .copyInMugshot((accepted[0] as any).path)
             .then(() => setPath(props.person.mugshotPath));
         }
       }}

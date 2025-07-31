@@ -133,7 +133,7 @@ export const _FileList: React.FunctionComponent<{
       onDrop={(accepted, rejected) => {
         addFiles(
           props.folder,
-          accepted.map((f) => f.path)
+          accepted.map((f) => (f as any).path)
         );
       }}
       disableClick
