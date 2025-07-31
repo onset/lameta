@@ -267,7 +267,7 @@ export function generateRoCrateHtml(roCrateData: any): string {
     ${generateEntityHtml(rootDataset, graph, true)}
     
     <h2>All Entities</h2>
-    ${graph.map((entity: any) => generateEntityHtml(entity, graph)).join("")}
+    ${generateHierarchicalEntitiesHtml(graph)}
   </div>
 
 </body>
@@ -505,16 +505,16 @@ function generatePeopleList(graph: any[]): string {
     return "";
   }
 
-  const peopleLinks = people
+  const peopleWithParts = people
     .map((person: any) => {
       const personId = person["@id"];
       const personName = person.name || personId;
-      const anchorId = personId.replace(/[^a-zA-Z0-9]/g, "_");
-      return `<li><a href="#entity_${anchorId}">${personName}</a></li>`;
+      const personAnchorId = personId.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<li><a href="#entity_${personAnchorId}">${personName}</a></li>`;
     })
     .join("");
 
-  return `<ul class="sessions-list">${peopleLinks}</ul>`;
+  return `<ul class="sessions-list">${peopleWithParts}</ul>`;
 }
 
 function generateDescriptionDocumentsList(graph: any[]): string {
@@ -561,4 +561,186 @@ function generateOtherDocumentsList(graph: any[]): string {
     .join("");
 
   return `<ul class="sessions-list">${docLinks}</ul>`;
+}
+
+function generateHierarchicalEntitiesHtml(graph: any[]): string {
+  console.log("=== Starting generateHierarchicalEntitiesHtml ===");
+  console.log(`Total entities in graph: ${graph.length}`);
+
+  // Log all entity IDs for debugging
+  console.log("All entity IDs:");
+  graph.forEach((entity, index) => {
+    console.log(`  ${index}: "${entity["@id"]}"`);
+  });
+
+  const processedEntities = new Set<string>();
+
+  // Recursive function to generate entity HTML with proper nesting
+  function generateEntityWithChildren(entity: any, depth: number = 0): string {
+    const entityId = entity["@id"];
+    console.log(`\n--- Processing entity at depth ${depth}: "${entityId}" ---`);
+
+    if (processedEntities.has(entityId)) {
+      console.log(`  Already processed, skipping`);
+      return "";
+    }
+
+    processedEntities.add(entityId);
+    console.log(`  Added to processed set`);
+
+    // Generate the entity HTML
+    let entityHtml = generateEntityHtml(entity, graph);
+
+    // Apply indentation based on depth
+    if (depth > 0) {
+      const indentPx = depth * 40;
+      console.log(`  Applying indentation: ${indentPx}px at depth ${depth}`);
+      // Handle different entity types that might have additional classes
+      entityHtml = entityHtml.replace(
+        /<div class="entity([^"]*)"[^>]*>/,
+        `<div class="entity$1" style="margin-left: ${indentPx}px; border-left: 3px solid var(--color-primary); padding-left: 15px;">`
+      );
+    }
+
+    let html = entityHtml;
+
+    // Find and add child entities (those whose IDs start with this entity's ID)
+    if (entityId) {
+      console.log(`  Looking for children of: "${entityId}"`);
+      const children = graph.filter((child: any) => {
+        const childId = child["@id"];
+        if (!childId || childId === entityId || processedEntities.has(childId))
+          return false;
+
+        // Check if child ID starts with parent ID and is a direct child
+        if (childId.startsWith(entityId)) {
+          const remainder = childId.substring(entityId.length);
+          let isDirectChild = false;
+          if (entityId.endsWith("/") || entityId.endsWith("\\")) {
+            // Parent is a folder, so remainder should be just the filename/subfolder
+            isDirectChild =
+              remainder.length > 0 &&
+              !remainder.includes("/") &&
+              !remainder.includes("\\");
+          } else {
+            // Parent is not a folder, so remainder should start with path separator
+            isDirectChild =
+              remainder.startsWith("/") || remainder.startsWith("\\");
+          }
+          if (isDirectChild) {
+            console.log(
+              `    Found child: "${childId}" (remainder: "${remainder}")`
+            );
+          }
+          return isDirectChild;
+        }
+        return false;
+      });
+
+      console.log(`  Found ${children.length} children`);
+
+      // Recursively add children with increased depth
+      const childrenHtml = children
+        .map((child: any) => generateEntityWithChildren(child, depth + 1))
+        .filter(Boolean)
+        .join("");
+
+      html += childrenHtml;
+    }
+
+    return html;
+  }
+
+  // Find root entities (those that aren't children of any other entity)
+  console.log("\n=== Finding root entities ===");
+  const rootEntities = graph.filter((entity: any) => {
+    const entityId = entity["@id"];
+    if (!entityId) return false;
+
+    console.log(`\nChecking if "${entityId}" is a root entity:`);
+
+    // Check if this entity is a child of any other entity
+    const isChild = graph.some((potentialParent: any) => {
+      const parentId = potentialParent["@id"];
+      if (!parentId || parentId === entityId) return false;
+
+      console.log(`  Checking against potential parent: "${parentId}"`);
+
+      // If this entity's ID starts with the parent's ID and has more path segments,
+      // then it's a child
+      if (entityId.startsWith(parentId) && entityId !== parentId) {
+        const remainder = entityId.substring(parentId.length);
+        console.log(`    Entity starts with parent. Remainder: "${remainder}"`);
+        // For folder parents (ending with /), the remainder should not start with /
+        // For non-folder parents, the remainder should start with / or \
+        let isDirectChild = false;
+        if (parentId.endsWith("/") || parentId.endsWith("\\")) {
+          // Parent is a folder, so remainder should be just the filename/subfolder
+          isDirectChild =
+            remainder.length > 0 &&
+            !remainder.includes("/") &&
+            !remainder.includes("\\");
+        } else {
+          // Parent is not a folder, so remainder should start with path separator
+          isDirectChild =
+            remainder.startsWith("/") || remainder.startsWith("\\");
+        }
+        console.log(
+          `    Is direct child? ${isDirectChild} (parent ends with /: ${parentId.endsWith(
+            "/"
+          )}, remainder: "${remainder}")`
+        );
+        if (isDirectChild) {
+          console.log(
+            `  ✓ "${entityId}" is child of "${parentId}" (remainder: "${remainder}")`
+          );
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (!isChild) {
+      console.log(`  ✓ Root entity: "${entityId}"`);
+    }
+    return !isChild;
+  });
+
+  console.log(`Found ${rootEntities.length} root entities`);
+
+  // Sort root entities to ensure folders come before their files
+  rootEntities.sort((a, b) => {
+    const aId = a["@id"];
+    const bId = b["@id"];
+    // Folders (ending with /) should come first
+    if (aId.endsWith("/") && !bId.endsWith("/")) return -1;
+    if (!aId.endsWith("/") && bId.endsWith("/")) return 1;
+    return aId.localeCompare(bId);
+  });
+
+  // Generate HTML for root entities and their hierarchies
+  console.log("\n=== Generating HTML for root entities ===");
+  const entitiesHtml = rootEntities
+    .map((entity: any) => generateEntityWithChildren(entity, 0))
+    .filter(Boolean)
+    .join("");
+
+  // Add any remaining entities that weren't processed (shouldn't happen, but safety net)
+  const remainingEntities = graph
+    .filter((entity: any) => !processedEntities.has(entity["@id"]))
+    .map((entity: any) => {
+      console.log(`Adding remaining entity: "${entity["@id"]}"`);
+      return generateEntityHtml(entity, graph);
+    })
+    .join("");
+
+  console.log(
+    `Remaining unprocessed entities: ${
+      graph.filter((entity: any) => !processedEntities.has(entity["@id"]))
+        .length
+    }`
+  );
+  console.log("=== Finished generateHierarchicalEntitiesHtml ===\n");
+
+  return entitiesHtml + remainingEntities;
 }
