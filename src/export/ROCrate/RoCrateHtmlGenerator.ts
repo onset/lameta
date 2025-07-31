@@ -9,6 +9,26 @@ const EXCLUDED_FIELDS = new Set([
   "publisher" // Hide publisher field
 ]);
 
+// Helper function to transform property labels for display
+function formatPropertyLabel(propertyName: string): string {
+  // Handle specific cases
+  if (propertyName === "hasPart") {
+    return "parts";
+  }
+  if (propertyName === "pcdm:hasMember") {
+    return "events";
+  }
+
+  // Remove namespace prefixes (e.g., "ldac:", "dct:", "pcdm:")
+  const withoutPrefix = propertyName.replace(/^[a-zA-Z]+:/, "");
+
+  // Convert camelCase to space-separated words
+  const spaceSeparated = withoutPrefix.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+  // Convert to lowercase
+  return spaceSeparated.toLowerCase();
+}
+
 // Helper function to format property values with hyperlinks for object references
 function formatPropertyValue(value: any, graph: any[]): string {
   if (value === null || value === undefined) {
@@ -199,9 +219,9 @@ export function generateRoCrateHtml(roCrateData: any): string {
     .entity-type { 
       background-color: transparent; 
       color: var(--color-primary-content); 
-      border: 1px solid var(--color-primary-content);
+      //border: 1px solid var(--color-primary-content);
       padding: 2px 8px; 
-      border-radius: 3px; 
+      //border-radius: 3px; 
       font-size: 0.9em; 
     }
     .property { 
@@ -453,9 +473,10 @@ function generateEntityHtml(
     .filter(([key]) => !key.startsWith("@") && !EXCLUDED_FIELDS.has(key))
     .map(([key, value]) => {
       const displayValue = formatPropertyValue(value, graph);
+      const displayLabel = formatPropertyLabel(key);
       return `
         <div class="property">
-          <span class="property-name">${key}:</span>
+          <span class="property-name">${displayLabel}:</span>
           <span class="property-value">${displayValue}</span>
         </div>
       `;
