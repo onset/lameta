@@ -314,6 +314,10 @@ export async function addFieldEntries(
         // Access is now handled through the license system, skip the redundant top-level property
         continue;
       }
+      if (field.key === "collectionDescription") {
+        // collectionDescription is mapped to the standard 'description' property, skip the original
+        continue;
+      }
       if (field.key === "title" && folderEntry["name"]) {
         // Skip redundant title property when it's identical to name
         const titleValue = values[0];

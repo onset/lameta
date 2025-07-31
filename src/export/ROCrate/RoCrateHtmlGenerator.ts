@@ -8,6 +8,84 @@ const EXCLUDED_FIELDS = new Set([
   "contentSize"
 ]);
 
+// Helper function to format property values with hyperlinks for object references
+function formatPropertyValue(value: any, graph: any[]): string {
+  if (value === null || value === undefined) {
+    return String(value);
+  }
+
+  // Handle arrays
+  if (Array.isArray(value)) {
+    const formattedItems = value.map((item) => {
+      if (typeof item === "object" && item["@id"]) {
+        // Find the referenced entity to get its name
+        const referencedEntity = graph.find(
+          (entity: any) => entity["@id"] === item["@id"]
+        );
+        const displayName = referencedEntity?.name || item["@id"];
+        const anchorId = item["@id"].replace(/[^a-zA-Z0-9]/g, "_");
+        return `<a href="#entity_${anchorId}">${displayName}</a>`;
+      }
+      return typeof item === "object"
+        ? JSON.stringify(item, null, 2)
+        : String(item);
+    });
+    return formattedItems.join(", ");
+  }
+
+  // Handle single object with @id
+  if (typeof value === "object" && value["@id"]) {
+    const referencedEntity = graph.find(
+      (entity: any) => entity["@id"] === value["@id"]
+    );
+    const displayName = referencedEntity?.name || value["@id"];
+    const anchorId = value["@id"].replace(/[^a-zA-Z0-9]/g, "_");
+    return `<a href="#entity_${anchorId}">${displayName}</a>`;
+  }
+
+  // Handle string references that start with #
+  if (typeof value === "string" && value.startsWith("#")) {
+    // Clean up malformed references like "#language_#language_etr__Edolo"
+    let cleanReference = value;
+    if (value.includes("#language_#language_")) {
+      cleanReference = value.replace("#language_#language_", "#language_");
+    }
+
+    const referencedEntity = graph.find(
+      (entity: any) =>
+        entity["@id"] === cleanReference || entity["@id"] === value
+    );
+    if (referencedEntity) {
+      const displayName = referencedEntity.name || cleanReference;
+      const anchorId = (referencedEntity["@id"] || cleanReference).replace(
+        /[^a-zA-Z0-9]/g,
+        "_"
+      );
+      return `<a href="#entity_${anchorId}">${displayName}</a>`;
+    }
+
+    // If no entity found, try to make a nicer display name from the reference
+    if (cleanReference.startsWith("#language_")) {
+      const languageCode = cleanReference
+        .replace("#language_", "")
+        .replace(/__/g, " ")
+        .replace(/_/g, " ");
+      const anchorId = cleanReference.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<a href="#entity_${anchorId}">${languageCode}</a>`;
+    }
+
+    // For other references like #Huya, just clean up the display
+    const displayName = cleanReference.replace("#", "");
+    const anchorId = cleanReference.replace(/[^a-zA-Z0-9]/g, "_");
+    return `<a href="#entity_${anchorId}">${displayName}</a>`;
+  }
+
+  // Handle other objects or primitive values
+  return typeof value === "object"
+    ? JSON.stringify(value, null, 2)
+    : String(value);
+}
+
 export function generateRoCrateHtml(roCrateData: any): string {
   const graph = roCrateData["@graph"] || [];
   const rootDataset = graph.find((item: any) => item["@id"] === "./");
@@ -154,6 +232,14 @@ export function generateRoCrateHtml(roCrateData: any): string {
     .image-entity, .media-entity {
       text-align: left;
     }
+    .property-value a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .property-value a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -163,19 +249,19 @@ export function generateRoCrateHtml(roCrateData: any): string {
   </div>
 
   <div class="main-content">
-    ${generateEntityHtml(rootDataset)}
+    ${generateEntityHtml(rootDataset, graph)}
     
     ${generateSessionsSection(graph)}
     
     <h2>All Entities</h2>
-    ${graph.map((entity: any) => generateEntityHtml(entity)).join("")}
+    ${graph.map((entity: any) => generateEntityHtml(entity, graph)).join("")}
   </div>
 
 </body>
 </html>`;
 }
 
-function generateEntityHtml(entity: any): string {
+function generateEntityHtml(entity: any, graph: any[]): string {
   if (!entity) return "";
 
   const types = Array.isArray(entity["@type"])
@@ -227,6 +313,11 @@ function generateEntityHtml(entity: any): string {
           <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
           <div class="entity-types">${typeHtml}</div>
         </div>
+        ${
+          entity.name
+            ? `<h3 style="margin: 10px 0; color: var(--color-text);">${entity.name}</h3>`
+            : ""
+        }
         <img src="${imageUrl}" alt="Image: ${
       entity.name || entity["@id"]
     }" class="image-thumbnail" 
@@ -247,6 +338,11 @@ function generateEntityHtml(entity: any): string {
           <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
           <div class="entity-types">${typeHtml}</div>
         </div>
+        ${
+          entity.name
+            ? `<h3 style="margin: 10px 0; color: var(--color-text);">${entity.name}</h3>`
+            : ""
+        }
         <video controls class="media-player">
           <source src="${videoUrl}" type="${entity.encodingFormat || ""}">
           Your browser does not support the video tag.
@@ -264,6 +360,11 @@ function generateEntityHtml(entity: any): string {
           <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
           <div class="entity-types">${typeHtml}</div>
         </div>
+        ${
+          entity.name
+            ? `<h3 style="margin: 10px 0; color: var(--color-text);">${entity.name}</h3>`
+            : ""
+        }
         <audio controls class="media-player">
           <source src="${audioUrl}" type="${entity.encodingFormat || ""}">
           Your browser does not support the audio tag.
@@ -276,10 +377,7 @@ function generateEntityHtml(entity: any): string {
   const properties = Object.entries(entity)
     .filter(([key]) => !key.startsWith("@") && !EXCLUDED_FIELDS.has(key))
     .map(([key, value]) => {
-      const displayValue =
-        typeof value === "object"
-          ? JSON.stringify(value, null, 2)
-          : String(value);
+      const displayValue = formatPropertyValue(value, graph);
       return `
         <div class="property">
           <span class="property-name">${key}:</span>
@@ -295,6 +393,11 @@ function generateEntityHtml(entity: any): string {
         <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
         <div class="entity-types">${typeHtml}</div>
       </div>
+      ${
+        entity.name
+          ? `<h3 style="margin: 10px 0; color: var(--color-text);">${entity.name}</h3>`
+          : ""
+      }
       ${properties}
     </div>
   `;
