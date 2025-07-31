@@ -9,33 +9,45 @@ export function generateRoCrateHtml(roCrateData: any): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RO-Crate Preview - ${rootDataset?.name || "Research Object"}</title>
   <style>
+    :root {
+      --color-primary: #75b01c;
+      --color-primary-light: #cff09f;
+      --color-background: #e9ffc8;
+      --color-white: white;
+      --color-text: #333;
+      --color-text-muted: #666;
+      --color-border: #ddd;
+      --color-entity-bg: #f9f9f9;
+      --color-json-bg: #lightyellow;
+    }
     body { 
       font-family: Arial, sans-serif; 
       max-width: 1200px; 
       margin: 0 auto; 
       padding: 20px; 
       line-height: 1.6; 
+      background-color: var(--color-background);
     }
     .header { 
-      border-bottom: 2px solid #007acc; 
+      border-bottom: 2px solid var(--color-primary); 
       padding-bottom: 20px; 
       margin-bottom: 30px; 
     }
     .entity { 
-      border: 1px solid #ddd; 
+      border: 1px solid var(--color-border); 
       margin: 20px 0; 
       padding: 15px; 
       border-radius: 5px; 
-      background-color: #f9f9f9; 
+      background-color: var(--color-white); 
     }
     .entity-id { 
       font-weight: bold; 
-      color: #007acc; 
+      color: var(--color-primary); 
       margin-bottom: 10px; 
     }
     .entity-type { 
-      background-color: #007acc; 
-      color: white; 
+      background-color: var(--color-primary); 
+      color: var(--color-white); 
       padding: 2px 8px; 
       border-radius: 3px; 
       font-size: 0.9em; 
@@ -46,15 +58,15 @@ export function generateRoCrateHtml(roCrateData: any): string {
     }
     .property-name { 
       font-weight: bold; 
-      color: #333; 
+      color: var(--color-text); 
     }
     .property-value { 
-      color: #666; 
+      color: var(--color-text-muted); 
       margin-left: 10px; 
     }
     .json-toggle { 
-      background-color: #28a745; 
-      color: white; 
+      background-color: var(--color-primary); 
+      color: var(--color-white); 
       border: none; 
       padding: 10px 20px; 
       border-radius: 5px; 
@@ -63,8 +75,8 @@ export function generateRoCrateHtml(roCrateData: any): string {
     }
     .json-content { 
       display: none; 
-      background-color: #f8f8f8; 
-      border: 1px solid #ddd; 
+      background-color: var(--color-json-bg); 
+      border: 1px solid var(--color-border); 
       padding: 15px; 
       border-radius: 5px; 
       overflow-x: auto; 
@@ -77,8 +89,9 @@ export function generateRoCrateHtml(roCrateData: any): string {
 </head>
 <body>
   <div class="header">
-    <h1>RO-Crate Preview</h1>
-    <p><strong>Research Object Crate</strong> - Human-readable view of the metadata</p>
+    <h1>${rootDataset?.name}</h1>
+    <p>This is a human-readable view of the <a href="https://www.researchobject.org/ro-crate/" target="_blank">ro-crate</a> metadata found in the accompanying ro-crate-metadata.json file.</p>
+    <p>It conforms to the <a href="https://w3id.org/ldac/profile" target="_blank">LDAC Profile</a></p>
   </div>
 
   <div class="main-content">
