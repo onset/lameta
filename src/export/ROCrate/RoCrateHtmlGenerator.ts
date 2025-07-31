@@ -85,6 +85,39 @@ export function generateRoCrateHtml(roCrateData: any): string {
       margin: 0; 
       white-space: pre-wrap; 
     }
+    .sessions-section {
+      background-color: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: 5px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .sessions-list {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+    .sessions-list li {
+      margin: 8px 0;
+    }
+    .sessions-list a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .sessions-list a:hover {
+      text-decoration: underline;
+    }
+    .image-thumbnail {
+      max-width: 200px;
+      max-height: 200px;
+      border: 1px solid var(--color-border);
+      border-radius: 5px;
+      margin: 10px 0;
+      display: block;
+    }
+    .image-entity {
+      text-align: left;
+    }
   </style>
 </head>
 <body>
@@ -96,6 +129,8 @@ export function generateRoCrateHtml(roCrateData: any): string {
 
   <div class="main-content">
     ${generateEntityHtml(rootDataset)}
+    
+    ${generateSessionsSection(graph)}
     
     <h2>All Entities</h2>
     ${graph.map((entity: any) => generateEntityHtml(entity)).join("")}
@@ -127,6 +162,35 @@ function generateEntityHtml(entity: any): string {
     .map((type: string) => `<span class="entity-type">${type}</span>`)
     .join("");
 
+  // Create anchor ID for linking
+  const anchorId = entity["@id"]
+    ? entity["@id"].replace(/[^a-zA-Z0-9]/g, "_")
+    : "unknown";
+
+  // Check if this is an image entity
+  const isImage = types.some((type: string) => 
+    type === "ImageObject" || 
+    (entity.encodingFormat && entity.encodingFormat.startsWith("image/")) ||
+    (entity["@id"] && /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(entity["@id"]))
+  );
+
+  if (isImage) {
+    // For images, show only ID and thumbnail
+    const imageUrl = entity["@id"];
+    return `
+      <div class="entity image-entity" id="entity_${anchorId}">
+        <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
+        <div>${typeHtml}</div>
+        <img src="${imageUrl}" alt="Image: ${entity.name || entity["@id"]}" class="image-thumbnail" 
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display:none; color: var(--color-text-muted); font-style: italic;">
+          Image could not be loaded: ${imageUrl}
+        </div>
+      </div>
+    `;
+  }
+
+  // For non-image entities, show all properties as before
   const properties = Object.entries(entity)
     .filter(([key]) => !key.startsWith("@"))
     .map(([key, value]) => {
@@ -144,10 +208,44 @@ function generateEntityHtml(entity: any): string {
     .join("");
 
   return `
-    <div class="entity">
+    <div class="entity" id="entity_${anchorId}">
       <div class="entity-id">${entity["@id"] || "Unknown ID"}</div>
       <div>${typeHtml}</div>
       ${properties}
+    </div>
+  `;
+}
+
+function generateSessionsSection(graph: any[]): string {
+  // Find session entities - they have @id starting with "Sessions/" and @type includes "Event"
+  const sessions = graph.filter((entity: any) => {
+    const id = entity["@id"];
+    const types = Array.isArray(entity["@type"])
+      ? entity["@type"]
+      : [entity["@type"]];
+    return id && id.startsWith("Sessions/") && types.includes("Event");
+  });
+
+  if (sessions.length === 0) {
+    return "";
+  }
+
+  const sessionLinks = sessions
+    .map((session: any) => {
+      const sessionId = session["@id"];
+      const sessionName = session.name || sessionId;
+      // Create anchor link to the entity in the "All Entities" section
+      const anchorId = sessionId.replace(/[^a-zA-Z0-9]/g, "_");
+      return `<li><a href="#entity_${anchorId}">${sessionName}</a></li>`;
+    })
+    .join("");
+
+  return `
+    <div class="sessions-section">
+      <h2>Sessions</h2>
+      <ul class="sessions-list">
+        ${sessionLinks}
+      </ul>
     </div>
   `;
 }
