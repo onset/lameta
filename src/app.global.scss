@@ -117,16 +117,24 @@ select,
   }
 }
 textarea {
-  border-style: inset;
+  // --- Reset and Basic Styles ---
   resize: none;
   height: $field-height;
-  width: 100%; //just fill the container
+  width: 100%;
   font-size: $default-font-size;
-
-  &.invalid {
-    border: solid 2px red;
-  }
   font-family: $default-fonts;
+
+  border: none;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $accent-color;
+  }
+
+  // Your invalid state will still work perfectly
+  &.invalid {
+    border: 2px solid red;
+  }
 }
 
 .rt-noData {

@@ -128,8 +128,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       key={props.axis?.tag || "monolingual"}
       css={css`
         display: flex;
-        padding-left: 5px;
+        height: 100%;
+        padding-left: 2px;
         padding-top: 2px;
+        padding-right: 2px;
+        padding-bottom: 0;
         ${props.showAffordancesAfter &&
         props.field.definition.separatorWithCommaInstructions
           ? "padding-right: 2px;" // leave a little space after the icon
@@ -153,6 +156,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         direction="down"
         background="red"
         color="white"
+        css={css`
+          width: 100%; // this for the div that this unfortunately wraps the textarea with
+          height: 100%;
+        `}
       >
         <textarea
           id={props.field.key}
