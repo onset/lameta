@@ -1131,3 +1131,165 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     });
   });
 });
+
+describe("RoCrateExporter project document folders", () => {
+  let mockProject: Project;
+
+  beforeEach(() => {
+    // Create mock files for testing
+    const mockDescriptionFile = {
+      getActualFilePath: () => "/path/to/description/README.md",
+      getModifiedDate: () => new Date("2023-01-01"),
+      filePrefix: "README"
+    };
+
+    const mockOtherDocFile = {
+      getActualFilePath: () => "/path/to/otherdocs/notes.txt",
+      getModifiedDate: () => new Date("2023-01-02"),
+      filePrefix: "notes"
+    };
+
+    const mockDescriptionFolder = {
+      files: [mockDescriptionFile],
+      filePrefix: "Description"
+    };
+
+    const mockOtherDocsFolder = {
+      files: [mockOtherDocFile],
+      filePrefix: "OtherDocs"
+    };
+
+    mockProject = {
+      filePrefix: "project1",
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "collectionDescription") return "Test Description";
+          return "";
+        }),
+        properties: {
+          forEach: vi.fn()
+        }
+      } as any,
+      sessions: { items: [] },
+      descriptionFolder: mockDescriptionFolder,
+      otherDocsFolder: mockOtherDocsFolder,
+      authorityLists: {
+        accessChoicesOfCurrentProtocol: []
+      },
+      knownFields: [],
+      files: []
+    } as any;
+
+    // Mock fs.statSync
+    vi.mock("fs-extra", () => ({
+      statSync: vi.fn().mockReturnValue({
+        size: 1024,
+        birthtime: new Date("2023-01-01")
+      })
+    }));
+  });
+
+  it("should include description folder files in RO-Crate", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Check that the description file is included in hasPart
+    const descriptionFileRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "Description/README.md"
+    );
+    expect(descriptionFileRef).toBeDefined();
+
+    // Find the actual file entry in the graph
+    const descriptionFileEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "Description/README.md"
+    );
+    expect(descriptionFileEntry).toBeDefined();
+    expect(descriptionFileEntry["@type"]).toBe("DigitalDocument");
+    expect(descriptionFileEntry.name).toBe("README.md");
+    expect(descriptionFileEntry.contentSize).toBe(1024);
+  });
+
+  it("should include other docs folder files in RO-Crate", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Check that the other docs file is included in hasPart
+    const otherDocFileRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "OtherDocs/notes.txt"
+    );
+    expect(otherDocFileRef).toBeDefined();
+
+    // Find the actual file entry in the graph
+    const otherDocFileEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "OtherDocs/notes.txt"
+    );
+    expect(otherDocFileEntry).toBeDefined();
+    expect(otherDocFileEntry["@type"]).toBe("DigitalDocument");
+    expect(otherDocFileEntry.name).toBe("notes.txt");
+    expect(otherDocFileEntry.contentSize).toBe(1024);
+  });
+
+  it("should handle empty document folders gracefully", async () => {
+    // Create project with empty folders
+    const emptyProject = {
+      ...mockProject,
+      descriptionFolder: { files: [] },
+      otherDocsFolder: { files: [] }
+    } as any;
+
+    const result = (await getRoCrate(emptyProject, emptyProject)) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Should not have any Description/ or OtherDocs/ file references
+    const docFileRefs = rootEntry.hasPart.filter(
+      (part: any) =>
+        part["@id"].startsWith("Description/") ||
+        part["@id"].startsWith("OtherDocs/")
+    );
+    expect(docFileRefs).toHaveLength(0);
+  });
+
+  it("should handle missing document folders gracefully", async () => {
+    // Create project with null folders
+    const projectWithoutFolders = {
+      ...mockProject,
+      descriptionFolder: null,
+      otherDocsFolder: null
+    } as any;
+
+    const result = (await getRoCrate(
+      projectWithoutFolders,
+      projectWithoutFolders
+    )) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Should not have any Description/ or OtherDocs/ file references
+    const docFileRefs = rootEntry.hasPart.filter(
+      (part: any) =>
+        part["@id"].startsWith("Description/") ||
+        part["@id"].startsWith("OtherDocs/")
+    );
+    expect(docFileRefs).toHaveLength(0);
+  });
+});

@@ -156,6 +156,29 @@ async function getRoCrateInternal(
       entry.hasPart.push({ "@id": personId });
     });
 
+    // Add description folder files to root dataset hasPart
+    if (
+      project.descriptionFolder &&
+      project.descriptionFolder.files.length > 0
+    ) {
+      addProjectDocumentFolderEntries(
+        project.descriptionFolder,
+        "Description",
+        entry,
+        otherEntries
+      );
+    }
+
+    // Add other docs folder files to root dataset hasPart
+    if (project.otherDocsFolder && project.otherDocsFolder.files.length > 0) {
+      addProjectDocumentFolderEntries(
+        project.otherDocsFolder,
+        "OtherDocs",
+        entry,
+        otherEntries
+      );
+    }
+
     // Add LDAC access type definitions to other entries
     const ldacAccessDefinitions = createLdacAccessTypeDefinitions();
     const ldacMaterialTypeDefinitions = createLdacMaterialTypeDefinitions();
@@ -485,6 +508,58 @@ export function addChildFileEntries(
 
     otherEntries.push(fileEntry);
     folderEntry["hasPart"].push({
+      "@id": fileId
+    });
+  });
+}
+
+export function addProjectDocumentFolderEntries(
+  folder: Folder,
+  folderType: string,
+  projectEntry: any,
+  otherEntries: object[]
+): void {
+  if (folder.files.length === 0) return;
+
+  folder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    const fileName = Path.basename(path);
+    const fileExt = Path.extname(fileName).toLowerCase();
+
+    // Skip RO-Crate metadata files to avoid circular references
+    if (fileName.startsWith("ro-crate")) {
+      return;
+    }
+
+    // Determine the appropriate @type based on file extension
+    let fileType = "DigitalDocument"; // Default for project documents
+
+    if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
+      fileType = "ImageObject";
+    } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
+      fileType = "AudioObject";
+    } else if (fileExt.match(/\.(mp4|avi|mov|mkv|webm)$/)) {
+      fileType = "VideoObject";
+    }
+
+    // Create file ID using folder type
+    const fileId = `${folderType}/${fileName}`;
+
+    const fileEntry: any = {
+      "@id": fileId,
+      "@type": fileType,
+      contentSize: fs.statSync(path).size,
+      dateCreated: fs.statSync(path).birthtime.toISOString(),
+      dateModified: file.getModifiedDate()?.toISOString(),
+      encodingFormat: getMimeType(
+        Path.extname(fileName).toLowerCase().replace(/\./g, "")
+      ),
+      "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
+      name: fileName
+    };
+
+    otherEntries.push(fileEntry);
+    projectEntry.hasPart.push({
       "@id": fileId
     });
   });
