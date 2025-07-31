@@ -122,13 +122,26 @@ export function generateRoCrateHtml(roCrateData: any): string {
   /*    padding-bottom: 20px; 
       margin-bottom: 30px; */
     }
+      .main-content{
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
     .entity { 
       border: 1px solid var(--color-border); 
-      margin: 20px 0; 
-      padding: 15px; 
+      
+      
       border-radius: 5px; 
       background-color: var(--color-white); 
       position: relative;
+      
+    }
+    .entity.child {
+      /* Hide the entity header (green ID bar) for child entities */
+    }
+    .entity.child .entity-header {
+      display: none;
     }
     .entity:target {
       animation: targetHighlight 1s ease-in-out forwards;
@@ -165,6 +178,12 @@ export function generateRoCrateHtml(roCrateData: any): string {
       flex-wrap: wrap;
       gap: 5px;
       margin-left: 10px;
+    }
+    .entity-types.bottom-right {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      margin-left: 0;
     }
     .entity-type { 
       background-color: transparent; 
@@ -246,6 +265,31 @@ export function generateRoCrateHtml(roCrateData: any): string {
     }
     .image-entity, .media-entity {
       text-align: left;
+      display: inline-block;
+      width: auto;
+      min-width: 200px;
+      max-width: 300px;
+      vertical-align: top;
+      margin: 5px;
+    }
+    .entity-children-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+      padding-right: 30px;
+      padding-left: 30px;
+    }
+    .entity-children-container .entity {
+      flex: 0 0 auto;
+      width: auto;
+      box-sizing: border-box;
+      min-height: 250px; /* makes it more uniform */
+      min-width: 250px; /* makes it more uniform */
+    }
+    .entity {
+      box-sizing: border-box;
+      padding: 20px;
     }
     .property-value a {
       color: var(--color-primary);
@@ -591,14 +635,19 @@ function generateHierarchicalEntitiesHtml(graph: any[]): string {
     // Generate the entity HTML
     let entityHtml = generateEntityHtml(entity, graph);
 
-    // Apply indentation based on depth
+    // Apply child styling based on depth
     if (depth > 0) {
-      const indentPx = depth * 40;
-      console.log(`  Applying indentation: ${indentPx}px at depth ${depth}`);
-      // Handle different entity types that might have additional classes
+      console.log(`  Applying child styling at depth ${depth}`);
+      // Add 'child' class for child entities - no need for manual indentation
       entityHtml = entityHtml.replace(
-        /<div class="entity([^"]*)"[^>]*>/,
-        `<div class="entity$1" style="margin-left: ${indentPx}px; border-left: 3px solid var(--color-primary); padding-left: 15px;">`
+        /<div class="entity([^"]*)"([^>]*)>/,
+        `<div class="entity$1 child"$2>`
+      );
+
+      // Move entity types to bottom right for child entities
+      entityHtml = entityHtml.replace(
+        /<div class="entity-types"([^>]*)>/,
+        `<div class="entity-types bottom-right"$1>`
       );
     }
 
@@ -639,13 +688,15 @@ function generateHierarchicalEntitiesHtml(graph: any[]): string {
 
       console.log(`  Found ${children.length} children`);
 
-      // Recursively add children with increased depth
-      const childrenHtml = children
-        .map((child: any) => generateEntityWithChildren(child, depth + 1))
-        .filter(Boolean)
-        .join("");
+      // If there are children, wrap them in a container for proper layout
+      if (children.length > 0) {
+        const childrenHtml = children
+          .map((child: any) => generateEntityWithChildren(child, depth + 1))
+          .filter(Boolean)
+          .join("");
 
-      html += childrenHtml;
+        html += `<div class="entity-children-container">${childrenHtml}</div>`;
+      }
     }
 
     return html;
