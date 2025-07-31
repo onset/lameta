@@ -304,7 +304,7 @@ export class Session extends Folder {
       const s = i18n._(
         t`lameta could not find a matching Person for the following contributors: `
       );
-      return s + violations.join(" ");
+      return "\n\n" + s + violations.join(", ");
     }
   }
 }

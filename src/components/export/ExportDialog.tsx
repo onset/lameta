@@ -438,7 +438,7 @@ export const ExportDialog: React.FunctionComponent<{
                   <ReactMarkdown
                     children={rulesBasedValidationResult!}
                     renderers={{
-                      paragraph: ({ children }) => <span>{children}</span>
+                      paragraph: ({ children }) => <div>{children}</div>
                     }}
                   />
                 </Alert>
