@@ -440,6 +440,11 @@ export function addChildFileEntries(
     const fileName = Path.basename(path);
     const fileExt = Path.extname(fileName).toLowerCase();
 
+    // Skip RO-Crate metadata files to avoid circular references
+    if (fileName.startsWith("ro-crate")) {
+      return;
+    }
+
     // Determine the appropriate @type based on file extension and context
     let fileType = "File";
 
