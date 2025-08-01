@@ -143,8 +143,8 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
-      expect(sessionEntry["ldac:speaker"]).toEqual({ "@id": "John Doe" });
-      expect(sessionEntry["ldac:interviewer"]).toEqual({ "@id": "Jane Smith" });
+      expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "John Doe" }]);
+      expect(sessionEntry["ldac:interviewer"]).toEqual([{ "@id": "Jane Smith" }]);
     });
 
     it("should handle multiple people with same role", () => {
@@ -160,6 +160,43 @@ describe("RoCrateSessions", () => {
         { "@id": "John Doe" },
         { "@id": "Jane Smith" }
       ]);
+    });
+
+    it("should handle mixed roles with multiple speakers and single recorder", () => {
+      mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
+        { personReference: "John Doe", role: "speaker" },
+        { personReference: "Jane Smith", role: "speaker" },
+        { personReference: "Bob Wilson", role: "recorder" }
+      ]);
+
+      const sessionEntry = {};
+      addParticipantProperties(sessionEntry, mockSession, mockProject);
+
+      // Both single and multiple role values should be arrays
+      expect(sessionEntry["ldac:speaker"]).toEqual([
+        { "@id": "John Doe" },
+        { "@id": "Jane Smith" }
+      ]);
+      expect(sessionEntry["ldac:recorder"]).toEqual([
+        { "@id": "Bob Wilson" }
+      ]);
+    });
+
+    it("should avoid duplicate person IDs in the same role", () => {
+      mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
+        { personReference: "John Doe", role: "speaker" },
+        { personReference: "John Doe", role: "speaker" }, // duplicate
+        { personReference: "Jane Smith", role: "speaker" }
+      ]);
+
+      const sessionEntry = {};
+      addParticipantProperties(sessionEntry, mockSession, mockProject);
+
+      expect(sessionEntry["ldac:speaker"]).toEqual([
+        { "@id": "John Doe" },
+        { "@id": "Jane Smith" }
+      ]);
+      expect(sessionEntry["ldac:speaker"]).toHaveLength(2); // Only unique entries
     });
   });
 });

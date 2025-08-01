@@ -211,9 +211,9 @@ describe("RoCrateExporter LDAC profile conformance", () => {
     expect(sessionEvent.participant).toBeUndefined();
 
     // Should use specific LDAC role properties
-    expect(sessionEvent["ldac:speaker"]).toEqual({
+    expect(sessionEvent["ldac:speaker"]).toEqual([{
       "@id": "People/Awi_Heole/"
-    });
+    }]);
   });
 
   it("should link Session Event to all its files", async () => {

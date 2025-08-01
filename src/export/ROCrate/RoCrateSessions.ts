@@ -151,9 +151,8 @@ export function addParticipantProperties(
     const ldacProperty = `ldac:${role}`;
     const personIds = roleGroups[role];
 
-    if (personIds.length === 1) {
-      sessionEntry[ldacProperty] = { "@id": personIds[0] };
-    } else if (personIds.length > 1) {
+    // Always wrap in arrays for consistency with LDAC profile expectations
+    if (personIds.length > 0) {
       sessionEntry[ldacProperty] = personIds.map((id) => ({ "@id": id }));
     }
   }
