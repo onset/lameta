@@ -231,7 +231,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent).toBeDefined();
       expect(sessionEvent["@type"]).toEqual([
         "Dataset",
-        "pcdm:RepositoryObject",
+        "pcdm:Object",
         "Event"
       ]);
       expect(sessionEvent.name).toBe(

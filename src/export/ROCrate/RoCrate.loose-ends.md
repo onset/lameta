@@ -12,7 +12,3 @@ LDAC expects us to know what language the session was in. We should use the sess
     }
     ]
 ```
-
-# session types
-
-"pcdm:RepositoryObject" --> "pcdm:Object"

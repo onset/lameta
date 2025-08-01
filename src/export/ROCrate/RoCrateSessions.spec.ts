@@ -71,11 +71,13 @@ describe("RoCrateSessions", () => {
     mockSession = {
       filePrefix: "test-session",
       metadataFile: {
-        getTextProperty: vi.fn().mockImplementation(
-          (key: string, defaultValue: string = "") =>
-            sessionProperties[key as keyof typeof sessionProperties] ??
-            defaultValue
-        ),
+        getTextProperty: vi
+          .fn()
+          .mockImplementation(
+            (key: string, defaultValue: string = "") =>
+              sessionProperties[key as keyof typeof sessionProperties] ??
+              defaultValue
+          ),
         properties: {
           forEach: vi.fn()
         }
@@ -112,7 +114,7 @@ describe("RoCrateSessions", () => {
       expect(sessionEntry["@id"]).toBe("./");
       expect(sessionEntry["@type"]).toEqual([
         "Dataset",
-        "pcdm:RepositoryObject",
+        "pcdm:Object",
         "Event"
       ]);
       expect(sessionEntry.name).toBe("Test Session");
@@ -133,7 +135,7 @@ describe("RoCrateSessions", () => {
       expect(sessionEntry["@id"]).toBe("Sessions/test-session/");
       expect(sessionEntry["@type"]).toEqual([
         "Dataset",
-        "pcdm:RepositoryObject",
+        "pcdm:Object",
         "Event"
       ]);
       expect(sessionEntry.startDate).toBe("2023-01-01");

@@ -21,7 +21,7 @@ export async function createSessionEntry(
 ): Promise<object[]> {
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : `Sessions/${session.filePrefix}/`,
-    "@type": ["Dataset", "pcdm:RepositoryObject", "Event"],
+    "@type": ["Dataset", "pcdm:Object", "Event"],
     conformsTo: {
       "@id": "https://w3id.org/ldac/profile#Object"
     },
