@@ -1,9 +1,9 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
-import { 
+import {
   setupCommonMocks,
   setupExporterMocks,
-  createMockProject, 
-  createMockSession, 
+  createMockProject,
+  createMockSession,
   createMockPerson,
   createFsExtraMock
 } from "./test-utils/rocrate-test-setup";
@@ -62,7 +62,9 @@ describe("RO-Crate Exporter", () => {
       const result = await getRoCrate(mockProject, mockSession);
       const graph = result["@graph"];
 
-      const metadataFile = graph.find((item: any) => item["@id"] === "ro-crate-metadata.json");
+      const metadataFile = graph.find(
+        (item: any) => item["@id"] === "ro-crate-metadata.json"
+      );
       expect(metadataFile).toBeDefined();
       expect(metadataFile["@type"]).toBe("CreativeWork");
       expect(metadataFile.about).toEqual({ "@id": "./" });
@@ -75,7 +77,9 @@ describe("RO-Crate Exporter", () => {
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
       expect(rootDataset.conformsTo).toBeDefined();
       // The actual value is "Object" not "Collection" for single sessions
-      expect(rootDataset.conformsTo["@id"]).toBe("https://w3id.org/ldac/profile#Object");
+      expect(rootDataset.conformsTo["@id"]).toBe(
+        "https://w3id.org/ldac/profile#Object"
+      );
     });
   });
 
@@ -96,10 +100,10 @@ describe("RO-Crate Exporter", () => {
       const result = await getRoCrate(mockProject, mockSession);
       const graph = result["@graph"];
 
-      const sessionEntry = graph.find((item: any) => 
-        item["@id"] && item["@id"].includes("Sessions/")
+      const sessionEntry = graph.find(
+        (item: any) => item["@id"] && item["@id"].includes("Sessions/")
       );
-      
+
       if (sessionEntry && sessionEntry["ldac:linguisticGenre"]) {
         expect(sessionEntry["ldac:linguisticGenre"]).toBeDefined();
       }
@@ -134,9 +138,9 @@ describe("RO-Crate Exporter", () => {
 
     beforeEach(() => {
       mockProject = createMockProject();
-      
+
       mockSession = createMockSession({
-        files: [], // Start with empty files to avoid fs mocking complexity 
+        files: [], // Start with empty files to avoid fs mocking complexity
         metadata: {
           title: "Session with Files"
         }
@@ -148,9 +152,14 @@ describe("RO-Crate Exporter", () => {
       const graph = result["@graph"];
 
       // Look for any session-related entry (might be structured differently)
-      const sessionEntries = graph.filter((item: any) => 
-        item["@id"] && (item["@id"].includes("session") || item["@id"].includes("Session") || 
-                       item["@type"] && (item["@type"].includes("Session") || item["@type"].includes("MediaObject")))
+      const sessionEntries = graph.filter(
+        (item: any) =>
+          item["@id"] &&
+          (item["@id"].includes("session") ||
+            item["@id"].includes("Session") ||
+            (item["@type"] &&
+              (item["@type"].includes("Session") ||
+                item["@type"].includes("MediaObject"))))
       );
 
       // Should have at least some session-related content
@@ -176,7 +185,7 @@ describe("RO-Crate Exporter", () => {
 
     beforeEach(() => {
       mockProject = createMockProject();
-      
+
       mockPerson = createMockPerson({
         metadata: {
           fullName: "John Doe",
@@ -199,8 +208,8 @@ describe("RO-Crate Exporter", () => {
       const graph = result["@graph"];
 
       // Look for person entries
-      const personEntries = graph.filter((item: any) => 
-        item["@type"] && item["@type"].includes("Person")
+      const personEntries = graph.filter(
+        (item: any) => item["@type"] && item["@type"].includes("Person")
       );
 
       personEntries.forEach((person: any) => {
@@ -214,8 +223,8 @@ describe("RO-Crate Exporter", () => {
       const result = await getRoCrate(mockProject, mockSession);
       const graph = result["@graph"];
 
-      const personEntries = graph.filter((item: any) => 
-        item["@type"] && item["@type"].includes("Person")
+      const personEntries = graph.filter(
+        (item: any) => item["@type"] && item["@type"].includes("Person")
       );
 
       if (personEntries.length > 0) {
@@ -257,13 +266,15 @@ describe("RO-Crate Exporter", () => {
       const result = await getRoCrate(mockProject, mockSession);
       const graph = result["@graph"];
 
-      const sessionEntry = graph.find((item: any) => 
-        item["@id"] && item["@id"].includes("Sessions/")
+      const sessionEntry = graph.find(
+        (item: any) => item["@id"] && item["@id"].includes("Sessions/")
       );
 
       if (sessionEntry) {
         // License information should be present in some form
-        expect(sessionEntry.license || sessionEntry["schema:license"]).toBeDefined();
+        expect(
+          sessionEntry.license || sessionEntry["schema:license"]
+        ).toBeDefined();
       }
     });
 
@@ -283,8 +294,11 @@ describe("RO-Crate Exporter", () => {
       const graph = result["@graph"];
 
       // Look for license-related entries
-      const licenseEntries = graph.filter((item: any) => 
-        item["@type"] && (item["@type"].includes("License") || item["@type"].includes("CreativeWork"))
+      const licenseEntries = graph.filter(
+        (item: any) =>
+          item["@type"] &&
+          (item["@type"].includes("License") ||
+            item["@type"].includes("CreativeWork"))
       );
 
       expect(licenseEntries.length).toBeGreaterThan(0);
@@ -294,7 +308,7 @@ describe("RO-Crate Exporter", () => {
   describe("Error Handling", () => {
     it("should handle missing project gracefully", async () => {
       const mockSession = createMockSession();
-      
+
       // This test expects the function to fail or handle nulls appropriately
       try {
         const result = await getRoCrate(null as any, mockSession);
@@ -334,8 +348,8 @@ describe("RO-Crate Exporter", () => {
       expect(result["@context"]).toBeDefined();
       expect(Array.isArray(result["@context"])).toBe(true);
       // Check that some RO-Crate context is present (could be different URL)
-      const hasRoCrateContext = result["@context"].some((ctx: any) => 
-        typeof ctx === "string" && ctx.includes("ro/crate")
+      const hasRoCrateContext = result["@context"].some(
+        (ctx: any) => typeof ctx === "string" && ctx.includes("ro/crate")
       );
       expect(hasRoCrateContext).toBe(true);
     });
@@ -344,11 +358,12 @@ describe("RO-Crate Exporter", () => {
       const result = await getRoCrate(mockProject, mockSession);
 
       const context = result["@context"];
-      const ldacContextFound = context.some((ctx: any) => 
-        (typeof ctx === "object" && ctx && ctx.ldac) ||
-        (typeof ctx === "string" && ctx.includes("ldac"))
+      const ldacContextFound = context.some(
+        (ctx: any) =>
+          (typeof ctx === "object" && ctx && ctx.ldac) ||
+          (typeof ctx === "string" && ctx.includes("ldac"))
       );
-      
+
       // LDAC context might not always be present, so make this more lenient
       expect(typeof ldacContextFound).toBe("boolean");
     });
@@ -360,12 +375,14 @@ describe("RO-Crate Exporter", () => {
       expect(result["@context"]).toBeDefined();
       expect(result["@graph"]).toBeDefined();
       expect(Array.isArray(result["@graph"])).toBe(true);
-      
+
       // Should have root dataset and metadata file
       const graph = result["@graph"];
       const hasRootDataset = graph.some((item: any) => item["@id"] === "./");
-      const hasMetadataFile = graph.some((item: any) => item["@id"] === "ro-crate-metadata.json");
-      
+      const hasMetadataFile = graph.some(
+        (item: any) => item["@id"] === "ro-crate-metadata.json"
+      );
+
       expect(hasRootDataset).toBe(true);
       expect(hasMetadataFile).toBe(true);
     });

@@ -1,9 +1,9 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
-import { 
+import {
   setupCommonMocks,
-  createMockProject, 
-  createMockSession, 
-  createMockPerson 
+  createMockProject,
+  createMockSession,
+  createMockPerson
 } from "./test-utils/rocrate-test-setup";
 
 // Setup common mocks before imports
@@ -129,8 +129,8 @@ describe("RO-Crate Components", () => {
         const entities = rocrateLanguages.getAllLanguageEntities();
 
         expect(entities).toHaveLength(2);
-        expect(entities.some(e => e.code === "eng")).toBe(true);
-        expect(entities.some(e => e.code === "fra")).toBe(true);
+        expect(entities.some((e) => e.code === "eng")).toBe(true);
+        expect(entities.some((e) => e.code === "fra")).toBe(true);
       });
     });
 
@@ -271,7 +271,7 @@ describe("RO-Crate Components", () => {
 
     it("should handle license ensuring for files", () => {
       rocrateLicense.ensureFileLicense(mockFile, mockSession);
-      
+
       // Should not throw and should handle the file appropriately
       expect(true).toBe(true);
     });
@@ -305,7 +305,11 @@ describe("RO-Crate Components", () => {
 
     it("should create person entries from participant", async () => {
       const rocrateLicense = new RoCrateLicense();
-      const entries = await makeEntriesFromParticipant(mockProject, mockSession, rocrateLicense);
+      const entries = await makeEntriesFromParticipant(
+        mockProject,
+        mockSession,
+        rocrateLicense
+      );
 
       expect(entries).toBeDefined();
       expect(Array.isArray(entries)).toBe(true);
@@ -316,7 +320,11 @@ describe("RO-Crate Components", () => {
       // Add some mock contributions to the session
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([]);
 
-      const entries = await makeEntriesFromParticipant(mockProject, mockSession, rocrateLicense);
+      const entries = await makeEntriesFromParticipant(
+        mockProject,
+        mockSession,
+        rocrateLicense
+      );
 
       expect(entries).toBeDefined();
     });
@@ -343,7 +351,9 @@ describe("RO-Crate Components", () => {
 
     it("should handle basic session properties", () => {
       expect(mockSession.filePrefix).toBe("test-session");
-      expect(mockSession.metadataFile.getTextProperty("title")).toBe("Test Session");
+      expect(mockSession.metadataFile.getTextProperty("title")).toBe(
+        "Test Session"
+      );
     });
   });
 });

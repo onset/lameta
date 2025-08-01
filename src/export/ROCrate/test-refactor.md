@@ -93,6 +93,7 @@ src/export/ROCrate/__tests__/
 - [x] 4.9 Remove old LDAC test files
 
 **Git Commit**: TBD - Phase 4 completion
+
 - [ ] 4.7 Validation: Run `yarn test` - LDAC tests should pass
 - [ ] 4.8 Remove old LDAC test files
 

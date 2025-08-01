@@ -36,21 +36,23 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
   beforeEach(() => {
     // Mock field definitions for LDAC tests
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([
-      {
-        key: "languages",
-        persist: true,
-        type: "languageChoices",
-        multilingual: false,
-        isCustom: false,
-        showOnAutoForm: true,
-        rocrate: {
-          key: "ldac:subjectLanguage",
-          handler: "languages",
-          array: true
-        }
-      } as FieldDefinition
-    ]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      [
+        {
+          key: "languages",
+          persist: true,
+          type: "languageChoices",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "ldac:subjectLanguage",
+            handler: "languages",
+            array: true
+          }
+        } as FieldDefinition
+      ]
+    );
 
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
@@ -113,7 +115,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -147,7 +150,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "description") return "Documentation of the Edolo language";
+          if (key === "description")
+            return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
@@ -187,7 +191,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       } as any,
       {
         id: "U",
-        label: "U: All Registered Users", 
+        label: "U: All Registered Users",
         description: "all Users can access (requires registration)",
         ldacAccessCategory: "ldac:AuthorizedAccess"
       } as any,
@@ -200,12 +204,14 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     ];
 
     // Set up archive configuration for license tests - use non-null assertion
-    (mockProject.metadataFile as any).getTextProperty = vi.fn().mockImplementation((key: string) => {
-      if (key === "title") return "Edolo Language Documentation";
-      if (key === "description") return "Documentation of the Edolo language";
-      if (key === "archiveConfigurationName") return "TestArchive";
-      return "";
-    });
+    (mockProject.metadataFile as any).getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Edolo Language Documentation";
+        if (key === "description") return "Documentation of the Edolo language";
+        if (key === "archiveConfigurationName") return "TestArchive";
+        return "";
+      });
 
     // Set up the correct prototypes for instanceof checks
     Object.setPrototypeOf(mockProject, Project.prototype);
@@ -225,7 +231,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent).toBeDefined();
       expect(sessionEvent["@type"]).toEqual([
         "Dataset",
-        "pcdm:RepositoryObject", 
+        "pcdm:RepositoryObject",
         "Event"
       ]);
       expect(sessionEvent.name).toBe(
@@ -388,7 +394,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       } as any;
 
       const xmlFile = {
-        getActualFilePath: () => "/sessions/ETR009/ETR009.xml", 
+        getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
         getModifiedDate: () => new Date("2023-01-01"),
         pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
       } as any;
@@ -452,7 +458,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -471,7 +478,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       expect(license).toBeDefined();
       expect(license["@type"]).toBe("ldac:DataReuseLicense");
-      expect(license["ldac:access"]).toEqual({ "@id": "ldac:AuthorizedAccess" });
+      expect(license["ldac:access"]).toEqual({
+        "@id": "ldac:AuthorizedAccess"
+      });
       expect(license.description).toContain("TestArchive-specific term");
       expect(license.description).toContain("'U: All Registered Users'");
       expect(license.description).toContain(
@@ -496,7 +505,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(openAccess).toBeDefined();
       expect(openAccess["@type"]).toBe("DefinedTerm");
       expect(openAccess.name).toBe("Open Access");
-      expect(openAccess.inDefinedTermSet).toEqual({ "@id": "ldac:AccessTypes" });
+      expect(openAccess.inDefinedTermSet).toEqual({
+        "@id": "ldac:AccessTypes"
+      });
 
       const authorizedAccess = result["@graph"].find(
         (item: any) => item["@id"] === "ldac:AuthorizedAccess"
@@ -520,7 +531,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -554,7 +566,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -572,7 +585,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(license).toBeDefined();
-      expect(license["ldac:access"]).toEqual({ "@id": "ldac:AuthorizedAccess" });
+      expect(license["ldac:access"]).toEqual({
+        "@id": "ldac:AuthorizedAccess"
+      });
     });
   });
 
@@ -601,7 +616,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         (item: any) => item["@id"]
       );
       expect(languageIds).toContain("#language_etr");
-      expect(languageIds).toContain("#language_tpi"); 
+      expect(languageIds).toContain("#language_tpi");
     });
 
     it("should not have unreferenced language entities", async () => {
@@ -656,7 +671,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -725,7 +741,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title") return "The story behind how we catch fish with poison bark";
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
