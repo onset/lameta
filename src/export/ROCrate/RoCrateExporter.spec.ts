@@ -1020,9 +1020,11 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent["ldac:recorder"]).toBeDefined();
 
       // Values should be direct references to Person objects, not Role objects
-      expect(sessionEvent["ldac:speaker"]).toEqual([{
-        "@id": "People/Awi_Heole/"
-      }]);
+      expect(sessionEvent["ldac:speaker"]).toEqual([
+        {
+          "@id": "People/Awi_Heole/"
+        }
+      ]);
       expect(sessionEvent["ldac:recorder"]).toEqual([{ "@id": "Hatton" }]);
     });
 

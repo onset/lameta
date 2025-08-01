@@ -430,7 +430,13 @@ function getFieldValues(folder: Folder, field: any): string[] {
   //console.log("getFieldValues(", field.key);
 
   if (field.rocrate?.handler === "languages") {
-    return (folder as Session).getLanguageCodes(field.key);
+    // Handle languages for any folder type (Project, Session, Person)
+    const languageString =
+      folder.metadataFile?.properties.getTextStringOrEmpty(field.key) || "";
+    return languageString
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
   } else {
     const v = folder.metadataFile?.properties.getHasValue(field.key)
       ? folder.metadataFile?.getTextProperty(field.key, "").trim()
