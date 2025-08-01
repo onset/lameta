@@ -389,18 +389,58 @@ export async function addFieldEntries(
         const leafTemplate = getRoCrateTemplate(field);
 
         if (leafTemplate) {
-          values.forEach((c: string) => {
-            // For each value, create a graph entry that is the template, filled in with the value
-            const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
-            otherEntries.push(leaf);
-            const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
-            // Now create the links to those from the parent object
-            if (field.rocrate?.array) {
-              if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
-              // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
-              folderEntry[propertyKey].push(reference);
-            } else folderEntry[propertyKey] = reference;
-          });
+          // Check if this is a language-related template
+          const isLanguageTemplate =
+            field.type === "languageChoices" &&
+            leafTemplate["@id"] &&
+            leafTemplate["@id"].includes("#language_");
+
+          if (isLanguageTemplate) {
+            // Use RoCrateLanguages system for language templates to ensure proper tracking
+            const languageReferences: any[] = [];
+            values.forEach((languageValue: string) => {
+              // Parse language value (could be "etr" or "etr: Edolo")
+              const [code] = languageValue.split(":").map((s) => s.trim());
+              if (code) {
+                // Create language entity and get reference using RoCrateLanguages system
+                const languageEntity = rocrateLanguages.getLanguageEntity(code);
+                const reference = rocrateLanguages.getLanguageReference(code);
+
+                // Add language entity to other entries if not already added
+                if (
+                  !otherEntries.some(
+                    (entry: any) => entry["@id"] === languageEntity["@id"]
+                  )
+                ) {
+                  otherEntries.push(languageEntity);
+                }
+
+                // Track usage
+                rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
+
+                // Add reference to the field
+                languageReferences.push(reference);
+              }
+            });
+
+            if (languageReferences.length > 0) {
+              folderEntry[propertyKey] = languageReferences;
+            }
+          } else {
+            // Regular template processing for non-language fields
+            values.forEach((c: string) => {
+              // For each value, create a graph entry that is the template, filled in with the value
+              const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
+              otherEntries.push(leaf);
+              const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
+              // Now create the links to those from the parent object
+              if (field.rocrate?.array) {
+                if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
+                // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
+                folderEntry[propertyKey].push({ "@id": reference });
+              } else folderEntry[propertyKey] = { "@id": reference };
+            });
+          }
         } else {
           folderEntry[propertyKey] = values[0]; // we have a key, but nothing else. Can use, e.g. to rename "keyword" to "keywords"
         }
@@ -500,6 +540,17 @@ function getFieldValues(folder: Folder, field: any): string[] {
     const v = folder.metadataFile?.properties.getHasValue(field.key)
       ? folder.metadataFile?.getTextProperty(field.key, "").trim()
       : "";
+
+    // Check if this is a language-related field with a template (no handler)
+    // This handles cases where templates are used without the language handler
+    if (v && field.rocrate?.template && field.type === "languageChoices") {
+      // Parse as languages: split by semicolon and trim
+      return v
+        .split(";")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+    }
+
     return v ? [v] : [];
   }
 }
@@ -516,14 +567,28 @@ export function getElementUsingTemplate(
     // but insted of [v], that template has [code] which we replace with the value
     let replacedValue = template[key];
 
-    // Replace [v] with the value
+    // For language-related templates, extract just the language code from "code: Name" format
+    const extractLanguageCode = (langValue: string): string => {
+      // Handle "etr: Edolo" format - extract just "etr"
+      const [code] = langValue.split(":").map((s) => s.trim());
+      return code || langValue;
+    };
+
+    // Replace [v] with the value - but for @id fields with #language_ prefix, use just the code
     if (replacedValue.includes("[v]")) {
-      replacedValue = replacedValue.replace("[v]", value);
+      let replacementValue = value;
+
+      // Special handling for language @id fields
+      if (key === "@id" && replacedValue.includes("#language_")) {
+        replacementValue = extractLanguageCode(value);
+      }
+
+      replacedValue = replacedValue.replace("[v]", replacementValue);
     }
 
     // Replace [code] with sanitized language code for language templates
     if (replacedValue.includes("[code]")) {
-      const sanitizedCode = sanitizeLanguageCode(value);
+      const sanitizedCode = sanitizeLanguageCode(extractLanguageCode(value));
       replacedValue = replacedValue.replace("[code]", sanitizedCode);
     }
 
