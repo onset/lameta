@@ -309,9 +309,9 @@
       type: "languageChoices",
       englishLabel: "Subject Languages",
       rocrate: {
-        key: "ldac:subjectLanguage",
+        key: "ldac:subjectLanguage", // LDAC extension: array of languages that are the subject of study
         handler: "languages",
-        array: true
+        array: true // Multiple languages can be studied in a session
       },
       tabIndex: 12
     },
@@ -321,9 +321,9 @@
       type: "languageChoices",
       englishLabel: "Working Languages",
       rocrate: {
-        key: "contentLanguages",
+        key: "inLanguage", // Schema.org property: single language the session was conducted in
         handler: "languages",
-        array: true,
+        array: false, // Only one primary working language per session (per Schema.org spec)
         template: { "@id": "#language_[v]" }
       },
       tabIndex: 14

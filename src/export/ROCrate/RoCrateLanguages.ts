@@ -5,6 +5,7 @@ export interface LanguageEntity {
   "@type": "Language";
   code: string;
   name: string;
+  description?: string;
 }
 
 /**
@@ -26,14 +27,20 @@ export class RoCrateLanguages {
     }
 
     // Create new language entity
-    const name =
-      staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code);
+    const name = staticLanguageFinder 
+      ? staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code)
+      : `Language ${code}`;
     const entity: LanguageEntity = {
       "@id": `#language_${normalizedCode}`,
       "@type": "Language",
       code: normalizedCode,
       name: name
     };
+
+    // Add descriptive text for special cases like "unk" (unknown language)
+    if (normalizedCode === "unk") {
+      entity.description = "Language marked as unknown because no working language was specified in lameta";
+    }
 
     this.languageMap.set(normalizedCode, entity);
     return entity;

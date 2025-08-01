@@ -174,7 +174,7 @@ export class RoCrateValidator {
 export function ensureSubjectLanguage(
   entity: any,
   rocrateLanguages: RoCrateLanguages,
-  defaultLanguageCodes: string[] = ["und"]
+  defaultLanguageCodes: string[] = ["unk"]
 ): void {
   if (!entity["ldac:subjectLanguage"]) {
     entity["ldac:subjectLanguage"] = [];

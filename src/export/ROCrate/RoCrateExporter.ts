@@ -282,7 +282,10 @@ export async function addFieldEntries(
   // First handle the known fields
   for (const field of folder.knownFields) {
     const values: string[] = getFieldValues(folder, field);
-    if (values.length === 0 || values[0] === "unspecified") continue;
+    // Skip empty fields, except for language fields which need to process empty values
+    // to trigger "und" fallback behavior for LDAC compliance
+    const isLanguageField = field.rocrate?.handler === "languages";
+    if ((values.length === 0 || values[0] === "unspecified") && !isLanguageField) continue;
 
     // For Person entities, skip PII fields entirely
     if (folder instanceof Person && field.personallyIdentifiableInformation) {
@@ -313,7 +316,25 @@ export async function addFieldEntries(
         });
 
         if (languageReferences.length > 0) {
-          folderEntry[propertyKey] = languageReferences;
+          // Check if field should be array or single object
+          if (field.rocrate?.array === false) {
+            // Use only the first language reference (single object)
+            folderEntry[propertyKey] = languageReferences[0];
+          } else {
+            // Use array (default behavior)
+            folderEntry[propertyKey] = languageReferences;
+          }
+        } else {
+          // No language values found, fallback to "unk" (unknown language)
+          const languageEntity = rocrateLanguages.getLanguageEntity("unk");
+          const reference = rocrateLanguages.getLanguageReference("unk");
+          rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
+          
+          if (field.rocrate?.array === false) {
+            folderEntry[propertyKey] = reference;
+          } else {
+            folderEntry[propertyKey] = [reference];
+          }
         }
         continue; // Skip the normal template processing for language fields
       }
@@ -409,7 +430,25 @@ export async function addFieldEntries(
             });
 
             if (languageReferences.length > 0) {
-              folderEntry[propertyKey] = languageReferences;
+              // Apply array vs single object logic based on field configuration
+              if (field.rocrate?.array === false) {
+                // For fields like workingLanguages with array:false, use single object
+                folderEntry[propertyKey] = languageReferences[0];
+              } else {
+                // For fields like languages with array:true, use array
+                folderEntry[propertyKey] = languageReferences;
+              }
+            } else {
+              // No language values found, fallback to "unk" (unknown language)
+              const languageEntity = rocrateLanguages.getLanguageEntity("unk");
+              const reference = rocrateLanguages.getLanguageReference("unk");
+              rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
+              
+              if (field.rocrate?.array === false) {
+                folderEntry[propertyKey] = reference;
+              } else {
+                folderEntry[propertyKey] = [reference];
+              }
             }
           } else {
             // Regular template processing for non-language fields

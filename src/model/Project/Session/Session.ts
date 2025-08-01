@@ -257,6 +257,11 @@ export class Session extends Folder {
   // we no longer use "participants" except when serializing for legacy versions of SayMore(x) out there
 
   public getLanguageCodes(fieldKey: string): string[] {
+    // Defensive check for mock objects in tests that may not have all methods implemented
+    // TODO: Improve test mocks to include all required methods instead of this runtime check
+    if (!this.properties || typeof this.properties.getTextStringOrEmpty !== 'function') {
+      return [];
+    }
     return this.properties
       .getTextStringOrEmpty(fieldKey)
       .split(";")

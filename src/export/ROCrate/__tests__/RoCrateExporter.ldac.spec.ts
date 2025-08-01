@@ -734,9 +734,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           showOnAutoForm: true,
           englishLabel: "Working Languages",
           rocrate: {
-            key: "contentLanguages",
+            key: "inLanguage",
             handler: "languages",
-            array: true,
+            array: false,
             template: { "@id": "#language_[v]" }
           }
         } as any
@@ -777,14 +777,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         (item: any) => item["@id"] === "./"
       );
 
-      // The contentLanguages should be properly formatted as objects with @id
-      if (sessionEntry["contentLanguages"]) {
-        expect(Array.isArray(sessionEntry["contentLanguages"])).toBe(true);
-        sessionEntry["contentLanguages"].forEach((item: any) => {
-          expect(typeof item).toBe("object");
-          expect(item).toHaveProperty("@id");
-          expect(typeof item["@id"]).toBe("string");
-        });
+      // The inLanguage should be properly formatted as a single object with @id (array: false)
+      if (sessionEntry["inLanguage"]) {
+        expect(typeof sessionEntry["inLanguage"]).toBe("object");
+        expect(sessionEntry["inLanguage"]).toHaveProperty("@id");
+        expect(typeof sessionEntry["inLanguage"]["@id"]).toBe("string");
+        // Should not be an array since array: false
+        expect(Array.isArray(sessionEntry["inLanguage"])).toBe(false);
       }
     });
 
@@ -891,6 +890,95 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       languageEntities.forEach((entity: any) => {
         expect(referencedLanguageIds.has(entity["@id"])).toBe(true);
       });
+    });
+
+    it("should use 'unk' as fallback when both subjectLanguages and workingLanguages are missing", async () => {
+      // Mock a session with no language fields
+      mockSession.knownFields = [
+        {
+          key: "languages",
+          persist: true,
+          type: "languageChoices",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          englishLabel: "Subject Languages",
+          rocrate: {
+            key: "ldac:subjectLanguage",
+            handler: "languages",
+            array: true
+          }
+        } as any,
+        {
+          key: "workingLanguages",
+          persist: true,
+          type: "languageChoices",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          englishLabel: "Working Languages",
+          rocrate: {
+            key: "inLanguage",
+            handler: "languages",
+            array: false,
+            template: { "@id": "#language_[v]" }
+          }
+        } as any
+      ];
+
+      // Mock empty language fields
+      (mockSession.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title")
+            return "Session with no languages specified";
+          if (key === "description") return "No language info provided";
+          if (key === "date") return "2010-06-06";
+          if (key === "access") return "F: Free to All";
+          // Return empty strings for language fields
+          if (key === "languages" || key === "workingLanguages") return "";
+          return "";
+        });
+
+      (mockSession.metadataFile as any).properties.getHasValue = vi
+        .fn()
+        .mockReturnValue(false);
+
+      (mockSession.metadataFile as any).properties.getTextStringOrEmpty = vi
+        .fn()
+        .mockReturnValue("");
+
+      // Mock getWorkingLanguageCodes to return empty array
+      (mockSession as any).getWorkingLanguageCodes = vi
+        .fn()
+        .mockReturnValue([]);
+
+      const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+      // Find the main session entry
+      const sessionEntry = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      // Both ldac:subjectLanguage and inLanguage should fallback to "unk"
+      expect(sessionEntry["ldac:subjectLanguage"]).toBeDefined();
+      expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
+      expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(1);
+      expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({ "@id": "#language_unk" });
+
+      expect(sessionEntry["inLanguage"]).toBeDefined();
+      expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_unk" });
+
+      // Check that "unk" language entity is created with descriptive text
+      const unkLanguageEntity = result["@graph"].find(
+        (item: any) => item["@id"] === "#language_unk"
+      );
+
+      expect(unkLanguageEntity).toBeDefined();
+      expect(unkLanguageEntity["@type"]).toBe("Language");
+      expect(unkLanguageEntity.code).toBe("unk");
+      expect(unkLanguageEntity.name).toBe("Language unk");
+      expect(unkLanguageEntity.description).toContain("Language marked as unknown because no working language was specified in lameta");
     });
   });
 });

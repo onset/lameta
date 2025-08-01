@@ -80,7 +80,7 @@ export async function createSessionEntry(
 
   // Ensure session has ldac:subjectLanguage (fallback if no languages field processed)
   if (!mainSessionEntry["ldac:subjectLanguage"]) {
-    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages);
+    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, ["unk"]);
   }
 
   const allEntries: any[] = [mainSessionEntry];

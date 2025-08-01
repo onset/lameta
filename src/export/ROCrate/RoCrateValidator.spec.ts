@@ -228,7 +228,7 @@ describe("ensureSubjectLanguage", () => {
     ensureSubjectLanguage(entity, rocrateLanguages);
 
     expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_und" }
+      { "@id": "#language_unk" }
     ]);
   });
 
