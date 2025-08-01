@@ -317,7 +317,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(rootDataset["dct:rightsHolder"]).toBe("Dr. John Smith");
     });
 
-    it("should use 'Unknown' as fallback when contactPerson is empty", async () => {
+    it("should use structured Person entity as fallback when contactPerson is empty", async () => {
       // Mock empty contactPerson field
       (mockProject.metadataFile as any).getTextProperty = vi
         .fn()
@@ -336,12 +336,24 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(rootDataset).toBeDefined();
-      expect(rootDataset.author).toBe("Unknown");
-      expect(rootDataset.accountablePerson).toBe("Unknown");
-      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+      expect(rootDataset.author).toEqual({ "@id": "#unknown-contributor" });
+      expect(rootDataset.accountablePerson).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(rootDataset["dct:rightsHolder"]).toEqual({
+        "@id": "#unknown-contributor"
+      });
+
+      // Check that the unknown contributor entity exists
+      const unknownContributor = result["@graph"].find(
+        (item: any) => item["@id"] === "#unknown-contributor"
+      );
+      expect(unknownContributor).toBeDefined();
+      expect(unknownContributor["@type"]).toBe("Person");
+      expect(unknownContributor.name).toBe("Unknown");
     });
 
-    it("should use 'Unknown' as fallback when contactPerson field is not present", async () => {
+    it("should use structured Person entity as fallback when contactPerson field is not present", async () => {
       // Mock missing contactPerson field entirely
       (mockProject.metadataFile as any).getTextProperty = vi
         .fn()
@@ -360,9 +372,21 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(rootDataset).toBeDefined();
-      expect(rootDataset.author).toBe("Unknown");
-      expect(rootDataset.accountablePerson).toBe("Unknown");
-      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+      expect(rootDataset.author).toEqual({ "@id": "#unknown-contributor" });
+      expect(rootDataset.accountablePerson).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(rootDataset["dct:rightsHolder"]).toEqual({
+        "@id": "#unknown-contributor"
+      });
+
+      // Check that the unknown contributor entity exists
+      const unknownContributor = result["@graph"].find(
+        (item: any) => item["@id"] === "#unknown-contributor"
+      );
+      expect(unknownContributor).toBeDefined();
+      expect(unknownContributor["@type"]).toBe("Person");
+      expect(unknownContributor.name).toBe("Unknown");
     });
   });
 
@@ -930,8 +954,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "Session with no languages specified";
+          if (key === "title") return "Session with no languages specified";
           if (key === "description") return "No language info provided";
           if (key === "date") return "2010-06-06";
           if (key === "access") return "F: Free to All";
@@ -964,7 +987,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEntry["ldac:subjectLanguage"]).toBeDefined();
       expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
       expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(1);
-      expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({ "@id": "#language_unk" });
+      expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({
+        "@id": "#language_unk"
+      });
 
       expect(sessionEntry["inLanguage"]).toBeDefined();
       expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_unk" });
@@ -978,7 +1003,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(unkLanguageEntity["@type"]).toBe("Language");
       expect(unkLanguageEntity.code).toBe("unk");
       expect(unkLanguageEntity.name).toBe("Language unk");
-      expect(unkLanguageEntity.description).toContain("Language marked as unknown because no working language was specified in lameta");
+      expect(unkLanguageEntity.description).toContain(
+        "Language marked as unknown because no working language was specified in lameta"
+      );
     });
   });
 });

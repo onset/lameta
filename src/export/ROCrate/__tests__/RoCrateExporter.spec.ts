@@ -360,7 +360,7 @@ describe("RO-Crate Exporter", () => {
       expect(rootDataset["dct:rightsHolder"]).toBe("Dr. Jane Doe");
     });
 
-    it("should use 'Unknown' when contactPerson is not provided", async () => {
+    it("should use structured Person entity when contactPerson is not provided", async () => {
       // Create project without contactPerson
       const projectWithoutContact = createMockProject({
         filePrefix: "test-project",
@@ -379,9 +379,21 @@ describe("RO-Crate Exporter", () => {
 
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
       expect(rootDataset).toBeDefined();
-      expect(rootDataset.author).toBe("Unknown");
-      expect(rootDataset.accountablePerson).toBe("Unknown");
-      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+      expect(rootDataset.author).toEqual({ "@id": "#unknown-contributor" });
+      expect(rootDataset.accountablePerson).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(rootDataset["dct:rightsHolder"]).toEqual({
+        "@id": "#unknown-contributor"
+      });
+
+      // Check that the unknown contributor entity exists
+      const unknownContributor = graph.find(
+        (item: any) => item["@id"] === "#unknown-contributor"
+      );
+      expect(unknownContributor).toBeDefined();
+      expect(unknownContributor["@type"]).toBe("Person");
+      expect(unknownContributor.name).toBe("Unknown");
     });
   });
 

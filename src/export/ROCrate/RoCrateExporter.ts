@@ -105,9 +105,15 @@ async function getRoCrateInternal(
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     // The default lameta model (lameta/fields.json5) doesn't have these fields.
     // For now, we can give contact person or use "Unknown" as fallback
-    const contactPerson =
+    const contactPersonText =
       folder.metadataFile?.getTextProperty("contactPerson", "").trim() ||
       "Unknown";
+
+    // Use structured Person entity instead of plain text for better linked data practices
+    const isUnknownContact = contactPersonText === "Unknown";
+    const contactPersonReference = isUnknownContact
+      ? { "@id": "#unknown-contributor" }
+      : contactPersonText;
 
     const entry: any = {
       "@id": "./",
@@ -124,10 +130,10 @@ async function getRoCrateInternal(
       ),
       publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
-      // Add required LDAC fields using contactPerson
-      author: contactPerson,
-      accountablePerson: contactPerson,
-      "dct:rightsHolder": contactPerson,
+      // Add required LDAC fields using contactPerson (structured entity reference for better linked data)
+      author: contactPersonReference,
+      accountablePerson: contactPersonReference,
+      "dct:rightsHolder": contactPersonReference,
       // Add a default collection-level license - individual sessions may have their own licenses
       license: { "@id": "#collection-license" },
       hasPart: [],
@@ -152,6 +158,15 @@ async function getRoCrateInternal(
       rocrateLanguages
     );
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense);
+
+    // Add unknown contributor entity if using fallback
+    if (isUnknownContact) {
+      otherEntries.push({
+        "@id": "#unknown-contributor",
+        "@type": "Person",
+        name: "Unknown"
+      });
+    }
 
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
@@ -285,7 +300,11 @@ export async function addFieldEntries(
     // Skip empty fields, except for language fields which need to process empty values
     // to trigger "und" fallback behavior for LDAC compliance
     const isLanguageField = field.rocrate?.handler === "languages";
-    if ((values.length === 0 || values[0] === "unspecified") && !isLanguageField) continue;
+    if (
+      (values.length === 0 || values[0] === "unspecified") &&
+      !isLanguageField
+    )
+      continue;
 
     // For Person entities, skip PII fields entirely
     if (folder instanceof Person && field.personallyIdentifiableInformation) {
@@ -329,7 +348,7 @@ export async function addFieldEntries(
           const languageEntity = rocrateLanguages.getLanguageEntity("unk");
           const reference = rocrateLanguages.getLanguageReference("unk");
           rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
-          
+
           if (field.rocrate?.array === false) {
             folderEntry[propertyKey] = reference;
           } else {
@@ -443,7 +462,7 @@ export async function addFieldEntries(
               const languageEntity = rocrateLanguages.getLanguageEntity("unk");
               const reference = rocrateLanguages.getLanguageReference("unk");
               rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
-              
+
               if (field.rocrate?.array === false) {
                 folderEntry[propertyKey] = reference;
               } else {

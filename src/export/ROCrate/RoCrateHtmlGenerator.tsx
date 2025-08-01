@@ -26,7 +26,8 @@ const EXCLUDED_FIELDS = new Set([
   "contentSize",
   "publisher"
 ]);
-
+// Entities that don't add any value to the human just wanting to know "what's in this collection"
+const FILTERED_ENTITY_IDS = ["#collection-license", "#CustomGenreTerms"];
 // Creates a URL-safe anchor ID from an entity ID
 const createAnchorId = (id: string): string => {
   return id ? `entity_${id.replace(/[^a-zA-Z0-9]/g, "_")}` : "";
@@ -83,9 +84,9 @@ function isLanguageEntity(entity: RoCrateEntity): boolean {
   return types.includes("Language") && entity["@id"]?.startsWith("#language_");
 }
 
-// Helper function to check if an entity is the CustomGenreTerms entity that should be filtered out
-function isCustomGenreTermsEntity(entity: RoCrateEntity): boolean {
-  return entity["@id"] === "#CustomGenreTerms";
+// Helper function to check if an entity should be filtered out by ID
+function isFilteredEntityId(entity: RoCrateEntity): boolean {
+  return FILTERED_ENTITY_IDS.includes(entity["@id"]);
 }
 
 // Helper function to check if an entity is a lameta XML file
@@ -502,6 +503,11 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       return;
     }
 
+    // Filter out entities by ID
+    if (isFilteredEntityId(entity)) {
+      return;
+    }
+
     // Skip official LDAC DefinedTerms and DefinedTermSets - they shouldn't appear as separate entities
     if (isOfficialLdacTerm(entity) || isOfficialLdacTermSet(entity)) {
       return;
@@ -519,11 +525,6 @@ function computeHierarchy(graph: RoCrateEntity[]) {
 
     // Skip Language entities - they should link to Glottolog
     if (isLanguageEntity(entity)) {
-      return;
-    }
-
-    // Skip CustomGenreTerms entity
-    if (isCustomGenreTermsEntity(entity)) {
       return;
     }
 
@@ -746,8 +747,8 @@ const HierarchicalEntityDisplay: React.FC<{
       return false;
     }
 
-    // Skip CustomGenreTerms entity
-    if (isCustomGenreTermsEntity(child)) {
+    // Filter out entities by ID
+    if (isFilteredEntityId(child)) {
       return false;
     }
 

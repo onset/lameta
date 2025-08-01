@@ -27,7 +27,7 @@ export class RoCrateLanguages {
     }
 
     // Create new language entity
-    const name = staticLanguageFinder 
+    const name = staticLanguageFinder
       ? staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code)
       : `Language ${code}`;
     const entity: LanguageEntity = {
@@ -39,7 +39,8 @@ export class RoCrateLanguages {
 
     // Add descriptive text for special cases like "unk" (unknown language)
     if (normalizedCode === "unk") {
-      entity.description = "Language marked as unknown because no working language was specified in lameta";
+      entity.description =
+        "Language marked as unknown because no working language was specified in lameta";
     }
 
     this.languageMap.set(normalizedCode, entity);
