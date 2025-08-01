@@ -67,7 +67,13 @@ export async function createSessionEntry(
 
   const otherEntries: any[] = [];
 
-  await addFieldEntries(project, session, mainSessionEntry, otherEntries);
+  await addFieldEntries(
+    project,
+    session,
+    mainSessionEntry,
+    otherEntries,
+    rocrateLanguages
+  );
 
   // Ensure session has ldac:subjectLanguage
   const sessionLanguages = session.metadataFile

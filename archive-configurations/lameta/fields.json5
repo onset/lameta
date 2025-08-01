@@ -266,8 +266,7 @@
       rocrate: {
         key: "ldac:subjectLanguage",
         handler: "languages",
-        array: true,
-        template: { "@id": "#language_[v]" }
+        array: true
       },
       tabIndex: 1
     },
@@ -312,8 +311,7 @@
       rocrate: {
         key: "ldac:subjectLanguage",
         handler: "languages",
-        array: true,
-        template: { "@id": "#language_[v]" }
+        array: true
       },
       tabIndex: 12
     },

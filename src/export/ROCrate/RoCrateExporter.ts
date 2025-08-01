@@ -91,7 +91,13 @@ async function getRoCrateInternal(
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
-    await addFieldEntries(project, folder, entry, otherEntries);
+    await addFieldEntries(
+      project,
+      folder,
+      entry,
+      otherEntries,
+      rocrateLanguages
+    );
     addChildFileEntries(folder, entry, otherEntries);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -129,7 +135,13 @@ async function getRoCrateInternal(
     ];
 
     const otherEntries: object[] = [];
-    await addFieldEntries(project, folder, entry, otherEntries);
+    await addFieldEntries(
+      project,
+      folder,
+      entry,
+      otherEntries,
+      rocrateLanguages
+    );
     addChildFileEntries(folder, entry, otherEntries);
 
     const sessionEntries = await Promise.all(
@@ -252,7 +264,8 @@ export async function addFieldEntries(
   project: Project,
   folder: Folder,
   folderEntry: object,
-  otherEntries: object[]
+  otherEntries: object[],
+  rocrateLanguages: RoCrateLanguages
 ) {
   // First handle the known fields
   for (const field of folder.knownFields) {
@@ -277,6 +290,40 @@ export async function addFieldEntries(
 
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
+      // Special handling for language fields
+      if (field.rocrate?.handler === "languages") {
+        const languageReferences: any[] = [];
+        values.forEach((languageValue: string) => {
+          // Parse language value (could be "etr" or "etr: Edolo")
+          const [code] = languageValue.split(":").map((s) => s.trim());
+          if (code) {
+            // Create language entity and get reference
+            const languageEntity = rocrateLanguages.getLanguageEntity(code);
+            const reference = rocrateLanguages.getLanguageReference(code);
+
+            // Add language entity to other entries if not already added
+            if (
+              !otherEntries.some(
+                (entry: any) => entry["@id"] === languageEntity["@id"]
+              )
+            ) {
+              otherEntries.push(languageEntity);
+            }
+
+            // Track usage
+            rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
+
+            // Add reference to the field
+            languageReferences.push(reference);
+          }
+        });
+
+        if (languageReferences.length > 0) {
+          folderEntry[propertyKey] = languageReferences;
+        }
+        continue; // Skip the normal template processing for language fields
+      }
+
       // Special handling for fields with vocabularyFile
       if (field.vocabularyFile) {
         const termValues = values[0]
@@ -487,6 +534,10 @@ export function getElementUsingTemplate(
 }
 
 function sanitizeLanguageCode(code: string): string {
+  // If already starts with #language_, don't add another prefix
+  if (code.startsWith("#language_")) {
+    return code;
+  }
   // Remove spaces and colons, replace with underscores for valid IDs
   return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
 }

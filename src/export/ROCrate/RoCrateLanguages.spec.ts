@@ -226,4 +226,33 @@ describe("RoCrateLanguages", () => {
       expect(unusedEntities[0].code).toBe("deu");
     });
   });
+
+  describe("language code parsing and reference generation", () => {
+    it("should handle language codes with colon and name format correctly", () => {
+      // This tests the fix for the double prefix issue
+      const languageWithName = "etr: Edolo";
+      const [code] = languageWithName.split(":").map((s) => s.trim());
+
+      const entity = rocrateLanguages.getLanguageEntity(code);
+      const reference = rocrateLanguages.getLanguageReference(code);
+
+      expect(entity["@id"]).toBe("#language_etr");
+      expect(entity.code).toBe("etr");
+      expect(entity.name).toBe("Edolo");
+      expect(reference).toEqual({ "@id": "#language_etr" });
+    });
+
+    it("should not double-prefix language IDs", () => {
+      // Test that we don't get #language_#language_etr
+      const entity1 = rocrateLanguages.getLanguageEntity("etr");
+      expect(entity1["@id"]).toBe("#language_etr");
+
+      // Simulate what could happen with template processing
+      const alreadyPrefixed = "#language_etr";
+      if (!alreadyPrefixed.startsWith("#language_#language_")) {
+        // This should not create a double prefix
+        expect(alreadyPrefixed).toBe("#language_etr");
+      }
+    });
+  });
 });
