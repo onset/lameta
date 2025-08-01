@@ -17,8 +17,8 @@ describe("RoCrateLicense", () => {
 
     // Create mock session
     mockSession = {
-      properties: {
-        getTextStringOrEmpty: vi.fn()
+      metadataFile: {
+        getTextProperty: vi.fn()
       }
     } as any;
 
@@ -45,7 +45,7 @@ describe("RoCrateLicense", () => {
 
     it("should use session license as fallback when file has no license", () => {
       mockFile.properties.getTextStringOrEmpty = vi.fn().mockReturnValue("");
-      mockSession.properties.getTextStringOrEmpty = vi
+      mockSession.metadataFile!.getTextProperty = vi
         .fn()
         .mockReturnValue("CC-BY-SA-4.0");
 
@@ -85,7 +85,7 @@ describe("RoCrateLicense", () => {
 
     it("should handle case when neither file nor session has license", () => {
       mockFile.properties.getTextStringOrEmpty = vi.fn().mockReturnValue("");
-      mockSession.properties.getTextStringOrEmpty = vi.fn().mockReturnValue("");
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockReturnValue("");
 
       rocrateLicense.ensureFileLicense(mockFile, mockSession);
 
@@ -95,7 +95,7 @@ describe("RoCrateLicense", () => {
 
   describe("getSessionLicenseId", () => {
     it("should return session license when available", () => {
-      mockSession.properties.getTextStringOrEmpty = vi
+      mockSession.metadataFile!.getTextProperty = vi
         .fn()
         .mockReturnValue("GPL-3.0");
 
@@ -105,7 +105,7 @@ describe("RoCrateLicense", () => {
     });
 
     it("should return null when session has no license", () => {
-      mockSession.properties.getTextStringOrEmpty = vi.fn().mockReturnValue("");
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockReturnValue("");
 
       const licenseId = rocrateLicense.getSessionLicenseId(mockSession);
 
@@ -203,15 +203,15 @@ describe("RoCrateLicense", () => {
 
       // Session with license
       const sessionWithLicense = {
-        properties: {
-          getTextStringOrEmpty: vi.fn().mockReturnValue("GPL-3.0")
+        metadataFile: {
+          getTextProperty: vi.fn().mockReturnValue("GPL-3.0")
         }
       } as any;
 
       // Session without license
       const sessionWithoutLicense = {
-        properties: {
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
+        metadataFile: {
+          getTextProperty: vi.fn().mockReturnValue("")
         }
       } as any;
 
@@ -222,6 +222,20 @@ describe("RoCrateLicense", () => {
       expect(rocrateLicense.getFileLicense("/file1")).toBe("CC-BY-4.0");
       expect(rocrateLicense.getFileLicense("/file2")).toBe("GPL-3.0");
       expect(rocrateLicense.getFileLicense("/file3")).toBeUndefined();
+    });
+  });
+
+  describe("getRepositoryCollectionTypes", () => {
+    it("should return the standard RO-Crate type array for repository collections", () => {
+      const types = RoCrateLicense.getRepositoryCollectionTypes();
+      expect(types).toEqual(["Dataset", "RepositoryCollection"]);
+    });
+
+    it("should return a new array each time to prevent mutation", () => {
+      const types1 = RoCrateLicense.getRepositoryCollectionTypes();
+      const types2 = RoCrateLicense.getRepositoryCollectionTypes();
+      expect(types1).toEqual(types2);
+      expect(types1).not.toBe(types2); // Different array instances
     });
   });
 });

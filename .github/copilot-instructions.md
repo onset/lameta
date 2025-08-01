@@ -14,4 +14,4 @@ Never say "I see the issue!" or similar phrases.
 
 When doing debugging by writing temporary one-off code files in the terminal, remember not to leave them laying around.
 
-Don't write code that silently works around failed dependencies. If a dependency is missing we should fail. Javascript itself will fail if we try to use a missing dependency, and that's fine.
+Fail Fast. Don't write code that silently works around failed dependencies. If a dependency is missing we should fail. Javascript itself will fail if we try to use a missing dependency, and that's fine. E.g. if you expect a foo to be defined, don't write "if(foo){}". Just use foo and if it's null, fine, we'll get an error, which is good.

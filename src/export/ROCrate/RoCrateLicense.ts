@@ -15,8 +15,9 @@ export class RoCrateLicense {
     const filePath = file.metadataFilePath || file.getActualFilePath();
 
     if (!this.fileLicenseMap.has(filePath)) {
-      // Check if file has its own license
-      const fileLicense = file.properties.getTextStringOrEmpty("license");
+      // Check if file has its own license - safely handle cases where properties might not exist
+      const fileLicense =
+        file.properties?.getTextStringOrEmpty("license") || "";
 
       if (fileLicense) {
         this.setFileLicense(filePath, fileLicense);
@@ -34,8 +35,8 @@ export class RoCrateLicense {
    * Get the license ID for a session
    */
   getSessionLicenseId(session: Session): string | null {
-    const license = session.properties.getTextStringOrEmpty("license");
-    return license || null;
+    const access = session.metadataFile?.getTextProperty("access") || "";
+    return access || null;
   }
 
   /**
@@ -64,6 +65,13 @@ export class RoCrateLicense {
    */
   getAllFileLicenses(): Map<string, string> {
     return new Map(this.fileLicenseMap);
+  }
+
+  /**
+   * Get the standard RO-Crate type array for repository collections
+   */
+  static getRepositoryCollectionTypes(): string[] {
+    return ["Dataset", "RepositoryCollection"];
   }
 }
 

@@ -154,7 +154,12 @@ export async function makeEntriesFromParticipant(
 
       // Person languages are not included in RO-Crate as they create unreferenced entities
       // Only session/project languages with proper ldac:subjectLanguage references are included
-      addChildFileEntries(person, personElement, entriesForAllContributors);
+      addChildFileEntries(
+        person,
+        personElement,
+        entriesForAllContributors,
+        rocrateLicense
+      );
     }
     // Note: roles are now handled in the participant property of the Event, not on Person entities
     entriesForAllContributors.push(personElement);

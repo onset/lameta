@@ -4,6 +4,7 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { RoCrateLicense } from "./RoCrateLicense";
 
 // Mock the new managers
 vi.mock("./LanguageManager", () => ({
@@ -870,7 +871,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "https://w3id.org/ldac/profile#Collection"
       );
       // And should be typed as RepositoryCollection
-      expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
+      expect(rootDataset["@type"]).toEqual(
+        RoCrateLicense.getRepositoryCollectionTypes()
+      );
     });
 
     it("should use correct LDAC profile URI for session", async () => {
@@ -962,7 +965,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(rootDataset.conformsTo["@id"]).toBe(
         "https://w3id.org/ldac/profile#Collection"
       );
-      expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
+      expect(rootDataset["@type"]).toEqual(
+        RoCrateLicense.getRepositoryCollectionTypes()
+      );
 
       // Sessions should conform to Object profile
       const sessionEvent = result["@graph"].find(

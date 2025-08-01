@@ -89,7 +89,7 @@ export async function createSessionEntry(
   );
 
   // Add files to session hasPart
-  addChildFileEntries(session, mainSessionEntry, otherEntries);
+  addChildFileEntries(session, mainSessionEntry, otherEntries, rocrateLicense);
 
   // Create Place entity if location is specified
   const location = session.metadataFile?.getTextProperty("location");

@@ -97,7 +97,7 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
-    addChildFileEntries(folder, entry, otherEntries);
+    addChildFileEntries(folder, entry, otherEntries, rocrateLicense);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
 
@@ -105,7 +105,7 @@ async function getRoCrateInternal(
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     const entry: any = {
       "@id": "./",
-      "@type": ["Dataset", "RepositoryCollection"],
+      "@type": RoCrateLicense.getRepositoryCollectionTypes(),
       conformsTo: {
         "@id": "https://w3id.org/ldac/profile#Collection"
       },
@@ -141,7 +141,7 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
-    addChildFileEntries(folder, entry, otherEntries);
+    addChildFileEntries(folder, entry, otherEntries, rocrateLicense);
 
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
@@ -189,7 +189,8 @@ async function getRoCrateInternal(
         project.descriptionFolder,
         "Description",
         entry,
-        otherEntries
+        otherEntries,
+        rocrateLicense
       );
     }
 
@@ -199,7 +200,8 @@ async function getRoCrateInternal(
         project.otherDocsFolder,
         "OtherDocs",
         entry,
-        otherEntries
+        otherEntries,
+        rocrateLicense
       );
     }
 
@@ -580,10 +582,52 @@ function sanitizeLanguageCode(code: string): string {
   return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
+/**
+ * Adds license information to a file entry according to LDAC spec requirements.
+ * Per LDAC spec, files must have license properties, so we inherit from parent when needed.
+ */
+function addFileLicenseProperty(
+  fileEntry: any,
+  filePath: string,
+  rocrateLicense: RoCrateLicense,
+  folder?: Folder,
+  parentEntry?: any
+): void {
+  // Check if file already has its own license
+  const fileLicense = rocrateLicense.getFileLicense(filePath);
+  if (fileLicense) {
+    fileEntry.license = { "@id": fileLicense };
+    return;
+  }
+
+  // For session files, ensure they inherit the session license
+  if (folder instanceof Session) {
+    const file = folder.files.find((f) => f.getActualFilePath() === filePath);
+    if (file) {
+      rocrateLicense.ensureFileLicense(file, folder as Session);
+      const inheritedLicense = rocrateLicense.getFileLicense(filePath);
+      if (inheritedLicense) {
+        fileEntry.license = { "@id": inheritedLicense };
+        return;
+      }
+    }
+  }
+
+  // For other files (project files, person files), inherit from parent
+  if (
+    parentEntry?.license &&
+    typeof parentEntry.license === "object" &&
+    parentEntry.license["@id"]
+  ) {
+    fileEntry.license = { "@id": parentEntry.license["@id"] };
+  }
+}
+
 export function addChildFileEntries(
   folder: Folder,
   folderEntry: object,
-  otherEntries: object[]
+  otherEntries: object[],
+  rocrateLicense: RoCrateLicense
 ): void {
   if (folder.files.length === 0) return;
   folderEntry["hasPart"] = [];
@@ -631,6 +675,15 @@ export function addChildFileEntries(
       name: fileName
     };
 
+    // Add license information - per LDAC spec, files must have license properties
+    addFileLicenseProperty(
+      fileEntry,
+      path,
+      rocrateLicense,
+      folder,
+      folderEntry
+    );
+
     otherEntries.push(fileEntry);
     folderEntry["hasPart"].push({
       "@id": fileId
@@ -642,7 +695,8 @@ export function addProjectDocumentFolderEntries(
   folder: Folder,
   folderType: string,
   projectEntry: any,
-  otherEntries: object[]
+  otherEntries: object[],
+  rocrateLicense: RoCrateLicense
 ): void {
   if (folder.files.length === 0) return;
 
@@ -682,6 +736,15 @@ export function addProjectDocumentFolderEntries(
       "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
       name: fileName
     };
+
+    // Add license information - per LDAC spec, files must have license properties
+    addFileLicenseProperty(
+      fileEntry,
+      path,
+      rocrateLicense,
+      undefined,
+      projectEntry
+    );
 
     otherEntries.push(fileEntry);
     projectEntry.hasPart.push({
