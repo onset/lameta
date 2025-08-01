@@ -174,8 +174,18 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
       "@id": "#license-demoarchive-restricted"
     });
 
-    // Project should NOT have a license (we removed it)
-    expect(projectDataset.license).toBeUndefined();
+    // Project should have its own collection-level license (required by RO-Crate spec)
+    expect(projectDataset.license).toEqual({
+      "@id": "#collection-license"
+    });
+
+    // Find the collection license definition in the graph
+    const collectionLicense = result["@graph"].find(
+      (item: any) => item["@id"] === "#collection-license"
+    );
+    expect(collectionLicense).toBeDefined();
+    expect(collectionLicense["@type"]).toBe("ldac:DataReuseLicense");
+    expect(collectionLicense.name).toBe("Collection License");
 
     // Count the total number of session events in the graph
     const sessionEvents = result["@graph"].filter(

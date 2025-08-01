@@ -113,7 +113,8 @@ async function getRoCrateInternal(
       ),
       publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
-      // ENHANCE: Revisit project-level licensing if needed. For now, each session has its own license.
+      // Add a default collection-level license - individual sessions may have their own licenses
+      license: { "@id": "#collection-license" },
       hasPart: [],
       "pcdm:hasMember": []
     };
@@ -201,6 +202,16 @@ async function getRoCrateInternal(
       project
     );
 
+    // Add a collection-level license definition
+    const collectionLicense = {
+      "@id": "#collection-license",
+      "@type": "ldac:DataReuseLicense",
+      name: "Collection License",
+      description:
+        "License for the collection as a whole. Individual items may have their own specific licenses.",
+      "ldac:access": { "@id": "ldac:OpenAccess" }
+    };
+
     return [
       entry,
       ...sessionEntries.flat(),
@@ -208,6 +219,7 @@ async function getRoCrateInternal(
       ...ldacAccessDefinitions,
       ...ldacMaterialTypeDefinitions,
       ...uniqueLicenses,
+      collectionLicense,
       ...getUniqueEntries(otherEntries)
     ];
   }

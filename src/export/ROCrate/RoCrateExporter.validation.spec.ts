@@ -648,5 +648,33 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(validation).toHaveProperty("warnings");
       expect(validation).toHaveProperty("info");
     });
+
+    it("should generate a root dataset with all required properties", async () => {
+      (mockProject as any).sessions = {
+        items: []
+      };
+
+      const roCrateData = await getRoCrate(mockProject, mockProject);
+      const validation = await validateRoCrateWithCategories(roCrateData);
+
+      // Find the root dataset
+      const graph = (roCrateData as any)["@graph"];
+      const rootDataset = graph.find((item: any) => item["@id"] === "./");
+      expect(rootDataset).toBeDefined();
+
+      // Check for all required properties according to RO-Crate spec
+      expect(rootDataset).toHaveProperty("@type");
+      expect(rootDataset).toHaveProperty("@id", "./");
+      expect(rootDataset).toHaveProperty("name");
+      expect(rootDataset).toHaveProperty("description");
+      expect(rootDataset).toHaveProperty("datePublished");
+      expect(rootDataset).toHaveProperty("license");
+
+      // The validation should not have errors about missing required properties
+      const missingLicenseError = validation.errors.find((error) =>
+        error.message.includes("Missing required property: license")
+      );
+      expect(missingLicenseError).toBeUndefined();
+    });
   });
 });
