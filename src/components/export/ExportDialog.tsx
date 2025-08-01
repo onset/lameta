@@ -305,7 +305,7 @@ export const ExportDialog: React.FunctionComponent<{
 
   const saveFilesAsync = async (path: string) => {
     const startTime = Date.now();
-    const MIN_EXPORT_TIME = 0; // 1 seconds minimum to give user some confirmation that we did do something (ro-crate export is very fast)
+    const MIN_EXPORT_TIME = 1000; // 1 seconds minimum to give user some confirmation that we did do something (ro-crate export is very fast)
 
     const finishExport = async () => {
       const elapsedTime = Date.now() - startTime;

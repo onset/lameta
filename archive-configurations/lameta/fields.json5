@@ -263,6 +263,12 @@
       controlProps: {
         canCreateNew: true
       },
+      rocrate: {
+        key: "ldac:subjectLanguage",
+        handler: "languages",
+        array: true,
+        template: { "@id": "#language_[v]" }
+      },
       tabIndex: 1
     },
     {

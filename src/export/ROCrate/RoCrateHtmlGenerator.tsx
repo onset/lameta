@@ -175,11 +175,11 @@ const Style = () => (
 /**
  * Renders a property's value, automatically creating links for references.
  */
-const PropertyValue: React.FC<{ value: any; graph: RoCrateEntity[]; propertyName?: string }> = ({
-  value,
-  graph,
-  propertyName
-}) => {
+const PropertyValue: React.FC<{
+  value: any;
+  graph: RoCrateEntity[];
+  propertyName?: string;
+}> = ({ value, graph, propertyName }) => {
   if (value === null || value === undefined) {
     return <>{String(value)}</>;
   }
@@ -189,7 +189,11 @@ const PropertyValue: React.FC<{ value: any; graph: RoCrateEntity[]; propertyName
       <>
         {value.map((item, index) => (
           <React.Fragment key={index}>
-            <PropertyValue value={item} graph={graph} propertyName={propertyName} />
+            <PropertyValue
+              value={item}
+              graph={graph}
+              propertyName={propertyName}
+            />
             {index < value.length - 1 && ", "}
           </React.Fragment>
         ))}
@@ -201,7 +205,11 @@ const PropertyValue: React.FC<{ value: any; graph: RoCrateEntity[]; propertyName
     const referencedEntity = graph.find((entity) => entity["@id"] === id);
 
     // Special handling for contentLocation (Place entities) - just show the name
-    if (propertyName === "contentLocation" && referencedEntity && isPlaceEntity(referencedEntity)) {
+    if (
+      propertyName === "contentLocation" &&
+      referencedEntity &&
+      isPlaceEntity(referencedEntity)
+    ) {
       return <>{referencedEntity.name || defaultName}</>;
     }
 
@@ -554,7 +562,11 @@ function computeHierarchy(graph: RoCrateEntity[]) {
 
     // Special case: Description/, OtherDocs/, and *.sprj entities should be children of root project entity
     let finalParentEntity = parentEntity;
-    if (entityId.startsWith("Description/") || entityId.startsWith("OtherDocs/") || entityId.endsWith(".sprj")) {
+    if (
+      entityId.startsWith("Description/") ||
+      entityId.startsWith("OtherDocs/") ||
+      entityId.endsWith(".sprj")
+    ) {
       const rootProject = graph.find((e) => e["@id"] === "./");
       if (rootProject) {
         finalParentEntity = rootProject;
@@ -617,7 +629,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     children.sort((a, b) => {
       const getSortPriority = (entity: RoCrateEntity) => {
         const id = entity["@id"];
-        
+
         // Description documents come first
         if (id?.startsWith("Description/")) return 0;
 
@@ -820,7 +832,7 @@ const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              ro-crate
+              RO-Crate
             </a>{" "}
             metadata found in the accompanying{" "}
             <a href="ro-crate-metadata.json">ro-crate-metadata.json</a> file,

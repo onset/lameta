@@ -23,6 +23,8 @@ import {
 } from "./RoCrateLicenses";
 import { createSessionEntry } from "./RoCrateSessions";
 import { getPersonLanguageElement } from "./RoCratePeople";
+import { RoCrateLanguages } from "./RoCrateLanguages";
+import { RoCrateLicense } from "./RoCrateLicense";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -82,6 +84,10 @@ async function getRoCrateInternal(
   folder: Folder,
   isStandaloneSession: boolean = false
 ): Promise<object | object[]> {
+  // Initialize managers
+  const rocrateLanguages = new RoCrateLanguages();
+  const rocrateLicense = new RoCrateLicense();
+
   if (folder instanceof Person) {
     const entry = {};
     const otherEntries: object[] = [];
@@ -127,7 +133,13 @@ async function getRoCrateInternal(
 
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
-        return await createSessionEntry(project, session as Session, false);
+        return await createSessionEntry(
+          project,
+          session as Session,
+          false,
+          rocrateLanguages,
+          rocrateLicense
+        );
       })
     );
 
@@ -204,7 +216,13 @@ async function getRoCrateInternal(
   // from within a project export or as a standalone session export
   const session = folder as Session;
 
-  return await createSessionEntry(project, session, isStandaloneSession);
+  return await createSessionEntry(
+    project,
+    session,
+    isStandaloneSession,
+    rocrateLanguages,
+    rocrateLicense
+  );
 }
 
 export function addFieldIfNotEmpty(

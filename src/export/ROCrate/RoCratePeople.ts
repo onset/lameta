@@ -4,6 +4,7 @@ import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../model/PersonLanguage";
+import { RoCrateLicense } from "./RoCrateLicense";
 import {
   addChildFileEntries,
   getElementUsingTemplate,
@@ -103,7 +104,8 @@ function makeLdacCompliantPersonEntry(
 
 export async function makeEntriesFromParticipant(
   project: Project,
-  session: Session
+  session: Session,
+  rocrateLicense: RoCrateLicense
 ) {
   const uniqueContributors: { [key: string]: Set<string> } = {};
 

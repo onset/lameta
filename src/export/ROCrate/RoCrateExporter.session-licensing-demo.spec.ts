@@ -1,4 +1,14 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
+
+// Mock the staticLanguageFinder dependency BEFORE importing modules that use it
+vi.mock("../../languageFinder/LanguageFinder", () => ({
+  staticLanguageFinder: {
+    findOneLanguageNameFromCode_Or_ReturnCode: vi
+      .fn()
+      .mockImplementation((code: string) => `Language ${code}`)
+  }
+}));
+
 import { getRoCrate } from "./RoCrateExporter";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";

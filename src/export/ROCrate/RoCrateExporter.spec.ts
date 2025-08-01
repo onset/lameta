@@ -5,6 +5,43 @@ import { Project } from "../../model/Project/Project";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 
+// Mock the new managers
+vi.mock("./LanguageManager", () => ({
+  languageManager: {
+    clear: vi.fn(),
+    getLanguageEntity: vi.fn(),
+    getLanguageReference: vi.fn(),
+    trackUsage: vi.fn(),
+    getUsedLanguageEntities: vi.fn().mockReturnValue([]),
+    getUnusedLanguageEntities: vi.fn().mockReturnValue([])
+  },
+  LanguageManager: vi.fn()
+}));
+
+vi.mock("./LicenseManager", () => ({
+  LicenseManager: vi.fn().mockImplementation(() => ({
+    setDefaultLicense: vi.fn(),
+    setFileLicense: vi.fn(),
+    getFileLicense: vi.fn(),
+    getFileLicenseReference: vi.fn(),
+    ensureFileLicense: vi.fn(),
+    clear: vi.fn(),
+    getAllFileLicenses: vi.fn()
+  })),
+  getSessionLicenseId: vi
+    .fn()
+    .mockReturnValue("https://creativecommons.org/licenses/by/4.0/")
+}));
+
+vi.mock("./RoCrateValidator", () => ({
+  RoCrateValidator: vi.fn().mockImplementation(() => ({
+    validate: vi
+      .fn()
+      .mockReturnValue({ isValid: true, errors: [], warnings: [] })
+  })),
+  ensureSubjectLanguage: vi.fn()
+}));
+
 describe("RoCrateExporter genre handling", () => {
   let mockProject: Project;
   let mockSession: Session;

@@ -1,4 +1,14 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
+
+// Mock the staticLanguageFinder dependency BEFORE importing modules that use it
+vi.mock("../../languageFinder/LanguageFinder", () => ({
+  staticLanguageFinder: {
+    findOneLanguageNameFromCode_Or_ReturnCode: vi
+      .fn()
+      .mockImplementation((code: string) => `Language ${code}`)
+  }
+}));
+
 import { getRoCrate } from "./RoCrateExporter";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
@@ -191,13 +201,16 @@ describe("RoCrateExporter Validation Tests", () => {
         }
       ],
       metadataFile: {
-        getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title") return "Test Session";
-          if (key === "description") return "Test session description";
-          if (key === "access") return "public";
-          if (key === "genre") return "dialog";
-          return "";
-        }),
+        getTextProperty: vi
+          .fn()
+          .mockImplementation((key: string, defaultValue: string = "") => {
+            if (key === "title") return "Test Session";
+            if (key === "description") return "Test session description";
+            if (key === "access") return "public";
+            if (key === "genre") return "dialog";
+            if (key === "languages") return "";
+            return defaultValue;
+          }),
         properties: {
           getHasValue: vi.fn().mockImplementation((key: string) => {
             return ["title", "description", "access", "genre"].includes(key);

@@ -109,13 +109,13 @@ export const ExportChoices: React.FunctionComponent<{
           />
           <Trans>RO-Crate</Trans>
         </label>
-        <p>
+        <div>
           <Markdown>
             {i18n._(
               "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
             )}
           </Markdown>
-        </p>
+        </div>
       </fieldset>
       <div
         id="whichSessions"

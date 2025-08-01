@@ -8,11 +8,16 @@ import {
 import { createLdacMaterialTypeDefinitions } from "./RoCrateMaterialTypes";
 import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
+import { RoCrateLanguages } from "./RoCrateLanguages";
+import { RoCrateLicense } from "./RoCrateLicense";
+import { ensureSubjectLanguage } from "./RoCrateValidator";
 
 export async function createSessionEntry(
   project: Project,
   session: Session,
-  isStandaloneSession: boolean = false
+  isStandaloneSession: boolean = false,
+  rocrateLanguages: RoCrateLanguages,
+  rocrateLicense: RoCrateLicense
 ): Promise<object[]> {
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : `Sessions/${session.filePrefix}/`,
@@ -64,11 +69,27 @@ export async function createSessionEntry(
 
   await addFieldEntries(project, session, mainSessionEntry, otherEntries);
 
+  // Ensure session has ldac:subjectLanguage
+  const sessionLanguages = session.metadataFile
+    ?.getTextProperty("languages", "")
+    .trim();
+  if (sessionLanguages) {
+    const codes = sessionLanguages
+      .split(",")
+      .map((c) => c.trim())
+      .filter((c) => c);
+    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, codes);
+  } else {
+    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages);
+  }
+
   const allEntries: any[] = [mainSessionEntry];
 
   // Add participant properties and person entries
   addParticipantProperties(mainSessionEntry, session, project);
-  allEntries.push(...(await makeEntriesFromParticipant(project, session)));
+  allEntries.push(
+    ...(await makeEntriesFromParticipant(project, session, rocrateLicense))
+  );
 
   // Add files to session hasPart
   addChildFileEntries(session, mainSessionEntry, otherEntries);

@@ -1,4 +1,14 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
+
+// Mock the staticLanguageFinder dependency BEFORE importing modules that use it
+vi.mock("../../languageFinder/LanguageFinder", () => ({
+  staticLanguageFinder: {
+    findOneLanguageNameFromCode_Or_ReturnCode: vi
+      .fn()
+      .mockImplementation((code: string) => `Language ${code}`)
+  }
+}));
+
 import {
   createSessionEntry,
   addParticipantProperties
@@ -7,12 +17,20 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { RoCrateLanguages } from "./RoCrateLanguages";
+import { RoCrateLicense } from "./RoCrateLicense";
 
 describe("RoCrateSessions", () => {
   let mockProject: Project;
   let mockSession: Session;
+  let mockRoCrateLanguages: RoCrateLanguages;
+  let mockRoCrateLicense: RoCrateLicense;
 
   beforeEach(() => {
+    // Create manager instances
+    mockRoCrateLanguages = new RoCrateLanguages();
+    mockRoCrateLicense = new RoCrateLicense();
+
     // Mock the field definitions
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
       []
@@ -45,14 +63,17 @@ describe("RoCrateSessions", () => {
     mockSession = {
       filePrefix: "test-session",
       metadataFile: {
-        getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title") return "Test Session";
-          if (key === "description") return "Test Description";
-          if (key === "date") return "2023-01-01";
-          if (key === "location") return "Test Location";
-          if (key === "access") return "public";
-          return undefined;
-        }),
+        getTextProperty: vi
+          .fn()
+          .mockImplementation((key: string, defaultValue: string = "") => {
+            if (key === "title") return "Test Session";
+            if (key === "description") return "Test Description";
+            if (key === "date") return "2023-01-01";
+            if (key === "location") return "Test Location";
+            if (key === "access") return "public";
+            if (key === "languages") return "";
+            return defaultValue;
+          }),
         properties: {
           forEach: vi.fn()
         }
@@ -74,7 +95,13 @@ describe("RoCrateSessions", () => {
 
   describe("createSessionEntry", () => {
     it("should create session entry for standalone session", async () => {
-      const result = await createSessionEntry(mockProject, mockSession, true);
+      const result = await createSessionEntry(
+        mockProject,
+        mockSession,
+        true,
+        mockRoCrateLanguages,
+        mockRoCrateLicense
+      );
 
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBeGreaterThan(0);
@@ -90,7 +117,13 @@ describe("RoCrateSessions", () => {
     });
 
     it("should create session entry for project session", async () => {
-      const result = await createSessionEntry(mockProject, mockSession, false);
+      const result = await createSessionEntry(
+        mockProject,
+        mockSession,
+        false,
+        mockRoCrateLanguages,
+        mockRoCrateLicense
+      );
 
       expect(result).toBeInstanceOf(Array);
       const sessionEntry = result[0] as any;
