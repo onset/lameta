@@ -333,6 +333,58 @@ describe("RO-Crate Exporter", () => {
     });
   });
 
+  describe("Project Root Dataset Fields", () => {
+    let mockProject: any;
+
+    beforeEach(() => {
+      mockProject = createMockProject({
+        filePrefix: "test-project",
+        metadata: {
+          title: "Test Project",
+          collectionDescription: "A test project for contact person validation",
+          contactPerson: "Dr. Jane Doe"
+        }
+      });
+
+      (mockProject as any).sessions = { items: [] }; // Empty sessions to trigger project export
+    });
+
+    it("should include required LDAC fields using contactPerson when available", async () => {
+      const result = await getRoCrate(mockProject, mockProject);
+      const graph = result["@graph"];
+
+      const rootDataset = graph.find((item: any) => item["@id"] === "./");
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.author).toBe("Dr. Jane Doe");
+      expect(rootDataset.accountablePerson).toBe("Dr. Jane Doe");
+      expect(rootDataset["dct:rightsHolder"]).toBe("Dr. Jane Doe");
+    });
+
+    it("should use 'Unknown' when contactPerson is not provided", async () => {
+      // Create project without contactPerson
+      const projectWithoutContact = createMockProject({
+        filePrefix: "test-project",
+        metadata: {
+          title: "Test Project",
+          collectionDescription: "A test project without contact person"
+        }
+      });
+      (projectWithoutContact as any).sessions = { items: [] };
+
+      const result = await getRoCrate(
+        projectWithoutContact,
+        projectWithoutContact
+      );
+      const graph = result["@graph"];
+
+      const rootDataset = graph.find((item: any) => item["@id"] === "./");
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.author).toBe("Unknown");
+      expect(rootDataset.accountablePerson).toBe("Unknown");
+      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+    });
+  });
+
   describe("Context and Schema", () => {
     let mockProject: any;
     let mockSession: any;

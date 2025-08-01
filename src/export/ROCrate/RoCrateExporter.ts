@@ -103,6 +103,12 @@ async function getRoCrateInternal(
 
   // Check if this is a project by looking for sessions property (easier on mocks than checking type)
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
+    // The default lameta model (lameta/fields.json5) doesn't have these fields.
+    // For now, we can give contact person or use "Unknown" as fallback
+    const contactPerson =
+      folder.metadataFile?.getTextProperty("contactPerson", "").trim() ||
+      "Unknown";
+
     const entry: any = {
       "@id": "./",
       "@type": RoCrateLicense.getRepositoryCollectionTypes(),
@@ -118,6 +124,10 @@ async function getRoCrateInternal(
       ),
       publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
+      // Add required LDAC fields using contactPerson
+      author: contactPerson,
+      accountablePerson: contactPerson,
+      "dct:rightsHolder": contactPerson,
       // Add a default collection-level license - individual sessions may have their own licenses
       license: { "@id": "#collection-license" },
       hasPart: [],

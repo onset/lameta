@@ -292,6 +292,80 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     });
   });
 
+  describe("LDAC Root Dataset Required Fields", () => {
+    it("should include required LDAC fields for root dataset when contactPerson is provided", async () => {
+      // Mock the contactPerson field
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "contactPerson") return "Dr. John Smith";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.author).toBe("Dr. John Smith");
+      expect(rootDataset.accountablePerson).toBe("Dr. John Smith");
+      expect(rootDataset["dct:rightsHolder"]).toBe("Dr. John Smith");
+    });
+
+    it("should use 'Unknown' as fallback when contactPerson is empty", async () => {
+      // Mock empty contactPerson field
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "contactPerson") return "";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.author).toBe("Unknown");
+      expect(rootDataset.accountablePerson).toBe("Unknown");
+      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+    });
+
+    it("should use 'Unknown' as fallback when contactPerson field is not present", async () => {
+      // Mock missing contactPerson field entirely
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          // contactPerson returns empty string for missing field
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.author).toBe("Unknown");
+      expect(rootDataset.accountablePerson).toBe("Unknown");
+      expect(rootDataset["dct:rightsHolder"]).toBe("Unknown");
+    });
+  });
+
   describe("LDAC Person and Place Entities", () => {
     it("should use proper Person IDs with folder paths", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
