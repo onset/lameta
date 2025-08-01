@@ -43,14 +43,20 @@ export const createFsExtraMock = () => {
       readFileSync: vi.fn().mockReturnValue("mock file content"),
       writeFileSync: vi.fn(),
       mkdirSync: vi.fn(),
-      statSync: vi.fn().mockReturnValue({ size: 1024 }),
+      statSync: vi.fn().mockReturnValue({ 
+        size: 1024,
+        birthtime: new Date("2024-01-01T00:00:00.000Z")
+      }),
       readdirSync: vi.fn().mockReturnValue([])
     },
     existsSync: vi.fn().mockReturnValue(true),
     readFileSync: vi.fn().mockReturnValue("mock file content"),
     writeFileSync: vi.fn(),
     mkdirSync: vi.fn(),
-    statSync: vi.fn().mockReturnValue({ size: 1024 }),
+    statSync: vi.fn().mockReturnValue({ 
+      size: 1024,
+      birthtime: new Date("2024-01-01T00:00:00.000Z")
+    }),
     readdirSync: vi.fn().mockReturnValue([])
   }));
 };
@@ -220,12 +226,19 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
     displayName: "Test Project",
     directory: "/test/project",
     knownFields: new Map(),
+    authorityLists: {
+      accessChoicesOfCurrentProtocol: [
+        { label: "CC BY 4.0", value: "CC BY 4.0" },
+        { label: "CC BY-SA 4.0", value: "CC BY-SA 4.0" }
+      ]
+    },
     metadataFile: {
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: string } = {
           title: "Test Project Title",
           description: "Test project description", 
           id: "test-project-001",
+          archiveConfigurationName: "lameta",
           ...overrides.metadata
         };
         return defaults[key] || "";
@@ -235,6 +248,17 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
           title: "Test Project Title",
           description: "Test project description",
           id: "test-project-001", 
+          archiveConfigurationName: "lameta",
+          ...overrides.metadata
+        };
+        return defaults[key];
+      }),
+      getTextProperty: vi.fn().mockImplementation((key: string) => {
+        const defaults: { [key: string]: any } = {
+          title: "Test Project Title",
+          description: "Test project description",
+          id: "test-project-001", 
+          archiveConfigurationName: "lameta",
           ...overrides.metadata
         };
         return defaults[key];
@@ -254,12 +278,15 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
  * Create a mock Session with common properties
  */
 export const createMockSession = (overrides: Partial<any> = {}): Session => {
+  const mockProperties = new Map();
+  
   const mockSession = {
     displayName: "Test Session",
     directory: "/test/project/sessions/test-session",
     filePrefix: "test-session",
-    knownFields: new Map(),
+    knownFields: [], // Make it iterable for the forEach loop
     metadataFile: {
+      properties: mockProperties, // Add the Map for properties
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: string } = {
           id: "test-session-001",
