@@ -22,7 +22,6 @@ import {
   createDistinctLicenses
 } from "./RoCrateLicenses";
 import { createSessionEntry } from "./RoCrateSessions";
-import { getPersonLanguageElement } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicense";
 
@@ -232,6 +231,7 @@ async function getRoCrateInternal(
       ...ldacMaterialTypeDefinitions,
       ...uniqueLicenses,
       collectionLicense,
+      ...rocrateLanguages.getUsedLanguageEntities(),
       ...getUniqueEntries(otherEntries)
     ];
   }
@@ -279,15 +279,6 @@ export async function addFieldEntries(
 
     const propertyKey = field.rocrate?.key || field.key;
 
-    // REVIEW: for some reason languages of a person aren't in the normal field system?
-    if (folder instanceof Person) {
-      (folder.metadataFile as PersonMetadataFile).languages.forEach(
-        (personLanguageObject) => {
-          otherEntries.push(getPersonLanguageElement(personLanguageObject));
-        }
-      );
-    }
-
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
       // Special handling for language fields
@@ -300,15 +291,6 @@ export async function addFieldEntries(
             // Create language entity and get reference
             const languageEntity = rocrateLanguages.getLanguageEntity(code);
             const reference = rocrateLanguages.getLanguageReference(code);
-
-            // Add language entity to other entries if not already added
-            if (
-              !otherEntries.some(
-                (entry: any) => entry["@id"] === languageEntity["@id"]
-              )
-            ) {
-              otherEntries.push(languageEntity);
-            }
 
             // Track usage
             rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
@@ -405,15 +387,6 @@ export async function addFieldEntries(
                 // Create language entity and get reference using RoCrateLanguages system
                 const languageEntity = rocrateLanguages.getLanguageEntity(code);
                 const reference = rocrateLanguages.getLanguageReference(code);
-
-                // Add language entity to other entries if not already added
-                if (
-                  !otherEntries.some(
-                    (entry: any) => entry["@id"] === languageEntity["@id"]
-                  )
-                ) {
-                  otherEntries.push(languageEntity);
-                }
 
                 // Track usage
                 rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");

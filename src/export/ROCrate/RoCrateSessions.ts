@@ -75,17 +75,8 @@ export async function createSessionEntry(
     rocrateLanguages
   );
 
-  // Ensure session has ldac:subjectLanguage
-  const sessionLanguages = session.metadataFile
-    ?.getTextProperty("languages", "")
-    .trim();
-  if (sessionLanguages) {
-    const codes = sessionLanguages
-      .split(",")
-      .map((c) => c.trim())
-      .filter((c) => c);
-    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, codes);
-  } else {
+  // Ensure session has ldac:subjectLanguage (fallback if no languages field processed)
+  if (!mainSessionEntry["ldac:subjectLanguage"]) {
     ensureSubjectLanguage(mainSessionEntry, rocrateLanguages);
   }
 
@@ -124,6 +115,10 @@ export async function createSessionEntry(
   }
 
   allEntries.push(...boilerplateSessionGraph, ...otherEntries);
+
+  // Add used language entities from the RoCrateLanguages system
+  allEntries.push(...rocrateLanguages.getUsedLanguageEntities());
+
   return allEntries;
 }
 

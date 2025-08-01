@@ -2,13 +2,11 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
-import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
-import { IPersonLanguage } from "../../model/PersonLanguage";
 import { RoCrateLicense } from "./RoCrateLicense";
 import {
   addChildFileEntries,
-  getElementUsingTemplate,
-  getRoCrateTemplate
+  getRoCrateTemplate,
+  getElementUsingTemplate
 } from "./RoCrateExporter";
 
 // LDAC Profile compliant fields that should be preserved as-is
@@ -154,54 +152,12 @@ export async function makeEntriesFromParticipant(
       // Use LDAC compliant processing instead of generic field processing
       makeLdacCompliantPersonEntry(person, sessionDate, personElement);
 
-      // Still handle languages and child files as before, with safe access
-      const personMetadata = person.metadataFile as PersonMetadataFile;
-      if (personMetadata?.languages) {
-        personMetadata.languages.forEach((personLanguageObject) => {
-          entriesForAllContributors.push(
-            getPersonLanguageElement(personLanguageObject)
-          );
-        });
-      }
+      // Person languages are not included in RO-Crate as they create unreferenced entities
+      // Only session/project languages with proper ldac:subjectLanguage references are included
       addChildFileEntries(person, personElement, entriesForAllContributors);
     }
     // Note: roles are now handled in the participant property of the Event, not on Person entities
     entriesForAllContributors.push(personElement);
   }
   return entriesForAllContributors;
-}
-
-export function getPersonLanguageElement(value: IPersonLanguage): object {
-  const languageField = fieldDefinitionsOfCurrentConfig.common.find(
-    (f) => f.key === "language"
-  );
-  const template = languageField?.rocrate?.template;
-
-  if (!template) {
-    return {};
-  }
-
-  const output = {};
-  Object.keys(template).forEach((key) => {
-    let val = template[key];
-
-    // Find placeholders in the format [property]
-    val = val.replace(/\[([^\]]+)\]/g, (match, property) => {
-      let replacement;
-      if (property === "languageName") {
-        const name =
-          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-            value.code
-          );
-        replacement = val.replace("[languageName]", name);
-      } else replacement = value[property];
-      return replacement !== undefined && replacement !== ""
-        ? replacement
-        : undefined;
-    });
-
-    output[key] = val;
-  });
-
-  return output;
 }

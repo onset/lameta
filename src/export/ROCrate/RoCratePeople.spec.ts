@@ -1,14 +1,10 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
-import {
-  makeEntriesFromParticipant,
-  getPersonLanguageElement
-} from "./RoCratePeople";
+import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { Person } from "../../model/Project/Person/Person";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
-import { IPersonLanguage } from "../../model/PersonLanguage";
 
 // Mock the staticLanguageFinder
 vi.mock("../../languageFinder/LanguageFinder", () => ({
@@ -139,50 +135,6 @@ describe("RoCratePeople", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]["@id"]).toBe("People/john-doe/");
-    });
-  });
-
-  describe("getPersonLanguageElement", () => {
-    it("should create language element from person language object", () => {
-      const personLanguage: IPersonLanguage = {
-        code: "en",
-        primary: true
-      };
-
-      const result = getPersonLanguageElement(personLanguage);
-
-      expect(result["@id"]).toBe("#language_en");
-      expect(result["@type"]).toBe("Language");
-      expect((result as any).name).toBe("English");
-    });
-
-    it("should handle missing language template", () => {
-      vi.spyOn(
-        fieldDefinitionsOfCurrentConfig,
-        "common",
-        "get"
-      ).mockReturnValue([]);
-
-      const personLanguage: IPersonLanguage = {
-        code: "en",
-        primary: true
-      };
-
-      const result = getPersonLanguageElement(personLanguage);
-
-      expect(result).toEqual({});
-    });
-
-    it("should replace placeholders correctly", () => {
-      const personLanguage: IPersonLanguage = {
-        code: "fr",
-        primary: false
-      };
-
-      const result = getPersonLanguageElement(personLanguage);
-
-      expect(result["@id"]).toBe("#language_fr");
-      expect((result as any).name).toBe("French");
     });
   });
 

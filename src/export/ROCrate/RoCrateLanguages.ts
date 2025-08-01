@@ -69,12 +69,14 @@ export class RoCrateLanguages {
    * Get only language entities that are actually used
    */
   getUsedLanguageEntities(): LanguageEntity[] {
-    return Array.from(this.languageMap.entries())
+    const used = Array.from(this.languageMap.entries())
       .filter(
         ([code, _]) =>
           this.usageMap.has(code) && this.usageMap.get(code)!.size > 0
       )
       .map(([_, entity]) => entity);
+
+    return used;
   }
 
   /**
