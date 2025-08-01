@@ -78,16 +78,21 @@ src/export/ROCrate/__tests__/
 - [x] 3.8 Validation: Run `yarn test` - core exporter tests should pass (21 tests passing)
 - [x] 3.9 Remove old exporter test files incrementally
 
-**Git Commit**: TBD - Phase 3 completion
+**Git Commit**: `fece81fe` - "feat: consolidate RO-Crate core exporter tests (Phase 3)"
 
-### Phase 4: Consolidate LDAC Profile Tests
+### Phase 4: Consolidate LDAC Profile Tests ✅ COMPLETE
 
-- [ ] 4.1 Create `RoCrateExporter.ldac.spec.ts`
-- [ ] 4.2 Migrate existing `RoCrateExporter.ldac.spec.ts` tests
-- [ ] 4.3 Migrate `RoCrateExporter.ldac-access.spec.ts` tests
-- [ ] 4.4 Migrate `RoCrateExporter.subject-language.spec.ts` tests
-- [ ] 4.5 Organize by LDAC concerns (Collection, Access, Languages, Materials)
-- [ ] 4.6 Update imports to use shared utilities
+- [x] 4.1 Create `__tests__/RoCrateExporter.ldac.spec.ts`
+- [x] 4.2 Migrate existing `RoCrateExporter.ldac.spec.ts` tests (14 tests)
+- [x] 4.3 Migrate `RoCrateExporter.ldac-access.spec.ts` tests (6 tests)
+- [x] 4.4 Migrate `RoCrateExporter.subject-language.spec.ts` tests (5 tests)
+- [x] 4.5 Organize by LDAC concerns: Event Structure, Person/Place Entities, Material Types, Access Control, Subject Language Formatting
+- [x] 4.6 Enhanced mocking for LDAC access choices with ldacAccessCategory property
+- [x] 4.7 Proper handling of template-based and handler-based language fields
+- [x] 4.8 Validation: Run `yarn test` - LDAC tests should pass (25 tests passing)
+- [x] 4.9 Remove old LDAC test files
+
+**Git Commit**: TBD - Phase 4 completion
 - [ ] 4.7 Validation: Run `yarn test` - LDAC tests should pass
 - [ ] 4.8 Remove old LDAC test files
 

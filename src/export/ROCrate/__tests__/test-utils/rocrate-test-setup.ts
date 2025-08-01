@@ -17,7 +17,7 @@ export const createStaticLanguageFinderMock = () => {
           const languageMap: { [key: string]: string } = {
             eng: "English",
             en: "English",
-            fra: "French", 
+            fra: "French",
             fr: "French",
             deu: "German",
             de: "German",
@@ -43,7 +43,7 @@ export const createFsExtraMock = () => {
       readFileSync: vi.fn().mockReturnValue("mock file content"),
       writeFileSync: vi.fn(),
       mkdirSync: vi.fn(),
-      statSync: vi.fn().mockReturnValue({ 
+      statSync: vi.fn().mockReturnValue({
         size: 1024,
         birthtime: new Date("2024-01-01T00:00:00.000Z")
       }),
@@ -53,7 +53,7 @@ export const createFsExtraMock = () => {
     readFileSync: vi.fn().mockReturnValue("mock file content"),
     writeFileSync: vi.fn(),
     mkdirSync: vi.fn(),
-    statSync: vi.fn().mockReturnValue({ 
+    statSync: vi.fn().mockReturnValue({
       size: 1024,
       birthtime: new Date("2024-01-01T00:00:00.000Z")
     }),
@@ -77,11 +77,11 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
   } as FieldDefinition,
   {
     key: "title",
-    englishLabel: "Title", 
+    englishLabel: "Title",
     persist: true,
     rocrate: {
       template: {
-        "name": "[v]"
+        name: "[v]"
       }
     }
   } as FieldDefinition,
@@ -91,7 +91,7 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "description": "[v]"
+        description: "[v]"
       }
     }
   } as FieldDefinition,
@@ -103,13 +103,13 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
       template: {
         "@id": "#language_[code]",
         "@type": "Language",
-        "code": "[code]",
-        "name": "[languageName]"
+        code: "[code]",
+        name: "[languageName]"
       }
     }
   } as FieldDefinition,
   {
-    key: "person", 
+    key: "person",
     englishLabel: "Person",
     persist: true,
     rocrate: {
@@ -125,7 +125,7 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "genre": "[v]"
+        genre: "[v]"
       }
     }
   } as FieldDefinition
@@ -136,7 +136,7 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
  */
 export const getSessionFieldDefinitions = (): FieldDefinition[] => [
   {
-    key: "id", 
+    key: "id",
     englishLabel: "Session ID",
     persist: true,
     rocrate: {
@@ -151,7 +151,7 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "name": "[v]"
+        name: "[v]"
       }
     }
   } as FieldDefinition,
@@ -161,17 +161,17 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "dateCreated": "[v]"
+        dateCreated: "[v]"
       }
     }
   } as FieldDefinition,
   {
     key: "genre",
-    englishLabel: "Genre", 
+    englishLabel: "Genre",
     persist: true,
     rocrate: {
       template: {
-        "genre": "[v]"
+        genre: "[v]"
       }
     }
   } as FieldDefinition,
@@ -194,19 +194,19 @@ export const setupFieldDefinitionMocks = () => {
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
     getCommonFieldDefinitions()
   );
-  
+
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
     getSessionFieldDefinitions()
   );
-  
+
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "person", "get").mockReturnValue([
     {
       key: "fullName",
-      englishLabel: "Full Name", 
+      englishLabel: "Full Name",
       persist: true,
       rocrate: {
         template: {
-          "name": "[v]"
+          name: "[v]"
         }
       }
     } as FieldDefinition,
@@ -236,7 +236,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: string } = {
           title: "Test Project Title",
-          description: "Test project description", 
+          description: "Test project description",
           id: "test-project-001",
           archiveConfigurationName: "lameta",
           ...overrides.metadata
@@ -247,7 +247,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
         const defaults: { [key: string]: any } = {
           title: "Test Project Title",
           description: "Test project description",
-          id: "test-project-001", 
+          id: "test-project-001",
           archiveConfigurationName: "lameta",
           ...overrides.metadata
         };
@@ -257,7 +257,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
         const defaults: { [key: string]: any } = {
           title: "Test Project Title",
           description: "Test project description",
-          id: "test-project-001", 
+          id: "test-project-001",
           archiveConfigurationName: "lameta",
           ...overrides.metadata
         };
@@ -279,7 +279,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
  */
 export const createMockSession = (overrides: Partial<any> = {}): Session => {
   const mockProperties = new Map();
-  
+
   const mockSession = {
     displayName: "Test Session",
     directory: "/test/project/sessions/test-session",
@@ -300,7 +300,7 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
       }),
       getValue: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: any } = {
-          id: "test-session-001", 
+          id: "test-session-001",
           title: "Test Session Title",
           description: "Test session description",
           date: "2024-01-01",
@@ -312,7 +312,7 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
       }),
       getTextProperty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: any } = {
-          id: "test-session-001", 
+          id: "test-session-001",
           title: "Test Session Title",
           description: "Test session description",
           date: "2024-01-01",
@@ -354,7 +354,7 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
       getValue: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: any } = {
           fullName: "John Doe",
-          nickname: "John", 
+          nickname: "John",
           howToContact: "john@example.com",
           ...overrides.metadata
         };
@@ -375,7 +375,7 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
 export const setupCommonMocks = () => {
   createStaticLanguageFinderMock();
   setupFieldDefinitionMocks();
-  
+
   // Mock other common dependencies
   vi.mock("../../../../localization/LocalizationManager", () => ({
     default: {
@@ -405,7 +405,7 @@ export const setupExporterMocks = () => {
       setDefaultLicense: vi.fn(),
       setFileLicense: vi.fn(),
       getFileLicense: vi.fn(),
-      getFileLicenseReference: vi.fn(), 
+      getFileLicenseReference: vi.fn(),
       ensureFileLicense: vi.fn(),
       clear: vi.fn(),
       getAllFileLicenses: vi.fn()
