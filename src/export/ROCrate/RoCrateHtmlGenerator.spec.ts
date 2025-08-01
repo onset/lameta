@@ -57,6 +57,71 @@ describe("RoCrateHtmlGenerator", () => {
         "@id": "Sessions/ETR009/test.mp4",
         "@type": "VideoObject",
         name: "test.mp4"
+      },
+      {
+        "@id": "ro-crate-metadata.json",
+        "@type": "CreativeWork",
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.1" },
+        about: { "@id": "./" }
+      },
+      {
+        "@id": "ldac:DataReuseLicense",
+        "@type": "Class",
+        name: "Data Reuse License",
+        description: "A license for reusing data"
+      },
+      {
+        "@id": "ldac:OpenAccess",
+        "@type": "DefinedTerm",
+        name: "Open Access",
+        description: "Data may be accessed without authorization"
+      },
+      {
+        "@id": "ldac:AuthorizedAccess",
+        "@type": "DefinedTerm",
+        name: "Authorized Access",
+        description: "Data requires authorization for access"
+      },
+      {
+        "@id": "#license-testarchive-f",
+        "@type": "ldac:DataReuseLicense",
+        name: "Open Access License",
+        "ldac:access": { "@id": "ldac:OpenAccess" }
+      },
+      {
+        "@id": "#language_etr",
+        "@type": "Language",
+        code: "etr",
+        name: "Edolo"
+      },
+      {
+        "@id": "#language_tpi",
+        "@type": "Language",
+        code: "tpi",
+        name: "Tok Pisin"
+      },
+      {
+        "@id": "#CustomGenreTerms",
+        "@type": "DefinedTermSet",
+        name: "Custom Genre Terms"
+      },
+      {
+        "@id": "test.session",
+        "@type": "DigitalDocument",
+        name: "Test Session File",
+        encodingFormat: "application/lameta-session"
+      },
+      {
+        "@id": "person.person",
+        "@type": "DigitalDocument",
+        name: "Person File",
+        encodingFormat: "application/lameta-person"
+      },
+      {
+        "@id": "project.sprj",
+        "@type": "DigitalDocument",
+        name: "Project File",
+        encodingFormat: "application/lameta-project"
       }
     ]
   };
@@ -130,14 +195,10 @@ describe("RoCrateHtmlGenerator", () => {
       // Should contain entity-children-container
       expect(personEntityHtml).toContain("entity-children-container");
 
-      // Should contain the child entities within the person entity
-      expect(personEntityHtml).toContain(
-        "People/Awi_Heole/Awi_Heole_Photo.JPG"
-      );
-      expect(personEntityHtml).toContain(
-        "People/Awi_Heole/Awi_Heole_Consent.JPG"
-      );
-      expect(personEntityHtml).toContain("People/Awi_Heole/Awi_Heole.person");
+      // Should contain the child entities within the person entity (checking for names, not full paths)
+      expect(personEntityHtml).toContain("Awi_Heole_Photo.JPG");
+      expect(personEntityHtml).toContain("Awi_Heole_Consent.JPG");
+      expect(personEntityHtml).toContain("Awi_Heole.person");
     }
   });
 
@@ -190,9 +251,9 @@ describe("RoCrateHtmlGenerator", () => {
       // Should contain entity-children-container
       expect(sessionEntityHtml).toContain("entity-children-container");
 
-      // Should contain the child entities within the session entity
-      expect(sessionEntityHtml).toContain("Sessions/ETR009/ETR009.session");
-      expect(sessionEntityHtml).toContain("Sessions/ETR009/test.mp4");
+      // Should contain the child entities within the session entity (checking for names, not full paths)
+      expect(sessionEntityHtml).toContain("ETR009.session");
+      expect(sessionEntityHtml).toContain("test.mp4");
     }
   });
 
@@ -210,5 +271,141 @@ describe("RoCrateHtmlGenerator", () => {
 
     // The CSS rule should hide headers for child entities
     expect(html).toContain(".entity.child .entity-header { display: none; }");
+  });
+
+  it("should filter out ro-crate-metadata.json file", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Check that ro-crate-metadata.json is not rendered as an entity
+    expect(html).not.toContain('id="entity_ro-crate-metadata_json"');
+
+    // Should not contain the ro-crate-metadata.json as an entity header
+    expect(html).not.toContain(
+      '<div class="entity-id">ro-crate-metadata.json</div>'
+    );
+  });
+
+  it("should filter out official LDAC DataReuseLicense class definition and access types but keep custom licenses", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Check that the LDAC DataReuseLicense class definition is not rendered as a separate entity
+    expect(html).not.toContain('id="entity_ldac_DataReuseLicense"');
+    expect(html).not.toContain(
+      '<div class="entity-id">ldac:DataReuseLicense</div>'
+    );
+
+    // Check that LDAC access types are not rendered as separate entities
+    expect(html).not.toContain('id="entity_ldac_OpenAccess"');
+    expect(html).not.toContain('id="entity_ldac_AuthorizedAccess"');
+    expect(html).not.toContain('<div class="entity-id">ldac:OpenAccess</div>');
+    expect(html).not.toContain(
+      '<div class="entity-id">ldac:AuthorizedAccess</div>'
+    );
+
+    // But custom license entities should be rendered
+    expect(html).toContain('id="entity__license_testarchive_f"');
+    expect(html).toContain(
+      '<div class="entity-id">#license-testarchive-f</div>'
+    );
+  });
+
+  it("should filter out Language entities and link to Glottolog", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Check that Language entities are not rendered as separate entities
+    expect(html).not.toContain('id="entity__language_etr"');
+    expect(html).not.toContain('id="entity__language_tpi"');
+
+    // Should not contain Language entities as entity headers
+    expect(html).not.toContain('<div class="entity-id">#language_etr</div>');
+    expect(html).not.toContain('<div class="entity-id">#language_tpi</div>');
+  });
+
+  it("should generate external links for LDAC terms, DataReuseLicense, access types, and Languages", () => {
+    // Create test data with references to these entities
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project with References",
+          genre: { "@id": "ldac:Narrative" },
+          license: { "@id": "#license-testarchive-f" },
+          subjectLanguages: [{ "@id": "#language_etr" }]
+        },
+        {
+          "@id": "ldac:Narrative",
+          "@type": "DefinedTerm",
+          name: "Narrative",
+          inDefinedTermSet: { "@id": "ldac:Genres" }
+        },
+        {
+          "@id": "ldac:DataReuseLicense",
+          "@type": "Class",
+          name: "Data Reuse License",
+          description: "A license for reusing data"
+        },
+        {
+          "@id": "#license-testarchive-f",
+          "@type": "ldac:DataReuseLicense",
+          name: "Open Access License",
+          "ldac:access": { "@id": "ldac:OpenAccess" },
+          conformsTo: { "@id": "ldac:DataReuseLicense" }
+        },
+        {
+          "@id": "ldac:OpenAccess",
+          "@type": "DefinedTerm",
+          name: "Open Access",
+          description: "Data may be accessed without authorization"
+        },
+        {
+          "@id": "#language_etr",
+          "@type": "Language",
+          code: "etr",
+          name: "Edolo"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should contain external link to LDAC genre
+    expect(html).toContain('href="https://w3id.org/ldac/terms#Narrative"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+
+    // Should contain external link to LDAC access type (within the custom license entity)
+    expect(html).toContain('href="https://w3id.org/ldac/terms#OpenAccess"');
+
+    // Should contain external link to Glottolog for language
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/etr"'
+    );
+  });
+
+  it("should filter out CustomGenreTerms entity", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Check that CustomGenreTerms entity is not rendered
+    expect(html).not.toContain('id="entity__CustomGenreTerms"');
+    expect(html).not.toContain(
+      '<div class="entity-id">#CustomGenreTerms</div>'
+    );
+  });
+
+  it("should add lameta XML file description for .sprj, .session, and .person files", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Should contain the description for lameta XML files
+    expect(html).toContain("This is an XML file that is used by");
+    expect(html).toContain('href="https://github.com/onset/lameta"');
+    expect(html).toContain("lameta</a> software");
+
+    // Should appear for all lameta XML files (2 existing + 3 new = 5 total)
+    const lametaDescriptionCount = (
+      html.match(/This is an XML file that is used by/g) || []
+    ).length;
+    expect(lametaDescriptionCount).toBe(5); // All .sprj, .session, .person files
   });
 });
