@@ -299,7 +299,7 @@ export const setupRealFieldDefinitions = () => {
   // Import the real configuration loading function
   const {
     prepareGlobalFieldDefinitionCatalog
-  } = require("../../../../model/field/ConfiguredFieldDefinitions");
+  } = require("../../../model/field/ConfiguredFieldDefinitions");
 
   // Load the default lameta configuration (same as production)
   prepareGlobalFieldDefinitionCatalog("lameta");

@@ -27,7 +27,14 @@ const EXCLUDED_FIELDS = new Set([
   "publisher"
 ]);
 // Entities that don't add any value to the human just wanting to know "what's in this collection"
-const FILTERED_ENTITY_IDS = ["#collection-license", "#CustomGenreTerms"];
+const FILTERED_ENTITY_IDS = [
+  "#collection-license", 
+  "#CustomGenreTerms",
+  "ldac:DataReuseLicense",
+  "ldac:OpenAccess",
+  "ldac:AuthorizedAccess"
+];
+
 // Creates a URL-safe anchor ID from an entity ID
 const createAnchorId = (id: string): string => {
   return id ? `entity_${id.replace(/[^a-zA-Z0-9]/g, "_")}` : "";
@@ -42,40 +49,6 @@ function formatPropertyLabel(propertyName: string): string {
   return spaceSeparated.toLowerCase();
 }
 
-// Helper function to check if a DefinedTerm is an official LDAC term
-function isOfficialLdacTerm(entity: RoCrateEntity): boolean {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  return (
-    types.includes("DefinedTerm") &&
-    entity["@id"]?.startsWith("ldac:") &&
-    entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
-  );
-}
-
-// Helper function to check if a DefinedTermSet is an official LDAC term set
-function isOfficialLdacTermSet(entity: RoCrateEntity): boolean {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  return types.includes("DefinedTermSet") && entity["@id"]?.startsWith("ldac:");
-}
-
-// Helper function to check if an entity is an official LDAC DataReuseLicense class definition
-function isOfficialLdacDataReuseLicense(entity: RoCrateEntity): boolean {
-  // Only filter out the class definition itself, not instances
-  return entity["@id"] === "ldac:DataReuseLicense";
-}
-
-// Helper function to check if an entity is an official LDAC access type that should be filtered out
-function isOfficialLdacAccessType(entity: RoCrateEntity): boolean {
-  return (
-    entity["@id"] === "ldac:OpenAccess" ||
-    entity["@id"] === "ldac:AuthorizedAccess"
-  );
-}
-
 // Helper function to check if an entity is a Language that should link to Glottolog
 function isLanguageEntity(entity: RoCrateEntity): boolean {
   const types = Array.isArray(entity["@type"])
@@ -84,9 +57,44 @@ function isLanguageEntity(entity: RoCrateEntity): boolean {
   return types.includes("Language") && entity["@id"]?.startsWith("#language_");
 }
 
-// Helper function to check if an entity should be filtered out by ID
-function isFilteredEntityId(entity: RoCrateEntity): boolean {
-  return FILTERED_ENTITY_IDS.includes(entity["@id"]);
+// Helper function to check if an entity should be filtered out by ID or type
+function isFilteredEntity(entity: RoCrateEntity): boolean {
+  // Filter by specific entity IDs
+  if (FILTERED_ENTITY_IDS.includes(entity["@id"])) {
+    return true;
+  }
+
+  const types = Array.isArray(entity["@type"])
+    ? entity["@type"]
+    : [entity["@type"]];
+
+  // Filter official LDAC DefinedTerms
+  if (
+    types.includes("DefinedTerm") &&
+    entity["@id"]?.startsWith("ldac:") &&
+    entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
+  ) {
+    return true;
+  }
+
+  // Filter official LDAC DefinedTermSets
+  if (types.includes("DefinedTermSet") && entity["@id"]?.startsWith("ldac:")) {
+    return true;
+  }
+
+  return false;
+}
+
+// Helper function to check if an entity is an official LDAC term that should link externally
+function shouldLinkToLdacTerm(entity: RoCrateEntity): boolean {
+  const types = Array.isArray(entity["@type"])
+    ? entity["@type"]
+    : [entity["@type"]];
+  return (
+    types.includes("DefinedTerm") &&
+    entity["@id"]?.startsWith("ldac:") &&
+    entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
+  );
 }
 
 // Helper function to check if an entity is a lameta XML file
@@ -215,7 +223,7 @@ const PropertyValue: React.FC<{
     }
 
     // Check if this is an official LDAC term that should link externally
-    if (referencedEntity && isOfficialLdacTerm(referencedEntity)) {
+    if (referencedEntity && shouldLinkToLdacTerm(referencedEntity)) {
       const displayName = referencedEntity?.name || defaultName;
       const externalUrl = getLdacTermUrl(id);
       return (
@@ -503,23 +511,8 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       return;
     }
 
-    // Filter out entities by ID
-    if (isFilteredEntityId(entity)) {
-      return;
-    }
-
-    // Skip official LDAC DefinedTerms and DefinedTermSets - they shouldn't appear as separate entities
-    if (isOfficialLdacTerm(entity) || isOfficialLdacTermSet(entity)) {
-      return;
-    }
-
-    // Skip official LDAC DataReuseLicense class definition - but keep custom license instances
-    if (isOfficialLdacDataReuseLicense(entity)) {
-      return;
-    }
-
-    // Skip official LDAC access type entities - they should link externally
-    if (isOfficialLdacAccessType(entity)) {
+    // Filter out entities by ID and type
+    if (isFilteredEntity(entity)) {
       return;
     }
 
@@ -727,28 +720,13 @@ const HierarchicalEntityDisplay: React.FC<{
       return false;
     }
 
-    // Skip official LDAC DefinedTerms and DefinedTermSets
-    if (isOfficialLdacTerm(child) || isOfficialLdacTermSet(child)) {
-      return false;
-    }
-
-    // Skip official LDAC DataReuseLicense class definition - but keep custom license instances
-    if (isOfficialLdacDataReuseLicense(child)) {
-      return false;
-    }
-
-    // Skip official LDAC access type entities
-    if (isOfficialLdacAccessType(child)) {
+    // Filter out entities by ID and type
+    if (isFilteredEntity(child)) {
       return false;
     }
 
     // Skip Language entities
     if (isLanguageEntity(child)) {
-      return false;
-    }
-
-    // Filter out entities by ID
-    if (isFilteredEntityId(child)) {
       return false;
     }
 
