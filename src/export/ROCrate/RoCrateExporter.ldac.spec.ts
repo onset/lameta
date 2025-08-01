@@ -188,9 +188,9 @@ describe("RoCrateExporter LDAC profile conformance", () => {
 
     expect(sessionEvent).toBeDefined();
     expect(sessionEvent["@type"]).toEqual([
-      "Event",
-      "Object",
-      "RepositoryObject"
+      "Dataset",
+      "pcdm:RepositoryObject",
+      "Event"
     ]);
     expect(sessionEvent.name).toBe(
       "The story behind how we catch fish with poison bark"
@@ -260,6 +260,25 @@ describe("RoCrateExporter LDAC profile conformance", () => {
       "@id": "Sessions/ETR009/"
     });
     expect(rootDataset.hasPart).toContainEqual({ "@id": "People/Awi_Heole/" });
+  });
+
+  it("should establish bidirectional pcdm:memberOf relationship between sessions and root collection", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Verify root dataset has pcdm:hasMember pointing to sessions
+    const rootDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/ETR009/"
+    });
+
+    // Verify session has pcdm:memberOf pointing back to root collection
+    const sessionEvent = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+    );
+    expect(sessionEvent["pcdm:memberOf"]).toEqual({ "@id": "./" });
   });
 
   it("should add role property to files", async () => {

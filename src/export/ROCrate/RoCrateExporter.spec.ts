@@ -540,7 +540,7 @@ describe("RoCrateExporter genre handling", () => {
     );
     expect(sessionEntry).toMatchObject({
       "@id": "./",
-      "@type": ["Dataset", "Object", "RepositoryObject"],
+      "@type": ["Dataset", "pcdm:RepositoryObject", "Event"],
       name: "Fishing",
       "ldac:linguisticGenre": [{ "@id": "ldac:Dialogue" }]
     });
@@ -892,9 +892,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
       // And should be typed as RepositoryObject
       expect(sessionEvent["@type"]).toEqual([
-        "Event",
-        "Object",
-        "RepositoryObject"
+        "Dataset",
+        "pcdm:RepositoryObject",
+        "Event"
       ]);
     });
 
@@ -979,9 +979,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "https://w3id.org/ldac/profile#Object"
       );
       expect(sessionEvent["@type"]).toEqual([
-        "Event",
-        "Object",
-        "RepositoryObject"
+        "Dataset",
+        "pcdm:RepositoryObject",
+        "Event"
       ]);
 
       // Collection uses pcdm:hasMember for sessions

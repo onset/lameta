@@ -7,7 +7,7 @@ describe("RoCrateHtmlGenerator", () => {
     "@graph": [
       {
         "@id": "./",
-        "@type": ["Dataset", "RepositoryCollection"],
+        "@type": ["Dataset", "pcdm:Collection"],
         name: "Test Project",
         hasPart: [{ "@id": "People/Awi_Heole/" }, { "@id": "Sessions/ETR009/" }]
       },
@@ -328,7 +328,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "RepositoryCollection"],
+          "@type": ["Dataset", "pcdm:Collection"],
           name: "Test Project with References",
           genre: { "@id": "ldac:Narrative" },
           license: { "@id": "#license-testarchive-f" },

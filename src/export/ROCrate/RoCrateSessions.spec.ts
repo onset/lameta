@@ -110,10 +110,11 @@ describe("RoCrateSessions", () => {
       expect(sessionEntry["@id"]).toBe("./");
       expect(sessionEntry["@type"]).toEqual([
         "Dataset",
-        "Object",
-        "RepositoryObject"
+        "pcdm:RepositoryObject",
+        "Event"
       ]);
       expect(sessionEntry.name).toBe("Test Session");
+      expect(sessionEntry["pcdm:memberOf"]).toBeUndefined();
     });
 
     it("should create session entry for project session", async () => {
@@ -129,12 +130,38 @@ describe("RoCrateSessions", () => {
       const sessionEntry = result[0] as any;
       expect(sessionEntry["@id"]).toBe("Sessions/test-session/");
       expect(sessionEntry["@type"]).toEqual([
-        "Event",
-        "Object",
-        "RepositoryObject"
+        "Dataset",
+        "pcdm:RepositoryObject",
+        "Event"
       ]);
       expect(sessionEntry.startDate).toBe("2023-01-01");
       expect(sessionEntry.location).toEqual({ "@id": "#Test Location" });
+    });
+
+    it("should add pcdm:memberOf property for project sessions", async () => {
+      const result = await createSessionEntry(
+        mockProject,
+        mockSession,
+        false,
+        mockRoCrateLanguages,
+        mockRoCrateLicense
+      );
+
+      const sessionEntry = result[0] as any;
+      expect(sessionEntry["pcdm:memberOf"]).toEqual({ "@id": "./" });
+    });
+
+    it("should not add pcdm:memberOf property for standalone sessions", async () => {
+      const result = await createSessionEntry(
+        mockProject,
+        mockSession,
+        true,
+        mockRoCrateLanguages,
+        mockRoCrateLicense
+      );
+
+      const sessionEntry = result[0] as any;
+      expect(sessionEntry["pcdm:memberOf"]).toBeUndefined();
     });
   });
 

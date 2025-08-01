@@ -21,9 +21,7 @@ export async function createSessionEntry(
 ): Promise<object[]> {
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : `Sessions/${session.filePrefix}/`,
-    "@type": isStandaloneSession
-      ? ["Dataset", "Object", "RepositoryObject"]
-      : ["Event", "Object", "RepositoryObject"],
+    "@type": ["Dataset", "pcdm:RepositoryObject", "Event"],
     conformsTo: {
       "@id": "https://w3id.org/ldac/profile#Object"
     },
@@ -37,6 +35,11 @@ export async function createSessionEntry(
     datePublished: new Date().toISOString(),
     hasPart: []
   };
+
+  // Add bidirectional pcdm:memberOf link for sessions that are part of a collection
+  if (!isStandaloneSession) {
+    mainSessionEntry["pcdm:memberOf"] = { "@id": "./" };
+  }
 
   // Add session-specific properties for Events
   if (!isStandaloneSession) {

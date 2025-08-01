@@ -228,7 +228,7 @@ describe("RoCrateLicense", () => {
   describe("getRepositoryCollectionTypes", () => {
     it("should return the standard RO-Crate type array for repository collections", () => {
       const types = RoCrateLicense.getRepositoryCollectionTypes();
-      expect(types).toEqual(["Dataset", "RepositoryCollection"]);
+      expect(types).toEqual(["Dataset", "pcdm:Collection"]);
     });
 
     it("should return a new array each time to prevent mutation", () => {

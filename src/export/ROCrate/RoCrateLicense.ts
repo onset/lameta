@@ -71,7 +71,7 @@ export class RoCrateLicense {
    * Get the standard RO-Crate type array for repository collections
    */
   static getRepositoryCollectionTypes(): string[] {
-    return ["Dataset", "RepositoryCollection"];
+    return ["Dataset", "pcdm:Collection"];
   }
 }
 

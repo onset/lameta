@@ -190,7 +190,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (item: any) => item["@id"] === "./"
     );
     expect(rootDataset).toBeDefined();
-    expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
+    expect(rootDataset["@type"]).toEqual(["Dataset", "pcdm:Collection"]);
     expect(rootDataset.name).toBe("Edolo Language Documentation");
     expect(rootDataset.description).toBe("Documentation of the Edolo language");
 
@@ -211,9 +211,9 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     );
     expect(sessionEvent).toBeDefined();
     expect(sessionEvent["@type"]).toEqual([
-      "Event",
-      "Object",
-      "RepositoryObject"
+      "Dataset",
+      "pcdm:RepositoryObject",
+      "Event"
     ]);
     expect(sessionEvent.name).toBe(
       "The story behind how we catch fish with poison bark"
@@ -221,6 +221,9 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     expect(sessionEvent.description).toBe("Some guys talking");
     expect(sessionEvent.startDate).toBe("2010-06-06");
     expect(sessionEvent.keywords).toBe("fishing, poison");
+
+    // Verify bidirectional pcdm:memberOf relationship
+    expect(sessionEvent["pcdm:memberOf"]).toEqual({ "@id": "./" });
 
     // Verify session uses LDAC-specific role properties instead of generic participant
     expect(sessionEvent["ldac:speaker"]).toBeDefined();
