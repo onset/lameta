@@ -530,7 +530,7 @@ export async function addFieldEntries(
   // Now handle any custom fields from the properties
 
   folder.metadataFile!.properties.forEach((key, field) => {
-    if (!field.definition.isCustom) return;
+    if (!field.definition || !field.definition.isCustom) return;
 
     // For Person entities, skip custom fields entirely since we don't know if they contain PII
     if (folder instanceof Person) {
