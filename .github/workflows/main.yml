@@ -6,6 +6,7 @@ on:
       - V2
       - beta
       - release
+      - V3
   workflow_dispatch:
 
 jobs:

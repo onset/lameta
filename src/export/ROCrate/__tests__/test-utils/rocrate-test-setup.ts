@@ -3,7 +3,10 @@ import { Project } from "../../../../model/Project/Project";
 import { Session } from "../../../../model/Project/Session/Session";
 import { Person } from "../../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../../model/field/FieldDefinition";
-import { fieldDefinitionsOfCurrentConfig } from "../../../../model/field/ConfiguredFieldDefinitions";
+import {
+  fieldDefinitionsOfCurrentConfig,
+  prepareGlobalFieldDefinitionCatalog
+} from "../../../../model/field/ConfiguredFieldDefinitions";
 
 /**
  * RO-Crate Test Setup Utilities
@@ -296,11 +299,6 @@ export const setupFieldDefinitionMocks = () => {
  * This uses the actual field configuration that the app uses in production.
  */
 export const setupRealFieldDefinitions = () => {
-  // Import the real configuration loading function
-  const {
-    prepareGlobalFieldDefinitionCatalog
-  } = require("../../../model/field/ConfiguredFieldDefinitions");
-
   // Load the default lameta configuration (same as production)
   prepareGlobalFieldDefinitionCatalog("lameta");
 
@@ -311,6 +309,8 @@ export const setupRealFieldDefinitions = () => {
  * Create a mock Project with common properties
  */
 export const createMockProject = (overrides: Partial<any> = {}): Project => {
+  const mockProperties = new Map();
+
   const mockProject = {
     displayName: "Test Project",
     directory: "/test/project",
@@ -322,6 +322,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
       ]
     },
     metadataFile: {
+      properties: mockProperties, // Add the Map for properties
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: string } = {
           title: "Test Project Title",
@@ -342,21 +343,25 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
         };
         return defaults[key];
       }),
-      getTextProperty: vi.fn().mockImplementation((key: string) => {
-        const defaults: { [key: string]: any } = {
-          title: "Test Project Title",
-          description: "Test project description",
-          id: "test-project-001",
-          archiveConfigurationName: "lameta",
-          ...overrides.metadata
-        };
-        return defaults[key];
-      }),
+      getTextProperty: vi
+        .fn()
+        .mockImplementation((key: string, defaultValue: string = "") => {
+          const defaults: { [key: string]: any } = {
+            title: "Test Project Title",
+            description: "Test project description",
+            id: "test-project-001",
+            archiveConfigurationName: "lameta",
+            ...overrides.metadata
+          };
+          // Return the value if it exists, otherwise return the defaultValue (which might be "")
+          return defaults[key] !== undefined ? defaults[key] : defaultValue;
+        }),
       setTextStringProperty: vi.fn(),
       hasValue: vi.fn().mockReturnValue(true)
     },
     sessions: [],
     persons: [],
+    files: [], // Add files array
     ...overrides
   } as unknown as Project;
 
@@ -399,18 +404,21 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
         };
         return defaults[key];
       }),
-      getTextProperty: vi.fn().mockImplementation((key: string) => {
-        const defaults: { [key: string]: any } = {
-          id: "test-session-001",
-          title: "Test Session Title",
-          description: "Test session description",
-          date: "2024-01-01",
-          genre: "Conversation",
-          access: "CC BY 4.0",
-          ...overrides.metadata
-        };
-        return defaults[key];
-      }),
+      getTextProperty: vi
+        .fn()
+        .mockImplementation((key: string, defaultValue: string = "") => {
+          const defaults: { [key: string]: any } = {
+            id: "test-session-001",
+            title: "Test Session Title",
+            description: "Test session description",
+            date: "2024-01-01",
+            genre: "Conversation",
+            access: "CC BY 4.0",
+            ...overrides.metadata
+          };
+          // Return the value if it exists, otherwise return the defaultValue (which might be "")
+          return defaults[key] !== undefined ? defaults[key] : defaultValue;
+        }),
       setTextStringProperty: vi.fn(),
       hasValue: vi.fn().mockReturnValue(true)
     },

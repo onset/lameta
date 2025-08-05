@@ -96,9 +96,6 @@ test.describe("Export Marked Sessions", () => {
     await expect(firstRowCheckbox).toBeChecked();
     await expect(secondRowCheckbox).toBeChecked();
 
-    // Pause for manual verification
-    await page.pause();
-
     // 3. Use File menu -> Export Project
     await lameta.clickMenu("File", "Export Project...");
 
