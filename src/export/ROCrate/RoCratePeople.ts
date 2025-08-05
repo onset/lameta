@@ -160,6 +160,11 @@ export async function makeEntriesFromParticipant(
         entriesForAllContributors,
         rocrateLicense
       );
+    } else {
+      // Create a stub entity for contributors without matching person records
+      (personElement as any).name = name;
+      (personElement as any).description =
+        "The lameta project could not find a matching Person for this contributor, so we do not have any further information";
     }
     // Note: roles are now handled in the participant property of the Event, not on Person entities
     entriesForAllContributors.push(personElement);
