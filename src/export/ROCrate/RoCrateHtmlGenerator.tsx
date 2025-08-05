@@ -24,11 +24,13 @@ const EXCLUDED_FIELDS = new Set([
   "dateCreated",
   "dateModified",
   "contentSize",
-  "publisher"
+  "publisher",
+  "hasPart",
+  "pcdm:hasMember"
 ]);
 // Entities that don't add any value to the human just wanting to know "what's in this collection"
 const FILTERED_ENTITY_IDS = [
-  "#collection-license", 
+  "#collection-license",
   "#CustomGenreTerms",
   "ldac:DataReuseLicense",
   "ldac:OpenAccess",
@@ -46,7 +48,9 @@ function formatPropertyLabel(propertyName: string): string {
   if (propertyName === "pcdm:hasMember") return "events";
   const withoutPrefix = propertyName.replace(/^[a-zA-Z]+:/, "");
   const spaceSeparated = withoutPrefix.replace(/([a-z])([A-Z])/g, "$1 $2");
-  return spaceSeparated.toLowerCase();
+  // Capitalize first letter instead of making everything lowercase
+  const formatted = spaceSeparated.toLowerCase();
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 // Helper function to check if an entity is a Language that should link to Glottolog
@@ -213,6 +217,11 @@ const PropertyValue: React.FC<{
   const renderLink = (id: string, defaultName: string) => {
     const referencedEntity = graph.find((entity) => entity["@id"] === id);
 
+    // Special handling for "Unknown" - don't link, just show text
+    if (referencedEntity?.name === "Unknown" || defaultName === "Unknown") {
+      return <>Unknown</>;
+    }
+
     // Special handling for contentLocation (Place entities) - just show the name
     if (
       propertyName === "contentLocation" &&
@@ -300,6 +309,11 @@ const PropertyValue: React.FC<{
     return <pre>{JSON.stringify(value, null, 2)}</pre>;
   }
 
+  // Handle "Unknown" as plain text without linking
+  if (String(value) === "Unknown") {
+    return <>Unknown</>;
+  }
+
   return <>{String(value)}</>;
 };
 
@@ -384,18 +398,20 @@ const Entity: React.FC<{
             {name}
           </h3>
         )}
-        <img
-          src={id}
-          alt={`Image: ${name || id}`}
-          className="image-thumbnail"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.style.display = "none";
-            if (target.nextElementSibling)
-              (target.nextElementSibling as HTMLElement).style.display =
-                "block";
-          }}
-        />
+        <a href={id}>
+          <img
+            src={id}
+            alt={`Image: ${name || id}`}
+            className="image-thumbnail"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+              if (target.nextElementSibling)
+                (target.nextElementSibling as HTMLElement).style.display =
+                  "block";
+            }}
+          />
+        </a>
         <div
           style={{
             display: "none",
@@ -439,9 +455,10 @@ const Entity: React.FC<{
         Array.isArray(e["@type"]) &&
         e["@type"].includes("Event")
     ),
-    People: graph.filter(
-      (e) => Array.isArray(e["@type"]) && e["@type"].includes("Person")
-    ),
+    People: graph.filter((e) => {
+      const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
+      return types.includes("Person") && e.name !== "Unknown";
+    }),
     "Description Documents": graph.filter((e) =>
       e["@id"]?.startsWith("Description/")
     ),
@@ -464,17 +481,22 @@ const Entity: React.FC<{
           }}
         >
           This is an XML file that is used by{" "}
-          <a href="https://github.com/onset/lameta">lameta</a> software.
+          <a href="https://sites.google.com/site/metadatatooldiscussion/home">
+            lameta
+          </a>{" "}
+          (<a href="https://github.com/onset/lameta">github</a>) software.
         </p>
       )}
-      {properties.map(([key, value]) => (
-        <div key={key} className="property">
-          <span className="property-name">{formatPropertyLabel(key)}:</span>
-          <span className="property-value">
-            <PropertyValue value={value} graph={graph} propertyName={key} />
-          </span>
-        </div>
-      ))}
+      {properties
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => (
+          <div key={key} className="property">
+            <span className="property-name">{formatPropertyLabel(key)}:</span>
+            <span className="property-value">
+              <PropertyValue value={value} graph={graph} propertyName={key} />
+            </span>
+          </div>
+        ))}
       {isRootDataset &&
         Object.entries(specialLists).map(
           ([title, entities]) =>
@@ -523,6 +545,11 @@ function computeHierarchy(graph: RoCrateEntity[]) {
 
     // Skip Place entities - they should only show their name in contentLocation
     if (isPlaceEntity(entity)) {
+      return;
+    }
+
+    // Skip entities with "Unknown" names
+    if (entity.name === "Unknown") {
       return;
     }
 
@@ -732,6 +759,11 @@ const HierarchicalEntityDisplay: React.FC<{
 
     // Skip Place entities
     if (isPlaceEntity(child)) {
+      return false;
+    }
+
+    // Skip entities with "Unknown" names
+    if (child.name === "Unknown") {
       return false;
     }
 
