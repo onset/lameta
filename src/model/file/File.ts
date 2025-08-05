@@ -28,6 +28,7 @@ import {
 } from "../../components/Notify";
 import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
+import genres from "../Project/Session/genres.json";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
@@ -483,6 +484,45 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
 
+  /**
+   * Normalizes genre values from human-readable labels to internal IDs.
+   * For example, "Procedural Discourse" -> "procedural_discourse"
+   * @param genreValue The genre value from the XML file
+   * @returns The normalized genre ID, or the original value if no mapping found
+   */
+  private normalizeGenreValue(genreValue: string): string {
+    if (!genreValue) {
+      return genreValue || ""; // Ensure we return a string, not undefined/null
+    }
+
+    const trimmedValue = genreValue.trim();
+
+    if (trimmedValue === "") {
+      return trimmedValue;
+    }
+
+    // Try to find a genre that matches by label (case-insensitive)
+    const matchingGenre = genres.find(
+      (genre) => genre.label.toLowerCase() === trimmedValue.toLowerCase()
+    );
+
+    if (matchingGenre) {
+      return matchingGenre.id;
+    }
+
+    // If no label match, check if it's already an ID
+    const idMatch = genres.find(
+      (genre) => genre.id.toLowerCase() === trimmedValue.toLowerCase()
+    );
+
+    if (idMatch) {
+      return idMatch.id; // Return the correct case
+    }
+
+    // If no match found, return original value unchanged
+    return genreValue;
+  }
+
   private loadOnePersistentProperty(
     xmlTag: string,
     value: any,
@@ -527,6 +567,9 @@ export /*babel doesn't like this: abstract*/ class File {
 
     const textValue: string = value;
 
+    // Normalize genre values from labels to IDs during reading
+    let processedTextValue = textValue;
+
     if (isCustom && textValue.length > 0) {
       this.encounteredVocabularyRegistry.encountered(
         this.type + EncounteredVocabularyRegistry.kCustomFieldSuffix,
@@ -562,9 +605,20 @@ export /*babel doesn't like this: abstract*/ class File {
       fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
     }
 
+    // Apply genre normalization after fixedKey is determined
+    if (fixedKey.toLowerCase() === "genre") {
+      const normalizedGenre = this.normalizeGenreValue(textValue);
+      if (normalizedGenre !== textValue) {
+        // Track that normalization occurred during reading
+        this.migrationsHappenedDuringReading = true;
+      }
+      processedTextValue = normalizedGenre;
+    }
+
     // ---- DATES  --
     if (xmlTag.toLowerCase().indexOf("date") > -1) {
-      const normalizedDateString = this.normalizeIncomingDateString(textValue);
+      const normalizedDateString =
+        this.normalizeIncomingDateString(processedTextValue);
       if (this.properties.containsKey(fixedKey)) {
         const existingDateField = this.properties.getValueOrThrow(fixedKey);
         existingDateField.setValueFromString(normalizedDateString);
@@ -578,14 +632,14 @@ export /*babel doesn't like this: abstract*/ class File {
     // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
     else if (this.properties.containsKey(fixedKey)) {
       const v = this.properties.getValueOrThrow(fixedKey);
-      v.setValueFromString(textValue);
+      v.setValueFromString(processedTextValue);
       //console.log("11111" + key);
     } else {
       //console.log("extra" + fixedKey + "=" + value);
       // otherwise treat it as a string
       this.addTextProperty(
         fixedKey,
-        textValue,
+        processedTextValue,
         true,
         isCustom,
         undefined /*showOnAutoForm*/
@@ -693,9 +747,14 @@ export /*babel doesn't like this: abstract*/ class File {
         }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
-        // note this could conceivably be wrong if we wanted to save some changes/updates that happen during loadPropertiesFromXml()
         // But otherwise, we don't want to spend time saving, notifying, and messing with the file change dates.
         this.clearDirty();
+
+        // If migrations (like genre normalization) happened during reading, mark the file as dirty
+        // so the normalized values get saved
+        if (this.migrationsHappenedDuringReading) {
+          this.changed();
+        }
       }
       this.recomputedChangeWatcher();
     } catch (err) {
@@ -948,6 +1007,9 @@ export /*babel doesn't like this: abstract*/ class File {
 
   //does this need to be saved?
   private dirty: boolean;
+
+  // Flag to track if data migrations (like genre normalization) happened during file reading
+  private migrationsHappenedDuringReading: boolean = false;
 
   private clearDirty() {
     this.dirty = false;

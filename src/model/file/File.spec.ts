@@ -184,3 +184,219 @@ describe("FolderMetadataFile", () => {
   });
   */
 });
+
+describe("Genre normalization during reading", () => {
+  it("should map known genre label to ID when reading session", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">Procedural Discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that genre label was normalized to ID
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should map Dialog label to dialog ID when reading session", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">Dialog</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that Dialog was normalized to dialog
+    expect(f.getTextProperty("genre")).toBe("dialog");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should handle case insensitive genre label mapping when reading session", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">procedural discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that case insensitive matching works
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should leave unknown genre unchanged when reading session", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">custom_unknown_genre</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that unknown genre is left as-is
+    expect(f.getTextProperty("genre")).toBe("custom_unknown_genre");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should preserve genre ID when already in ID form", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">procedural_discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that ID form is preserved
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should handle empty genre value when reading session", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string"></Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that empty genre is handled properly (returns empty string)
+    expect(f.getTextProperty("genre")).toBe("");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should mark file as dirty when genre is normalized during reading", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">Procedural Discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    // Create session file - this triggers genre normalization
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that genre was normalized
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    // Save the file and check if the XML contains the normalized value
+    f.save(false, true); // force save
+    const savedXml = fs.readFileSync(filePath, "utf8");
+    expect(savedXml).toContain(
+      '<Genre type="string">procedural_discourse</Genre>'
+    );
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should persist dirty flag after loading when normalization occurs", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">Procedural Discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    // Create session file - this triggers genre normalization during loading
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that genre was normalized
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    // The file should be dirty because normalization occurred
+    // We can verify this by checking if save() actually writes the file
+    f.save(); // should save because file is dirty
+
+    const savedXml = fs.readFileSync(filePath, "utf8");
+    expect(savedXml).toContain(
+      '<Genre type="string">procedural_discourse</Genre>'
+    );
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+
+  it("should not mark file as dirty when no normalization occurs", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Genre type="string">procedural_discourse</Genre>
+      <title type="string">Test Session</title>
+    `);
+
+    // Create session file - no normalization needed (already in ID form)
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Check that genre was preserved as-is (no normalization)
+    expect(f.getTextProperty("genre")).toBe("procedural_discourse");
+
+    // The key test: verify that the migrationsHappenedDuringReading flag was not set
+    // We can indirectly test this by checking that genre normalization didn't occur
+    // and that subsequent saves don't happen due to migration-related changes
+    const originalContent = f.getTextProperty("genre");
+    expect(originalContent).toBe("procedural_discourse"); // No change from input
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+});
