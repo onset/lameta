@@ -274,7 +274,7 @@ describe("RoCrateExporter Validation Tests", () => {
       const context = roCrateData["@context"];
 
       expect(Array.isArray(context)).toBe(true);
-      expect(context).toContain("https://w3id.org/ro/crate/1.2-DRAFT/context");
+      expect(context).toContain("https://w3id.org/ro/crate/1.2/context");
       expect(context).toContain(
         "http://purl.archive.org/language-data-commons/context.json"
       );

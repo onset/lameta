@@ -1,5 +1,7 @@
 import { Session } from "../../model/Project/Session/Session";
 import { File } from "../../model/file/File";
+import { Project } from "../../model/Project/Project";
+import { getSessionLicenseId as getSessionLicenseIdFromLicenses } from "./RoCrateLicenses";
 
 /**
  * Manages licenses for RO-Crate export, ensuring every distributable file
@@ -9,9 +11,24 @@ export class RoCrateLicense {
   private fileLicenseMap = new Map<string, string>();
 
   /**
+   * Check if a license value is a raw access value that needs normalization
+   */
+  private isRawAccessValue(license: string): boolean {
+    // Raw access values are typically archive-specific labels that don't start with "#"
+    // and don't look like URLs
+    return (
+      !!license &&
+      !license.startsWith("#") &&
+      !license.startsWith("http") &&
+      !license.startsWith("https") &&
+      license.trim().length > 0
+    );
+  }
+
+  /**
    * Ensure a file has a license, using session license as fallback
    */
-  ensureFileLicense(file: File, session: Session): void {
+  ensureFileLicense(file: File, session: Session, project?: Project): void {
     const filePath = file.metadataFilePath || file.getActualFilePath();
 
     if (!this.fileLicenseMap.has(filePath)) {
@@ -20,10 +37,23 @@ export class RoCrateLicense {
         file.properties?.getTextStringOrEmpty("license") || "";
 
       if (fileLicense) {
-        this.setFileLicense(filePath, fileLicense);
+        // If project is provided, use normalized license ID instead of raw license value
+        if (project && this.isRawAccessValue(fileLicense)) {
+          const normalizedLicenseId = this.getSessionLicenseId(
+            session,
+            project
+          );
+          if (normalizedLicenseId) {
+            this.setFileLicense(filePath, normalizedLicenseId);
+          } else {
+            this.setFileLicense(filePath, fileLicense);
+          }
+        } else {
+          this.setFileLicense(filePath, fileLicense);
+        }
       } else {
         // Use session license as fallback
-        const sessionLicenseId = this.getSessionLicenseId(session);
+        const sessionLicenseId = this.getSessionLicenseId(session, project);
         if (sessionLicenseId) {
           this.setFileLicense(filePath, sessionLicenseId);
         }
@@ -34,9 +64,15 @@ export class RoCrateLicense {
   /**
    * Get the license ID for a session
    */
-  getSessionLicenseId(session: Session): string | null {
-    const access = session.metadataFile?.getTextProperty("access") || "";
-    return access || null;
+  getSessionLicenseId(session: Session, project?: Project): string | null {
+    if (project) {
+      // Use the normalized license ID from RoCrateLicenses
+      return getSessionLicenseIdFromLicenses(session, project);
+    } else {
+      // Fallback to raw access value if no project is provided (for backward compatibility)
+      const access = session.metadataFile?.getTextProperty("access") || "";
+      return access || null;
+    }
   }
 
   /**

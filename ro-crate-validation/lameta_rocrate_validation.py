@@ -69,7 +69,7 @@ def validate_lameta_rocrate(crate_path):
         # Check @context
         context = data.get("@context", [])
         required_contexts = [
-            "https://w3id.org/ro/crate/1.2-DRAFT/context",
+            "https://w3id.org/ro/crate/1.2/context",
             "http://purl.archive.org/language-data-commons/context.json",
             "https://w3id.org/ldac/context",
         ]

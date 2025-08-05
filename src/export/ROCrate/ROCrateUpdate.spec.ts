@@ -36,12 +36,12 @@ describe("writeROCrateFile", () => {
   const mockProjectDirectory = "/test/project";
   const expectedRoCrateFilePath = "/test/project/ro-crate-metadata.json";
   const mockRoCrateData = {
-    "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+    "@context": ["https://w3id.org/ro/crate/1.2/context"],
     "@graph": [
       {
         "@type": "CreativeWork",
         "@id": "ro-crate-metadata.json",
-        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" }
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" }
       }
     ]
   };
@@ -115,14 +115,14 @@ describe("writeROCrateFile", () => {
     it("should handle complex RO-Crate data structure", async () => {
       const complexRoCrateData = {
         "@context": [
-          "https://w3id.org/ro/crate/1.2-DRAFT/context",
+          "https://w3id.org/ro/crate/1.2/context",
           { "@vocab": "http://schema.org/" }
         ],
         "@graph": [
           {
             "@type": "CreativeWork",
             "@id": "ro-crate-metadata.json",
-            conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+            conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
             about: { "@id": "./" }
           },
           {

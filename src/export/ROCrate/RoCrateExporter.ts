@@ -43,7 +43,7 @@ export async function getRoCrate(
   ) {
     const roCrate: { "@context": any[]; "@graph": object[] } = {
       "@context": [
-        "https://w3id.org/ro/crate/1.2-DRAFT/context",
+        "https://w3id.org/ro/crate/1.2/context",
         { "@vocab": "http://schema.org/" },
         "http://purl.archive.org/language-data-commons/context.json",
         "https://w3id.org/ldac/context",
@@ -97,7 +97,7 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
-    addChildFileEntries(folder, entry, otherEntries, rocrateLicense);
+    addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
 
@@ -144,7 +144,7 @@ async function getRoCrateInternal(
       {
         "@id": "ro-crate-metadata.json",
         "@type": "CreativeWork",
-        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
         about: { "@id": "./" }
       }
     ];
@@ -157,7 +157,7 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
-    addChildFileEntries(folder, entry, otherEntries, rocrateLicense);
+    addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
 
     // Add unknown contributor entity if using fallback
     if (isUnknownContact) {
@@ -215,7 +215,8 @@ async function getRoCrateInternal(
         "Description",
         entry,
         otherEntries,
-        rocrateLicense
+        rocrateLicense,
+        project
       );
     }
 
@@ -226,7 +227,8 @@ async function getRoCrateInternal(
         "OtherDocs",
         entry,
         otherEntries,
-        rocrateLicense
+        rocrateLicense,
+        project
       );
     }
 
@@ -344,10 +346,10 @@ export async function addFieldEntries(
             folderEntry[propertyKey] = languageReferences;
           }
         } else {
-          // No language values found, fallback to "unk" (unknown language)
-          const languageEntity = rocrateLanguages.getLanguageEntity("unk");
-          const reference = rocrateLanguages.getLanguageReference("unk");
-          rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
+          // No language values found, fallback to "und" (undetermined language)
+          const languageEntity = rocrateLanguages.getLanguageEntity("und");
+          const reference = rocrateLanguages.getLanguageReference("und");
+          rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
 
           if (field.rocrate?.array === false) {
             folderEntry[propertyKey] = reference;
@@ -458,10 +460,10 @@ export async function addFieldEntries(
                 folderEntry[propertyKey] = languageReferences;
               }
             } else {
-              // No language values found, fallback to "unk" (unknown language)
-              const languageEntity = rocrateLanguages.getLanguageEntity("unk");
-              const reference = rocrateLanguages.getLanguageReference("unk");
-              rocrateLanguages.trackUsage("unk", folderEntry["@id"] || "./");
+              // No language values found, fallback to "und" (undetermined language)
+              const languageEntity = rocrateLanguages.getLanguageEntity("und");
+              const reference = rocrateLanguages.getLanguageReference("und");
+              rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
 
               if (field.rocrate?.array === false) {
                 folderEntry[propertyKey] = reference;
@@ -659,7 +661,8 @@ function addFileLicenseProperty(
   filePath: string,
   rocrateLicense: RoCrateLicense,
   folder?: Folder,
-  parentEntry?: any
+  parentEntry?: any,
+  project?: Project
 ): void {
   // Check if file already has its own license
   const fileLicense = rocrateLicense.getFileLicense(filePath);
@@ -672,7 +675,7 @@ function addFileLicenseProperty(
   if (folder instanceof Session) {
     const file = folder.files.find((f) => f.getActualFilePath() === filePath);
     if (file) {
-      rocrateLicense.ensureFileLicense(file, folder as Session);
+      rocrateLicense.ensureFileLicense(file, folder as Session, project);
       const inheritedLicense = rocrateLicense.getFileLicense(filePath);
       if (inheritedLicense) {
         fileEntry.license = { "@id": inheritedLicense };
@@ -695,7 +698,8 @@ export function addChildFileEntries(
   folder: Folder,
   folderEntry: object,
   otherEntries: object[],
-  rocrateLicense: RoCrateLicense
+  rocrateLicense: RoCrateLicense,
+  project?: Project
 ): void {
   if (folder.files.length === 0) return;
   folderEntry["hasPart"] = [];
@@ -749,7 +753,8 @@ export function addChildFileEntries(
       path,
       rocrateLicense,
       folder,
-      folderEntry
+      folderEntry,
+      project
     );
 
     otherEntries.push(fileEntry);
@@ -764,7 +769,8 @@ export function addProjectDocumentFolderEntries(
   folderType: string,
   projectEntry: any,
   otherEntries: object[],
-  rocrateLicense: RoCrateLicense
+  rocrateLicense: RoCrateLicense,
+  project?: Project
 ): void {
   if (folder.files.length === 0) return;
 
@@ -811,7 +817,8 @@ export function addProjectDocumentFolderEntries(
       path,
       rocrateLicense,
       undefined,
-      projectEntry
+      projectEntry,
+      project
     );
 
     otherEntries.push(fileEntry);

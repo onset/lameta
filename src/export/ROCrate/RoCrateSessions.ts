@@ -63,7 +63,7 @@ export async function createSessionEntry(
     {
       "@id": "ro-crate-metadata.json",
       "@type": "CreativeWork",
-      conformsTo: { "@id": "https://w3id.org/ro/crate/1.2-DRAFT" },
+      conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
       about: { "@id": "./" }
     }
   ];
@@ -80,7 +80,7 @@ export async function createSessionEntry(
 
   // Ensure session has ldac:subjectLanguage (fallback if no languages field processed)
   if (!mainSessionEntry["ldac:subjectLanguage"]) {
-    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, ["unk"]);
+    ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, ["und"]);
   }
 
   const allEntries: any[] = [mainSessionEntry];

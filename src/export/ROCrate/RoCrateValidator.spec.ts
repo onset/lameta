@@ -29,7 +29,7 @@ describe("RoCrateValidator", () => {
   describe("validate", () => {
     it("should pass for valid RO-Crate with all requirements", () => {
       const validRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -68,7 +68,7 @@ describe("RoCrateValidator", () => {
 
     it("should fail for missing @graph", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"]
+        "@context": ["https://w3id.org/ro/crate/1.2/context"]
       };
 
       const result = validator.validate(invalidRoCrate);
@@ -79,7 +79,7 @@ describe("RoCrateValidator", () => {
 
     it("should fail for root collection without ldac:subjectLanguage", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -99,7 +99,7 @@ describe("RoCrateValidator", () => {
 
     it("should fail for object without ldac:subjectLanguage", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -124,7 +124,7 @@ describe("RoCrateValidator", () => {
 
     it("should fail for file without license", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -149,7 +149,7 @@ describe("RoCrateValidator", () => {
 
     it("should validate ldac:subjectLanguage is an array", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -169,7 +169,7 @@ describe("RoCrateValidator", () => {
 
     it("should fail for empty ldac:subjectLanguage array", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -192,7 +192,7 @@ describe("RoCrateValidator", () => {
       rocrateLanguages.getLanguageEntity("unused_lang");
 
       const validRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2-DRAFT/context"],
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           {
             "@id": "./",
@@ -228,7 +228,7 @@ describe("ensureSubjectLanguage", () => {
     ensureSubjectLanguage(entity, rocrateLanguages);
 
     expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_unk" }
+      { "@id": "#language_und" }
     ]);
   });
 

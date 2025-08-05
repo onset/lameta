@@ -6,6 +6,12 @@ import { Person } from "../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
+/*
+ * NOTE: This test file uses custom vi.fn() mocks instead of standardized mocks from rocrate-test-setup.ts
+ * This is intentional because these tests need precise control over specific LDAC compliance scenarios
+ * and field definitions that may not be available in the standardized mock utilities.
+ */
+
 // Mock fs-extra and other dependencies
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
@@ -916,7 +922,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
     });
 
-    it("should use 'unk' as fallback when both subjectLanguages and workingLanguages are missing", async () => {
+    it("should use 'und' as fallback when both subjectLanguages and workingLanguages are missing", async () => {
       // Mock a session with no language fields
       mockSession.knownFields = [
         {
@@ -983,28 +989,28 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         (item: any) => item["@id"] === "./"
       );
 
-      // Both ldac:subjectLanguage and inLanguage should fallback to "unk"
+      // Both ldac:subjectLanguage and inLanguage should fallback to "und"
       expect(sessionEntry["ldac:subjectLanguage"]).toBeDefined();
       expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
       expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(1);
       expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({
-        "@id": "#language_unk"
+        "@id": "#language_und"
       });
 
       expect(sessionEntry["inLanguage"]).toBeDefined();
-      expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_unk" });
+      expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_und" });
 
-      // Check that "unk" language entity is created with descriptive text
-      const unkLanguageEntity = result["@graph"].find(
-        (item: any) => item["@id"] === "#language_unk"
+      // Check that "und" language entity is created with descriptive text
+      const undLanguageEntity = result["@graph"].find(
+        (item: any) => item["@id"] === "#language_und"
       );
 
-      expect(unkLanguageEntity).toBeDefined();
-      expect(unkLanguageEntity["@type"]).toBe("Language");
-      expect(unkLanguageEntity.code).toBe("unk");
-      expect(unkLanguageEntity.name).toBe("Language unk");
-      expect(unkLanguageEntity.description).toContain(
-        "Language marked as unknown because no working language was specified in lameta"
+      expect(undLanguageEntity).toBeDefined();
+      expect(undLanguageEntity["@type"]).toBe("Language");
+      expect(undLanguageEntity.code).toBe("und");
+      expect(undLanguageEntity.name).toBe("Undetermined");
+      expect(undLanguageEntity.description).toContain(
+        "Language marked as undetermined because no working language was specified in lameta"
       );
     });
   });

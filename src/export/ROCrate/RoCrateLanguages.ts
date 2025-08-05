@@ -37,10 +37,11 @@ export class RoCrateLanguages {
       name: name
     };
 
-    // Add descriptive text for special cases like "unk" (unknown language)
-    if (normalizedCode === "unk") {
+    // Add descriptive text for special cases like "und" (undetermined language)
+    if (normalizedCode === "und") {
       entity.description =
-        "Language marked as unknown because no working language was specified in lameta";
+        "Language marked as undetermined because no working language was specified in lameta";
+      entity.name = "Undetermined";
     }
 
     this.languageMap.set(normalizedCode, entity);

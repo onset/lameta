@@ -67,6 +67,27 @@ describe("RO-Crate Components", () => {
           name: "xyz"
         });
       });
+
+      it("should create proper undetermined language entity for 'und'", () => {
+        const entity = rocrateLanguages.getLanguageEntity("und");
+
+        expect(entity).toEqual({
+          "@id": "#language_und",
+          "@type": "Language",
+          code: "und",
+          name: "Undetermined",
+          description:
+            "Language marked as undetermined because no working language was specified in lameta"
+        });
+      });
+
+      it("should not map 'und' to incorrect language names", () => {
+        const entity = rocrateLanguages.getLanguageEntity("und");
+
+        // Make sure we don't have incorrect mappings
+        expect(entity.name).not.toBe("Enawené-Nawé");
+        expect(entity.name).toBe("Undetermined");
+      });
     });
 
     describe("getLanguageReference", () => {
@@ -270,7 +291,7 @@ describe("RO-Crate Components", () => {
     });
 
     it("should handle license ensuring for files", () => {
-      rocrateLicense.ensureFileLicense(mockFile, mockSession);
+      rocrateLicense.ensureFileLicense(mockFile, mockSession, undefined);
 
       // Should not throw and should handle the file appropriately
       expect(true).toBe(true);

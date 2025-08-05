@@ -750,7 +750,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     sentryBreadCrumb(`Saving xml ${this.metadataFilePath}`);
 
-    console.log(`Saving ${this.metadataFilePath}`);
+    // console.log(`Saving ${this.metadataFilePath}`);
 
     const xml = this.getXml(false);
 
@@ -956,10 +956,10 @@ export /*babel doesn't like this: abstract*/ class File {
 
   private changed() {
     if (this.dirty) {
-      console.log("changed() but already dirty " + this.metadataFilePath);
+      //console.log("changed() but already dirty " + this.metadataFilePath);
     } else {
       this.dirty = true;
-      console.log(`Changed and now dirty: ${this.metadataFilePath}`);
+      //console.log(`Changed and now dirty: ${this.metadataFilePath}`);
     }
   }
   // there may be other ways, but one way mobx won't notice is if we make
