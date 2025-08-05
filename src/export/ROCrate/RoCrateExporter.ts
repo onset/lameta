@@ -12,7 +12,7 @@ import {
   createTermDefinition,
   getTermSets,
   getCustomUri
-} from "../VocabularyHandler";
+} from "./RoCrateUtils";
 import {
   getLdacMaterialTypeForPath,
   createLdacMaterialTypeDefinitions
@@ -24,6 +24,7 @@ import {
 import { createSessionEntry } from "./RoCrateSessions";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicense";
+import { sanitizeForIri } from "./RoCrateUtils";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -183,7 +184,7 @@ async function getRoCrateInternal(
     // Link to session events in the root dataset using pcdm:hasMember
     project.sessions.items.forEach((session) => {
       entry["pcdm:hasMember"].push({
-        "@id": `Sessions/${session.filePrefix}/`
+        "@id": `Sessions/${sanitizeForIri(session.filePrefix)}/`
       });
     });
 
@@ -727,11 +728,15 @@ export function addChildFileEntries(
     }
 
     // Use proper file ID based on folder type
-    let fileId = fileName;
+    let fileId = sanitizeForIri(fileName);
     if (folder instanceof Session) {
-      fileId = `Sessions/${folder.filePrefix}/${fileName}`;
+      fileId = `Sessions/${sanitizeForIri(folder.filePrefix)}/${sanitizeForIri(
+        fileName
+      )}`;
     } else if (folder instanceof Person) {
-      fileId = `People/${folder.filePrefix}/${fileName}`;
+      fileId = `People/${sanitizeForIri(folder.filePrefix)}/${sanitizeForIri(
+        fileName
+      )}`;
     }
 
     const fileEntry: any = {
@@ -796,7 +801,7 @@ export function addProjectDocumentFolderEntries(
     }
 
     // Create file ID using folder type
-    const fileId = `${folderType}/${fileName}`;
+    const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
 
     const fileEntry: any = {
       "@id": fileId,

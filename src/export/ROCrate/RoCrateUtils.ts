@@ -1,6 +1,6 @@
 import * as Path from "path";
 import * as fs from "fs";
-import { locateDependencyForFilesystemCall } from "../other/locateDependency";
+import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 
 export interface VocabularyDefinition {
   id: string;
@@ -17,6 +17,30 @@ interface CachedVocabulary {
 
 // Cache for vocabulary files
 const vocabularyCache = new Map<string, CachedVocabulary>();
+
+/**
+ * Sanitizes a string for use in an IRI (Internationalized Resource Identifier).
+ * Replaces invalid characters like spaces and parentheses with valid alternatives.
+ * Per RFC 3987, IRIs must not contain certain characters unless percent-encoded.
+ */
+export function sanitizeForIri(input: string | undefined): string {
+  if (!input) {
+    return ""; // Return empty string for null, undefined, or empty input
+  }
+  return (
+    input
+      // Replace spaces with hyphens
+      .replace(/\s+/g, "-")
+      // Replace parentheses with hyphens
+      .replace(/[()]/g, "-")
+      // Replace exclamation marks with hyphens
+      .replace(/!/g, "-")
+      // Replace multiple consecutive hyphens with single hyphen
+      .replace(/-+/g, "-")
+      // Remove leading and trailing hyphens
+      .replace(/^-+|-+$/g, "")
+  );
+}
 
 export async function getVocabularyMapping(
   termId: string,
@@ -202,5 +226,18 @@ export function getCustomUri(path: string, projectTitle?: string): string {
 }
 
 function createCustomTermId(termLabel: string, projectTitle?: string): string {
+  // Check for unknown/placeholder values and use simplified ID
+  const normalizedTerm = termLabel.toLowerCase().trim();
+  if (
+    normalizedTerm === "unknown" ||
+    normalizedTerm === "unspecified" ||
+    normalizedTerm === "<unknown>" ||
+    normalizedTerm === "" ||
+    normalizedTerm === "null" ||
+    normalizedTerm === "undefined"
+  ) {
+    return "tag:lameta/unknown";
+  }
+
   return getCustomUri(`genre/${termLabel}`, projectTitle);
 }

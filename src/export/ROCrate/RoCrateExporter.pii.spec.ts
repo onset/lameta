@@ -37,12 +37,13 @@ vi.mock("./RoCrateMaterialTypes", () => ({
   createLdacMaterialTypeDefinitions: vi.fn().mockReturnValue([])
 }));
 
-// Mock the VocabularyHandler module
-vi.mock("../VocabularyHandler", () => ({
+// Mock the RoCrateUtils module
+vi.mock("./RoCrateUtils", () => ({
   getVocabularyMapping: vi.fn(),
   createTermDefinition: vi.fn(),
   getTermSets: vi.fn().mockReturnValue([]),
-  getCustomUri: vi.fn()
+  getCustomUri: vi.fn(),
+  sanitizeForIri: vi.fn((input) => input || "")
 }));
 
 describe("RoCrateExporter PII and Custom Fields Filtering", () => {

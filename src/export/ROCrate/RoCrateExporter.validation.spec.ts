@@ -1,4 +1,5 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
+import * as fs from "fs-extra";
 
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it
 vi.mock("../../languageFinder/LanguageFinder", () => ({
@@ -7,6 +8,14 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
       .fn()
       .mockImplementation((code: string) => `Language ${code}`)
   }
+}));
+
+// Mock fs-extra
+vi.mock("fs-extra", () => ({
+  statSync: vi.fn().mockReturnValue({
+    size: 1000,
+    birthtime: new Date("2023-01-01")
+  })
 }));
 
 import { getRoCrate } from "./RoCrateExporter";
@@ -675,6 +684,163 @@ describe("RoCrateExporter Validation Tests", () => {
         error.message.includes("Missing required property: license")
       );
       expect(missingLicenseError).toBeUndefined();
+    });
+  });
+
+  describe("Session ID Sanitization", () => {
+    it("should sanitize invalid characters in session @id identifiers", async () => {
+      // Create a session with invalid characters in filePrefix (simulating folder names with spaces and parentheses)
+      const mockSessionWithInvalidChars = {
+        filePrefix: "dde-houmba-ori (v1)", // Contains space and parentheses
+        knownFields: [], // Add empty knownFields array
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "title") return "Test Session with Invalid Chars";
+            if (key === "description") return "Test session description";
+            return "";
+          }),
+          properties: {
+            getHasValue: vi.fn().mockReturnValue(false),
+            forEach: vi.fn()
+          }
+        },
+        files: [],
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      } as any;
+
+      // Add the session with invalid chars to mockProject
+      (mockProject as any).sessions = {
+        items: [mockSessionWithInvalidChars]
+      };
+
+      const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
+      const graph = roCrateData["@graph"];
+
+      // Find the session entry
+      const sessionEntry = graph.find(
+        (item: any) =>
+          item["@type"] &&
+          Array.isArray(item["@type"]) &&
+          item["@type"].includes("Dataset") &&
+          item["@id"].startsWith("Sessions/")
+      );
+
+      expect(sessionEntry).toBeDefined();
+
+      // The @id should not contain invalid characters
+      expect(sessionEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses
+      expect(sessionEntry["@id"]).toMatch(/^Sessions\/[a-zA-Z0-9_.-]+\/$/); // Valid IRI format
+
+      // Should sanitize to something like "Sessions/dde-houmba-ori-v1/"
+      expect(sessionEntry["@id"]).toBe("Sessions/dde-houmba-ori-v1/");
+    });
+
+    it("should handle multiple types of invalid characters in session IDs", async () => {
+      const testCases = [
+        {
+          input: "dde-houmba-ori (v2)",
+          expected: "Sessions/dde-houmba-ori-v2/"
+        },
+        {
+          input: "dde-kabousoulou1-ori (v2)",
+          expected: "Sessions/dde-kabousoulou1-ori-v2/"
+        },
+        {
+          input: "dde-mahoungou-ori (NO IC!)",
+          expected: "Sessions/dde-mahoungou-ori-NO-IC/"
+        },
+        {
+          input: "session with spaces",
+          expected: "Sessions/session-with-spaces/"
+        }
+      ];
+
+      for (const testCase of testCases) {
+        const mockSessionWithChars = {
+          filePrefix: testCase.input,
+          knownFields: [], // Add empty knownFields array
+          metadataFile: {
+            getTextProperty: vi.fn().mockImplementation((key: string) => {
+              if (key === "title") return `Test Session ${testCase.input}`;
+              if (key === "description") return "Test session description";
+              return "";
+            }),
+            properties: {
+              getHasValue: vi.fn().mockReturnValue(false),
+              forEach: vi.fn()
+            }
+          },
+          files: [],
+          getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+        } as any;
+
+        // Add the session to mockProject
+        (mockProject as any).sessions = {
+          items: [mockSessionWithChars]
+        };
+
+        const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
+        const graph = roCrateData["@graph"];
+
+        const sessionEntry = graph.find(
+          (item: any) =>
+            item["@type"] &&
+            Array.isArray(item["@type"]) &&
+            item["@type"].includes("Dataset") &&
+            item["@id"].startsWith("Sessions/")
+        );
+
+        expect(sessionEntry).toBeDefined();
+        expect(sessionEntry["@id"]).toBe(testCase.expected);
+      }
+    });
+
+    it("should sanitize invalid characters in file names within session @id identifiers", async () => {
+      // Mock file with spaces and special characters in name
+      const mockFileWithInvalidName = {
+        getActualFilePath: () =>
+          "C:/temp/BAHOUNGOU Hilaire_Consent (final)!.wav",
+        getModifiedDate: () => new Date("2023-01-01"),
+        getCreatedDate: () => new Date("2023-01-01")
+      };
+
+      const mockSessionWithFileInvalidChars = {
+        filePrefix: "test-session",
+        knownFields: [],
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "title") return "Test Session";
+            if (key === "description") return "Test session description";
+            return "";
+          }),
+          properties: {
+            getHasValue: vi.fn().mockReturnValue(false),
+            forEach: vi.fn()
+          }
+        },
+        files: [mockFileWithInvalidName],
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      } as any;
+
+      (mockProject as any).sessions = {
+        items: [mockSessionWithFileInvalidChars]
+      };
+
+      const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
+      const graph = roCrateData["@graph"];
+
+      // Find the file entry in the graph
+      const fileEntry = graph.find(
+        (item: any) =>
+          item["@id"]?.includes("BAHOUNGOU") && item["@type"] === "AudioObject"
+      );
+
+      expect(fileEntry).toBeDefined();
+
+      // The key test: the @id should be sanitized (no invalid characters)
+      expect(fileEntry["@id"]).toBe("BAHOUNGOU-Hilaire_Consent-final-.wav");
+      expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks
+      expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
     });
   });
 });
