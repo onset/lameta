@@ -8,6 +8,7 @@ import {
   getRoCrateTemplate,
   getElementUsingTemplate
 } from "./RoCrateExporter";
+import { createPersonId } from "./RoCrateUtils";
 
 // LDAC Profile compliant fields that should be preserved as-is
 const LDAC_COMPLIANT_FIELDS = new Set([
@@ -150,7 +151,7 @@ export async function makeEntriesFromParticipant(
     // add in the ro-crate stuff like @id and @type
     const personElement = getElementUsingTemplate(
       template,
-      person ? `People/${person.filePrefix}/` : name
+      person ? createPersonId(person) : name
     );
 
     if (person) {
