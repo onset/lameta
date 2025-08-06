@@ -485,6 +485,14 @@ describe("RoCrateExporter Validation Tests", () => {
         "https://github.com/onset/lameta"
       );
 
+      // Check that the publisher entity is actually defined in the graph
+      const publisherEntity = graph.find((item: any) => 
+        item["@id"] === "https://github.com/onset/lameta"
+      );
+      expect(publisherEntity).toBeDefined();
+      expect(publisherEntity["@type"]).toBe("Organization");
+      expect(publisherEntity.name).toBeDefined();
+
       // Validation should run
       expect(validation).toBeDefined();
     });

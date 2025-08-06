@@ -262,6 +262,15 @@ async function getRoCrateInternal(
       "ldac:access": { "@id": "ldac:OpenAccess" }
     };
 
+    // Add publisher organization entity 
+    const publisherEntity = {
+      "@id": "https://github.com/onset/lameta",
+      "@type": "Organization",
+      name: "LaMeta Project",
+      url: "https://github.com/onset/lameta",
+      description: "A metadata tool for language documentation projects"
+    };
+
     return [
       entry,
       ...sessionEntries.flat(),
@@ -270,6 +279,7 @@ async function getRoCrateInternal(
       ...ldacMaterialTypeDefinitions,
       ...uniqueLicenses,
       collectionLicense,
+      publisherEntity,
       ...rocrateLanguages.getUsedLanguageEntities(),
       ...getUniqueEntries(otherEntries)
     ];

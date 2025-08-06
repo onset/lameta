@@ -127,6 +127,16 @@ export async function createSessionEntry(
     // Add LDAC access type definitions to the graph
     otherEntries.push(...createLdacAccessTypeDefinitions());
     otherEntries.push(...createLdacMaterialTypeDefinitions());
+
+    // Add publisher organization entity for standalone sessions
+    const publisherEntity = {
+      "@id": "https://github.com/onset/lameta",
+      "@type": "Organization",
+      name: "LaMeta Project",
+      url: "https://github.com/onset/lameta",
+      description: "A metadata tool for language documentation projects"
+    };
+    otherEntries.push(publisherEntity);
   }
 
   allEntries.push(...boilerplateSessionGraph, ...otherEntries);
