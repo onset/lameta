@@ -207,7 +207,7 @@ async function getRoCrateInternal(
             contribution.personReference.trim()
           );
           if (person) {
-            allPeople.add(`People/${person.filePrefix}/`);
+            allPeople.add(createPersonId(person));
           }
         });
     });
@@ -262,7 +262,7 @@ async function getRoCrateInternal(
       "ldac:access": { "@id": "ldac:OpenAccess" }
     };
 
-    // Add publisher organization entity 
+    // Add publisher organization entity
     const publisherEntity = {
       "@id": "https://github.com/onset/lameta",
       "@type": "Organization",
