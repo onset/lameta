@@ -26,6 +26,7 @@ import {
   createDistinctLicenses
 } from "./RoCrateLicenseUtils";
 import { createSessionEntry } from "./RoCrateSessions";
+import { makeLdacCompliantPersonEntry } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
 
@@ -94,7 +95,7 @@ async function getRoCrateInternal(
   const rocrateLanguages = new RoCrateLanguages();
   const rocrateLicense = new RoCrateLicense();
 
-  if (folder instanceof Person) {
+  if (folder instanceof Person || (folder as any).folderType === "person") {
     const entry = {
       "@id": createPersonId(folder),
       "@type": "Person"
@@ -107,6 +108,22 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
+    
+    // Apply LDAC compliance for direct person export
+    // Try to find a session date from the project for age calculation
+    let sessionDate: Date | undefined;
+    if (project && (project as any).sessions && (project as any).sessions.items) {
+      const firstSession = (project as any).sessions.items[0];
+      if (firstSession && firstSession.metadataFile) {
+        const dateString = firstSession.metadataFile.getTextProperty("date");
+        if (dateString) {
+          sessionDate = new Date(dateString);
+        }
+      }
+    }
+    
+    makeLdacCompliantPersonEntry(folder as Person, sessionDate, entry);
+    
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -343,62 +360,51 @@ export async function addFieldEntries(
     // does the fields.json5 specify how we should handle this field in the rocrate?
     if (field.rocrate) {
       // Special handling for language fields
+      // Note: the spec is ambiguous about whether languages should be just BCP47 codes or
+      // full entities. This confusion is especially found around "inLanguage" because it
+      // has a direct schema.org type, "http://schema.org/inLanguage".
+      // Perhaps both are supported. Until we find out otherwise, we have decided to always create entities,
+      // which then gives us room for things like how people want to see the language named,
+      // as opposed to some official name.
       if (field.rocrate?.handler === "languages") {
         const languageReferences: any[] = [];
-        const languageCodes: string[] = [];
 
         values.forEach((languageValue: string) => {
           // Parse language value (could be "etr" or "etr: Edolo")
           const [code] = languageValue.split(":").map((s) => s.trim());
           if (code) {
-            // Create language entity and get reference
-            const languageEntity = rocrateLanguages.getLanguageEntity(code);
             const reference = rocrateLanguages.getLanguageReference(code);
 
             // Track usage
             rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
 
-            // Store both the code and the reference
-            languageCodes.push(code);
             languageReferences.push(reference);
           }
         });
 
-        // Special handling for inLanguage field per LDAC profile requirement
-        if (propertyKey === "inLanguage") {
-          // LDAC Profile states: "inLanguage MUST be a string containing a BCP47 language tag"
-          if (languageCodes.length > 0) {
-            folderEntry[propertyKey] = languageCodes[0]; // Use first language code as string
+        // Normal language field handling (ldac:subjectLanguage, etc.)
+        if (languageReferences.length > 0) {
+          // Check if field should be array or single object
+          if (field.rocrate?.array === false) {
+            // Use only the first language reference (single object)
+            folderEntry[propertyKey] = languageReferences[0];
           } else {
-            // Fallback to "und" (undetermined language) as string
-            const languageEntity = rocrateLanguages.getLanguageEntity("und");
-            rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
-            folderEntry[propertyKey] = "und";
+            // Use array (default behavior)
+            folderEntry[propertyKey] = languageReferences;
           }
         } else {
-          // Normal language field handling (ldac:subjectLanguage, etc.)
-          if (languageReferences.length > 0) {
-            // Check if field should be array or single object
-            if (field.rocrate?.array === false) {
-              // Use only the first language reference (single object)
-              folderEntry[propertyKey] = languageReferences[0];
-            } else {
-              // Use array (default behavior)
-              folderEntry[propertyKey] = languageReferences;
-            }
-          } else {
-            // No language values found, fallback to "und" (undetermined language)
-            const languageEntity = rocrateLanguages.getLanguageEntity("und");
-            const reference = rocrateLanguages.getLanguageReference("und");
-            rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
+          // No language values found, fallback to "und" (undetermined language)
+          const languageEntity = rocrateLanguages.getLanguageEntity("und");
+          const reference = rocrateLanguages.getLanguageReference("und");
+          rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
 
-            if (field.rocrate?.array === false) {
-              folderEntry[propertyKey] = reference;
-            } else {
-              folderEntry[propertyKey] = [reference];
-            }
+          if (field.rocrate?.array === false) {
+            folderEntry[propertyKey] = reference;
+          } else {
+            folderEntry[propertyKey] = [reference];
           }
         }
+
         continue; // Skip the normal template processing for language fields
       }
 

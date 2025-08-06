@@ -34,7 +34,7 @@ const NON_LDAC_FIELDS = new Set([
  * - Moves non-profile fields to description
  * - Preserves profile-compliant fields
  */
-function makeLdacCompliantPersonEntry(
+export function makeLdacCompliantPersonEntry(
   person: Person,
   sessionDate: Date | undefined,
   personElement: any
@@ -53,11 +53,9 @@ function makeLdacCompliantPersonEntry(
   if (birthYear && sessionDate && birthYear !== "?" && birthYear !== "") {
     const age = person.ageOn(sessionDate);
     if (age && age !== "") {
-      // Convert age string to integer for LDAC compliance (LDAC profile requires integer)
-      const ageNumber = parseInt(age, 10);
-      if (!isNaN(ageNumber)) {
-        personElement["ldac:age"] = ageNumber;
-      }
+      // Note: Some LLM validators will argue this should be a number. They appear to be wrong, because
+      // the LDAC spec calls for http://schema.org/Text
+      personElement["ldac:age"] = age;
     }
   }
 

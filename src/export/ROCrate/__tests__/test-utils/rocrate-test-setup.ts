@@ -359,7 +359,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
       setTextStringProperty: vi.fn(),
       hasValue: vi.fn().mockReturnValue(true)
     },
-    sessions: [],
+    sessions: { items: [] },
     persons: [],
     files: [], // Add files array
     ...overrides
@@ -374,11 +374,34 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
 export const createMockSession = (overrides: Partial<any> = {}): Session => {
   const mockProperties = new Map();
 
+  const defaults: { [key: string]: any } = {
+    id: "test-session-001",
+    title: "Test Session Title",
+    description: "Test session description",
+    date: "2024-01-01",
+    genre: "Conversation",
+    access: "CC BY 4.0",
+    ...overrides.metadata
+  };
+
+  // Add the required methods to mockProperties
+  (mockProperties as any).getHasValue = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      return defaults[key] !== undefined && defaults[key] !== "";
+    });
+
+  (mockProperties as any).getTextStringOrEmpty = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      return defaults[key] || "";
+    });
+
   const mockSession = {
     displayName: "Test Session",
     directory: "/test/project/sessions/test-session",
     filePrefix: "test-session",
-    knownFields: [], // Make it iterable for the forEach loop
+    knownFields: fieldDefinitionsOfCurrentConfig.session, // for proper field processing
     metadataFile: {
       properties: mockProperties, // Add the Map for properties
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
@@ -435,10 +458,35 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
  * Create a mock Person with common properties
  */
 export const createMockPerson = (overrides: Partial<any> = {}): Person => {
+  const mockProperties = new Map();
+
+  const defaults: { [key: string]: any } = {
+    fullName: "John Doe",
+    nickname: "John",
+    howToContact: "john@example.com",
+    ...overrides.metadata
+  };
+
+  // Add the required methods to mockProperties
+  (mockProperties as any).getHasValue = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      return defaults[key] !== undefined && defaults[key] !== "";
+    });
+
+  (mockProperties as any).getTextStringOrEmpty = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      return defaults[key] || "";
+    });
+
   const mockPerson = {
     displayName: "Test Person",
     directory: "/test/project/people/test-person",
+    folderType: "person", // Add folderType to help with instanceof checks
+    knownFields: fieldDefinitionsOfCurrentConfig.person, // for proper field processing
     metadataFile: {
+      properties: mockProperties, // Add the Map for properties
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
         const defaults: { [key: string]: string } = {
           fullName: "John Doe",
@@ -457,9 +505,22 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
         };
         return defaults[key];
       }),
+      getTextProperty: vi
+        .fn()
+        .mockImplementation((key: string, defaultValue: string = "") => {
+          const defaults: { [key: string]: any } = {
+            fullName: "John Doe",
+            nickname: "John",
+            howToContact: "john@example.com",
+            ...overrides.metadata
+          };
+          // Return the value if it exists, otherwise return the defaultValue (which might be "")
+          return defaults[key] !== undefined ? defaults[key] : defaultValue;
+        }),
       setTextStringProperty: vi.fn(),
       hasValue: vi.fn().mockReturnValue(true)
     },
+    files: [],
     ...overrides
   } as unknown as Person;
 

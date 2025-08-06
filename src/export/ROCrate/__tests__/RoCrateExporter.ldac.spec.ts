@@ -809,8 +809,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // The inLanguage should be properly formatted as a string per LDAC profile requirements
       if (sessionEntry["inLanguage"]) {
-        expect(typeof sessionEntry["inLanguage"]).toBe("string");
-        expect(sessionEntry["inLanguage"]).toBe("etr"); // Should be the language code directly
+        expect(typeof sessionEntry["inLanguage"]).toBe("object");
+        expect(sessionEntry["inLanguage"]).toHaveProperty("@id");
+        expect(sessionEntry["inLanguage"]["@id"]).toBe("#language_etr");
         // Should not be an array since array: false
         expect(Array.isArray(sessionEntry["inLanguage"])).toBe(false);
       }
@@ -997,7 +998,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
 
       expect(sessionEntry["inLanguage"]).toBeDefined();
-      expect(sessionEntry["inLanguage"]).toBe("und");
+      expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_und" });
 
       // Check that "und" language entity is created with descriptive text
       const undLanguageEntity = result["@graph"].find(

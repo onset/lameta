@@ -6,6 +6,7 @@ import {
   createMockSession,
   createFsExtraMock
 } from "./test-utils/rocrate-test-setup";
+import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Setup all common mocks before imports
 setupCommonMocks();
@@ -16,13 +17,13 @@ createFsExtraMock();
 import { getRoCrate } from "../RoCrateExporter";
 
 describe("RoCrateExporter inLanguage LDAC compliance", () => {
-  it("should export inLanguage as string BCP47 language tag, not object reference", async () => {
-    // Create a mock session with WorkingLanguages field set to a language code (this maps to inLanguage in export)
+  it("should export inLanguage as an object reference", async () => {
+    // Create a mock session with workingLanguages field set to a language code (this maps to inLanguage in export)
     const mockSession = createMockSession({
       filePrefix: "test-session",
       metadata: {
         title: "Test Session",
-        WorkingLanguages: "etr" // This should map to inLanguage in the RO-Crate export
+        workingLanguages: "etr" // This should map to inLanguage in the RO-Crate export
       }
     });
 
@@ -51,11 +52,12 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     expect(sessionEntity).toBeDefined();
     console.log("Session entity:", JSON.stringify(sessionEntity, null, 2));
 
-    // According to LDAC profile, inLanguage should be a string BCP47 language tag
-    expect(sessionEntity.inLanguage).toBe("etr");
+    // There is some ambiguity in the LDAC profile regarding inLanguage. We have seen a claim that
+    // it should be a string, but our Paradisec example use an object reference, so we are
+    // going to take that as the correct approach. inLanguage should be an entity.
 
-    // It should NOT be an object reference
-    expect(typeof sessionEntity.inLanguage).toBe("string");
-    expect(sessionEntity.inLanguage).not.toHaveProperty("@id");
+    // It should be an object reference
+    expect(typeof sessionEntity.inLanguage).toBe("object");
+    expect(sessionEntity.inLanguage).toHaveProperty("@id");
   });
 });

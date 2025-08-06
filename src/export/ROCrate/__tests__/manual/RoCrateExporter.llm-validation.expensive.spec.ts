@@ -64,7 +64,12 @@ describe.skipIf("Manual test: Will incur charges")(
       console.log(`Generated RO-Crate JSON size: ${roCrateJson.length} chars`);
 
       const prompt = `The attached file should conform to https://raw.githubusercontent.com/Language-Research-Technology/ldac-profile/refs/heads/master/profile/profile.md and https://www.researchobject.org/ro-crate/specification/1.2/structure.
-Please check for any significant problems, list them as numbered markdown checkmark items. If you find no significant problems, return only this text: [OK]. Else, explain each problem along with an example from the json.`;
+Please check for any significant problems, list them as numbered markdown checkmark items. If you find no significant problems, return only this text: [OK]. Else, explain each problem along with an example from the json.
+
+There are some ambiguities, and we have made the following decisions:
+Do not complain about inLanguage being an object instead of a string.
+Do not complain about age being a string instead of a number.
+Do not complain about what roles are assigned contributors. That is a subjective decision.`;
 
       const model = "google/gemini-2.5-pro";
       try {
