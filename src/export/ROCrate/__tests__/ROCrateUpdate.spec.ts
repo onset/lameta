@@ -1,9 +1,9 @@
 import { vi, describe, it, beforeEach, afterEach, expect } from "vitest";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { writeROCrateFile } from "./WriteROCrateFile";
-import { getRoCrate } from "./RoCrateExporter";
-import { Project } from "../../model/Project/Project";
+import { writeROCrateFile } from "../WriteROCrateFile";
+import { getRoCrate } from "../RoCrateExporter";
+import { Project } from "../../../model/Project/Project";
 
 // Mock fs-extra
 vi.mock("fs-extra", () => ({

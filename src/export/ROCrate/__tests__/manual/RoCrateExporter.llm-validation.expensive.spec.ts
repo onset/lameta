@@ -1,12 +1,23 @@
 import { describe, it, beforeAll, expect } from "vitest";
-import { getRoCrate } from "../RoCrateExporter";
-import { Project } from "../../../model/Project/Project";
+import { getRoCrate } from "../../RoCrateExporter";
+import { Project } from "../../../../model/Project/Project";
 import path from "path";
 import fs from "fs-extra";
 import axios from "axios";
 
+/*
+  This test can be helpful, but in areas where the spec isn't clear, it can actually ping-pong
+  between opinions on what is correct.  Here are some cases where I have judge it incorrect:
+
+  1) language references
+  INCORRECT: "The `inLanguage` property value is an object reference, but the LDAC Profile requires it to be a string.".
+  This view is not clear from the spec, and the example from paradisec does not do that. It uses a full @type: language object:
+  {"@id":"#language_erk","@type":"Language","code":"erk","location":{"@id":"#geo_168.159,-17.83,168.594,-17.585"},"name":"Efate, South"},
+
+*/
+
 // This test is expensive and only runs when explicitly enabled by a human.
-describe.skipIf(!process.env.ENABLE_EXPENSIVE_TESTS)(
+describe.skipIf("Manual test: Will incur charges")(
   "RoCrateExporter OpenRouter Validation (Expensive)",
   () => {
     let project: Project;

@@ -12,13 +12,13 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
 import {
   createSessionEntry,
   addParticipantProperties
-} from "./RoCrateSessions";
-import { Session } from "../../model/Project/Session/Session";
-import { Project } from "../../model/Project/Project";
-import { FieldDefinition } from "../../model/field/FieldDefinition";
-import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
-import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicenseManager";
+} from "../RoCrateSessions";
+import { Session } from "../../../model/Project/Session/Session";
+import { Project } from "../../../model/Project/Project";
+import { FieldDefinition } from "../../../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
+import { RoCrateLanguages } from "../RoCrateLanguages";
+import { RoCrateLicense } from "../RoCrateLicenseManager";
 
 describe("RoCrateSessions", () => {
   let mockProject: Project;

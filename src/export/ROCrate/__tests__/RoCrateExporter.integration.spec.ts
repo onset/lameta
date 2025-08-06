@@ -1,223 +1,368 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { getRoCrate } from "../RoCrateExporter";
-import {
-  createMockProject,
-  createMockSession
-} from "./test-utils/rocrate-test-setup";
-import * as fs from "fs";
-import * as path from "path";
-import { Session } from "../../../model/Project/Session/Session";
+import { vi, describe, it, beforeEach, expect } from "vitest";
 
-// Mock fs for file operations
-vi.mock("fs", () => ({
-  statSync: vi.fn().mockReturnValue({
-    size: 12345,
-    birthtime: new Date("2023-01-01"),
-    isFile: () => true
-  }),
-  existsSync: vi.fn().mockReturnValue(true)
+// Mock the staticLanguageFinder dependency BEFORE importing modules that use it
+vi.mock("../../languageFinder/LanguageFinder", () => ({
+  staticLanguageFinder: {
+    findOneLanguageNameFromCode_Or_ReturnCode: vi
+      .fn()
+      .mockImplementation((code: string) => `Language ${code}`)
+  }
 }));
 
-// Mock path operations
-vi.mock("path", async () => {
-  const actual = await vi.importActual("path");
-  return {
-    ...actual,
-    basename: vi.fn(
-      (p: string) => p.split("/").pop() || p.split("\\").pop() || p
-    ),
-    extname: vi.fn((p: string) => {
-      const parts = p.split(".");
-      return parts.length > 1 ? "." + parts[parts.length - 1] : "";
-    })
-  };
-});
+import { getRoCrate } from "../RoCrateExporter";
+import { Session } from "../../../model/Project/Session/Session";
+import { Project } from "../../../model/Project/Project";
+import { Person } from "../../../model/Project/Person/Person";
+import { FieldDefinition } from "../../../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
-function createMockFile(filePath: string, overrides: any = {}) {
-  return {
-    getActualFilePath: () => filePath,
-    getModifiedDate: () => new Date("2023-01-01"),
-    pathInFolderToLinkFileOrLocalCopy: path.basename(filePath),
-    properties: {
-      getTextStringOrEmpty: (key: string) => "",
-      ...overrides.properties
-    },
-    ...overrides
-  };
-}
+// Mock fs-extra module
+vi.mock("fs-extra", () => ({
+  statSync: vi.fn().mockReturnValue({
+    size: 2048,
+    birthtime: new Date("2010-06-06")
+  })
+}));
 
-describe("RoCrateExporter Integration Tests", () => {
-  let mockProject: any;
+describe("RoCrateExporter LDAC Profile Full Integration", () => {
+  let mockProject: Project;
+  let mockSession: Session;
+  let mockPerson1: Person;
+  let mockPerson2: Person;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    // Mock field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      []
+    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
+      {
+        key: "person",
+        rocrate: {
+          template: {
+            "@id": "[v]",
+            "@type": "Person"
+          }
+        }
+      } as FieldDefinition
+    ]);
 
-    mockProject = createMockProject({
-      metadata: {
-        title: "Test Project",
-        archiveConfigurationName: "REAP"
-      }
-    });
+    // Create mock files representing the ETR009 session from the report
+    const mockAudioFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009_Careful.mp3",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3"
+    } as any;
+
+    const mockVideoFile = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009_Tiny.mp4",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4"
+    } as any;
+
+    const mockSessionXml = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
+    } as any;
+
+    const mockPhoto1 = {
+      getActualFilePath: () => "/people/Awi_Heole/Awi_Heole_Photo.JPG",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG"
+    } as any;
+
+    const mockPersonFile1 = {
+      getActualFilePath: () => "/people/Awi_Heole/Awi_Heole.person",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole.person"
+    } as any;
+
+    const mockPhoto2 = {
+      getActualFilePath: () => "/people/Ilawi_Amosa/Ilawi_Amosa_Photo.JPG",
+      getModifiedDate: () => new Date("2010-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "Ilawi_Amosa_Photo.JPG"
+    } as any;
+
+    // Mock persons from the report
+    mockPerson1 = {
+      filePrefix: "Awi_Heole",
+      directory: "/people/Awi_Heole",
+      getIdToUseForReferences: () => "Awi_Heole",
+      knownFields: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "name") return "Awi Heole";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockPhoto1, mockPersonFile1]
+    } as any;
+
+    mockPerson2 = {
+      filePrefix: "Ilawi_Amosa",
+      directory: "/people/Ilawi_Amosa",
+      getIdToUseForReferences: () => "Ilawi_Amosa",
+      knownFields: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "name") return "Ilawi Amosa";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockPhoto2]
+    } as any;
+
+    // Mock session ETR009 from the report
+    mockSession = {
+      filePrefix: "ETR009",
+      directory: "/sessions/ETR009",
+      knownFields: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title")
+            return "The story behind how we catch fish with poison bark";
+          if (key === "description") return "Some guys talking";
+          if (key === "date") return "2010-06-06";
+          if (key === "location") return "huya";
+          if (key === "keyword") return "fishing, poison";
+          if (key === "access") return "public";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [mockAudioFile, mockVideoFile, mockSessionXml],
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([
+        { personReference: "Awi_Heole", role: "speaker" },
+        { personReference: "Ilawi_Amosa", role: "speaker" } // Both are speakers for the test
+      ])
+    } as any;
+
+    // Mock project
+    mockProject = {
+      filePrefix: "Edolo_sample",
+      sessions: { items: [mockSession] },
+      findPerson: vi.fn().mockImplementation((name: string) => {
+        if (name === "Awi_Heole") return mockPerson1;
+        if (name === "Ilawi_Amosa") return mockPerson2;
+        return null;
+      }),
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockReturnValue(false),
+          forEach: vi.fn()
+        }
+      },
+      files: [],
+      knownFields: [],
+      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+    } as any;
+
+    // Set up prototypes for instanceof checks
+    Object.setPrototypeOf(mockProject, Project.prototype);
+    Object.setPrototypeOf(mockSession, Session.prototype);
+    Object.setPrototypeOf(mockPerson1, Person.prototype);
+    Object.setPrototypeOf(mockPerson2, Person.prototype);
   });
 
-  it("should export session files with properly normalized license IDs", async () => {
-    // Create a session with raw access value
-    const mockSession = createMockSession({
-      metadata: {
-        title: "Test Session",
-        access: "Strategic partners",
-        location: "Test Location"
-      }
+  it("should generate a complete LDAC-compliant RO-Crate structure", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    // Verify root dataset structure
+    const rootDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootDataset).toBeDefined();
+    expect(rootDataset["@type"]).toEqual(["Dataset", "pcdm:Collection"]);
+    expect(rootDataset.name).toBe("Edolo Language Documentation");
+    expect(rootDataset.description).toBe("Documentation of the Edolo language");
+
+    // Verify root dataset uses pcdm:hasMember for sessions
+    expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/ETR009/"
+    });
+    // And hasPart for people
+    expect(rootDataset.hasPart).toContainEqual({ "@id": "People/Awi_Heole/" });
+    expect(rootDataset.hasPart).toContainEqual({
+      "@id": "People/Ilawi_Amosa/"
     });
 
-    // Create a session file (.session) with raw license property
-    const sessionFile = createMockFile("/sessions/test/test.session", {
-      properties: {
-        getTextStringOrEmpty: (key: string) => {
-          if (key === "license") return "Strategic partners";
-          return "";
-        }
-      },
-      pathInFolderToLinkFileOrLocalCopy: "test.session"
+    // Verify session event entity (central hub)
+    const sessionEvent = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+    );
+    expect(sessionEvent).toBeDefined();
+    expect(sessionEvent["@type"]).toEqual(["Dataset", "pcdm:Object", "Event"]);
+    expect(sessionEvent.name).toBe(
+      "The story behind how we catch fish with poison bark"
+    );
+    expect(sessionEvent.description).toBe("Some guys talking");
+    expect(sessionEvent.startDate).toBe("2010-06-06");
+    expect(sessionEvent.keywords).toBe("fishing, poison");
+
+    // Verify bidirectional pcdm:memberOf relationship
+    expect(sessionEvent["pcdm:memberOf"]).toEqual({ "@id": "./" });
+
+    // Verify session uses LDAC-specific role properties instead of generic participant
+    expect(sessionEvent["ldac:speaker"]).toBeDefined();
+    expect(sessionEvent.participant).toBeUndefined(); // Should not use generic participant
+
+    // Check that speakers are properly referenced
+    const speakers = Array.isArray(sessionEvent["ldac:speaker"])
+      ? sessionEvent["ldac:speaker"]
+      : [sessionEvent["ldac:speaker"]];
+    const speakerIds = speakers.map((s: any) => s["@id"]);
+    expect(speakerIds).toContain("People/Awi_Heole/");
+    expect(speakerIds).toContain("People/Ilawi_Amosa/");
+
+    // Verify session links to its files
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009_Careful.mp3"
+    });
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
+    });
+    expect(sessionEvent.hasPart).toContainEqual({
+      "@id": "Sessions/ETR009/ETR009.xml"
     });
 
-    mockSession.files = [sessionFile];
-    mockProject.sessions.items = [mockSession];
-
-    const result = await getRoCrate(mockProject, mockProject);
-    const graph = (result as any)["@graph"];
-
-    // Find the session file entry
-    const sessionFileEntry = graph.find(
-      (item: any) => item.name === "test.session"
+    // Verify Place entity
+    const placeEntity = result["@graph"].find(
+      (item: any) => item["@id"] === "#huya" && item["@type"] === "Place"
     );
+    expect(placeEntity).toBeDefined();
+    expect(placeEntity.name).toBe("huya");
+    expect(sessionEvent.location).toEqual({ "@id": "#huya" });
 
-    expect(sessionFileEntry).toBeDefined();
-    expect(sessionFileEntry.license).toBeDefined();
-    expect(sessionFileEntry.license["@id"]).toBe(
-      "#license-reap-strategic-partners"
+    // Verify Person entities with proper IDs
+    const person1 = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "People/Awi_Heole/" && item["@type"] === "Person"
     );
+    expect(person1).toBeDefined();
 
-    // This is the key test - it should NOT be the raw value
-    expect(sessionFileEntry.license["@id"]).not.toBe("Strategic partners");
-
-    // Verify the corresponding license object exists in the graph
-    const licenseObject = graph.find(
-      (item: any) => item["@id"] === "#license-reap-strategic-partners"
+    const person2 = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "People/Ilawi_Amosa/" && item["@type"] === "Person"
     );
+    expect(person2).toBeDefined();
 
-    expect(licenseObject).toBeDefined();
-    expect(licenseObject["@type"]).toBe("ldac:DataReuseLicense");
+    // Verify specific file types and roles
+    const audioFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+    );
+    expect(audioFile["@type"]).toBe("AudioObject");
+    expect(audioFile.role).toBeUndefined();
+
+    const videoFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
+    );
+    expect(videoFile["@type"]).toBe("VideoObject");
+    expect(videoFile.role).toBeUndefined();
+
+    const xmlFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+    );
+    expect(xmlFile["@type"]).toBe("DigitalDocument");
+    expect(xmlFile.role).toBeUndefined();
+
+    const photo1 = result["@graph"].find(
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+    );
+    expect(photo1["@type"]).toBe("ImageObject");
+    expect(photo1.role).toBeUndefined();
+
+    const personFile = result["@graph"].find(
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
+    );
+    expect(personFile["@type"]).toBe("DigitalDocument");
+    expect(personFile.role).toBeUndefined();
+
+    // Verify that no separate Role entities are created (we use LDAC properties directly)
+    const roleEntities = result["@graph"].filter(
+      (item: any) => item["@type"] === "Role"
+    );
+    expect(roleEntities).toHaveLength(0); // No separate Role entities
+
+    // Verify license entity (normalized)
+    const license = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "#license-unknown-public" &&
+        item["@type"] === "ldac:DataReuseLicense"
+    );
+    // If license is not defined, log the entire graph
+    if (!license) {
+      console.log("License not found in the graph, logging the entire graph:");
+      console.log(JSON.stringify(result["@graph"], null, 2));
+    }
+    // If license is not defined, log the entire graph
+    if (!license) {
+      console.log("License not found in the graph, logging the entire graph:");
+      console.log(JSON.stringify(result["@graph"], null, 2));
+    }
+    expect(license).toBeDefined();
+
+    // Verify metadata file
+    const metadataFile = result["@graph"].find(
+      (item: any) => item["@id"] === "ro-crate-metadata.json"
+    );
+    expect(metadataFile).toBeDefined();
+    expect(metadataFile["@type"]).toBe("CreativeWork");
+    expect(metadataFile.about).toEqual({ "@id": "./" });
   });
 
-  it("should handle multiple session files with different raw license values", async () => {
-    const session1 = createMockSession({
-      metadata: {
-        title: "Session 1",
-        access: "Strategic partners"
-      }
-    });
+  it("should create a connected graph, not a flat file list", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-    const session2 = createMockSession({
-      metadata: {
-        title: "Session 2",
-        access: "Public"
-      }
-    });
-
-    const sessionFile1 = createMockFile("/sessions/session1/session1.session", {
-      properties: {
-        getTextStringOrEmpty: (key: string) => {
-          if (key === "license") return "Strategic partners";
-          return "";
-        }
-      },
-      pathInFolderToLinkFileOrLocalCopy: "session1.session"
-    });
-
-    const sessionFile2 = createMockFile("/sessions/session2/session2.session", {
-      properties: {
-        getTextStringOrEmpty: (key: string) => {
-          if (key === "license") return "Public";
-          return "";
-        }
-      },
-      pathInFolderToLinkFileOrLocalCopy: "session2.session"
-    });
-
-    session1.files = [sessionFile1];
-    session2.files = [sessionFile2];
-    mockProject.sessions.items = [session1, session2];
-
-    const result = await getRoCrate(mockProject, mockProject);
-    const graph = (result as any)["@graph"];
-
-    // Check session file 1
-    const sessionFile1Entry = graph.find(
-      (item: any) => item.name === "session1.session"
-    );
-    expect(sessionFile1Entry.license["@id"]).toBe(
-      "#license-reap-strategic-partners"
-    );
-    expect(sessionFile1Entry.license["@id"]).not.toBe("Strategic partners");
-
-    // Check session file 2
-    const sessionFile2Entry = graph.find(
-      (item: any) => item.name === "session2.session"
-    );
-    expect(sessionFile2Entry.license["@id"]).toBe("#license-reap-public");
-    expect(sessionFile2Entry.license["@id"]).not.toBe("Public");
-
-    // Verify both license objects exist
-    const license1 = graph.find(
-      (item: any) => item["@id"] === "#license-reap-strategic-partners"
-    );
-    const license2 = graph.find(
-      (item: any) => item["@id"] === "#license-reap-public"
+    // Count entities that have proper relationships
+    const entitiesWithRelationships = result["@graph"].filter(
+      (item: any) =>
+        item.hasPart || item.participant || item.location || item.about
     );
 
-    expect(license1).toBeDefined();
-    expect(license2).toBeDefined();
-  });
+    // Should have root dataset, session event, and possibly person entities with relationships
+    expect(entitiesWithRelationships.length).toBeGreaterThan(1);
 
-  it("should demonstrate that the bug would have been caught by this integration test", async () => {
-    // This test recreates the exact scenario that was failing:
-    // A session file with raw "Strategic partners" value should get normalized to "#license-reap-strategic-partners"
+    // Verify the graph is connected - root links to sessions via pcdm:hasMember and people via hasPart
+    const rootDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(
+      rootDataset.hasPart.length + rootDataset["pcdm:hasMember"].length
+    ).toBeGreaterThan(0);
 
-    const mockSession = createMockSession({
-      metadata: {
-        title: "Problem Session",
-        access: "Strategic partners"
-      }
-    });
-
-    const sessionFile = createMockFile("/sessions/problem/problem.session", {
-      properties: {
-        getTextStringOrEmpty: (key: string) => {
-          if (key === "license") return "Strategic partners";
-          return "";
-        }
-      },
-      pathInFolderToLinkFileOrLocalCopy: "problem.session"
-    });
-
-    mockSession.files = [sessionFile];
-    mockProject.sessions.items = [mockSession];
-
-    const result = await getRoCrate(mockProject, mockProject);
-    const graph = (result as any)["@graph"];
-
-    const problemSessionFile = graph.find(
-      (item: any) => item.name === "problem.session"
+    // Session event links to people via LDAC role properties and files
+    const sessionEvent = result["@graph"].find(
+      (item: any) =>
+        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
     );
 
-    // Before the fix, this would have been: { "@id": "Strategic partners" }
-    // After the fix, this should be: { "@id": "#license-reap-strategic-partners" }
-    expect(problemSessionFile.license["@id"]).toBe(
-      "#license-reap-strategic-partners"
-    );
-
-    // This assertion would have caught the bug
-    expect(problemSessionFile.license["@id"]).not.toBe("Strategic partners");
+    // Count LDAC role properties instead of generic participant
+    const roleCount = Object.keys(sessionEvent).filter(
+      (key) =>
+        key.startsWith("ldac:") &&
+        sessionEvent[key] &&
+        (Array.isArray(sessionEvent[key]) || sessionEvent[key]["@id"])
+    ).length;
+    expect(roleCount).toBeGreaterThan(0);
+    expect(sessionEvent.hasPart.length).toBeGreaterThan(0);
   });
 });

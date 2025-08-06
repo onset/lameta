@@ -9,12 +9,12 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   }
 }));
 
-import { getRoCrate } from "./RoCrateExporter";
-import { Person } from "../../model/Project/Person/Person";
-import { Project } from "../../model/Project/Project";
-import { Session } from "../../model/Project/Session/Session";
-import { FieldDefinition } from "../../model/field/FieldDefinition";
-import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { getRoCrate } from "../RoCrateExporter";
+import { Person } from "../../../model/Project/Person/Person";
+import { Project } from "../../../model/Project/Project";
+import { Session } from "../../../model/Project/Session/Session";
+import { FieldDefinition } from "../../../model/field/FieldDefinition";
+import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({

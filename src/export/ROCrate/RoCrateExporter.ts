@@ -346,7 +346,7 @@ export async function addFieldEntries(
       if (field.rocrate?.handler === "languages") {
         const languageReferences: any[] = [];
         const languageCodes: string[] = [];
-        
+
         values.forEach((languageValue: string) => {
           // Parse language value (could be "etr" or "etr: Edolo")
           const [code] = languageValue.split(":").map((s) => s.trim());
@@ -513,53 +513,80 @@ export async function addFieldEntries(
                 folderEntry[propertyKey] = [reference];
               }
             }
-          } else if (field.key === "location" && leafTemplate["@type"] === "Place") {
+          } else if (
+            field.key === "location" &&
+            leafTemplate["@type"] === "Place"
+          ) {
             // Special handling for location field - combine with region/country/continent
             values.forEach((c: string) => {
               // Create the basic Place entity from the template
               const leaf = getElementUsingTemplate(leafTemplate, c);
-              
+
               // Build description from companion location fields
               const locationParts: string[] = [];
-              
+
               // Check for locationRegion
               try {
-                const regionField = folder.metadataFile!.properties.getValueOrThrow("locationRegion");
-                if (regionField && regionField.text && regionField.text.trim() && regionField.text !== "unspecified") {
+                const regionField =
+                  folder.metadataFile!.properties.getValueOrThrow(
+                    "locationRegion"
+                  );
+                if (
+                  regionField &&
+                  regionField.text &&
+                  regionField.text.trim() &&
+                  regionField.text !== "unspecified"
+                ) {
                   locationParts.push(regionField.text.trim());
                 }
               } catch {
                 // Field doesn't exist, skip
               }
-              
-              // Check for locationCountry  
+
+              // Check for locationCountry
               try {
-                const countryField = folder.metadataFile!.properties.getValueOrThrow("locationCountry");
-                if (countryField && countryField.text && countryField.text.trim() && countryField.text !== "unspecified") {
+                const countryField =
+                  folder.metadataFile!.properties.getValueOrThrow(
+                    "locationCountry"
+                  );
+                if (
+                  countryField &&
+                  countryField.text &&
+                  countryField.text.trim() &&
+                  countryField.text !== "unspecified"
+                ) {
                   locationParts.push(countryField.text.trim());
                 }
               } catch {
                 // Field doesn't exist, skip
               }
-              
+
               // Check for locationContinent
               try {
-                const continentField = folder.metadataFile!.properties.getValueOrThrow("locationContinent");
-                if (continentField && continentField.text && continentField.text.trim() && continentField.text !== "unspecified") {
+                const continentField =
+                  folder.metadataFile!.properties.getValueOrThrow(
+                    "locationContinent"
+                  );
+                if (
+                  continentField &&
+                  continentField.text &&
+                  continentField.text.trim() &&
+                  continentField.text !== "unspecified"
+                ) {
                   locationParts.push(continentField.text.trim());
                 }
               } catch {
                 // Field doesn't exist, skip
               }
-              
+
               // Add description if we have location parts
               if (locationParts.length > 0) {
                 leaf["description"] = `Located in ${locationParts.join(", ")}`;
               }
-              
+
               otherEntries.push(leaf);
               const reference = leaf["@id"];
-              
+
               if (field.rocrate?.array) {
                 if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
                 folderEntry[propertyKey].push({ "@id": reference });
@@ -831,7 +858,9 @@ export function addChildFileEntries(
       fileType = "VideoObject";
     } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
       fileType = "ImageObject";
-    } else if (fileExt.match(/\.(xml|eaf|txt|doc|docx|pdf|person|session)$/)) {
+    } else if (
+      fileExt.match(/\.(xml|eaf|txt|doc|docx|rtf|md|pptx|pdf|person|session)$/)
+    ) {
       fileType = "DigitalDocument";
     }
 

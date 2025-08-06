@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateRoCrateHtml } from "./RoCrateHtmlGenerator";
+import { generateRoCrateHtml } from "../RoCrateHtmlGenerator";
 
 describe("RoCrateHtmlGenerator", () => {
   const mockRoCrateData = {

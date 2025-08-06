@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { getRoCrate } from "./RoCrateExporter";
+import { getRoCrate } from "../RoCrateExporter";
 
 vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {

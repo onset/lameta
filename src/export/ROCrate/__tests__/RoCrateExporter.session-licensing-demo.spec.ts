@@ -9,10 +9,10 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   }
 }));
 
-import { getRoCrate } from "./RoCrateExporter";
-import { Session } from "../../model/Project/Session/Session";
-import { Project } from "../../model/Project/Project";
-import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
+import { getRoCrate } from "../RoCrateExporter";
+import { Session } from "../../../model/Project/Session/Session";
+import { Project } from "../../../model/Project/Project";
+import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 describe("RoCrateExporter Session-Specific Licensing Demo", () => {
   let mockProject: Project;

@@ -1,6 +1,6 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
-import { RoCrateValidator, ensureSubjectLanguage } from "./RoCrateValidator";
-import { RoCrateLanguages } from "./RoCrateLanguages";
+import { RoCrateValidator, ensureSubjectLanguage } from "../RoCrateValidator";
+import { RoCrateLanguages } from "../RoCrateLanguages";
 
 // Mock the staticLanguageFinder
 vi.mock("../../languageFinder/LanguageFinder", () => ({

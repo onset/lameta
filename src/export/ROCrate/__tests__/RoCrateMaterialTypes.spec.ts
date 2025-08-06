@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   getLdacMaterialType,
   getLdacMaterialTypeForPath
-} from "./RoCrateMaterialTypes";
+} from "../RoCrateMaterialTypes";
 
 describe("getLdacMaterialType", () => {
   it("should return ldac:PrimaryMaterial for audio files", () => {
