@@ -63,3 +63,6 @@ locale/_build
 
 *.cjs
 test-results/.last-run.json
+
+# validation reports
+rocrate-export-review-*.md
