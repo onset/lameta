@@ -1,7 +1,7 @@
 import { Session } from "../../model/Project/Session/Session";
 import { File } from "../../model/file/File";
 import { Project } from "../../model/Project/Project";
-import { getSessionLicenseId as getSessionLicenseIdFromLicenses } from "./RoCrateLicenseUtils";
+import { getSessionLicenseId as getSessionLicenseIdFromLicenses } from "./RoCrateLicenses";
 
 /**
  * Manages licenses for RO-Crate export, ensuring every distributable file

@@ -6,7 +6,8 @@ import fs from "fs-extra";
 
 describe("RoCrateExporter Doondo Project Integration", () => {
   let project: Project;
-  const doondoProjectPath = "c:\\dev\\lameta projects\\SayMore Data from Brian Parker\\Doondo";
+  const doondoProjectPath =
+    "c:\\dev\\lameta projects\\SayMore Data from Brian Parker\\Doondo";
 
   beforeAll(() => {
     // Check if the Doondo project exists
@@ -17,7 +18,7 @@ describe("RoCrateExporter Doondo Project Integration", () => {
 
     // Load the real Doondo project
     project = Project.fromDirectory(doondoProjectPath);
-    
+
     if (project.loadingError) {
       throw new Error(`Failed to load Doondo project: ${project.loadingError}`);
     }
@@ -26,16 +27,17 @@ describe("RoCrateExporter Doondo Project Integration", () => {
   it("should not have any raw license values in session files", async () => {
     console.log(`Loading project from: ${doondoProjectPath}`);
     console.log(`Project has ${project.sessions.items.length} sessions`);
-    
+
     // Generate RO-Crate metadata for the entire project
     const roCrateData = await getRoCrate(project, project);
-    
+
     // Parse the JSON if it's a string
-    const metadata = typeof roCrateData === 'string' ? JSON.parse(roCrateData) : roCrateData;
-    
+    const metadata =
+      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+
     // Find all license references in the @graph
     const allLicenseReferences: any[] = [];
-    
+
     metadata["@graph"].forEach((item: any) => {
       if (item.license && item.license["@id"]) {
         allLicenseReferences.push({
@@ -45,62 +47,67 @@ describe("RoCrateExporter Doondo Project Integration", () => {
         });
       }
     });
-    
+
     console.log(`Found ${allLicenseReferences.length} license references:`);
-    allLicenseReferences.forEach(ref => {
+    allLicenseReferences.forEach((ref) => {
       console.log(`  Entity: ${ref.entityId} -> License: ${ref.licenseId}`);
     });
-    
+
     // Check for any raw license values (not normalized)
-    const rawLicenseReferences = allLicenseReferences.filter(ref => 
-      !ref.licenseId.startsWith("#") && 
-      !ref.licenseId.startsWith("http") &&
-      ref.licenseId !== "CC0" // CC0 is also valid
+    const rawLicenseReferences = allLicenseReferences.filter(
+      (ref) =>
+        !ref.licenseId.startsWith("#") &&
+        !ref.licenseId.startsWith("http") &&
+        ref.licenseId !== "CC0" // CC0 is also valid
     );
-    
+
     if (rawLicenseReferences.length > 0) {
       console.error("Found raw license values that should be normalized:");
-      rawLicenseReferences.forEach(ref => {
-        console.error(`  PROBLEM: Entity ${ref.entityId} has raw license: "${ref.licenseId}"`);
+      rawLicenseReferences.forEach((ref) => {
+        console.error(
+          `  PROBLEM: Entity ${ref.entityId} has raw license: "${ref.licenseId}"`
+        );
       });
     }
-    
+
     // The test should fail if any raw license values are found
     expect(rawLicenseReferences).toHaveLength(0);
-    
+
     // Also check specifically for the "Strategic partners" issue
-    const strategicPartnersRefs = allLicenseReferences.filter(ref => 
-      ref.licenseId === "Strategic partners"
+    const strategicPartnersRefs = allLicenseReferences.filter(
+      (ref) => ref.licenseId === "Strategic partners"
     );
-    
+
     expect(strategicPartnersRefs).toHaveLength(0);
-    
+
     // All license references should be properly normalized (start with # or be a URL)
-    allLicenseReferences.forEach(ref => {
+    allLicenseReferences.forEach((ref) => {
       expect(
-        ref.licenseId.startsWith("#") || 
-        ref.licenseId.startsWith("http") || 
-        ref.licenseId === "CC0"
+        ref.licenseId.startsWith("#") ||
+          ref.licenseId.startsWith("http") ||
+          ref.licenseId === "CC0"
       ).toBe(true);
     });
   });
 
   it("should have normalized license IDs for all entities", async () => {
     const roCrateData = await getRoCrate(project, project);
-    const metadata = typeof roCrateData === 'string' ? JSON.parse(roCrateData) : roCrateData;
-    
-    // Find any session files specifically  
-    const sessionFiles = metadata["@graph"].filter((item: any) => 
-      item["@id"] && 
-      item["@id"].includes(".session") &&
-      item.license
+    const metadata =
+      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+
+    // Find any session files specifically
+    const sessionFiles = metadata["@graph"].filter(
+      (item: any) =>
+        item["@id"] && item["@id"].includes(".session") && item.license
     );
-    
+
     console.log(`Found ${sessionFiles.length} session files with licenses`);
-    
+
     sessionFiles.forEach((sessionFile: any) => {
-      console.log(`Session file: ${sessionFile["@id"]} -> License: ${sessionFile.license["@id"]}`);
-      
+      console.log(
+        `Session file: ${sessionFile["@id"]} -> License: ${sessionFile.license["@id"]}`
+      );
+
       // Each session file should have a normalized license ID
       expect(sessionFile.license["@id"]).toMatch(/^#license-/);
     });
