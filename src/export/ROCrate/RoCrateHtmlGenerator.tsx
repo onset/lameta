@@ -68,6 +68,11 @@ function isFilteredEntity(entity: RoCrateEntity): boolean {
     return true;
   }
 
+  // Filter entities with unknown/placeholder IDs
+  if (entity["@id"] === "tag:lameta/unknown") {
+    return true;
+  }
+
   const types = Array.isArray(entity["@type"])
     ? entity["@type"]
     : [entity["@type"]];
@@ -130,6 +135,63 @@ function getGlottologUrl(languageCode: string): string {
   // Extract the language code from the #language_XXX format
   const code = languageCode.replace("#language_", "").split(":")[0];
   return `https://glottolog.org/resource/languoid/iso/${code}`;
+}
+
+// Helper function to convert file:// URLs and URL-encoded paths to display paths for HTML
+function getDisplayPath(id: string): string {
+  if (id.startsWith("file://")) {
+    // Convert file:// URL to relative path
+    try {
+      const url = new URL(id);
+      let path = decodeURIComponent(url.pathname);
+      // Remove leading slash on Windows paths
+      if (path.match(/^\/[A-Z]:/)) {
+        path = path.substring(1);
+      }
+      // Convert backslashes to forward slashes for web compatibility
+      path = path.replace(/\\/g, "/");
+      
+      // Extract just the relative path from the project directory
+      // The path should be relative to where the HTML file is located
+      // Since we're generating the HTML in the project root, we just need the relative part
+      const pathSegments = path.split("/");
+      
+      // Find the segment that starts our relative path (usually "People", "Sessions", etc.)
+      let startIndex = -1;
+      for (let i = 0; i < pathSegments.length; i++) {
+        if (pathSegments[i] === "People" || 
+            pathSegments[i] === "Sessions" || 
+            pathSegments[i] === "Description" || 
+            pathSegments[i] === "OtherDocs") {
+          startIndex = i;
+          break;
+        }
+      }
+      
+      if (startIndex !== -1) {
+        // Return the path starting from the recognized folder
+        return pathSegments.slice(startIndex).join("/");
+      }
+      
+      // Fallback: return just the filename
+      return pathSegments[pathSegments.length - 1] || path;
+    } catch (e) {
+      // If URL parsing fails, return the original id
+      return id;
+    }
+  }
+  
+  // Handle URL-encoded relative paths (e.g., "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Photo.JPG")
+  if (id.includes("%")) {
+    try {
+      return decodeURIComponent(id);
+    } catch (e) {
+      // If decoding fails, return the original id
+      return id;
+    }
+  }
+  
+  return id;
 }
 
 // --- React Components ---
@@ -217,8 +279,14 @@ const PropertyValue: React.FC<{
   const renderLink = (id: string, defaultName: string) => {
     const referencedEntity = graph.find((entity) => entity["@id"] === id);
 
-    // Special handling for "Unknown" - don't link, just show text
-    if (referencedEntity?.name === "Unknown" || defaultName === "Unknown") {
+    // Special handling for "Unknown" entities - don't link, just show text
+    if (
+      id === "tag:lameta/unknown" ||
+      referencedEntity?.name === "Unknown" ||
+      referencedEntity?.name === "<Unknown>" ||
+      defaultName === "Unknown" ||
+      defaultName === "<Unknown>"
+    ) {
       return <>Unknown</>;
     }
 
@@ -310,7 +378,7 @@ const PropertyValue: React.FC<{
   }
 
   // Handle "Unknown" as plain text without linking
-  if (String(value) === "Unknown") {
+  if (String(value) === "Unknown" || String(value) === "<Unknown>") {
     return <>Unknown</>;
   }
 
@@ -375,7 +443,7 @@ const Entity: React.FC<{
   const EntityHeader = () =>
     !isChild ? (
       <div className="entity-header">
-        <div className="entity-id">{id || "Unknown ID"}</div>
+        <div className="entity-id">{getDisplayPath(id) || "Unknown ID"}</div>
       </div>
     ) : null;
   const EntityTypes = () => (
@@ -389,6 +457,7 @@ const Entity: React.FC<{
   );
 
   if (isImage) {
+    const displayPath = getDisplayPath(id);
     return (
       <div className={entityClasses} id={anchorId}>
         <EntityHeader />
@@ -398,9 +467,9 @@ const Entity: React.FC<{
             {name}
           </h3>
         )}
-        <a href={id}>
+        <a href={displayPath}>
           <img
-            src={id}
+            src={displayPath}
             alt={`Image: ${name || id}`}
             className="image-thumbnail"
             onError={(e) => {
@@ -419,7 +488,7 @@ const Entity: React.FC<{
             fontStyle: "italic"
           }}
         >
-          Image could not be loaded: {id}
+          Image could not be loaded: {displayPath}
         </div>
       </div>
     );
@@ -427,6 +496,7 @@ const Entity: React.FC<{
 
   if (isVideo || isAudio) {
     const MediaTag = isVideo ? "video" : "audio";
+    const displayPath = getDisplayPath(id);
     return (
       <div className={entityClasses} id={anchorId}>
         <EntityHeader />
@@ -437,7 +507,7 @@ const Entity: React.FC<{
           </h3>
         )}
         <MediaTag controls className="media-player">
-          <source src={id} type={entity.encodingFormat || ""} />
+          <source src={displayPath} type={entity.encodingFormat || ""} />
           Your browser does not support the {MediaTag} tag.
         </MediaTag>
       </div>
@@ -549,18 +619,36 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     }
 
     // Skip entities with "Unknown" names
-    if (entity.name === "Unknown") {
+    if (
+      entity.name === "Unknown" ||
+      entity.name === "<Unknown>" ||
+      entity["@id"] === "tag:lameta/unknown"
+    ) {
       return;
     }
 
     // Check if this entity is a child of any other entity in the graph
     const parentEntity = graph.find((parent) => {
       const parentId = parent["@id"];
-      if (
-        !parentId ||
-        parentId === entityId ||
-        !entityId.startsWith(parentId)
-      ) {
+      if (!parentId || parentId === entityId) {
+        return false;
+      }
+
+      // Check if this entity is explicitly listed in the parent's hasPart array
+      if (parent.hasPart && Array.isArray(parent.hasPart)) {
+        const isInHasPart = parent.hasPart.some((part: any) => {
+          if (typeof part === "object" && part["@id"]) {
+            return part["@id"] === entityId;
+          }
+          return part === entityId;
+        });
+        if (isInHasPart) {
+          return true;
+        }
+      }
+
+      // Fallback to path-based detection for entities not explicitly listed
+      if (!entityId.startsWith(parentId)) {
         return false;
       }
 

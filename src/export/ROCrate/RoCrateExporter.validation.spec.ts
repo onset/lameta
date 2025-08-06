@@ -728,31 +728,31 @@ describe("RoCrateExporter Validation Tests", () => {
 
       expect(sessionEntry).toBeDefined();
 
-      // The @id should not contain invalid characters
-      expect(sessionEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses
-      expect(sessionEntry["@id"]).toMatch(/^Sessions\/[a-zA-Z0-9_.-]+\/$/); // Valid IRI format
+      // The @id should be URL encoded
+      expect(sessionEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses in URL
+      expect(sessionEntry["@id"]).toMatch(/^Sessions\/[a-zA-Z0-9_.%-]+\/$/); // Valid IRI format with URL encoding
 
-      // Should sanitize to something like "Sessions/dde-houmba-ori-v1/"
-      expect(sessionEntry["@id"]).toBe("Sessions/dde-houmba-ori-v1/");
+      // Should sanitize to URL encoded format
+      expect(sessionEntry["@id"]).toBe("Sessions/dde-houmba-ori%20%28v1%29/");
     });
 
     it("should handle multiple types of invalid characters in session IDs", async () => {
       const testCases = [
         {
           input: "dde-houmba-ori (v2)",
-          expected: "Sessions/dde-houmba-ori-v2/"
+          expected: "Sessions/dde-houmba-ori%20%28v2%29/"
         },
         {
           input: "dde-kabousoulou1-ori (v2)",
-          expected: "Sessions/dde-kabousoulou1-ori-v2/"
+          expected: "Sessions/dde-kabousoulou1-ori%20%28v2%29/"
         },
         {
           input: "dde-mahoungou-ori (NO IC!)",
-          expected: "Sessions/dde-mahoungou-ori-NO-IC/"
+          expected: "Sessions/dde-mahoungou-ori%20%28NO%20IC%21%29/"
         },
         {
           input: "session with spaces",
-          expected: "Sessions/session-with-spaces/"
+          expected: "Sessions/session%20with%20spaces/"
         }
       ];
 
@@ -836,9 +836,9 @@ describe("RoCrateExporter Validation Tests", () => {
       // Find the session entry in the graph
       const sessionEntry = graph.find(
         (item: any) =>
-          item["@id"] === "Sessions/test-session/" && 
-          item["@type"] && 
-          Array.isArray(item["@type"]) && 
+          item["@id"] === "Sessions/test-session/" &&
+          item["@type"] &&
+          Array.isArray(item["@type"]) &&
           item["@type"].includes("Dataset")
       );
 
@@ -852,10 +852,11 @@ describe("RoCrateExporter Validation Tests", () => {
 
       expect(fileEntry).toBeDefined();
 
-      // The key test: the @id should be sanitized (no invalid characters) and include full path
-      const expectedFileId = "Sessions/test-session/BAHOUNGOU-Hilaire_Consent-final-.wav";
+      // The key test: the @id should be sanitized (URL encoded) and include full path
+      const expectedFileId =
+        "Sessions/test-session/BAHOUNGOU%20Hilaire_Consent%20%28final%29%21.wav";
       expect(fileEntry["@id"]).toBe(expectedFileId);
-      expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks
+      expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks in URL
       expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
 
       // Critical test: Verify that the session's hasPart references match the actual file @id
@@ -876,19 +877,22 @@ describe("RoCrateExporter Validation Tests", () => {
       };
 
       const mockPersonConsent = {
-        getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Consent (final).wav",
+        getActualFilePath: () =>
+          "C:/temp/BAHOUNGOU Hilaire_Consent (final).wav",
         getModifiedDate: () => new Date("2023-01-01"),
         getCreatedDate: () => new Date("2023-01-01")
       };
 
       const mockPersonWithFiles = {
         filePrefix: "BAHOUNGOU Hilaire",
-        knownFields: [{
-          key: "name",
-          englishLabel: "Full Name",
-          personallyIdentifiableInformation: false,
-          isCustom: false
-        }],
+        knownFields: [
+          {
+            key: "name",
+            englishLabel: "Full Name",
+            personallyIdentifiableInformation: false,
+            isCustom: false
+          }
+        ],
         metadataFile: {
           getTextProperty: vi.fn().mockImplementation((key: string) => {
             if (key === "name") return "BAHOUNGOU Hilaire";
@@ -925,30 +929,37 @@ describe("RoCrateExporter Validation Tests", () => {
       Object.setPrototypeOf(mockProjectWithPerson, Project.prototype);
       Object.setPrototypeOf(mockPersonWithFiles, Person.prototype);
 
-      const roCrateData = (await getRoCrate(mockProjectWithPerson, mockPersonWithFiles)) as any;
-      const graph = Array.isArray(roCrateData) ? roCrateData : roCrateData["@graph"];
+      const roCrateData = (await getRoCrate(
+        mockProjectWithPerson,
+        mockPersonWithFiles
+      )) as any;
+      const graph = Array.isArray(roCrateData)
+        ? roCrateData
+        : roCrateData["@graph"];
 
       // Find the person entry
-      const personEntry = graph.find(
-        (item: any) => item["@type"] === "Person"
-      );
+      const personEntry = graph.find((item: any) => item["@type"] === "Person");
 
       expect(personEntry).toBeDefined();
 
       // Find the file entries
       const photoEntry = graph.find(
-        (item: any) => item["@type"] === "ImageObject" && item["@id"]?.includes("Photo")
+        (item: any) =>
+          item["@type"] === "ImageObject" && item["@id"]?.includes("Photo")
       );
       const consentEntry = graph.find(
-        (item: any) => item["@type"] === "AudioObject" && item["@id"]?.includes("Consent")
+        (item: any) =>
+          item["@type"] === "AudioObject" && item["@id"]?.includes("Consent")
       );
 
       expect(photoEntry).toBeDefined();
       expect(consentEntry).toBeDefined();
 
-      // Verify file IDs are sanitized
-      const expectedPhotoId = "People/BAHOUNGOU-Hilaire/BAHOUNGOU-Hilaire_Photo-v2-.JPG";
-      const expectedConsentId = "People/BAHOUNGOU-Hilaire/BAHOUNGOU-Hilaire_Consent-final-.wav";
+      // Verify file IDs are URL encoded
+      const expectedPhotoId =
+        "People/BAHOUNGOU%20Hilaire/BAHOUNGOU%20Hilaire_Photo%20%28v2%29%21.JPG";
+      const expectedConsentId =
+        "People/BAHOUNGOU%20Hilaire/BAHOUNGOU%20Hilaire_Consent%20%28final%29.wav";
 
       expect(photoEntry["@id"]).toBe(expectedPhotoId);
       expect(consentEntry["@id"]).toBe(expectedConsentId);

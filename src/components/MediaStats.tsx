@@ -15,10 +15,10 @@ const humanizeDuration = require("humanize-duration");
 type Stats = object;
 
 let ffprobePath = require("ffmpeg-ffprobe-static").ffprobePath;
-console.log("raw ffprobePath: " + ffprobePath);
+//console.log("raw ffprobePath: " + ffprobePath);
 // for mac & windows when installed
 ffprobePath = ffprobePath.replace("app.asar", "app.asar.unpacked");
-console.log(`final ffprobePath: ${ffprobePath}`);
+//console.log(`final ffprobePath: ${ffprobePath}`);
 ffmpeg.setFfprobePath(ffprobePath);
 
 export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {

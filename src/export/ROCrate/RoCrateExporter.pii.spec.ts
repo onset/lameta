@@ -45,7 +45,9 @@ vi.mock("./RoCrateUtils", () => ({
   getCustomUri: vi.fn(),
   sanitizeForIri: vi.fn((input) => input || ""),
   createFileId: vi.fn((folder, fileName) => fileName || ""),
-  createSessionId: vi.fn((session) => `Sessions/${session.filePrefix || "test"}/`),
+  createSessionId: vi.fn(
+    (session) => `Sessions/${session.filePrefix || "test"}/`
+  ),
   createPersonId: vi.fn((person) => `People/${person.filePrefix || "test"}/`)
 }));
 

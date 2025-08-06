@@ -29,16 +29,13 @@ export function sanitizeForIri(input: string | undefined): string {
   }
   return (
     input
-      // Replace spaces with hyphens
-      .replace(/\s+/g, "-")
-      // Replace parentheses with hyphens
-      .replace(/[()]/g, "-")
-      // Replace exclamation marks with hyphens
-      .replace(/!/g, "-")
-      // Replace multiple consecutive hyphens with single hyphen
-      .replace(/-+/g, "-")
-      // Remove leading and trailing hyphens
-      .replace(/^-+|-+$/g, "")
+      // URL encode spaces (and other special characters) for proper IRI compliance
+      .replace(/\s+/g, "%20")
+      // Replace parentheses with URL encoding
+      .replace(/\(/g, "%28")
+      .replace(/\)/g, "%29")
+      // Replace exclamation marks with URL encoding
+      .replace(/!/g, "%21")
   );
 }
 
@@ -49,19 +46,21 @@ export function sanitizeForIri(input: string | undefined): string {
  */
 export function createFileId(folder: any, fileName: string): string {
   const sanitizedFileName = sanitizeForIri(fileName);
-  
+
   // Use duck typing to check folder type since we can't import the classes here
   // to avoid circular dependencies
   if (folder.filePrefix !== undefined) {
     if (folder.getAllContributionsToAllFiles !== undefined) {
       // This is a Session
-      return `Sessions/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
+      return `Sessions/${sanitizeForIri(
+        folder.filePrefix
+      )}/${sanitizedFileName}`;
     } else if (folder.knownFields !== undefined && folder.files !== undefined) {
       // This is a Person
       return `People/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
     }
   }
-  
+
   // Default case for other folder types
   return sanitizedFileName;
 }
@@ -160,13 +159,15 @@ export function createTermDefinition(mapping: {
     return result;
   } else {
     // Custom term not in vocabulary file - create a basic definition
-    const name = mapping.originalTerm; // Use the original term input
+    const originalTerm = mapping.originalTerm;
+    // Clean up the name for display - remove angle brackets from unknown terms
+    const cleanName = originalTerm === "<Unknown>" ? "Unknown" : originalTerm;
 
     return {
       "@id": mapping.id,
       "@type": "DefinedTerm",
-      name: name,
-      description: `Custom term: ${name}`,
+      name: cleanName,
+      description: `Custom term: ${cleanName}`,
       inDefinedTermSet: { "@id": "#CustomGenreTerms" }
     };
   }

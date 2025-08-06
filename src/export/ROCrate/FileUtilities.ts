@@ -10,12 +10,6 @@ export async function removeFileIfWritableOrThrow(
   try {
     // Check if file is read-only before attempting to remove
     const stats = await fs.stat(filePath);
-    console.log(`File stats for ${filePath}:`, {
-      mode: stats.mode,
-      modeOctal: stats.mode.toString(8),
-      isWritable: !!(stats.mode & 0o200),
-      isReadOnly: !(stats.mode & 0o200)
-    });
 
     if (!(stats.mode & 0o200)) {
       // Check if write permission is missing
@@ -24,9 +18,8 @@ export async function removeFileIfWritableOrThrow(
         `Cannot overwrite read-only file: ${filePath}. Please make the file writable or delete it manually.`
       );
     }
-    console.log("File is writable, attempting to remove");
+
     await fs.remove(filePath);
-    console.log("File removed successfully");
   } catch (error) {
     console.log("Error during file removal:", error);
     if (
