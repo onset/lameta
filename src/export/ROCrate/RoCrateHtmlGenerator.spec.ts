@@ -258,6 +258,28 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain(".entity.child .entity-header { display: none; }");
   });
 
+  it("should show entity headers for Person and Session entities", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
+
+    // Person entities should have entity headers (not be marked as children)
+    expect(html).toContain('id="entity_People_Awi_Heole_"');
+
+    // Find the Person entity section and verify it has an entity header
+    const personEntityMatch = html.match(
+      /<div class="entity"[^>]*id="entity_People_Awi_Heole_"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">People\/Awi_Heole\/<\/div>/s
+    );
+    expect(personEntityMatch).toBeTruthy();
+
+    // Session entities should have entity headers (not be marked as children)
+    expect(html).toContain('id="entity_Sessions_ETR009_"');
+
+    // Find the Session entity section and verify it has an entity header
+    const sessionEntityMatch = html.match(
+      /<div class="entity"[^>]*id="entity_Sessions_ETR009_"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Sessions\/ETR009\/<\/div>/s
+    );
+    expect(sessionEntityMatch).toBeTruthy();
+  });
+
   it("should filter out ro-crate-metadata.json file", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 

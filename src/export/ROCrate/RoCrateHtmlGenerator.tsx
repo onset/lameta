@@ -645,6 +645,19 @@ function computeHierarchy(graph: RoCrateEntity[]) {
           return part === entityId;
         });
         if (isInHasPart) {
+          // Special case: Person and Session entities should not be treated as children
+          // of the root project even if they're in hasPart - they should have their own headers
+          const entityTypes = Array.isArray(entity["@type"])
+            ? entity["@type"]
+            : [entity["@type"]];
+          const isPersonOrSession =
+            entityTypes.includes("Person") ||
+            entityTypes.includes("Event") ||
+            entityId.startsWith("People/") ||
+            entityId.startsWith("Sessions/");
+          if (parentId === "./" && isPersonOrSession) {
+            return false;
+          }
           return true;
         }
       }
