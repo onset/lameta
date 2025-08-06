@@ -671,14 +671,8 @@ function addFileLicenseProperty(
   parentEntry?: any,
   project?: Project
 ): void {
-  // Check if file already has its own license
-  const fileLicense = rocrateLicense.getFileLicense(filePath);
-  if (fileLicense) {
-    fileEntry.license = { "@id": fileLicense };
-    return;
-  }
-
-  // For session files, ensure they inherit the session license
+  // For session files, ensure they inherit the session license first
+  // This must happen before checking existing licenses to normalize any raw values
   if (folder instanceof Session) {
     const file = folder.files.find((f) => f.getActualFilePath() === filePath);
     if (file) {
@@ -689,6 +683,13 @@ function addFileLicenseProperty(
         return;
       }
     }
+  }
+
+  // Check if file already has its own license (after normalization)
+  const fileLicense = rocrateLicense.getFileLicense(filePath);
+  if (fileLicense) {
+    fileEntry.license = { "@id": fileLicense };
+    return;
   }
 
   // For other files (project files, person files), inherit from parent
