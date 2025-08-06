@@ -74,7 +74,7 @@ export async function getRoCrate(
     );
     roCrate["@graph"] = Array.isArray(entries) ? entries : [entries];
     roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
-    
+
     // Deduplicate hasPart arrays to prevent duplicate file references
     roCrate["@graph"] = deduplicateHasPartArrays(roCrate["@graph"]);
 
@@ -855,7 +855,7 @@ export function addProjectDocumentFolderEntries(
  * Duplicates are identified by their @id values.
  */
 function deduplicateHasPartArrays(graph: any[]): any[] {
-  return graph.map(entity => {
+  return graph.map((entity) => {
     if (entity.hasPart && Array.isArray(entity.hasPart)) {
       const seen = new Set<string>();
       entity.hasPart = entity.hasPart.filter((item: any) => {
