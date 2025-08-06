@@ -83,6 +83,22 @@ export function createPersonId(person: any): string {
   return `People/${sanitizeForIri(person.filePrefix)}/`;
 }
 
+/**
+ * Creates a consistent fragment identifier for unresolved contributors.
+ * Unresolved contributors are people mentioned in sessions who don't have 
+ * matching Person records in the project.
+ */
+export function createUnresolvedContributorId(contributorName: string): string {
+  // Create a fragment identifier starting with #
+  // Replace spaces and special characters to make a valid identifier
+  const sanitized = contributorName
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .replace(/[()]/g, "") // Remove parentheses
+    .replace(/[^a-zA-Z0-9_-]/g, "_"); // Replace other special chars with underscores
+  
+  return `#contributor-${sanitized}`;
+}
+
 export function getVocabularyMapping(
   termId: string,
   vocabularyFile: string,

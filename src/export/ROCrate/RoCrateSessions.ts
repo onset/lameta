@@ -11,7 +11,7 @@ import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
-import { sanitizeForIri, createSessionId, createPersonId } from "./RoCrateUtils";
+import { sanitizeForIri, createSessionId, createPersonId, createUnresolvedContributorId } from "./RoCrateUtils";
 
 export async function createSessionEntry(
   project: Project,
@@ -149,7 +149,7 @@ export function addParticipantProperties(
     }
 
     const person = project.findPerson(personName);
-    const personId = person ? createPersonId(person) : personName;
+    const personId = person ? createPersonId(person) : createUnresolvedContributorId(personName);
 
     // Avoid duplicates
     if (!roleGroups[role].includes(personId)) {
