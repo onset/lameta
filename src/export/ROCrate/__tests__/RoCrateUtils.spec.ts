@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { getVocabularyMapping, createTermDefinition, sanitizeForIri } from "../RoCrateUtils";
+import {
+  getVocabularyMapping,
+  createTermDefinition,
+  sanitizeForIri
+} from "../RoCrateUtils";
 
 describe("RoCrateUtils - Vocabulary Handling", () => {
   it("should return simplified ID for unknown terms", async () => {
@@ -84,7 +88,9 @@ describe("RoCrateUtils - IRI Sanitization", () => {
   });
 
   it("should URL encode parentheses and exclamation marks", () => {
-    expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe("BAKALA%20Michel%20%28@Mfouati%29");
+    expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe(
+      "BAKALA%20Michel%20%28@Mfouati%29"
+    );
     expect(sanitizeForIri("File with!")).toBe("File%20with%21");
   });
 

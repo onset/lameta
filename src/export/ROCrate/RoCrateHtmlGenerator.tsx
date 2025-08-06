@@ -150,29 +150,31 @@ function getDisplayPath(id: string): string {
       }
       // Convert backslashes to forward slashes for web compatibility
       path = path.replace(/\\/g, "/");
-      
+
       // Extract just the relative path from the project directory
       // The path should be relative to where the HTML file is located
       // Since we're generating the HTML in the project root, we just need the relative part
       const pathSegments = path.split("/");
-      
+
       // Find the segment that starts our relative path (usually "People", "Sessions", etc.)
       let startIndex = -1;
       for (let i = 0; i < pathSegments.length; i++) {
-        if (pathSegments[i] === "People" || 
-            pathSegments[i] === "Sessions" || 
-            pathSegments[i] === "Description" || 
-            pathSegments[i] === "OtherDocs") {
+        if (
+          pathSegments[i] === "People" ||
+          pathSegments[i] === "Sessions" ||
+          pathSegments[i] === "Description" ||
+          pathSegments[i] === "OtherDocs"
+        ) {
           startIndex = i;
           break;
         }
       }
-      
+
       if (startIndex !== -1) {
         // Return the path starting from the recognized folder
         return pathSegments.slice(startIndex).join("/");
       }
-      
+
       // Fallback: return just the filename
       return pathSegments[pathSegments.length - 1] || path;
     } catch (e) {
@@ -180,7 +182,7 @@ function getDisplayPath(id: string): string {
       return id;
     }
   }
-  
+
   // Handle URL-encoded relative paths (e.g., "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Photo.JPG")
   if (id.includes("%")) {
     try {
@@ -190,7 +192,7 @@ function getDisplayPath(id: string): string {
       return id;
     }
   }
-  
+
   return id;
 }
 

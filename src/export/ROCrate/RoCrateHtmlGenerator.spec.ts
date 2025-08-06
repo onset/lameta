@@ -451,7 +451,8 @@ describe("RoCrateHtmlGenerator", () => {
             name: "Test Project"
           },
           {
-            "@id": "file:///C:/dev/lameta%20projects/SayMore%20Data%20from%20Brian%20Parker/Doondo/People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG",
+            "@id":
+              "file:///C:/dev/lameta%20projects/SayMore%20Data%20from%20Brian%20Parker/Doondo/People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG",
             "@type": "ImageObject",
             name: "NZOUMBA-Georgine_Photo.JPG"
           }
@@ -461,13 +462,15 @@ describe("RoCrateHtmlGenerator", () => {
       const html = generateRoCrateHtml(testData);
 
       // Should convert file:// URL to relative path
-      expect(html).toContain('src="People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG"');
+      expect(html).toContain(
+        'src="People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG"'
+      );
       // Should not contain the original file:// URL
       expect(html).not.toContain('src="file:///');
       // Should not contain percent-encoded characters in the path
-      expect(html).not.toContain('%20');
+      expect(html).not.toContain("%20");
       // Should decode the URL properly
-      expect(html).toContain('NZOUMBA-Georgine_Photo.JPG');
+      expect(html).toContain("NZOUMBA-Georgine_Photo.JPG");
     });
 
     it("should handle Windows paths with spaces in file:// URLs", () => {
@@ -480,7 +483,8 @@ describe("RoCrateHtmlGenerator", () => {
             name: "Test Project"
           },
           {
-            "@id": "file:///C:/dev/lameta%20projects/Project%20With%20Spaces/People/Person%20Name/Person%20Name_Photo.JPG",
+            "@id":
+              "file:///C:/dev/lameta%20projects/Project%20With%20Spaces/People/Person%20Name/Person%20Name_Photo.JPG",
             "@type": "ImageObject",
             name: "Person Name_Photo.JPG"
           }
@@ -491,8 +495,8 @@ describe("RoCrateHtmlGenerator", () => {
 
       // Should properly decode and convert to relative path
       expect(html).toContain('src="People/Person Name/Person Name_Photo.JPG"');
-      expect(html).not.toContain('%20');
-      expect(html).not.toContain('file://');
+      expect(html).not.toContain("%20");
+      expect(html).not.toContain("file://");
     });
 
     it("should handle various project folder structures", () => {
@@ -505,13 +509,14 @@ describe("RoCrateHtmlGenerator", () => {
             name: "Test Project"
           },
           {
-            "@id": "file:///Users/researcher/Documents/Research/LanguageProject/Sessions/session1/recording.mp3",
+            "@id":
+              "file:///Users/researcher/Documents/Research/LanguageProject/Sessions/session1/recording.mp3",
             "@type": "AudioObject",
             name: "recording.mp3"
           },
           {
             "@id": "file:///D:/Research/Data/OtherDocs/readme.txt",
-            "@type": "DigitalDocument", 
+            "@type": "DigitalDocument",
             name: "readme.txt"
           }
         ]
@@ -522,7 +527,7 @@ describe("RoCrateHtmlGenerator", () => {
       // Should extract relative paths starting from recognized folders
       expect(html).toContain('src="Sessions/session1/recording.mp3"');
       // For DigitalDocument files, check the entity-id display uses getDisplayPath
-      expect(html).toContain('>OtherDocs/readme.txt</div>');
+      expect(html).toContain(">OtherDocs/readme.txt</div>");
     });
 
     it("should handle relative paths that are already correct", () => {
@@ -611,7 +616,7 @@ describe("RoCrateHtmlGenerator", () => {
           },
           {
             "@id": "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Consent.jpg",
-            "@type": "ImageObject", 
+            "@type": "ImageObject",
             name: "BAKEMBA Martine_Consent.jpg"
           }
         ]
@@ -620,12 +625,16 @@ describe("RoCrateHtmlGenerator", () => {
       const html = generateRoCrateHtml(testData);
 
       // Should correctly decode %20 back to spaces in the relative paths
-      expect(html).toContain('src="People/BAKEMBA Martine/BAKEMBA Martine_Photo.JPG"');
-      expect(html).toContain('src="People/BAKEMBA Martine/BAKEMBA Martine_Consent.jpg"');
-      
+      expect(html).toContain(
+        'src="People/BAKEMBA Martine/BAKEMBA Martine_Photo.JPG"'
+      );
+      expect(html).toContain(
+        'src="People/BAKEMBA Martine/BAKEMBA Martine_Consent.jpg"'
+      );
+
       // Should not contain the original percent-encoded URLs
       expect(html).not.toContain('src="People/BAKEMBA%20Martine');
-      expect(html).not.toContain('%20');
+      expect(html).not.toContain("%20");
     });
   });
 
@@ -673,23 +682,37 @@ describe("RoCrateHtmlGenerator", () => {
 
       // Debug output
       console.log("Generated HTML for person files test contains:");
-      const entityMatches = html.match(/<div class="entity[^>]*id="[^"]*"[^>]*>/g);
-      console.log("Entity divs:", entityMatches?.map(match => {
-        const idMatch = match.match(/id="([^"]*)"/);
-        return idMatch ? idMatch[1] : "unknown";
-      }));
+      const entityMatches = html.match(
+        /<div class="entity[^>]*id="[^"]*"[^>]*>/g
+      );
+      console.log(
+        "Entity divs:",
+        entityMatches?.map((match) => {
+          const idMatch = match.match(/id="([^"]*)"/);
+          return idMatch ? idMatch[1] : "unknown";
+        })
+      );
 
       // The person entity should exist
       expect(html).toContain('id="entity_People_NZOUMBA_Georgine_"');
 
       // Find the person entity section in the HTML
-      const personEntityStart = html.indexOf('id="entity_People_NZOUMBA_Georgine_"');
+      const personEntityStart = html.indexOf(
+        'id="entity_People_NZOUMBA_Georgine_"'
+      );
       expect(personEntityStart).toBeGreaterThan(-1);
 
       // Look for the next top-level entity to find the end of the person entity section
-      const nextEntityStart = html.indexOf('<div class="entity"', personEntityStart + 1);
-      const personEntityEnd = nextEntityStart > -1 ? nextEntityStart : html.length;
-      const personEntityHtml = html.substring(personEntityStart, personEntityEnd);
+      const nextEntityStart = html.indexOf(
+        '<div class="entity"',
+        personEntityStart + 1
+      );
+      const personEntityEnd =
+        nextEntityStart > -1 ? nextEntityStart : html.length;
+      const personEntityHtml = html.substring(
+        personEntityStart,
+        personEntityEnd
+      );
 
       // The person entity should contain an entity-children-container
       expect(personEntityHtml).toContain("entity-children-container");
@@ -705,7 +728,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     it("should not show person files as separate root-level entities", () => {
       const testDataWithPersonFiles = {
-        "@context": "https://w3id.org/ro/crate/1.1/context", 
+        "@context": "https://w3id.org/ro/crate/1.1/context",
         "@graph": [
           {
             "@id": "./",
@@ -718,24 +741,36 @@ describe("RoCrateHtmlGenerator", () => {
             "@type": "Person",
             name: "BAKALA Michel (@Mfouati)",
             hasPart: [
-              { "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person" },
-              { "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG" },
-              { "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg" }
+              {
+                "@id":
+                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person"
+              },
+              {
+                "@id":
+                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG"
+              },
+              {
+                "@id":
+                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg"
+              }
             ]
           },
           {
-            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
+            "@id":
+              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
             "@type": "DigitalDocument",
             name: "BAKALA Michel (@Mfouati).person",
             encodingFormat: "application/lameta-person"
           },
           {
-            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG",
+            "@id":
+              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG",
             "@type": "ImageObject",
             name: "BAKALA Michel (@Mfouati)_Photo.JPG"
           },
           {
-            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg",
+            "@id":
+              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg",
             "@type": "ImageObject",
             name: "BAKALA Michel (@Mfouati)_Consent.jpg"
           }
@@ -752,13 +787,13 @@ describe("RoCrateHtmlGenerator", () => {
       const photoEntityMatches = html.match(
         /<div class="entity"[^>]*id="[^"]*BAKALA[^"]*Photo[^"]*"[^>]*>/g
       );
-      
+
       if (photoEntityMatches) {
         // If they appear, they should all have the "child" class
-        photoEntityMatches.forEach(match => {
+        photoEntityMatches.forEach((match) => {
           expect(match).toContain("child");
         });
-        
+
         // Should only appear once (as child, not as separate entity)
         expect(photoEntityMatches.length).toBe(1);
       }
@@ -796,21 +831,23 @@ describe("RoCrateHtmlGenerator", () => {
       ];
 
       // Test the child detection logic that's used in computeHierarchy
-      const personEntity = testGraph.find(e => e["@id"] === "People/PARKER Brian/");
+      const personEntity = testGraph.find(
+        (e) => e["@id"] === "People/PARKER Brian/"
+      );
       const personEntityId = personEntity!["@id"];
 
-      const potentialChildren = testGraph.filter(child => {
+      const potentialChildren = testGraph.filter((child) => {
         const childId = child["@id"];
         if (!childId || childId === personEntityId) return false;
 
         // The logic from computeHierarchy for checking if a child belongs to a parent
         if (childId.startsWith(personEntityId)) {
           const remainder = childId.substring(personEntityId.length);
-          
+
           if (personEntityId.endsWith("/")) {
             return remainder.length > 0 && !remainder.includes("/");
           }
-          
+
           if (remainder.startsWith("/")) {
             const afterSlash = remainder.substring(1);
             return afterSlash.length > 0 && !afterSlash.includes("/");
@@ -827,7 +864,7 @@ describe("RoCrateHtmlGenerator", () => {
       const consistentGraph = [
         {
           "@id": "People/PARKER-Brian/",
-          "@type": "Person", 
+          "@type": "Person",
           name: "PARKER Brian"
         },
         {
@@ -842,16 +879,18 @@ describe("RoCrateHtmlGenerator", () => {
         }
       ];
 
-      const consistentPersonEntity = consistentGraph.find(e => e["@type"] === "Person");
+      const consistentPersonEntity = consistentGraph.find(
+        (e) => e["@type"] === "Person"
+      );
       const consistentPersonId = consistentPersonEntity!["@id"];
 
-      const consistentChildren = consistentGraph.filter(child => {
+      const consistentChildren = consistentGraph.filter((child) => {
         const childId = child["@id"];
         if (!childId || childId === consistentPersonId) return false;
 
         if (childId.startsWith(consistentPersonId)) {
           const remainder = childId.substring(consistentPersonId.length);
-          
+
           if (consistentPersonId.endsWith("/")) {
             return remainder.length > 0 && !remainder.includes("/");
           }
@@ -861,8 +900,12 @@ describe("RoCrateHtmlGenerator", () => {
 
       // Should find children when paths are consistent
       expect(consistentChildren.length).toBe(2);
-      expect(consistentChildren.map(c => c.name)).toContain("PARKER Brian.person");
-      expect(consistentChildren.map(c => c.name)).toContain("PARKER Brian_Photo.jpg");
+      expect(consistentChildren.map((c) => c.name)).toContain(
+        "PARKER Brian.person"
+      );
+      expect(consistentChildren.map((c) => c.name)).toContain(
+        "PARKER Brian_Photo.jpg"
+      );
     });
   });
 });
