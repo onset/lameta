@@ -513,6 +513,58 @@ export async function addFieldEntries(
                 folderEntry[propertyKey] = [reference];
               }
             }
+          } else if (field.key === "location" && leafTemplate["@type"] === "Place") {
+            // Special handling for location field - combine with region/country/continent
+            values.forEach((c: string) => {
+              // Create the basic Place entity from the template
+              const leaf = getElementUsingTemplate(leafTemplate, c);
+              
+              // Build description from companion location fields
+              const locationParts: string[] = [];
+              
+              // Check for locationRegion
+              try {
+                const regionField = folder.metadataFile!.properties.getValueOrThrow("locationRegion");
+                if (regionField && regionField.text && regionField.text.trim() && regionField.text !== "unspecified") {
+                  locationParts.push(regionField.text.trim());
+                }
+              } catch {
+                // Field doesn't exist, skip
+              }
+              
+              // Check for locationCountry  
+              try {
+                const countryField = folder.metadataFile!.properties.getValueOrThrow("locationCountry");
+                if (countryField && countryField.text && countryField.text.trim() && countryField.text !== "unspecified") {
+                  locationParts.push(countryField.text.trim());
+                }
+              } catch {
+                // Field doesn't exist, skip
+              }
+              
+              // Check for locationContinent
+              try {
+                const continentField = folder.metadataFile!.properties.getValueOrThrow("locationContinent");
+                if (continentField && continentField.text && continentField.text.trim() && continentField.text !== "unspecified") {
+                  locationParts.push(continentField.text.trim());
+                }
+              } catch {
+                // Field doesn't exist, skip
+              }
+              
+              // Add description if we have location parts
+              if (locationParts.length > 0) {
+                leaf["description"] = `Located in ${locationParts.join(", ")}`;
+              }
+              
+              otherEntries.push(leaf);
+              const reference = leaf["@id"];
+              
+              if (field.rocrate?.array) {
+                if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
+                folderEntry[propertyKey].push({ "@id": reference });
+              } else folderEntry[propertyKey] = { "@id": reference };
+            });
           } else {
             // Regular template processing for non-language fields
             values.forEach((c: string) => {
@@ -557,7 +609,10 @@ export async function addFieldEntries(
       if (
         field.key === "status" ||
         field.key === "topic" ||
-        field.key === "id"
+        field.key === "id" ||
+        field.key === "locationRegion" ||
+        field.key === "locationCountry" ||
+        field.key === "locationContinent"
       ) {
         continue;
       }
