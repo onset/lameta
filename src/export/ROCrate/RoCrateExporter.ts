@@ -345,6 +345,8 @@ export async function addFieldEntries(
       // Special handling for language fields
       if (field.rocrate?.handler === "languages") {
         const languageReferences: any[] = [];
+        const languageCodes: string[] = [];
+        
         values.forEach((languageValue: string) => {
           // Parse language value (could be "etr" or "etr: Edolo")
           const [code] = languageValue.split(":").map((s) => s.trim());
@@ -356,30 +358,45 @@ export async function addFieldEntries(
             // Track usage
             rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
 
-            // Add reference to the field
+            // Store both the code and the reference
+            languageCodes.push(code);
             languageReferences.push(reference);
           }
         });
 
-        if (languageReferences.length > 0) {
-          // Check if field should be array or single object
-          if (field.rocrate?.array === false) {
-            // Use only the first language reference (single object)
-            folderEntry[propertyKey] = languageReferences[0];
+        // Special handling for inLanguage field per LDAC profile requirement
+        if (propertyKey === "inLanguage") {
+          // LDAC Profile states: "inLanguage MUST be a string containing a BCP47 language tag"
+          if (languageCodes.length > 0) {
+            folderEntry[propertyKey] = languageCodes[0]; // Use first language code as string
           } else {
-            // Use array (default behavior)
-            folderEntry[propertyKey] = languageReferences;
+            // Fallback to "und" (undetermined language) as string
+            const languageEntity = rocrateLanguages.getLanguageEntity("und");
+            rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
+            folderEntry[propertyKey] = "und";
           }
         } else {
-          // No language values found, fallback to "und" (undetermined language)
-          const languageEntity = rocrateLanguages.getLanguageEntity("und");
-          const reference = rocrateLanguages.getLanguageReference("und");
-          rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
-
-          if (field.rocrate?.array === false) {
-            folderEntry[propertyKey] = reference;
+          // Normal language field handling (ldac:subjectLanguage, etc.)
+          if (languageReferences.length > 0) {
+            // Check if field should be array or single object
+            if (field.rocrate?.array === false) {
+              // Use only the first language reference (single object)
+              folderEntry[propertyKey] = languageReferences[0];
+            } else {
+              // Use array (default behavior)
+              folderEntry[propertyKey] = languageReferences;
+            }
           } else {
-            folderEntry[propertyKey] = [reference];
+            // No language values found, fallback to "und" (undetermined language)
+            const languageEntity = rocrateLanguages.getLanguageEntity("und");
+            const reference = rocrateLanguages.getLanguageReference("und");
+            rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
+
+            if (field.rocrate?.array === false) {
+              folderEntry[propertyKey] = reference;
+            } else {
+              folderEntry[propertyKey] = [reference];
+            }
           }
         }
         continue; // Skip the normal template processing for language fields
