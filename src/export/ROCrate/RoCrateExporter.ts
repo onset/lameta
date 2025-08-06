@@ -11,7 +11,11 @@ import {
   getVocabularyMapping,
   createTermDefinition,
   getTermSets,
-  getCustomUri
+  getCustomUri,
+  sanitizeForIri,
+  createFileId,
+  createPersonId,
+  createSessionId
 } from "./RoCrateUtils";
 import {
   getLdacMaterialTypeForPath,
@@ -24,7 +28,6 @@ import {
 import { createSessionEntry } from "./RoCrateSessions";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicense";
-import { sanitizeForIri } from "./RoCrateUtils";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -89,7 +92,10 @@ async function getRoCrateInternal(
   const rocrateLicense = new RoCrateLicense();
 
   if (folder instanceof Person) {
-    const entry = {};
+    const entry = {
+      "@id": createPersonId(folder),
+      "@type": "Person"
+    };
     const otherEntries: object[] = [];
     await addFieldEntries(
       project,
@@ -184,7 +190,7 @@ async function getRoCrateInternal(
     // Link to session events in the root dataset using pcdm:hasMember
     project.sessions.items.forEach((session) => {
       entry["pcdm:hasMember"].push({
-        "@id": `Sessions/${sanitizeForIri(session.filePrefix)}/`
+        "@id": createSessionId(session)
       });
     });
 
@@ -727,17 +733,8 @@ export function addChildFileEntries(
       fileType = "DigitalDocument";
     }
 
-    // Use proper file ID based on folder type
-    let fileId = sanitizeForIri(fileName);
-    if (folder instanceof Session) {
-      fileId = `Sessions/${sanitizeForIri(folder.filePrefix)}/${sanitizeForIri(
-        fileName
-      )}`;
-    } else if (folder instanceof Person) {
-      fileId = `People/${sanitizeForIri(folder.filePrefix)}/${sanitizeForIri(
-        fileName
-      )}`;
-    }
+    // Use centralized file ID generation to ensure consistency
+    const fileId = createFileId(folder, fileName);
 
     const fileEntry: any = {
       "@id": fileId,

@@ -11,7 +11,7 @@ import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicense";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
-import { sanitizeForIri } from "./RoCrateUtils";
+import { sanitizeForIri, createSessionId } from "./RoCrateUtils";
 
 export async function createSessionEntry(
   project: Project,
@@ -23,7 +23,7 @@ export async function createSessionEntry(
   const mainSessionEntry: any = {
     "@id": isStandaloneSession
       ? "./"
-      : `Sessions/${sanitizeForIri(session.filePrefix)}/`,
+      : createSessionId(session),
     "@type": ["Dataset", "pcdm:Object", "Event"],
     conformsTo: {
       "@id": "https://w3id.org/ldac/profile#Object"

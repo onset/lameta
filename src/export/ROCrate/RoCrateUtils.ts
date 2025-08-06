@@ -42,6 +42,46 @@ export function sanitizeForIri(input: string | undefined): string {
   );
 }
 
+/**
+ * Creates a consistent file ID for RO-Crate entities.
+ * This centralizes the logic for generating file @id values to ensure
+ * consistency between file entities and their hasPart references.
+ */
+export function createFileId(folder: any, fileName: string): string {
+  const sanitizedFileName = sanitizeForIri(fileName);
+  
+  // Use duck typing to check folder type since we can't import the classes here
+  // to avoid circular dependencies
+  if (folder.filePrefix !== undefined) {
+    if (folder.getAllContributionsToAllFiles !== undefined) {
+      // This is a Session
+      return `Sessions/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
+    } else if (folder.knownFields !== undefined && folder.files !== undefined) {
+      // This is a Person
+      return `People/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
+    }
+  }
+  
+  // Default case for other folder types
+  return sanitizedFileName;
+}
+
+/**
+ * Creates a consistent Session ID for RO-Crate entities.
+ * This centralizes the logic for generating Session @id values.
+ */
+export function createSessionId(session: any): string {
+  return `Sessions/${sanitizeForIri(session.filePrefix)}/`;
+}
+
+/**
+ * Creates a consistent Person ID for RO-Crate entities.
+ * This centralizes the logic for generating Person @id values.
+ */
+export function createPersonId(person: any): string {
+  return `People/${sanitizeForIri(person.filePrefix)}/`;
+}
+
 export async function getVocabularyMapping(
   termId: string,
   vocabularyFile: string,

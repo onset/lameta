@@ -43,7 +43,10 @@ vi.mock("./RoCrateUtils", () => ({
   createTermDefinition: vi.fn(),
   getTermSets: vi.fn().mockReturnValue([]),
   getCustomUri: vi.fn(),
-  sanitizeForIri: vi.fn((input) => input || "")
+  sanitizeForIri: vi.fn((input) => input || ""),
+  createFileId: vi.fn((folder, fileName) => fileName || ""),
+  createSessionId: vi.fn((session) => `Sessions/${session.filePrefix || "test"}/`),
+  createPersonId: vi.fn((person) => `People/${person.filePrefix || "test"}/`)
 }));
 
 describe("RoCrateExporter PII and Custom Fields Filtering", () => {

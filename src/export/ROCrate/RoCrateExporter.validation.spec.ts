@@ -21,6 +21,7 @@ vi.mock("fs-extra", () => ({
 import { getRoCrate } from "./RoCrateExporter";
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
+import { Person } from "../../model/Project/Person/Person";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import {
@@ -826,8 +827,22 @@ describe("RoCrateExporter Validation Tests", () => {
         items: [mockSessionWithFileInvalidChars]
       };
 
+      // Set the proper prototype for the session so instanceof checks work
+      Object.setPrototypeOf(mockSessionWithFileInvalidChars, Session.prototype);
+
       const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
       const graph = roCrateData["@graph"];
+
+      // Find the session entry in the graph
+      const sessionEntry = graph.find(
+        (item: any) =>
+          item["@id"] === "Sessions/test-session/" && 
+          item["@type"] && 
+          Array.isArray(item["@type"]) && 
+          item["@type"].includes("Dataset")
+      );
+
+      expect(sessionEntry).toBeDefined();
 
       // Find the file entry in the graph
       const fileEntry = graph.find(
@@ -837,10 +852,128 @@ describe("RoCrateExporter Validation Tests", () => {
 
       expect(fileEntry).toBeDefined();
 
-      // The key test: the @id should be sanitized (no invalid characters)
-      expect(fileEntry["@id"]).toBe("BAHOUNGOU-Hilaire_Consent-final-.wav");
+      // The key test: the @id should be sanitized (no invalid characters) and include full path
+      const expectedFileId = "Sessions/test-session/BAHOUNGOU-Hilaire_Consent-final-.wav";
+      expect(fileEntry["@id"]).toBe(expectedFileId);
       expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks
       expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
+
+      // Critical test: Verify that the session's hasPart references match the actual file @id
+      expect(sessionEntry.hasPart).toBeDefined();
+      const hasPartReference = sessionEntry.hasPart.find(
+        (ref: any) => ref["@id"] === expectedFileId
+      );
+      expect(hasPartReference).toBeDefined();
+      expect(hasPartReference["@id"]).toBe(expectedFileId);
+    });
+
+    it("should ensure hasPart references match sanitized file IDs for Person entities", async () => {
+      // Mock files with spaces and special characters in names
+      const mockPersonPhoto = {
+        getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Photo (v2)!.JPG",
+        getModifiedDate: () => new Date("2023-01-01"),
+        getCreatedDate: () => new Date("2023-01-01")
+      };
+
+      const mockPersonConsent = {
+        getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Consent (final).wav",
+        getModifiedDate: () => new Date("2023-01-01"),
+        getCreatedDate: () => new Date("2023-01-01")
+      };
+
+      const mockPersonWithFiles = {
+        filePrefix: "BAHOUNGOU Hilaire",
+        knownFields: [{
+          key: "name",
+          englishLabel: "Full Name",
+          personallyIdentifiableInformation: false,
+          isCustom: false
+        }],
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "name") return "BAHOUNGOU Hilaire";
+            return "";
+          }),
+          properties: {
+            getHasValue: vi.fn().mockReturnValue(true),
+            forEach: vi.fn()
+          }
+        },
+        files: [mockPersonPhoto, mockPersonConsent]
+      } as any;
+
+      // Mock project with this person
+      const mockProjectWithPerson = {
+        filePrefix: "test-project",
+        sessions: { items: [] },
+        findPerson: vi.fn().mockReturnValue(mockPersonWithFiles),
+        metadataFile: {
+          getTextProperty: vi.fn().mockImplementation((key: string) => {
+            if (key === "title") return "Test Project";
+            return "";
+          }),
+          properties: {
+            getHasValue: vi.fn().mockReturnValue(false),
+            forEach: vi.fn()
+          }
+        },
+        files: [],
+        knownFields: [],
+        authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      } as any;
+
+      Object.setPrototypeOf(mockProjectWithPerson, Project.prototype);
+      Object.setPrototypeOf(mockPersonWithFiles, Person.prototype);
+
+      const roCrateData = (await getRoCrate(mockProjectWithPerson, mockPersonWithFiles)) as any;
+      const graph = Array.isArray(roCrateData) ? roCrateData : roCrateData["@graph"];
+
+      // Find the person entry
+      const personEntry = graph.find(
+        (item: any) => item["@type"] === "Person"
+      );
+
+      expect(personEntry).toBeDefined();
+
+      // Find the file entries
+      const photoEntry = graph.find(
+        (item: any) => item["@type"] === "ImageObject" && item["@id"]?.includes("Photo")
+      );
+      const consentEntry = graph.find(
+        (item: any) => item["@type"] === "AudioObject" && item["@id"]?.includes("Consent")
+      );
+
+      expect(photoEntry).toBeDefined();
+      expect(consentEntry).toBeDefined();
+
+      // Verify file IDs are sanitized
+      const expectedPhotoId = "People/BAHOUNGOU-Hilaire/BAHOUNGOU-Hilaire_Photo-v2-.JPG";
+      const expectedConsentId = "People/BAHOUNGOU-Hilaire/BAHOUNGOU-Hilaire_Consent-final-.wav";
+
+      expect(photoEntry["@id"]).toBe(expectedPhotoId);
+      expect(consentEntry["@id"]).toBe(expectedConsentId);
+
+      // Critical test: Verify that the person's hasPart references match the actual file @ids
+      expect(personEntry.hasPart).toBeDefined();
+      expect(Array.isArray(personEntry.hasPart)).toBe(true);
+
+      const photoReference = personEntry.hasPart.find(
+        (ref: any) => ref["@id"] === expectedPhotoId
+      );
+      const consentReference = personEntry.hasPart.find(
+        (ref: any) => ref["@id"] === expectedConsentId
+      );
+
+      expect(photoReference).toBeDefined();
+      expect(photoReference["@id"]).toBe(expectedPhotoId);
+      expect(consentReference).toBeDefined();
+      expect(consentReference["@id"]).toBe(expectedConsentId);
+
+      // Verify no invalid characters in any @id
+      expect(photoEntry["@id"]).not.toMatch(/[\s()!]/);
+      expect(consentEntry["@id"]).not.toMatch(/[\s()!]/);
+      expect(photoReference["@id"]).not.toMatch(/[\s()!]/);
+      expect(consentReference["@id"]).not.toMatch(/[\s()!]/);
     });
   });
 });
