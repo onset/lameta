@@ -14,4 +14,6 @@ Never say "I see the issue!" or similar phrases.
 
 When doing debugging by writing temporary one-off code files in the terminal, remember not to leave them laying around.
 
+When making test data, don't make it clean, include things like spaces, slashes, and other characters that could cause issues with file names, URLs, IRIs. This is an app that deals in all human language scripts, so we have to test for a wide range of inputs and edge cases.
+
 Fail Fast. Don't write code that silently works around failed dependencies. If a dependency is missing we should fail. Javascript itself will fail if we try to use a missing dependency, and that's fine. E.g. if you expect a foo to be defined, don't write "if(foo){}". Just use foo and if it's null, fine, we'll get an error, which is good.
