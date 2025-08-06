@@ -22,7 +22,7 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
       filePrefix: "test-session",
       metadata: {
         title: "Test Session",
-        WorkingLanguages: "etr"  // This should map to inLanguage in the RO-Crate export
+        WorkingLanguages: "etr" // This should map to inLanguage in the RO-Crate export
       }
     });
 
@@ -40,21 +40,20 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
 
     // Generate RO-Crate
     const roCrateData = await getRoCrate(mockProject, mockProject);
-    const roCrateJson = typeof roCrateData === "string" 
-      ? JSON.parse(roCrateData) 
-      : roCrateData;
+    const roCrateJson =
+      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the session entity in the graph
-    const sessionEntity = roCrateJson["@graph"].find((entity: any) => 
-      entity["@id"] === "Sessions/test-session/"
+    const sessionEntity = roCrateJson["@graph"].find(
+      (entity: any) => entity["@id"] === "Sessions/test-session/"
     );
 
     expect(sessionEntity).toBeDefined();
     console.log("Session entity:", JSON.stringify(sessionEntity, null, 2));
-    
+
     // According to LDAC profile, inLanguage should be a string BCP47 language tag
     expect(sessionEntity.inLanguage).toBe("etr");
-    
+
     // It should NOT be an object reference
     expect(typeof sessionEntity.inLanguage).toBe("string");
     expect(sessionEntity.inLanguage).not.toHaveProperty("@id");

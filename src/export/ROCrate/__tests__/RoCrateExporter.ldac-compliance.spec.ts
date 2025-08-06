@@ -66,7 +66,7 @@ describe("RO-Crate LDAC Profile Compliance", () => {
         {
           key: "languages",
           persist: true,
-          type: "languageChoices", 
+          type: "languageChoices",
           multilingual: false,
           isCustom: false,
           showOnAutoForm: true,
@@ -90,12 +90,12 @@ describe("RO-Crate LDAC Profile Compliance", () => {
       );
 
       expect(sessionEntry).toBeDefined();
-      
+
       // According to LDAC profile, inLanguage MUST be a string containing a BCP47 language tag
       expect(sessionEntry["inLanguage"]).toBeDefined();
       expect(typeof sessionEntry["inLanguage"]).toBe("string");
       expect(sessionEntry["inLanguage"]).toBe("etr"); // Should be the language code directly
-      
+
       // Should NOT be an object reference
       expect(sessionEntry["inLanguage"]).not.toHaveProperty("@id");
     });
