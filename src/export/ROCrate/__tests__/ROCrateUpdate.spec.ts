@@ -15,7 +15,7 @@ vi.mock("fs-extra", () => ({
 }));
 
 // Mock the RoCrateExporter
-vi.mock("./RoCrateExporter", () => ({
+vi.mock("../RoCrateExporter", () => ({
   getRoCrate: vi.fn()
 }));
 
@@ -29,7 +29,7 @@ vi.mock("path", async () => {
 });
 
 const mockFs = fs as any;
-const mockGetRoCrate = getRoCrate as any;
+const mockGetRoCrate = vi.mocked(getRoCrate);
 
 describe("writeROCrateFile", () => {
   let mockProject: Project;

@@ -1030,7 +1030,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           "@id": "People/Awi_Heole/"
         }
       ]);
-      expect(sessionEvent["ldac:recorder"]).toEqual([{ "@id": "Hatton" }]);
+      expect(sessionEvent["ldac:recorder"]).toEqual([
+        { "@id": "#contributor-Hatton" }
+      ]);
     });
 
     it("should use correct LDAC role URIs with ldac: namespace", async () => {
@@ -1104,7 +1106,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": "People/Awi_Heole/"
       });
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
-        "@id": "John Doe"
+        "@id": "#contributor-John_Doe"
       });
     });
   });

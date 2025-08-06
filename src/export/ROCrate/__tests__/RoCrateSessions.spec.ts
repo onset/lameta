@@ -174,9 +174,11 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
-      expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "John Doe" }]);
+      expect(sessionEntry["ldac:speaker"]).toEqual([
+        { "@id": "#contributor-John_Doe" }
+      ]);
       expect(sessionEntry["ldac:interviewer"]).toEqual([
-        { "@id": "Jane Smith" }
+        { "@id": "#contributor-Jane_Smith" }
       ]);
     });
 
@@ -190,8 +192,8 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "John Doe" },
-        { "@id": "Jane Smith" }
+        { "@id": "#contributor-John_Doe" },
+        { "@id": "#contributor-Jane_Smith" }
       ]);
     });
 
@@ -207,10 +209,12 @@ describe("RoCrateSessions", () => {
 
       // Both single and multiple role values should be arrays
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "John Doe" },
-        { "@id": "Jane Smith" }
+        { "@id": "#contributor-John_Doe" },
+        { "@id": "#contributor-Jane_Smith" }
       ]);
-      expect(sessionEntry["ldac:recorder"]).toEqual([{ "@id": "Bob Wilson" }]);
+      expect(sessionEntry["ldac:recorder"]).toEqual([
+        { "@id": "#contributor-Bob_Wilson" }
+      ]);
     });
 
     it("should avoid duplicate person IDs in the same role", () => {
@@ -224,8 +228,8 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "John Doe" },
-        { "@id": "Jane Smith" }
+        { "@id": "#contributor-John_Doe" },
+        { "@id": "#contributor-Jane_Smith" }
       ]);
       expect(sessionEntry["ldac:speaker"]).toHaveLength(2); // Only unique entries
     });
