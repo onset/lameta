@@ -17,6 +17,7 @@ import axios from "axios";
 */
 
 // This test is expensive and only runs when explicitly enabled by a human.
+// Comment out the .skipIf to run it manually.
 describe.skipIf("Manual test: Will incur charges")(
   "RoCrateExporter OpenRouter Validation (Expensive)",
   () => {

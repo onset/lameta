@@ -3,7 +3,10 @@ import { Session } from "../../model/Project/Session/Session";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import { getMimeType } from "../../model/file/FileTypeInfo";
+import {
+  getMimeType,
+  GetFileFormatInfoForExtension
+} from "../../model/file/FileTypeInfo";
 import { Project } from "../../model/Project/Project";
 import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
 import _ from "lodash";
@@ -862,11 +865,16 @@ export function addChildFileEntries(
     // Determine the appropriate @type based on file extension and context
     let fileType = "File";
 
-    if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
-      fileType = "AudioObject";
-    } else if (fileExt.match(/\.(mp4|avi|mov|mkv|webm)$/)) {
+    // Use FileTypeInfo to get the file format information
+    const fileFormatInfo = GetFileFormatInfoForExtension(
+      fileExt.replace(".", "")
+    );
+
+    if (fileFormatInfo?.type === "Video") {
       fileType = "VideoObject";
-    } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
+    } else if (fileFormatInfo?.type === "Audio") {
+      fileType = "AudioObject";
+    } else if (fileFormatInfo?.type === "Image") {
       fileType = "ImageObject";
     } else if (
       fileExt.match(
@@ -932,12 +940,21 @@ export function addProjectDocumentFolderEntries(
     // Determine the appropriate @type based on file extension
     let fileType = "DigitalDocument"; // Default for project documents
 
-    if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
+    // Use FileTypeInfo to get the file format information
+    const fileFormatInfo = GetFileFormatInfoForExtension(
+      fileExt.replace(".", "")
+    );
+
+    if (fileFormatInfo?.type === "Image") {
+      fileType = "ImageObject";
+    } else if (fileFormatInfo?.type === "Audio") {
+      fileType = "AudioObject";
+    } else if (fileFormatInfo?.type === "Video") {
+      fileType = "VideoObject";
+    } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
       fileType = "ImageObject";
     } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
       fileType = "AudioObject";
-    } else if (fileExt.match(/\.(mp4|avi|mov|mkv|webm)$/)) {
-      fileType = "VideoObject";
     }
 
     // Create file ID using folder type

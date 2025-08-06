@@ -25,7 +25,8 @@ export const knownFileFormats: IFileFormat[] = [
     type: "Audio",
     isMediaType: true,
     imdiType: "Audio",
-    extensions: "wav, mp3, wma,ogg"
+    extensions:
+      "wav, mp3, wma,ogg,flac, aac, m4a, aiff, aif, au, amr, ra, ram, caf"
   },
   {
     type: "Video",
