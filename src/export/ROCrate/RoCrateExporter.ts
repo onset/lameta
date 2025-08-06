@@ -385,7 +385,7 @@ export async function addFieldEntries(
               project.metadataFile?.getTextProperty("title") ||
               "unknown-project";
 
-            const mapping = await getVocabularyMapping(
+            const mapping = getVocabularyMapping(
               termId,
               field.vocabularyFile,
               projectTitle

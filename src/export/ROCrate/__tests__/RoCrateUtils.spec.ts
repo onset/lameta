@@ -6,7 +6,7 @@ import {
 } from "../RoCrateUtils";
 
 describe("RoCrateUtils - Vocabulary Handling", () => {
-  it("should return simplified ID for unknown terms", async () => {
+  it("should return simplified ID for unknown terms", () => {
     const unknownTerms = [
       "unknown",
       "Unknown",
@@ -18,7 +18,7 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
     ];
 
     for (const term of unknownTerms) {
-      const result = await getVocabularyMapping(
+      const result = getVocabularyMapping(
         term,
         "genres.json", // This file might not exist but that's OK for this test
         "Test Project"
@@ -31,8 +31,8 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
     }
   });
 
-  it("should use normal project-specific ID for custom terms", async () => {
-    const result = await getVocabularyMapping(
+  it("should use normal project-specific ID for custom terms", () => {
+    const result = getVocabularyMapping(
       "some_nonexistent_custom_genre",
       "genres.json", // This file might not exist but that's OK for this test
       "Test Project"
