@@ -305,6 +305,11 @@ export async function addFieldEntries(
 ) {
   // First handle the known fields
   for (const field of folder.knownFields) {
+    // don't export if we know it has been migrated
+    if (field.deprecated && field.deprecated.indexOf("migrated") > -1) {
+      continue;
+    }
+
     const values: string[] = getFieldValues(folder, field);
     // Skip empty fields, except for language fields which need to process empty values
     // to trigger "und" fallback behavior for LDAC compliance
@@ -550,6 +555,17 @@ export async function addFieldEntries(
     if (folder.knownFields.some((k) => k.key === key)) {
       return;
     }
+
+    // don't export if we know it has been migrated
+    const definition = folder.metadataFile!.properties.getFieldDefinition(key);
+    if (
+      definition &&
+      definition.deprecated &&
+      definition.deprecated.indexOf("migrated") > -1
+    ) {
+      return;
+    }
+
     const value = field.text?.trim();
     if (value && value !== "unspecified") {
       folderEntry[key] = value;

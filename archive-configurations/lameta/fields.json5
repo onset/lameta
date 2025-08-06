@@ -587,7 +587,7 @@
     {
       key: "otherLanguage0",
       omitExport: "true",
-      // Leave this out because it is deprecated. deprecated: "migrated to languages by lameta",
+      deprecated: "migrated to languages by lameta",
       importType: "languageCodeOrName"
     },
     {

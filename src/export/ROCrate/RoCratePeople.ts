@@ -54,6 +54,11 @@ function makeLdacCompliantPersonEntry(
 
   // Process known fields
   for (const field of person.knownFields) {
+    // don't export if we know it has been migrated
+    if (field.deprecated && field.deprecated.indexOf("migrated") > -1) {
+      continue;
+    }
+
     const value = person.metadataFile?.getTextProperty(field.key)?.trim();
 
     if (!value || value === "unspecified" || value === "") {

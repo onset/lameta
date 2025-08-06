@@ -1337,3 +1337,234 @@ describe("RoCrateExporter project document folders", () => {
     expect(docFileRefs).toHaveLength(0);
   });
 });
+
+describe("RoCrateExporter deprecated field handling", () => {
+  let mockProject: Project;
+  let mockSession: Session;
+
+  beforeEach(() => {
+    // Mock the field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
+      [
+        {
+          key: "deprecated_field",
+          englishLabel: "Deprecated Field",
+          deprecated: "migrated to new field",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "deprecated_field",
+            template: null
+          }
+        } as FieldDefinition,
+        {
+          key: "regular_field",
+          englishLabel: "Regular Field",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "regular_field",
+            template: null
+          }
+        } as FieldDefinition
+      ]
+    );
+
+    // Mock common field definitions
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
+      {
+        key: "person",
+        rocrate: {
+          template: {
+            "@id": "[v]",
+            "@type": "Person"
+          }
+        }
+      } as FieldDefinition
+    ]);
+
+    mockProject = {
+      filePrefix: "project1",
+      metadataFile: {
+        getTextProperty: vi.fn(() => ""),
+        properties: {
+          forEach: vi.fn()
+        }
+      } as any,
+      sessions: { items: [] },
+      authorityLists: {
+        accessChoicesOfCurrentProtocol: []
+      },
+      knownFields: [],
+      files: []
+    } as any;
+
+    mockSession = {
+      filePrefix: "test_session",
+      knownFields: [
+        {
+          key: "deprecated_field",
+          deprecated: "migrated to new field",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "deprecated_field",
+            template: null
+          }
+        },
+        {
+          key: "regular_field",
+          persist: true,
+          type: "Text",
+          multilingual: false,
+          isCustom: false,
+          showOnAutoForm: true,
+          rocrate: {
+            key: "regular_field",
+            template: null
+          }
+        }
+      ],
+      files: [],
+      metadataFile: {
+        getTextProperty: vi.fn().mockImplementation((key: string) => {
+          if (key === "title") return "Test Session";
+          if (key === "description") return "Test Description";
+          if (key === "deprecated_field") return "deprecated value";
+          if (key === "regular_field") return "regular value";
+          return "";
+        }),
+        properties: {
+          getHasValue: vi.fn().mockImplementation((key: string) => {
+            if (key === "deprecated_field") return true;
+            if (key === "regular_field") return true;
+            return false;
+          }),
+          forEach: vi.fn().mockImplementation((callback) => {
+            // Mock custom field that should be skipped due to migration
+            callback("deprecated_custom", {
+              definition: {
+                isCustom: true,
+                deprecated: "migrated to better field"
+              },
+              text: "custom deprecated value"
+            });
+            // Mock regular custom field that should be included
+            callback("regular_custom", {
+              definition: {
+                isCustom: true
+              },
+              text: "custom regular value"
+            });
+          }),
+          getFieldDefinition: vi.fn().mockImplementation((key: string) => {
+            if (key === "deprecated_custom") {
+              return {
+                deprecated: "migrated to better field"
+              };
+            }
+            return null;
+          })
+        }
+      },
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+    } as any;
+  });
+
+  it("should skip fields with deprecated='migrated' status from knownFields", async () => {
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should not include the deprecated field
+    expect(sessionEntry).not.toHaveProperty("deprecated_field");
+
+    // Should include the regular field
+    expect(sessionEntry).toHaveProperty("regular_field");
+    expect(sessionEntry.regular_field).toBe("regular value");
+  });
+
+  it("should skip custom fields with deprecated='migrated' status", async () => {
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should not include the deprecated custom field
+    expect(sessionEntry).not.toHaveProperty("deprecated_custom");
+
+    // Should include the regular custom field
+    expect(sessionEntry).toHaveProperty("regular_custom");
+    expect(sessionEntry.regular_custom).toBe("custom regular value");
+  });
+
+  it("should include fields with other types of deprecation", async () => {
+    // Add a field with different deprecation reason
+    mockSession.knownFields.push({
+      key: "other_deprecated_field",
+      englishLabel: "Other Deprecated Field",
+      deprecated: "superseded by another field",
+      persist: true,
+      type: "Text",
+      multilingual: false,
+      isCustom: false,
+      showOnAutoForm: true,
+      rocrate: {
+        key: "other_deprecated_field",
+        template: null
+      }
+    });
+
+    mockSession.metadataFile!.getTextProperty = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test Description";
+        if (key === "deprecated_field") return "deprecated value";
+        if (key === "regular_field") return "regular value";
+        if (key === "other_deprecated_field") return "other deprecated value";
+        return "";
+      });
+
+    mockSession.metadataFile!.properties.getHasValue = vi
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === "deprecated_field") return true;
+        if (key === "regular_field") return true;
+        if (key === "other_deprecated_field") return true;
+        return false;
+      });
+
+    const result = (await getRoCrate(mockProject, mockSession)) as any;
+
+    // Find the main session entry
+    const sessionEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+
+    // Should not include the migrated field
+    expect(sessionEntry).not.toHaveProperty("deprecated_field");
+
+    // Should include the field with other deprecation (not "migrated")
+    expect(sessionEntry).toHaveProperty("other_deprecated_field");
+    expect(sessionEntry.other_deprecated_field).toBe("other deprecated value");
+
+    // Should include the regular field
+    expect(sessionEntry).toHaveProperty("regular_field");
+    expect(sessionEntry.regular_field).toBe("regular value");
+  });
+});
