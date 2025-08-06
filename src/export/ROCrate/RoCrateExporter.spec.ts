@@ -4,7 +4,7 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
-import { RoCrateLicense } from "./RoCrateLicense";
+import { RoCrateLicense } from "./RoCrateLicenseManager";
 
 // Mock the new managers
 vi.mock("./LanguageManager", () => ({

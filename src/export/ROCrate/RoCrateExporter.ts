@@ -24,10 +24,10 @@ import {
 import {
   createLdacAccessTypeDefinitions,
   createDistinctLicenses
-} from "./RoCrateLicenses";
+} from "./RoCrateLicenseUtils";
 import { createSessionEntry } from "./RoCrateSessions";
 import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicense";
+import { RoCrateLicense } from "./RoCrateLicenseManager";
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to

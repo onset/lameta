@@ -1,7 +1,7 @@
 import { Session } from "../../model/Project/Session/Session";
 import { File } from "../../model/file/File";
 import { Project } from "../../model/Project/Project";
-import { getSessionLicenseId as getSessionLicenseIdFromLicenses } from "./RoCrateLicenses";
+import { getSessionLicenseId as getSessionLicenseIdFromLicenses } from "./RoCrateLicenseUtils";
 
 /**
  * Manages licenses for RO-Crate export, ensuring every distributable file
@@ -31,32 +31,30 @@ export class RoCrateLicense {
   ensureFileLicense(file: File, session: Session, project?: Project): void {
     const filePath = file.metadataFilePath || file.getActualFilePath();
 
-    if (!this.fileLicenseMap.has(filePath)) {
-      // Check if file has its own license - safely handle cases where properties might not exist
-      const fileLicense =
-        file.properties?.getTextStringOrEmpty("license") || "";
+    // Check if file has its own license - safely handle cases where properties might not exist
+    const fileLicense =
+      file.properties?.getTextStringOrEmpty("license") || "";
 
-      if (fileLicense) {
-        // If project is provided, use normalized license ID instead of raw license value
-        if (project && this.isRawAccessValue(fileLicense)) {
-          const normalizedLicenseId = this.getSessionLicenseId(
-            session,
-            project
-          );
-          if (normalizedLicenseId) {
-            this.setFileLicense(filePath, normalizedLicenseId);
-          } else {
-            this.setFileLicense(filePath, fileLicense);
-          }
+    if (fileLicense) {
+      // Always normalize raw license values when project is available
+      if (project && this.isRawAccessValue(fileLicense)) {
+        const normalizedLicenseId = this.getSessionLicenseId(
+          session,
+          project
+        );
+        if (normalizedLicenseId) {
+          this.setFileLicense(filePath, normalizedLicenseId);
         } else {
           this.setFileLicense(filePath, fileLicense);
         }
       } else {
-        // Use session license as fallback
-        const sessionLicenseId = this.getSessionLicenseId(session, project);
-        if (sessionLicenseId) {
-          this.setFileLicense(filePath, sessionLicenseId);
-        }
+        this.setFileLicense(filePath, fileLicense);
+      }
+    } else {
+      // Always set session license as fallback when no file license exists
+      const sessionLicenseId = this.getSessionLicenseId(session, project);
+      if (sessionLicenseId) {
+        this.setFileLicense(filePath, sessionLicenseId);
       }
     }
   }

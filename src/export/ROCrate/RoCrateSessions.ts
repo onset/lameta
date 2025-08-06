@@ -4,12 +4,12 @@ import {
   createSessionLicense,
   getSessionLicenseId,
   createLdacAccessTypeDefinitions
-} from "./RoCrateLicenses";
+} from "./RoCrateLicenseUtils";
 import { createLdacMaterialTypeDefinitions } from "./RoCrateMaterialTypes";
 import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicense";
+import { RoCrateLicense } from "./RoCrateLicenseManager";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
 import { sanitizeForIri, createSessionId } from "./RoCrateUtils";
 
@@ -93,7 +93,7 @@ export async function createSessionEntry(
   );
 
   // Add files to session hasPart
-  addChildFileEntries(session, mainSessionEntry, otherEntries, rocrateLicense);
+  addChildFileEntries(session, mainSessionEntry, otherEntries, rocrateLicense, project);
 
   // Create Place entity if location is specified
   const location = session.metadataFile?.getTextProperty("location");

@@ -11,7 +11,7 @@ setupCommonMocks();
 
 // Import components after mocks are set up
 import { RoCrateLanguages } from "../RoCrateLanguages";
-import { RoCrateLicense } from "../RoCrateLicense";
+import { RoCrateLicense } from "../RoCrateLicenseManager";
 import { makeEntriesFromParticipant } from "../RoCratePeople";
 import { createSessionEntry } from "../RoCrateSessions";
 

@@ -18,7 +18,7 @@ import { Project } from "../../model/Project/Project";
 import { FieldDefinition } from "../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicense";
+import { RoCrateLicense } from "./RoCrateLicenseManager";
 
 describe("RoCrateSessions", () => {
   let mockProject: Project;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { RoCrateLicense } from "../RoCrateLicense";
+import { RoCrateLicense } from "../RoCrateLicenseManager";
 import {
   createMockProject,
   createMockSession

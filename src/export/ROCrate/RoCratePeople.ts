@@ -2,7 +2,7 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
-import { RoCrateLicense } from "./RoCrateLicense";
+import { RoCrateLicense } from "./RoCrateLicenseManager";
 import {
   addChildFileEntries,
   getRoCrateTemplate,
