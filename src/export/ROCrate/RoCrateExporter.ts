@@ -108,11 +108,15 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
-    
+
     // Apply LDAC compliance for direct person export
     // Try to find a session date from the project for age calculation
     let sessionDate: Date | undefined;
-    if (project && (project as any).sessions && (project as any).sessions.items) {
+    if (
+      project &&
+      (project as any).sessions &&
+      (project as any).sessions.items
+    ) {
       const firstSession = (project as any).sessions.items[0];
       if (firstSession && firstSession.metadataFile) {
         const dateString = firstSession.metadataFile.getTextProperty("date");
@@ -121,9 +125,9 @@ async function getRoCrateInternal(
         }
       }
     }
-    
+
     makeLdacCompliantPersonEntry(folder as Person, sessionDate, entry);
-    
+
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
     return [entry, ...getUniqueEntries(otherEntries)];
   }
@@ -865,7 +869,9 @@ export function addChildFileEntries(
     } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
       fileType = "ImageObject";
     } else if (
-      fileExt.match(/\.(xml|eaf|txt|doc|docx|rtf|md|pptx|pdf|person|session)$/)
+      fileExt.match(
+        /\.(xml|eaf|txt|doc|docx|rtf|md|pptx|wmv|pdf|person|session)$/
+      )
     ) {
       fileType = "DigitalDocument";
     }
