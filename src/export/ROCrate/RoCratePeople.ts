@@ -53,7 +53,11 @@ function makeLdacCompliantPersonEntry(
   if (birthYear && sessionDate && birthYear !== "?" && birthYear !== "") {
     const age = person.ageOn(sessionDate);
     if (age && age !== "") {
-      personElement["ldac:age"] = age;
+      // Convert age string to integer for LDAC compliance (LDAC profile requires integer)
+      const ageNumber = parseInt(age, 10);
+      if (!isNaN(ageNumber)) {
+        personElement["ldac:age"] = ageNumber;
+      }
     }
   }
 
