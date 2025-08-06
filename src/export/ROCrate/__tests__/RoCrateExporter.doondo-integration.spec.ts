@@ -112,4 +112,32 @@ describe("RoCrateExporter Doondo Project Integration", () => {
       expect(sessionFile.license["@id"]).toMatch(/^#license-/);
     });
   });
+
+  it("should have consistently URI-encoded @id values", async () => {
+    const roCrateData = await getRoCrate(project, project);
+    const metadata =
+      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+
+    // we have a path to a file, "dde-bakala(BZV)1-ori\dde-bakala(BZV)1-ori.session".
+    // ensure that the @id for this has been encoded properly so that we get
+    // dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session
+
+    // Find the specific dde-bakala(BZV)1-ori.session file
+    const ddeBakalaFile = metadata["@graph"].find(
+      (item: any) =>
+        item["@id"] &&
+        item["@id"].includes("dde-bakala") &&
+        item["@id"].includes("BZV") &&
+        item["@id"].includes(".session")
+    );
+
+    expect(ddeBakalaFile).toBeTruthy();
+
+    console.log(`Found dde-bakala file with @id: ${ddeBakalaFile["@id"]}`);
+
+    // Check that the @id is exactly: Sessions/dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session
+    expect(ddeBakalaFile["@id"]).toBe(
+      "Sessions/dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session"
+    );
+  });
 });
