@@ -1289,7 +1289,8 @@ describe("RoCrateExporter project document folders", () => {
   it("should use OtherDocuments folder prefix for files like Letter_from_Jan.txt", async () => {
     // Create a project with a specific file in otherDocsFolder that matches the user's example
     const letterFile = {
-      getActualFilePath: () => "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
+      getActualFilePath: () =>
+        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
       getModifiedDate: () => new Date("2023-01-03"),
       filePrefix: "Letter_from_Jan"
     };
@@ -1302,7 +1303,10 @@ describe("RoCrateExporter project document folders", () => {
       }
     } as any;
 
-    const result = (await getRoCrate(projectWithLetter, projectWithLetter)) as any;
+    const result = (await getRoCrate(
+      projectWithLetter,
+      projectWithLetter
+    )) as any;
 
     // Find the root dataset entry
     const rootEntry = result["@graph"].find(
@@ -1328,7 +1332,8 @@ describe("RoCrateExporter project document folders", () => {
   it("should use DescriptionDocuments folder prefix for description files", async () => {
     // Create a project with a specific file in descriptionFolder
     const descriptionFile = {
-      getActualFilePath: () => "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\DescriptionDocuments\\Project_Overview.txt",
+      getActualFilePath: () =>
+        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\DescriptionDocuments\\Project_Overview.txt",
       getModifiedDate: () => new Date("2023-01-04"),
       filePrefix: "Project_Overview"
     };
@@ -1341,7 +1346,10 @@ describe("RoCrateExporter project document folders", () => {
       }
     } as any;
 
-    const result = (await getRoCrate(projectWithDescription, projectWithDescription)) as any;
+    const result = (await getRoCrate(
+      projectWithDescription,
+      projectWithDescription
+    )) as any;
 
     // Find the root dataset entry
     const rootEntry = result["@graph"].find(
