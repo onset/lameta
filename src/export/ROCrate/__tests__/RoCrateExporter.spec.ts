@@ -1247,13 +1247,13 @@ describe("RoCrateExporter project document folders", () => {
 
     // Check that the description file is included in hasPart
     const descriptionFileRef = rootEntry.hasPart.find(
-      (part: any) => part["@id"] === "Description/README.md"
+      (part: any) => part["@id"] === "DescriptionDocuments/README.md"
     );
     expect(descriptionFileRef).toBeDefined();
 
     // Find the actual file entry in the graph
     const descriptionFileEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "Description/README.md"
+      (item: any) => item["@id"] === "DescriptionDocuments/README.md"
     );
     expect(descriptionFileEntry).toBeDefined();
     expect(descriptionFileEntry["@type"]).toBe("DigitalDocument");
@@ -1272,18 +1272,96 @@ describe("RoCrateExporter project document folders", () => {
 
     // Check that the other docs file is included in hasPart
     const otherDocFileRef = rootEntry.hasPart.find(
-      (part: any) => part["@id"] === "OtherDocs/notes.txt"
+      (part: any) => part["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileRef).toBeDefined();
 
     // Find the actual file entry in the graph
     const otherDocFileEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "OtherDocs/notes.txt"
+      (item: any) => item["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileEntry).toBeDefined();
     expect(otherDocFileEntry["@type"]).toBe("DigitalDocument");
     expect(otherDocFileEntry.name).toBe("notes.txt");
     expect(otherDocFileEntry.contentSize).toBe(1024);
+  });
+
+  it("should use OtherDocuments folder prefix for files like Letter_from_Jan.txt", async () => {
+    // Create a project with a specific file in otherDocsFolder that matches the user's example
+    const letterFile = {
+      getActualFilePath: () => "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
+      getModifiedDate: () => new Date("2023-01-03"),
+      filePrefix: "Letter_from_Jan"
+    };
+
+    const projectWithLetter = {
+      ...mockProject,
+      otherDocsFolder: {
+        files: [letterFile],
+        filePrefix: "OtherDocuments"
+      }
+    } as any;
+
+    const result = (await getRoCrate(projectWithLetter, projectWithLetter)) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Check that the letter file is included with correct ID
+    const letterFileRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "OtherDocuments/Letter_from_Jan.txt"
+    );
+    expect(letterFileRef).toBeDefined();
+
+    // Find the actual file entry in the graph
+    const letterFileEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
+    );
+    expect(letterFileEntry).toBeDefined();
+    expect(letterFileEntry["@type"]).toBe("DigitalDocument");
+    expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
+  });
+
+  it("should use DescriptionDocuments folder prefix for description files", async () => {
+    // Create a project with a specific file in descriptionFolder
+    const descriptionFile = {
+      getActualFilePath: () => "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\DescriptionDocuments\\Project_Overview.txt",
+      getModifiedDate: () => new Date("2023-01-04"),
+      filePrefix: "Project_Overview"
+    };
+
+    const projectWithDescription = {
+      ...mockProject,
+      descriptionFolder: {
+        files: [descriptionFile],
+        filePrefix: "DescriptionDocuments"
+      }
+    } as any;
+
+    const result = (await getRoCrate(projectWithDescription, projectWithDescription)) as any;
+
+    // Find the root dataset entry
+    const rootEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "./"
+    );
+    expect(rootEntry).toBeDefined();
+
+    // Check that the description file is included with correct ID
+    const descriptionFileRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "DescriptionDocuments/Project_Overview.txt"
+    );
+    expect(descriptionFileRef).toBeDefined();
+
+    // Find the actual file entry in the graph
+    const descriptionFileEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "DescriptionDocuments/Project_Overview.txt"
+    );
+    expect(descriptionFileEntry).toBeDefined();
+    expect(descriptionFileEntry["@type"]).toBe("DigitalDocument");
+    expect(descriptionFileEntry.name).toBe("Project_Overview.txt");
   });
 
   it("should handle empty document folders gracefully", async () => {
@@ -1302,7 +1380,7 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Should not have any Description/ or OtherDocs/ file references
+    // Should not have any Description/ or OtherDocs/ file references (old incorrect folder names)
     const docFileRefs = rootEntry.hasPart.filter(
       (part: any) =>
         part["@id"].startsWith("Description/") ||
@@ -1330,7 +1408,7 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Should not have any Description/ or OtherDocs/ file references
+    // Should not have any Description/ or OtherDocs/ file references (old incorrect folder names)
     const docFileRefs = rootEntry.hasPart.filter(
       (part: any) =>
         part["@id"].startsWith("Description/") ||

@@ -1,5 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import * as Path from "path";
 
 // --- Type Definitions ---
 type RoCrateEntity = {
@@ -112,6 +113,57 @@ function isLametaXmlFile(entity: RoCrateEntity): boolean {
   return (
     id?.endsWith(".sprj") || id?.endsWith(".session") || id?.endsWith(".person")
   );
+}
+
+// Helper function to check if an entity represents a file that browsers can handle
+function isClickableFile(entity: RoCrateEntity): boolean {
+  const id = entity["@id"];
+  if (!id) return false;
+
+  // Skip special metadata files
+  if (id === "ro-crate-metadata.json" || id.startsWith("ro-crate")) {
+    return false;
+  }
+
+  // Skip entities that are just references or don't represent actual files
+  if (id.startsWith("#") || id.startsWith("ldac:") || id.startsWith("tag:")) {
+    return false;
+  }
+
+  // Check if the file extension is something a browser can handle
+  const browserSupportedExtensions = [
+    // Images
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "svg",
+    "webp",
+    "bmp",
+    // Video
+    "mp4",
+    "webm",
+    "ogg",
+    // Audio
+    "mp3",
+    "wav",
+    "ogg",
+    "m4a",
+    // Text files
+    "txt",
+    "html",
+    "htm",
+    "css",
+    "js",
+    "json",
+    "xml",
+    "csv",
+    // PDFs (browsers can display these)
+    "pdf"
+  ];
+
+  const extension = id.toLowerCase().split(".").pop();
+  return extension ? browserSupportedExtensions.includes(extension) : false;
 }
 
 // Helper function to check if an entity is a Place that should be filtered out
@@ -537,12 +589,30 @@ const Entity: React.FC<{
     "Other Documents": graph.filter((e) => e["@id"]?.startsWith("OtherDocs/"))
   };
 
+  const isClickable = isClickableFile(entity);
+  const displayPath = isClickable ? getDisplayPath(id) : null;
+
   return (
     <div className={entityClasses} id={anchorId}>
       <EntityHeader />
       <EntityTypes />
       {name && (
-        <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>{name}</h3>
+        <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>
+          {isClickable && displayPath ? (
+            <a
+              href={displayPath}
+              style={{
+                color: "var(--color-primary-content)",
+                textDecoration: "underline",
+                fontWeight: "500"
+              }}
+            >
+              {name}
+            </a>
+          ) : (
+            name
+          )}
+        </h3>
       )}
       {isLametaXmlFile(entity) && (
         <p

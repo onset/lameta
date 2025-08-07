@@ -246,7 +246,7 @@ async function getRoCrateInternal(
     ) {
       addProjectDocumentFolderEntries(
         project.descriptionFolder,
-        "Description",
+        "DescriptionDocuments",
         entry,
         otherEntries,
         rocrateLicense,
@@ -258,7 +258,7 @@ async function getRoCrateInternal(
     if (project.otherDocsFolder && project.otherDocsFolder.files.length > 0) {
       addProjectDocumentFolderEntries(
         project.otherDocsFolder,
-        "OtherDocs",
+        "OtherDocuments",
         entry,
         otherEntries,
         rocrateLicense,

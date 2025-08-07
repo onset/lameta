@@ -930,4 +930,67 @@ describe("RoCrateHtmlGenerator", () => {
       );
     });
   });
+
+  it("should add download links for browser-supported file types only", () => {
+    const testDataWithFiles = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "test-document.pdf",
+          "@type": "DigitalDocument",
+          name: "Test PDF Document",
+          encodingFormat: "application/pdf"
+        },
+        {
+          "@id": "word-document.docx",
+          "@type": "DigitalDocument",
+          name: "Word Document",
+          encodingFormat:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        },
+        {
+          "@id": "Description/README.txt",
+          "@type": "File",
+          name: "README.txt",
+          encodingFormat: "text/plain"
+        },
+        {
+          "@id": "data.json",
+          "@type": "File",
+          name: "Data File",
+          encodingFormat: "application/json"
+        },
+        {
+          "@id": "#collection-license",
+          "@type": "CreativeWork",
+          name: "Collection License"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testDataWithFiles);
+
+    // Should contain download links for browser-supported files
+    expect(html).toContain('href="test-document.pdf"');
+    expect(html).toContain(">Test PDF Document</a>");
+    expect(html).toContain('href="Description/README.txt"');
+    expect(html).toContain(">README.txt</a>");
+    expect(html).toContain('href="data.json"');
+    expect(html).toContain(">Data File</a>");
+
+    // Should NOT contain download link for unsupported file types (docx)
+    expect(html).not.toContain('href="word-document.docx"');
+    expect(html).toContain(">Word Document</h3>"); // Should still show name as plain text
+
+    // Should NOT contain download link for non-file entities
+    expect(html).not.toContain('href="#collection-license"');
+
+    // Should NOT contain the old "📁 Download" text
+    expect(html).not.toContain("📁 Download");
+  });
 });
