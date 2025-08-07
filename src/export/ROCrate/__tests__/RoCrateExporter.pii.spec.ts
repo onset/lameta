@@ -24,8 +24,8 @@ vi.mock("fs-extra", () => ({
   })
 }));
 
-// Mock the RoCrateLicenses module
-vi.mock("./RoCrateLicenses", () => ({
+// Mock the RoCrateLicenseUtils module
+vi.mock("./RoCrateLicenseUtils", () => ({
   createLdacAccessTypeDefinitions: vi.fn().mockReturnValue([]),
   createDistinctLicenses: vi.fn().mockReturnValue([]),
   getSessionLicenseId: vi.fn().mockReturnValue("#license-default")
