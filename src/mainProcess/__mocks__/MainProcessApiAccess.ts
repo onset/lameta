@@ -47,4 +47,8 @@ export class MainProcessApi {
   ) {
     // Mock implementation
   }
+
+  public revealInFolder(path: string) {
+    // Mock implementation - noop
+  }
 }

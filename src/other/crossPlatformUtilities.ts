@@ -7,10 +7,17 @@ import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { globSync } from "glob";
 
 export function showInExplorer(path: string) {
+  if (!path) return;
   if (process.platform === "win32") {
     path = path.replace(/\//g, "\\");
   }
-  electron.shell.showItemInFolder(path);
+  try {
+    mainProcessApi.revealInFolder(path);
+  } catch {
+    try {
+      electron.shell.showItemInFolder(path);
+    } catch {}
+  }
 }
 export async function asyncTrash(path: string) {
   return await asyncTrashWithContext<null>(path, null);

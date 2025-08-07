@@ -61,6 +61,12 @@ export class MainProcessApi {
   ) {
     mainWindow!.webContents.stopFindInPage(action);
   }
+
+  // On macOS, calling shell.showItemInFolder from a renderer can delay Finder until app quits.
+  // Provide a main-process version so renderer can delegate.
+  public revealInFolder(path: string) {
+    shell.showItemInFolder(path);
+  }
 }
 
 const mainProcessInstance = new MainProcessApi();
