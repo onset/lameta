@@ -28,9 +28,7 @@ interface IProps {
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
 
-  const kFirstTabToOpen = userSettings.DeveloperMode
-    ? 9 /*working on ro-crate */
-    : 0;
+  const kFirstTabToOpen = userSettings.DeveloperMode ? 0 : 0;
 
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in

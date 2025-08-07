@@ -79,7 +79,7 @@ When running lameta, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 
-then you need to do `yarn lingui-compile`.
+then you need to do `yarn strings:compile`.
 
 ### Publishing a new release
 
