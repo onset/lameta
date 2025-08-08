@@ -66,7 +66,7 @@
     fileAssociations: [
       {
         ext: "sprj",
-        name: "lameta/saymore project"
+        name: "lameta/lameta project"
       }
     ]
   },
@@ -78,11 +78,20 @@
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
+    // Add usage description so macOS shows a clear reason the first time the app
+    // requests access to the user's Documents folder (TCC protected). This does not
+    // suppress the first prompt (Apple does not allow bypass) but should avoid
+    // repeated prompts unless the user denies access.
+    extendInfo: {
+      NSDocumentsFolderUsageDescription: "lameta needs access to your Documents folder so you can add and organise files in your lameta project folder(s).",
+      // Does not appear to work: Show version in Dock tooltip and app menu so users can distinguish beta from release
+      CFBundleDisplayName: "lameta ${version}"
+    },
 
     fileAssociations: [
       {
         ext: "sprj",
-        name: "lameta/saymore project",
+        name: "lameta/lameta project",
         role: "Editor"
       }
     ],
@@ -97,7 +106,7 @@
     fileAssociations: [
       {
         ext: "sprj",
-        name: "lameta/saymore project"
+        name: "lameta/lameta project"
       }
     ]
   }
