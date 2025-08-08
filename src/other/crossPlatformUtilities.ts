@@ -5,6 +5,7 @@ import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { globSync } from "glob";
+import * as remote from "@electron/remote";
 
 export function revealInFolder(path: string) {
   console.log("Revealing in folder:", path);
@@ -12,7 +13,10 @@ export function revealInFolder(path: string) {
   if (process.platform === "win32") {
     path = path.replace(/\//g, "\\");
   }
-  mainProcessApi.revealInFolder(path);
+  
+  // Use remote.shell directly - works reliably in both dev and packaged builds
+  const { shell } = remote;
+  shell.showItemInFolder(path);
 }
 
 export async function asyncTrash(path: string) {

@@ -80,8 +80,6 @@ export class MainProcessApi {
 
     //shell.openPath(path);
   }
-
-  }
 }
 
 const mainProcessInstance = new MainProcessApi();
