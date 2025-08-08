@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import { showInExplorer } from "../other/crossPlatformUtilities";
+import { revealInFolder } from "../other/crossPlatformUtilities";
 //import { store } from "react-notifications-component";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
@@ -217,7 +217,7 @@ export function NotifyMultipleProjectFiles(
         })
         .then((response) => {
           if (response > 0) {
-            showInExplorer(folder);
+            revealInFolder(folder);
             if (!userSettings.DeveloperMode) {
               window.setTimeout(() => remote.app.quit(), 1000);
             }

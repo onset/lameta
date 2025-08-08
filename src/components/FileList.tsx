@@ -6,7 +6,7 @@ import Dropzone from "react-dropzone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.scss";
-import { showInExplorer } from "../other/crossPlatformUtilities";
+import { revealInFolder } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
@@ -277,7 +277,7 @@ function showFileMenu(
           ? t`Show in Finder`
           : t`Show in File Explorer`,
       click: () => {
-        showInExplorer(file.getActualFilePath());
+        revealInFolder(file.getActualFilePath());
       },
       enabled: !missing
     },

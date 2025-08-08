@@ -6,19 +6,15 @@ import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { globSync } from "glob";
 
-export function showInExplorer(path: string) {
+export function revealInFolder(path: string) {
+  console.log("Revealing in folder:", path);
   if (!path) return;
   if (process.platform === "win32") {
     path = path.replace(/\//g, "\\");
   }
-  try {
-    mainProcessApi.revealInFolder(path);
-  } catch {
-    try {
-      electron.shell.showItemInFolder(path);
-    } catch {}
-  }
+  mainProcessApi.revealInFolder(path);
 }
+
 export async function asyncTrash(path: string) {
   return await asyncTrashWithContext<null>(path, null);
 }

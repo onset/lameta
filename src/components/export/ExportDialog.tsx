@@ -9,7 +9,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import "./ExportDialog.scss";
 import { ProjectHolder } from "../../model/Project/Project";
-import { showInExplorer } from "../../other/crossPlatformUtilities";
+import { revealInFolder } from "../../other/crossPlatformUtilities";
 import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
@@ -561,7 +561,7 @@ export const ExportDialog: React.FunctionComponent<{
               color="secondary"
               onClick={() => {
                 closeDialog();
-                showInExplorer(outputPath || "");
+                revealInFolder(outputPath || "");
               }}
               css={css`
                 min-width: 120px;
