@@ -13,8 +13,8 @@ export function revealInFolder(path: string) {
   if (process.platform === "win32") {
     path = path.replace(/\//g, "\\");
   }
-  
-  // Use remote.shell directly - works reliably in both dev and packaged builds
+
+  // Note: electron.shell.showItemInFolder() did not work in production versions on macos, but remote.shell one does.
   const { shell } = remote;
   shell.showItemInFolder(path);
 }

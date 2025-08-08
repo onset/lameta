@@ -10,11 +10,7 @@ import type { MainProcessApi } from "./MainProcessApi";
 // Define the public API interface that will be available through electron-call
 type MainProcessApiPublic = Pick<
   MainProcessApi,
-  | "trashItem"
-  | "validateImdiAsync"
-  | "findInPage"
-  | "stopFindInPage"
-  | "revealInFolder"
+  "trashItem" | "validateImdiAsync" | "findInPage" | "stopFindInPage"
 >;
 
 let mainProcessApi: MainProcessApiPublic;
