@@ -14,6 +14,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
+import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { observer } from "mobx-react";
 import TextField from "@mui/material/TextField";
@@ -30,6 +31,7 @@ export interface IProps {
   onSearchQueryChange?: (q: string) => void;
 }
 class FolderList extends React.Component<IProps, any> {
+  static contextType = SearchContext;
   private hasConsentPath = "assets/hasConsent.png";
   private noConsentPath = "assets/noConsent.png";
   private columnWidthManager: ReactTableColumnWidthManager;
@@ -84,6 +86,39 @@ class FolderList extends React.Component<IProps, any> {
         folder.metadataFile!.getTextProperty("status");
       }
     });
+
+    // Access search query from context (hooks not allowed in class component)
+    const query: string = (this.context && (this.context as any).query) || "";
+    function highlightIfMatch(text: string) {
+      if (!query || !query.trim()) return text;
+      try {
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(`(${escaped})`, "ig");
+        const parts = text.split(re);
+        return (
+          <>
+            {parts.map((p, i) =>
+              p.toLowerCase() === query.toLowerCase() ? (
+                <mark
+                  key={i}
+                  data-testid="inline-highlight"
+                  css={css`
+                    background: #ffba8a;
+                    padding: 0 1px;
+                  `}
+                >
+                  {p}
+                </mark>
+              ) : (
+                p
+              )
+            )}
+          </>
+        );
+      } catch {
+        return text;
+      }
+    }
 
     const columns = this.props.columns.map((key, index) => {
       const header =
@@ -153,13 +188,13 @@ class FolderList extends React.Component<IProps, any> {
                   />
                 );
               case "title":
-                return field.getTextForSimpleDisplay();
+                return highlightIfMatch(field.getTextForSimpleDisplay());
               default:
-                return field.toString();
+                return highlightIfMatch(field.toString());
             }
           }
           if (field.type === FieldType.Date) {
-            return field.asISODateString();
+            return highlightIfMatch(field.asISODateString());
           }
 
           if (field instanceof HasConsentField) {
@@ -182,7 +217,7 @@ class FolderList extends React.Component<IProps, any> {
           }
 
           if (field.type === FieldType.Function) {
-            return field.text;
+            return highlightIfMatch(field.text);
           }
           return "ERROR";
         }

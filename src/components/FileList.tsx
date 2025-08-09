@@ -62,16 +62,16 @@ export const _FileList: React.FunctionComponent<{
         <>
           {parts.map((p, i) =>
             p.toLowerCase() === query.toLowerCase() ? (
-              <span
+              <mark
                 key={i}
-                data-testid="highlight"
+                data-testid="inline-highlight"
                 css={css`
-                  background: #ffe58f;
+                  background: #ffba8a;
                   padding: 0 1px;
                 `}
               >
                 {p}
-              </span>
+              </mark>
             ) : (
               p
             )
