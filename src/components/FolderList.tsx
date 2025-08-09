@@ -16,6 +16,11 @@ import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { observer } from "mobx-react";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -23,7 +28,7 @@ export interface IProps {
   columns: string[];
   columnWidths: number[];
 }
-class FolderList extends React.Component<IProps> {
+class FolderList extends React.Component<IProps, any> {
   private hasConsentPath = "assets/hasConsent.png";
   private noConsentPath = "assets/noConsent.png";
   private columnWidthManager: ReactTableColumnWidthManager;
@@ -34,6 +39,11 @@ class FolderList extends React.Component<IProps> {
       this.props.columns,
       this.props.columnWidths
     );
+    this.state = {
+      searchText: "",
+      lastSearch: "",
+      searchCount: 0
+    };
   }
 
   public render() {
@@ -181,15 +191,97 @@ class FolderList extends React.Component<IProps> {
 
     return (
       <div className={"folderList"}>
+        {/* Folder find/search bar */}
+        <div
+          className="folderSearchBar"
+          data-testid="folder-search-bar"
+          data-last-search={this.state.lastSearch}
+          data-search-count={this.state.searchCount}
+          css={css`
+            padding: 4px 6px 2px 6px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background: transparent;
+          `}
+        >
+          <TextField
+            size="small"
+            placeholder={i18n._(t`Find`)}
+            value={this.state.searchText}
+            variant="outlined"
+            inputProps={{ "data-testid": "folder-search-input" }}
+            onChange={(e) => this.setState({ searchText: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && this.state.searchText.trim().length) {
+                this.handleSearch();
+              }
+            }}
+            InputProps={{
+              startAdornment: this.state.searchText ? (
+                <InputAdornment position="start">
+                  <IconButton
+                    size="small"
+                    onClick={() => this.handleSearch()}
+                    data-testid="folder-search-button"
+                    aria-label={i18n._(t`Search`)}
+                  >
+                    <SearchIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : (
+                <InputAdornment position="start">
+                  <SearchIcon
+                    fontSize="small"
+                    data-testid="folder-search-icon"
+                    css={css`
+                      opacity: 0.6;
+                    `}
+                  />
+                </InputAdornment>
+              ),
+              endAdornment: this.state.searchText ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      this.setState({ searchText: "" });
+                      this.props.folders.filter(undefined);
+                    }}
+                    aria-label={i18n._(t`Clear`)}
+                    data-testid="folder-search-clear"
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : undefined
+            }}
+            css={css`
+              flex: 1;
+              & .MuiOutlinedInput-root {
+                height: 32px;
+              }
+            `}
+          />
+        </div>
         <ReactTable
           showPagination={false}
-          data={this.props.folders.items}
+          data={
+            this.props.folders.filteredItems !== undefined
+              ? this.props.folders.filteredItems
+              : this.props.folders.items
+          }
           columns={columns}
           onResizedChange={(resizedState: Resize[]) =>
             this.columnWidthManager.handleResizedChange(resizedState)
           }
           onFetchData={() => scrollSelectedIntoView("folderList")}
-          pageSize={this.props.folders.items.length} // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
+          pageSize={
+            (this.props.folders.filteredItems !== undefined
+              ? this.props.folders.filteredItems
+              : this.props.folders.items
+            ).length
+          } // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
@@ -225,6 +317,19 @@ class FolderList extends React.Component<IProps> {
     } catch (e) {
       // there is some status this version doesn't understand
       return "assets/warning.png";
+    }
+  }
+
+  private handleSearch() {
+    this.setState((prev: any) => ({
+      lastSearch: prev.searchText,
+      searchCount: prev.searchCount + 1
+    }));
+    const s = this.state.searchText.trim();
+    if (s.length === 0) {
+      this.props.folders.filter(undefined);
+    } else {
+      this.props.folders.filter(s);
     }
   }
 }

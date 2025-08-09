@@ -31,18 +31,21 @@ import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDe
 import temp from "temp";
 import userSettingsSingleton from "../../other/UserSettings";
 
-// There are two `FolderGroup` instances, one for projects and one for sessions.
+// There are two `FolderGroup` instances, one for people and one for sessions.
 export class FolderGroup {
   //NB: originally we just had this class extend an array, rather than having this property. That was nice for consumers.
   // However I was struggling to get mobx (v5) to observe the items then. Splitting it out solved the problem.
   public items: Folder[];
+  // if set (even to empty array), UI should show only these instead of items
+  public filteredItems: Folder[] | undefined;
 
   public selectedIndex: number;
 
   constructor() {
     makeObservable(this, {
       items: observable,
-      selectedIndex: observable
+      selectedIndex: observable,
+      filteredItems: observable
     });
 
     this.items = new Array<Folder>();
@@ -61,6 +64,40 @@ export class FolderGroup {
   }
   public countOfMarkedFolders(): number {
     return this.items.filter((f) => f.marked).length;
+  }
+
+  // Sets filteredItems based on a case-insensitive substring match across all text fields of each folder.
+  // If search is undefined or empty string after trimming, clears the filter (filteredItems becomes undefined).
+  public filter(search: string | undefined) {
+    if (search === undefined) {
+      this.filteredItems = undefined;
+      return;
+    }
+    const needle = search.trim();
+    if (!needle) {
+      this.filteredItems = undefined;
+      return;
+    }
+    const needleLower = needle.toLowerCase();
+    // naive scan of every field on every folder
+    this.filteredItems = this.items.filter((folder) => {
+      try {
+        const fields = folder.properties.values();
+        for (const field of fields) {
+          // only checking textual representation currently
+          if (
+            field &&
+            typeof field.text === "string" &&
+            field.text.toLowerCase().includes(needleLower)
+          ) {
+            return true;
+          }
+        }
+      } catch {
+        // ignore folders with issues
+      }
+      return false;
+    });
   }
 }
 
