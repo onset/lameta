@@ -211,7 +211,11 @@ class FolderList extends React.Component<IProps, any> {
             value={this.state.searchText}
             variant="outlined"
             inputProps={{ "data-testid": "folder-search-input" }}
-            onChange={(e) => this.setState({ searchText: e.target.value })}
+            onChange={(e) => {
+              const v = e.target.value;
+              this.setState({ searchText: v, lastSearch: v });
+              this.props.folders.filter(v);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && this.state.searchText.trim().length) {
                 this.handleSearch();

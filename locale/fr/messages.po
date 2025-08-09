@@ -244,6 +244,9 @@ msgstr "Le verrouillage de fichier peut se produire lorsqu'un lecteur multimédi
 msgid "File to Import:"
 msgstr "Fichier à importer :"
 
+msgid "Find"
+msgstr ""
+
 msgid "Font Size"
 msgstr "Taille de police"
 
@@ -492,6 +495,9 @@ msgstr "Sauvegarde"
 
 msgid "Saving before rename..."
 msgstr "Sauvegarder avant de renommer..."
+
+msgid "Search"
+msgstr ""
 
 msgid "Select All"
 msgstr "Tout sélectionner"

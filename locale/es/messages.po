@@ -244,6 +244,9 @@ msgstr "El bloqueo de archivos puede ocurrir cuando un reproductor de medios est
 msgid "File to Import:"
 msgstr "Archivo a importar:"
 
+msgid "Find"
+msgstr ""
+
 msgid "Font Size"
 msgstr "Tamaño de fuente"
 
@@ -494,6 +497,9 @@ msgstr "Guardando"
 
 msgid "Saving before rename..."
 msgstr "Guardar antes de renombrar..."
+
+msgid "Search"
+msgstr ""
 
 msgid "Select All"
 msgstr "Seleccionar Todo"

@@ -242,6 +242,9 @@ msgstr ""
 msgid "File to Import:"
 msgstr ""
 
+msgid "Find"
+msgstr ""
+
 msgid "Font Size"
 msgstr ""
 
@@ -489,6 +492,9 @@ msgid "Saving"
 msgstr ""
 
 msgid "Saving before rename..."
+msgstr ""
+
+msgid "Search"
 msgstr ""
 
 msgid "Select All"

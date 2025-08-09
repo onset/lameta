@@ -49,14 +49,12 @@ test.describe("Folder Search UI", () => {
     await expect(page.getByTestId("folder-search-icon")).toBeVisible();
 
     // now actually test filtering: search for 'Session' should match all sessions
-    await input.fill("Session");
-    await input.press("Enter");
+    await input.fill("Session"); // live filtering now
     // expect at least one gridcell with id containing New_Session
     const matchingCells = page.getByRole("gridcell", { name: /New_Session/i });
     await expect(matchingCells.first()).toBeVisible();
     // now search for nonsense; we only verify the search registered (result count may be 0 depending on app state)
     await input.fill("ZZZZ_NO_MATCH_§§");
-    await input.press("Enter");
     await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
       "ZZZZ_NO_MATCH_§§"
@@ -71,8 +69,7 @@ test.describe("Folder Search UI", () => {
     const input = page.getByTestId("folder-search-input");
     await input.click();
     await input.type("Person XYZ ???");
-    await expect(page.getByTestId("folder-search-button")).toBeVisible();
-    await input.press("Enter");
+    await expect(page.getByTestId("folder-search-button")).toBeVisible(); // button still shows because non-empty
     await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
       "Person XYZ ???"

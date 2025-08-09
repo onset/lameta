@@ -38,6 +38,7 @@ export class FolderGroup {
   public items: Folder[];
   // if set (even to empty array), UI should show only these instead of items
   public filteredItems: Folder[] | undefined;
+  private index?: any; // FolderIndex, keep 'any' to avoid circular import at compile time
 
   public selectedIndex: number;
 
@@ -50,6 +51,10 @@ export class FolderGroup {
 
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
+  }
+  // called by FolderIndex
+  public _setIndex(index: any) {
+    this.index = index;
   }
 
   public selectFirstMarkedFolder() {
@@ -78,13 +83,21 @@ export class FolderGroup {
       this.filteredItems = undefined;
       return;
     }
+    if (this.index) {
+      // let the index do the work
+      try {
+        this.filteredItems = this.index.search(this, needle);
+        this.adjustSelectionAfterFilter();
+        return;
+      } catch {
+        // fall through to naive if index problem
+      }
+    }
     const needleLower = needle.toLowerCase();
-    // naive scan of every field on every folder
     this.filteredItems = this.items.filter((folder) => {
       try {
         const fields = folder.properties.values();
         for (const field of fields) {
-          // only checking textual representation currently
           if (
             field &&
             typeof field.text === "string" &&
@@ -93,11 +106,29 @@ export class FolderGroup {
             return true;
           }
         }
-      } catch {
-        // ignore folders with issues
-      }
+      } catch {}
       return false;
     });
+    this.adjustSelectionAfterFilter();
+  }
+
+  private adjustSelectionAfterFilter() {
+    if (this.filteredItems === undefined) return; // no filtering
+    if (this.filteredItems.length === 0) {
+      this.selectedIndex = -1;
+      return;
+    }
+    if (this.selectedIndex < 0) {
+      this.selectedIndex = 0;
+      return;
+    }
+    const currentlySelected = this.items[this.selectedIndex];
+    if (!this.filteredItems.includes(currentlySelected)) {
+      // pick first filtered item
+      const first = this.filteredItems[0];
+      const newIndexInAll = this.items.indexOf(first);
+      this.selectedIndex = newIndexInAll;
+    }
   }
 }
 

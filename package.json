@@ -189,6 +189,7 @@
     "fold-to-ascii": "^5.0.0",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.2.0",
+    "fuse.js": "^7.0.0",
     "glob": "^9.3.3",
     "graceful-fs": "^4.2.11",
     "history": "^4.6.1",

@@ -244,6 +244,9 @@ msgstr "File locking dapat terjadi ketika pemutar media memegang file video. Ini
 msgid "File to Import:"
 msgstr "File untuk Impor:"
 
+msgid "Find"
+msgstr ""
+
 msgid "Font Size"
 msgstr "Ukuran Font"
 
@@ -492,6 +495,9 @@ msgstr "Sedang menyimpan"
 
 msgid "Saving before rename..."
 msgstr "Menyimpan sebelum ubah nama..."
+
+msgid "Search"
+msgstr ""
 
 msgid "Select All"
 msgstr "Pilih Semua"
