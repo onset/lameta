@@ -27,6 +27,7 @@ export interface IProps {
   folders: FolderGroup;
   columns: string[];
   columnWidths: number[];
+  onSearchQueryChange?: (q: string) => void;
 }
 class FolderList extends React.Component<IProps, any> {
   private hasConsentPath = "assets/hasConsent.png";
@@ -219,6 +220,8 @@ class FolderList extends React.Component<IProps, any> {
                 clearTimeout((this as any)._searchDebounceTimer);
               (this as any)._searchDebounceTimer = setTimeout(() => {
                 this.props.folders.filter(v);
+                this.props.onSearchQueryChange &&
+                  this.props.onSearchQueryChange(v);
               }, 150);
             }}
             onKeyDown={(e) => {
@@ -256,6 +259,8 @@ class FolderList extends React.Component<IProps, any> {
                     onClick={() => {
                       this.setState({ searchText: "" });
                       this.props.folders.filter(undefined);
+                      this.props.onSearchQueryChange &&
+                        this.props.onSearchQueryChange("");
                     }}
                     aria-label={i18n._(t`Clear`)}
                     data-testid="folder-search-clear"

@@ -8,6 +8,8 @@ import "./ComponentTab.scss";
 
 import SplitPane from "react-split-pane";
 import FolderList from "../FolderList";
+import { SearchContext } from "../SearchContext";
+import { css } from "@emotion/react";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -24,6 +26,7 @@ interface IProps {
 // This is the "Sessions" tab and the "People" tab.  It is a tab that has a list of folders on
 // the left and a pane showing the files of that folder on the right.
 const ComponentTab: React.FunctionComponent<IProps> = (props) => {
+  const [searchQuery, setSearchQuery] = React.useState("");
   const splitterKey = props.folderTypeStyleClass + "VerticalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
@@ -33,47 +36,83 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
     );
 
   return (
-    <div className={"componentTab " + props.folderTypeStyleClass}>
-      <SplitPane
-        split="vertical"
-        defaultSize={sp}
-        onChange={(size: any) => localStorage.setItem(splitterKey, size)}
-      >
-        <div className={"firstColumn"}>
-          <FolderList
-            nameForPersistingUsersTableConfiguration={
-              props.nameForPersistingUsersTableConfiguration
-            }
-            folders={props.folders}
-            columns={props.columns}
-            columnWidths={props.columnWidths}
-          />
-          <div className={"newFolderBar"}>{props.folderListButtons}</div>
-        </div>
-        {props.folders &&
-        props.folders.items.length > 0 &&
-        props.folders.selectedIndex > -1 ? (
-          <FolderPane
-            project={props.project}
-            // Note, when props.folders.selectedIndex, mobx should cause us to re-render because selectedIndex is an observable,
-            // and we are an observer.
-            folder={props.folders.items[props.folders.selectedIndex]}
-            folderTypeStyleClass={props.folderTypeStyleClass}
-            showStandardMetaTabs={true}
-            authorityLists={props.authorityLists}
-            fileListButtons={props.fileListButtons}
-          >
-            <h3 className={"paneTitle"}>
-              {props.folders.items[props.folders.selectedIndex].displayName}
-            </h3>
-          </FolderPane>
-        ) : (
-          <React.Fragment />
-        )}
-      </SplitPane>
-    </div>
+    <SearchContext.Provider value={{ query: searchQuery }}>
+      <div className={"componentTab " + props.folderTypeStyleClass}>
+        <SplitPane
+          split="vertical"
+          defaultSize={sp}
+          onChange={(size: any) => localStorage.setItem(splitterKey, size)}
+        >
+          <div className={"firstColumn"}>
+            <FolderList
+              nameForPersistingUsersTableConfiguration={
+                props.nameForPersistingUsersTableConfiguration
+              }
+              folders={props.folders}
+              columns={props.columns}
+              columnWidths={props.columnWidths}
+              onSearchQueryChange={(q) => setSearchQuery(q)}
+            />
+            <div className={"newFolderBar"}>{props.folderListButtons}</div>
+          </div>
+          {props.folders &&
+          props.folders.items.length > 0 &&
+          props.folders.selectedIndex > -1 ? (
+            <FolderPane
+              project={props.project}
+              // Note, when props.folders.selectedIndex, mobx should cause us to re-render because selectedIndex is an observable,
+              // and we are an observer.
+              folder={props.folders.items[props.folders.selectedIndex]}
+              folderTypeStyleClass={props.folderTypeStyleClass}
+              showStandardMetaTabs={true}
+              authorityLists={props.authorityLists}
+              fileListButtons={props.fileListButtons}
+            >
+              <h3 className={"paneTitle"}>
+                {highlight(
+                  props.folders.items[props.folders.selectedIndex].displayName,
+                  searchQuery
+                )}
+              </h3>
+            </FolderPane>
+          ) : (
+            <React.Fragment />
+          )}
+        </SplitPane>
+      </div>
+    </SearchContext.Provider>
   );
 };
+
+function highlight(text: string, query: string) {
+  if (!query.trim()) return text;
+  try {
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(${escaped})`, "ig");
+    const parts = text.split(re);
+    return (
+      <>
+        {parts.map((p, i) =>
+          p.toLowerCase() === query.toLowerCase() ? (
+            <span
+              key={i}
+              css={css`
+                background: #ffe58f;
+                padding: 0 2px;
+              `}
+            >
+              {p}
+            </span>
+          ) : (
+            p
+          )
+        )}
+      </>
+    );
+  } catch {
+    return text;
+  }
+}
 
 // tslint:disable-next-line:no-empty-interface
 interface IJustChildrenProps {}

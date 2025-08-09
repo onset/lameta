@@ -101,5 +101,40 @@ test.describe("Folder Search UI", () => {
     const filteredRows = await page.getByRole("row").count();
     expect(filteredRows).toBeGreaterThan(0);
     expect(filteredRows).toBeLessThanOrEqual(initialRows);
+    // filename highlight span should exist containing mp3 (case-insensitive)
+    await expect(
+      page.getByTestId("highlight").filter({ hasText: /mp3/i })
+    ).toBeVisible();
+  });
+
+  test("search highlights a text field value", async () => {
+    await project.goToSessions();
+    // ensure at least one session
+    await project.addSession();
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("Session");
+    await page.waitForTimeout(250);
+    // Expect a text field container with data-has-highlight
+    const highlighted = page.locator('[data-has-highlight="true"]');
+    await expect(highlighted.first()).toBeVisible();
+    // Inline highlight spans should exist
+    await expect(page.getByTestId("inline-highlight").first()).toBeVisible();
+  });
+
+  test("search highlight clears when query cleared", async () => {
+    await project.goToSessions();
+    await project.addSession();
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("Session");
+    await page.waitForTimeout(250);
+    await expect(
+      page.locator('[data-has-highlight="true"]').first()
+    ).toBeVisible();
+    // clear search
+    const clearButton = page.getByTestId("folder-search-clear");
+    await clearButton.click();
+    await page.waitForTimeout(250);
+    // no inline highlight spans should remain
+    await expect(page.getByTestId("inline-highlight").first()).toHaveCount(0);
   });
 });

@@ -24,6 +24,8 @@ import {
 } from "../model/file/FileStatus";
 import { toJS } from "mobx";
 import { useLingui } from "@lingui/react";
+import { SearchContext } from "./SearchContext";
+import { css } from "@emotion/react";
 const electron = require("electron");
 
 export const _FileList: React.FunctionComponent<{
@@ -48,6 +50,39 @@ export const _FileList: React.FunctionComponent<{
     const progressUnused = f.copyProgress;
   });
 
+  const { query } = React.useContext(SearchContext);
+
+  function highlight(text: string) {
+    if (!query.trim()) return text;
+    try {
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(`(${escaped})`, "ig");
+      const parts = text.split(re);
+      return (
+        <>
+          {parts.map((p, i) =>
+            p.toLowerCase() === query.toLowerCase() ? (
+              <span
+                key={i}
+                data-testid="highlight"
+                css={css`
+                  background: #ffe58f;
+                  padding: 0 1px;
+                `}
+              >
+                {p}
+              </span>
+            ) : (
+              p
+            )
+          )}
+        </>
+      );
+    } catch {
+      return text;
+    }
+  }
+
   const columns = [
     {
       id: "icon",
@@ -66,7 +101,8 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getFilenameToShowInList();
       },
-      className: "filename"
+      className: "filename",
+      Cell: (cell: any) => highlight(cell.value)
     },
     {
       id: "linkStatus",
