@@ -26,6 +26,7 @@ import { toJS } from "mobx";
 import { useLingui } from "@lingui/react";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
+import { highlightReact } from "./highlighting";
 const electron = require("electron");
 
 export const _FileList: React.FunctionComponent<{
@@ -51,37 +52,7 @@ export const _FileList: React.FunctionComponent<{
   });
 
   const { query } = React.useContext(SearchContext);
-
-  function highlight(text: string) {
-    if (!query.trim()) return text;
-    try {
-      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const re = new RegExp(`(${escaped})`, "ig");
-      const parts = text.split(re);
-      return (
-        <>
-          {parts.map((p, i) =>
-            p.toLowerCase() === query.toLowerCase() ? (
-              <mark
-                key={i}
-                data-testid="inline-highlight"
-                css={css`
-                  background: #ffba8a;
-                  padding: 0 1px;
-                `}
-              >
-                {p}
-              </mark>
-            ) : (
-              p
-            )
-          )}
-        </>
-      );
-    } catch {
-      return text;
-    }
-  }
+  const highlight = (text: string) => highlightReact(text, query);
 
   const columns = [
     {

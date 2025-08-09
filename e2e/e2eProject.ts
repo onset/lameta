@@ -26,15 +26,25 @@ export class E2eProject {
     //     projectName
     // );
     await this.page.locator("#creatNewProjectLink").click();
-    await this.page.locator("#projectNameInput").fill(projectName);
+    const nameInput = this.page.locator("#projectNameInput");
+    await nameInput.waitFor({ state: "visible" });
+    await nameInput.fill(projectName);
+    const ok = this.page.getByRole("button", { name: "Create" });
+    // If the button is disabled (e.g. duplicate name from a previous test run), mutate the name until enabled.
+    for (let i = 0; i < 5; i++) {
+      if (await ok.isEnabled()) break;
+      // append a short random suffix and try again
+      projectName = projectName + "-" + Math.floor(Math.random() * 1000);
+      await nameInput.fill(projectName);
+      await this.page.waitForTimeout(50);
+    }
+    expect(ok).toBeEnabled();
     this.projectDirectory = Path.join(
       process.env.E2ERoot!,
       "lameta",
       projectName
     );
-    const ok = await this.page.getByRole("button", { name: "Create" });
-    expect(ok).toBeEnabled();
-    ok.click();
+    await ok.click();
     //await this.page.getByTitle(projectName, { exact: false }).waitFor();
     const w = await this.lameta.electronApp.firstWindow();
     // wait until the window title contains the project name

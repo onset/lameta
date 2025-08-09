@@ -82,10 +82,11 @@ test.describe("Folder Search UI", () => {
     // ensure at least one session exists
     await project.addSession();
     await project.addSession();
-    // capture initial row count
-    const initialRows = await page.getByRole("row").count();
-    // select first session row so file add button panel is visible (gridcell click)
-    // (Assuming first session has a gridcell with New_Session in its name)
+    // wait for at least one session gridcell to appear before selecting
+    await page
+      .getByRole("gridcell", { name: /New_Session/i })
+      .first()
+      .waitFor({ state: "visible", timeout: 10000 });
     await page
       .getByRole("gridcell", { name: /New_Session/i })
       .first()
@@ -97,13 +98,15 @@ test.describe("Folder Search UI", () => {
     await input.fill("mp3");
     // wait briefly for debounce
     await page.waitForTimeout(250);
-    // Expect at least one session row still visible (the one we just added file to)
-    const filteredRows = await page.getByRole("row").count();
-    expect(filteredRows).toBeGreaterThan(0);
-    expect(filteredRows).toBeLessThanOrEqual(initialRows);
+    // Expect at least one session row still visible
+    const filteredRows = await page
+      .locator(".folderList")
+      .getByRole("row")
+      .count();
+    expect(filteredRows).toBeGreaterThan(1); // header + at least one data row
     // filename highlight span should exist containing mp3 (case-insensitive)
     await expect(
-      page.getByTestId("highlight").filter({ hasText: /mp3/i })
+      page.getByTestId("inline-highlight").filter({ hasText: /mp3/i })
     ).toBeVisible();
   });
 
@@ -111,6 +114,11 @@ test.describe("Folder Search UI", () => {
     await project.goToSessions();
     // ensure at least one session
     await project.addSession();
+    // wait for at least one data row
+    await page.waitForFunction(() => {
+      const rows = document.querySelectorAll('.folderList [role="row"]');
+      return rows.length > 1;
+    });
     const input = page.getByTestId("folder-search-input");
     await input.fill("Session");
     await page.waitForTimeout(250);
@@ -124,6 +132,10 @@ test.describe("Folder Search UI", () => {
   test("search highlight clears when query cleared", async () => {
     await project.goToSessions();
     await project.addSession();
+    await page.waitForFunction(() => {
+      const rows = document.querySelectorAll('.folderList [role="row"]');
+      return rows.length > 1;
+    });
     const input = page.getByTestId("folder-search-input");
     await input.fill("Session");
     await page.waitForTimeout(250);

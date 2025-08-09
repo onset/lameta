@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Field } from "../model/field/Field";
 import { FieldLabel } from "./FieldLabel";
 import { SearchContext } from "./SearchContext";
+import { buildHighlightedHTML } from "./highlighting";
 
 export interface IProps {
   field: Field;
@@ -17,40 +18,7 @@ export interface IProps {
   showAffordancesAfter?: boolean;
 }
 
-// Highlight util (case-insensitive) returns HTML with <mark> wrappers.
-function buildHighlightedHTML(value: string, query: string): string {
-  if (!query.trim()) {
-    return escapeHtml(value);
-  }
-  const q = query.trim();
-  const lower = value.toLowerCase();
-  const lowerQ = q.toLowerCase();
-  let i = 0;
-  let html = "";
-  while (i < value.length) {
-    const found = lower.indexOf(lowerQ, i);
-    if (found === -1) {
-      html += escapeHtml(value.slice(i));
-      break;
-    }
-    // pre-match text
-    if (found > i) html += escapeHtml(value.slice(i, found));
-    const match = value.slice(found, found + q.length);
-    html += `<mark data-testid="inline-highlight" style="background:#ffba8a;padding:0;">${escapeHtml(
-      match
-    )}</mark>`;
-    i = found + q.length;
-  }
-  return html;
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+// highlighting logic moved to highlighting.tsx helper
 
 export const TextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>

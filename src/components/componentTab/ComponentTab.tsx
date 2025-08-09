@@ -10,6 +10,7 @@ import SplitPane from "react-split-pane";
 import FolderList from "../FolderList";
 import { SearchContext } from "../SearchContext";
 import { css } from "@emotion/react";
+import { highlightReact } from "../highlighting";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -69,9 +70,10 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
               fileListButtons={props.fileListButtons}
             >
               <h3 className={"paneTitle"}>
-                {highlight(
+                {highlightReact(
                   props.folders.items[props.folders.selectedIndex].displayName,
-                  searchQuery
+                  searchQuery,
+                  { background: "#ffe58f" }
                 )}
               </h3>
             </FolderPane>
@@ -84,35 +86,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
   );
 };
 
-function highlight(text: string, query: string) {
-  if (!query.trim()) return text;
-  try {
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`(${escaped})`, "ig");
-    const parts = text.split(re);
-    return (
-      <>
-        {parts.map((p, i) =>
-          p.toLowerCase() === query.toLowerCase() ? (
-            <span
-              key={i}
-              css={css`
-                background: #ffe58f;
-                padding: 0 2px;
-              `}
-            >
-              {p}
-            </span>
-          ) : (
-            p
-          )
-        )}
-      </>
-    );
-  } catch {
-    return text;
-  }
-}
+// highlight helper removed in favor of shared highlightReact
 
 // tslint:disable-next-line:no-empty-interface
 interface IJustChildrenProps {}

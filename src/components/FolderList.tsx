@@ -16,6 +16,7 @@ import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
+import { highlightReact } from "./highlighting";
 import { observer } from "mobx-react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -89,36 +90,7 @@ class FolderList extends React.Component<IProps, any> {
 
     // Access search query from context (hooks not allowed in class component)
     const query: string = (this.context && (this.context as any).query) || "";
-    function highlightIfMatch(text: string) {
-      if (!query || !query.trim()) return text;
-      try {
-        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const re = new RegExp(`(${escaped})`, "ig");
-        const parts = text.split(re);
-        return (
-          <>
-            {parts.map((p, i) =>
-              p.toLowerCase() === query.toLowerCase() ? (
-                <mark
-                  key={i}
-                  data-testid="inline-highlight"
-                  css={css`
-                    background: #ffba8a;
-                    padding: 0 1px;
-                  `}
-                >
-                  {p}
-                </mark>
-              ) : (
-                p
-              )
-            )}
-          </>
-        );
-      } catch {
-        return text;
-      }
-    }
+    const highlightIfMatch = (text: string) => highlightReact(text, query);
 
     const columns = this.props.columns.map((key, index) => {
       const header =
