@@ -20,7 +20,11 @@ export const SessionsTab = observer(
           id="newSession"
           data-testid="new-session-button"
           key="newSession"
-          onClick={(e) => this.props.project.addSession()}
+          onClick={(e) => {
+            this.props.project.addSession();
+            // Clear any active filter so the new session is visible & selected
+            this.props.project.sessions.filter(undefined);
+          }}
         >
           <Trans>New Session</Trans>
         </button>

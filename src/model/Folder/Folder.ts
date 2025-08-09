@@ -40,6 +40,9 @@ export class FolderGroup {
   public items: Folder[];
   // if set (even to empty array), UI should show only these instead of items
   public filteredItems: Folder[] | undefined;
+  // increments each time an external caller clears the filter (filter(undefined)).
+  // UI components (e.g. FolderList) can observe this to know they should also clear their search input state.
+  public searchResetCounter: number;
   private index?: FolderIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
@@ -48,11 +51,13 @@ export class FolderGroup {
     makeObservable(this, {
       items: observable,
       selectedIndex: observable,
-      filteredItems: observable
+      filteredItems: observable,
+      searchResetCounter: observable
     });
 
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
+    this.searchResetCounter = 0;
   }
   // called by FolderIndex
   public _setIndex(index: any) {
@@ -78,6 +83,8 @@ export class FolderGroup {
   public filter(search: string | undefined) {
     if (search === undefined) {
       this.filteredItems = undefined;
+      // signal to any observers (e.g. FolderList) that the filter was programmatically cleared
+      this.searchResetCounter++;
       return;
     }
     const needle = search.trim();

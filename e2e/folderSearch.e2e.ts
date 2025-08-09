@@ -149,4 +149,23 @@ test.describe("Folder Search UI", () => {
     // no inline highlight spans should remain
     await expect(page.getByTestId("inline-highlight").first()).toHaveCount(0);
   });
+
+  test("adding new session clears filter and selects new item", async () => {
+    await project.goToSessions();
+    // ensure at least one session so search has something
+    await project.addSession();
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("ZZZNonMatch123");
+    await page.waitForTimeout(250);
+    // filtered list should now have zero data rows (only header) or selection cleared
+    const rowsBefore = await page.locator('.folderList [role="row"]').count();
+    // add another session (should clear filter and show all again)
+    await page.getByTestId("new-session-button").click();
+    // search input should be cleared
+    await expect(input).toHaveValue("");
+    // selection should be on the newly added session (which contains 'New_Session')
+    await expect(
+      page.getByRole("gridcell", { name: /New_Session/i }).first()
+    ).toBeVisible();
+  });
 });

@@ -78,7 +78,7 @@ Encountered "Invalid hook call" due to using `React.useContext` inside class `Fo
 ### TODO Now
 
 - [x] Consolidate highlight utility (currently duplicated logic in FolderList, FileList, TextFieldEdit) into a shared helper to avoid divergence.
-- [ ] Adding a new Session or Folder should clear the filter (and select the new item). Verify this with an e2e test.
+- [x] Adding a new Session or Folder should clear the filter (and select the new item). Verify this with an e2e test.
 - [ ] Add a count below the folder list (e.g. "234 Sessions"), and when filtered, show "12 matches".
 - [ ] Add e2e test ensuring that a new folder is selected when filtering removes selected folder, and no folder is selected if the filter has zero hits.
 - [ ] Currently if you are in Sessions and set a filter then switch to the Project tab and come back, the filter is still in place however the "find" field has lost your search term (it should persist), and there is no "x" button. Probababy the current search string should be a field in FolderPane. e2e test this.

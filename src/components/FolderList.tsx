@@ -46,14 +46,34 @@ class FolderList extends React.Component<IProps, any> {
     this.state = {
       searchText: "",
       lastSearch: "",
-      searchCount: 0
+      searchCount: 0,
+      lastSearchResetCounter: 0
     };
+  }
+
+  componentDidUpdate(prevProps: IProps) {
+    // no-op now; reset handled in getDerivedStateFromProps to avoid relying on mutable prop object reference
+  }
+
+  static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
+    if (
+      nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
+    ) {
+      return {
+        searchText: "",
+        lastSearchResetCounter: nextProps.folders.searchResetCounter
+      };
+    }
+    return null;
   }
 
   public render() {
     //console.log("FOlderList rendering");
     // it's important that we access this at this level so that mobx will know to re-render us when this changes.
     const selectedFolderIndex = this.props.folders.selectedIndex;
+    // Access the reset counter so that mobx observes it; when it increments we will get a re-render
+    // which lets componentDidUpdate run and clear the local searchText state.
+    const currentSearchResetCounter = this.props.folders.searchResetCounter;
     // console.log(
     //   `FolderList render length:${this.props.folders.items.length} selected:${this.props.folders.selected.index}`
     // );
@@ -205,6 +225,7 @@ class FolderList extends React.Component<IProps, any> {
           data-testid="folder-search-bar"
           data-last-search={this.state.lastSearch}
           data-search-count={this.state.searchCount}
+          data-search-reset-counter={currentSearchResetCounter}
           css={css`
             padding: 4px 6px 2px 6px;
             display: flex;
