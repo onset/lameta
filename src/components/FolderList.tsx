@@ -214,7 +214,12 @@ class FolderList extends React.Component<IProps, any> {
             onChange={(e) => {
               const v = e.target.value;
               this.setState({ searchText: v, lastSearch: v });
-              this.props.folders.filter(v);
+              // debounce filtering for fast typing
+              (this as any)._searchDebounceTimer &&
+                clearTimeout((this as any)._searchDebounceTimer);
+              (this as any)._searchDebounceTimer = setTimeout(() => {
+                this.props.folders.filter(v);
+              }, 150);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && this.state.searchText.trim().length) {

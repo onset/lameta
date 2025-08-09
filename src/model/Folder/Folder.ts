@@ -1,4 +1,6 @@
 import { File, OtherFile } from "../file/File";
+// type-only import to give FolderGroup a stronger index type without creating a runtime cycle
+import type { FolderIndex } from "./FolderIndex";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -38,7 +40,7 @@ export class FolderGroup {
   public items: Folder[];
   // if set (even to empty array), UI should show only these instead of items
   public filteredItems: Folder[] | undefined;
-  private index?: any; // FolderIndex, keep 'any' to avoid circular import at compile time
+  private index?: FolderIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
 
@@ -83,14 +85,25 @@ export class FolderGroup {
       this.filteredItems = undefined;
       return;
     }
-    if (this.index) {
-      // let the index do the work
+    // Lazily attach a per-group index the first time we actually filter with a non-empty string.
+    // Each FolderGroup receives its own FolderIndex instance (we intentionally do NOT share a singleton
+    // to avoid cross-talk, unintended memory retention, or future coupling between groups).
+    if (!this.index) {
       try {
-        this.filteredItems = this.index.search(this, needle);
+        const { FolderIndex } = require("./FolderIndex");
+        const idx = new FolderIndex();
+        idx.attach(this);
+      } catch {
+        // ignore if dynamic load fails; we'll use fallback
+      }
+    }
+    if (this.index) {
+      try {
+        this.filteredItems = this.index.search(needle);
         this.adjustSelectionAfterFilter();
         return;
       } catch {
-        // fall through to naive if index problem
+        // fall back
       }
     }
     const needleLower = needle.toLowerCase();
@@ -105,6 +118,17 @@ export class FolderGroup {
           ) {
             return true;
           }
+        }
+        // also search file names
+        if (
+          folder.files &&
+          folder.files.some((file) =>
+            (file.pathInFolderToLinkFileOrLocalCopy || "")
+              .toLowerCase()
+              .includes(needleLower)
+          )
+        ) {
+          return true;
         }
       } catch {}
       return false;

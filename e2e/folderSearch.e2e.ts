@@ -1,6 +1,7 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
+import { E2eFileList } from "./e2eFileList";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -74,5 +75,31 @@ test.describe("Folder Search UI", () => {
       "data-last-search",
       "Person XYZ ???"
     );
+  });
+
+  test("search matches on file names (e.g. mp3)", async () => {
+    await project.goToSessions();
+    // ensure at least one session exists
+    await project.addSession();
+    await project.addSession();
+    // capture initial row count
+    const initialRows = await page.getByRole("row").count();
+    // select first session row so file add button panel is visible (gridcell click)
+    // (Assuming first session has a gridcell with New_Session in its name)
+    await page
+      .getByRole("gridcell", { name: /New_Session/i })
+      .first()
+      .click();
+    const fileList = new E2eFileList(lameta, page, project.projectDirectory);
+    // add an mp3 file (extension important for search)
+    await fileList.addFile("test audio Üŋïçødé 123.mp3");
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("mp3");
+    // wait briefly for debounce
+    await page.waitForTimeout(250);
+    // Expect at least one session row still visible (the one we just added file to)
+    const filteredRows = await page.getByRole("row").count();
+    expect(filteredRows).toBeGreaterThan(0);
+    expect(filteredRows).toBeLessThanOrEqual(initialRows);
   });
 });

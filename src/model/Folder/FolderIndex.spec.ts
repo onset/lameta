@@ -52,7 +52,7 @@ describe("FolderIndex", () => {
     // change a field to include search term
     f2.properties.setText("notes", "giant fox hunter");
     // explicitly rebuild index (in app a reaction or subsequent attach/build could handle this)
-    index.build(g);
+    index.build();
     g.filter("fox");
     // Both should now match; order not guaranteed
     expect(g.filteredItems!.length).toBe(2);

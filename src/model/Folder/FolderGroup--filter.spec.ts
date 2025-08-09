@@ -78,4 +78,25 @@ describe("FolderGroup.filter", () => {
     g.filter(undefined);
     expect(g.filteredItems).toBeUndefined();
   });
+  it("matches on file names when fields don't contain term", () => {
+    const g = new FolderGroup();
+    const f1 = new FakeFolder({ id: "F1", title: "NoMatch" }) as any;
+    f1.files = [
+      {
+        pathInFolderToLinkFileOrLocalCopy: "/tmp/audio-one.MP3"
+      }
+    ];
+    const f2 = new FakeFolder({ id: "F2", title: "StillNo" }) as any;
+    f2.files = [
+      {
+        pathInFolderToLinkFileOrLocalCopy: "/tmp/readme.txt"
+      }
+    ];
+    g.items.push(f1, f2);
+    g.filter("mp3");
+    expect(g.filteredItems!.length).toBe(1);
+    expect(g.filteredItems![0].properties.getTextStringOrEmpty("id")).toBe(
+      "F1"
+    );
+  });
 });
