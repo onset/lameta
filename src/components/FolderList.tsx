@@ -306,6 +306,7 @@ class FolderList extends React.Component<IProps, any> {
             `}
           />
         </div>
+        {/* Count moved to ComponentTab */}
         <ReactTable
           showPagination={false}
           data={
@@ -361,6 +362,8 @@ class FolderList extends React.Component<IProps, any> {
       return "assets/warning.png";
     }
   }
+
+  // folder label logic moved to ComponentTab
 
   private handleSearch() {
     this.setState((prev: any) => ({

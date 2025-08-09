@@ -11,6 +11,8 @@ import FolderList from "../FolderList";
 import { SearchContext } from "../SearchContext";
 import { css } from "@emotion/react";
 import { highlightReact } from "../highlighting";
+import { t } from "@lingui/macro";
+import { i18n } from "../../other/localization";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -54,7 +56,28 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
               columnWidths={props.columnWidths}
               onSearchQueryChange={(q) => setSearchQuery(q)}
             />
-            <div className={"newFolderBar"}>{props.folderListButtons}</div>
+            <div
+              className={"newFolderBar"}
+              css={css`
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              `}
+            >
+              {props.folderListButtons}
+              <div
+                data-testid="folder-count"
+                css={css`
+                  margin-left: auto;
+                  font-size: 11px;
+                  opacity: 0.8;
+                  user-select: none;
+                  white-space: nowrap;
+                `}
+              >
+                {getCountLabel(props.folders)}
+              </div>
+            </div>
           </div>
           {props.folders &&
           props.folders.items.length > 0 &&
@@ -85,6 +108,23 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
     </SearchContext.Provider>
   );
 };
+
+function getCountLabel(folders: FolderGroup): string {
+  if (folders.filteredItems) {
+    return `${folders.filteredItems.length} ${i18n._(t`matches`)}`;
+  }
+  // infer plural label from folder type of first item
+  const first: any = folders.items[0];
+  if (first) {
+    switch (first.folderType) {
+      case "session":
+        return `${folders.items.length} ${i18n._(t`Sessions`)}`;
+      case "person":
+        return `${folders.items.length} ${i18n._(t`People`)}`;
+    }
+  }
+  return `${folders.items.length} ${i18n._(t`Items`)}`;
+}
 
 // highlight helper removed in favor of shared highlightReact
 

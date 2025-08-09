@@ -324,6 +324,9 @@ msgstr "نشان می دهد که این زبان اول پدر یا مادر ا
 msgid "Interface Language"
 msgstr "زبان ارتباط"
 
+msgid "Items"
+msgstr ""
+
 msgid "Language Code"
 msgstr "کد زبانی"
 
@@ -710,6 +713,9 @@ msgid "lameta will not export Notes to IMDI"
 msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
+msgstr ""
+
+msgid "matches"
 msgstr ""
 
 msgid "{0} Marked Sessions"

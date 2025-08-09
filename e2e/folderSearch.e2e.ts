@@ -168,4 +168,22 @@ test.describe("Folder Search UI", () => {
       page.getByRole("gridcell", { name: /New_Session/i }).first()
     ).toBeVisible();
   });
+
+  test("folder count and matches display", async () => {
+    await project.goToSessions();
+    // add a couple sessions to get a stable count
+    await project.addSession();
+    await project.addSession();
+    const countEl = page.getByTestId("folder-count");
+    // expect something like '3 Sessions'
+    await expect(countEl).toContainText(/\d+\s+Sessions/);
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("ZZZ_NO_MATCH_dont_exist");
+    await page.waitForTimeout(250);
+    await expect(countEl).toHaveText(/0\s+matches/);
+    // clear via clear button
+    await page.getByTestId("folder-search-clear").click();
+    await page.waitForTimeout(150);
+    await expect(countEl).toContainText(/Sessions/);
+  });
 });
