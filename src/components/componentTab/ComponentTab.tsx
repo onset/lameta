@@ -68,8 +68,8 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
                 data-testid="folder-count"
                 css={css`
                   margin-left: auto;
-                  font-size: 11px;
-                  opacity: 0.8;
+                  font-size: 14px;
+                  opacity: 0.9;
                   user-select: none;
                   white-space: nowrap;
                 `}
