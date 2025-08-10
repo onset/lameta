@@ -28,6 +28,7 @@ import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
 import { highlightReact } from "./highlighting";
 import { lameta_orange } from "../containers/theme";
+import SearchIcon from "@mui/icons-material/Search";
 const electron = require("electron");
 
 export const _FileList: React.FunctionComponent<{
@@ -185,21 +186,30 @@ export const _FileList: React.FunctionComponent<{
                 justify-content: center;
                 width: 100%;
                 height: 100%;
-                background: ${lameta_orange};
               `}
               title={i18n._(t`Search match in metadata`)}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <div
+                css={css`
+                  background: ${lameta_orange};
+                  border-radius: 50%;
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  /* keep icon crisp */
+                  line-height: 0;
+                `}
               >
-                <circle cx="11" cy="11" r="7" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
+                <SearchIcon
+                  fontSize="inherit"
+                  css={css`
+                    color: white;
+                    font-size: 14px; /* slightly smaller to fit circle */
+                  `}
+                />
+              </div>
             </div>
           ) : null;
         }
