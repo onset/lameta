@@ -60,12 +60,6 @@
   }
 }
 
-.metadataMatch {
-  /* fallback if inline style missing */
-  border: 3px solid $project--color;
-  box-sizing: border-box;
-}
-
 /* status values::after    status:
       | "normalFile"
       | "missing"

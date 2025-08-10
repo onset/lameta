@@ -55,7 +55,43 @@ export const _FileList: React.FunctionComponent<{
   const { query } = React.useContext(SearchContext);
   const highlight = (text: string) => highlightReact(text, query);
 
-  const columns = [
+  const trimmedQuery = (query || "").trim().toLowerCase();
+
+  const fileHasMetadataMatch = (file: any, trimmed: string): boolean => {
+    if (!trimmed || !file) return false;
+    let metadataMatch = false;
+    try {
+      if (file.properties && file.properties.values) {
+        for (const p of file.properties.values()) {
+          if (
+            p &&
+            typeof p.text === "string" &&
+            p.text.length > 0 &&
+            p.text.toLowerCase().includes(trimmed)
+          ) {
+            metadataMatch = true;
+            break;
+          }
+        }
+      }
+      if (!metadataMatch && Array.isArray(file.contributions)) {
+        for (const c of file.contributions) {
+          if (
+            (c.personReference &&
+              c.personReference.toLowerCase().includes(trimmed)) ||
+            (c.role && c.role.toLowerCase().includes(trimmed)) ||
+            (c.comments && c.comments.toLowerCase().includes(trimmed))
+          ) {
+            metadataMatch = true;
+            break;
+          }
+        }
+      }
+    } catch {}
+    return metadataMatch;
+  };
+
+  let columns: any[] = [
     {
       id: "icon",
       Header: "",
@@ -130,6 +166,47 @@ export const _FileList: React.FunctionComponent<{
       }
     }
   ];
+
+  if (trimmedQuery) {
+    columns = [
+      {
+        id: "matchIndicator",
+        Header: "",
+        width: 20,
+        accessor: (d: any) => d,
+        style: { padding: 0 },
+        Cell: (cell: any) => {
+          const match = fileHasMetadataMatch(cell.original, trimmedQuery);
+          return match ? (
+            <div
+              css={css`
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                background: ${lameta_orange};
+              `}
+              title={i18n._(t`Search match in metadata`)}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+          ) : null;
+        }
+      },
+      ...columns
+    ];
+  }
   const isSpecialSayMoreFile =
     props.folder.selectedFile === props.folder.metadataFile;
   const filesPerPage = Math.min(300, props.folder.files.length);
@@ -208,41 +285,10 @@ export const _FileList: React.FunctionComponent<{
         getTrProps={(state: any, rowInfo: any, column: any) => {
           //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
           const { missing, status, info } = getStatusOfFile(rowInfo.original);
-          const trimmedQuery = (query || "").trim().toLowerCase();
-          let metadataMatch = false;
-          if (trimmedQuery && rowInfo && rowInfo.original) {
-            try {
-              const file: any = rowInfo.original;
-              // filename already highlighted; look at other metadata fields
-              if (file.properties && file.properties.values) {
-                for (const p of file.properties.values()) {
-                  if (
-                    p &&
-                    typeof p.text === "string" &&
-                    p.text.length > 0 &&
-                    p.text.toLowerCase().includes(trimmedQuery)
-                  ) {
-                    metadataMatch = true;
-                    break;
-                  }
-                }
-              }
-              if (!metadataMatch && Array.isArray(file.contributions)) {
-                for (const c of file.contributions) {
-                  if (
-                    (c.personReference &&
-                      c.personReference.toLowerCase().includes(trimmedQuery)) ||
-                    (c.role && c.role.toLowerCase().includes(trimmedQuery)) ||
-                    (c.comments &&
-                      c.comments.toLowerCase().includes(trimmedQuery))
-                  ) {
-                    metadataMatch = true;
-                    break;
-                  }
-                }
-              }
-            } catch {}
-          }
+          const metadataMatch = fileHasMetadataMatch(
+            rowInfo.original,
+            trimmedQuery
+          );
 
           return {
             title: info,
@@ -289,12 +335,7 @@ export const _FileList: React.FunctionComponent<{
                 : "") +
               (metadataMatch ? " metadataMatch " : ""),
             "data-testid": metadataMatch ? "file-metadata-match" : undefined,
-            style: metadataMatch
-              ? {
-                  border: `3px solid ${lameta_orange}`,
-                  boxSizing: "border-box"
-                }
-              : undefined
+            style: undefined
           };
         }}
       />

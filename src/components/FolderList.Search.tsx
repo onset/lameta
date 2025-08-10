@@ -9,6 +9,7 @@ import { t } from "@lingui/macro";
 import { i18n } from "../other/localization";
 import { FolderGroup } from "../model/Folder/Folder";
 import { observer } from "mobx-react";
+import { lameta_orange } from "../containers/theme";
 
 interface ISearchBarProps {
   folders: FolderGroup;
@@ -79,6 +80,14 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                   onClick={handleImmediateCommit}
                   data-testid="folder-search-button"
                   aria-label={i18n._(t`Search`)}
+                  css={css`
+                    background: ${lameta_orange};
+                    color: white; /* sets icon color */
+                    padding: 2px;
+                    &:hover {
+                      background: ${lameta_orange};
+                    }
+                  `}
                 >
                   <SearchIcon fontSize="small" />
                 </IconButton>
