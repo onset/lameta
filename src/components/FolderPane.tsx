@@ -339,7 +339,7 @@ const FileTabs: React.FunctionComponent<
         </Tabs>
       );
     case "Person": {
-      const kFirstPersonTabToOpen = userSettingsSingleton.DeveloperMode ? 3 : 0;
+      const kFirstPersonTabToOpen = userSettingsSingleton.DeveloperMode ? 0 : 0;
       return (
         <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
           <TabList>

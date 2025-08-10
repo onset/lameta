@@ -110,7 +110,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
 
 function getCountLabel(folders: FolderGroup): string {
   if (folders.filteredItems) {
-    return `${folders.filteredItems.length} ${i18n._(t`matches`)}`;
+    return `${folders.filteredItems.length} / ${folders.items.length}`;
   }
   // infer plural label from folder type of first item
   const first: any = folders.items[0];

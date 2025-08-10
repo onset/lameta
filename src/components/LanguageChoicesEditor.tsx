@@ -7,6 +7,7 @@ import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
+import { SearchContext } from "./SearchContext";
 import { observer } from "mobx-react";
 
 const saymore_orange = "#e69664";
@@ -21,6 +22,7 @@ export interface IProps {
 export const LanguageChoicesEditor: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
+  const { query } = React.useContext(SearchContext);
   const customStyles = {
     control: (styles, state) => ({
       ...styles,

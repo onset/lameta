@@ -5,6 +5,9 @@ import CreatableSelect from "react-select/creatable";
 import { lameta_orange } from "../../containers/theme";
 import { capitalCase } from "../../other/case";
 import { OptionWithTooltip } from "../OptionWithTooltip";
+import { SearchContext } from "../SearchContext";
+import { highlightReact } from "../highlighting";
+import { components } from "react-select";
 
 //const Choices = new Dictionary<string, Array<string>>();
 
@@ -55,8 +58,9 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           label: props.field.text
         };
   }
+  const { query } = React.useContext(SearchContext);
   return (
-    <div className={"field " + props.className}>
+    <div className={"field " + props.className} data-testid="genre-chooser">
       <label>{label}</label>
       <CreatableSelect
         tabIndex={props.tabIndex ? props.tabIndex : undefined}
@@ -106,7 +110,14 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         onChange={(s: any) => {
           props.field.setValueFromString(s && s.value ? s.value : "");
         }}
-        components={{ Option: OptionWithTooltip }}
+        components={{
+          Option: (p: any) => <OptionWithTooltip {...p} />,
+          SingleValue: (p: any) => (
+            <components.SingleValue {...p}>
+              {highlightReact(p.data.label, query)}
+            </components.SingleValue>
+          )
+        }}
         options={options}
       />
     </div>

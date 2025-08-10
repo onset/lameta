@@ -10,6 +10,8 @@ import {
 } from "./LanguagePill";
 import { observer } from "mobx-react";
 import { components, SingleValueProps } from "react-select";
+import { SearchContext } from "./SearchContext";
+import { highlightReact } from "./highlighting";
 import { css } from "@emotion/react";
 
 const saymore_orange = "#e69664";
@@ -81,11 +83,9 @@ export const SingleLanguageChooser: React.FunctionComponent<
         // so we have to put it here
         css={languagePillHoverStyle}
         components={{
-          SingleValue: LanguagePillForSingle,
-          Option: LanguageOption,
-          // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
+          SingleValue: (p: any) => <LanguagePillForSingle {...p} />,
+          Option: (p: any) => <LanguageOption {...p} />,
           DropdownIndicator: null
-          // ClearIndicator:
         }}
         className="select"
         placeholder=""

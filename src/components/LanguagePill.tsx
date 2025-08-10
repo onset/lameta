@@ -1,11 +1,13 @@
 import { css } from "@emotion/react";
-import { default as React } from "react";
+import { default as React, useContext } from "react";
 import {
   components,
   GroupBase,
   MultiValueGenericProps,
   SingleValueProps
 } from "react-select";
+import { SearchContext } from "./SearchContext";
+import { highlightReact } from "./highlighting";
 
 const saymore_orange = "#e69664";
 
@@ -36,10 +38,11 @@ export const LanguagePill = ({
   data,
   innerProps
 }: MultiValueGenericProps<LanguageData>) => {
+  const { query } = useContext(SearchContext);
   return (
     <div {...innerProps} css={pillStyle}>
       <div>
-        {data.label}
+        {highlightReact(data.label, query)}
         <span className="isoCode">{data.value}</span>
       </div>
     </div>
@@ -52,32 +55,37 @@ export const LanguagePillForSingle = ({
   data,
   ...props
 }: SingleValueProps<LanguageData, false, GroupBase<LanguageData>>) => (
-  <components.SingleValue data={data} css={pillStyle} {...props}>
-    {data.label}
-    <span className="isoCode">{data.value}</span>
-  </components.SingleValue>
+  <LanguagePillSingleWrapper data={data} {...props} />
 );
+
+const LanguagePillSingleWrapper = (props: any) => {
+  const { query } = useContext(SearchContext);
+  return (
+    <components.SingleValue data={props.data} css={pillStyle} {...props}>
+      {highlightReact(props.data.label, query)}
+      <span className="isoCode">{props.data.value}</span>
+    </components.SingleValue>
+  );
+};
 
 // how to render the choice in the drop down
 export const LanguageOption = (props) => {
+  const { query } = useContext(SearchContext);
   return (
     <div
       {...props.innerProps}
       css={css`
         padding-left: 5px;
         color: ${props.isFocused ? "white" : "black"};
-        // TODO: improve this color: the orang looked good, except in the Project where everything is orange
-        // "#dc8deb" // light purple
         background-color: ${props.isFocused ? "#257598" : "white"};
         .isoCode {
-          //font-size: 0.6em;
           margin-left: 5px;
           color: gray;
         }
       `}
     >
       <div>
-        {props.data.label}
+        {highlightReact(props.data.label, query)}
         <span className="isoCode">{props.data.value}</span>
       </div>
     </div>

@@ -29,6 +29,24 @@ export class LametaE2ERunner {
       }
     });
     this.page = await this.electronApp.firstWindow();
+
+    // Attach logging of renderer console + page errors so failing tests can report why windows close
+    const attachDebugListeners = (p: Page) => {
+      if ((p as any)._lametaDebugListenersAttached) return; // prevent double
+      (p as any)._lametaDebugListenersAttached = true;
+      p.on("console", (msg) => {
+        try {
+          console.log(`[renderer-console][${msg.type()}] ${msg.text()}`);
+        } catch {}
+      });
+      p.on("pageerror", (err) => {
+        try {
+          console.error(`[renderer-pageerror] ${err?.message || err}`);
+        } catch {}
+      });
+    };
+    attachDebugListeners(this.page);
+    this.electronApp.on("window", attachDebugListeners as any);
     return this.page;
   }
   // if you don't do this, there may be a noticable delay

@@ -18,11 +18,7 @@ import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { highlightReact } from "./highlighting";
 import { observer } from "mobx-react";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
+import { SearchBar } from "./FolderList.Search";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -43,7 +39,7 @@ class FolderList extends React.Component<IProps, any> {
       this.props.columnWidths
     );
     this.state = {
-      searchText: props.folders.searchQuery || "",
+      // searchText removed from parent state; we now only track committed searches
       lastSearch: props.folders.searchQuery || "",
       searchCount: 0,
       lastSearchResetCounter: 0
@@ -65,13 +61,13 @@ class FolderList extends React.Component<IProps, any> {
       nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
     ) {
       return {
-        searchText: "",
-        lastSearchResetCounter: nextProps.folders.searchResetCounter
+        lastSearchResetCounter: nextProps.folders.searchResetCounter,
+        lastSearch: ""
       };
     }
-    // if parent (FolderGroup) has a persisted search query (e.g. after tab switch), adopt it when our local state is empty
-    if (nextProps.folders.searchQuery !== prevState.searchText) {
-      return { searchText: nextProps.folders.searchQuery };
+    // When the persisted query changes externally we treat that as lastSearch for data-* attributes
+    if (nextProps.folders.searchQuery !== prevState.lastSearch) {
+      return { lastSearch: nextProps.folders.searchQuery };
     }
     return null;
   }
@@ -229,89 +225,18 @@ class FolderList extends React.Component<IProps, any> {
     return (
       <div className={"folderList"}>
         {/* Folder find/search bar */}
-        <div
-          className="folderSearchBar"
-          data-testid="folder-search-bar"
-          data-last-search={this.state.lastSearch}
-          data-search-count={this.state.searchCount}
-          data-search-reset-counter={currentSearchResetCounter}
-          css={css`
-            padding: 4px 6px 2px 6px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            background: transparent;
-          `}
-        >
-          <TextField
-            size="small"
-            placeholder={i18n._(t`Find`)}
-            value={this.state.searchText}
-            variant="outlined"
-            inputProps={{ "data-testid": "folder-search-input" }}
-            onChange={(e) => {
-              const v = e.target.value;
-              this.setState({ searchText: v, lastSearch: v });
-              // debounce filtering for fast typing
-              (this as any)._searchDebounceTimer &&
-                clearTimeout((this as any)._searchDebounceTimer);
-              (this as any)._searchDebounceTimer = setTimeout(() => {
-                this.props.folders.filter(v);
-              }, 150);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && this.state.searchText.trim().length) {
-                this.handleSearch();
-              }
-            }}
-            InputProps={{
-              startAdornment: this.state.searchText ? (
-                <InputAdornment position="start">
-                  <IconButton
-                    size="small"
-                    onClick={() => this.handleSearch()}
-                    data-testid="folder-search-button"
-                    aria-label={i18n._(t`Search`)}
-                  >
-                    <SearchIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : (
-                <InputAdornment position="start">
-                  <SearchIcon
-                    fontSize="small"
-                    data-testid="folder-search-icon"
-                    css={css`
-                      opacity: 0.6;
-                    `}
-                  />
-                </InputAdornment>
-              ),
-              endAdornment: this.state.searchText ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      this.setState({ searchText: "" });
-                      // Use empty string to explicitly clear both filtered list and persisted searchQuery.
-                      this.props.folders.filter("");
-                    }}
-                    aria-label={i18n._(t`Clear`)}
-                    data-testid="folder-search-clear"
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : undefined
-            }}
-            css={css`
-              flex: 1;
-              & .MuiOutlinedInput-root {
-                height: 32px;
-              }
-            `}
-          />
-        </div>
+        <SearchBar
+          folders={this.props.folders}
+          lastSearch={this.state.lastSearch}
+          searchCount={this.state.searchCount}
+          currentSearchResetCounter={currentSearchResetCounter}
+          onCommitted={(s) =>
+            this.setState((prev: any) => ({
+              lastSearch: s,
+              searchCount: prev.searchCount + 1
+            }))
+          }
+        />
         {/* Count moved to ComponentTab */}
         <ReactTable
           showPagination={false}
@@ -370,20 +295,6 @@ class FolderList extends React.Component<IProps, any> {
   }
 
   // folder label logic moved to ComponentTab
-
-  private handleSearch() {
-    this.setState((prev: any) => ({
-      lastSearch: prev.searchText,
-      searchCount: prev.searchCount + 1
-    }));
-    const s = this.state.searchText.trim();
-    if (s.length === 0) {
-      // empty string => clear filter AND persisted searchQuery
-      this.props.folders.filter("");
-    } else {
-      this.props.folders.filter(s);
-    }
-  }
 }
 
 export default observer(FolderList);
