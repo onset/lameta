@@ -22,8 +22,12 @@ export const SessionsTab = observer(
           key="newSession"
           onClick={(e) => {
             this.props.project.addSession();
-            // Clear any active filter so the new session is visible & selected
-            this.props.project.sessions.filter(undefined);
+            // If there's an active filter, try to re-run it so the new session will be included if it matches.
+            // We purposely do NOT clear searchQuery so persistence across tab switches works.
+            const q = this.props.project.sessions.searchQuery;
+            if (q && q.trim().length > 0) {
+              this.props.project.sessions.filter(q);
+            }
           }}
         >
           <Trans>New Session</Trans>

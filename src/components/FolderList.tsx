@@ -29,7 +29,6 @@ export interface IProps {
   folders: FolderGroup;
   columns: string[];
   columnWidths: number[];
-  onSearchQueryChange?: (q: string) => void;
 }
 class FolderList extends React.Component<IProps, any> {
   static contextType = SearchContext;
@@ -44,8 +43,8 @@ class FolderList extends React.Component<IProps, any> {
       this.props.columnWidths
     );
     this.state = {
-      searchText: "",
-      lastSearch: "",
+      searchText: props.folders.searchQuery || "",
+      lastSearch: props.folders.searchQuery || "",
       searchCount: 0,
       lastSearchResetCounter: 0
     };
@@ -53,6 +52,12 @@ class FolderList extends React.Component<IProps, any> {
 
   componentDidUpdate(prevProps: IProps) {
     // no-op now; reset handled in getDerivedStateFromProps to avoid relying on mutable prop object reference
+  }
+
+  componentDidMount() {
+    // If we mount with a remembered search term but no active filteredItems (e.g. after tab switch), reapply it.
+    // We assume items don't change just from tab switching; if a searchQuery exists and filteredItems not set
+    // we can derive filteredItems lazily only when user resumes typing. So no auto re-filter here now.
   }
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
@@ -63,6 +68,10 @@ class FolderList extends React.Component<IProps, any> {
         searchText: "",
         lastSearchResetCounter: nextProps.folders.searchResetCounter
       };
+    }
+    // if parent (FolderGroup) has a persisted search query (e.g. after tab switch), adopt it when our local state is empty
+    if (nextProps.folders.searchQuery !== prevState.searchText) {
+      return { searchText: nextProps.folders.searchQuery };
     }
     return null;
   }
@@ -248,8 +257,6 @@ class FolderList extends React.Component<IProps, any> {
                 clearTimeout((this as any)._searchDebounceTimer);
               (this as any)._searchDebounceTimer = setTimeout(() => {
                 this.props.folders.filter(v);
-                this.props.onSearchQueryChange &&
-                  this.props.onSearchQueryChange(v);
               }, 150);
             }}
             onKeyDown={(e) => {
@@ -286,9 +293,8 @@ class FolderList extends React.Component<IProps, any> {
                     size="small"
                     onClick={() => {
                       this.setState({ searchText: "" });
-                      this.props.folders.filter(undefined);
-                      this.props.onSearchQueryChange &&
-                        this.props.onSearchQueryChange("");
+                      // Use empty string to explicitly clear both filtered list and persisted searchQuery.
+                      this.props.folders.filter("");
                     }}
                     aria-label={i18n._(t`Clear`)}
                     data-testid="folder-search-clear"
@@ -372,7 +378,8 @@ class FolderList extends React.Component<IProps, any> {
     }));
     const s = this.state.searchText.trim();
     if (s.length === 0) {
-      this.props.folders.filter(undefined);
+      // empty string => clear filter AND persisted searchQuery
+      this.props.folders.filter("");
     } else {
       this.props.folders.filter(s);
     }

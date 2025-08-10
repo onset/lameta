@@ -43,6 +43,8 @@ export class FolderGroup {
   // increments each time an external caller clears the filter (filter(undefined)).
   // UI components (e.g. FolderList) can observe this to know they should also clear their search input state.
   public searchResetCounter: number;
+  // holds the current (last non-empty) search string so that UI components can persist it across unmounts/mounts
+  public searchQuery: string;
   private index?: FolderIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
@@ -52,12 +54,14 @@ export class FolderGroup {
       items: observable,
       selectedIndex: observable,
       filteredItems: observable,
-      searchResetCounter: observable
+      searchResetCounter: observable,
+      searchQuery: observable
     });
 
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
     this.searchResetCounter = 0;
+    this.searchQuery = "";
   }
   // called by FolderIndex
   public _setIndex(index: any) {
@@ -85,13 +89,19 @@ export class FolderGroup {
       this.filteredItems = undefined;
       // signal to any observers (e.g. FolderList) that the filter was programmatically cleared
       this.searchResetCounter++;
+      // Do NOT clear searchQuery here; we want persistence across tab switches even if something
+      // (e.g. adding a session) temporarily clears the active filtered list.
       return;
     }
     const needle = search.trim();
     if (!needle) {
       this.filteredItems = undefined;
+      // user actually entered empty => clear persistence
+      this.searchQuery = "";
       return;
     }
+    // remember the active non-empty search string for persistence across tab switches
+    this.searchQuery = search;
     // Lazily attach a per-group index the first time we actually filter with a non-empty string.
     // Each FolderGroup receives its own FolderIndex instance (we intentionally do NOT share a singleton
     // to avoid cross-talk, unintended memory retention, or future coupling between groups).
