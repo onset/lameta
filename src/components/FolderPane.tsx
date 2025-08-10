@@ -168,6 +168,75 @@ const FileTabs: React.FunctionComponent<
     <Trans>Notes</Trans>
   );
 
+  // Generic helper to wrap a tab label if highlighted
+  const highlightLabel = (
+    label: React.ReactNode,
+    should: boolean,
+    testId: string
+  ) =>
+    should ? (
+      <span
+        data-testid={testId}
+        css={css`
+          background: #ffba8a;
+          padding: 0 4px;
+          border-radius: 3px;
+        `}
+      >
+        {label}
+      </span>
+    ) : (
+      <>{label}</>
+    );
+
+  const lcQuery = trimmedQuery.toLowerCase();
+  const hasQuery = lcQuery.length > 0;
+
+  // Collect file property matches (excluding notes which is handled separately)
+  const propertiesHasMatch = hasQuery
+    ? file.properties
+        .values()
+        .filter((f: any) => f && f.key !== "notes")
+        .some((f: any) => (f.text || "").toLowerCase().includes(lcQuery))
+    : false;
+
+  // Contributors (file-level contributions) tab match
+  const contributorsHasMatch = hasQuery
+    ? (file.contributions || []).some((c) =>
+        [c.personReference, c.role, c.comments]
+          .filter(Boolean)
+          .some((v) => ("" + v).toLowerCase().includes(lcQuery))
+      )
+    : false;
+
+  // For media tab (Audio/Video/Image/Text/ELAN/File), highlight if filename or media stats (currently just filename) matches
+  const filename = file.getTextProperty("filename");
+  const mediaHasMatch = hasQuery
+    ? (filename || "").toLowerCase().includes(lcQuery)
+    : false;
+
+  // Session / Person primary tab highlighting (folder-level properties)
+  const folderPropertiesHasMatch = hasQuery
+    ? directoryObject.properties
+        .values()
+        .filter((f: any) => f && f.key !== "notes") // exclude notes; it has its own tab highlight
+        .some((f: any) => (f.text || "").toLowerCase().includes(lcQuery))
+    : false;
+
+  // Person Contributions tab (different from file Contributors) when viewing a Person
+  const personContributionsHasMatch =
+    hasQuery && file.type === "Person"
+      ? props.project
+          .getContributionsMatchingPerson(
+            (directoryObject as any).getIdToUseForReferences()
+          )
+          .some((c: any) =>
+            [c.sessionName, c.role, c.comments]
+              .filter(Boolean)
+              .some((v) => ("" + v).toLowerCase().includes(lcQuery))
+          )
+      : false;
+
   const notesPanel = directoryObject.properties.getValue("notes") ? (
     <TabPanel>
       {/* <Notes text={directoryObject.properties.getTextField("notes")} /> */}
@@ -261,10 +330,18 @@ const FileTabs: React.FunctionComponent<
   const standardMetaTabs = props.showStandardMetaTabs ? (
     <>
       <Tab>
-        <Trans>Properties</Trans>
+        {highlightLabel(
+          <Trans>Properties</Trans>,
+          propertiesHasMatch,
+          "properties-tab-highlight"
+        )}
       </Tab>
       <Tab>
-        <Trans>Contributors</Trans>
+        {highlightLabel(
+          <Trans>Contributors</Trans>,
+          contributorsHasMatch,
+          "contributors-tab-highlight"
+        )}
       </Tab>
       <Tab>{notesTabLabel}</Tab>
       {imdiTab}
@@ -306,10 +383,18 @@ const FileTabs: React.FunctionComponent<
         >
           <TabList>
             <Tab>
-              <Trans>Session</Trans>
+              {highlightLabel(
+                <Trans>Session</Trans>,
+                folderPropertiesHasMatch,
+                "session-tab-highlight"
+              )}
             </Tab>
             <Tab>
-              <Trans>Contributors</Trans>
+              {highlightLabel(
+                <Trans>Contributors</Trans>,
+                contributorsHasMatch,
+                "contributors-tab-highlight"
+              )}
             </Tab>
             <Tab>
               <Trans>Status</Trans>
@@ -366,10 +451,18 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
           <TabList>
             <Tab>
-              <Trans>Person</Trans>
+              {highlightLabel(
+                <Trans>Person</Trans>,
+                folderPropertiesHasMatch,
+                "person-tab-highlight"
+              )}
             </Tab>
             <Tab>
-              <Trans>Contributions</Trans>
+              {highlightLabel(
+                <Trans>Contributions</Trans>,
+                personContributionsHasMatch,
+                "person-contributions-tab-highlight"
+              )}
             </Tab>
             <Tab>{notesTabLabel}</Tab>
             {imdiTab}
@@ -417,7 +510,11 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey}>
           <TabList>
             <Tab>
-              <Trans>Audio</Trans>
+              {highlightLabel(
+                <Trans>Audio</Trans>,
+                mediaHasMatch,
+                "audio-tab-highlight"
+              )}
             </Tab>
             {standardMetaTabs}
           </TabList>
@@ -434,7 +531,11 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey}>
           <TabList>
             <Tab>
-              <Trans>Video</Trans>
+              {highlightLabel(
+                <Trans>Video</Trans>,
+                mediaHasMatch,
+                "video-tab-highlight"
+              )}
             </Tab>
             {standardMetaTabs}
           </TabList>
@@ -459,7 +560,11 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey}>
           <TabList>
             <Tab>
-              <Trans>Image</Trans>
+              {highlightLabel(
+                <Trans>Image</Trans>,
+                mediaHasMatch,
+                "image-tab-highlight"
+              )}
             </Tab>
             {standardMetaTabs}
           </TabList>
@@ -478,7 +583,11 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey}>
           <TabList>
             <Tab>
-              <Trans>Text</Trans>
+              {highlightLabel(
+                <Trans>Text</Trans>,
+                mediaHasMatch,
+                "text-tab-highlight"
+              )}
             </Tab>
             {standardMetaTabs}
           </TabList>
@@ -493,7 +602,13 @@ const FileTabs: React.FunctionComponent<
       return (
         <Tabs key={tabsKey}>
           <TabList>
-            <Tab>ELAN {/* should not be translated */}</Tab>
+            <Tab>
+              {highlightLabel(
+                <>ELAN {/* should not be translated */}</>,
+                mediaHasMatch,
+                "elan-tab-highlight"
+              )}
+            </Tab>
             {standardMetaTabs}
           </TabList>
           <TabPanel className="unhandledFileType">
@@ -516,7 +631,11 @@ const FileTabs: React.FunctionComponent<
         <Tabs key={tabsKey}>
           <TabList>
             <Tab>
-              <Trans>File</Trans>
+              {highlightLabel(
+                <Trans>File</Trans>,
+                mediaHasMatch,
+                "file-tab-highlight"
+              )}
             </Tab>
             {standardMetaTabs}
           </TabList>

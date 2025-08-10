@@ -280,4 +280,63 @@ test.describe("Folder Search UI", () => {
     // Expect the file row to have metadata match border (detect via test id)
     await expect(page.getByTestId("file-metadata-match").first()).toBeVisible();
   });
+
+  test("search highlighting: session tab highlights when built-in id matches default name", async () => {
+    await project.goToSessions();
+    await project.addSession();
+    const cell = page.getByRole("gridcell", { name: /^New_Session$/ }).first();
+    await cell.click();
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("New_Session");
+    await page.waitForTimeout(250);
+    await expect(page.getByTestId("session-tab-highlight")).toBeVisible();
+  });
+
+  test("search highlighting: audio and properties tabs highlight on filename match", async () => {
+    await project.goToSessions();
+    await project.addSession();
+    await page
+      .getByRole("gridcell", { name: /New_Session/i })
+      .first()
+      .click();
+    const fileList = new E2eFileList(lameta, page, project.projectDirectory);
+    const token = "TabPropX456";
+    await fileList.addFile(`media_${token}.mp3`);
+    // file row may not be automatically selected; click by partial filename
+    const fileCell = page
+      .getByRole("gridcell", { name: new RegExp(token, "i") })
+      .first();
+    await fileCell.waitFor({ state: "visible" });
+    await fileCell.click();
+    const input = page.getByTestId("folder-search-input");
+    await input.fill(token);
+    await page.waitForTimeout(350);
+    await expect(page.getByTestId("audio-tab-highlight")).toBeVisible();
+    await expect(page.getByTestId("properties-tab-highlight")).toBeVisible();
+  });
+
+  test("notes-only match does not highlight session tab", async () => {
+    await project.goToSessions();
+    await project.addSession();
+    // select session
+    await page
+      .getByRole("gridcell", { name: /^New_Session$/ })
+      .first()
+      .click();
+    // open Notes tab
+    const notesTab = page.getByRole("tab", { name: /Notes/i });
+    await notesTab.click();
+    const notesEditor = page.getByTestId("field-notes-edit");
+    const token = "SessNotesOnlyZ99"; // unlikely to appear elsewhere
+    await notesEditor.click();
+    await page.keyboard.type(token);
+    await page.keyboard.press("Enter");
+    const input = page.getByTestId("folder-search-input");
+    await input.fill(token);
+    await page.waitForTimeout(300);
+    // Notes tab highlighted
+    await expect(page.getByTestId("notes-tab-highlight")).toBeVisible();
+    // Session tab NOT highlighted (element with test id should not exist)
+    await expect(page.getByTestId("session-tab-highlight")).toHaveCount(0);
+  });
 });

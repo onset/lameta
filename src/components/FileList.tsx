@@ -231,9 +231,7 @@ export const _FileList: React.FunctionComponent<{
                 for (const c of file.contributions) {
                   if (
                     (c.personReference &&
-                      c.personReference
-                        .toLowerCase()
-                        .includes(trimmedQuery)) ||
+                      c.personReference.toLowerCase().includes(trimmedQuery)) ||
                     (c.role && c.role.toLowerCase().includes(trimmedQuery)) ||
                     (c.comments &&
                       c.comments.toLowerCase().includes(trimmedQuery))

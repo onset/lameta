@@ -162,7 +162,8 @@ export class FolderGroup {
                     (c.personReference &&
                       c.personReference.toLowerCase().includes(needleLower)) ||
                     (c.role && c.role.toLowerCase().includes(needleLower)) ||
-                    (c.comments && c.comments.toLowerCase().includes(needleLower))
+                    (c.comments &&
+                      c.comments.toLowerCase().includes(needleLower))
                   )
                     return true;
                 }

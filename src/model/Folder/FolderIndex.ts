@@ -86,12 +86,12 @@ export class FolderIndex {
             );
           }
           // include all metadata field texts
-            if (file && file.properties && file.properties.values) {
-              const props = file.properties.values();
-              for (const p of props) {
-                if (p && typeof p.text === "string") fileBits.push(p.text);
-              }
+          if (file && file.properties && file.properties.values) {
+            const props = file.properties.values();
+            for (const p of props) {
+              if (p && typeof p.text === "string") fileBits.push(p.text);
             }
+          }
           // include contributions (personReference, role, comments)
           if (file && Array.isArray(file.contributions)) {
             for (const c of file.contributions) {
