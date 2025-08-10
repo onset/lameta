@@ -19,13 +19,16 @@ export class LametaE2ERunner {
     // inspect what happened and we don't get leftovers around from crashes or whatever.
     fs.mkdirSync(rootDir, { recursive: true });
 
+    const e2eRoot = process.env.E2ERoot || rootDir; // allow caller override, else use unique temp dir
     this.electronApp = await electron.launch({
       args: ["."],
       env: {
-        NODE_ENV: "test" /* <-- doesn't work */,
+        ...process.env, // inherit so PATH etc are preserved
+        NODE_ENV: "test", // used by main & renderer conditionals
+        VITE_NODE_ENV: "test", // some libs look for this (vite conventions)
         E2E: "true",
         E2E_USER_SETTINGS_STORE_NAME: "none", // like we're running for the first time
-        E2ERoot: process.env.E2ERoot!
+        E2ERoot: e2eRoot
       }
     });
     this.page = await this.electronApp.firstWindow();

@@ -18,9 +18,21 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
-  process.exit(0);
+// In normal runs we enforce a single instance. For E2E we allow parallel instances
+// so tests can launch while a developer has `yarn dev` running. The E2E harness
+// sets process.env.E2E. We also optionally redirect userData to an isolated temp
+// directory (E2ERoot) so settings/stores do not collide with a dev session.
+if (process.env.E2E) {
+  if (process.env.E2ERoot) {
+    try {
+      app.setPath("userData", join(process.env.E2ERoot, "userData"));
+    } catch {}
+  }
+} else {
+  if (!app.requestSingleInstanceLock()) {
+    app.quit();
+    process.exit(0);
+  }
 }
 
 Store.initRenderer();
