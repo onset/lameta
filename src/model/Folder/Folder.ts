@@ -136,16 +136,39 @@ export class FolderGroup {
             return true;
           }
         }
-        // also search file names
-        if (
-          folder.files &&
-          folder.files.some((file) =>
-            (file.pathInFolderToLinkFileOrLocalCopy || "")
-              .toLowerCase()
-              .includes(needleLower)
-          )
-        ) {
-          return true;
+        // also search files: names + metadata fields + contributions
+        if (folder.files) {
+          for (const file of folder.files as any[]) {
+            try {
+              if (
+                (file.pathInFolderToLinkFileOrLocalCopy || "")
+                  .toLowerCase()
+                  .includes(needleLower)
+              )
+                return true;
+              if (file.properties && file.properties.values) {
+                for (const p of file.properties.values()) {
+                  if (
+                    p &&
+                    typeof p.text === "string" &&
+                    p.text.toLowerCase().includes(needleLower)
+                  )
+                    return true;
+                }
+              }
+              if (Array.isArray(file.contributions)) {
+                for (const c of file.contributions) {
+                  if (
+                    (c.personReference &&
+                      c.personReference.toLowerCase().includes(needleLower)) ||
+                    (c.role && c.role.toLowerCase().includes(needleLower)) ||
+                    (c.comments && c.comments.toLowerCase().includes(needleLower))
+                  )
+                    return true;
+                }
+              }
+            } catch {}
+          }
         }
       } catch {}
       return false;

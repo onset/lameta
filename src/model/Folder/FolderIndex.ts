@@ -5,7 +5,7 @@ import { reaction } from "mobx";
 
 interface IndexedFolder {
   folder: Folder;
-  blob: string; // concatenation of all field texts and file names
+  blob: string; // concatenation of all field texts, file names, and file metadata fields
 }
 
 // A FolderIndex instance is attached to exactly one FolderGroup.
@@ -77,12 +77,32 @@ export class FolderIndex {
         .map((field: any) =>
           field && typeof field.text === "string" ? field.text : ""
         );
-      const fileNameBits = (f.files || []).map((file: any) =>
-        file && file.pathInFolderToLinkFileOrLocalCopy
-          ? Path.basename(file.pathInFolderToLinkFileOrLocalCopy)
-          : ""
-      );
-      return [...fieldBits, ...fileNameBits].join(" | ");
+      const fileBits: string[] = [];
+      (f.files || []).forEach((file: any) => {
+        try {
+          if (file && file.pathInFolderToLinkFileOrLocalCopy) {
+            fileBits.push(
+              Path.basename(file.pathInFolderToLinkFileOrLocalCopy)
+            );
+          }
+          // include all metadata field texts
+            if (file && file.properties && file.properties.values) {
+              const props = file.properties.values();
+              for (const p of props) {
+                if (p && typeof p.text === "string") fileBits.push(p.text);
+              }
+            }
+          // include contributions (personReference, role, comments)
+          if (file && Array.isArray(file.contributions)) {
+            for (const c of file.contributions) {
+              if (c.personReference) fileBits.push(c.personReference);
+              if (c.role) fileBits.push(c.role);
+              if (c.comments) fileBits.push(c.comments);
+            }
+          }
+        } catch {}
+      });
+      return [...fieldBits, ...fileBits].join(" | ");
     } catch {
       return "";
     }

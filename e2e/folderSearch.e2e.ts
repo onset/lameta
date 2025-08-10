@@ -252,4 +252,32 @@ test.describe("Folder Search UI", () => {
     await alphaTwoCell.click();
     await expect(idField).toHaveText(/AlphaFilterTestTwo/);
   });
+
+  test("search matches file metadata (notes) and highlights file row", async () => {
+    await project.goToSessions();
+    // ensure a session exists and select it
+    await project.addSession();
+    await page
+      .getByRole("gridcell", { name: /New_Session/i })
+      .first()
+      .click();
+    const fileList = new E2eFileList(lameta, page, project.projectDirectory);
+    await fileList.addFile("metaMatchTestAudio.mp3");
+    // Open Notes tab for the file (Audio -> Properties -> Notes). The Audio tab shows first; click Notes tab label
+    // Wait for tabs to render
+    const notesTab = page.getByRole("tab", { name: /Notes/i });
+    await notesTab.click();
+    // Find the notes field editable div
+    const notesEditor = page.getByTestId("field-notes-edit");
+    const token = "MetaMatchΩ123";
+    await notesEditor.click();
+    await page.keyboard.type(token);
+    await page.keyboard.press("Enter"); // blur if single-line; ensure save
+    // Now search for the token at folder level
+    const input = page.getByTestId("folder-search-input");
+    await input.fill(token);
+    await page.waitForTimeout(300);
+    // Expect the file row to have metadata match border (detect via test id)
+    await expect(page.getByTestId("file-metadata-match").first()).toBeVisible();
+  });
 });

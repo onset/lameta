@@ -27,6 +27,7 @@ import { useLingui } from "@lingui/react";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
 import { highlightReact } from "./highlighting";
+import { lameta_orange } from "../containers/theme";
 const electron = require("electron");
 
 export const _FileList: React.FunctionComponent<{
@@ -207,6 +208,43 @@ export const _FileList: React.FunctionComponent<{
         getTrProps={(state: any, rowInfo: any, column: any) => {
           //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
           const { missing, status, info } = getStatusOfFile(rowInfo.original);
+          const trimmedQuery = (query || "").trim().toLowerCase();
+          let metadataMatch = false;
+          if (trimmedQuery && rowInfo && rowInfo.original) {
+            try {
+              const file: any = rowInfo.original;
+              // filename already highlighted; look at other metadata fields
+              if (file.properties && file.properties.values) {
+                for (const p of file.properties.values()) {
+                  if (
+                    p &&
+                    typeof p.text === "string" &&
+                    p.text.length > 0 &&
+                    p.text.toLowerCase().includes(trimmedQuery)
+                  ) {
+                    metadataMatch = true;
+                    break;
+                  }
+                }
+              }
+              if (!metadataMatch && Array.isArray(file.contributions)) {
+                for (const c of file.contributions) {
+                  if (
+                    (c.personReference &&
+                      c.personReference
+                        .toLowerCase()
+                        .includes(trimmedQuery)) ||
+                    (c.role && c.role.toLowerCase().includes(trimmedQuery)) ||
+                    (c.comments &&
+                      c.comments.toLowerCase().includes(trimmedQuery))
+                  ) {
+                    metadataMatch = true;
+                    break;
+                  }
+                }
+              }
+            } catch {}
+          }
 
           return {
             title: info,
@@ -250,7 +288,15 @@ export const _FileList: React.FunctionComponent<{
               " " +
               (rowInfo && rowInfo.original === props.folder.selectedFile
                 ? " selected "
-                : "")
+                : "") +
+              (metadataMatch ? " metadataMatch " : ""),
+            "data-testid": metadataMatch ? "file-metadata-match" : undefined,
+            style: metadataMatch
+              ? {
+                  border: `3px solid ${lameta_orange}`,
+                  boxSizing: "border-box"
+                }
+              : undefined
           };
         }}
       />
