@@ -77,6 +77,28 @@ test.describe("Folder Search UI", () => {
     );
   });
 
+  test("search term persists visually across tab switch (sessions -> project -> sessions)", async () => {
+    await project.goToSessions();
+    // Ensure at least one session exists for a stable filtered view
+    await project.addSession();
+    const input = page.getByTestId("folder-search-input");
+    const query = "PersistMe123 Ω";
+    await input.fill(query);
+    await page.waitForTimeout(200); // allow debounce
+    // Verify filter recorded
+    await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
+      "data-last-search",
+      query
+    );
+    // Switch to Project tab
+    await project.goToProjectConfiguration();
+    // Switch back to Sessions
+    await project.goToSessions();
+    // Input should still show the query and clear button present
+    await expect(page.getByTestId("folder-search-input")).toHaveValue(query);
+    await expect(page.getByTestId("folder-search-clear")).toBeVisible();
+  });
+
   test("search matches on file names (e.g. mp3)", async () => {
     await project.goToSessions();
     // ensure at least one session exists

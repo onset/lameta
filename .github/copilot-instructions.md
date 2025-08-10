@@ -10,6 +10,7 @@ Never use npm commands
 This project uses a bash terminal, so always use forward slashes in paths.
 Use `yarn test` in a terminal to run unit tests. The "run_tests" tool often hangs.
 Use `yarn e2e` in a terminal to run end-to-end tests. You can run a particular file with `yarn e2e <file-name>`.
+If you make a change and e2e does not seem to reflect the change, try a console.log statement as a sanity check. If e2ebuildwatch is running, it should pick up the changes, but if it is not, you may need to run it or do a `yarn build`.
 
 When doing debugging by writing temporary one-off code files in the terminal, remember not to leave them laying around.
 

@@ -84,6 +84,7 @@ Encountered "Invalid hook call" due to using `React.useContext` inside class `Fo
 - [x] Persist search term & clear button across tab switches (Sessions/People <-> Project) by storing searchQuery on FolderGroup; add e2e test (implicit in other tests).
 - [x] Highlight matches on UI fields that don't use TextFieldEdit, including genre, AccessChooser, Subject Langauges, Working Languages. Include an e2e test to verify that all of these highlights work. Add e2e tests.
 - [x] If the Notes field is where a match is, highlight the label of the Notes tab as well to draw the user there. After clicking that tab, we should then see the search test highlighted in the note. Add e2e test.
+- [x] Bug: When we enter a search term in Sessions and then switch to the project tab and come back, the filter is still in effect (that's good). However, the Search Bar does not show the search term, and ther is no "x" to clear it. Added effect to restore input when filter active; extended e2e test.
 
 ### TODO Later
 

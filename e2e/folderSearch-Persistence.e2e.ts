@@ -23,9 +23,10 @@ test.describe("Folder search persistence across tab switches", () => {
     const input = page.getByTestId("folder-search-input");
     await input.fill("Session");
     await page.waitForTimeout(250);
-    // ensure filter active (count shows matches or Sessions)
-    await expect(page.getByTestId("folder-count")).toContainText(
-      /Session|matches/
+    // ensure search registered (data-last-search reflects current query)
+    await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
+      "data-last-search",
+      /Session/
     );
     // switch to Project tab
     await page.getByTestId("project-tab").click();

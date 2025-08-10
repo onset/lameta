@@ -51,9 +51,7 @@ class FolderList extends React.Component<IProps, any> {
   }
 
   componentDidMount() {
-    // If we mount with a remembered search term but no active filteredItems (e.g. after tab switch), reapply it.
-    // We assume items don't change just from tab switching; if a searchQuery exists and filteredItems not set
-    // we can derive filteredItems lazily only when user resumes typing. So no auto re-filter here now.
+    // no-op; persistence handled by FolderGroup.searchQuery only
   }
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {

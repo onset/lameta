@@ -716,9 +716,6 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Lameta va maintenant ouvrir ce dossier sur votre disque dur ensuite va quitter. Vous devez ouvrir ces fichiers {projectType} dans un éditeur de texte et décider lequel vous voulez, et supprimer les autres. Celui que vous choisissez doit s'appeler {name}."
 
-msgid "matches"
-msgstr ""
-
 msgid "{0} Marked Sessions"
 msgstr "{0} Sessions Cochées"
 
