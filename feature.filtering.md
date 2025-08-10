@@ -83,10 +83,10 @@ Encountered "Invalid hook call" due to using `React.useContext` inside class `Fo
 - [x] Add e2e test ensuring that a new folder is selected when filtering removes selected folder, and no folder is selected if the filter has zero hits.
 - [x] Persist search term & clear button across tab switches (Sessions/People <-> Project) by storing searchQuery on FolderGroup; add e2e test (implicit in other tests).
 - [x] Highlight matches on UI fields that don't use TextFieldEdit, including genre, AccessChooser, Subject Langauges, Working Languages. Include an e2e test to verify that all of these highlights work. Add e2e tests.
+- [x] If the Notes field is where a match is, highlight the label of the Notes tab as well to draw the user there. After clicking that tab, we should then see the search test highlighted in the note. Add e2e test.
 
 ### TODO Later
 
-- [ ] If the Notes field is where a match is, highlight the label of the Notes tab as well to draw the user there. Add e2e tests.
 - [ ] Match not only on the fields of a Folder, but also on the metadata fields of its child files. If a match is in the fields of a file, highlight that file in the FileList. For example, an audio file has Notes, and Custom Fields. Add e2e tests.
 - [ ] Add e2e test for filename match where case differs (ensures case-insensitive path executed).
 - [ ] Introduce minimum query length (e.g. 2) to avoid indexing overhead for single-character searches if performance issues arise.

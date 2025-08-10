@@ -33,6 +33,8 @@ import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import { SearchContext } from "./SearchContext";
+import { css } from "@emotion/react";
 import { RoCrateView } from "./RoCrate/RoCrateView";
 import userSettingsSingleton from "../other/UserSettings";
 
@@ -122,6 +124,9 @@ const FileTabs: React.FunctionComponent<
   const [selectedContribution, setSelectedContribution] =
     React.useState<Contribution | undefined>(undefined);
 
+  // search context (for highlighting the Notes tab label when a match is inside notes)
+  const { query } = React.useContext(SearchContext);
+
   // tabIndex: number,
   // setTabIndex: (index: number) => void,
   // selectedContribution: Contribution | undefined,
@@ -142,10 +147,31 @@ const FileTabs: React.FunctionComponent<
   if (!file || path.length === 0) {
     return <br />;
   }
+  const notesField = file.properties.getTextField("notes");
+  const notesText = notesField ? notesField.text : "";
+  const trimmedQuery = (query || "").trim();
+  const notesHasMatch =
+    trimmedQuery.length > 0 &&
+    notesText.toLowerCase().includes(trimmedQuery.toLowerCase());
+  const notesTabLabel = notesHasMatch ? (
+    <span
+      data-testid="notes-tab-highlight"
+      css={css`
+        background: #ffba8a;
+        padding: 0 4px;
+        border-radius: 3px;
+      `}
+    >
+      <Trans>Notes</Trans>
+    </span>
+  ) : (
+    <Trans>Notes</Trans>
+  );
+
   const notesPanel = directoryObject.properties.getValue("notes") ? (
     <TabPanel>
       {/* <Notes text={directoryObject.properties.getTextField("notes")} /> */}
-      <Notes field={file.properties.getTextField("notes")} />
+      <Notes field={notesField} />
     </TabPanel>
   ) : null;
   const propertiesPanel = (
@@ -240,9 +266,7 @@ const FileTabs: React.FunctionComponent<
       <Tab>
         <Trans>Contributors</Trans>
       </Tab>
-      <Tab>
-        <Trans>Notes</Trans>
-      </Tab>
+      <Tab>{notesTabLabel}</Tab>
       {imdiTab}
     </>
   ) : null;
@@ -290,9 +314,7 @@ const FileTabs: React.FunctionComponent<
             <Tab>
               <Trans>Status</Trans>
             </Tab>
-            <Tab>
-              <Trans>Notes</Trans>
-            </Tab>
+            <Tab>{notesTabLabel}</Tab>
             {imdiTab} {paradisecTab} {roCrateTab}
           </TabList>
           <TabPanel>
@@ -349,9 +371,7 @@ const FileTabs: React.FunctionComponent<
             <Tab>
               <Trans>Contributions</Trans>
             </Tab>
-            <Tab>
-              <Trans>Notes</Trans>
-            </Tab>
+            <Tab>{notesTabLabel}</Tab>
             {imdiTab}
             {roCrateTab}
           </TabList>
