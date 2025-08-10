@@ -141,6 +141,7 @@ export const TextFieldEdit: React.FunctionComponent<
           aria-multiline={
             props.field.definition.multipleLines ? "true" : "false"
           }
+          data-testid={`field-${props.field.definition.key}-edit`}
           onFocus={beginEditing}
           onInput={(e) => {
             const el = e.currentTarget as HTMLDivElement;

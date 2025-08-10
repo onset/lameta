@@ -208,4 +208,48 @@ test.describe("Folder Search UI", () => {
     await page.waitForTimeout(150);
     await expect(countEl).toContainText(/Sessions/);
   });
+
+  test("selecting nth filtered folder shows correct details pane", async () => {
+    await project.goToSessions();
+    // Ensure at least two fresh sessions
+    for (let i = 0; i < 2; i++) {
+      await project.addSession();
+    }
+    // Rename first session id to AlphaOne (initial sessions typically New_Session & New_Session1)
+    const firstRow = page
+      .getByRole("gridcell", { name: /^New_Session$/ })
+      .first();
+    await firstRow.click();
+    const idField = page.getByTestId("field-id-edit");
+    await idField.click();
+    await page.keyboard.press("Control+A");
+    await page.keyboard.type("AlphaFilterTestOne");
+    await page.keyboard.press("Enter");
+    // wait for rename to reflect in grid (id column only)
+    const alphaOneIdCell = page
+      .locator(".folderList .rt-td.id")
+      .filter({ hasText: /^AlphaFilterTestOne$/ });
+    await expect(alphaOneIdCell).toBeVisible();
+    // Rename second session id to AlphaTwo. Remaining original should be New_Session1.
+    const secondRow = page
+      .getByRole("gridcell", { name: /^New_Session1$/ })
+      .first();
+    await secondRow.click();
+    await idField.click();
+    await page.keyboard.press("Control+A");
+    await page.keyboard.type("AlphaFilterTestTwo");
+    await page.keyboard.press("Enter");
+    // Filter to only Alpha sessions
+    const input = page.getByTestId("folder-search-input");
+    await input.fill("AlphaFilterTest");
+    await page.waitForTimeout(300);
+    const idCells = page.locator(".folderList .rt-td.id");
+    const alphaOneCell = idCells.filter({ hasText: /^AlphaFilterTestOne$/ });
+    const alphaTwoCell = idCells.filter({ hasText: /^AlphaFilterTestTwo$/ });
+    await expect(alphaOneCell).toBeVisible();
+    await expect(alphaTwoCell).toBeVisible();
+    // Click the second filtered id cell and ensure details pane shows its id
+    await alphaTwoCell.click();
+    await expect(idField).toHaveText(/AlphaFilterTestTwo/);
+  });
 });

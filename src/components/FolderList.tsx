@@ -258,22 +258,30 @@ class FolderList extends React.Component<IProps, any> {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
               onClick: (e: any, x: any) => {
-                // console.log(
-                //   "row " + JSON.stringify(rowInfo.original.directory)
-                // );
-                if (
-                  this.props.folders.selectedIndex > -1 &&
-                  selectedFolderIndex > -1
-                ) {
+                // Save current selection before changing
+                if (selectedFolderIndex > -1) {
                   this.props.folders.items[
                     selectedFolderIndex
                   ].saveAllFilesInFolder();
                 }
-                this.props.folders.selectedIndex = rowInfo.index;
-                this.setState({}); // trigger re-render so that the following style: takes effect
+                // rowInfo.index refers to the index within the currently displayed (possibly filtered) data set.
+                // We need to store the index relative to the full, unfiltered items array, because other code
+                // (e.g. the FolderPane) dereferences selectedIndex against folders.items.
+                const clickedFolder: Folder | undefined =
+                  rowInfo && rowInfo.original;
+                if (clickedFolder) {
+                  const absoluteIndex =
+                    this.props.folders.items.indexOf(clickedFolder);
+                  if (absoluteIndex !== -1) {
+                    this.props.folders.selectedIndex = absoluteIndex;
+                  }
+                }
+                this.setState({}); // force re-render so updated selection styling applies
               },
               className:
-                rowInfo && rowInfo.index === selectedFolderIndex
+                rowInfo &&
+                this.props.folders.items[selectedFolderIndex] ===
+                  rowInfo.original
                   ? "selected"
                   : ""
             };
