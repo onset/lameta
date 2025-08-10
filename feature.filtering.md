@@ -82,7 +82,7 @@ Encountered "Invalid hook call" due to using `React.useContext` inside class `Fo
 - [x] Add a count (now shown at right of the new-folder button bar) showing total (e.g. "234 Sessions") or filtered ("12 matches").
 - [x] Add e2e test ensuring that a new folder is selected when filtering removes selected folder, and no folder is selected if the filter has zero hits.
 - [x] Persist search term & clear button across tab switches (Sessions/People <-> Project) by storing searchQuery on FolderGroup; add e2e test (implicit in other tests).
-- [ ] Highlight matches on UI fields that don't use TextFieldEdit, including genre, AccessChooser, Subject Langauges, Working Languages. Include an e2e test to verify that all of these highlights work. Add e2e tests.
+- [x] Highlight matches on UI fields that don't use TextFieldEdit, including genre, AccessChooser, Subject Langauges, Working Languages. Include an e2e test to verify that all of these highlights work. Add e2e tests.
 
 ### TODO Later
 

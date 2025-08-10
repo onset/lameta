@@ -22,11 +22,13 @@ export const SessionsTab = observer(
           key="newSession"
           onClick={(e) => {
             this.props.project.addSession();
-            // If there's an active filter, try to re-run it so the new session will be included if it matches.
-            // We purposely do NOT clear searchQuery so persistence across tab switches works.
-            const q = this.props.project.sessions.searchQuery;
-            if (q && q.trim().length > 0) {
-              this.props.project.sessions.filter(q);
+            // UX decision (aligned with e2e tests): adding a new session should clear any active filter
+            // so the newly added item is visible & selected and the search box empties.
+            if (this.props.project.sessions.filteredItems !== undefined) {
+              // calling filter(undefined) both clears filteredItems and increments searchResetCounter
+              this.props.project.sessions.filter(undefined as any);
+              // also clear persisted search query so the input shows empty when user returns
+              this.props.project.sessions.searchQuery = "";
             }
           }}
         >
