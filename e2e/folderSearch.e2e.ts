@@ -292,7 +292,7 @@ test.describe("Folder Search UI", () => {
     await expect(page.getByTestId("session-tab-highlight")).toBeVisible();
   });
 
-  test("search highlighting: audio and properties tabs highlight on filename match", async () => {
+  test("search highlighting: properties tab highlights on filename match (audio tab no longer highlights)", async () => {
     await project.goToSessions();
     await project.addSession();
     await page
@@ -311,8 +311,8 @@ test.describe("Folder Search UI", () => {
     const input = page.getByTestId("folder-search-input");
     await input.fill(token);
     await page.waitForTimeout(350);
-    await expect(page.getByTestId("audio-tab-highlight")).toBeVisible();
     await expect(page.getByTestId("properties-tab-highlight")).toBeVisible();
+    await expect(page.getByTestId("audio-tab-highlight")).toHaveCount(0);
   });
 
   test("notes-only match does not highlight session tab", async () => {

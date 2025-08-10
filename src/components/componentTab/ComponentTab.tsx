@@ -8,7 +8,7 @@ import "./ComponentTab.scss";
 
 import SplitPane from "react-split-pane";
 import FolderList from "../FolderList";
-import { SearchContext } from "../SearchContext";
+import { SearchContext, normalizeQuery } from "../SearchContext";
 import { css } from "@emotion/react";
 import { highlightReact } from "../highlighting";
 import { t } from "@lingui/macro";
@@ -39,7 +39,9 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
     );
 
   return (
-    <SearchContext.Provider value={{ query: props.folders.searchQuery }}>
+    <SearchContext.Provider
+      value={{ query: normalizeQuery(props.folders.searchQuery) }}
+    >
       <div className={"componentTab " + props.folderTypeStyleClass}>
         <SplitPane
           split="vertical"

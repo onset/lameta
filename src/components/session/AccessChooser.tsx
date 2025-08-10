@@ -24,13 +24,13 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
 
   const options = props.authorityLists.accessChoicesOfCurrentProtocol.map(
     (c: IChoice) => {
-      console.log(
-        `translateAccessProtocol(${c.label})--> ${JSON.stringify(
-          translateAccessProtocolLabelOrDescription(c.label),
-          null,
-          2
-        )}`
-      );
+      // console.log(
+      //   `translateAccessProtocol(${c.label})--> ${JSON.stringify(
+      //     translateAccessProtocolLabelOrDescription(c.label),
+      //     null,
+      //     2
+      //   )}`
+      // );
       const { label, description } = translateAccessProtocolLabelOrDescription(
         c.label
       );
