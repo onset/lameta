@@ -38,6 +38,26 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
       `folders.length = ${props.folders.items.length} but selected index is ${props.folders.selectedIndex}`
     );
 
+  // Persist raw search term across tab unmount/mount cycles (e2e expects visual persistence)
+  const searchPersistKey = `searchTerm_${props.folderTypeStyleClass}`;
+  React.useEffect(() => {
+    if (props.folders.searchTerm && props.folders.searchTerm.trim()) {
+      localStorage.setItem(searchPersistKey, props.folders.searchTerm);
+    }
+    // Intentionally keep previous stored value when term becomes empty so an unintended programmatic clear
+    // (e.g., tab switch side effect) doesn't lose the user's query; user explicit clear button already calls filter("")
+    // and we still want option to restore if they navigate away and back.
+  }, [props.folders.searchTerm, searchPersistKey]);
+  React.useEffect(() => {
+    // On first mount only, if no current term but we have a stored one, restore it.
+    if (!props.folders.searchTerm) {
+      const stored = localStorage.getItem(searchPersistKey);
+      if (stored) {
+        props.folders.filter(stored);
+      }
+    }
+  }, []);
+
   return (
     <SearchContext.Provider
       value={{
