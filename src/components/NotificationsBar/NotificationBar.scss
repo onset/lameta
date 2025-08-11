@@ -1,7 +1,7 @@
-@import "../../colors.scss";
+@use "../../colors";
 
 .sidebar {
-  background-color: $pane__interstitial--color;
+  background-color: colors.$pane__interstitial--color;
   margin-top: 30px;
   width: 0;
   &.open {

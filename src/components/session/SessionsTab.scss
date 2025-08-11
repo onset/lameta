@@ -1,15 +1,15 @@
-@import "../../colors";
+@use "../../colors";
 
 .sessions {
-  background-color: $session--color;
+  background-color: colors.$session--color;
   .selected {
-    background-color: $session__selected--color;
-    border-color: $session__outline--color;
+    background-color: colors.$session__selected--color;
+    border-color: colors.$session__outline--color;
   }
   .react-tabs {
-    background-color: $session--color;
+    background-color: colors.$session--color;
   }
   .react-tabs__tab-list {
-    background-color: $session--color;
+    background-color: colors.$session--color;
   }
 }

@@ -1,10 +1,10 @@
+@use "./colors";
+
 @import "font-awesome/css/font-awesome.css";
 
 @import "react-table-6/react-table.css";
 
 @import "react-tabs/style/react-tabs.css";
-
-@import "./colors";
 
 //@import "~react-datepicker/dist/react-datepicker.css";
 
@@ -14,13 +14,13 @@ $default-font-size: 1em; // note, we can't control the electron default font siz
 $default-fonts: "-apple-system" /* mac*/, "BlinkMacSystemFont" /* mac*/,
   "Segoe UI" /* windows*/, "Ubuntu", "Open Sans", sans-serif;
 .tab-project.react-tabs__tab--selected {
-  background-color: $project--color;
+  background-color: colors.$project--color;
 }
 .tab-sessions.react-tabs__tab--selected {
-  background-color: $session--color;
+  background-color: colors.$session--color;
 }
 .tab-people.react-tabs__tab--selected {
-  background-color: $people--color;
+  background-color: colors.$people--color;
 }
 
 $color-interstitial: #f0f0f0;
@@ -44,9 +44,9 @@ html,
 a {
   cursor: pointer;
   text-decoration: underline;
-  color: $link--color;
+  color: colors.$link--color;
   &:visited {
-    color: $link--color; //don't change after they've clicked it once
+    color: colors.$link--color; //don't change after they've clicked it once
   }
 }
 .field textarea,
@@ -128,7 +128,7 @@ textarea {
   outline: none;
 
   &:focus-visible {
-    outline: 2px solid $accent-color;
+    outline: 2px solid colors.$accent-color;
   }
 
   // Your invalid state will still work perfectly
@@ -167,8 +167,8 @@ button {
 }
 
 .fileDetails {
-  background-color: $pane__interstitial--color;
-  border: solid thin $pane__border--color;
+  background-color: colors.$pane__interstitial--color;
+  border: solid thin colors.$pane__border--color;
 }
 
 .paneTitle {
@@ -262,8 +262,8 @@ form .ReactTable {
 .Select--multi .Select-value {
   background-color: unset;
   margin-top: 2px; // the default pushs it down too far
-  color: $session--color;
-  border-color: $session--color;
+  color: colors.$session--color;
+  border-color: colors.$session--color;
 }
 .todo {
   margin-left: auto;

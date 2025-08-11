@@ -1,4 +1,4 @@
-@import "../colors.scss";
+@use "../colors";
 
 .startScreen {
   color: black;
@@ -28,7 +28,7 @@
       margin-top: 0;
       // the "x"
       span {
-        color: $project--color;
+        color: colors.$project--color;
         position: relative;
         bottom: -0.3em;
         font-weight: normal;
@@ -55,7 +55,7 @@
       border: solid 1px transparent;
       &:focus,
       &:hover {
-        border-color: $project--color;
+        border-color: colors.$project--color;
       }
     }
   }

@@ -1,7 +1,7 @@
-@import "../../colors";
+@use "../../colors";
 .ReactModal__Content.createProject {
   position: absolute;
-  border: 3px solid $project--color;
+  border: 3px solid colors.$project--color;
   background: white;
   overflow: auto;
   border-radius: 4px;

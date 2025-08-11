@@ -1,4 +1,4 @@
-@import "../../colors";
+@use "../../colors";
 
 $dateWidth: 148px; // enhance: why is it 148px?
 
@@ -107,5 +107,5 @@ $dateWidth: 148px; // enhance: why is it 148px?
   font-size: 85%;
 }
 .highlight {
-  color: $project-color;
+  color: colors.$project-color;
 }

@@ -1,5 +1,5 @@
-//@import "../../colors";
-@import "../commonDialog.scss";
+//@use "../../colors";
+@use "../commonDialog.scss";
 
 .languagePickerDialog {
   .dialogContent {

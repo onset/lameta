@@ -1,4 +1,4 @@
-@import "../../colors";
+@use "../../colors";
 
 .contributors {
   background-color: white;
@@ -29,7 +29,7 @@
   &.ReactTable {
     .-odd {
       //todo: should be different for sessions
-      background-color: $sessions__oddRowHighlight--color;
+      background-color: colors.$sessions__oddRowHighlight--color;
     }
     flex-grow: 1; //fill to the bottom, without just filling with empty rows (cause we're setting minRow=0 in the ReactTable)
     .rt-td {

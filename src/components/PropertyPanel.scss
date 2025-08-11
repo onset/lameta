@@ -1,4 +1,4 @@
-@import "../colors";
+@use "../colors";
 
 .propertyPanel {
   display: flex;
@@ -40,7 +40,7 @@
 
       .-odd {
         //todo: should be different for sessions
-        background-color: $sessions__oddRowHighlight--color;
+        background-color: colors.$sessions__oddRowHighlight--color;
       }
     }
   }

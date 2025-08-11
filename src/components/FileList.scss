@@ -1,8 +1,8 @@
-@import "../colors";
-@import "./common";
+@use "../colors";
+@use "./common";
 
 .fileList {
-  border: solid 1px $people__outline--color;
+  border: solid 1px colors.$people__outline--color;
   cursor: pointer;
   background-color: white;
   width: 100%;
@@ -20,7 +20,7 @@
   }
 
   .fileBar {
-    //background-color: $pane__interstitial--color;
+    //background-color: colors.$pane__interstitial--color;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -48,8 +48,8 @@
       margin: 0;
       border: solid 2px white;
       &:hover {
-        border-color: $people--color;
-        border: solid 2px $people--color;
+        border-color: colors.$people--color;
+        border: solid 2px colors.$people--color;
       }
       &:disabled {
         color: lightgray;
@@ -70,13 +70,13 @@
 
 .copyPending {
   //background-color: aqua;
-  color: $project--color;
+  color: colors.$project--color;
 }
 .missing {
-  color: $error-color !important;
+  color: colors.$error-color !important;
 }
 .noMediaFolderConnection {
-  color: $project-color !important;
+  color: colors.$project-color !important;
 }
 // .linkFile .filename {
 //   font-style: italic;

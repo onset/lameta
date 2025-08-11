@@ -1,27 +1,27 @@
-@import "../../colors";
+@use "../../colors";
 
 .people {
-  background-color: $people--color;
+  background-color: colors.$people--color;
   .react-tabs__tab-list {
-    background-color: $people--color;
+    background-color: colors.$people--color;
   }
   .react-tabs {
-    background-color: $people--color;
+    background-color: colors.$people--color;
   }
   .not-implemented {
-    color: $people__disabled--color;
+    color: colors.$people__disabled--color;
   }
   .selected {
-    background-color: $people__selected--color;
-    border-color: $people__outline--color;
+    background-color: colors.$people__selected--color;
+    border-color: colors.$people__outline--color;
   }
   .folderList {
-    border: solid 1px $people__outline--color;
+    border: solid 1px colors.$people__outline--color;
     cursor: pointer;
   }
   .fileList {
     button:disabled {
-      color: $people__disabled--color !important;
+      color: colors.$people__disabled--color !important;
     }
   }
 }

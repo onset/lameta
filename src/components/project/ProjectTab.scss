@@ -1,4 +1,4 @@
-@import "../../colors";
+@use "../../colors";
 
 form.project {
   max-width: 600px; // beyond that, the fields get hard to read
@@ -82,8 +82,8 @@ form.project {
 
 .project .folderPane {
   .selected {
-    background-color: $project__selected--color;
-    border-color: $project__outline--color;
+    background-color: colors.$project__selected--color;
+    border-color: colors.$project__outline--color;
   }
 
   .react-tabs__tab-panel {
@@ -102,7 +102,7 @@ form.project {
     flex: 1;
   }
   .react-tabs__tab-list {
-    background-color: $project--color;
+    background-color: colors.$project--color;
   }
 }
 
@@ -110,8 +110,8 @@ form.project {
   min-height: 150px;
 }
 .project .react-tabs__tab-panel {
-  background-color: $project--color;
-  //border: solid thin $project__outline--color;
+  background-color: colors.$project--color;
+  //border: solid thin colors.$project__outline--color;
   padding: 10px;
   height: 100%; // unlike other tabs, this has tabs on left so can be taller
 

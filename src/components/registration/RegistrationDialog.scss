@@ -1,10 +1,10 @@
-@import "../../colors";
+@use "../../colors";
 
 .ReactModal__Content.registrationDialog {
-  background-color: $session--color;
+  background-color: colors.$session--color;
 
   .dialogContent {
-    background-color: $session--color;
+    background-color: colors.$session--color;
     min-width: 300px;
     //margin-bottom: 2em;
     textarea {
