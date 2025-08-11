@@ -6,10 +6,17 @@ import { StackFrame } from "@sentry/browser";
 import { RewriteFrames } from "@sentry/integrations";
 import userSettingsSingleton from "./UserSettings";
 import pkg from "package.json";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 // frame.replace("file:///C:/dev/lameta/app/dist", "dist"),
 
 export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
+  // Don't initialize Sentry in E2E tests to avoid RendererTransport issues
+  if (getTestEnvironment().E2E) {
+    console.log("Skipping Sentry initialization in E2E test environment");
+    return;
+  }
+  
   if (evenIfDevelopmentBuild || process.env.NODE_ENV === "production") {
     Sentry.init({
       dsn:
@@ -60,6 +67,9 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
   }
 }
 export function setUserInfoForErrorReporting(email: string, howUsing: string) {
+  if (getTestEnvironment().E2E) {
+    return; // Skip in E2E tests
+  }
   Sentry.configureScope((scope) => {
     console.log("setUserInfoForErrorReporting");
     scope.setUser({ email });
@@ -67,12 +77,22 @@ export function setUserInfoForErrorReporting(email: string, howUsing: string) {
   });
 }
 export function sentryBreadCrumb(msg: string) {
+  if (getTestEnvironment().E2E) {
+    return; // Skip in E2E tests
+  }
   Sentry.addBreadcrumb({ message: msg });
 }
 export function sentryExceptionBreadCrumb(err: Error) {
+  if (getTestEnvironment().E2E) {
+    return; // Skip in E2E tests
+  }
   Sentry.addBreadcrumb({ message: err.message, level: Sentry.Severity.Error });
 }
 export function sentryException(err: Error) {
+  if (getTestEnvironment().E2E) {
+    console.log(`E2E test - would send error: ${err.message}`);
+    return; // Skip in E2E tests
+  }
   if (userSettingsSingleton.SendErrors) {
     Sentry.captureException(err);
   } else {
@@ -80,6 +100,10 @@ export function sentryException(err: Error) {
   }
 }
 export function sentryErrorFromString(message: string) {
+  if (getTestEnvironment().E2E) {
+    console.log(`E2E test - would send error: ${message}`);
+    return; // Skip in E2E tests
+  }
   if (userSettingsSingleton.SendErrors) {
     try {
       throw new Error(message);
