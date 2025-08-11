@@ -125,7 +125,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return getLinkStatusIconPath(f);
       },
-      Cell: (p) => <img src={p.value} />
+  Cell: (p) => (p.value ? <img src={p.value} /> : null)
     },
     {
       id: "type",

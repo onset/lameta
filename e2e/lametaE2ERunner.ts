@@ -37,14 +37,38 @@ export class LametaE2ERunner {
     const attachDebugListeners = (p: Page) => {
       if ((p as any)._lametaDebugListenersAttached) return; // prevent double
       (p as any)._lametaDebugListenersAttached = true;
+      const verbose =
+        (process.env.E2E_VERBOSE || "") === "1" ||
+        (process.env.E2E_VERBOSE || "").toLowerCase() === "true";
+      /*
+        By default we only surface console "error" messages from the renderer during e2e
+        runs so the output stays readable. To see everything (log/debug/info/warning/etc.),
+        run with E2E_VERBOSE=1 yarn e2e ...
+      */
       p.on("console", (msg) => {
         try {
-          console.log(`[renderer-console][${msg.type()}] ${msg.text()}`);
+          const type = msg.type();
+            if (!verbose) {
+              // Always show errors. Optionally include warnings if we decide later.
+              if (type !== "error") return;
+            }
+          console.log(`[renderer-console][${type}] ${msg.text()}`);
         } catch {}
       });
       p.on("pageerror", (err) => {
         try {
           console.error(`[renderer-pageerror] ${err?.message || err}`);
+        } catch {}
+      });
+      // capture network/resource load failures (helps reduce mystery 'Failed to load resource' spam)
+      p.on("requestfailed", (request) => {
+        try {
+          if (verbose) {
+            const f = request.failure();
+            console.error(
+              `[renderer-requestfailed] ${request.resourceType()} ${request.url()} -> ${f?.errorText}`
+            );
+          }
         } catch {}
       });
     };

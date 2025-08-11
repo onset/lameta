@@ -294,12 +294,9 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
-    try {
-      const p = this.properties.getValueOrThrow(key); //as Field;
-      return p.text;
-    } catch {
-      return ifMissing;
-    }
+  const p = (this.properties as any).getValue(key); // safe direct lookup; avoids noisy throw/log
+  if (!p) return ifMissing;
+  return p.text;
   }
 
   public getTextField(key: string): Field {
