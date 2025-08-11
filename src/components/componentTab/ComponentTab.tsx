@@ -29,7 +29,7 @@ interface IProps {
 // This is the "Sessions" tab and the "People" tab.  It is a tab that has a list of folders on
 // the left and a pane showing the files of that folder on the right.
 const ComponentTab: React.FunctionComponent<IProps> = (props) => {
-  // search query now persisted on the FolderGroup (searchQuery)
+  // search query now persisted on the FolderGroup (searchTerm)
   const splitterKey = props.folderTypeStyleClass + "VerticalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
@@ -41,7 +41,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
   return (
     <SearchContext.Provider
       value={{
-        searchTerm: normalizeQuery(props.folders.searchQuery)
+        searchTerm: normalizeQuery(props.folders.searchTerm)
       }}
     >
       <div className={"componentTab " + props.folderTypeStyleClass}>
@@ -98,7 +98,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
               <h3 className={"paneTitle"}>
                 {highlightReact(
                   props.folders.items[props.folders.selectedIndex].displayName,
-                  props.folders.searchQuery,
+                  props.folders.searchTerm,
                   { background: "#ffe58f" }
                 )}
               </h3>

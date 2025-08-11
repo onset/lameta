@@ -40,7 +40,7 @@ class FolderList extends React.Component<IProps, any> {
     );
     this.state = {
       // searchText removed from parent state; we now only track committed searches
-      lastSearch: props.folders.searchQuery || "",
+      lastSearch: props.folders.searchTerm || "",
       searchCount: 0,
       lastSearchResetCounter: 0
     };
@@ -51,7 +51,7 @@ class FolderList extends React.Component<IProps, any> {
   }
 
   componentDidMount() {
-    // no-op; persistence handled by FolderGroup.searchQuery only
+    // no-op; persistence handled by FolderGroup.searchTerm only
   }
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
@@ -64,8 +64,8 @@ class FolderList extends React.Component<IProps, any> {
       };
     }
     // When the persisted query changes externally we treat that as lastSearch for data-* attributes
-    if (nextProps.folders.searchQuery !== prevState.lastSearch) {
-      return { lastSearch: nextProps.folders.searchQuery };
+    if (nextProps.folders.searchTerm !== prevState.lastSearch) {
+      return { lastSearch: nextProps.folders.searchTerm };
     }
     return null;
   }

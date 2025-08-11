@@ -27,7 +27,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
     currentSearchResetCounter,
     onCommitted
   }) => {
-    const value = folders.searchQuery || "";
+    const value = folders.searchTerm || "";
 
     const commit = React.useCallback(
       (v: string) => {

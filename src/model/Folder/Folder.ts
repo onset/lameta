@@ -41,7 +41,7 @@ export class FolderGroup {
   // UI components (e.g. FolderList) can observe this to know they should also clear their search input state.
   public searchResetCounter: number;
   // holds the current (last non-empty) search string so that UI components can persist it across unmounts/mounts
-  public searchQuery: string;
+  public searchTerm: string;
   private index?: FolderSearchTermsIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
@@ -52,13 +52,13 @@ export class FolderGroup {
       selectedIndex: observable,
       filteredItems: observable,
       searchResetCounter: observable,
-      searchQuery: observable
+      searchTerm: observable
     });
 
     this.items = new Array<Folder>();
     this.selectedIndex = -1;
     this.searchResetCounter = 0;
-    this.searchQuery = "";
+    this.searchTerm = "";
   }
   // index is now directly assigned by the caller (FolderGroup.filter) when lazily creating it.
 
@@ -79,23 +79,14 @@ export class FolderGroup {
   // Sets filteredItems based on a case-insensitive substring match across all text fields of each folder.
   // If search is undefined or empty string after trimming, clears the filter (filteredItems becomes undefined).
   public filter(search: string | undefined) {
-    if (search === undefined) {
+    this.searchTerm = (search ? search.trim() : "").toLowerCase();
+    if (this.searchTerm === "") {
       this.filteredItems = undefined;
       // signal to any observers (e.g. FolderList) that the filter was programmatically cleared
       this.searchResetCounter++;
-      // Do NOT clear searchQuery here; we want persistence across tab switches even if something
-      // (e.g. adding a session) temporarily clears the active filtered list.
       return;
     }
-    const needle = search.trim();
-    if (!needle) {
-      this.filteredItems = undefined;
-      // user actually entered empty => clear persistence
-      this.searchQuery = "";
-      return;
-    }
-    // remember the active non-empty search string for persistence across tab switches
-    this.searchQuery = search;
+
     // Lazily attach a per-group index the first time we actually filter with a non-empty string.
     // Each FolderGroup receives its own FolderSearchTermsIndex instance (we intentionally do NOT share a singleton
     // to avoid cross-talk, unintended memory retention, or future coupling between groups).
@@ -108,14 +99,13 @@ export class FolderGroup {
     }
     if (this.index) {
       try {
-        this.filteredItems = this.index.search(needle);
+        this.filteredItems = this.index.search(this.searchTerm);
         this.adjustSelectionAfterFilter();
         return;
       } catch {
         // fall back
       }
     }
-    const needleLower = needle.toLowerCase();
     this.filteredItems = this.items.filter((folder) => {
       try {
         const fields = folder.properties.values();
@@ -123,7 +113,7 @@ export class FolderGroup {
           if (
             field &&
             typeof field.text === "string" &&
-            field.text.toLowerCase().includes(needleLower)
+            field.text.toLowerCase().includes(this.searchTerm)
           ) {
             return true;
           }
@@ -135,7 +125,7 @@ export class FolderGroup {
               if (
                 (file.pathInFolderToLinkFileOrLocalCopy || "")
                   .toLowerCase()
-                  .includes(needleLower)
+                  .includes(this.searchTerm)
               )
                 return true;
               if (file.properties && file.properties.values) {
@@ -143,7 +133,7 @@ export class FolderGroup {
                   if (
                     p &&
                     typeof p.text === "string" &&
-                    p.text.toLowerCase().includes(needleLower)
+                    p.text.toLowerCase().includes(this.searchTerm)
                   )
                     return true;
                 }
@@ -152,10 +142,13 @@ export class FolderGroup {
                 for (const c of file.contributions) {
                   if (
                     (c.personReference &&
-                      c.personReference.toLowerCase().includes(needleLower)) ||
-                    (c.role && c.role.toLowerCase().includes(needleLower)) ||
+                      c.personReference
+                        .toLowerCase()
+                        .includes(this.searchTerm)) ||
+                    (c.role &&
+                      c.role.toLowerCase().includes(this.searchTerm)) ||
                     (c.comments &&
-                      c.comments.toLowerCase().includes(needleLower))
+                      c.comments.toLowerCase().includes(this.searchTerm))
                   )
                     return true;
                 }
