@@ -27,7 +27,14 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
     currentSearchResetCounter,
     onCommitted
   }) => {
-    const value = folders.searchTerm || "";
+    // Use folders.searchTerm only for persisted normalized match logic; UI adornments should reflect what user has typed (rawValue)
+    const value = folders.searchTerm || ""; // legacy persisted value (may lag while typing in empty list state)
+    // Track raw user input; initialize from lastSearch prop (state persisted in parent) so tab switches retain visual input
+    const [rawValue, setRawValue] = React.useState<string>(lastSearch);
+    // Sync when external lastSearch prop changes (e.g., programmatic clear)
+    React.useEffect(() => {
+      setRawValue(lastSearch);
+    }, [lastSearch]);
 
     const commit = React.useCallback(
       (v: string) => {
@@ -41,15 +48,27 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
       [folders, onCommitted]
     );
 
-    const handleChange = (v: string) => commit(v);
-    const handleImmediateCommit = () => commit(value);
+    const handleChange = (v: string) => {
+      setRawValue(v);
+      // When there are no items (e.g., People tab before adding any person) rapid re-filtering on each keystroke
+      // causes the input to lose focus mid-typing, dropping spaces in E2E typing. Defer filtering until Enter/button
+      // in that edge case; still clear immediately when emptied.
+      if (folders.items.length === 0) {
+        if (!v.trim()) {
+          commit("");
+        }
+        return;
+      }
+      commit(v);
+    };
+    const handleImmediateCommit = () => commit(rawValue);
     const clear = () => commit("");
 
     return (
       <div
         className="folderSearchBar"
         data-testid="folder-search-bar"
-        data-last-search={lastSearch}
+        data-last-search={rawValue}
         data-search-count={searchCount}
         data-search-reset-counter={currentSearchResetCounter}
         css={css`
@@ -63,7 +82,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
         <TextField
           size="small"
           placeholder={i18n._(t`Find`)}
-          value={value}
+          value={rawValue}
           variant="outlined"
           inputProps={{ "data-testid": "folder-search-input" }}
           onChange={(e) => handleChange(e.target.value)}
@@ -73,7 +92,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
             }
           }}
           InputProps={{
-            startAdornment: value ? (
+            startAdornment: rawValue ? (
               <InputAdornment position="start">
                 <IconButton
                   size="small"
@@ -103,7 +122,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                 />
               </InputAdornment>
             ),
-            endAdornment: value ? (
+            endAdornment: rawValue ? (
               <InputAdornment position="end">
                 <IconButton
                   size="small"

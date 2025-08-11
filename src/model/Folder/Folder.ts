@@ -79,8 +79,10 @@ export class FolderGroup {
   // Sets filteredItems based on a case-insensitive substring match across all text fields of each folder.
   // If search is undefined or empty string after trimming, clears the filter (filteredItems becomes undefined).
   public filter(search: string | undefined) {
-    this.searchTerm = (search ? search.trim() : "").toLowerCase();
-    if (this.searchTerm === "") {
+    // Preserve original user-entered (trimmed) query for UI (tests expect original casing/symbols)
+    this.searchTerm = search ? search.trim() : "";
+    const normalized = this.searchTerm.toLowerCase();
+    if (normalized === "") {
       this.filteredItems = undefined;
       // signal to any observers (e.g. FolderList) that the filter was programmatically cleared
       this.searchResetCounter++;
@@ -99,7 +101,7 @@ export class FolderGroup {
     }
     if (this.index) {
       try {
-        this.filteredItems = this.index.search(this.searchTerm);
+        this.filteredItems = this.index.search(normalized);
         this.adjustSelectionAfterFilter();
         return;
       } catch {
@@ -113,7 +115,7 @@ export class FolderGroup {
           if (
             field &&
             typeof field.text === "string" &&
-            field.text.toLowerCase().includes(this.searchTerm)
+            field.text.toLowerCase().includes(normalized)
           ) {
             return true;
           }
@@ -125,7 +127,7 @@ export class FolderGroup {
               if (
                 (file.pathInFolderToLinkFileOrLocalCopy || "")
                   .toLowerCase()
-                  .includes(this.searchTerm)
+                  .includes(normalized)
               )
                 return true;
               if (file.properties && file.properties.values) {
@@ -133,7 +135,7 @@ export class FolderGroup {
                   if (
                     p &&
                     typeof p.text === "string" &&
-                    p.text.toLowerCase().includes(this.searchTerm)
+                    p.text.toLowerCase().includes(normalized)
                   )
                     return true;
                 }
@@ -142,13 +144,10 @@ export class FolderGroup {
                 for (const c of file.contributions) {
                   if (
                     (c.personReference &&
-                      c.personReference
-                        .toLowerCase()
-                        .includes(this.searchTerm)) ||
-                    (c.role &&
-                      c.role.toLowerCase().includes(this.searchTerm)) ||
+                      c.personReference.toLowerCase().includes(normalized)) ||
+                    (c.role && c.role.toLowerCase().includes(normalized)) ||
                     (c.comments &&
-                      c.comments.toLowerCase().includes(this.searchTerm))
+                      c.comments.toLowerCase().includes(normalized))
                   )
                     return true;
                 }
