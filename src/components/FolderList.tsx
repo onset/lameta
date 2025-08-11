@@ -58,9 +58,12 @@ class FolderList extends React.Component<IProps, any> {
     if (
       nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
     ) {
+      // Only clear the search if the searchTerm is also empty, which indicates an intentional clear
+      // If searchTerm has a value, we should preserve it (e.g., during tab switching)
+      const shouldClearSearch = nextProps.folders.searchTerm === "";
       return {
         lastSearchResetCounter: nextProps.folders.searchResetCounter,
-        lastSearch: ""
+        lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm
       };
     }
     // When the persisted query changes externally we treat that as lastSearch for data-* attributes
