@@ -1,10 +1,8 @@
 import { File, OtherFile } from "../file/File";
-// type-only import to give FolderGroup a stronger index type without creating a runtime cycle
-import type { FolderSearchTermsIndex } from "./FolderSearchTermsIndex";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
-
+import { FolderSearchTermsIndex } from "./FolderSearchTermsIndex";
 import {
   NotifyMultipleProjectFiles,
   NotifyError,
@@ -31,7 +29,6 @@ import { PatientFS } from "../../other/patientFile";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
-import userSettingsSingleton from "../../other/UserSettings";
 
 // There are two `FolderGroup` instances, one for people and one for sessions.
 export class FolderGroup {
@@ -104,10 +101,7 @@ export class FolderGroup {
     // to avoid cross-talk, unintended memory retention, or future coupling between groups).
     if (!this.index) {
       try {
-        const { FolderSearchTermsIndex } = require("./FolderSearchTermsIndex");
-        const idx: FolderSearchTermsIndex = new FolderSearchTermsIndex();
-        idx.attach(this);
-        this.index = idx; // explicit assignment (no hidden callback)
+        this.index = new FolderSearchTermsIndex(this);
       } catch {
         // ignore if dynamic load fails; we'll use fallback
       }

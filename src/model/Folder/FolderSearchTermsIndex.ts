@@ -8,13 +8,13 @@ interface IndexedFolder {
   blob: string; // concatenation of all field texts, file names, and file metadata fields
 }
 
-// A FolderIndex instance is attached to exactly one FolderGroup.
+// Each FolderGroup owns one FolderSearchTermsIndex
 export class FolderSearchTermsIndex {
   private group?: FolderGroup;
-  private fuse?: Fuse<IndexedFolder>;
+  private index?: Fuse<IndexedFolder>;
   private lastSnapshot: string = "";
 
-  public attach(group: FolderGroup) {
+  constructor(group: FolderGroup) {
     this.group = group;
     this.build();
     // Rebuild index reactively when folder items or contained file lists change.
@@ -51,7 +51,7 @@ export class FolderSearchTermsIndex {
       folder: f,
       blob: this.makeBlob(f)
     }));
-    this.fuse = new Fuse(items, {
+    this.index = new Fuse(items, {
       keys: ["blob"],
       includeScore: false,
       threshold: 0.4,
@@ -63,9 +63,9 @@ export class FolderSearchTermsIndex {
 
   public search(query: string): Folder[] {
     if (!this.group) return [];
-    if (!this.fuse) this.build();
+    if (!this.index) this.build();
     if (!query.trim()) return this.group.items;
-    const results = this.fuse!.search(query.trim());
+    const results = this.index!.search(query.trim());
     return results.map((r) => r.item.folder);
   }
 
