@@ -1,8 +1,11 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
+import { components } from "react-select";
 import { IChoice } from "../../model/field/Field";
 import { capitalCase } from "../../other/case";
+import { SearchContext } from "../SearchContext";
+import HighlightSearchTerm from "../HighlightSearchTerm";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";
@@ -15,11 +18,13 @@ export interface IProps {
 }
 
 class PersonChooser extends React.Component<IProps> {
+  static contextType = SearchContext;
   constructor(props: IProps) {
     super(props);
   }
 
   public render() {
+    const searchTerm = (this.context && (this.context as any).searchTerm) || "";
     const customStyles = {
       container: (styles: any) => {
         return {
@@ -70,6 +75,25 @@ class PersonChooser extends React.Component<IProps> {
     });
 
     const person = choices.find((c: any) => c.value === this.props.name);
+    const labelText = person ? person.label : this.props.name;
+    const highlightLabel = () => {
+      if (!searchTerm) return labelText;
+      const lower = labelText.toLowerCase();
+      const i = lower.indexOf(searchTerm);
+      if (i === -1) return labelText;
+      return (
+        <>
+          {labelText.substring(0, i)}
+          <mark
+            data-testid="inline-highlight"
+            style={{ background: "#ffba8a", padding: "0 1px" }}
+          >
+            {labelText.substring(i, i + searchTerm.length)}
+          </mark>
+          {labelText.substring(i + searchTerm.length)}
+        </>
+      );
+    };
     return (
       //<ReactSelect <-- if we didn't want to allow new
       <CreatableSelect
@@ -78,7 +102,7 @@ class PersonChooser extends React.Component<IProps> {
         styles={customStyles}
         value={{
           value: this.props.name,
-          label: person ? person.label : this.props.name
+          label: labelText
         }}
         onChange={(v: any) => {
           // ELAR does not want this
@@ -90,6 +114,13 @@ class PersonChooser extends React.Component<IProps> {
         // this is what shows if you start typing, see it until you type a match of a person
         formatCreateLabel={(inputValue: string) => {
           return `${inputValue} ❓`;
+        }}
+        components={{
+          SingleValue: (props: any) => (
+            <components.SingleValue {...props}>
+              {highlightLabel()}
+            </components.SingleValue>
+          )
         }}
       />
     );

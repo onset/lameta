@@ -23,7 +23,7 @@ export interface IProps {
 export const TextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = mobx.observer((props) => {
-  const { query } = useContext(SearchContext);
+  const { searchTerm } = useContext(SearchContext);
   const [validationMessage, setValidationMessage] = useState<string>();
   const [previous, setPrevious] = useState(props.field.text);
   const [editing, setEditing] = useState(false);
@@ -41,7 +41,7 @@ export const TextFieldEdit: React.FunctionComponent<
   // re-highlight when query changes or underlying value changes (and not editing)
   useEffect(() => {
     if (!editing) applyHighlight();
-  }, [query, props.field.text, editing]);
+  }, [searchTerm, props.field.text, editing]);
 
   function validateValue(value: string): boolean {
     if (props.validate) {
@@ -59,11 +59,11 @@ export const TextFieldEdit: React.FunctionComponent<
     const el = contentRef.current;
     if (!el) return;
     const value = props.field.text;
-    if (!query.trim()) {
+    if (!searchTerm.trim()) {
       el.textContent = value;
       return;
     }
-    el.innerHTML = buildHighlightedHTML(value, query);
+    el.innerHTML = buildHighlightedHTML(value, searchTerm);
   }
 
   function beginEditing() {
@@ -107,8 +107,7 @@ export const TextFieldEdit: React.FunctionComponent<
       }
       title={props.tooltip}
       data-has-highlight={
-        query.trim() &&
-        props.field.text.toLowerCase().includes(query.toLowerCase())
+        searchTerm.trim() && props.field.text.toLowerCase().includes(searchTerm)
           ? "true"
           : undefined
       }

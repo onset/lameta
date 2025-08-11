@@ -22,11 +22,10 @@ import {
   getLinkStatusIconPath,
   getStatusOfFile
 } from "../model/file/FileStatus";
-import { toJS } from "mobx";
 import { useLingui } from "@lingui/react";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
-import { highlightReact } from "./highlighting";
+import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 const electron = require("electron");
@@ -35,6 +34,13 @@ export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
 }> = (props) => {
+  React.useEffect(() => {
+    if (process.env.E2E) {
+      try {
+        (window as any).lametaDebugCurrentFolder = props.folder;
+      } catch {}
+    }
+  }, [props.folder, props.folder?.files?.length]);
   useLingui();
   const [selectedFile, setSelectedFile] = React.useState(undefined);
   const [haveMediaFolder] = React.useState(
@@ -53,10 +59,8 @@ export const _FileList: React.FunctionComponent<{
     const progressUnused = f.copyProgress;
   });
 
-  const { query } = React.useContext(SearchContext);
-  const highlight = (text: string) => highlightReact(text, query);
-
-  const trimmedQuery = (query || "").trim().toLowerCase();
+  const { searchTerm } = React.useContext(SearchContext);
+  const highlight = (text: string) => <HighlightSearchTerm text={text} />;
 
   const fileHasMetadataMatch = (file: any, trimmed: string): boolean => {
     if (!trimmed || !file) return false;
@@ -168,7 +172,7 @@ export const _FileList: React.FunctionComponent<{
     }
   ];
 
-  if (trimmedQuery) {
+  if (searchTerm) {
     columns = [
       {
         id: "matchIndicator",
@@ -177,7 +181,7 @@ export const _FileList: React.FunctionComponent<{
         accessor: (d: any) => d,
         style: { padding: 0 },
         Cell: (cell: any) => {
-          const match = fileHasMetadataMatch(cell.original, trimmedQuery);
+          const match = fileHasMetadataMatch(cell.original, searchTerm);
           return match ? (
             <div
               css={css`
@@ -187,7 +191,6 @@ export const _FileList: React.FunctionComponent<{
                 width: 100%;
                 height: 100%;
               `}
-              title={i18n._(t`Search match in metadata`)}
             >
               <div
                 css={css`
@@ -297,7 +300,7 @@ export const _FileList: React.FunctionComponent<{
           const { missing, status, info } = getStatusOfFile(rowInfo.original);
           const metadataMatch = fileHasMetadataMatch(
             rowInfo.original,
-            trimmedQuery
+            searchTerm
           );
 
           return {

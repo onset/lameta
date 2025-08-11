@@ -82,7 +82,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                   aria-label={i18n._(t`Search`)}
                   css={css`
                     background: ${lameta_orange};
-                    color: white; /* sets icon color */
+                    color: white; /* icon color */
                     padding: 2px;
                     &:hover {
                       background: ${lameta_orange};
@@ -120,6 +120,10 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
             flex: 1;
             & .MuiOutlinedInput-root {
               height: 32px;
+            }
+            & .MuiOutlinedInput-input {
+              font-weight: 500;
+              transition: font-weight 0.15s ease-in-out;
             }
           `}
         />

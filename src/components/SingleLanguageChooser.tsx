@@ -4,15 +4,10 @@ import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
 import {
   LanguageOption,
-  LanguagePill,
   languagePillHoverStyle,
   LanguagePillForSingle
 } from "./LanguagePill";
 import { observer } from "mobx-react";
-import { components, SingleValueProps } from "react-select";
-import { SearchContext } from "./SearchContext";
-import { highlightReact } from "./highlighting";
-import { css } from "@emotion/react";
 
 const saymore_orange = "#e69664";
 

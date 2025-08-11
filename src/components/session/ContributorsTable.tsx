@@ -8,6 +8,7 @@ import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.scss";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
+import { SearchContext } from "../SearchContext";
 
 export interface IProps {
   file: File;
@@ -19,6 +20,7 @@ interface IState {
 }
 
 class ContributorsTable extends React.Component<IProps> {
+  static contextType = SearchContext;
   constructor(props: IProps) {
     super(props);
   }

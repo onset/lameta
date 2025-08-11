@@ -23,7 +23,7 @@ export const HighlightableTab = React.forwardRef<
   HTMLDivElement,
   HighlightableTabProps
 >(({ getSearchStrings, testId, children, className, ...rest }, ref) => {
-  const { query } = React.useContext(SearchContext);
+  const { searchTerm } = React.useContext(SearchContext);
 
   // If no search strings are supplied, just behave like a normal Tab without extra DOM
   if (!getSearchStrings) {
@@ -42,8 +42,8 @@ export const HighlightableTab = React.forwardRef<
 
   let highlight = false;
 
-  if (getSearchStrings && query.length > 0) {
-    const q = query; // normalized already
+  if (getSearchStrings && searchTerm.length > 0) {
+    const q = searchTerm; // normalized already
     for (const raw of getSearchStrings() as any) {
       const text = raw == null ? "" : String(raw);
       if (text && text.toLowerCase().includes(q)) {

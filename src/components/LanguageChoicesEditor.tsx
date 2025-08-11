@@ -22,7 +22,6 @@ export interface IProps {
 export const LanguageChoicesEditor: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
-  const { query } = React.useContext(SearchContext);
   const customStyles = {
     control: (styles, state) => ({
       ...styles,

@@ -126,7 +126,7 @@ const FileTabs: React.FunctionComponent<
     React.useState<Contribution | undefined>(undefined);
 
   // search context (for highlighting the Notes tab label when a match is inside notes)
-  const { query } = React.useContext(SearchContext);
+  const { searchTerm } = React.useContext(SearchContext);
 
   // tabIndex: number,
   // setTabIndex: (index: number) => void,

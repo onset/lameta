@@ -502,6 +502,9 @@ msgstr "Menyimpan sebelum ubah nama..."
 msgid "Search"
 msgstr ""
 
+msgid "Search match in metadata"
+msgstr ""
+
 msgid "Select All"
 msgstr "Pilih Semua"
 

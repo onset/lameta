@@ -9,7 +9,7 @@ import { translateAccessProtocolLabelOrDescription } from "../../other/localizat
 import { lameta_orange } from "../../containers/theme";
 import { FieldLabel } from "../FieldLabel";
 import { SearchContext } from "../SearchContext";
-import { highlightReact } from "../highlighting";
+import HighlightSearchTerm from "../HighlightSearchTerm";
 import { components } from "react-select";
 
 export interface IProps {
@@ -20,7 +20,7 @@ export interface IProps {
 const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
   props
 ) => {
-  const { query } = React.useContext(SearchContext);
+  const { searchTerm } = React.useContext(SearchContext);
 
   const options = props.authorityLists.accessChoicesOfCurrentProtocol.map(
     (c: IChoice) => {
@@ -70,12 +70,12 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
         components={{
           Option: (selectProps: any) => (
             <components.Option {...selectProps}>
-              {highlightReact(selectProps.data.label, query)}
+              <HighlightSearchTerm text={selectProps.data.label} />
             </components.Option>
           ),
           SingleValue: (selectProps: any) => (
             <components.SingleValue {...selectProps}>
-              {highlightReact(selectProps.data.label, query)}
+              <HighlightSearchTerm text={selectProps.data.label} />
             </components.SingleValue>
           )
         }}

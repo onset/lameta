@@ -6,7 +6,7 @@ import { lameta_orange } from "../../containers/theme";
 import { capitalCase } from "../../other/case";
 import { OptionWithTooltip } from "../OptionWithTooltip";
 import { SearchContext } from "../SearchContext";
-import { highlightReact } from "../highlighting";
+import HighlightSearchTerm from "../HighlightSearchTerm";
 import { components } from "react-select";
 
 //const Choices = new Dictionary<string, Array<string>>();
@@ -58,7 +58,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           label: props.field.text
         };
   }
-  const { query } = React.useContext(SearchContext);
+  const { searchTerm } = React.useContext(SearchContext);
   return (
     <div className={"field " + props.className} data-testid="genre-chooser">
       <label>{label}</label>
@@ -114,7 +114,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           Option: (p: any) => <OptionWithTooltip {...p} />,
           SingleValue: (p: any) => (
             <components.SingleValue {...p}>
-              {highlightReact(p.data.label, query)}
+              <HighlightSearchTerm text={p.data.label} />
             </components.SingleValue>
           )
         }}

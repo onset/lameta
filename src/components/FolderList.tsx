@@ -16,7 +16,7 @@ import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-import { highlightReact } from "./highlighting";
+import HighlightSearchTerm from "./HighlightSearchTerm";
 import { observer } from "mobx-react";
 import { SearchBar } from "./FolderList.Search";
 
@@ -111,9 +111,12 @@ class FolderList extends React.Component<IProps, any> {
       }
     });
 
-    // Access search query from context (hooks not allowed in class component)
-    const query: string = (this.context && (this.context as any).query) || "";
-    const highlightIfMatch = (text: string) => highlightReact(text, query);
+    // Access normalized search term from context (hooks not allowed in class component)
+    const searchTerm: string =
+      (this.context && (this.context as any).searchTerm) || "";
+    const highlightIfMatch = (text: string) => (
+      <HighlightSearchTerm text={text} />
+    );
 
     const columns = this.props.columns.map((key, index) => {
       const header =

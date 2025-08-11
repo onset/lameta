@@ -40,7 +40,9 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <SearchContext.Provider
-      value={{ query: normalizeQuery(props.folders.searchQuery) }}
+      value={{
+        searchTerm: normalizeQuery(props.folders.searchQuery)
+      }}
     >
       <div className={"componentTab " + props.folderTypeStyleClass}>
         <SplitPane

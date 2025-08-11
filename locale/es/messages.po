@@ -504,6 +504,9 @@ msgstr "Guardar antes de renombrar..."
 msgid "Search"
 msgstr ""
 
+msgid "Search match in metadata"
+msgstr ""
+
 msgid "Select All"
 msgstr "Seleccionar Todo"
 

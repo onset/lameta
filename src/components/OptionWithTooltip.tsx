@@ -4,7 +4,7 @@ import { lameta_orange } from "../containers/theme";
 import { OptionProps, GroupBase } from "react-select";
 import { CSSProperties } from "react";
 import { SearchContext } from "./SearchContext";
-import { highlightReact } from "./highlighting";
+import HighlightSearchTerm from "./HighlightSearchTerm";
 
 /* This is a custom option for react-select that shows a tooltip on hover. */
 
@@ -18,7 +18,7 @@ interface OptionData {
 export const OptionWithTooltip = (
   props: OptionProps<OptionData, false, GroupBase<OptionData>>
 ) => {
-  const { query } = React.useContext(SearchContext);
+  const { searchTerm } = React.useContext(SearchContext);
   const {
     cx,
     data,
@@ -59,7 +59,7 @@ export const OptionWithTooltip = (
         )}
         ref={innerRef}
       >
-        {highlightReact(data.label, query)}
+        <HighlightSearchTerm text={data.label} />
       </div>
     </Tooltip>
   );

@@ -7,7 +7,7 @@ import {
   SingleValueProps
 } from "react-select";
 import { SearchContext } from "./SearchContext";
-import { highlightReact } from "./highlighting";
+import HighlightSearchTerm from "./HighlightSearchTerm";
 
 const saymore_orange = "#e69664";
 
@@ -38,11 +38,11 @@ export const LanguagePill = ({
   data,
   innerProps
 }: MultiValueGenericProps<LanguageData>) => {
-  const { query } = useContext(SearchContext);
+  const { searchTerm } = useContext(SearchContext);
   return (
     <div {...innerProps} css={pillStyle}>
       <div>
-        {highlightReact(data.label, query)}
+        <HighlightSearchTerm text={data.label} />
         <span className="isoCode">{data.value}</span>
       </div>
     </div>
@@ -59,10 +59,10 @@ export const LanguagePillForSingle = ({
 );
 
 const LanguagePillSingleWrapper = (props: any) => {
-  const { query } = useContext(SearchContext);
+  const { searchTerm } = useContext(SearchContext);
   return (
     <components.SingleValue data={props.data} css={pillStyle} {...props}>
-      {highlightReact(props.data.label, query)}
+      <HighlightSearchTerm text={props.data.label} />
       <span className="isoCode">{props.data.value}</span>
     </components.SingleValue>
   );
@@ -70,7 +70,7 @@ const LanguagePillSingleWrapper = (props: any) => {
 
 // how to render the choice in the drop down
 export const LanguageOption = (props) => {
-  const { query } = useContext(SearchContext);
+  const { searchTerm } = useContext(SearchContext);
   return (
     <div
       {...props.innerProps}
@@ -85,7 +85,7 @@ export const LanguageOption = (props) => {
       `}
     >
       <div>
-        {highlightReact(props.data.label, query)}
+        <HighlightSearchTerm text={props.data.label} />
         <span className="isoCode">{props.data.value}</span>
       </div>
     </div>

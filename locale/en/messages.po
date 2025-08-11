@@ -497,6 +497,9 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
+msgid "Search match in metadata"
+msgstr ""
+
 msgid "Select All"
 msgstr ""
 
