@@ -47,7 +47,7 @@ src/export/ROCrate/__tests__/
 - [x] 1.4 Extract `fs-extra` mock patterns
 - [x] 1.5 Create factory functions for Project, Session, Person
 - [x] 1.6 Create field definition mock utilities
-- [x] 1.7 Validation: Run `yarn test` - all existing tests should still pass
+- [x] 1.7 Validation: Run `bun test` - all existing tests should still pass
 
 **Git Commit**: `8085725c` - "feat: consolidate RO-Crate component tests (Phases 1-2)"
 
@@ -61,7 +61,7 @@ src/export/ROCrate/__tests__/
 - [x] 2.6 Migrate `RoCratePeople.spec.ts` tests
 - [x] 2.7 Migrate `RoCrateSessions.spec.ts` tests
 - [x] 2.8 Update all imports to use shared utilities
-- [x] 2.9 Validation: Run `yarn test` - component tests should pass
+- [x] 2.9 Validation: Run `bun test` - component tests should pass
 - [x] 2.10 Remove old component test files one by one
 
 **Git Commit**: `8085725c` - "feat: consolidate RO-Crate component tests (Phases 1-2)"
@@ -75,7 +75,7 @@ src/export/ROCrate/__tests__/
 - [x] 3.5 Migrate `RoCrateExporter.session-licensing-demo.spec.ts` tests
 - [x] 3.6 Organize into logical describe blocks
 - [x] 3.7 Update imports to use shared utilities
-- [x] 3.8 Validation: Run `yarn test` - core exporter tests should pass (21 tests passing)
+- [x] 3.8 Validation: Run `bun test` - core exporter tests should pass (21 tests passing)
 - [x] 3.9 Remove old exporter test files incrementally
 
 **Git Commit**: `fece81fe` - "feat: consolidate RO-Crate core exporter tests (Phase 3)"
@@ -89,12 +89,12 @@ src/export/ROCrate/__tests__/
 - [x] 4.5 Organize by LDAC concerns: Event Structure, Person/Place Entities, Material Types, Access Control, Subject Language Formatting
 - [x] 4.6 Enhanced mocking for LDAC access choices with ldacAccessCategory property
 - [x] 4.7 Proper handling of template-based and handler-based language fields
-- [x] 4.8 Validation: Run `yarn test` - LDAC tests should pass (25 tests passing)
+- [x] 4.8 Validation: Run `bun test` - LDAC tests should pass (25 tests passing)
 - [x] 4.9 Remove old LDAC test files
 
 **Git Commit**: TBD - Phase 4 completion
 
-- [ ] 4.7 Validation: Run `yarn test` - LDAC tests should pass
+- [ ] 4.7 Validation: Run `bun test` - LDAC tests should pass
 - [ ] 4.8 Remove old LDAC test files
 
 ### Phase 5: Create Validation Test File
@@ -104,25 +104,25 @@ src/export/ROCrate/__tests__/
 - [ ] 5.3 Migrate `RoCrateHtmlGenerator.spec.ts` tests
 - [ ] 5.4 Migrate `RoCrateExporter.validation.spec.ts` tests
 - [ ] 5.5 Update imports to use shared utilities
-- [ ] 5.6 Validation: Run `yarn test` - validation tests should pass
+- [ ] 5.6 Validation: Run `bun test` - validation tests should pass
 - [ ] 5.7 Remove old validation test files
 
 ### Phase 6: Preserve Integration Tests
 
 - [ ] 6.1 Update `RoCrateExporter.integration.spec.ts` to use shared utilities
-- [ ] 6.2 Validation: Run `yarn test` - integration tests should pass
+- [ ] 6.2 Validation: Run `bun test` - integration tests should pass
 
 ### Phase 7: Final Cleanup
 
 - [ ] 7.1 Remove any remaining old test files
 - [ ] 7.2 Update any test script references if needed
-- [ ] 7.3 Final validation: Run `yarn test` - all tests should pass
+- [ ] 7.3 Final validation: Run `bun test` - all tests should pass
 - [ ] 7.4 Verify test coverage hasn't decreased
 - [ ] 7.5 Update this document with completion status
 
 ## Risk Mitigation
 
-- ✅ After each phase: Run `yarn test` to catch issues immediately
+- ✅ After each phase: Run `bun test` to catch issues immediately
 - ✅ One file at a time: Don't remove multiple old files simultaneously
 - ✅ Git commits: Commit a "chore:" after each successful phase
 - ✅ Rollback plan: Keep old files until new structure is proven stable

@@ -27,11 +27,11 @@ A TypeScript validation script that uses the oni-ocfl library to validate RO-Cra
 
 ```bash
 # Run from project root
-yarn validate-oni-fishing
-yarn validate-oni-farms
+bun validate-oni-fishing
+bun validate-oni-farms
 
 # Or with specific options
-yarn tsx ro-crate-validation/validate_oni_ocfl.ts <path_to_rocrate_or_metadata_file> [--excel-validator <file>] [--mode-validator <file>] [--namespace <name>] [--ignore-files]
+bun tsx ro-crate-validation/validate_oni_ocfl.ts <path_to_rocrate_or_metadata_file> [--excel-validator <file>] [--mode-validator <file>] [--namespace <name>] [--ignore-files]
 ```
 
 **Notes:**
@@ -56,8 +56,8 @@ The comprehensive validation script that checks for:
 # Run from project root
 python ro-crate-validation/lameta_rocrate_validation.py .
 
-# Or use the npm/yarn script
-yarn validate-rocrate-python
+# Or use the npm/bun script
+bun validate-rocrate-python
 npm run validate-rocrate-python
 ```
 

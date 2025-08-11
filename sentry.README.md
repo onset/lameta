@@ -54,7 +54,7 @@ So I removed source-map-support, no change in the frame we're sending.
 
 I investigated [source-map-support](https://github.com/evanw/node-source-map-support)
 
-Normally if I do `yarn build-production-renderer && yarn start` then do the test throw, I get frame of
+Normally if I do `bun build-production-renderer && bun start` then do the test throw, I get frame of
 `{lineno:467 colno: 43411 filename: render-bundle.js}` This is actually correct... it points to the line where the throw happened.
 
 If I add `import "source-map-support/register";` at the top of menu.ts, then I get `{lineno:19 colno: 294 filename: menu.ts}`. Which is what it is supposed to do. However sentry clearly says they cannot handle that.

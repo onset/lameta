@@ -69,7 +69,7 @@ function loadOneCatalog(code: string, set: string) {
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
-      `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn strings:compile" at least once.`
+      `Could not locate ${path}. If you are running the dev server, make sure you have run "bun strings:compile" at least once.`
     );
   }
 

@@ -174,7 +174,7 @@ class HomePage extends React.Component<IProps, IState> {
     });
 
     // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
+    // was unavailable sometimes, particularly when running production build via "bun start" on Windows.
     // So we give it a few seconds and catch the problem if it still fails.
     window.setTimeout(() => {
       try {

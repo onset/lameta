@@ -4,7 +4,7 @@
     {
       "type": "shell",
       "label": "Run vitest tests",
-      "command": "yarn",
+      "command": "bun",
       "args": ["test"],
       "group": "test",
       "isBackground": false,

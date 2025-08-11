@@ -19,14 +19,14 @@ Stack: Typescript, React, mobx, vite, electron.
 
 ## Get Started
 
-Make sure [volta](https://github.com/volta-cli/volta) is installed. Verify that it is working correctly via `volta list`. You should see the same versions of node & yarn as are listed in `packages.json`.
+Make sure [volta](https://github.com/volta-cli/volta) is installed. Verify that it is working correctly via `volta list`. You should see the same versions of node & bun as are listed in `packages.json`.
 
 Note that due to a common failure of nodejs.org to deliver node to the github actions, we are currently using a mirror. See `.volta/hooks.json`.
 
 ```bash
-yarn
-yarn lingui compile  <-- just once, before dev will work
-yarn dev
+bun
+bun lingui compile  <-- just once, before dev will work
+bun dev
 ```
 
 ## Packaging
@@ -34,7 +34,7 @@ yarn dev
 To package apps for the local platform:
 
 ```bash
-yarn package
+bun package
 ```
 
 More information available in the upstream project:
@@ -43,7 +43,7 @@ More information available in the upstream project:
 ### unit tests
 
 ```bash
-yarn test
+bun test
 ```
 
 ### e2e tests
@@ -53,8 +53,8 @@ arbitrary URL, the render process in electron is tied up with its own chromium b
 run a built exe of lameta.
 
 ```bash
-yarn  e2ebuildwatch
-yarn e2e
+bun  e2ebuildwatch
+bun e2e
 ```
 
 Note that at the time of this writing, playwright does not have a "watch" mode via command line, and the "ui" mode, which can watch, does not work with electron.
@@ -62,7 +62,7 @@ Note that at the time of this writing, playwright does not have a "watch" mode v
 To run just one e2e fixture, name it:
 
 ```bash
-yarn e2e registration.e2e.ts
+bun e2e registration.e2e.ts
 ```
 
 If you see `ENOENT: no such file or directory, scandir "<path>\archive-configurations"`, you may have forgotten to do the `build` step.
@@ -70,7 +70,7 @@ If you see `ENOENT: no such file or directory, scandir "<path>\archive-configura
 To show the Playwright Inspector (which has a recorder), use
 
 ```bash
-yarn e2erecord
+bun e2erecord
 ```
 
 ### l10n
@@ -79,7 +79,7 @@ When running lameta, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 
-then you need to do `yarn strings:compile`.
+then you need to do `bun strings:compile`.
 
 ### Publishing a new release
 

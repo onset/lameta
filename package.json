@@ -10,8 +10,8 @@
   "description": "File & metadata organization for language documentation projects.",
   "scripts": {
     "lint": "tsc --noemit && eslint",
-    "test": "yarn vitest",
-    "testui": "yarn vitest --ui",
+    "test": "bun run vitest",
+    "testui": "bun run vitest --ui",
     "test-all": "npm run test-unit && npm run build && npm run test-e2e",
     "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",
     "e2e": "npx playwright test",
@@ -21,12 +21,12 @@
     "e2erecord": "cross-env PWDEBUG=console  npx playwright test --debug",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
-    "build": "yarn strings:extract && yarn strings:compile && tsc && yarn vite build",
-    "e2ebuildwatch": "yarn vite build --config vite.config.nonminified.js --watch",
-    "postinstall": "yarn patch-package && electron-builder install-app-deps",
+    "build": "bun run strings:extract && bun run strings:compile && tsc && bun run vite build",
+    "e2ebuildwatch": "bun run vite build --config vite.config.nonminified.js --watch",
+    "postinstall": "bun run patch-package && electron-builder install-app-deps",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
-    "dev": "yarn check-node && vite",
-    "check-node": "yarn check-node-version --package",
+    "dev": "bun run check-node && vite",
+    "check-node": "bun run check-node-version --package",
     "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
     "clean": "node clean.js",
     "make-sentry-release": "./make-sentry-release.sh",
@@ -35,14 +35,14 @@
     "lingui-add": "lingui add-locale",
     "##note": "lingui extract will overwrite the fields.po so stringsaextract-json must be run afterwards",
     "strings:extract-code": "lingui extract --clean",
-    "strings:extract-json": "yarn tsx ./archive-configurations/extractFromJSON.ts",
-    "strings:extract": "yarn strings:extract-code && yarn strings:extract-json",
+    "strings:extract-json": "bun run tsx ./archive-configurations/extractFromJSON.ts",
+    "strings:extract": "bun run strings:extract-code && bun run strings:extract-json",
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3",
     "strings:compile": "lingui compile",
-    "make-langindex": "yarn tsx src/languageFinder/make-langindex.ts && yarn vitest run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
+    "make-langindex": "bun run tsx src/languageFinder/make-langindex.ts && bun run vitest run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
     "validate-rocrate-python": "./.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py ro-crate-validation/lameta-fishing",
-    "validate-oni-fishing": "yarn tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/lameta-fishing",
-    "validate-oni-farms": "yarn tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/farmstofreeways",
+    "validate-oni-fishing": "bun run tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/lameta-fishing",
+    "validate-oni-farms": "bun run tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/farmstofreeways",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -260,8 +260,7 @@
     }
   },
   "volta": {
-    "node": "22.16.0",
-    "yarn": "1.22.19"
+    "node": "22.16.0"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "bun@1.22.19"
 }

@@ -5,4 +5,4 @@ Our source is for the langindex is "langtags.json", from https://github.com/siln
 "langtags.json" would ideally be updated from 
 . However in May 2021 we dipped into the "master" build because ELAR wanted the latest "Eastern Minyag"/"Western Minyag" info.
 
-To re-generate "langindex.json", do `yarn make-langindex`.
+To re-generate "langindex.json", do `bun make-langindex`.

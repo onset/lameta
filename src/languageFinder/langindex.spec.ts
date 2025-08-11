@@ -2,7 +2,7 @@ import fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
 import { describe, beforeAll, it, expect } from "vitest";
 
-// langindex.json is created by `yarn make-langindex`. We will need to run that whenever we take in an updated langtags.json from
+// langindex.json is created by `bun make-langindex`. We will need to run that whenever we take in an updated langtags.json from
 describe("Check langindex.json", () => {
   let index: ILangIndexEntry[] = [];
   beforeAll(() => {

@@ -19,7 +19,7 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
 // In normal runs we enforce a single instance. For E2E we allow parallel instances
-// so tests can launch while a developer has `yarn dev` running. The E2E harness
+// so tests can launch while a developer has `bun dev` running. The E2E harness
 // sets process.env.E2E. We also optionally redirect userData to an isolated temp
 // directory (E2ERoot) so settings/stores do not collide with a dev session.
 if (process.env.E2E) {
@@ -97,7 +97,7 @@ async function createWindow() {
     //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(
-        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+        "!!!!!If you hang when doing a 'bun dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
       );
 
       win!.webContents.openDevTools();

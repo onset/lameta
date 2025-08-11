@@ -1,6 +1,7 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
+  npmRebuild: false, // because we expect that bun already got node_modules in the correct state
   afterSign: "electron-builder-notarize",
   dmg: {
     contents: [

@@ -1,7 +1,7 @@
 // NOTE: this is used by multiple processes, so check all these after making any changes
-// 1. yarn dev, yarn build-production
-// 2. yarn test (jest test running environment)
-// 3. yarn lingui-extract
+// 1. bun dev, bun build-production
+// 2. bun test (jest test running environment)
+// 3. bun lingui-extract
 
 module.exports = function (api) {
   if (api) api.cache(true);

@@ -14,13 +14,13 @@ This directory contains TypeScript validation scripts for Lameta RO-Crate files 
 
 ```bash
 # Validate a specific ro-crate-metadata.json file
-yarn validate-rocrate-oni /path/to/ro-crate-metadata.json
+bun validate-rocrate-oni /path/to/ro-crate-metadata.json
 
 # Validate a directory containing ro-crate-metadata.json
-yarn validate-rocrate-oni /path/to/rocrate-directory
+bun validate-rocrate-oni /path/to/rocrate-directory
 
 # With additional validation options
-yarn tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/crate --mode-validator https://example.com/mode.json --namespace my-namespace --ignore-files
+bun tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/crate --mode-validator https://example.com/mode.json --namespace my-namespace --ignore-files
 ```
 
 ### Programmatic Usage
@@ -65,7 +65,7 @@ The oni-ocfl Collector handles all the complex validation logic including LDAC p
 Run the test script to verify the validation works:
 
 ```bash
-yarn test-validate-oni
+bun test-validate-oni
 ```
 
 This will test the validation against the sample ro-crate-metadata.json file in this directory.
