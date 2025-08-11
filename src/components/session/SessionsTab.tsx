@@ -27,7 +27,7 @@ export const SessionsTab = observer(
             if (this.props.project.sessions.filteredItems !== undefined) {
               // calling filter(undefined) both clears filteredItems and increments searchResetCounter
               this.props.project.sessions.filter(undefined as any);
-              // also clear persisted search query so the input shows empty when user returns
+              // also clear persisted search term so the input shows empty when user returns
               this.props.project.sessions.searchTerm = "";
             }
           }}

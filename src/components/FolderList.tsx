@@ -4,7 +4,8 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import { default as ReactTable, Resize } from "react-table-6";
 
-import { Folder, FolderGroup } from "../model/Folder/Folder";
+import { Folder } from "../model/Folder/Folder";
+import { FolderGroup } from "src/model/Folder/FolderGroup";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.scss";
@@ -50,10 +51,6 @@ class FolderList extends React.Component<IProps, any> {
     // no-op now; reset handled in getDerivedStateFromProps to avoid relying on mutable prop object reference
   }
 
-  componentDidMount() {
-    // no-op; persistence handled by FolderGroup.searchTerm only
-  }
-
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
     if (
       nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
@@ -66,7 +63,7 @@ class FolderList extends React.Component<IProps, any> {
         lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm
       };
     }
-    // When the persisted query changes externally we treat that as lastSearch for data-* attributes
+    // When the persisted search term changes externally we treat that as lastSearch for data-* attributes
     if (nextProps.folders.searchTerm !== prevState.lastSearch) {
       return { lastSearch: nextProps.folders.searchTerm };
     }

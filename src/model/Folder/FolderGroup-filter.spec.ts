@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { Folder, FolderGroup } from "./Folder";
+import { Folder } from "./Folder";
+import { FolderGroup } from "./FolderGroup";
 import { FieldSet } from "../field/FieldSet";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 

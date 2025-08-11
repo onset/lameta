@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FolderGroup } from "../../model/Folder/Folder";
+import { FolderGroup } from "src/model/Folder/FolderGroup";
 import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
@@ -8,9 +8,9 @@ import "./ComponentTab.scss";
 
 import SplitPane from "react-split-pane";
 import FolderList from "../FolderList";
-import { SearchContext, normalizeQuery } from "../SearchContext";
+import { SearchContext, normalizeSearchTerm } from "../SearchContext";
 import { css } from "@emotion/react";
-import { highlightReact } from "../highlighting";
+import { highlightMatches } from "../highlighting";
 import { t } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 
@@ -29,7 +29,6 @@ interface IProps {
 // This is the "Sessions" tab and the "People" tab.  It is a tab that has a list of folders on
 // the left and a pane showing the files of that folder on the right.
 const ComponentTab: React.FunctionComponent<IProps> = (props) => {
-  // search query now persisted on the FolderGroup (searchTerm)
   const splitterKey = props.folderTypeStyleClass + "VerticalSplitPosition";
   const splitterposition = localStorage.getItem(splitterKey) || "300";
   const sp = parseInt(splitterposition, 10);
@@ -45,7 +44,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
       localStorage.setItem(searchPersistKey, props.folders.searchTerm);
     }
     // Intentionally keep previous stored value when term becomes empty so an unintended programmatic clear
-    // (e.g., tab switch side effect) doesn't lose the user's query; user explicit clear button already calls filter("")
+    // (e.g., tab switch side effect) doesn't lose the user's search term; user explicit clear button already calls filter("")
     // and we still want option to restore if they navigate away and back.
   }, [props.folders.searchTerm, searchPersistKey]);
   React.useEffect(() => {
@@ -61,7 +60,8 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
   return (
     <SearchContext.Provider
       value={{
-        searchTerm: normalizeQuery(props.folders.searchTerm)
+        rawSearchTerm: props.folders.searchTerm || "",
+        searchTerm: normalizeSearchTerm(props.folders.searchTerm)
       }}
     >
       <div className={"componentTab " + props.folderTypeStyleClass}>
@@ -116,7 +116,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
               fileListButtons={props.fileListButtons}
             >
               <h3 className={"paneTitle"}>
-                {highlightReact(
+                {highlightMatches(
                   props.folders.items[props.folders.selectedIndex].displayName,
                   props.folders.searchTerm,
                   { background: "#ffe58f" }

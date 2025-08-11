@@ -7,7 +7,7 @@ import { lameta_orange } from "../containers/theme";
 
 export interface HighlightableTabProps {
   // Optional supplier returning strings to search; if provided (and shouldHighlight not explicitly true),
-  // the tab will highlight when any returned string contains the current search query (case-insensitive).
+  // the tab will highlight when any returned string contains the current search term (case-insensitive).
   getSearchStrings?: () =>
     | Iterable<string | undefined | null>
     | ArrayLike<string | undefined | null>;

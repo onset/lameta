@@ -18,8 +18,6 @@ export interface IProps {
   showAffordancesAfter?: boolean;
 }
 
-// highlighting logic moved to highlighting.tsx helper
-
 export const TextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = mobx.observer((props) => {
@@ -36,7 +34,7 @@ export const TextFieldEdit: React.FunctionComponent<
     applyHighlight();
   }, []);
 
-  // re-highlight when query changes or underlying value changes (and not editing)
+  // re-highlight when search changes or underlying value changes (and not editing)
   useEffect(() => {
     if (!editing) applyHighlight();
   }, [searchTerm, props.field.text, editing]);
@@ -57,7 +55,7 @@ export const TextFieldEdit: React.FunctionComponent<
     const el = contentRef.current;
     if (!el) return;
     const value = props.field.text;
-    if (!searchTerm.trim()) {
+    if (!searchTerm) {
       el.textContent = value;
       return;
     }
@@ -106,7 +104,7 @@ export const TextFieldEdit: React.FunctionComponent<
       }
       title={props.tooltip}
       data-has-highlight={
-        searchTerm.trim() && props.field.text.toLowerCase().includes(searchTerm)
+        searchTerm && props.field.text.toLowerCase().includes(searchTerm)
           ? "true"
           : undefined
       }

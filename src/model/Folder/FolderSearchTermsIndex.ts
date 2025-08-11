@@ -1,5 +1,6 @@
 import Fuse from "fuse.js";
-import { Folder, FolderGroup } from "./Folder";
+import { Folder } from "./Folder";
+import { FolderGroup } from "./FolderGroup";
 import * as Path from "path";
 import { reaction } from "mobx";
 

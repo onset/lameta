@@ -7,7 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { t } from "@lingui/macro";
 import { i18n } from "../other/localization";
-import { FolderGroup } from "../model/Folder/Folder";
+import { FolderGroup } from "src/model/Folder/FolderGroup";
 import { observer } from "mobx-react";
 import { lameta_orange } from "../containers/theme";
 
