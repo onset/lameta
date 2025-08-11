@@ -27,15 +27,15 @@ test.describe("ID Validation Tests", () => {
     await idField.fill("session001");
     await page.keyboard.press("Tab");
 
-    // verify no tooltip appears
-    const tooltip = page.locator(".react-tooltip-lite");
-    await expect(tooltip).not.toBeVisible();
+    // verify no validation message appears
+    const validationMessage = page.locator('[data-testid="validation-message"]');
+    await expect(validationMessage).not.toBeVisible();
 
     // verify we're no longer in the ID field
     await expect(idField).not.toBeFocused();
   });
 
-  test("empty ID should show tooltip and maintain focus", async () => {
+  test("empty ID should show validation message and maintain focus", async () => {
     await project.goToSessions();
     await project.addSession();
     const idField = page.locator("#id");
@@ -43,15 +43,16 @@ test.describe("ID Validation Tests", () => {
     await idField.fill("");
     await page.keyboard.press("Tab");
 
-    // verify tooltip appears
-    const tooltip = page.locator(".react-tooltip-lite");
-    await expect(tooltip).toBeVisible();
+    // verify validation message appears
+    const validationMessage = page.locator('[data-testid="validation-message"]');
+    await expect(validationMessage).toBeVisible();
+    await expect(validationMessage).toContainText("ID cannot be empty");
 
     // verify focus stays in field
     // not working yet: await expect(idField).toBeFocused();
   });
 
-  test("ID with spaces should show tooltip and maintain focus", async () => {
+  test("ID with spaces should show validation message and maintain focus", async () => {
     await project.goToSessions();
     await project.addSession();
     const idField = page.locator("#id");
@@ -59,17 +60,18 @@ test.describe("ID Validation Tests", () => {
     await idField.fill("session 2");
     await page.keyboard.press("Tab");
 
-    // verify tooltip appears
-    const tooltip = page.locator(".react-tooltip-lite");
-    await expect(tooltip).toBeVisible();
+    // verify validation message appears
+    const validationMessage = page.locator('[data-testid="validation-message"]');
+    await expect(validationMessage).toBeVisible();
+    await expect(validationMessage).toContainText("ID cannot contain spaces");
 
     // verify focus returns to ID field
     // not working yet: await expect(idField).toBeFocused();
 
-    // fix the ID and verify tooltip disappears
+    // fix the ID and verify validation message disappears
     await idField.fill("session2");
     await page.keyboard.press("Tab");
-    await expect(tooltip).not.toBeVisible();
+    await expect(validationMessage).not.toBeVisible();
     await expect(idField).not.toBeFocused();
   });
 });
