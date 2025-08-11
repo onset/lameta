@@ -6,9 +6,9 @@ import { translateRole } from "../other/localization";
 import { titleCase } from "title-case";
 import { IChoice } from "../model/field/Field";
 import { OptionWithTooltip } from "./OptionWithTooltip";
-import HighlightSearchTerm from "./HighlightSearchTerm";
 import { css } from "@emotion/react";
 import { SearchContext } from "./SearchContext";
+import { highlightMatches } from "./highlighting";
 
 export interface IProps {
   contribution: Contribution;
@@ -38,24 +38,7 @@ class RoleChooser extends React.Component<IProps> {
     };
     const searchTerm = (this.context && (this.context as any).searchTerm) || "";
     const labelText = currentValueWrappedForSelect.label || "";
-    const highlightLabel = () => {
-      if (!searchTerm) return labelText;
-      const lower = labelText.toLowerCase();
-      const i = lower.indexOf(searchTerm);
-      if (i === -1) return labelText;
-      return (
-        <>
-          {labelText.substring(0, i)}
-          <mark
-            data-testid="inline-highlight"
-            style={{ background: "#ffba8a", padding: "0 1px" }}
-          >
-            {labelText.substring(i, i + searchTerm.length)}
-          </mark>
-          {labelText.substring(i + searchTerm.length)}
-        </>
-      );
-    };
+    const highlightedLabel = highlightMatches(labelText, searchTerm);
     return (
       <ReactSelectClass
         name={"select role"}
@@ -71,7 +54,7 @@ class RoleChooser extends React.Component<IProps> {
           Option: OptionWithTooltip,
           SingleValue: (props: any) => (
             <components.SingleValue {...props}>
-              {highlightLabel()}
+              {highlightedLabel}
             </components.SingleValue>
           )
         }}

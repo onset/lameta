@@ -5,7 +5,7 @@ import { components } from "react-select";
 import { IChoice } from "../../model/field/Field";
 import { capitalCase } from "../../other/case";
 import { SearchContext } from "../SearchContext";
-import HighlightSearchTerm from "../HighlightSearchTerm";
+import { highlightMatches } from "../highlighting";
 //import colors from "..//../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 
 const saymore_orange = "#e69664";
@@ -76,24 +76,7 @@ class PersonChooser extends React.Component<IProps> {
 
     const person = choices.find((c: any) => c.value === this.props.name);
     const labelText = person ? person.label : this.props.name;
-    const highlightLabel = () => {
-      if (!searchTerm) return labelText;
-      const lower = labelText.toLowerCase();
-      const i = lower.indexOf(searchTerm);
-      if (i === -1) return labelText;
-      return (
-        <>
-          {labelText.substring(0, i)}
-          <mark
-            data-testid="inline-highlight"
-            style={{ background: "#ffba8a", padding: "0 1px" }}
-          >
-            {labelText.substring(i, i + searchTerm.length)}
-          </mark>
-          {labelText.substring(i + searchTerm.length)}
-        </>
-      );
-    };
+    const highlightedLabel = highlightMatches(labelText, searchTerm);
     return (
       //<ReactSelect <-- if we didn't want to allow new
       <CreatableSelect
@@ -118,7 +101,7 @@ class PersonChooser extends React.Component<IProps> {
         components={{
           SingleValue: (props: any) => (
             <components.SingleValue {...props}>
-              {highlightLabel()}
+              {highlightedLabel}
             </components.SingleValue>
           )
         }}
