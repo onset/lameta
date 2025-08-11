@@ -32,20 +32,19 @@ test.describe("ArchiveConfiguration", () => {
     await shouldSeeExactlyOnce(page, ["Other"]);
     
     // Wait for the custom access choices field to be visible and ready for interaction
-    const customAccessChoicesInput = page.locator("#customAccessChoices");
+    const customAccessChoicesInput = page.getByTestId("field-customAccessChoices-edit");
     await customAccessChoicesInput.waitFor({ state: "visible", timeout: 10000 });
     
-    // Look for the actual input inside
-    const textInput = page.locator("#customAccessChoices [contenteditable]");
-    await textInput.click();
-    await textInput.fill("good, bad");
-    await textInput.press("Tab");
+    // Click and fill the input
+    await customAccessChoicesInput.click();
+    await customAccessChoicesInput.fill("good, bad");
+    await customAccessChoicesInput.press("Tab");
     await project.goToSessions();
     await project.addSession();
     await page.locator("#access-chooser").click();
     await shouldSeeExactlyOnce(page, ["good", "bad"]);
     await project.goToProjectConfiguration();
-    await page.locator("#customAccessChoices [contenteditable]").fill("good, bad, ugly");
+    await page.getByTestId("field-customAccessChoices-edit").fill("good, bad, ugly");
     await project.goToSessions();
     await page.locator("#access-chooser").click();
     await shouldSeeExactlyOnce(page, ["good", "bad", "ugly"]);
