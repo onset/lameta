@@ -54,7 +54,9 @@ export class LametaE2ERunner {
   }
   // if you don't do this, there may be a noticable delay
   public async quit() {
-    await this.electronApp.close();
+    if (this.electronApp) {
+      await this.electronApp.close();
+    }
     // without this, the command line hangs for 30 seconds after the tests are done
     await new Promise((resolve) => setTimeout(resolve, 100));
   }

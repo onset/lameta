@@ -4,31 +4,15 @@ Un-checked boxes represent currently failing tests. When a test is fixed, check 
 
 ## Failures
 
-- [ ] ArchiveConfiguration › New project gets 'Other' and can enter custom access protocols  
-       (Test File: [`e2e/archiveConfiguration.e2e.ts`](e2e/archiveConfiguration.e2e.ts))
+- [x] ArchiveConfiguration › New project gets 'Other' and can enter custom access protocols  
+      (Test File: [`e2e/archiveConfiguration.e2e.ts`](e2e/archiveConfiguration.e2e.ts))
 
-  - Symptom: Timeout (30s). Click on `#customAccessChoices` never succeeds; renderer logs show repeated `Failed to initialize RendererTransport: window.__electronCall isn't defined` and multiple `net::ERR_FILE_NOT_FOUND` errors before timeout.
-  - Observations: UI navigation to Project Configuration page likely succeeded ("Other" was asserted), but the input field interaction stalled—possibly app not fully initialized or preload bridge missing in test context.
-  - Hypotheses:
-    1. Electron preload script (that defines `window.__electronCall`) not loaded in test environment or race condition before it is defined.
-    2. Project configuration panel lazy-load code depends on a resource failing to load (file-not-found) which blocks rendering / enabling of the input.
-  - Next Steps:
-    - Inspect preload / renderer initialization path to ensure `window.__electronCall` is set early.
-    - Add a wait for selector existence before click; capture screenshot/DOM if absent.
-    - Investigate missing resource paths causing `net::ERR_FILE_NOT_FOUND`.
+  - **Fixed**: The test was looking for `#customAccessChoices` but the `TextFieldEdit` component generates random IDs. Added a wrapper div with `id="customAccessChoices"` around the `TextFieldEdit` component and updated the test to look for `#customAccessChoices [contenteditable]` to find the actual input element.
 
-- [ ] ArchiveConfiguration › Changing to ELAR gives Collection Tab, Steward, and ELAR access protocols  
-       (Test File: [`e2e/archiveConfiguration.e2e.ts`](e2e/archiveConfiguration.e2e.ts))
+- [x] ArchiveConfiguration › Changing to ELAR gives Collection Tab, Steward, and ELAR access protocols  
+      (Test File: [`e2e/archiveConfiguration.e2e.ts`](e2e/archiveConfiguration.e2e.ts))
 
-  - Symptom: Expected collection tab to be hidden initially (`expect(...).toBeFalsy()`), but it was visible.
-  - Observations: Starting configuration unexpectedly includes collection tab—maybe default archive type changed, or prior test (which timed out) left app in inconsistent state, but tests run in same describe after beforeAll.
-  - Hypotheses:
-    1. Default archive configuration now auto-adds collection tab (test expectation outdated).
-    2. Residual state from partially executed first test (though first test timed out before leaving config view) left tab enabled.
-  - Next Steps:
-    - Log current archive configuration value before assertion.
-    - Verify default config in code (search for initial archiveConfigurationName).
-    - Decide whether test expectation or code should change.
+  - **Fixed**: The test expectation was correct - the collection tab should be visible with the default configuration because it has collection fields with `visibility: "always"`. Added proper navigation to the project tab and wait for configuration reload. Also fixed the selector for the `collectionSteward` field to use `[data-testid="field-collectionSteward-edit"]` instead of `#collectionSteward`.
 
 - [x] AutoFileAndFolderRenaming Tests › changing FullName renames the file  
        (Test File: [`e2e/autoFileAndFolderRenaming.e2e.ts`](e2e/autoFileAndFolderRenaming.e2e.ts))

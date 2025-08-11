@@ -167,10 +167,12 @@ const CustomArchiveConfiguration: React.FunctionComponent<{
         margin-top: 1em;
       `}
     >
-      <TextFieldEdit
-        field={props.customChoicesField}
-        visibleInstructions={"Enter each choice, separated by commas"}
-      />
+      <div id="customAccessChoices">
+        <TextFieldEdit
+          field={props.customChoicesField}
+          visibleInstructions={"Enter each choice, separated by commas"}
+        />
+      </div>
     </div>
   );
 };
