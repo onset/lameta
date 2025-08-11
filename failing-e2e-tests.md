@@ -30,25 +30,15 @@ Un-checked boxes represent currently failing tests. When a test is fixed, check 
     - Verify default config in code (search for initial archiveConfigurationName).
     - Decide whether test expectation or code should change.
 
-- [ ] AutoFileAndFolderRenaming Tests › changing FullName renames the file  
+- [x] AutoFileAndFolderRenaming Tests › changing FullName renames the file  
        (Test File: [`e2e/autoFileAndFolderRenaming.e2e.ts`](e2e/autoFileAndFolderRenaming.e2e.ts))
 
-  - Symptom: Timeout waiting for `#name` field (30s); repeated renderer init errors.
-  - Observations: Test launches fresh Electron app in `beforeEach`; early renderer failure may prevent field from rendering.
-  - Hypotheses:
-    1. Regression in People tab rendering due to search bar changes (unlikely—field id unrelated) but possible mounting order issue.
-    2. Same preload / initialization race causing earlier click attempts to fail.
-  - Next Steps:
-    - Add explicit wait for People tab main container before selecting `#name`.
-    - Capture screenshot on timeout to inspect DOM.
-    - Confirm component sets `id="name"` (grep) and not changed.
+  - ✅ **FIXED**: Modified `TextFieldEdit` component to use deterministic field IDs instead of random ones, and added proper `onBlur` handler support to trigger file renaming logic. Added timing wait for file operations to complete.
 
-- [ ] AutoFileAndFolderRenaming Tests › changing FullName renames other files that have been renamed to match the person  
+- [x] AutoFileAndFolderRenaming Tests › changing FullName renames other files that have been renamed to match the person  
        (Test File: [`e2e/autoFileAndFolderRenaming.e2e.ts`](e2e/autoFileAndFolderRenaming.e2e.ts))
 
-  - Symptom: Same as above: timeout waiting for `#name`.
-  - Observations: Shares setup with previous test; likely same root cause.
-  - Next Steps: Fix root cause from previous item; re-run both.
+  - ✅ **FIXED**: Same root cause as above test - fixed by restoring deterministic field IDs and proper onBlur handling.
 
 - [x] Folder Search UI › search term persists visually across tab switch (sessions -> project -> sessions)  
        (Test File: [`e2e/folderSearch.e2e.ts`](e2e/folderSearch.e2e.ts) • Related Source: [`src/components/FolderList.Search.tsx`](src/components/FolderList.Search.tsx), [`src/model/Folder/Folder.ts`](src/model/Folder/Folder.ts))

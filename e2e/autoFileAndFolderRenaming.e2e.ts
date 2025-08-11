@@ -98,4 +98,6 @@ async function setFullName(name: string) {
   await fullNameField.click();
   await fullNameField.fill(name);
   await page.keyboard.press("Tab");
+  // Wait for the file renaming to complete (onBlur has a 100ms setTimeout)
+  await page.waitForTimeout(500);
 }

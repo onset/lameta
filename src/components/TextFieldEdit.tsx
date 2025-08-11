@@ -28,10 +28,8 @@ export const TextFieldEdit: React.FunctionComponent<
   const [previous, setPrevious] = useState(props.field.text);
   const [editing, setEditing] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const { current: fieldId } = useRef(
-    "textfield-" +
-      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
-  );
+  // Use the field key for the ID to make it predictable for tests
+  const fieldId = props.field.definition.key;
 
   // initial highlight after mount
   useEffect(() => {
@@ -83,6 +81,7 @@ export const TextFieldEdit: React.FunctionComponent<
       props.field.setValueFromString(newValue);
     }
     if (props.onBlurWithValue) props.onBlurWithValue(newValue);
+    if (props.onBlur) props.onBlur(e as any); // Call the onBlur handler if provided
     if (!validateValue(newValue)) {
       // revert
       props.field.text = previous;
