@@ -106,7 +106,10 @@ async function doExport(
   fs.mkdirSync(thisSpecDir, { recursive: true });
   const randomStringForFileName = Math.random().toString(36).substring(7);
   // including "fssync" in the path tells our file copy thing to just do the copy synchronously
-  const thisRunDir = Path.join(thisSpecDir, "run-" + randomStringForFileName + "-fssync");
+  const thisRunDir = Path.join(
+    thisSpecDir,
+    "run-" + randomStringForFileName + "-fssync"
+  );
   fs.mkdirSync(thisRunDir);
   const projectDir = Path.join(thisRunDir, "projectDir");
   fs.mkdirSync(projectDir);

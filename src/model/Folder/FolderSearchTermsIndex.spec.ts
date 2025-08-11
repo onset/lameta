@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { FolderGroup, Folder } from "./Folder";
 import { FieldSet } from "../field/FieldSet";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
-import { FolderIndex } from "./FolderIndex";
+// No direct import of FolderSearchTermsIndex; test exercises lazy creation via FolderGroup.filter()
 
 class FakeFolder extends Folder {
   private _props = new FieldSet();
@@ -32,7 +32,7 @@ class FakeFolder extends Folder {
   }
 }
 
-describe("FolderIndex", () => {
+describe("FolderSearchTermsIndex", () => {
   it("searches across concatenated fields and updates after field change", () => {
     const g = new FolderGroup();
     const f1 = new FakeFolder({ id: "A1", title: "Alpha", notes: "red fox" });
@@ -42,17 +42,14 @@ describe("FolderIndex", () => {
       notes: "blue whale"
     });
     g.items.push(f1, f2);
-    const index = new FolderIndex();
-    index.attach(g);
-
     g.filter("fox");
     expect(g.filteredItems!.length).toBe(1);
     expect(g.filteredItems![0]).toBe(f1);
 
     // change a field to include search term
     f2.properties.setText("notes", "giant fox hunter");
-    // explicitly rebuild index (in app a reaction or subsequent attach/build could handle this)
-    index.build();
+    // trigger a re-filter; since our current simple reaction in FolderSearchTermsIndex rebuilds
+    // synchronously on observable changes, filtering again should now see both
     g.filter("fox");
     // Both should now match; order not guaranteed
     expect(g.filteredItems!.length).toBe(2);

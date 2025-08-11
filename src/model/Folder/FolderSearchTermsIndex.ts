@@ -9,7 +9,7 @@ interface IndexedFolder {
 }
 
 // A FolderIndex instance is attached to exactly one FolderGroup.
-export class FolderIndex {
+export class FolderSearchTermsIndex {
   private group?: FolderGroup;
   private fuse?: Fuse<IndexedFolder>;
   private lastSnapshot: string = "";
@@ -17,7 +17,6 @@ export class FolderIndex {
   public attach(group: FolderGroup) {
     this.group = group;
     this.build();
-    group._setIndex(this); // internal hook from FolderGroup
     // Rebuild index reactively when folder items or contained file lists change.
     reaction(
       () =>

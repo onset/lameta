@@ -1,6 +1,6 @@
 import { File, OtherFile } from "../file/File";
 // type-only import to give FolderGroup a stronger index type without creating a runtime cycle
-import type { FolderIndex } from "./FolderIndex";
+import type { FolderSearchTermsIndex } from "./FolderSearchTermsIndex";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -45,7 +45,7 @@ export class FolderGroup {
   public searchResetCounter: number;
   // holds the current (last non-empty) search string so that UI components can persist it across unmounts/mounts
   public searchQuery: string;
-  private index?: FolderIndex; // lazily instantiated per FolderGroup; never a singleton
+  private index?: FolderSearchTermsIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
 
@@ -63,10 +63,7 @@ export class FolderGroup {
     this.searchResetCounter = 0;
     this.searchQuery = "";
   }
-  // called by FolderIndex
-  public _setIndex(index: any) {
-    this.index = index;
-  }
+  // index is now directly assigned by the caller (FolderGroup.filter) when lazily creating it.
 
   public selectFirstMarkedFolder() {
     const foundIndex = this.items.findIndex((f) => f.marked);
@@ -103,13 +100,14 @@ export class FolderGroup {
     // remember the active non-empty search string for persistence across tab switches
     this.searchQuery = search;
     // Lazily attach a per-group index the first time we actually filter with a non-empty string.
-    // Each FolderGroup receives its own FolderIndex instance (we intentionally do NOT share a singleton
+    // Each FolderGroup receives its own FolderSearchTermsIndex instance (we intentionally do NOT share a singleton
     // to avoid cross-talk, unintended memory retention, or future coupling between groups).
     if (!this.index) {
       try {
-        const { FolderIndex } = require("./FolderIndex");
-        const idx = new FolderIndex();
+        const { FolderSearchTermsIndex } = require("./FolderSearchTermsIndex");
+        const idx: FolderSearchTermsIndex = new FolderSearchTermsIndex();
         idx.attach(this);
+        this.index = idx; // explicit assignment (no hidden callback)
       } catch {
         // ignore if dynamic load fails; we'll use fallback
       }
