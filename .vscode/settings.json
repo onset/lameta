@@ -20,5 +20,8 @@
   "cSpell.diagnosticLevel": "Hint",
   "wallaby.alwaysOpenLocalWallabyAppUrl": true,
   "wallaby.codeLensFeature.runTest": true,
-  "testing.automaticallyOpenPeekView": "never"
+  "testing.automaticallyOpenPeekView": "never",
+  "files.associations": {
+    "package.json": "jsonc"
+  }
 }

@@ -10,30 +10,29 @@
   "description": "File & metadata organization for language documentation projects.",
   "scripts": {
     "lint": "tsc --noemit && eslint",
+    // Note: we can't yet use bun's test becuase of @electron/remote. So for now,
+    // just vitest.
     "test": "bun run vitest",
     "testui": "bun run vitest --ui",
-    "test-all": "npm run test-unit && npm run build && npm run test-e2e",
-    "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",
-    "e2e": "npx playwright test",
-    "// This brings up the inspector and record button oh my...": "",
+    "test-all": "bun run test-unit && bun run build && bun run test-e2e",
+    //note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)
+    "e2e": "bunx playwright test",
+    // This brings up the inspector and record button oh my...
     "e2edebug": "echo To debug, right click on the e2e test and choose 'Debug Test'",
-    "// This is the same as as e2edebug because neither actually runs a test": "",
-    "e2erecord": "cross-env PWDEBUG=console  npx playwright test --debug",
+    // This is the same as as e2edebug because neither actually runs a test"
+    "e2erecord": "cross-env PWDEBUG=console  bunx playwright test --debug",
     "//----watch": "The nature of watch is that we can't run two commands, so you'll have to have 2 terminals if you want to watch both",
     "//---build-is-what-github-actions-runs": "",
     "build": "bun run strings:extract && bun run strings:compile && tsc && bun run vite build",
     "e2ebuildwatch": "bun run vite build --config vite.config.nonminified.js --watch",
     "postinstall": "bun run patch-package && electron-builder install-app-deps",
-    "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
+    // this is the normal day-to-day way of running while developing, with compiling of main, preload, and render
     "dev": "bun run check-node && vite",
-    "check-node": "bun run check-node-version --package",
-    "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
-    "clean": "node clean.js",
     "make-sentry-release": "./make-sentry-release.sh",
-    "package": "npm run build && electron-builder",
+    "package": "bun run build && electron-builder",
     "cleanup": "mop -v",
     "lingui-add": "lingui add-locale",
-    "##note": "lingui extract will overwrite the fields.po so stringsaextract-json must be run afterwards",
+    // Note: lingui extract will overwrite the fields.po so strings:extract-json must be run afterwards",
     "strings:extract-code": "lingui extract --clean",
     "strings:extract-json": "bun run tsx ./archive-configurations/extractFromJSON.ts",
     "strings:extract": "bun run strings:extract-code && bun run strings:extract-json",
@@ -259,8 +258,6 @@
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777"
     }
   },
-  "volta": {
-    "node": "22.16.0"
-  },
+
   "packageManager": "bun@1.22.19"
 }
