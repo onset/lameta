@@ -1,33 +1,96 @@
 import { css } from "@emotion/react";
 import * as mobx from "mobx-react";
-import React, { useContext, useEffect, useRef, useState } from "react";
 import { Field } from "../model/field/Field";
+import Tooltip from "react-tooltip-lite";
 import { FieldLabel } from "./FieldLabel";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { LanguageAxis } from "src/model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
-
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
   hideLabel?: boolean;
   visibleInstructions?: string;
-  attemptFileChanges?: () => boolean; // return false to cancel
+  attemptFileChanges?: () => boolean;
   onBlurWithValue?: (currentValue: string) => void;
-  validate?: (value: string) => string | undefined; // returns validation message if invalid
+  // returns validation message if invalid, undefined if valid
+  validate?: (value: string) => string | undefined;
   tooltip?: string;
   showAffordancesAfter?: boolean;
+  //LanguageAxes?: LanguageAxis[];
 }
 
 export const TextFieldEdit: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = mobx.observer((props) => {
-  const { searchTerm } = useContext(SearchContext);
+  const { current: fieldId } = useRef(
+    "textfield-" +
+      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
+  );
+
+  const testAxes: LanguageAxis[] = [
+    { tag: "en", label: "eng", name: "English" },
+    { tag: "es", label: "esp", name: "Español" }
+  ];
+  return (
+    <div
+      className={
+        "field " +
+        props.className +
+        (props.field.definition.multipleLines ? " multiline" : "")
+      }
+      title={props.tooltip}
+    >
+      {props.hideLabel ? (
+        ""
+      ) : (
+        <FieldLabel
+          htmlFor={fieldId}
+          fieldDef={props.field.definition}
+          omitInfoAffordances={props.showAffordancesAfter}
+        />
+      )}
+      <div
+        css={css`
+          flex-grow: 1;
+        `}
+      >
+        {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
+        <div
+          css={css`
+            background-color: white;
+            border: 1px solid black;
+            height: -webkit-fill-available;
+          `}
+        >
+          {props.field.definition.multilingual ? (
+            testAxes.map((axis) => (
+              <>
+                <SingleLanguageTextFieldEdit {...props} axis={axis} />
+              </>
+            ))
+          ) : (
+            <SingleLanguageTextFieldEdit {...props} axis={undefined} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const SingleLanguageTextFieldEdit: React.FunctionComponent<
+  IProps & React.HTMLAttributes<HTMLDivElement> & { axis?: LanguageAxis }
+> = mobx.observer((props) => {
   const [validationMessage, setValidationMessage] = useState<string>();
+  const { searchTerm } = useContext(SearchContext);
   const [previous, setPrevious] = useState(props.field.text);
   const [editing, setEditing] = useState(false);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-  // Use the field key for the ID to make it predictable for tests
-  const fieldId = props.field.definition.key;
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    validateValue(props.field.text);
+  }, []); // run once on mount
 
   // initial highlight after mount
   useEffect(() => {
@@ -37,24 +100,12 @@ export const TextFieldEdit: React.FunctionComponent<
   // re-highlight when search changes or underlying value changes (and not editing)
   useEffect(() => {
     if (!editing) applyHighlight();
-  }, [searchTerm, props.field.text, editing]);
-
-  function validateValue(value: string): boolean {
-    if (props.validate) {
-      const message = props.validate(value);
-      if (message) {
-        setValidationMessage(message);
-        return false;
-      }
-    }
-    setValidationMessage(undefined);
-    return true;
-  }
+  }, [searchTerm, getValue(props.field), editing]);
 
   function applyHighlight() {
     const el = contentRef.current;
     if (!el) return;
-    const value = props.field.text;
+    const value = getValue(props.field);
     if (!searchTerm) {
       el.textContent = value;
       return;
@@ -71,115 +122,161 @@ export const TextFieldEdit: React.FunctionComponent<
     el.textContent = plain;
   }
 
-  function finishEditing(e: React.FocusEvent<HTMLDivElement>) {
-    const el = e.currentTarget;
+  const validateValue = (value: string) => {
+    if (props.validate) {
+      const message = props.validate(value);
+      if (message) {
+        setValidationMessage(message);
+        return false;
+      }
+    }
+
+    setValidationMessage(undefined);
+    return true;
+  };
+
+  function onChange(event: React.FormEvent<HTMLDivElement>, field: Field) {
+    // NB: Don't trim value here. It is tempting, because at the end of the day we'd
+    // like it trimmed, but if you do it here, it's not possible to even
+    // type a space.
+    const value = event.currentTarget.innerText || "";
+    if (props.axis === undefined) field.setValueFromString(value);
+    else field.setTextAxis(props.axis.tag, value);
+    validateValue(value);
+  }
+
+  function finishEditing(event: React.FocusEvent<HTMLDivElement>) {
+    const el = event.currentTarget;
     // Preserve leading spaces the user intentionally adds; only trim trailing newline noise.
     const newValue = el.innerText.replace(/\n+$/g, "");
-    if (newValue !== props.field.text) {
-      props.field.setValueFromString(newValue);
+
+    if (props.axis === undefined) {
+      if (newValue !== props.field.text) {
+        props.field.setValueFromString(newValue);
+      }
+    } else {
+      if (newValue !== props.field.getTextAxis(props.axis.tag)) {
+        props.field.setTextAxis(props.axis.tag, newValue);
+      }
     }
+
     if (props.onBlurWithValue) props.onBlurWithValue(newValue);
-    if (props.onBlur) props.onBlur(e as any); // Call the onBlur handler if provided
+    if (props.onBlur) props.onBlur(event as any);
+
     if (!validateValue(newValue)) {
       // revert
-      props.field.text = previous;
+      if (props.axis === undefined) {
+        props.field.text = previous;
+      } else {
+        props.field.setTextAxis(props.axis.tag, previous);
+      }
       el.textContent = previous;
     } else {
       setPrevious(newValue);
     }
+
     if (props.attemptFileChanges && !props.attemptFileChanges()) {
-      props.field.text = previous;
+      if (props.axis === undefined) {
+        props.field.text = previous;
+      } else {
+        props.field.setTextAxis(props.axis.tag, previous);
+      }
       el.textContent = previous;
     }
+
     setEditing(false);
     // highlight will re-apply via effect
   }
 
+  function getValue(field: Field): string {
+    if (field === undefined) {
+      return "Null Text";
+    }
+    if (props.axis === undefined) return field.text;
+    // review should this be "monolingual" os some such?
+    else return field.getTextAxis(props.axis.tag);
+  }
   return (
     <div
-      className={
-        "field " +
-        (props.className || "") +
-        (props.field.definition.multipleLines ? " multiline" : "")
-      }
-      title={props.tooltip}
-      data-has-highlight={
-        searchTerm && props.field.text.toLowerCase().includes(searchTerm)
-          ? "true"
-          : undefined
-      }
+      key={props.axis?.tag || "monolingual"}
+      css={css`
+        display: flex;
+        height: 100%;
+        padding-left: 2px;
+        padding-top: 2px;
+        padding-right: 2px;
+        padding-bottom: 0;
+        ${props.showAffordancesAfter &&
+        props.field.definition.separatorWithCommaInstructions
+          ? "padding-right: 2px;" // leave a little space after the icon
+          : ""};
+      `}
     >
-      {!props.hideLabel && (
-        <FieldLabel
-          htmlFor={fieldId}
-          fieldDef={props.field.definition}
-          omitInfoAffordances={props.showAffordancesAfter}
-        />
+      {props.axis && (
+        <span
+          css={css`
+            width: 2em; // it's important to nail down the width so that the following text blocks are aligned
+            color: #81c21e; // todo use theme with colors to match the form
+          `}
+        >
+          {props.axis.label}
+        </span>
       )}
-      <div
+
+      <Tooltip
+        content={validationMessage || ""}
+        isOpen={!!validationMessage}
+        direction="down"
+        background="red"
+        color="white"
         css={css`
-          display: flex;
-          flex-direction: column;
-          padding: 2px;
-          ${props.showAffordancesAfter &&
-          props.field.definition.separatorWithCommaInstructions
-            ? "padding-right: 2px;"
-            : ""};
+          width: 100%; // this for the div that this unfortunately wraps the textarea with
+          height: 100%;
         `}
       >
         <div
-          id={fieldId}
+          id={props.field.key}
           ref={contentRef}
           tabIndex={props.tabIndex}
+          autoFocus={props.autoFocus}
+          className={validationMessage ? "invalid" : ""}
           contentEditable
           suppressContentEditableWarning
           role="textbox"
           aria-multiline={
             props.field.definition.multipleLines ? "true" : "false"
           }
-          data-testid={`field-${props.field.definition.key}-edit`}
           onFocus={beginEditing}
-          onInput={(e) => {
-            const el = e.currentTarget as HTMLDivElement;
-            const plain = el.innerText; // keep as user types
-            props.field.setValueFromString(plain);
-          }}
+          onInput={(event) => onChange(event, props.field)}
           onKeyDown={(event) => {
-            if (
-              !props.field.definition.multipleLines &&
-              event.key === "Enter"
-            ) {
+            if (!props.field.definition.multipleLines && event.keyCode === 13) {
               event.preventDefault();
               (event.currentTarget as HTMLDivElement).blur();
             }
           }}
           onBlur={finishEditing}
           css={css`
-            font: inherit;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            height: 100%;
+            min-height: 1.2em;
             outline: none;
+            /* white-space: ${props.field.definition.multipleLines
+              ? "pre-wrap"
+              : "nowrap"};
+            /* overflow: ${props.field.definition.multipleLines
+              ? "auto"
+              : "hidden"}; */
+            font: inherit;
+            word-wrap: break-word;
             width: 100%;
-            min-height: 2.2em;
             padding: 2px;
             box-sizing: border-box;
             background: white;
             border: none;
+            display: block;
+            cursor: text;
           `}
         />
-        {validationMessage && (
-          <div
-            css={css`
-              color: #b00020;
-              font-size: 0.8em;
-              margin-top: 2px;
-            `}
-            data-testid="validation-message"
-          >
-            {validationMessage}
-          </div>
-        )}
-      </div>
+      </Tooltip>
     </div>
   );
 });
