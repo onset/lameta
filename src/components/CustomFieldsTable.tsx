@@ -181,6 +181,7 @@ class CustomFieldsTable extends React.Component<IProps> {
           return (
             <TextFieldEdit
               hideLabel={true}
+              borderless={true}
               className={field.cssClass}
               key={field.key}
               field={field as Field}

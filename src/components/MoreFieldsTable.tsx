@@ -59,6 +59,7 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
           return (
             <TextFieldEdit
               hideLabel={true}
+              borderless={true}
               className={field.cssClass}
               key={field.key}
               field={field as Field}

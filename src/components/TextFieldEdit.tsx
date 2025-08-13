@@ -18,6 +18,8 @@ export interface IProps {
   validate?: (value: string) => string | undefined;
   tooltip?: string;
   showAffordancesAfter?: boolean;
+  // When true, omit the default border around the editable container
+  borderless?: boolean;
   //LanguageAxes?: LanguageAxis[];
 }
 
@@ -60,7 +62,7 @@ export const TextFieldEdit: React.FunctionComponent<
         <div
           css={css`
             background-color: white;
-            border: 1px solid black;
+            border: ${props.borderless ? "none" : "1px solid black"};
             height: -webkit-fill-available;
           `}
         >
