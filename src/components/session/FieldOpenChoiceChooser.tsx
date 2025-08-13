@@ -63,6 +63,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
     <div className={"field " + props.className} data-testid="genre-chooser">
       <label>{label}</label>
       <CreatableSelect
+        className="field-value-border"
         tabIndex={props.tabIndex ? props.tabIndex : undefined}
         //classNamePrefix="rs" // causes react-select to show you the parts of the control for styling, e.g. "rs-input"
         value={currentOption}
@@ -73,11 +74,12 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
             ...provided,
             minHeight: "2em",
             height: "2em",
-            borderStyle: "inset",
-            borderRadius: 0,
-            borderColor: "rgb(169, 169, 169)",
-            boxShadow: state.isFocused ? "0 0 0 1px " + lameta_orange : "unset",
-            "&:hover": { borderColor: lameta_orange }
+            border: "none",
+            boxShadow: "none",
+            "&:hover": {
+              border: "none"
+            },
+            borderRadius: 0
           }),
           menu: (provided) => ({
             ...provided,

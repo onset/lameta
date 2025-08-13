@@ -57,17 +57,22 @@ export const TextFieldEdit: React.FunctionComponent<
       <div
         css={css`
           flex-grow: 1;
+
+          overflow-y: ${props.field.definition.multipleLines
+            ? "scroll"
+            : "hidden"};
         `}
       >
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
         <div
+          className="field-value-border"
           css={css`
             background-color: white;
-            border: ${props.borderless ? "none" : "1px solid black"};
-            height: -webkit-fill-available;
-            ${props.field.definition.multilingual
+            border: ${props.borderless ? "none !important" : ""};
+            ${props.field.definition.multipleLines
               ? "min-height: 4em; display: flex; flex-direction: column;"
-              : ""}
+              : // improve: the height part here is a hack
+                "max-height: 24px; overflow: hidden;"}
           `}
         >
           {props.field.definition.multilingual ? (
@@ -246,7 +251,6 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         content={validationMessage || ""}
         isOpen={!!validationMessage}
         direction="down"
-        background="red"
         color="white"
         css={css`
           width: 100%; // this for the div that this unfortunately wraps the textarea with
@@ -303,6 +307,9 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             border: none;
             display: block;
             cursor: text;
+            height: ${props.field.definition.multipleLines
+              ? "-webkit-fill-available"
+              : "auto"};
           `}
         />
       </Tooltip>

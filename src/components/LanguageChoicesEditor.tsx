@@ -9,6 +9,7 @@ import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
 import { SearchContext } from "./SearchContext";
 import { observer } from "mobx-react";
+import { he } from "date-fns/locale";
 
 const saymore_orange = "#e69664";
 
@@ -26,13 +27,20 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     control: (styles, state) => ({
       ...styles,
       height: "100%",
-      borderStyle: "inset",
+      border: "none",
+      boxShadow: "none",
+      "&:hover": {
+        border: "none"
+      },
       borderRadius: 0,
-      borderColor: "rgb(169, 169, 169)",
-      boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange }
+      minHeight: "auto"
     }),
-    // valueContainer: (styles) => ({ ...styles }),
+    valueContainer: (styles) => ({
+      ...styles,
+      paddingLeft: "2px",
+      paddingTop: "0",
+      paddingBottom: "0"
+    }),
     // container: (styles) => ({
     //   ...styles,
     // }),
@@ -113,7 +121,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
       DropdownIndicator: null
     },
-    className: "select flex-grow",
+    className: "select flex-grow field-value-border",
     placeholder: "",
     isClearable: false, // don't need the extra "x"
     loadOptions: _.debounce(loadMatchingOptions, 100),

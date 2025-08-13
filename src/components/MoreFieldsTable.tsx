@@ -78,7 +78,7 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
         <Trans>More Fields</Trans>
       </label>
       <ReactTable
-        className="moreFieldsTable"
+        className="moreFieldsTable field-value-border"
         noDataText=""
         showPagination={false}
         data={fieldsForRows}

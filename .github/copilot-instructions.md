@@ -9,7 +9,7 @@ This project uses yarn 1.22.22
 Never use npm commands
 This project uses a bash terminal, so always use forward slashes in paths.
 Use `yarn test` in a terminal to run unit tests. The "run_tests" tool often hangs.
-Use `yarn e2e` in a terminal to run UI tests. Run these when you have done something that is obviously in the UI. You can run a particular file with `yarn e2e <file-name>`. Pause 3 seconds after changing the core app code before launching e2e test so that the build can finish.
+Use `yarn e2e` in a terminal to run UI tests. Run these when you have done something that is obviously in the UI. You can run a particular file with `yarn e2e <file-name>`. Sleep 20 seconds after changing the core app code before launching e2e test so that the build can finish.
 If you make a change and e2e does not seem to reflect the change, try a console.log statement as a sanity check. If e2ebuildwatch is running, it should pick up the changes, but if it is not, you may need to run it or do a `yarn build`.
 
 E2E verbosity:

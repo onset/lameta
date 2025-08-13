@@ -29,7 +29,7 @@ DateFieldEdit extends React.Component<
         <div style={{ display: "grid" }}>
           <DatePicker
             tabIndex={this.props.tabIndex}
-            className="date-picker"
+            className="date-picker field-value-border"
             dateFormat="yyyy-MM-dd"
             selected={m?.toDate()}
             //onChange={d => console.log("change " + d)}

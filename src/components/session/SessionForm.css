@@ -37,6 +37,9 @@
     grid-row: span 3;
     align-self: start;
     height: -webkit-fill-available;
+    /* this is a hack to make the bottom align with the other fields.
+      I haven't been able to figure out where their *apparent* padding comes from */
+    padding-bottom: 4px;
   }
   .genre {
     order: 6;
@@ -76,10 +79,6 @@
   .workingLanguages .select {
     font-size: 13px;
     line-height: 20px;
-  }
-  .languages .select [class*="control"],
-  .workingLanguages .select [class*="control"] {
-    min-height: 32px;
   }
 
   .moreFieldsBlock {

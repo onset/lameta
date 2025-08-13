@@ -226,8 +226,6 @@ button {
 }
 
 form .ReactTable {
-  border-style: inset;
-  border-color: rgb(169, 169, 169);
   .rt-td {
     padding-top: 0;
     padding-bottom: 0;
@@ -240,7 +238,6 @@ form .ReactTable {
 
 .Select--multi .Select-value {
   background-color: unset;
-  margin-top: 2px;
   color: var(--session--color);
   border-color: var(--session--color);
 }
@@ -307,4 +304,9 @@ input {
 
 .flex-grow {
   flex-grow: 1;
+}
+
+.field-value-border {
+  border: 1px solid var(--pane__border--color);
+  border-radius: 0 !important;
 }

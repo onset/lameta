@@ -60,6 +60,7 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
       <FieldLabel fieldDef={props.field.definition} />
       <ReactSelectClass
         id="access-chooser" // for playwright
+        className="field-value-border"
         tabIndex={props.tabIndex ? props.tabIndex : undefined}
         value={currentOption}
         placeholder=""
@@ -84,11 +85,12 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
             ...styles,
             minHeight: "2em",
             height: "2em",
-            borderStyle: "inset",
-            borderRadius: 0,
-            borderColor: "rgb(169, 169, 169)",
-            boxShadow: state.isFocused ? "0 0 0 1px " + lameta_orange : "unset",
-            "&:hover": { borderColor: lameta_orange }
+            border: "none",
+            boxShadow: "none",
+            "&:hover": {
+              border: "none"
+            },
+            borderRadius: 0
           }),
           menu: (provided) => ({
             ...provided,
@@ -96,8 +98,8 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
             marginBottom: "0"
           }),
           container: (provided) => ({
-            ...provided,
-            marginTop: "2px"
+            ...provided
+            //marginTop: "2px"
           }),
           valueContainer: (provided) => ({
             ...provided,

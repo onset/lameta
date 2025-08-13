@@ -261,7 +261,7 @@ form .ReactTable {
 }
 .Select--multi .Select-value {
   background-color: unset;
-  margin-top: 2px; // the default pushs it down too far
+  margin-top: 0; // the default pushs it down too far
   color: $session--color;
   border-color: $session--color;
 }

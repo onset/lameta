@@ -207,7 +207,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       <div className="customFieldsBlock">
         <FieldLabel fieldDef={customFieldsDef} />
         <ReactTable
-          className="customFieldsTable"
+          className="customFieldsTable field-value-border"
           noDataText=""
           minRows={1}
           showPagination={false}
