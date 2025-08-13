@@ -22,7 +22,7 @@ export const PeopleChooser: React.FunctionComponent<
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
-      borderStyle: "inset",
+      //borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",

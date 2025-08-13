@@ -165,7 +165,7 @@ button {
 }
 
 .Select .Select-control {
-  border-style: inset;
+  /*border-style: inset;*/
   border-radius: 0px;
 }
 

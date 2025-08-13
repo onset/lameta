@@ -78,14 +78,14 @@
     order: 5;
   }
   .howToContact {
-    order: 7;
-    textarea {
+    [contenteditable] {
+      height: 100%;
       overflow-y: auto;
-      height: auto;
     }
+    grid-column: 3 / 5;
   }
   .languageGroup {
-    border-bottom: solid 1px gray;
+    /* border-bottom: solid 1px gray; */
     margin-bottom: 3px;
   }
   .customFieldsBlock {
@@ -109,13 +109,12 @@
     grid-row: 8;
   }
   .description {
-    grid-row: span 2;
-    grid-column: 3 / 5;
     display: flex;
     flex-direction: column;
-    textarea {
+    min-height: 4em;
+    [contenteditable] {
       height: 100%;
-      overflow-y: scroll;
+      overflow-y: auto;
     }
   }
   .languageNotRecognized textarea {

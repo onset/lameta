@@ -33,7 +33,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
       paddingTop: "0px",
       paddingBottom: "0px",
       minHeight: "auto",
-      borderStyle: "inset",
+      //borderStyle: "inset",
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",

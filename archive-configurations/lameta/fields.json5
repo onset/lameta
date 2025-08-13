@@ -708,6 +708,7 @@
       key: "description",
       xmlTag: "Description",
       englishLabel: "Description",
+      multipleLines: true,
       description: "Relevant details such as where they learned the language(s)"
     },
     {

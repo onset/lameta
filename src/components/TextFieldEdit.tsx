@@ -70,7 +70,7 @@ export const TextFieldEdit: React.FunctionComponent<
             background-color: white;
             border: ${props.borderless ? "none !important" : ""};
             ${props.field.definition.multipleLines
-              ? "min-height: 4em; display: flex; flex-direction: column;"
+              ? "min-height: 4em; display: flex; flex-direction: column; height:100%"
               : // improve: the height part here is a hack
                 "max-height: 24px; overflow: hidden;"}
           `}

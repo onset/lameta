@@ -58,17 +58,6 @@ class PersonForm extends React.Component<IProps> {
             this.props.person.IdMightHaveChanged();
           }}
         />
-
-        {/* uncomment for testing that the parent buttons are working
-          <TextFieldEdit className={"language-name"} field={mother} />
-          <TextFieldEdit className={"language-name"} field={father} /> */}
-        <TextFieldEdit
-          className="education"
-          field={this.props.fields.getTextField("education")}
-        />
-        {/* </div> */}
-        {/* <div className={"second-column"}> */}
-        {/* <div className={"upper-right-cluster"}> */}
         <TextFieldEdit
           className={"birth"}
           field={this.props.fields.getTextField("birthYear")}
@@ -82,10 +71,18 @@ class PersonForm extends React.Component<IProps> {
           person={this.props.person}
           unused={this.props.person.displayName}
         />
-        {/* </div> */}
+
+        <TextFieldEdit
+          field={this.props.fields.getTextField("description")}
+          className="description multiline full-right-side"
+        />
         <TextFieldEdit
           className="howToContact multiline full-right-side"
           field={this.props.fields.getTextField("howToContact")}
+        />
+        <TextFieldEdit
+          className="education"
+          field={this.props.fields.getTextField("education")}
         />
         <TextFieldEdit
           field={this.props.fields.getTextField("ethnicGroup")}
@@ -95,12 +92,7 @@ class PersonForm extends React.Component<IProps> {
           field={this.props.fields.getTextField("primaryOccupation")}
           className="primaryOccupation"
         />
-        <TextFieldEdit
-          field={this.props.fields.getTextField("description")}
-          className="description"
-        />
         <CustomFieldsTable file={this.props.person.metadataFile!} />
-
         <PersonLanguageList
           person={this.props.person}
           languageFinder={this.props.languageFinder}

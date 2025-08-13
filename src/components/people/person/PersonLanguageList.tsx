@@ -57,7 +57,13 @@ const SortableItem = SortableElement(({ value }) => (
 ));
 const SortableList = SortableContainer(({ items }) => {
   return (
-    <div>
+    <div
+      css={css`
+        gap: 10px;
+        display: flex;
+        flex-direction: column;
+      `}
+    >
       {items.map((value, index) => (
         <SortableItem key={index} index={index} value={value} />
       ))}
