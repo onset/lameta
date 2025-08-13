@@ -1,0 +1,8 @@
+@import "../../colors.css";
+
+.createProjectDialog {
+  border: 3px solid var(--project--color);
+  .error {
+    color: var(--error-color);
+  }
+}

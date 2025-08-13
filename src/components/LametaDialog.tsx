@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import "./commonDialog.scss";
+import "./commonDialog.css";
 import * as React from "react";
 import { useState } from "react";
 import { t, Trans } from "@lingui/macro";

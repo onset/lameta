@@ -1,0 +1,23 @@
+@import "../../colors.css";
+
+.renameFileDialog {
+  z-index: 10000;
+  .dialogContent {
+    margin-left: 20px;
+    width: calc(1em * 30);
+    height: 150px;
+    h1 {
+      height: 2em;
+    }
+    .validationMessage {
+      color: var(--error-color);
+    }
+    .row {
+      margin-top: 1em;
+      display: flex;
+    }
+    input {
+      width: calc(1em * 27);
+    }
+  }
+}

@@ -5,7 +5,7 @@ import ReactTable from "react-table-6";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
-import "./ContributorsTable.scss";
+import "./ContributorsTable.css";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext } from "../SearchContext";

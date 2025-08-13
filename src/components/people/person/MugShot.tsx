@@ -4,7 +4,7 @@ import Dropzone from "react-dropzone";
 import * as fs from "fs-extra";
 import { MugshotPlaceholder } from "./MugshotPlaceholderIcon";
 import ImageField from "../../ImageField";
-import "../../common.scss";
+import "../../common.css";
 import React, { useState } from "react";
 
 export const MugShot: React.FunctionComponent<{

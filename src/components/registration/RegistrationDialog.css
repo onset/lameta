@@ -1,0 +1,11 @@
+@import "../../colors.css";
+
+.registrationDialog {
+  background-color: var(--session--color);
+  .dialogContent {
+    background-color: var(--session--color);
+  }
+  .markInvalidIfNotFocussed:not(:focus) {
+    border-color: red;
+  }
+}

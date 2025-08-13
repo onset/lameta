@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
 import { File } from "../../model/file/File";
-import "./PeopleTab.scss";
+import "./PeopleTab.css";
 import { t, Trans } from "@lingui/macro";
 import { i18n } from "../../other/localization";
 import ComponentTab from "../componentTab/ComponentTab";

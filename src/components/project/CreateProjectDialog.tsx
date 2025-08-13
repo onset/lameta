@@ -5,7 +5,7 @@ import * as React from "react";
 import fs from "fs";
 import * as Path from "path";
 const sanitize = require("sanitize-filename");
-import "./CreateProjectDialog.scss";
+import "./CreateProjectDialog.css";
 import { app } from "@electron/remote";
 import { t, Trans } from "@lingui/macro";
 import {

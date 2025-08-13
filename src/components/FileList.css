@@ -1,0 +1,67 @@
+@import "../colors.css";
+@import "./common.css";
+
+.fileList {
+  border: solid 1px var(--people__outline--color);
+  cursor: pointer;
+  background-color: white;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  img {
+    height: 16px;
+    width: auto;
+  }
+
+  .fileBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 7px;
+    min-height: calc(1em + 10px);
+    padding-top: 5px;
+    font-size: 1em;
+    li {
+      list-style: none;
+    }
+    .menu {
+      li {
+        display: none;
+      }
+    }
+    button {
+      background-color: inherit;
+      border-color: transparent;
+      border-width: 1px;
+      font-size: 1em;
+      font-weight: bold;
+      height: 21px;
+      margin: 0;
+      border: solid 2px white;
+      &:hover {
+        border-color: var(--people--color);
+        border: solid 2px var(--people--color);
+      }
+      &:disabled {
+        color: lightgray;
+        border: solid 2px white !important;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.copyPending {
+  color: var(--project--color);
+}
+.missing {
+  color: var(--error-color) !important;
+}
+.noMediaFolderConnection {
+  color: var(--project-color) !important;
+}

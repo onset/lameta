@@ -1,7 +1,7 @@
 import { render } from "react-dom";
 import { ipcRenderer } from "electron";
 import { app, process } from "@electron/remote";
-import "./app.global.scss";
+import "./app.global.css";
 import { App } from "./containers/App";
 import { initializeAnalytics, analyticsEvent } from "./other/analytics";
 import { initializeSentry as initializeErrorReporting } from "./other/errorHandling";

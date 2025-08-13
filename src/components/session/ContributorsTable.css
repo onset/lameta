@@ -1,0 +1,45 @@
+@import "../../colors.css";
+
+.contributors {
+  background-color: white;
+  .Select-control {
+    border: none !important;
+  }
+  .Select-arrow,
+  .Select-placeholder {
+    visibility: hidden;
+  }
+  .rt-td:hover .Select-arrow {
+    visibility: visible;
+  }
+  input {
+    border: none;
+    width: 100%;
+  }
+  textarea {
+    overflow: hidden;
+    height: auto;
+    border: none;
+  }
+  &.ReactTable {
+    .-odd {
+      background-color: var(--sessions__oddRowHighlight--color);
+    }
+    flex-grow: 1;
+    .rt-td {
+      overflow: visible !important;
+    }
+    .rt-tr-group {
+      flex-grow: 0;
+    }
+    input,
+    textarea,
+    .Select-control {
+      background-color: transparent;
+    }
+  }
+  .deleteButton {
+    background: transparent;
+    border: none;
+  }
+}

@@ -1,0 +1,21 @@
+#statusRadioGroup {
+  margin: 1em;
+}
+#statusRadioGroup div {
+  margin-bottom: 1em;
+}
+#statusRadioGroup div img {
+  width: auto;
+  margin-right: 10px;
+  margin-bottom: -4px;
+}
+#statusRadioGroup div label {
+  display: inline-block;
+  font-weight: normal;
+}
+#statusRadioGroup div label input {
+  height: auto;
+}
+.win32 #statusRadioGroup img {
+  margin-bottom: -1px;
+}

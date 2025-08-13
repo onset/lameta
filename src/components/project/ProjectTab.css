@@ -1,0 +1,110 @@
+@import "../../colors.css";
+
+form.project {
+  max-width: 600px;
+}
+
+.project {
+  height: 100%;
+  color: black;
+  display: flex;
+  & > ul {
+    width: 200px;
+    padding: 10px;
+    list-style: none;
+    .react-tabs__tab {
+      border: none;
+      border-radius: initial;
+      width: 100%;
+    }
+  }
+  & > .react-tabs__tab-list {
+    background-color: white;
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .react-tabs__tab-panel--selected {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    .folderPane {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      .SplitPane {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: auto;
+      }
+    }
+  }
+
+  .primary {
+    display: block;
+  }
+
+  .primary,
+  .collection,
+  .fundingProject,
+  .languages,
+  .collectionLocation,
+  .accessProtocol {
+    .field {
+      display: flex;
+      height: initial;
+      margin-bottom: 20px;
+      &.field__newSection {
+        margin-top: 50px;
+      }
+      label {
+        text-align: right;
+        width: 150px;
+        margin-right: 1em;
+        margin-top: 4px;
+      }
+      textarea {
+        width: 400px;
+      }
+    }
+  }
+}
+
+.project .folderPane {
+  .selected {
+    background-color: var(--project__selected--color);
+    border-color: var(--project__outline--color);
+  }
+  .react-tabs__tab-panel {
+    padding-left: 1px;
+    padding-top: 0px;
+    padding-right: 0;
+  }
+  .project .react-tabs__tab-panel--selected {
+    border: solid yellow !important;
+    display: flex;
+    flex: 1;
+  }
+  .project .react-tabs__tab-panel {
+    border: solid red !important;
+    display: flex;
+    flex: 1;
+  }
+  .react-tabs__tab-list {
+    background-color: var(--project--color);
+  }
+}
+
+.project-documents .fileList {
+  min-height: 150px;
+}
+
+.project .react-tabs__tab-panel {
+  background-color: var(--project--color);
+  padding: 10px;
+  height: 100%;
+  .imdiView {
+    margin-top: -22px;
+  }
+}

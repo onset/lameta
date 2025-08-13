@@ -1,6 +1,6 @@
 import * as React from "react";
 import fs from "fs";
-import "./TextFileView.scss";
+import "./TextFileView.css";
 
 export interface IProps {
   path: string;

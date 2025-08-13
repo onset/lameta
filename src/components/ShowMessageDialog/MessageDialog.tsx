@@ -4,7 +4,7 @@ import { Trans } from "@lingui/macro";
 
 import * as React from "react";
 import ReactModal from "react-modal";
-import "./MessageDialog.scss";
+import "./MessageDialog.css";
 import CloseOnEscape from "react-close-on-escape";
 
 import {

@@ -19,7 +19,7 @@ import { Project } from "../model/Project/Project";
 import { ImdiView } from "./ImdiView";
 import { Contribution } from "../model/file/File";
 const electron = require("electron");
-import "./FolderPane.scss";
+import "./FolderPane.css";
 import { PersonContributions } from "./PersonContributions";
 import { Trans } from "@lingui/macro";
 import SplitPane from "react-split-pane";

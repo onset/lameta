@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Trans } from "@lingui/macro";
 import ReactModal from "react-modal";
-import "./LanguagePickerDialog.scss";
+import "./LanguagePickerDialog.css";
 import CloseOnEscape from "react-close-on-escape";
 import Autosuggest from "react-autosuggest";
 import { Field } from "../../model/field/Field";

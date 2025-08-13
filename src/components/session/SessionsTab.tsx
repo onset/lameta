@@ -3,7 +3,7 @@ import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
-import "./SessionsTab.scss";
+import "./SessionsTab.css";
 import ComponentTab from "../componentTab/ComponentTab";
 
 interface IProps {

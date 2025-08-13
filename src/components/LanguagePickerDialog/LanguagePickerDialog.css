@@ -1,0 +1,20 @@
+@import "../commonDialog.css";
+
+.languagePickerDialog {
+  .dialogContent {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: grid !important;
+    grid-template-columns: 100px 1fr;
+    grid-gap: 10px;
+    label {
+      text-align: right;
+    }
+    .codeEntry {
+      width: 70px;
+    }
+    .name {
+      width: 300px;
+    }
+  }
+}

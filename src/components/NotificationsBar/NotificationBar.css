@@ -1,0 +1,8 @@
+@import "../../colors.css";
+
+.notification-bar {
+  background-color: var(--pane__interstitial--color);
+  &.open {
+    display: block;
+  }
+}

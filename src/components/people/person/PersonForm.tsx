@@ -7,7 +7,7 @@ import { FieldSet } from "../../../model/field/FieldSet";
 import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import ClosedChoiceEdit from "../../ClosedChoiceEdit";
 import { MugShot } from "./MugShot";
-import "./PersonForm.scss";
+import "./PersonForm.css";
 import CustomFieldsTable from "../../CustomFieldsTable";
 import { OtherLanguageEdit } from "./OtherLanguageEdit";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";

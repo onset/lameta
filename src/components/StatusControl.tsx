@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { RadioGroup, Radio } from "react-radio-group";
-import "./StatusControl.scss";
+import "./StatusControl.css";
 import { translateChoice } from "../other/localization";
 
 export interface IProps {

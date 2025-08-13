@@ -1,0 +1,25 @@
+/* used by (at least) AutoForm, Notes, PersonForm */
+
+form {
+  height: 100%;
+  background-color: transparent;
+  overflow: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  .fill-form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    textarea {
+      flex-grow: 1;
+    }
+  }
+  label {
+    flex-shrink: 0;
+  }
+}

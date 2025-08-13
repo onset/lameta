@@ -10,7 +10,7 @@ import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
 import { ImdiView } from "../ImdiView";
-import "./ProjectTab.scss";
+import "./ProjectTab.css";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
 import { useState } from "react";

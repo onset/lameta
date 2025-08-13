@@ -17,7 +17,7 @@ import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
 
-import "./StartScreen.scss";
+import "./StartScreen.css";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
 import { t, Trans } from "@lingui/macro";

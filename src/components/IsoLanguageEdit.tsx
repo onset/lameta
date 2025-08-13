@@ -3,7 +3,7 @@ import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import LanguagePickerDialog from "./LanguagePickerDialog/LanguagePickerDialog";
-import "./IsoLanguageEdit.scss";
+import "./IsoLanguageEdit.css";
 
 export interface IProps {
   field: Field;

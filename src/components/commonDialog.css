@@ -1,0 +1,82 @@
+/* NB: the background overlay cannot be set from a stylesheet: It is set in app.tsx */
+
+.ReactModalPortal {
+  z-index: 1000;
+}
+
+.ReactModal__Content {
+  z-index: 1000;
+  position: absolute;
+  border: none;
+  background: white;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  flex-direction: row;
+  width: fit-content;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  bottom: auto;
+  top: 50%;
+  padding: 20px;
+  overflow: hidden;
+
+  .dialogTitle {
+    font-weight: bold;
+    font-size: 20pt;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dialogContent {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    input {
+      vertical-align: text-top;
+      margin-left: unset;
+    }
+    h1 {
+      font-size: 1em;
+      height: 1em;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+  .bottomButtonRow {
+    align-self: flex-end;
+    float: right;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    button {
+      width: auto;
+      min-width: 100px;
+      margin-left: 10px;
+    }
+    button:disabled {
+      color: gray;
+      border-color: lightgray;
+      border-style: solid;
+      border-width: 1px;
+    }
+  }
+  .reverseOrderOnMac {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+body.win32 .reverseOrderOnMac {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+body:not(.win32) .reverseOrderOnMac {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}

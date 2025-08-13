@@ -5,7 +5,7 @@ import { File } from "../model/file/File";
 import Dropzone from "react-dropzone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
-import "./FileList.scss";
+import "./FileList.css";
 import { revealInFolder } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
@@ -125,7 +125,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return getLinkStatusIconPath(f);
       },
-  Cell: (p) => (p.value ? <img src={p.value} /> : null)
+      Cell: (p) => (p.value ? <img src={p.value} /> : null)
     },
     {
       id: "type",

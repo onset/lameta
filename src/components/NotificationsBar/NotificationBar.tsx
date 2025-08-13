@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./NotificationBar.scss";
+import "./NotificationBar.css";
 
 export interface IState {
   open: boolean;

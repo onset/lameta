@@ -1,0 +1,310 @@
+@import "font-awesome/css/font-awesome.css";
+@import "react-table-6/react-table.css";
+@import "react-tabs/style/react-tabs.css";
+@import "./colors.css";
+
+/* Variables */
+:root {
+  /* this supposed to be mapped to whatever the "system font" is, but on my win10, it doesn't choose segoe ui */
+  --default-fonts: caption;
+  /* note, we can't control the electron default font size as easily as the container, so we use em instead of rem */
+  --default-font-size: 1em;
+
+  /* Override with a specific stack */
+  --default-fonts: "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu",
+    "Open Sans", sans-serif;
+  --color-interstitial: #f0f0f0;
+  --field-height: 2em;
+  --label-to-field-sep: 3px;
+}
+
+.tab-project.react-tabs__tab--selected {
+  background-color: var(--project--color);
+}
+.tab-sessions.react-tabs__tab--selected {
+  background-color: var(--session--color);
+}
+.tab-people.react-tabs__tab--selected {
+  background-color: var(--people--color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+html,
+#root,
+#app {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-interstitial);
+  color: black; /* blueprint messes with this */
+  font-family: var(--default-fonts);
+}
+
+a {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--link--color);
+  &:visited {
+    color: var(--link--color); /* don't change after they've clicked it once */
+  }
+}
+
+.field textarea,
+input {
+  padding-left: 5px;
+}
+
+label {
+  user-select: none;
+  display: block;
+  /* font-size: var(--default-font-size); */
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.hint {
+  font-size: 0.6em;
+  float: right;
+  color: grey;
+  font-weight: normal;
+}
+
+.moreFieldsBlock label + div,
+.field label + div,
+textarea .languages label + div,
+label + .select {
+  margin-top: var(--label-to-field-sep);
+}
+
+li {
+  cursor: default;
+}
+
+.multiline textarea {
+  height: 6em;
+}
+
+body,
+input,
+select,
+button,
+.Select--multi .Select-value {
+  font-size: var(--default-font-size);
+  font-family: var(--default-fonts);
+}
+
+input,
+select,
+.Select--multi .Select-value {
+  margin-left: -3px;
+}
+
+.autoForm {
+  a {
+    margin-top: 3px;
+  }
+}
+
+textarea {
+  resize: none;
+  height: var(--field-height);
+  width: 100%;
+  font-size: var(--default-font-size);
+  font-family: var(--default-fonts);
+  border: none;
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+  }
+  &.invalid {
+    border: 2px solid red;
+  }
+}
+
+.rt-noData {
+  display: none !important;
+}
+
+.rt-tbody {
+  cursor: pointer;
+}
+
+.rt-td {
+  textarea {
+    border: none;
+    &.invalid {
+      border: solid 2px red;
+    }
+  }
+  select {
+    border: none;
+    width: 100%;
+  }
+}
+
+button {
+  font-family: var(--default-fonts);
+  user-select: none;
+}
+
+.react-tabs {
+  height: 100%;
+  background-color: white;
+}
+
+.fileDetails {
+  background-color: var(--pane__interstitial--color);
+  border: solid thin var(--pane__border--color);
+}
+
+.paneTitle {
+  display: none;
+}
+
+.Select .Select-control {
+  border-style: inset;
+  border-radius: 0px;
+}
+
+.Select-value-label {
+  color: black !important;
+}
+
+.react-tabs__tab:hover,
+.react-tabs__tab--selected {
+  font-weight: bold;
+}
+
+.Resizer.horizontal {
+  height: 11px;
+  cursor: row-resize;
+  width: 100%;
+}
+
+.Resizer.vertical {
+  width: 10px;
+  cursor: col-resize;
+}
+
+.Resizer:hover {
+  background-color: gray;
+}
+
+.Resizer {
+  flex-shrink: 0;
+  opacity: 0.4;
+  z-index: 1;
+  box-sizing: border-box;
+  background-clip: padding-box;
+}
+
+.SplitPane {
+  position: relative !important;
+  .Pane {
+    display: flex;
+    overflow: hidden;
+  }
+}
+
+.not-implemented {
+  color: lightgray;
+}
+
+.ReactTable {
+  background-color: white;
+  .rt-table {
+    overflow-x: hidden;
+  }
+}
+
+.ReactTable .rt-thead.-header {
+  box-shadow: none;
+  border-bottom: solid thin rgba(0, 0, 0, 0.5);
+}
+
+form .ReactTable {
+  border-style: inset;
+  border-color: rgb(169, 169, 169);
+  .rt-td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.Select--multi .Select-value-icon {
+  border-right: none;
+}
+
+.Select--multi .Select-value {
+  background-color: unset;
+  margin-top: 2px;
+  color: var(--session--color);
+  border-color: var(--session--color);
+}
+
+.todo {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3em;
+}
+
+.date-picker {
+  height: var(--field-height);
+}
+
+.rt-td .react-datepicker-wrapper {
+  width: 100%;
+  .react-datepicker__input-container {
+    width: 100%;
+    .input {
+      width: 100%;
+    }
+  }
+}
+
+form {
+  padding-right: 10px;
+}
+
+input {
+  border-style: inset;
+  border-color: rgb(169, 169, 169);
+  border-width: 1px;
+}
+
+.omitFromImdi {
+  color: #6d6d6d;
+}
+
+.react-tooltip-lite {
+  max-width: 300px !important;
+  border-radius: 8px;
+}
+
+.toast-crunch {
+  min-width: 500px !important;
+}
+
+.bt-toast {
+  .title,
+  .content {
+    font-size: 12pt;
+    line-height: 1.2em;
+    padding-right: 30px;
+  }
+}
+
+.folder-bottom-pane {
+  width: 100%;
+}
+
+.field-label {
+  justify-content: space-between;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}

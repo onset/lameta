@@ -1,0 +1,36 @@
+/* .mask {
+  display: none;
+} */
+.mask.onlyIfInDropZone {
+  display: none;
+}
+.drop-active {
+  .onlyIfInDropZone {
+    display: flex;
+  }
+}
+.mask {
+  text-align: center;
+  font-size: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  z-index: 5000;
+  background-color: rgba(256, 256, 256, 0.8);
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  &:before {
+    content: "foo";
+    color: transparent;
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+    border: 4px dashed lightgray;
+  }
+}

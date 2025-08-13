@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
 import * as isEmail from "isemail";
 import userSettings from "../../other/UserSettings";
-import "./RegistrationDialog.scss";
+import "./RegistrationDialog.css";
 import { SMRadioGroup, SMRadio } from "../SMRadio";
 import { analyticsLocation, initializeAnalytics } from "../../other/analytics";
 

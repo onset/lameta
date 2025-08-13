@@ -1,0 +1,153 @@
+@import "../../../colors.css";
+
+.personForm {
+  display: grid;
+  height: 1px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: min-content;
+  grid-gap: 10px 20px;
+  .full-right-side {
+    grid-column: 3 / 5;
+  }
+  .full-name {
+    grid-row: 1;
+  }
+  .nickname-and-code {
+    grid-row: 2;
+  }
+  .primary-language {
+    grid-column: 1/3;
+  }
+  .primaryLanguageLearnedIn {
+    display: inline-flex;
+    align-items: baseline;
+    label {
+      margin-right: 5px;
+    }
+    textarea {
+      width: auto;
+      flex-grow: 1;
+    }
+  }
+  .left-side {
+    grid-column: 1/3;
+  }
+  .languages {
+    grid-row: 3;
+    grid-column: 1/3;
+  }
+  .other-languages {
+    grid-column: 1/3;
+  }
+  .birth {
+    grid-row: 1;
+    grid-column: 3;
+    > .field-label {
+      justify-content: left;
+    }
+    textarea {
+      width: 7em;
+      display: block;
+    }
+  }
+  .birth,
+  .gender {
+    select {
+      width: 100%;
+      height: 2em;
+    }
+  }
+  .nickname {
+    grid-column: 1;
+  }
+  .code {
+    grid-column: 2;
+  }
+  .mugshot {
+    grid-row: 1 / 3;
+    grid-column: 4;
+    img {
+      width: auto;
+      height: 97px;
+      float: right;
+    }
+  }
+  .gender {
+    grid-row: 2;
+    grid-column: 3;
+    order: 5;
+  }
+  .howToContact {
+    order: 7;
+    textarea {
+      overflow-y: auto;
+      height: auto;
+    }
+  }
+  .languageGroup {
+    border-bottom: solid 1px gray;
+    margin-bottom: 3px;
+  }
+  .customFieldsBlock {
+    grid-column: 1 / 3;
+    grid-row: span 5;
+    order: 8;
+  }
+  .education {
+    grid-column: 3 / 5;
+    order: 10;
+    grid-row: 6;
+  }
+  .ethnicGroup {
+    grid-column: 3 / 5;
+    order: 11;
+    grid-row: 7;
+  }
+  .primaryOccupation {
+    grid-column: 3 / 5;
+    order: 12;
+    grid-row: 8;
+  }
+  .description {
+    grid-row: span 2;
+    grid-column: 3 / 5;
+    display: flex;
+    flex-direction: column;
+    textarea {
+      height: 100%;
+      overflow-y: scroll;
+    }
+  }
+  .languageNotRecognized textarea {
+    color: red;
+  }
+}
+
+.language {
+  margin-top: 0;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  .field {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .language-name {
+    width: 100px;
+    flex-grow: 1;
+    margin-right: 8px;
+    textarea {
+      width: 100%;
+    }
+  }
+  .state {
+    border: none;
+    background-color: transparent;
+    &:focus {
+      outline: none;
+    }
+    &:hover {
+      border: solid thin blue;
+    }
+  }
+}

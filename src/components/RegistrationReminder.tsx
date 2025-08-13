@@ -1,6 +1,6 @@
 import * as React from "react";
 import userSettings from "../other/UserSettings";
-import "./RegistrationReminder.scss";
+import "./RegistrationReminder.css";
 import RegistrationDialog from "./registration/RegistrationDialog";
 import { t, Trans } from "@lingui/macro";
 import { observer } from "mobx-react";

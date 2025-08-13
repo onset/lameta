@@ -1,0 +1,27 @@
+@import "../../colors.css";
+
+.people {
+  background-color: var(--people--color);
+  .react-tabs__tab-list {
+    background-color: var(--people--color);
+  }
+  .react-tabs {
+    background-color: var(--people--color);
+  }
+  .not-implemented {
+    color: var(--people__disabled--color);
+  }
+  .selected {
+    background-color: var(--people__selected--color);
+    border-color: var(--people__outline--color);
+  }
+  .folderList {
+    border: solid 1px var(--people__outline--color);
+    cursor: pointer;
+  }
+  .fileList {
+    button:disabled {
+      color: var(--people__disabled--color) !important;
+    }
+  }
+}

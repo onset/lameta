@@ -87,7 +87,10 @@ export const TextFieldEdit: React.FunctionComponent<
 
 const SingleLanguageTextFieldEdit: React.FunctionComponent<
   IProps &
-    React.HTMLAttributes<HTMLDivElement> & { axis?: LanguageAxis; editorId?: string }
+    React.HTMLAttributes<HTMLDivElement> & {
+      axis?: LanguageAxis;
+      editorId?: string;
+    }
 > = mobx.observer((props) => {
   const [validationMessage, setValidationMessage] = useState<string>();
   const { searchTerm } = useContext(SearchContext);
@@ -256,7 +259,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           onFocus={beginEditing}
           onInput={(event) => onChange(event, props.field)}
           onKeyDown={(event) => {
-            if (!props.field.definition.multipleLines && event.key === "Enter") {
+            if (
+              !props.field.definition.multipleLines &&
+              event.key === "Enter"
+            ) {
               event.preventDefault();
               (event.currentTarget as HTMLDivElement).blur();
             }

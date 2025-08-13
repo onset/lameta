@@ -4,7 +4,7 @@ import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
-import "./ComponentTab.scss";
+import "./ComponentTab.css";
 
 import SplitPane from "react-split-pane";
 import FolderList from "../FolderList";

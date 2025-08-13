@@ -7,7 +7,7 @@ import Alert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useState } from "react";
 import { observer } from "mobx-react";
-import "./ExportDialog.scss";
+import "./ExportDialog.css";
 import { ProjectHolder } from "../../model/Project/Project";
 import { revealInFolder } from "../../other/crossPlatformUtilities";
 import * as remote from "@electron/remote";

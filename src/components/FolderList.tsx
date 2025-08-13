@@ -8,7 +8,7 @@ import { Folder } from "../model/Folder/Folder";
 import { FolderGroup } from "src/model/Folder/FolderGroup";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
-import "./FolderList.scss";
+import "./FolderList.css";
 
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";

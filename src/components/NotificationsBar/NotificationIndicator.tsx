@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./NotificationBar.scss";
+import "./NotificationBar.css";
 
 // tslint:disable-next-line:no-empty-interface
 export interface IState {}
