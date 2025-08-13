@@ -31,10 +31,11 @@ export const TextFieldEdit: React.FunctionComponent<
       (Math.random().toString(36) + "00000000000000000").slice(2, 7)
   );
 
+  // TODO: we need a way to define what languages to use in these fields (e.g. Description). The Project's working Language doesn't seem quit right.
   const testAxes: LanguageAxis[] = [
-    { tag: "en", label: "eng", name: "English" },
-    { tag: "es", label: "esp", name: "Español" }
+    { tag: "en", label: "eng", name: "English" }
   ];
+
   return (
     <div
       className={

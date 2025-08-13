@@ -48,7 +48,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         },
         div: {
           paddingLeft: 0,
-          fontSize: "1rem" //should match $default-font-size: 13px;
+          fontSize: 13 // match app default ~13px
         },
 
         ":hover": {
