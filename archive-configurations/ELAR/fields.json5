@@ -12,6 +12,11 @@
       description: "This is usually the same person as the Collection Steward."
     }
   ],
-  session: [],
+  session: [
+    {
+      key: "description",
+      multilingual: true
+    }
+  ],
   people: []
 }

@@ -64,6 +64,9 @@ export const TextFieldEdit: React.FunctionComponent<
             background-color: white;
             border: ${props.borderless ? "none" : "1px solid black"};
             height: -webkit-fill-available;
+            ${props.field.definition.multilingual
+              ? "min-height: 4em; display: flex; flex-direction: column;"
+              : ""}
           `}
         >
           {props.field.definition.multilingual ? (
@@ -157,6 +160,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     validateValue(value);
   }
 
+  //
   function finishEditing(event: React.FocusEvent<HTMLDivElement>) {
     const el = event.currentTarget;
     // Preserve leading spaces the user intentionally adds; only trim trailing newline noise.
@@ -213,7 +217,9 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       key={props.axis?.tag || "monolingual"}
       css={css`
         display: flex;
-        height: 100%;
+        height: ${props.axis ? "auto" : "100%"};
+        min-height: ${props.axis ? "2em" : "1.2em"};
+        flex: ${props.axis ? "1" : "none"};
         padding-left: 2px;
         padding-top: 2px;
         padding-right: 2px;

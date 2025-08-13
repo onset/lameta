@@ -25,7 +25,7 @@
   }
   .description {
     order: 5;
-    grid-row: span 2;
+    grid-row: span 3;
     grid-column: 3 / 5;
   }
   .genre {
@@ -83,7 +83,8 @@
   .description {
     display: flex;
     flex-direction: column;
-    textarea {
+    min-height: 4em;
+    [contenteditable] {
       height: 100%;
       overflow-y: auto;
     }
