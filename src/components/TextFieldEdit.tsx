@@ -66,12 +66,18 @@ export const TextFieldEdit: React.FunctionComponent<
         >
           {props.field.definition.multilingual ? (
             testAxes.map((axis) => (
-              <>
-                <SingleLanguageTextFieldEdit {...props} axis={axis} />
-              </>
+              <SingleLanguageTextFieldEdit
+                key={axis.tag}
+                {...props}
+                axis={axis}
+              />
             ))
           ) : (
-            <SingleLanguageTextFieldEdit {...props} axis={undefined} />
+            <SingleLanguageTextFieldEdit
+              {...props}
+              axis={undefined}
+              editorId={fieldId}
+            />
           )}
         </div>
       </div>
@@ -80,11 +86,12 @@ export const TextFieldEdit: React.FunctionComponent<
 });
 
 const SingleLanguageTextFieldEdit: React.FunctionComponent<
-  IProps & React.HTMLAttributes<HTMLDivElement> & { axis?: LanguageAxis }
+  IProps &
+    React.HTMLAttributes<HTMLDivElement> & { axis?: LanguageAxis; editorId?: string }
 > = mobx.observer((props) => {
   const [validationMessage, setValidationMessage] = useState<string>();
   const { searchTerm } = useContext(SearchContext);
-  const [previous, setPrevious] = useState(props.field.text);
+  const [previous, setPrevious] = useState<string>(() => getValue(props.field));
   const [editing, setEditing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -166,7 +173,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     if (!validateValue(newValue)) {
       // revert
       if (props.axis === undefined) {
-        props.field.text = previous;
+        props.field.setValueFromString(previous);
       } else {
         props.field.setTextAxis(props.axis.tag, previous);
       }
@@ -177,7 +184,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
 
     if (props.attemptFileChanges && !props.attemptFileChanges()) {
       if (props.axis === undefined) {
-        props.field.text = previous;
+        props.field.setValueFromString(previous);
       } else {
         props.field.setTextAxis(props.axis.tag, previous);
       }
@@ -235,7 +242,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         `}
       >
         <div
-          id={props.field.key}
+          id={props.editorId ?? props.field.key}
           ref={contentRef}
           tabIndex={props.tabIndex}
           autoFocus={props.autoFocus}
@@ -249,10 +256,17 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           onFocus={beginEditing}
           onInput={(event) => onChange(event, props.field)}
           onKeyDown={(event) => {
-            if (!props.field.definition.multipleLines && event.keyCode === 13) {
+            if (!props.field.definition.multipleLines && event.key === "Enter") {
               event.preventDefault();
               (event.currentTarget as HTMLDivElement).blur();
             }
+          }}
+          onPaste={(event) => {
+            // Force plain-text paste into contentEditable
+            event.preventDefault();
+            const text = event.clipboardData?.getData("text/plain") || "";
+            // execCommand is deprecated but still the simplest cross-browser way in contentEditable
+            document.execCommand("insertText", false, text);
           }}
           onBlur={finishEditing}
           css={css`
