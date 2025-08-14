@@ -83,8 +83,18 @@ li {
   cursor: default;
 }
 
-.multiline textarea {
-  height: 6em;
+.multiline {
+  display: flex;
+  flex-direction: column;
+  min-height: 4em;
+  [contenteditable] {
+    height: 100%;
+    overflow-y: auto;
+  }
+  display: flex;
+  flex-direction: column;
+  max-height: 20em;
+  overflow: hidden;
 }
 
 body,

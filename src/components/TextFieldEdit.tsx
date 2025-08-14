@@ -57,10 +57,8 @@ export const TextFieldEdit: React.FunctionComponent<
       <div
         css={css`
           flex-grow: 1;
-
-          overflow-y: ${props.field.definition.multipleLines
-            ? "scroll"
-            : "hidden"};
+          // we have one or more children that will scroll as needed
+          overflow-y: hidden;
         `}
       >
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
