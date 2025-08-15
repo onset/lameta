@@ -16,7 +16,6 @@ interface IndexedFolder {
 export class FolderSearchTermsIndex {
   private group?: FolderGroup;
   private index?: Fuse<IndexedFolder>;
-  private lastSnapshot: string = "";
 
   constructor(group: FolderGroup) {
     this.group = group;
@@ -63,9 +62,8 @@ export class FolderSearchTermsIndex {
       includeScore: false,
       threshold: 0.0,
       ignoreLocation: true,
-      minMatchCharLength: 1
+      minMatchCharLength: kMinimumSearchTermLength
     });
-    this.lastSnapshot = items.map((i) => i.blob).join("\n");
   }
 
   public search(query: string): Folder[] {
@@ -167,3 +165,6 @@ export class FolderSearchTermsIndex {
     }
   }
 }
+
+// Shared minimum search length for folder searches and highlights.
+export const kMinimumSearchTermLength = 2;

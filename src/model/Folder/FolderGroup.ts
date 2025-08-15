@@ -1,4 +1,5 @@
 import { makeObservable, observable } from "mobx";
+import { kMinimumSearchTermLength } from "./FolderSearchTermsIndex";
 import { Folder } from "./Folder";
 import { FolderSearchTermsIndex } from "./FolderSearchTermsIndex";
 
@@ -49,9 +50,14 @@ export class FolderGroup {
   // Sets filteredItems based on a case-insensitive substring match across all text fields of each folder.
   // If search is undefined or empty string after trimming, clears the filter (filteredItems becomes undefined).
   public filter(search: string | undefined) {
-    // Preserve original user-entered (trimmed) query for UI (tests expect original casing/symbols)
+    // Preserve original user-entered (trimmed) query for UI (keep original casing)
     this.searchTerm = search ? search.trim() : "";
     const normalized = this.searchTerm.toLowerCase();
+    // Enforce minimum length: do not filter on queries shorter than MIN_SEARCH_LENGTH
+    if (normalized.length > 0 && normalized.length < kMinimumSearchTermLength) {
+      this.filteredItems = undefined;
+      return;
+    }
     if (normalized === "") {
       this.filteredItems = undefined;
       // signal to any observers (e.g. FolderList) that the filter was programmatically cleared

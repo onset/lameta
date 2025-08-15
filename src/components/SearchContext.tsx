@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { kMinimumSearchTermLength } from "../model/Folder/FolderSearchTermsIndex";
 
 export interface ISearchContext {
   // The raw search term exactly as entered by the user (for echoing back in the UI, input boxes, etc.).
@@ -7,8 +8,11 @@ export interface ISearchContext {
   searchTerm: string;
 }
 
-export const normalizeSearchTerm = (q: string | undefined | null): string =>
-  (q || "").trim().toLowerCase();
+export const normalizeSearchTerm = (q: string | undefined | null): string => {
+  const norm = (q || "").trim().toLowerCase();
+  // Respect minimum length to engage highlights/matches
+  return norm.length >= kMinimumSearchTermLength ? norm : "";
+};
 
 export const SearchContext = React.createContext<ISearchContext>({
   rawSearchTerm: "",
