@@ -314,7 +314,9 @@ const FileTabs: React.FunctionComponent<
               getSearchStrings={() =>
                 directoryObject.properties
                   .values()
-                  .filter((f: any) => f && f.key !== "notes")
+                  .filter(
+                    (f: any) => f && f.key !== "notes" && f.key !== "status"
+                  )
                   .map((f: any) => f.text || "")
               }
               testId="session-tab-highlight"
@@ -333,9 +335,14 @@ const FileTabs: React.FunctionComponent<
             >
               <Trans>Contributors</Trans>
             </HighlightableTab>
-            <Tab>
+            <HighlightableTab
+              getSearchStrings={() => [
+                (directoryObject as any).properties.getTextField("status")?.text
+              ]}
+              testId="status-tab-highlight"
+            >
               <Trans>Status</Trans>
-            </Tab>
+            </HighlightableTab>
             <HighlightableTab
               getSearchStrings={() => [notesField?.text]}
               testId="notes-tab-highlight"
