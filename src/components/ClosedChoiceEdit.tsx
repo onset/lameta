@@ -4,6 +4,7 @@ import { Field } from "../model/field/Field";
 import { translateChoice } from "../other/localization";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
+import { searchHighlight } from "../containers/theme";
 
 export interface IProps {
   includeLabel: boolean;
@@ -71,6 +72,6 @@ class ClosedChoiceEdit extends React.Component<
 export default observer(ClosedChoiceEdit);
 
 const highlightContainerStyle = css`
-  background: #ffba8a; // align with inline <mark> highlight color
+  background: ${searchHighlight}; // align with inline <mark> highlight color
   padding: 0 1px;
 `;

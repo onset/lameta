@@ -1,5 +1,6 @@
 import React from "react";
 import { css } from "@emotion/react";
+import { searchHighlight } from "../containers/theme";
 
 function escapeHtml(s: string): string {
   return s
@@ -25,7 +26,7 @@ export function buildHighlightedHTML(
     }
     if (found > i) html += escapeHtml(value.slice(i, found));
     const match = value.slice(found, found + searchTerm.length);
-    html += `<mark data-testid="inline-highlight" style="background:#ffba8a;padding:0 1px;">${escapeHtml(
+    html += `<mark data-testid="inline-highlight" style="background:${searchHighlight};padding:0 1px;">${escapeHtml(
       match
     )}</mark>`;
     i = found + searchTerm.length;
@@ -40,7 +41,7 @@ export function highlightMatches(
 ): React.ReactNode {
   if (!searchTerm) return text;
   const testId = options?.testId || "inline-highlight";
-  const background = options?.background || "#ffba8a";
+  const background = options?.background || searchHighlight;
   try {
     // Escape any regex metacharacters in the user-supplied searchTerm so it is treated literally.
     // Example: if searchTerm is "a.b" we want to match the 3-character string a.b, not any char between a and b.
