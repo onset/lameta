@@ -8,7 +8,9 @@ import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.css";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
-import { SearchContext } from "../SearchContext";
+import { SearchContext, useHasSearchMatch } from "../SearchContext";
+import { css } from "@emotion/react";
+import { searchHighlight } from "../../containers/theme";
 
 export interface IProps {
   file: File;
@@ -45,8 +47,6 @@ class ContributorsTable extends React.Component<IProps> {
   }
   private renderPerson(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
-
     const highlight: boolean =
       this.props.selectContribution !== undefined &&
       contribution.personReference ===
@@ -71,14 +71,41 @@ class ContributorsTable extends React.Component<IProps> {
   }
   private renderEditableText(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
-    const key: keyof Contribution = cellInfo.column.id;
+    const fieldOfThisColumn: keyof Contribution = cellInfo.column.id;
+    const cellValue = (contribution[fieldOfThisColumn] as any) || "";
+    const CommentCell: React.FC<{
+      value: string;
+      onChange: (v: string) => void;
+    }> = ({ value, onChange }) => {
+      const shouldHighlight = useHasSearchMatch(value);
+      return (
+        <div
+          data-testid="contributor-comment-cell"
+          data-has-highlight={shouldHighlight ? "true" : undefined}
+          css={
+            shouldHighlight
+              ? css`
+                  background: ${searchHighlight};
+                `
+              : undefined
+          }
+        >
+          <textarea
+            data-testid="contributor-comment-textarea"
+            onChange={(e) => onChange(e.target.value)}
+            value={value}
+          />
+        </div>
+      );
+    };
+
     return (
-      <textarea
-        onChange={(e) => {
-          this.props.file.contributions[cellInfo.index][key] = e.target.value;
+      <CommentCell
+        value={cellValue as string}
+        onChange={(v: string) => {
+          this.props.file.contributions[cellInfo.index][fieldOfThisColumn] = v;
           this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
         }}
-        value={contribution[key]}
       />
     );
   }
