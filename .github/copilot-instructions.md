@@ -42,6 +42,8 @@
 
 - try not to use time-based waiting that might fail on slower machines. Try to find some dom-based thing to tell you that that the screen is ready.
 
+- always check e2eProject.ts for helper functions to use instead of reinventing the wheel. FolderSearch-utilities.ts had helper methods if you test involves the search function.
+
 ## What to do if you cannot figure out why an e2e test fails
 
 - try adding a console.log() statement will give you the information you need to debug the issue. It will appear in the terminal.

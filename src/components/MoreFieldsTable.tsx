@@ -44,13 +44,11 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
       Header: t`Value`,
       Cell: (cellInfo: any) => {
         const field = cellInfo.original as Field;
-
-        const f = field as Field;
-        if (f.choices && f.choices.length > 0) {
+        if (field.choices && field.choices.length > 0) {
           return (
             <ClosedChoiceEdit
               includeLabel={false}
-              field={f}
+              field={field}
               key={field.key}
               className={field.cssClass}
             />

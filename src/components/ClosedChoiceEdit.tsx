@@ -2,6 +2,8 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { translateChoice } from "../other/localization";
+import { SearchContext } from "./SearchContext";
+import { css } from "@emotion/react";
 
 export interface IProps {
   includeLabel: boolean;
@@ -11,6 +13,7 @@ export interface IProps {
 class ClosedChoiceEdit extends React.Component<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > {
+  static contextType = SearchContext;
   constructor(props: IProps) {
     super(props);
   }
@@ -32,8 +35,15 @@ class ClosedChoiceEdit extends React.Component<
   public render() {
     const label: string = this.props.field.labelInUILanguage;
     const v = ClosedChoiceEdit.getValue(this.props.field);
+    const { searchTerm } = (this.context || { searchTerm: "" }) as any;
+    const display = translateChoice(v);
+    const hasHighlight =
+      !!searchTerm && display.toLowerCase().includes(searchTerm);
     return (
-      <div className={"field " + this.props.className}>
+      <div
+        className={"field " + this.props.className}
+        data-has-highlight={hasHighlight ? "true" : undefined}
+      >
         {this.props.includeLabel ? <label>{label}</label> : ""}
         <select
           tabIndex={this.props.tabIndex}
@@ -42,14 +52,13 @@ class ClosedChoiceEdit extends React.Component<
           onChange={(event) => {
             ClosedChoiceEdit.onChange(event, this.props.field);
           }}
+          css={hasHighlight ? highlightContainerStyle : undefined}
         >
           {
             //NB: an error about keys here means that the choices were not unique
             this.props.field.choices.map((s) => (
               <option key={s} value={s}>
-                {s === "unspecified"
-                  ? ""
-                  : translateChoice(s)}
+                {s === "unspecified" ? "" : translateChoice(s)}
               </option>
             ))
           }
@@ -60,3 +69,8 @@ class ClosedChoiceEdit extends React.Component<
 }
 
 export default observer(ClosedChoiceEdit);
+
+const highlightContainerStyle = css`
+  background: #ffba8a; // align with inline <mark> highlight color
+  padding: 0 1px;
+`;

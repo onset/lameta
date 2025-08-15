@@ -110,6 +110,20 @@ export class E2eProject {
   }
 
   /**
+   * Sets the value of a closed-choice/select field by its name (e.g., "Country").
+   * Looks for a native <select name="{fieldName}"> and selects the option by its visible label.
+   * Fails fast if the select is not visible within a reasonable timeout.
+   */
+  public async setChooserFieldValue(fieldName: string, optionLabel: string) {
+    const select = this.page.locator(`select[name='${fieldName}']`).first();
+    await select.waitFor({ state: "visible", timeout: 10000 });
+    await select.click();
+    await select.selectOption({ label: optionLabel });
+    // brief settle
+    await this.page.waitForTimeout(150);
+  }
+
+  /**
    * Sets the name of the currently selected person
    * @param name The name to set for the person
    */
