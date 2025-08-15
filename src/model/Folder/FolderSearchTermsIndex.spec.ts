@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Folder } from "./Folder";
 import { FolderGroup } from "./FolderGroup";
 import { FieldSet } from "../field/FieldSet";
-import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
+// EncounteredVocabularyRegistry already imported above
 import { PersonMetadataFile } from "../Project/Person/Person";
 
 import * as temp from "temp";
@@ -10,6 +10,9 @@ import * as fs from "fs";
 
 import { runInAction } from "mobx";
 // No direct import of FolderSearchTermsIndex; test exercises lazy creation via FolderGroup.filter()
+import { SessionMetadataFile } from "../Project/Session/Session";
+import * as Path from "path";
+import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 
 class FakeFolder extends Folder {
   private _props = new FieldSet();
@@ -139,6 +142,50 @@ describe("FolderSearchTermsIndex", () => {
       expect(g.filteredItems!.length).toBe(0); // no match
     } finally {
       // Clean up temp directory
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it("indexes Session subject and working languages by code and name (LAM-14)", () => {
+    const g = new FolderGroup();
+
+    const tempDir = temp.mkdirSync("test-session");
+    try {
+      // Create a Session-like folder backed by a real SessionMetadataFile
+      class FakeSessionFolder extends FakeFolder {
+        public get folderType() {
+          return "session" as const;
+        }
+      }
+      const s = new FakeSessionFolder({ id: "S1", title: "My Session" });
+      const registry = new EncounteredVocabularyRegistry();
+      const sessionMd = new SessionMetadataFile(tempDir, registry);
+
+      // attach metadata file so instanceof checks pass
+      (s as any).metadataFile = sessionMd;
+
+      // Set subject language to French (fra) and working languages to include German (deu)
+      // Ensure the keys exist in the FieldSet before assigning values
+      s.properties.addTextProperty("languages", "fra");
+      s.properties.addTextProperty("workingLanguages", "deu;eng");
+
+      g.items.push(s as any);
+
+      // Code searches should match
+      g.filter("fra");
+      expect(g.filteredItems!.length).toBe(1);
+      expect(g.filteredItems![0]).toBe(s as any);
+
+      g.filter("deu");
+      expect(g.filteredItems!.length).toBe(1);
+
+      // Name searches should also match via staticLanguageFinder mapping
+      g.filter("french");
+      expect(g.filteredItems!.length).toBe(1);
+
+      g.filter("german");
+      expect(g.filteredItems!.length).toBe(1);
+    } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
   });

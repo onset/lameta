@@ -4,6 +4,7 @@ import { FolderGroup } from "./FolderGroup";
 import * as Path from "path";
 import { reaction } from "mobx";
 import { PersonMetadataFile } from "../Project/Person/Person";
+import { SessionMetadataFile } from "../Project/Session/Session";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 
 interface IndexedFolder {
@@ -125,6 +126,36 @@ export class FolderSearchTermsIndex {
             }
           }
         }
+      }
+
+      // Include session languages (subject and working) if this folder has a SessionMetadataFile
+      if (f.metadataFile instanceof SessionMetadataFile) {
+        const addLangFromCodes = (codes: string) => {
+          codes
+            .split(";")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0)
+            .forEach((code) => {
+              languageBits.push(code);
+              try {
+                const name =
+                  staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                    code
+                  );
+                if (name && name !== code) {
+                  languageBits.push(name);
+                }
+              } catch {}
+            });
+        };
+        try {
+          const subject = f.properties.getTextStringOrEmpty("languages");
+          addLangFromCodes(subject);
+        } catch {}
+        try {
+          const working = f.properties.getTextStringOrEmpty("workingLanguages");
+          addLangFromCodes(working);
+        } catch {}
       }
 
       return [...fieldBits, ...fileBits, ...languageBits].join(" | ");
