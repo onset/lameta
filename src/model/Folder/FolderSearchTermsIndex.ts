@@ -55,10 +55,13 @@ export class FolderSearchTermsIndex {
       folder: f,
       blob: this.makeBlob(f)
     }));
+    // This gives us exact matches only. "Fuzzy", while conceivably helpful,
+    // is too confusing for a user that is trying to filter down to a set
+    // of folders to work with.
     this.index = new Fuse(items, {
       keys: ["blob"],
       includeScore: false,
-      threshold: 0.4,
+      threshold: 0.0,
       ignoreLocation: true,
       minMatchCharLength: 1
     });
