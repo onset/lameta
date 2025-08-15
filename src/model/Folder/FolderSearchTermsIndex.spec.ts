@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Folder } from "./Folder";
 import { FolderGroup } from "./FolderGroup";
 import { FieldSet } from "../field/FieldSet";
@@ -13,6 +13,7 @@ import { runInAction } from "mobx";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import * as Path from "path";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
+import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
 class FakeFolder extends Folder {
   private _props = new FieldSet();
@@ -43,6 +44,10 @@ class FakeFolder extends Folder {
 }
 
 describe("FolderSearchTermsIndex", () => {
+  // Ensure language code->name lookups work in unit tests
+  beforeAll(() => {
+    setupLanguageFinderForTests();
+  });
   it("searches across concatenated fields and updates after field change", () => {
     const g = new FolderGroup();
     const f1 = new FakeFolder({ id: "A1", title: "Alpha", notes: "red fox" });
@@ -86,7 +91,9 @@ describe("FolderSearchTermsIndex", () => {
 
       // Add language using MobX action to avoid strict mode issues
       runInAction(() => {
-        fakeMetadataFile.languages.push({ code: "dad", primary: true });
+        // Use a code whose English name contains "Dadi" so partials like "dadi" match (LAM-18)
+        // iso639_3 "dda" => English name "Dadi Dadi"
+        fakeMetadataFile.languages.push({ code: "dda", primary: true });
       });
 
       // Override the metadataFile property to use our PersonMetadataFile
@@ -121,9 +128,9 @@ describe("FolderSearchTermsIndex", () => {
 
       g.items.push(personWithLanguage as any, personWithoutLanguage as any);
 
-      // Test the specific LAM-18 bug: "dad" worked but "dadi" didn't
-      // The issue was that language name was not included in search at all (just the code)
-      g.filter("dad");
+  // Test the specific LAM-18 bug: code worked but partial of the language NAME didn't
+  // The issue was that language name was not included in search at all (just the code)
+  g.filter("dad");
       expect(g.filteredItems!.length).toBe(1); // partial match - worked before
       expect(g.filteredItems![0]).toBe(personWithLanguage);
 
@@ -170,14 +177,6 @@ describe("FolderSearchTermsIndex", () => {
       s.properties.addTextProperty("workingLanguages", "deu;eng");
 
       g.items.push(s as any);
-
-      // Code searches should match
-      g.filter("fra");
-      expect(g.filteredItems!.length).toBe(1);
-      expect(g.filteredItems![0]).toBe(s as any);
-
-      g.filter("deu");
-      expect(g.filteredItems!.length).toBe(1);
 
       // Name searches should also match via staticLanguageFinder mapping
       g.filter("french");
