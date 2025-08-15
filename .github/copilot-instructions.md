@@ -23,7 +23,11 @@ Fail Fast. Don't write code that silently works around failed dependencies. If a
 
 If you had a problem you need me to solve, mark it with a "⚠️". If you have a question, mark it with a "❓".
 
+# Linear Usage
+
 When working with linear issues:
 
 - if the mcp server lets you, check off any todo items that you have accomplished.
 - never close linear issues by yourself. Instead, assign them back to whoever assigned it to you.
+- When I say “comment,” you must call mcp_linear_create_comment. Never call mcp_linear_update_issue.
+- never create or remove linear issues

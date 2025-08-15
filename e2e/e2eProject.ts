@@ -86,15 +86,91 @@ export class E2eProject {
   }
   public async goToSessions() {
     await this.page.getByTestId("sessions-tab").click();
+    // Wait for the sessions tab UI to be ready - specifically the New Session button
+    await this.page
+      .getByTestId("new-session-button")
+      .waitFor({ state: "visible", timeout: 10000 });
   }
   public async goToPeople() {
     await this.page.getByTestId("people-tab").click();
+    // Wait for the people tab UI to be ready - specifically the New Person button
+    await this.page
+      .getByTestId("new-person-button")
+      .waitFor({ state: "visible", timeout: 10000 });
   }
   public async addSession() {
     await this.page.getByTestId("new-session-button").click();
   }
-  public async addPerson() {
+  public async addPerson(name?: string) {
     await this.page.getByTestId("new-person-button").click();
+
+    if (name) {
+      await this.setPersonName(name);
+    }
+  }
+
+  /**
+   * Sets the name of the currently selected person
+   * @param name The name to set for the person
+   */
+  public async setPersonName(name: string) {
+    // Wait for person form to load - look for the contentEditable div with role="textbox"
+    await this.page.waitForSelector('[role="textbox"]', { timeout: 10000 });
+
+    // Find the name field (it should be the first contentEditable textbox)
+    const nameField = this.page.locator('[role="textbox"]').first();
+    await nameField.click();
+    await nameField.fill(name);
+
+    // Wait a moment for the form to process the change
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Adds a language to the currently selected person
+   * @param languageName The language name to add (e.g., "Dadi Dadi")
+   */
+  public async addPersonLanguage(languageName: string) {
+    // Wait for form to be ready
+    await this.page.waitForTimeout(1000);
+
+    // The PersonLanguageList automatically shows an empty language slot if there are no languages
+    const languageSelector = this.page.locator(
+      '.select input[role="combobox"]'
+    );
+    const languageSelectorVisible = await languageSelector.isVisible();
+
+    if (!languageSelectorVisible) {
+      throw new Error(
+        "Language selector not visible - person form may not be loaded"
+      );
+    }
+
+    // Fill in the language using AsyncSelect
+    const languageInput = this.page
+      .locator('.select input[role="combobox"]')
+      .first();
+    await languageInput.click();
+    await languageInput.fill(languageName);
+
+    // Wait for dropdown options and select by pressing Enter
+    await this.page.waitForTimeout(300); // let the debounced search trigger
+    await languageInput.press("Enter");
+
+    // Wait for the language to be saved
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Selects a person by name from the people list
+   * @param personName The name pattern to match (regex supported)
+   */
+  public async selectPerson(personName: string | RegExp) {
+    await this.page
+      .getByRole("gridcell", { name: personName })
+      .first()
+      .waitFor({ state: "visible", timeout: 10000 });
+    await this.page.getByRole("gridcell", { name: personName }).first().click();
   }
 
   /* I haven't been able to control the context menu. I can open it, but playwright doens't see it and 

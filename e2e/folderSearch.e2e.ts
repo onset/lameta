@@ -2,10 +2,12 @@ import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
 import { E2eFileList } from "./e2eFileList";
+import { FolderSearchUtilities } from "./folderSearch-utilities";
 
 let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
+let searchUtils: FolderSearchUtilities;
 
 test.describe("Folder Search UI", () => {
   test.beforeAll(async () => {
@@ -13,15 +15,15 @@ test.describe("Folder Search UI", () => {
     page = await lameta.launch();
     await lameta.cancelRegistration();
     project = await createNewProject(lameta, "FolderSearch[weird ✓ name]/测试");
+    searchUtils = new FolderSearchUtilities(page);
   });
   test.afterAll(async () => {
     await lameta.quit();
   });
 
+  // Legacy function - can be replaced with searchUtils.expectSearchUiPresent()
   async function expectSearchUiPresent() {
-    await expect(page.getByTestId("folder-search-input")).toBeVisible();
-    // subtle icon (no button yet because empty)
-    await expect(page.getByTestId("folder-search-icon")).toBeVisible();
+    await searchUtils.expectSearchUiPresent();
   }
 
   test("sessions tab search field typing enter and clearing", async () => {
@@ -67,14 +69,11 @@ test.describe("Folder Search UI", () => {
   test("people tab search field independent state", async () => {
     await project.goToPeople();
     await expectSearchUiPresent();
-    const input = page.getByTestId("folder-search-input");
+    const input = searchUtils.getSearchInput();
     await input.click();
     await input.type("Person XYZ ???");
-    await expect(page.getByTestId("folder-search-button")).toBeVisible(); // button still shows because non-empty
-    await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
-      "data-last-search",
-      "Person XYZ ???"
-    );
+    await searchUtils.expectSearchButtonStates(true); // button still shows because non-empty
+    await searchUtils.expectLastSearch("Person XYZ ???");
   });
 
   test("search term persists visually across tab switch (sessions -> project -> sessions)", async () => {

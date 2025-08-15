@@ -3,6 +3,8 @@ import { Folder } from "./Folder";
 import { FolderGroup } from "./FolderGroup";
 import * as Path from "path";
 import { reaction } from "mobx";
+import { PersonMetadataFile } from "../Project/Person/Person";
+import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 
 interface IndexedFolder {
   folder: Folder;
@@ -102,7 +104,30 @@ export class FolderSearchTermsIndex {
           }
         } catch {}
       });
-      return [...fieldBits, ...fileBits].join(" | ");
+
+      // Include person languages in search if this folder has a PersonMetadataFile
+      const languageBits: string[] = [];
+      if (f.metadataFile instanceof PersonMetadataFile) {
+        for (const language of f.metadataFile.languages) {
+          if (language.code) {
+            // Include both the language code and the language name in the search
+            languageBits.push(language.code);
+            try {
+              const languageName =
+                staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                  language.code
+                );
+              if (languageName && languageName !== language.code) {
+                languageBits.push(languageName);
+              }
+            } catch (e) {
+              // Skip language name resolution if staticLanguageFinder is not available
+            }
+          }
+        }
+      }
+
+      return [...fieldBits, ...fileBits, ...languageBits].join(" | ");
     } catch {
       return "";
     }
