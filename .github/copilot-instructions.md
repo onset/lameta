@@ -32,8 +32,6 @@
 
 - By default e2e output only shows renderer console errors (to reduce noise). To see all renderer console messages and failed network requests, run with the environment variable `E2E_VERBOSE=1` (or `true`). Example: `E2E_VERBOSE=1 yarn e2e e2e/fileList.e2e.ts`.
 
-- Often when an e2e test isn't passing, adding a console.log() statement will give you the information you need to debug the issue. It will appear in the terminal.
-
 - Use `yarn e2e` in a terminal to run UI tests. Run these when you have done something that is obviously in the UI. You can run a particular file with `yarn e2e <file-name>`.
 
 - Normally e2ebuildwatch will already be running in a different terminal. Sleep 20 seconds after changing the core app code before launching e2e test so that the e2ebuildwatch can finish.
@@ -43,6 +41,12 @@
 - Keep the e2e tests clean by factoring out helper functions that are used across tests. See folderSearch-utilities.ts and e2eProject.ts for examples.
 
 - try not to use time-based waiting that might fail on slower machines. Try to find some dom-based thing to tell you that that the screen is ready.
+
+## What to do if you cannot figure out why an e2e test fails
+
+- try adding a console.log() statement will give you the information you need to debug the issue. It will appear in the terminal.
+
+- can you reproduce the problem using a unit test instead? Often they are easier to work with. Then once the unit test is passing, you can go back to getting the e2e test to pass.
 
 # General
 

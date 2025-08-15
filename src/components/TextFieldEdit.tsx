@@ -127,9 +127,19 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     const value = getValue(props.field);
     if (!searchTerm) {
       el.textContent = value;
+      // clear any previous highlight flag
+      el.removeAttribute("data-has-highlight");
       return;
     }
-    el.innerHTML = buildHighlightedHTML(value, searchTerm);
+    const html = buildHighlightedHTML(value, searchTerm);
+    el.innerHTML = html;
+    // If any inline highlight mark exists, expose a data attribute for tests
+    const has = html.indexOf('data-testid="inline-highlight"') !== -1;
+    if (has) {
+      el.setAttribute("data-has-highlight", "true");
+    } else {
+      el.removeAttribute("data-has-highlight");
+    }
   }
 
   function beginEditing() {
@@ -260,6 +270,8 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           ref={contentRef}
           tabIndex={props.tabIndex}
           autoFocus={props.autoFocus}
+          // Provide stable selectors for E2E tests, e.g., field-id-edit, field-notes-edit
+          data-testid={`field-${props.field.key}-edit`}
           className={validationMessage ? "invalid" : ""}
           contentEditable
           suppressContentEditableWarning
