@@ -58,11 +58,5 @@ test.describe("Folder Search Contributors Comment Highlight", () => {
 
     // Optional: verify inline highlight elements exist somewhere
     await expect(page.getByTestId("inline-highlight").first()).toBeVisible();
-
-    // Capture a screenshot for the issue
-    await page.screenshot({
-      path: "playwright-screenshot-issue-LAM-20.png",
-      fullPage: true
-    });
   });
 });

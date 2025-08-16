@@ -1,6 +1,6 @@
 import fs from "fs";
 import * as Path from "path";
-import { test, expect as expect, Page } from "@playwright/test";
+import { Page, test, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
 import { E2eFileList } from "./e2eFileList";
@@ -27,6 +27,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
   });
 
   test("changing FullName renames the file", async () => {
+    page.setDefaultTimeout(1000);
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Bono Vox");
@@ -40,6 +41,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     await expectFileNameInGrid("Bono_Vox_Paul.person");
   });
   test("changing FullName renames other files that have been renamed to match the person", async () => {
+    page.setDefaultTimeout(1000);
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Paul Hewson");
@@ -94,7 +96,9 @@ async function expectFileNameInGrid(name: string) {
   ).toBeVisible({ timeout: 1000 });
 }
 async function setFullName(name: string) {
-  const fullNameField = await page.waitForSelector("#name");
+  const fullNameField = await page.waitForSelector(
+    '[data-testid="field-name-edit"]'
+  );
   await fullNameField.click();
   await fullNameField.fill(name);
   await page.keyboard.press("Tab");

@@ -38,10 +38,6 @@ test.describe("Folder Search minimum length", () => {
     ).toHaveCount(0);
     const countNow = await page.locator(allRowsSelector).count();
     expect(countNow).toBe(initialCount);
-    await page.screenshot({
-      path: "playwright-screenshot-LAM-21-single-char.png",
-      fullPage: true
-    });
 
     // Now type 2 characters
     await input.fill("Se");
