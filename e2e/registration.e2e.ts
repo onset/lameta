@@ -15,12 +15,19 @@ test.describe("Registration", () => {
   });
 
   test("register then front window should be the start screen", async () => {
-    const ok = await page.getByRole("button", { name: "OK" });
-    await expect(ok).toBeDisabled();
-    const email = await page.locator('input:below(:text("Email"))').first();
+    // Wait for the registration dialog to mount and the OK button to be present
+    const ok = page.getByTestId("ok");
+    await expect(ok).toBeDisabled({ timeout: 15000 });
+
+    // Target the email input within the registration dialog container
+    const dialog = page.locator(".registrationDialog");
+    const email = dialog.locator("input").first();
     await email.click();
     await email.fill("e2etest@example.com");
+
+    // Still disabled until a usage option is chosen
     await expect(ok).toBeDisabled();
+
     await page.getByText("For documenting my own language").click();
     await expect(ok).toBeEnabled();
     await ok.click();

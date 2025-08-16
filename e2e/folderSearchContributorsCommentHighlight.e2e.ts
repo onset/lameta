@@ -46,7 +46,15 @@ test.describe("Folder Search Contributors Comment Highlight", () => {
     const searchInput = page.getByTestId("folder-search-input");
     await searchInput.fill(query);
     await searchInput.press("Enter");
-    await page.waitForTimeout(250);
+    // Let search propagate and MobX reactions update the table highlight
+    await page.waitForFunction(() => {
+      const el = document.querySelector(
+        '[data-testid="contributor-comment-cell"]'
+      );
+      return (
+        el && (el as HTMLElement).getAttribute("data-has-highlight") === "true"
+      );
+    });
 
     // Ensure we are still on Contributors
     await page.getByRole("tab", { name: /Contributors/i }).click();

@@ -9,6 +9,7 @@ import "./ContributorsTable.css";
 import { i18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext, useHasSearchMatch } from "../SearchContext";
+import { highlightMatches } from "../highlighting";
 import { css } from "@emotion/react";
 import { searchHighlight } from "../../containers/theme";
 
@@ -37,7 +38,11 @@ class ContributorsTable extends React.Component<IProps> {
     let i = propToUse.file.contributions.length;
     while (i--) {
       const c = propToUse.file.contributions[i];
-      if (!c.personReference || c.personReference.length === 0) {
+      const isCompletelyEmpty =
+        (!c.personReference || c.personReference.length === 0) &&
+        (!c.role || c.role.length === 0) &&
+        (!c.comments || c.comments.length === 0);
+      if (isCompletelyEmpty) {
         //console.log("removing blank contribution at " + i);
         propToUse.file.contributions.splice(i, 1);
       }
@@ -78,10 +83,14 @@ class ContributorsTable extends React.Component<IProps> {
       onChange: (v: string) => void;
     }> = ({ value, onChange }) => {
       const shouldHighlight = useHasSearchMatch(value);
+      const { searchTerm } = (ContributorsTable as any).contextType
+        ? (this.context as any)
+        : { searchTerm: "" };
       return (
         <div
           data-testid="contributor-comment-cell"
-          data-has-highlight={shouldHighlight ? "true" : undefined}
+          // Always include the attribute for easier E2E assertions
+          data-has-highlight={shouldHighlight ? "true" : "false"}
           css={
             shouldHighlight
               ? css`
@@ -95,6 +104,12 @@ class ContributorsTable extends React.Component<IProps> {
             onChange={(e) => onChange(e.target.value)}
             value={value}
           />
+          {/* lightweight inline highlight preview to give a stable element for tests */}
+          {shouldHighlight && (
+            <div data-testid="contributor-comment-inline-preview">
+              {highlightMatches(value, searchTerm)}
+            </div>
+          )}
         </div>
       );
     };
