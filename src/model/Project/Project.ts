@@ -22,7 +22,9 @@ import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
-import * as Sentry from "@sentry/browser";
+// FIXED: Import safeCaptureException instead of using Sentry directly
+// CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
+import { safeCaptureException } from "../../other/errorHandling";
 
 import genres from "./Session/genres.json";
 
@@ -338,7 +340,11 @@ export class Project extends Folder {
       // tslint:disable-next-line:no-unused-expression
       return project;
     } catch (err) {
-      Sentry.captureException(err);
+      // FIXED: Use safeCaptureException instead of direct Sentry.captureException(err)
+      // PROBLEM: Direct Sentry calls in E2E tests caused auto-initialization and
+      // RendererTransport errors when window.__electronCall wasn't available
+      // SOLUTION: safeCaptureException checks E2E environment before calling Sentry
+      safeCaptureException(err);
       console.error(err);
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;

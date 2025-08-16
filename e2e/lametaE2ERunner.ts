@@ -48,11 +48,26 @@ export class LametaE2ERunner {
       p.on("console", (msg) => {
         try {
           const type = msg.type();
-            if (!verbose) {
-              // Always show errors. Optionally include warnings if we decide later.
-              if (type !== "error") return;
-            }
-          console.log(`[renderer-console][${type}] ${msg.text()}`);
+          const text = msg.text();
+
+          // NOISE REDUCTION: Filter out known Sentry E2E error messages
+          // PROBLEM: Even with our safeCaptureException wrapper, sometimes Sentry
+          // still produces noise in E2E test output about RendererTransport failures
+          // SOLUTION: Filter out this specific error message to keep E2E output clean
+          // NOTE: This is a secondary defense - the primary fix is in errorHandling.ts
+          if (
+            text.includes(
+              "Failed to initialize RendererTransport: window.__electronCall isn't defined"
+            )
+          ) {
+            return; // Skip logging this specific error message - it's expected in E2E
+          }
+
+          if (!verbose) {
+            // Always show errors. Optionally include warnings if we decide later.
+            if (type !== "error") return;
+          }
+          console.log(`[renderer-console][${type}] ${text}`);
         } catch {}
       });
       p.on("pageerror", (err) => {
@@ -66,7 +81,9 @@ export class LametaE2ERunner {
           if (verbose) {
             const f = request.failure();
             console.error(
-              `[renderer-requestfailed] ${request.resourceType()} ${request.url()} -> ${f?.errorText}`
+              `[renderer-requestfailed] ${request.resourceType()} ${request.url()} -> ${
+                f?.errorText
+              }`
             );
           }
         } catch {}
