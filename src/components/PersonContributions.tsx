@@ -4,9 +4,10 @@ import { Person } from "../model/Project/Person/Person";
 import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
 import ReactTable from "react-table-6";
-import { i18n, translateRole } from "../other/localization";
+import { translateRole } from "../other/localization";
 import { t } from "@lingui/macro";
 import Tooltip from "react-tooltip-lite";
+import { HighlightSearchTerm } from "./HighlightSearchTerm";
 
 export interface IProps {
   person: Person;
@@ -32,13 +33,19 @@ export const PersonContributions = observer(
           Header: t`Role`,
           width: 100,
           accessor: (row: Contribution) =>
-            row && row.role ? translateRole(row.role) : ""
+            row && row.role ? translateRole(row.role) : "",
+          Cell: (cellInfo: any) => (
+            <HighlightSearchTerm text={cellInfo.value || ""} />
+          )
         },
         {
           id: "comments",
           Header: t`Comments`,
           //width: 200,
-          accessor: (row: Contribution) => row.comments
+          accessor: (row: Contribution) => row.comments,
+          Cell: (cellInfo: any) => (
+            <HighlightSearchTerm text={cellInfo.value || ""} />
+          )
         }
       ];
       const rows = this.props.project.getContributionsMatchingPerson(

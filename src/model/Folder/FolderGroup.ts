@@ -1,5 +1,6 @@
 import { makeObservable, observable } from "mobx";
 import { kMinimumSearchTermLength } from "./FolderSearchTermsIndex";
+import { NotifyException } from "../../components/Notify";
 import { Folder } from "./Folder";
 import { FolderSearchTermsIndex } from "./FolderSearchTermsIndex";
 
@@ -14,6 +15,8 @@ export class FolderGroup {
   public searchResetCounter: number;
   // holds the current (last non-empty) search string so that UI components can persist it across unmounts/mounts
   public searchTerm: string;
+  // Optional provider for additional strings to index for each folder (e.g., cross-folder data like a person's contributions)
+  public getExtraIndexableStringsForFolder?: (f: Folder) => string[];
   private searchIndex?: FolderSearchTermsIndex; // lazily instantiated per FolderGroup; never a singleton
 
   public selectedIndex: number;
@@ -70,69 +73,19 @@ export class FolderGroup {
     if (!this.searchIndex) {
       try {
         this.searchIndex = new FolderSearchTermsIndex(this);
-      } catch {
-        // ignore if dynamic load fails; we'll use fallback
-      }
-    }
-    if (this.searchIndex) {
-      try {
-        this.filteredItems = this.searchIndex.search(normalized);
-        this.adjustSelectionAfterFilter();
+      } catch (e: any) {
+        NotifyException(e, "Building search index failed");
+        this.filteredItems = undefined;
         return;
-      } catch {
-        // fall back
       }
     }
-    this.filteredItems = this.items.filter((folder) => {
-      try {
-        const fields = folder.properties.values();
-        for (const field of fields) {
-          if (
-            field &&
-            typeof field.text === "string" &&
-            field.text.toLowerCase().includes(normalized)
-          ) {
-            return true;
-          }
-        }
-        // also search files: names + metadata fields + contributions
-        if (folder.files) {
-          for (const file of folder.files as any[]) {
-            try {
-              if (
-                (file.pathInFolderToLinkFileOrLocalCopy || "")
-                  .toLowerCase()
-                  .includes(normalized)
-              )
-                return true;
-              if (file.properties && file.properties.values) {
-                for (const p of file.properties.values()) {
-                  if (
-                    p &&
-                    typeof p.text === "string" &&
-                    p.text.toLowerCase().includes(normalized)
-                  )
-                    return true;
-                }
-              }
-              if (Array.isArray(file.contributions)) {
-                for (const c of file.contributions) {
-                  if (
-                    (c.personReference &&
-                      c.personReference.toLowerCase().includes(normalized)) ||
-                    (c.role && c.role.toLowerCase().includes(normalized)) ||
-                    (c.comments &&
-                      c.comments.toLowerCase().includes(normalized))
-                  )
-                    return true;
-                }
-              }
-            } catch {}
-          }
-        }
-      } catch {}
-      return false;
-    });
+    try {
+      this.filteredItems = this.searchIndex.search(normalized);
+    } catch (e: any) {
+      NotifyException(e, "Search failed");
+      this.filteredItems = undefined;
+      return;
+    }
     this.adjustSelectionAfterFilter();
   }
 

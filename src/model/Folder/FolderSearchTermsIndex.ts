@@ -6,6 +6,8 @@ import { reaction } from "mobx";
 import { PersonMetadataFile } from "../Project/Person/Person";
 import { SessionMetadataFile } from "../Project/Session/Session";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
+import { NotifyException } from "../../components/Notify";
+import { Project } from "../Project/Project";
 
 interface IndexedFolder {
   folder: Folder;
@@ -75,94 +77,123 @@ export class FolderSearchTermsIndex {
   }
 
   private makeBlob(f: Folder): string {
-    try {
-      const fieldBits = f.properties
-        .values()
-        .map((field: any) =>
-          field && typeof field.text === "string" ? field.text : ""
-        );
-      const fileBits: string[] = [];
-      (f.files || []).forEach((file: any) => {
-        try {
-          if (file && file.pathInFolderToLinkFileOrLocalCopy) {
-            fileBits.push(
-              Path.basename(file.pathInFolderToLinkFileOrLocalCopy)
-            );
+    const fieldBits = f.properties
+      .values()
+      .map((field: any) =>
+        field && typeof field.text === "string" ? field.text : ""
+      );
+    const fileBits: string[] = [];
+    (f.files || []).forEach((file: any) => {
+      try {
+        if (file && file.pathInFolderToLinkFileOrLocalCopy) {
+          fileBits.push(Path.basename(file.pathInFolderToLinkFileOrLocalCopy));
+        }
+        // include all metadata field texts
+        if (file && file.properties && file.properties.values) {
+          const props = file.properties.values();
+          for (const p of props) {
+            if (p && typeof p.text === "string") fileBits.push(p.text);
           }
-          // include all metadata field texts
-          if (file && file.properties && file.properties.values) {
-            const props = file.properties.values();
-            for (const p of props) {
-              if (p && typeof p.text === "string") fileBits.push(p.text);
-            }
+        }
+        // include contributions (personReference, role, comments)
+        if (file && Array.isArray(file.contributions)) {
+          for (const c of file.contributions) {
+            if (c.personReference) fileBits.push(c.personReference);
+            if (c.role) fileBits.push(c.role);
+            if (c.comments) fileBits.push(c.comments);
           }
-          // include contributions (personReference, role, comments)
-          if (file && Array.isArray(file.contributions)) {
-            for (const c of file.contributions) {
-              if (c.personReference) fileBits.push(c.personReference);
-              if (c.role) fileBits.push(c.role);
-              if (c.comments) fileBits.push(c.comments);
-            }
-          }
-        } catch {}
-      });
+        }
+      } catch (e: any) {
+        NotifyException(e, "Indexing file metadata failed");
+      }
+    });
 
-      // Include person languages in search if this folder has a PersonMetadataFile
-      const languageBits: string[] = [];
-      if (f.metadataFile instanceof PersonMetadataFile) {
-        for (const language of f.metadataFile.languages) {
-          if (language.code) {
-            // Include both the language code and the language name in the search
-            languageBits.push(language.code);
-            try {
-              const languageName =
-                staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                  language.code
-                );
-              if (languageName && languageName !== language.code) {
-                languageBits.push(languageName);
-              }
-            } catch (e) {
-              // Skip language name resolution if staticLanguageFinder is not available
-            }
+    // Include person languages in search if this folder has a PersonMetadataFile
+    const languageBits: string[] = [];
+    if (f.metadataFile instanceof PersonMetadataFile) {
+      for (const language of f.metadataFile.languages) {
+        if (language.code) {
+          // Include both the language code and the language name in the search
+          languageBits.push(language.code);
+          let languageName = "";
+          try {
+            languageName =
+              staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                language.code
+              );
+          } catch (e: any) {
+            NotifyException(e, "Language name lookup failed");
+          }
+          if (languageName && languageName !== language.code) {
+            languageBits.push(languageName);
           }
         }
       }
-
-      // Include session languages (subject and working) if this folder has a SessionMetadataFile
-      if (f.metadataFile instanceof SessionMetadataFile) {
-        const addLangFromCodes = (codes: string) => {
-          codes
-            .split(";")
-            .map((s) => s.trim())
-            .filter((s) => s.length > 0)
-            .forEach((code) => {
-              languageBits.push(code);
-              try {
-                const name =
-                  staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                    code
-                  );
-                if (name && name !== code) {
-                  languageBits.push(name);
-                }
-              } catch {}
-            });
-        };
-        try {
-          const subject = f.properties.getTextStringOrEmpty("languages");
-          addLangFromCodes(subject);
-        } catch {}
-        try {
-          const working = f.properties.getTextStringOrEmpty("workingLanguages");
-          addLangFromCodes(working);
-        } catch {}
-      }
-
-      return [...fieldBits, ...fileBits, ...languageBits].join(" | ");
-    } catch {
-      return "";
     }
+
+    // Include session languages (subject and working) if this folder has a SessionMetadataFile
+    if (f.metadataFile instanceof SessionMetadataFile) {
+      const addLangFromCodes = (codes: string) => {
+        codes
+          .split(";")
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+          .forEach((code) => {
+            languageBits.push(code);
+            let name = "";
+            try {
+              name =
+                staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+                  code
+                );
+            } catch (e: any) {
+              NotifyException(e, "Language name lookup failed");
+            }
+            if (name && name !== code) {
+              languageBits.push(name);
+            }
+          });
+      };
+      try {
+        const subject = f.properties.getTextStringOrEmpty("languages");
+        addLangFromCodes(subject);
+      } catch (e: any) {
+        NotifyException(e, "Reading subject languages failed");
+      }
+      try {
+        const working = f.properties.getTextStringOrEmpty("workingLanguages");
+        addLangFromCodes(working);
+      } catch (e: any) {
+        NotifyException(e, "Reading working languages failed");
+      }
+    }
+
+    // If this is a Person folder, also include contribution roles/comments/session names
+    // pulled from the current Project to allow role-based person search.
+    const personContributionBits: string[] = [];
+    if (f.metadataFile instanceof PersonMetadataFile) {
+      const personId = (f as any).getIdToUseForReferences
+        ? (f as any).getIdToUseForReferences()
+        : f.displayName;
+      try {
+        const contribs = Project.getContributionsMatchingPersonStatic(personId);
+        contribs.forEach((c) => {
+          if (c.role) personContributionBits.push(c.role);
+          if (c.comments) personContributionBits.push(c.comments);
+          if ((c as any).sessionName)
+            personContributionBits.push((c as any).sessionName);
+        });
+      } catch (e: any) {
+        NotifyException(e, "Indexing person contributions failed");
+      }
+    }
+
+    return [
+      ...fieldBits,
+      ...fileBits,
+      ...languageBits,
+      ...personContributionBits
+    ].join(" | ");
   }
 }
 
