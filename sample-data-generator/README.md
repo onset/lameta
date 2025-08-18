@@ -77,8 +77,7 @@ Your JSON file must contain a `people` array and `sessions` array with the follo
 ```json
 {
   "name": "Full Name",
-  "nickname": "Nickname", 
-  "code": "ABC",
+  "nickname": "Nickname",
   "birthYear": "1980",
   "gender": "Male/Female",
   "primaryOccupation": "Job description",
@@ -101,7 +100,7 @@ Your JSON file must contain a `people` array and `sessions` array with the follo
   "id": "SESSION_ID",
   "title": "Session Title",
   "description": "Rich description with cultural context",
-  "participants": "Person Name", 
+  "participants": "Person Name",
   "languages": "language-code",
   "workingLanguages": "eng",
   "genre": "mythology/procedural/conversation/elicitation",
@@ -154,17 +153,20 @@ project-directory/
 ### Key Requirements
 
 **Every person must have:**
+
 - Complete biographical information
 - A consent file (PDF, JPG, or video - created as empty placeholder)
-- Unique name and code
+- Unique name (skip the code)
 
 **Every session must have:**
+
 - At least one contributor linked to an actual person
 - Rich cultural and linguistic descriptions
 - Proper contributions XML structure
 - Media files with metadata
 
 **Names and linking:**
+
 - Person names in contributions must exactly match person file names
 - Contributions link sessions to people via the contributions XML structure
 - All custom fields should reflect consistent cultural themes
@@ -181,9 +183,10 @@ project-directory/
 ### Session Content Variety
 
 Include diverse genres:
+
 - `mythology` - Traditional narratives (avoid starting titles with "Traditional" or "Sacred")
 - `procedural` - How-to demonstrations, crafts
-- `conversation` - Natural discourse, interviews  
+- `conversation` - Natural discourse, interviews
 - `elicitation` - Linguistic data collection
 - `ceremony` - Ritual content
 - `song` - Traditional music
@@ -203,7 +206,7 @@ Vary complexity and access levels across sessions.
 ### For Large Datasets (100+ entities)
 
 1. **Design Phase**: Create 2-4 examples manually to establish patterns
-2. **JSON Specification**: Expand JSON with hundreds of realistic entities  
+2. **JSON Specification**: Expand JSON with hundreds of realistic entities
 3. **Batch Generation**: Use the script to create all files at once
 4. **Validation**: Run unit tests to verify proper loading
 
@@ -222,11 +225,12 @@ After generation, verify with unit tests:
 # Test all projects
 yarn test
 
-# Test specific project  
+# Test specific project
 yarn test src/model/Project/LargeSample.spec.ts
 ```
 
 Tests verify:
+
 - Project loads via `Project.fromDirectory()`
 - All people and session files load correctly
 - Contributions properly link sessions to people
@@ -238,6 +242,7 @@ Tests verify:
 The included example data features the fictional "Kürbinian (Gourd-Folk)" language and culture:
 
 ### Cultural Context
+
 - **Language**: Kürbinian (`qky-x-kurbin`)
 - **Location**: Mythical Research Territory
 - **Culture**: Gourd-Folk with clan-based society
@@ -245,12 +250,14 @@ The included example data features the fictional "Kürbinian (Gourd-Folk)" langu
 - **Modern Context**: Current community issues, politics, and daily life
 
 ### Key Cultural Elements
+
 - **Clans**: Ember-Hearth, Stone-Path, Wind-Song, etc.
 - **Traditional Roles**: Gourd-Shapers, Harvest-Keepers, Song-Weavers
 - **Seasonal Activities**: Harvest festivals, moon ceremonies, craft demonstrations
 - **Language Features**: Complex morphology, register variation, ceremonial vocabulary
 
 ### Sample Sessions Include
+
 - Honey gathering techniques (procedural)
 - Weather prediction lore (traditional knowledge)
 - Community history (narrative)
