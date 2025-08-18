@@ -4,7 +4,6 @@
   background-color: var(--session--color);
   .react-tabs__tab-list {
     background-color: var(--session__selected--color);
-    border-color: var(--session__outline--color);
   }
   .react-tabs {
     background-color: var(--session--color);
