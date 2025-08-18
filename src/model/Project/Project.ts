@@ -247,6 +247,9 @@ export class Project extends Folder {
     );
     this.loadSettingsFromConfiguration();
 
+    // Note: Role-based People search is now handled inside FolderSearchTermsIndex
+    // via getCurrentProject() to avoid cross-layer hooks.
+
     if (directory.indexOf("sample data") > -1) {
       window.setTimeout(
         () =>
@@ -871,6 +874,12 @@ export class Project extends Folder {
     this.sessions.items.forEach((session: Session) =>
       session.updateSessionReferencesToPersonWhenIdChanges(oldId, newId)
     );
+  }
+
+  public static getContributionsMatchingPersonStatic(
+    personId: string
+  ): Contribution[] {
+    return sCurrentProject!.getContributionsMatchingPerson(personId);
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
