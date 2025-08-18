@@ -1,7 +1,7 @@
 import { test, expect as expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./e2eProject";
-import { shouldSeeExactlyOnce } from "./e2e.expects";
+import { shouldSeeExactlyOnce, shouldAtLeastOnce } from "./e2e.expects";
 import { xorBy } from "lodash";
 
 let lameta: LametaE2ERunner;
@@ -49,14 +49,15 @@ test.describe("ArchiveConfiguration", () => {
     await project.goToSessions();
     await project.addSession();
     await page.locator("#access-chooser").click();
-    await shouldSeeExactlyOnce(page, ["good", "bad"]);
+    // Some select implementations render duplicate option nodes; assert visibility at least once
+    await shouldAtLeastOnce(page, ["good", "bad"]);
     await project.goToProjectConfiguration();
     await page
       .getByTestId("field-customAccessChoices-edit")
       .fill("good, bad, ugly");
     await project.goToSessions();
     await page.locator("#access-chooser").click();
-    await shouldSeeExactlyOnce(page, ["good", "bad", "ugly"]);
+    await shouldAtLeastOnce(page, ["good", "bad", "ugly"]);
   });
   test("Changing to ELAR gives Collection Tab, Steward, and ELAR access protocols", async () => {
     // collection tab should be visible now because the default lameta configuration

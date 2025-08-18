@@ -265,7 +265,7 @@
   },
   "packageManager": "yarn@1.22.19",
   "dependency-notes": {
-    "vite-electron-plugin": "attempted upgrade from 12 to 14 broke because they apparently don't support node in renderer anymore",
+    "vite-electron-plugin": "upgrade from 12 to 14 broke because they apparently don't support node in renderer anymore",
     "electron-builder": "upgrade from 25 to 26 broke, package just hangs."
   }
 }
