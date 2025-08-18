@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageAxis } from "src/model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
+import { tooltipBackground } from "../containers/theme";
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -260,6 +261,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         isOpen={!!validationMessage}
         direction="down"
         color="white"
+        background={tooltipBackground}
         css={css`
           width: 100%; // this for the div that this unfortunately wraps the textarea with
           height: 100%;
