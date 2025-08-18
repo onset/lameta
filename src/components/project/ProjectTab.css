@@ -55,6 +55,12 @@ form.project {
       display: flex;
       height: initial;
       margin-bottom: 20px;
+      /* Global .multiline makes fields stack label over input (column).
+         For Project tabs we want consistent row alignment, even for
+         multiline fields like Description. */
+      &.multiline {
+        flex-direction: row;
+      }
       &.field__newSection {
         margin-top: 50px;
       }
