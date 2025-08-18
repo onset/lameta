@@ -103,6 +103,54 @@ describe("file", () => {
     expect(f2.getTextField("customone").text).toBe("hello");
   });
 
+  it("parses unambiguous US date+time without creating a note", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Date type="date">11/22/2011 4:26:36 AM</Date>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Should normalize to ISO date with time discarded
+    expect(f.getTextProperty("date")).toBe("2011-11-22");
+    // Should not have added a parsing error note
+    const notes = f.getTextProperty("notes", "");
+    expect(notes).not.toContain("Parsing Error");
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      // ignore cleanup errors
+    }
+  });
+
+  it("flags ambiguous date like 2/2/2022 and clears the date", () => {
+    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+      <Date type="date">2/2/2022</Date>
+      <title type="string">Test Session</title>
+    `);
+
+    const f = new SessionMetadataFile(
+      sessionFolder,
+      new EncounteredVocabularyRegistry()
+    );
+
+    // Ambiguous; we should clear the date
+    expect(f.getTextProperty("date")).toBe("");
+    // And we should have added a note explaining the parsing error
+    const notes = f.getTextProperty("notes", "");
+    expect(notes).toContain('Parsing Error: lameta could not parse "2/2/2022"');
+
+    try {
+      fs.removeSync(tmpFolder);
+    } catch (e) {
+      // ignore cleanup errors
+    }
+  });
+
   // e.g., SayMore Windows Classic has more fields that we do; we need
   // to preserve those so that people don't lose their work
   // just because they tried out this version of SayMore

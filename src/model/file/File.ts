@@ -156,24 +156,92 @@ export /*babel doesn't like this: abstract*/ class File {
 
     let date: moment.Moment;
 
-    date = moment(dateString, "YYYY-MM-DD", true /*strict*/);
-    if (!date.isValid()) {
-      //console.error(`Could not parse ${dateString} strictly.`);
-      date = moment(dateString, moment.ISO_8601); // e.g. "2010-01-01T05:06:07"
-      if (!date.isValid()) {
-        this.setTextProperty(
-          "notes",
-          `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
-            moment.now()
-          ).toString()}`
-        );
-        return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
-      }
+    // 1) Try strict YYYY-MM-DD first
+    date = moment(dateString, "YYYY-MM-DD", true /* strict */);
+    if (date.isValid()) {
+      return date.format("YYYY-MM-DD");
     }
-    const ISO_YEAR_MONTH_DATE_DASHES_FORMAT = "YYYY-MM-DD";
-    // if there is time info, throw that away.
-    const standardizedDate = date.format(ISO_YEAR_MONTH_DATE_DASHES_FORMAT);
-    return standardizedDate;
+
+    // 2) Try ISO 8601 (e.g., 2010-01-01T05:06:07)
+    const iso = moment(dateString, moment.ISO_8601, true);
+    if (iso.isValid()) {
+      return iso.format("YYYY-MM-DD");
+    }
+
+    // 3) Try common US/EU formats with optional times and detect ambiguity
+    // We only accept a date when it's unambiguously parsable to a single Y-M-D.
+    const US_FORMATS = [
+      // with time (12-hour clock)
+      "M/D/YYYY h:mm:ss A",
+      "M/D/YYYY h:mm A",
+      // with time (24-hour)
+      "M/D/YYYY H:mm:ss",
+      "M/D/YYYY H:mm",
+      // date only
+      "M/D/YYYY",
+      "MM/DD/YYYY"
+    ];
+    const EU_FORMATS = [
+      // with time (12-hour clock)
+      "D/M/YYYY h:mm:ss A",
+      "D/M/YYYY h:mm A",
+      // with time (24-hour)
+      "D/M/YYYY H:mm:ss",
+      "D/M/YYYY H:mm",
+      // date only
+      "D/M/YYYY",
+      "DD/MM/YYYY"
+    ];
+
+    const parseWithFormats = (s: string, formats: string[]) =>
+      formats
+        .map((f) => moment(s, f, true /* strict */))
+        .filter((m) => m.isValid())
+        .map((m) => m.format("YYYY-MM-DD"));
+
+    const usResults = parseWithFormats(dateString, US_FORMATS);
+    const euResults = parseWithFormats(dateString, EU_FORMATS);
+
+    // If both US and EU interpretations parse, treat as ambiguous regardless of equality
+    if (usResults.length > 0 && euResults.length > 0) {
+      this.setTextProperty(
+        "notes",
+        `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+          moment.now()
+        ).toString()}`
+      );
+      return "";
+    }
+
+    // If only one side parses, accept it
+    const unique = Array.from(new Set([...usResults, ...euResults]));
+    if (unique.length === 1) {
+      return unique[0];
+    }
+
+    // 4) Give moment one last permissive try with known relaxed tokens (e.g., MMM D, YYYY)
+    const FALLBACK_FORMATS = [
+      "MMM D, YYYY",
+      "MMMM D, YYYY",
+      "D MMM YYYY",
+      "D MMMM YYYY",
+      "YYYY/M/D",
+      "YYYY.M.D"
+    ];
+    const fallback = parseWithFormats(dateString, FALLBACK_FORMATS);
+    const fallbackUnique = Array.from(new Set(fallback));
+    if (fallbackUnique.length === 1) {
+      return fallbackUnique[0];
+    }
+
+    // If we reach here, either nothing parsed or it was ambiguous
+    this.setTextProperty(
+      "notes",
+      `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+        moment.now()
+      ).toString()}`
+    );
+    return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
   }
   protected addDateProperty(key: string, date: Date, persist: boolean = true) {
     this.checkType(key, date);
@@ -294,9 +362,9 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
-  const p = (this.properties as any).getValue(key); // safe direct lookup; avoids noisy throw/log
-  if (!p) return ifMissing;
-  return p.text;
+    const p = (this.properties as any).getValue(key); // safe direct lookup; avoids noisy throw/log
+    if (!p) return ifMissing;
+    return p.text;
   }
 
   public getTextField(key: string): Field {
