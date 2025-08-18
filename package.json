@@ -114,11 +114,11 @@
     "css-modules-require-hook": "^4.0.6",
     "csv-loader": "^3.0.3",
     "electron": "^37.3.0",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^25.1.8",
     "electron-builder-http": "^19.27.5",
     "electron-builder-notarize": "^1.5.2",
-    "electron-devtools-installer": "^3.2.0",
-    "electron-playwright-helpers": "^1.7.1",
+    "electron-devtools-installer": "^4.0.0",
+    "electron-playwright-helpers": "^1.8.2",
     "eslint": "^9.17.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-mfe": "latest",
@@ -175,9 +175,9 @@
     "csv-parse": "^4.10.1",
     "date-fns": "^2.14.0",
     "electron-call": "^0.1.0",
-    "electron-context-menu": "^4.0.1",
-    "electron-debug": "^4.0.0",
-    "electron-log": "^5.1.6",
+    "electron-context-menu": "^4.1.0",
+    "electron-debug": "^4.1.0",
+    "electron-log": "^5.4.3",
     "electron-store": "8.2.0",
     "eslint-plugin-react": "^7.37.2",
     "excel-date-to-js": "^1.1.5",
@@ -263,5 +263,9 @@
     "node": "22.16.0",
     "yarn": "1.22.19"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.19",
+  "dependency-notes": {
+    "vite-electron-plugin": "attempted upgrade from 12 to 14 broke because they apparently don't support node in renderer anymore",
+    "electron-builder": "upgrade from 25 to 26 broke, package just hangs."
+  }
 }
