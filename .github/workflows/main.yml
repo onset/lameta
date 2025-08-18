@@ -49,8 +49,8 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: Build/release Electron app
-        # Let's only do this if the commit is tagged with a version
-        #if: startsWith(github.ref, 'refs/tags/v')
+        # (disabled) Let's only do this if the commit is tagged with a version
+        # if: startsWith(github.ref, 'refs/tags/v')
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
           # GitHub token, automatically provided to the action

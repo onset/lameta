@@ -152,12 +152,29 @@ class HomePage extends React.Component<IProps, IState> {
   private previousFolderNames = "";
   public componentDidMount() {
     if (!this.isRunningFromSource()) {
-      ShowMessageDialog({
-        title: `Warning`,
-        text: "This is a beta test version, so make sure you have a backup of your work.",
-        width: "300px",
-        buttonText: "I understand"
-      });
+      const version = pkg.version as string;
+      const match = version.match(/-(alpha|beta)(?:\.|$)/);
+      const tag = (match && match[1]) as "alpha" | "beta" | undefined;
+      switch (tag) {
+        case "alpha":
+          ShowMessageDialog({
+            title: `TESTING ONLY`,
+            text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
+            width: "300px",
+            buttonText: "I understand"
+          });
+          break;
+        case "beta":
+          ShowMessageDialog({
+            title: `Warning`,
+            text: "This is a beta test version, so make sure you have a backup of your work.",
+            width: "300px",
+            buttonText: "I understand"
+          });
+          break;
+        default:
+        // release build: no prerelease tag, show nothing
+      }
     }
 
     if (userSettings.HowUsing === "") {
