@@ -1,0 +1,12 @@
+{
+  "name": "sample-data-generator",
+  "version": "1.0.0",
+  "description": "Generator for Lameta sample data",
+  "scripts": {
+    "generate": "bun generate-sample-data.ts",
+    "generate-expansion": "bun generate-sample-data.ts \"../sample data/Large Sample/kurbin-expansion-data.json\" \"../sample data/Large Sample\""
+  },
+  "dependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
