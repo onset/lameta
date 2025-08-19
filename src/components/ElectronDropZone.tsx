@@ -63,15 +63,133 @@ export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
         evt.stopPropagation();
 
         console.log("ElectronDropZone.handleDrop: start");
+        console.log("ElectronDropZone: full event:", evt);
+        console.log("ElectronDropZone: dataTransfer:", evt.dataTransfer);
+        console.log(
+          "ElectronDropZone: dataTransfer types:",
+          evt.dataTransfer?.types
+        );
+        console.log(
+          "ElectronDropZone: dataTransfer files:",
+          evt.dataTransfer?.files
+        );
+        console.log(
+          "ElectronDropZone: dataTransfer items:",
+          evt.dataTransfer?.items
+        );
 
         const paths: string[] = [];
 
-        // 1) Preferred: Electron provides absolute paths on File objects as .path
+        // 1) Preferred: Use Electron's webUtils to get absolute paths from File objects
         if (evt.dataTransfer?.files) {
+          console.log(
+            "ElectronDropZone: found",
+            evt.dataTransfer.files.length,
+            "files"
+          );
+          console.log(
+            "ElectronDropZone: electronAPI available?",
+            !!(window as any).electronAPI
+          );
+          console.log(
+            "ElectronDropZone: getPathForFile available?",
+            !!(window as any).electronAPI?.getPathForFile
+          );
+
           for (let i = 0; i < evt.dataTransfer.files.length; i++) {
-            const file = evt.dataTransfer.files.item(i) as any;
-            if (file?.path) {
-              paths.push(normalizeOsPath(file.path as string));
+            const file = evt.dataTransfer.files.item(i);
+            if (file) {
+              console.log(
+                "ElectronDropZone: processing file",
+                file.name,
+                "type:",
+                file.type,
+                "size:",
+                file.size
+              );
+              console.log(
+                "ElectronDropZone: file object keys:",
+                Object.keys(file)
+              );
+              console.log(
+                "ElectronDropZone: file.path (deprecated):",
+                (file as any).path
+              );
+              console.log("ElectronDropZone: file object:", file);
+
+              try {
+                // Use webUtils.getPathForFile() which is the modern way to get file paths in Electron
+                const filePath = (window as any).electronAPI?.getPathForFile(
+                  file
+                );
+                console.log(
+                  "ElectronDropZone: webUtils returned path:",
+                  filePath
+                );
+                if (filePath) {
+                  paths.push(normalizeOsPath(filePath));
+                }
+              } catch (e) {
+                console.log(
+                  "ElectronDropZone: error getting path for file",
+                  file.name,
+                  e
+                );
+                // Fallback to deprecated .path property if webUtils fails
+                console.log(
+                  "ElectronDropZone: trying fallback .path property:",
+                  (file as any).path
+                );
+                if ((file as any).path) {
+                  paths.push(normalizeOsPath((file as any).path));
+                }
+              }
+            }
+          }
+        }
+
+        // Let's also inspect DataTransfer items
+        if (evt.dataTransfer?.items) {
+          console.log(
+            "ElectronDropZone: found",
+            evt.dataTransfer.items.length,
+            "items"
+          );
+          for (let i = 0; i < evt.dataTransfer.items.length; i++) {
+            const item = evt.dataTransfer.items[i];
+            console.log(
+              "ElectronDropZone: item",
+              i,
+              "kind:",
+              item.kind,
+              "type:",
+              item.type
+            );
+            if (item.kind === "file") {
+              const file = item.getAsFile();
+              console.log("ElectronDropZone: item.getAsFile():", file);
+              if (file) {
+                console.log(
+                  "ElectronDropZone: item file name:",
+                  file.name,
+                  "path:",
+                  (file as any).path
+                );
+                try {
+                  const filePath = (window as any).electronAPI?.getPathForFile(
+                    file
+                  );
+                  console.log(
+                    "ElectronDropZone: webUtils for item file:",
+                    filePath
+                  );
+                  if (filePath && !paths.includes(filePath)) {
+                    paths.push(normalizeOsPath(filePath));
+                  }
+                } catch (e) {
+                  console.log("ElectronDropZone: error with item file:", e);
+                }
+              }
             }
           }
         }
