@@ -63,20 +63,7 @@ export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
         evt.stopPropagation();
 
         console.log("ElectronDropZone.handleDrop: start");
-        console.log("ElectronDropZone: full event:", evt);
-        console.log("ElectronDropZone: dataTransfer:", evt.dataTransfer);
-        console.log(
-          "ElectronDropZone: dataTransfer types:",
-          evt.dataTransfer?.types
-        );
-        console.log(
-          "ElectronDropZone: dataTransfer files:",
-          evt.dataTransfer?.files
-        );
-        console.log(
-          "ElectronDropZone: dataTransfer items:",
-          evt.dataTransfer?.items
-        );
+        console.log("ElectronDropZone: electronAPI available?", !!(window as any).electronAPI);
 
         const paths: string[] = [];
 
