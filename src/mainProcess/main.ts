@@ -22,6 +22,7 @@ if (process.platform === "win32") app.setAppUserModelId(app.getName());
 // so tests can launch while a developer has `yarn dev` running. The E2E harness
 // sets process.env.E2E. We also optionally redirect userData to an isolated temp
 // directory (E2ERoot) so settings/stores do not collide with a dev session.
+// For developers, we also allow multiple instances to make development easier.
 if (process.env.E2E) {
   if (process.env.E2ERoot) {
     try {
@@ -29,7 +30,13 @@ if (process.env.E2E) {
     } catch {}
   }
 } else {
-  if (!app.requestSingleInstanceLock()) {
+  // Allow multiple instances for developers
+  const isDeveloper =
+    is.dev ||
+    process.env.VITE_DEV_SERVER_URL ||
+    process.env.NODE_ENV === "development";
+
+  if (!isDeveloper && !app.requestSingleInstanceLock()) {
     app.quit();
     process.exit(0);
   }
