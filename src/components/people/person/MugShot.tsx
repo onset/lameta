@@ -16,20 +16,38 @@ export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
       console.log("MugShot.addFiles called with paths:", paths);
       if (paths.length > 0) {
         console.log("MugShot: calling copyInMugshot with path:", paths[0]);
-        console.log("MugShot: current mugshotPath before copy:", props.person.mugshotPath);
-        console.log("MugShot: current files count before copy:", props.person.files.length);
-        
-        props.person.copyInMugshot(paths[0]).then(() => {
-          console.log("MugShot: copyInMugshot completed successfully");
-          console.log("MugShot: current mugshotPath after copy:", props.person.mugshotPath);
-          console.log("MugShot: current files count after copy:", props.person.files.length);
-          console.log("MugShot: all files after copy:", props.person.files.map(f => f.pathInFolderToLinkFileOrLocalCopy));
-          
-          // Force a re-render by updating the refresh key
-          setRefreshKey(prev => prev + 1);
-        }).catch((error) => {
-          console.error("MugShot: copyInMugshot failed:", error);
-        });
+        console.log(
+          "MugShot: current mugshotPath before copy:",
+          props.person.mugshotPath
+        );
+        console.log(
+          "MugShot: current files count before copy:",
+          props.person.files.length
+        );
+
+        props.person
+          .copyInMugshot(paths[0])
+          .then(() => {
+            console.log("MugShot: copyInMugshot completed successfully");
+            console.log(
+              "MugShot: current mugshotPath after copy:",
+              props.person.mugshotPath
+            );
+            console.log(
+              "MugShot: current files count after copy:",
+              props.person.files.length
+            );
+            console.log(
+              "MugShot: all files after copy:",
+              props.person.files.map((f) => f.pathInFolderToLinkFileOrLocalCopy)
+            );
+
+            // Force a re-render by updating the refresh key
+            setRefreshKey((prev) => prev + 1);
+          })
+          .catch((error) => {
+            console.error("MugShot: copyInMugshot failed:", error);
+          });
       }
     };
 
