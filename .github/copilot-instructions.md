@@ -38,6 +38,8 @@
 
 - If you make a change and e2e does not seem to reflect the change, try a console.log statement as a sanity check. If e2ebuildwatch is running, it should pick up the changes, but if it is not, you may need to run it or do a `yarn build`.
 
+- yarn e2ebuildwatch is not reliable for changes to main, preload, etc. Only things in the render process. Therefore, make sure to do a `yarn build` after touching these things. Wait for it to finish, then continue.
+
 - Keep the e2e tests clean by factoring out helper functions that are used across tests. See folderSearch-utilities.ts and e2eProject.ts for examples.
 
 - try not to use time-based waiting that might fail on slower machines. Try to find some dom-based thing to tell you that that the screen is ready.
