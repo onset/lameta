@@ -214,7 +214,7 @@
     "react-close-on-escape": "^2.0.0",
     "react-datepicker": "^4.24.0",
     "react-dom": "^17.0.2",
-    "react-dropzone": "7.0.1",
+    "react-dropzone": "14.2.10",
     "react-error-boundary": "^3.1.4",
     "react-markdown": "^5.0.3",
     "react-modal": "^3.16.3",
@@ -266,6 +266,7 @@
   "packageManager": "yarn@1.22.19",
   "dependency-notes": {
     "vite-electron-plugin": "upgrade from 12 to 14 broke because they apparently don't support node in renderer anymore",
-    "electron-builder": "upgrade from 25 to 26 broke, package just hangs."
+    "electron-builder": "upgrade from 25 to 26 broke, package just hangs.",
+    "react-dropzone": "They broke electron in 14.3.0 https://github.com/react-dropzone/react-dropzone/issues/1411"
   }
 }

@@ -1,39 +1,80 @@
+import { css } from "@emotion/react";
+import * as React from "react";
 import { observer } from "mobx-react";
 import { Person } from "../../../model/Project/Person/Person";
-import Dropzone from "react-dropzone";
-import * as fs from "fs-extra";
-import { MugshotPlaceholder } from "./MugshotPlaceholderIcon";
-import ImageField from "../../ImageField";
-import "../../common.css";
-import React, { useState } from "react";
+import { ElectronDropZone } from "../../ElectronDropZone";
 
-export const MugShot: React.FunctionComponent<{
+export interface IMugShotProps {
   person: Person;
-  unused: string;
-}> = observer((props) => {
-  const [path, setPath] = useState(props.person.mugshotPath);
+}
 
-  return (
-    <Dropzone
-      className={"mugshot"}
-      activeClassName={"drop-active"}
-      onDrop={(accepted, rejected) => {
-        if (accepted.length > 0) {
-          props.person
-            .copyInMugshot((accepted[0] as any).path)
-            .then(() => setPath(props.person.mugshotPath));
-        }
-      }}
-      accept="image/jpg,image/jpeg,image/png"
-    >
-      <div className={"mask onlyIfInDropZone"}>Drop here</div>
-      {props.person.mugshotPath &&
-      props.person.mugshotPath.length > 0 &&
-      fs.existsSync(props.person.mugshotPath) ? (
-        <ImageField path={path + "?nocache=" + new Date().getTime()} />
-      ) : (
-        <MugshotPlaceholder />
-      )}
-    </Dropzone>
-  );
-});
+export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
+  (props) => {
+    const onDrop = (paths: string[]) => {
+      if (paths.length > 0) {
+        props.person.copyInMugshot(paths[0]);
+      }
+    };
+
+    const getContainerStyle = (isDragActive: boolean) => css`
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      background-color: ${isDragActive ? "#e8f4fd" : "#f9f9f9"};
+      border-color: ${isDragActive ? "#007ACC" : "#ccc"};
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #f0f0f0;
+        border-color: #007acc;
+      }
+    `;
+
+    const imageStyle = css`
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    `;
+
+    const placeholderStyle = css`
+      color: #666;
+      font-size: 12px;
+      text-align: center;
+      padding: 4px;
+    `;
+
+    return (
+      <ElectronDropZone
+        onDrop={onDrop}
+        multipleFiles={false}
+        accept={{
+          "image/*": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"]
+        }}
+      >
+        {({ getRootProps, getInputProps, isDragActive }) => (
+          <div {...getRootProps()} css={getContainerStyle(isDragActive)}>
+            <input {...getInputProps()} />
+            {props.person.mugshotPath ? (
+              <img
+                src={`file://${props.person.mugshotPath}`}
+                alt="Person mugshot"
+                css={imageStyle}
+              />
+            ) : (
+              <div css={placeholderStyle}>
+                Drop image here or click to select
+              </div>
+            )}
+          </div>
+        )}
+      </ElectronDropZone>
+    );
+  }
+);

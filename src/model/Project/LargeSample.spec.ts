@@ -1,11 +1,17 @@
 import { describe, it, expect } from "vitest";
 import { Project } from "./Project";
 import { Session } from "./Session/Session";
+import fs from "fs";
+import path from "path";
 
-describe("Large Sample Project Loading", () => {
+// Skip this suite if the optional Large Sample fixtures are not present locally
+const largeSamplePath = path.resolve("sample data", "Large Sample");
+const hasLargeSample = fs.existsSync(largeSamplePath);
+
+(hasLargeSample ? describe : describe.skip)("Large Sample Project Loading", () => {
   it("should successfully load the Large Sample project via Project.fromDirectory", () => {
     // Test that Project.fromDirectory can load the comprehensive sample without errors
-    const project = Project.fromDirectory("sample data/Large Sample");
+  const project = Project.fromDirectory("sample data/Large Sample");
 
     // Verify basic project properties
     expect(project).toBeDefined();

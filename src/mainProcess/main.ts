@@ -42,7 +42,7 @@ let win: BrowserWindow | null = null;
 export { win as mainWindow };
 
 // Here, you can also use other preload
-//const preload = join(__dirname, "../preload/index.js");
+const preload = join(__dirname, "../preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, "index.html");
 
@@ -67,7 +67,7 @@ async function createWindow() {
     title: "Main window",
     //icon: join(process.env.PUBLIC, "favicon.svg"),
     webPreferences: {
-      //preload,
+      preload,
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false // this is safe, so long as we have no way of showing external web content
@@ -144,7 +144,7 @@ app.on("activate", () => {
 ipcMain.handle("open-win", (event, arg) => {
   const childWindow = new BrowserWindow({
     webPreferences: {
-      //preload,
+      preload,
       nodeIntegration: true,
       contextIsolation: false
     }

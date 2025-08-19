@@ -67,10 +67,7 @@ class PersonForm extends React.Component<IProps> {
           className={"gender"}
           field={this.props.fields.getTextField("gender")}
         />
-        <MugShot
-          person={this.props.person}
-          unused={this.props.person.displayName}
-        />
+        <MugShot person={this.props.person} />
 
         <TextFieldEdit
           field={this.props.fields.getTextField("description")}

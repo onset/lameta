@@ -2,7 +2,7 @@ import * as React from "react";
 import { default as ReactTable, RowInfo } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
-import Dropzone from "react-dropzone";
+import { ElectronDropZone } from "./ElectronDropZone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.css";
@@ -16,6 +16,7 @@ import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
+import * as nodePath from "path";
 import { getExtension } from "../other/CopyManager";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import {
@@ -29,9 +30,9 @@ import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 const electron = require("electron");
-
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
+
   extraButtons?: object[];
 }> = (props) => {
   React.useEffect(() => {
@@ -225,134 +226,144 @@ export const _FileList: React.FunctionComponent<{
   const filesPerPage = Math.min(300, props.folder.files.length);
 
   return (
-    <Dropzone
-      activeClassName={"drop-active"}
-      className={"fileList"}
-      onDrop={(accepted, rejected) => {
-        addFiles(
-          props.folder,
-          accepted.map((f) => (f as any).path)
-        );
-      }}
-      disableClick
+    <ElectronDropZone
+      onDrop={(filePaths) => addFiles(props.folder, filePaths)}
+      multipleFiles={true}
+      noClick
     >
-      <div className={"mask onlyIfInDropZone"}>Drop files here</div>
-      <div className={"fileBar"}>
-        <button
-          disabled={
-            isNullOrUndefined(props.folder.selectedFile) || isSpecialSayMoreFile
-          }
-          onClick={() => {
-            showFileMenu(
-              props.folder,
-              props.folder.selectedFile!,
-              false,
-              isSpecialSayMoreFile
-            );
-          }}
+      {({ getRootProps, getInputProps, isDragActive }) => (
+        <div
+          {...getRootProps({
+            className: `fileList ${isDragActive ? "drop-active" : ""}`
+          })}
         >
-          <Trans>Open</Trans>
-          {/* <ul className={"menu"}>
+          <input {...getInputProps()} />
+          <div className={"mask onlyIfInDropZone"}>Drop files here</div>
+          <div className={"fileBar"}>
+            <button
+              disabled={
+                isNullOrUndefined(props.folder.selectedFile) ||
+                isSpecialSayMoreFile
+              }
+              onClick={() => {
+                showFileMenu(
+                  props.folder,
+                  props.folder.selectedFile!,
+                  false,
+                  isSpecialSayMoreFile
+                );
+              }}
+            >
+              <Trans>Open</Trans>
+              {/* <ul className={"menu"}>
               <li className={"cmd-show-in-explorer"}>
                 Show in File Explorer...
               </li>
             </ul> */}
-        </button>
-        <button
-          className={"cmd-rename"}
-          disabled={isSpecialSayMoreFile}
-          onClick={() =>
-            ShowRenameDialog(props.folder.selectedFile!, props.folder)
-          }
-        >
-          <Trans>Rename...</Trans>
-        </button>
-        {props.extraButtons
-          ? props.extraButtons.map((c) => (
-              <button
-                key={(c as any).label}
-                disabled={!(c as any).enabled(props.folder.selectedFile)}
-                onClick={() => (c as any).onClick(props.folder.selectedFile)}
-              >
-                {(c as any).label}
-              </button>
-            ))
-          : null}
-        <button
-          className={"cmd-add-files"}
-          onClick={async () => await showAddFilesDialog(props.folder)}
-        >
-          <Trans> Add Files</Trans>
-        </button>
-      </div>
-      <ReactTable
-        //cause us to reset scroll to top when we change folders
-        key={props.folder.directory}
-        className="fileList"
-        showPagination={props.folder.files.length > filesPerPage}
-        pageSize={filesPerPage}
-        showPageSizeOptions={false}
-        data={props.folder.files}
-        columns={columns}
-        onFetchData={() => scrollSelectedIntoView("fileList")}
-        getTrProps={(state: any, rowInfo: any, column: any) => {
-          //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-          const { missing, status, info } = getStatusOfFile(rowInfo.original);
-          const metadataMatch = fileHasMetadataMatch(
-            rowInfo.original,
-            searchTerm
-          );
-
-          return {
-            title: info,
-            onContextMenu: (e: any) => {
-              e.preventDefault();
-              //First select the row
-              props.folder.selectedFile = rowInfo.original;
-              setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
-              //this event doesn't want to be accessed in the timeout, so store the coordinates
-              const x = e.clientX;
-              const y = e.clientY;
-              // then after it is selected, show the context menu
-              window.setTimeout(
-                () =>
-                  showFileMenu(
-                    props.folder,
-                    rowInfo.original,
-                    true,
-                    isSpecialSayMoreFile,
-                    x,
-                    y
-                  ),
-                0
-              );
-            },
-            onClick: (e: any, x: any) => {
-              const file = rowInfo.original as File;
-              if (!file.copyInProgress) {
-                if (props.folder.selectedFile != null) {
-                  // will only save if it thinks it is dirty
-                  props.folder.selectedFile.save();
-                }
-                props.folder.selectedFile = rowInfo.original;
-                setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+            </button>
+            <button
+              className={"cmd-rename"}
+              disabled={isSpecialSayMoreFile}
+              onClick={() =>
+                ShowRenameDialog(props.folder.selectedFile!, props.folder)
               }
-            },
-            className:
-              (rowInfo.original.copyInProgress ? "copyPending " : "") +
-              ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
-              status +
-              " " +
-              (rowInfo && rowInfo.original === props.folder.selectedFile
-                ? " selected "
-                : "") +
-              (metadataMatch ? " metadataMatch " : ""),
-            "data-testid": metadataMatch ? "file-metadata-match" : undefined,
-            style: undefined
-          };
-        }}
-      />
-    </Dropzone>
+            >
+              <Trans>Rename...</Trans>
+            </button>
+            {props.extraButtons
+              ? props.extraButtons.map((c) => (
+                  <button
+                    key={(c as any).label}
+                    disabled={!(c as any).enabled(props.folder.selectedFile)}
+                    onClick={() =>
+                      (c as any).onClick(props.folder.selectedFile)
+                    }
+                  >
+                    {(c as any).label}
+                  </button>
+                ))
+              : null}
+            <button
+              className={"cmd-add-files"}
+              onClick={async () => await showAddFilesDialog(props.folder)}
+            >
+              <Trans> Add Files</Trans>
+            </button>
+          </div>
+          <ReactTable
+            //cause us to reset scroll to top when we change folders
+            key={props.folder.directory}
+            className="fileList"
+            showPagination={props.folder.files.length > filesPerPage}
+            pageSize={filesPerPage}
+            showPageSizeOptions={false}
+            data={props.folder.files}
+            columns={columns}
+            onFetchData={() => scrollSelectedIntoView("fileList")}
+            getTrProps={(state: any, rowInfo: any, column: any) => {
+              //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
+              const { missing, status, info } = getStatusOfFile(
+                rowInfo.original
+              );
+              const metadataMatch = fileHasMetadataMatch(
+                rowInfo.original,
+                searchTerm
+              );
+
+              return {
+                title: info,
+                onContextMenu: (e: any) => {
+                  e.preventDefault();
+                  //First select the row
+                  props.folder.selectedFile = rowInfo.original;
+                  setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                  //this event doesn't want to be accessed in the timeout, so store the coordinates
+                  const x = e.clientX;
+                  const y = e.clientY;
+                  // then after it is selected, show the context menu
+                  window.setTimeout(
+                    () =>
+                      showFileMenu(
+                        props.folder,
+                        rowInfo.original,
+                        true,
+                        isSpecialSayMoreFile,
+                        x,
+                        y
+                      ),
+                    0
+                  );
+                },
+                onClick: (e: any, x: any) => {
+                  const file = rowInfo.original as File;
+                  if (!file.copyInProgress) {
+                    if (props.folder.selectedFile != null) {
+                      // will only save if it thinks it is dirty
+                      props.folder.selectedFile.save();
+                    }
+                    props.folder.selectedFile = rowInfo.original;
+                    setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                  }
+                },
+                className:
+                  (rowInfo.original.copyInProgress ? "copyPending " : "") +
+                  ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
+                  status +
+                  " " +
+                  (rowInfo && rowInfo.original === props.folder.selectedFile
+                    ? " selected "
+                    : "") +
+                  (metadataMatch ? " metadataMatch " : ""),
+                "data-testid": metadataMatch
+                  ? "file-metadata-match"
+                  : undefined,
+                style: undefined
+              };
+            }}
+          />
+        </div>
+      )}
+    </ElectronDropZone>
   );
 };
 
@@ -441,17 +452,79 @@ async function showAddFilesDialog(folder: Folder) {
 }
 
 function addFiles(folder: Folder, paths: string[]) {
+  // Filter out anything without a usable string path
+  const rawPaths = (paths || []).filter(
+    (p): p is string => typeof p === "string" && p.length > 0
+  );
+  const validPaths = rawPaths.filter((p) => {
+    try {
+      return nodePath.isAbsolute(p);
+    } catch {
+      return false;
+    }
+  });
+  try {
+    console.info("[FileList:addFiles] incoming paths:", paths);
+    console.info("[FileList:addFiles] validPaths:", validPaths);
+  } catch {}
+  if (validPaths.length === 0) {
+    try {
+      const stack = new Error("addFiles no valid paths").stack;
+      console.warn("[FileList:addFiles] No valid file paths provided.", {
+        stack
+      });
+      const rels = rawPaths.filter((p) => p && !nodePath.isAbsolute(p));
+      if (rels.length > 0) {
+        console.warn(
+          "[FileList:addFiles] Relative paths are not supported in Electron:",
+          rels
+        );
+      }
+    } catch {}
+    NotifyWarning(
+      t`No valid file paths were provided. Try dragging from your file manager so lameta receives absolute file paths.`
+    );
+    return;
+  }
+
+  // Block lameta internal file types by extension
   if (
-    paths.some((path) =>
+    validPaths.some((path) =>
       ["session", "person", "meta"].includes(getExtension(path))
     )
   ) {
+    try {
+      console.warn(
+        "[FileList:addFiles] Blocked internal lameta file type.",
+        validPaths
+      );
+    } catch {}
     NotifyWarning(t`You cannot add files of that type`);
     return;
   }
-  if (paths.some((path) => fs.lstatSync(path).isDirectory())) {
-    NotifyWarning(t`You cannot add folders.`);
+
+  // Disallow folders; catch and surface any fs errors as warnings
+  try {
+    if (validPaths.some((path) => fs.lstatSync(path).isDirectory())) {
+      try {
+        console.warn(
+          "[FileList:addFiles] Folders are not allowed.",
+          validPaths
+        );
+      } catch {}
+      NotifyWarning(t`You cannot add folders.`);
+      return;
+    }
+  } catch (err) {
+    // If a path doesn't exist or can't be stat'ed, warn and skip it rather than crashing the UI
+    try {
+      console.error("[FileList:addFiles] Error accessing file(s)", err);
+    } catch {}
+    NotifyWarning(
+      t`One or more files could not be accessed. Please check the paths and try again.`
+    );
     return;
   }
-  folder.copyInFiles(paths);
+
+  folder.copyInFiles(validPaths);
 }

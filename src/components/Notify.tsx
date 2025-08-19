@@ -59,6 +59,11 @@ function notify(
   }, 0);
 }
 export function NotifyError(message: string, details?: string) {
+  // Always mirror to console with a stack for diagnostics
+  try {
+    const stack = new Error("NotifyError stack").stack;
+    console.error("[NotifyError]", message, details ?? "", { stack });
+  } catch {}
   notify(message, details, errorToastProps);
 }
 export function getCannotRenameFileMsg() {
@@ -182,6 +187,11 @@ export function NotifyErrorWithClick(message: string, onClick: () => void) {
   notify(message, "", { ...errorToastProps, onClick: onClick });
 }
 export function NotifyWarning(message: string) {
+  // Always mirror to console with a stack for diagnostics
+  try {
+    const stack = new Error("NotifyWarning stack").stack;
+    console.warn("[NotifyWarning]", message, { stack });
+  } catch {}
   notify(message, "", { type: "warning" });
 }
 export function NotifySuccess(message: string, onClick?: () => void) {

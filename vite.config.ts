@@ -54,7 +54,7 @@ export default defineConfig({
         "src/mainProcess/main",
         "src/other/locateDependency.ts",
         "src/mainProcess/MainProcessApi.ts",
-        "src/mainProcess/preload",
+        "src/preload",
         "src/mainProcess/validateImdi.ts"
       ],
       transformOptions: {
