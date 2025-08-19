@@ -25,23 +25,66 @@ export class FolderSearchTermsIndex {
     // Rebuild index reactively when folder items or contained file lists change.
     reaction(
       () =>
-        this.group!.items.map(
-          (f) =>
-            f.properties
-              .values()
-              .map((fld: any) =>
-                fld && typeof fld.text === "string" ? fld.text : ""
-              )
-              .join("|") +
-            "::" +
-            (f.files || [])
-              .map((file: any) =>
+        this.group!.items.map((f) => {
+          // Folder-level properties signature (e.g., Session/Person fields)
+          const folderPropsSig = f.properties
+            .values()
+            .map((fld: any) =>
+              fld && typeof fld.text === "string" ? fld.text : ""
+            )
+            .join("|");
+
+          // Files signature: include file names, file metadata field texts, and contributions
+          const filesSig = (f.files || [])
+            .map((file: any) => {
+              const name =
                 file && file.pathInFolderToLinkFileOrLocalCopy
                   ? Path.basename(file.pathInFolderToLinkFileOrLocalCopy)
-                  : ""
-              )
-              .join(",")
-        ).join("\n"),
+                  : "";
+              let propsText = "";
+              try {
+                if (file && file.properties && file.properties.values) {
+                  propsText = file.properties
+                    .values()
+                    .map((p: any) =>
+                      p && typeof p.text === "string" ? p.text : ""
+                    )
+                    .join("|");
+                }
+              } catch {}
+              let contribText = "";
+              try {
+                if (file && Array.isArray(file.contributions)) {
+                  contribText = file.contributions
+                    .map((c: any) =>
+                      [c?.personReference, c?.role, c?.comments]
+                        .filter(Boolean)
+                        .join("|")
+                    )
+                    .join(";");
+                }
+              } catch {}
+              return [name, propsText, contribText].join("||");
+            })
+            .join(",");
+
+          // Language-related signals for Person/Session (match makeBlob sources)
+          let languageSig = "";
+          try {
+            if (f.metadataFile instanceof PersonMetadataFile) {
+              languageSig = (f.metadataFile.languages || [])
+                .map((lng: any) => lng?.code || "")
+                .join("|");
+            } else if (f.metadataFile instanceof SessionMetadataFile) {
+              const subject = f.properties.getTextStringOrEmpty("languages");
+              const working =
+                f.properties.getTextStringOrEmpty("workingLanguages");
+              languageSig = [subject, working].join("|");
+            }
+          } catch {}
+
+          return [folderPropsSig, filesSig, languageSig].join("::");
+        }).join("\n"),
       (sig, prev) => {
         if (sig !== prev) {
           this.build();
