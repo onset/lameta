@@ -40,4 +40,32 @@ test.describe("FileList", () => {
     //await project.deleteFile("foo.txt");
     //await expect(match()).toBeUndefined();
   });
+
+  test("after adding a file, it becomes the selected file", async ({}, testInfo) => {
+    await project.goToSessions();
+    await project.addSession();
+
+    // Add the first file
+    await fileList.addFile("first-file.txt");
+
+    // Wait for the file to appear and then check it's selected (has the "selected" class)
+    const firstFileRow = page
+      .getByRole("row")
+      .filter({ has: page.getByRole("gridcell", { name: "first-file.txt" }) });
+    await expect(firstFileRow).toBeVisible();
+    await expect(firstFileRow).toHaveClass(/selected/);
+
+    // Add a second file
+    await fileList.addFile("second-file.txt");
+
+    // Wait for the second file to appear and check it becomes selected
+    const secondFileRow = page
+      .getByRole("row")
+      .filter({ has: page.getByRole("gridcell", { name: "second-file.txt" }) });
+    await expect(secondFileRow).toBeVisible();
+    await expect(secondFileRow).toHaveClass(/selected/);
+
+    // The first file should no longer be selected
+    await expect(firstFileRow).not.toHaveClass(/selected/);
+  });
 });

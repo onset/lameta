@@ -227,7 +227,9 @@ export const _FileList: React.FunctionComponent<{
 
   return (
     <ElectronDropZone
-      addFiles={(filePaths) => addFiles(props.folder, filePaths)}
+      addFiles={(filePaths) =>
+        addFiles(props.folder, filePaths, setSelectedFile)
+      }
     >
       <div className="fileList">
         <input type="file" style={{ display: "none" }} />
@@ -276,7 +278,9 @@ export const _FileList: React.FunctionComponent<{
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={async () => await showAddFilesDialog(props.folder)}
+            onClick={async () =>
+              await showAddFilesDialog(props.folder, setSelectedFile)
+            }
           >
             <Trans> Add Files</Trans>
           </button>
@@ -427,17 +431,24 @@ function showFileMenu(
   remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
 }
 
-async function showAddFilesDialog(folder: Folder) {
+async function showAddFilesDialog(
+  folder: Folder,
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+) {
   const options: OpenDialogOptions = {
     properties: ["openFile", "multiSelections"]
   };
   const result = await ipcRenderer.invoke("showOpenDialog", options);
   if (result && result.filePaths && result.filePaths.length > 0) {
-    await addFiles(folder, result.filePaths);
+    await addFiles(folder, result.filePaths, setSelectedFile);
   }
 }
 
-function addFiles(folder: Folder, paths: string[]) {
+async function addFiles(
+  folder: Folder,
+  paths: string[],
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+) {
   // Filter out anything without a usable string path
   const rawPaths = (paths || []).filter(
     (p): p is string => typeof p === "string" && p.length > 0
@@ -512,5 +523,33 @@ function addFiles(folder: Folder, paths: string[]) {
     return;
   }
 
-  folder.copyInFiles(validPaths);
+  // Store the initial file count to identify newly added files
+  const initialFileCount = folder.files.length;
+
+  await folder.copyInFiles(validPaths);
+
+  // Select the first newly added file if any files were successfully added
+  if (folder.files.length > initialFileCount) {
+    const newlyAddedFile = folder.files[initialFileCount];
+
+    // Wait for the file to finish copying before selecting it
+    const waitForCopyComplete = () => {
+      return new Promise<void>((resolve) => {
+        const checkCopyStatus = () => {
+          if (!newlyAddedFile.copyInProgress) {
+            resolve();
+          } else {
+            // Check again in 100ms
+            setTimeout(checkCopyStatus, 100);
+          }
+        };
+        checkCopyStatus();
+      });
+    };
+
+    await waitForCopyComplete();
+
+    folder.selectedFile = newlyAddedFile;
+    setSelectedFile(newlyAddedFile);
+  }
 }
