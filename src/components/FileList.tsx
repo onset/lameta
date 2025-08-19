@@ -227,142 +227,128 @@ export const _FileList: React.FunctionComponent<{
 
   return (
     <ElectronDropZone
-      onDrop={(filePaths) => addFiles(props.folder, filePaths)}
-      multipleFiles={true}
-      noClick
+      addFiles={(filePaths) => addFiles(props.folder, filePaths)}
     >
-      {({ getRootProps, getInputProps, isDragActive }) => (
-        <div
-          {...getRootProps({
-            className: `fileList ${isDragActive ? "drop-active" : ""}`
-          })}
-        >
-          <input {...getInputProps()} />
-          <div className={"mask onlyIfInDropZone"}>Drop files here</div>
-          <div className={"fileBar"}>
-            <button
-              disabled={
-                isNullOrUndefined(props.folder.selectedFile) ||
+      <div className="fileList">
+        <input type="file" style={{ display: "none" }} />
+        <div className={"mask onlyIfInDropZone"}>Drop files here</div>
+        <div className={"fileBar"}>
+          <button
+            disabled={
+              isNullOrUndefined(props.folder.selectedFile) ||
+              isSpecialSayMoreFile
+            }
+            onClick={() => {
+              showFileMenu(
+                props.folder,
+                props.folder.selectedFile!,
+                false,
                 isSpecialSayMoreFile
-              }
-              onClick={() => {
-                showFileMenu(
-                  props.folder,
-                  props.folder.selectedFile!,
-                  false,
-                  isSpecialSayMoreFile
-                );
-              }}
-            >
-              <Trans>Open</Trans>
-              {/* <ul className={"menu"}>
+              );
+            }}
+          >
+            <Trans>Open</Trans>
+            {/* <ul className={"menu"}>
               <li className={"cmd-show-in-explorer"}>
                 Show in File Explorer...
               </li>
             </ul> */}
-            </button>
-            <button
-              className={"cmd-rename"}
-              disabled={isSpecialSayMoreFile}
-              onClick={() =>
-                ShowRenameDialog(props.folder.selectedFile!, props.folder)
-              }
-            >
-              <Trans>Rename...</Trans>
-            </button>
-            {props.extraButtons
-              ? props.extraButtons.map((c) => (
-                  <button
-                    key={(c as any).label}
-                    disabled={!(c as any).enabled(props.folder.selectedFile)}
-                    onClick={() =>
-                      (c as any).onClick(props.folder.selectedFile)
-                    }
-                  >
-                    {(c as any).label}
-                  </button>
-                ))
-              : null}
-            <button
-              className={"cmd-add-files"}
-              onClick={async () => await showAddFilesDialog(props.folder)}
-            >
-              <Trans> Add Files</Trans>
-            </button>
-          </div>
-          <ReactTable
-            //cause us to reset scroll to top when we change folders
-            key={props.folder.directory}
-            className="fileList"
-            showPagination={props.folder.files.length > filesPerPage}
-            pageSize={filesPerPage}
-            showPageSizeOptions={false}
-            data={props.folder.files}
-            columns={columns}
-            onFetchData={() => scrollSelectedIntoView("fileList")}
-            getTrProps={(state: any, rowInfo: any, column: any) => {
-              //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-              const { missing, status, info } = getStatusOfFile(
-                rowInfo.original
-              );
-              const metadataMatch = fileHasMetadataMatch(
-                rowInfo.original,
-                searchTerm
-              );
+          </button>
+          <button
+            className={"cmd-rename"}
+            disabled={isSpecialSayMoreFile}
+            onClick={() =>
+              ShowRenameDialog(props.folder.selectedFile!, props.folder)
+            }
+          >
+            <Trans>Rename...</Trans>
+          </button>
+          {props.extraButtons
+            ? props.extraButtons.map((c) => (
+                <button
+                  key={(c as any).label}
+                  disabled={!(c as any).enabled(props.folder.selectedFile)}
+                  onClick={() => (c as any).onClick(props.folder.selectedFile)}
+                >
+                  {(c as any).label}
+                </button>
+              ))
+            : null}
+          <button
+            className={"cmd-add-files"}
+            onClick={async () => await showAddFilesDialog(props.folder)}
+          >
+            <Trans> Add Files</Trans>
+          </button>
+        </div>
+        <ReactTable
+          //cause us to reset scroll to top when we change folders
+          key={props.folder.directory}
+          className="fileList"
+          showPagination={props.folder.files.length > filesPerPage}
+          pageSize={filesPerPage}
+          showPageSizeOptions={false}
+          data={props.folder.files}
+          columns={columns}
+          onFetchData={() => scrollSelectedIntoView("fileList")}
+          getTrProps={(state: any, rowInfo: any, column: any) => {
+            //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
+            const { missing, status, info } = getStatusOfFile(rowInfo.original);
+            const metadataMatch = fileHasMetadataMatch(
+              rowInfo.original,
+              searchTerm
+            );
 
-              return {
-                title: info,
-                onContextMenu: (e: any) => {
-                  e.preventDefault();
-                  //First select the row
+            return {
+              title: info,
+              onContextMenu: (e: any) => {
+                e.preventDefault();
+                //First select the row
+                props.folder.selectedFile = rowInfo.original;
+                setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                //this event doesn't want to be accessed in the timeout, so store the coordinates
+                const x = e.clientX;
+                const y = e.clientY;
+                // then after it is selected, show the context menu
+                window.setTimeout(
+                  () =>
+                    showFileMenu(
+                      props.folder,
+                      rowInfo.original,
+                      true,
+                      isSpecialSayMoreFile,
+                      x,
+                      y
+                    ),
+                  0
+                );
+              },
+              onClick: (e: any, x: any) => {
+                const file = rowInfo.original as File;
+                if (!file.copyInProgress) {
+                  if (props.folder.selectedFile != null) {
+                    // will only save if it thinks it is dirty
+                    props.folder.selectedFile.save();
+                  }
                   props.folder.selectedFile = rowInfo.original;
                   setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
-                  //this event doesn't want to be accessed in the timeout, so store the coordinates
-                  const x = e.clientX;
-                  const y = e.clientY;
-                  // then after it is selected, show the context menu
-                  window.setTimeout(
-                    () =>
-                      showFileMenu(
-                        props.folder,
-                        rowInfo.original,
-                        true,
-                        isSpecialSayMoreFile,
-                        x,
-                        y
-                      ),
-                    0
-                  );
-                },
-                onClick: (e: any, x: any) => {
-                  const file = rowInfo.original as File;
-                  if (!file.copyInProgress) {
-                    if (props.folder.selectedFile != null) {
-                      // will only save if it thinks it is dirty
-                      props.folder.selectedFile.save();
-                    }
-                    props.folder.selectedFile = rowInfo.original;
-                    setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
-                  }
-                },
-                className:
-                  (rowInfo.original.copyInProgress ? "copyPending " : "") +
-                  ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
-                  status +
-                  " " +
-                  (rowInfo && rowInfo.original === props.folder.selectedFile
-                    ? " selected "
-                    : "") +
-                  (metadataMatch ? " metadataMatch " : ""),
-                "data-testid": metadataMatch
-                  ? "file-metadata-match"
-                  : undefined,
-                style: undefined
-              };
-            }}
-          />
-        </div>
-      )}
+                }
+              },
+              className:
+                (rowInfo.original.copyInProgress ? "copyPending " : "") +
+                ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
+                status +
+                " " +
+                (rowInfo && rowInfo.original === props.folder.selectedFile
+                  ? " selected "
+                  : "") +
+                (metadataMatch ? " metadataMatch " : ""),
+              "data-testid": metadataMatch ? "file-metadata-match" : undefined,
+              style: undefined
+            };
+          }}
+        />
+      </div>
     </ElectronDropZone>
   );
 };

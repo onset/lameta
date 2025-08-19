@@ -10,13 +10,26 @@ export interface IMugShotProps {
 
 export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
   (props) => {
-    const onDrop = (paths: string[]) => {
+    const addFiles = (paths: string[]) => {
       if (paths.length > 0) {
         props.person.copyInMugshot(paths[0]);
       }
     };
 
-    const getContainerStyle = (isDragActive: boolean) => css`
+    const fileCanBeDropped = (path: string): boolean => {
+      const imageExtensions = [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".bmp",
+        ".webp"
+      ];
+      const ext = path.toLowerCase().substring(path.lastIndexOf("."));
+      return imageExtensions.includes(ext);
+    };
+
+    const getContainerStyle = (isDragActive: boolean = false) => css`
       border: 1px solid #ccc;
       border-radius: 4px;
       padding: 8px;
@@ -51,29 +64,19 @@ export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
     `;
 
     return (
-      <ElectronDropZone
-        onDrop={onDrop}
-        multipleFiles={false}
-        accept={{
-          "image/*": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"]
-        }}
-      >
-        {({ getRootProps, getInputProps, isDragActive }) => (
-          <div {...getRootProps()} css={getContainerStyle(isDragActive)}>
-            <input {...getInputProps()} />
-            {props.person.mugshotPath ? (
-              <img
-                src={`file://${props.person.mugshotPath}`}
-                alt="Person mugshot"
-                css={imageStyle}
-              />
-            ) : (
-              <div css={placeholderStyle}>
-                Drop image here or click to select
-              </div>
-            )}
-          </div>
-        )}
+      <ElectronDropZone fileCanBeDropped={fileCanBeDropped} addFiles={addFiles}>
+        <div css={getContainerStyle()}>
+          <input type="file" style={{ display: "none" }} />
+          {props.person.mugshotPath ? (
+            <img
+              src={`file://${props.person.mugshotPath}`}
+              alt="Person mugshot"
+              css={imageStyle}
+            />
+          ) : (
+            <div css={placeholderStyle}>Drop image here or click to select</div>
+          )}
+        </div>
       </ElectronDropZone>
     );
   }
