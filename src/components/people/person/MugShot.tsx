@@ -3,6 +3,10 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Person } from "../../../model/Project/Person/Person";
 import { ElectronDropZone } from "../../ElectronDropZone";
+import ImageField from "../../ImageField";
+import { MugshotPlaceholder } from "./MugshotPlaceholderIcon";
+import * as fs from "fs-extra";
+import "../../common.css";
 
 export interface IMugShotProps {
   person: Person;
@@ -11,38 +15,15 @@ export interface IMugShotProps {
 export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
   (props) => {
     const [refreshKey, setRefreshKey] = React.useState(0);
+    const [path, setPath] = React.useState(props.person.mugshotPath);
 
     const addFiles = (paths: string[]) => {
-      console.log("MugShot.addFiles called with paths:", paths);
       if (paths.length > 0) {
-        console.log("MugShot: calling copyInMugshot with path:", paths[0]);
-        console.log(
-          "MugShot: current mugshotPath before copy:",
-          props.person.mugshotPath
-        );
-        console.log(
-          "MugShot: current files count before copy:",
-          props.person.files.length
-        );
-
         props.person
           .copyInMugshot(paths[0])
           .then(() => {
-            console.log("MugShot: copyInMugshot completed successfully");
-            console.log(
-              "MugShot: current mugshotPath after copy:",
-              props.person.mugshotPath
-            );
-            console.log(
-              "MugShot: current files count after copy:",
-              props.person.files.length
-            );
-            console.log(
-              "MugShot: all files after copy:",
-              props.person.files.map((f) => f.pathInFolderToLinkFileOrLocalCopy)
-            );
-
-            // Force a re-render by updating the refresh key
+            // Keep both: re-render and update the displayed path to add nocache
+            setPath(props.person.mugshotPath);
             setRefreshKey((prev) => prev + 1);
           })
           .catch((error) => {
@@ -64,57 +45,26 @@ export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
       return imageExtensions.includes(ext);
     };
 
-    const getContainerStyle = (isDragActive: boolean = false) => css`
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 8px;
-      width: 100px;
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+    // Keep the container positioned to anchor the overlay mask from common.css
+    const rootStyle = css`
       position: relative;
-      background-color: ${isDragActive ? "#e8f4fd" : "#f9f9f9"};
-      border-color: ${isDragActive ? "#007ACC" : "#ccc"};
-      transition: all 0.2s ease;
-
-      &:hover {
-        background-color: #f0f0f0;
-        border-color: #007acc;
-      }
-    `;
-
-    const imageStyle = css`
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: cover;
-    `;
-
-    const placeholderStyle = css`
-      color: #666;
-      font-size: 12px;
-      text-align: center;
-      padding: 4px;
+      cursor: pointer;
     `;
 
     return (
-      <ElectronDropZone
-        fileCanBeDropped={fileCanBeDropped}
-        addFiles={addFiles}
-        clickOpensChooser={true}
-      >
-        <div css={getContainerStyle()}>
-          <input type="file" style={{ display: "none" }} />
-          {props.person.mugshotPath ? (
-            <img
-              key={refreshKey} // Force re-render when refreshKey changes
-              src={`file://${props.person.mugshotPath}?t=${refreshKey}`} // Add cache-busting parameter
-              alt="Person mugshot"
-              css={imageStyle}
+      <ElectronDropZone fileCanBeDropped={fileCanBeDropped} addFiles={addFiles}>
+        <div className="mugshot" css={rootStyle}>
+          <div className="mask onlyIfInDropZone">Drop here</div>
+          {props.person.mugshotPath &&
+          props.person.mugshotPath.length > 0 &&
+          fs.existsSync(props.person.mugshotPath) ? (
+            <ImageField
+              path={
+                (path || props.person.mugshotPath) + "?nocache=" + refreshKey
+              }
             />
           ) : (
-            <div css={placeholderStyle}>Drop image here or click to select</div>
+            <MugshotPlaceholder />
           )}
         </div>
       </ElectronDropZone>
