@@ -40,15 +40,15 @@
 
 - yarn e2ebuildwatch is not reliable for changes to main, preload, etc. Only things in the render process. Therefore, make sure to do a `yarn build` after touching these things. Wait for it to finish, then continue.
 
-- Keep the e2e tests clean by factoring out helper functions that are used across tests. See folderSearch-utilities.ts and e2eProject.ts for examples.
+- Keep the e2e tests clean by factoring out helper functions that are used across tests. Always check \*-e2e-helpers.ts and for helper functions to use instead of reinventing the wheel. For example, various-e2e-helpers.ts has methods for interacting with the project, and FolderSearch-e2e-helpers.ts had helper methods if you test involves the search function.
 
 - try not to use time-based waiting that might fail on slower machines. Try to find some dom-based thing to tell you that that the screen is ready.
 
-- always check e2eProject.ts for helper functions to use instead of reinventing the wheel. FolderSearch-utilities.ts had helper methods if you test involves the search function.
-
 ## What to do if you cannot figure out why an e2e test fails
 
-- try adding a console.log() statement will give you the information you need to debug the issue. It will appear in the terminal.
+- try adding a console.log() statement will give you the information you need to debug the issue. It will appear in the terminal. Remember to remove these after everything is passing.
+
+- try adding time-based waits for debugging purposes, but remember to replace them with something better as soon as possible.
 
 - can you reproduce the problem using a unit test instead? Often they are easier to work with. Then once the unit test is passing, you can go back to getting the e2e test to pass.
 

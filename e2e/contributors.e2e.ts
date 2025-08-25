@@ -1,7 +1,7 @@
 import { test, expect as expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./e2eProject";
-import { E2eFileList } from "./e2eFileList";
+import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { E2eFileList } from "./FileList-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;

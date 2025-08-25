@@ -18,8 +18,6 @@ export default defineConfig({
   outputDir: "tmp/playwright-output",
 
   use: {
-    trace: "retain-on-failure",
-    video: "retain-on-failure",
-    screenshot: "off"
+    trace: "retain-on-failure"
   }
 });

@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import fs from "fs";
 import { Project } from "./Project";
 import { Session } from "./Session/Session";
-import fs from "fs";
 import path from "path";
 
 // Skip this suite if the optional Large Sample fixtures are not present locally

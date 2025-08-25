@@ -1,4 +1,4 @@
-import { E2eProject, createNewProject } from "./e2eProject";
+import { E2eProject, createNewProject } from "./various-e2e-helpers";
 import { test, expect as expect } from "@playwright/test";
 import { Page } from "playwright-core";
 import { LametaE2ERunner } from "./lametaE2ERunner";

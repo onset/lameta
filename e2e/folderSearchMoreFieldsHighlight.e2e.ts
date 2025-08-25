@@ -1,7 +1,7 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./e2eProject";
-import { FolderSearchUtilities } from "./folderSearch-utilities";
+import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { FolderSearchUtilities } from "./folderSearch-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
