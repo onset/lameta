@@ -72,8 +72,8 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
       `Expected to find ${original}`
     ).toBeTruthy();
 
-  // Select the person file to get back to the person editing form
-  await fileList.selectFile("Paul_Hewson.person");
+    // Select the person file to get back to the person editing form
+    await fileList.selectFile("Paul_Hewson.person");
     await setFullName("Bono");
     await expectFileNameInGrid("Bono_foo.txt");
     const after = Path.join(

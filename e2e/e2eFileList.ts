@@ -48,7 +48,9 @@ export class E2eFileList {
 
   public async selectFile(fileName: string) {
     // Use DOM readiness signals instead of time-based pauses
-    const fileCell = this.page.getByRole("gridcell", { name: fileName }).first();
+    const fileCell = this.page
+      .getByRole("gridcell", { name: fileName })
+      .first();
     await fileCell.waitFor({ state: "attached", timeout: 5000 });
     await fileCell.scrollIntoViewIfNeeded();
     await fileCell.waitFor({ state: "visible", timeout: 5000 });
