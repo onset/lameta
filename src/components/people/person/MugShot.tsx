@@ -99,7 +99,11 @@ export const MugShot: React.FunctionComponent<IMugShotProps> = observer(
     `;
 
     return (
-      <ElectronDropZone fileCanBeDropped={fileCanBeDropped} addFiles={addFiles}>
+      <ElectronDropZone
+        fileCanBeDropped={fileCanBeDropped}
+        addFiles={addFiles}
+        clickOpensChooser={true}
+      >
         <div css={getContainerStyle()}>
           <input type="file" style={{ display: "none" }} />
           {props.person.mugshotPath ? (

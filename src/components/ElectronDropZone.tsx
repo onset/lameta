@@ -1,12 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { useDropzone } from "react-dropzone";
 import { NotifyWarning } from "./Notify";
 import { t } from "@lingui/macro";
 import * as nodePath from "path";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 interface ElectronDropZoneProps {
   fileCanBeDropped?: (path: string) => boolean;
   addFiles: (filePaths: string[]) => void;
   children: React.ReactNode;
+  clickOpensChooser?: boolean;
 }
 
 /**
@@ -15,117 +18,90 @@ interface ElectronDropZoneProps {
  * fallbacks for different Electron versions and operating systems.
  */
 export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
-  ({ fileCanBeDropped, addFiles, children }) => {
-    const containerRef = useRef<HTMLElement>(null);
+  ({
+    fileCanBeDropped,
+    addFiles,
+    children,
+    clickOpensChooser: clickOpensChooser = true
+  }) => {
+    // Sanity check: ensure preload script has run and provided the necessary API.
+    if (
+      !(window as any).electronAPI ||
+      typeof (window as any).electronAPI.getPathForFile !== "function"
+    ) {
+      const msg = t`ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work.`;
+      console.error(msg);
+      NotifyWarning(msg);
+      // We could throw here, but it's more user-friendly to just let the user try to click to add files.
+    }
 
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      // Helper: normalize file:// URIs and OS paths
-      const normalizeOsPath = (p: string): string => {
-        if (!p) return p;
-        // If looks like file:// URI, decode it first
-        if (p.startsWith("file://")) {
+    // Helper: normalize file:// URIs and OS paths
+    const normalizeOsPath = (p: string): string => {
+      if (!p) return p;
+      if (p.startsWith("file://")) {
+        try {
+          const url = new URL(p);
+          let pathname = decodeURIComponent(url.pathname);
+          if (/^\/[a-zA-Z]:\//.test(pathname)) {
+            pathname = pathname.slice(1);
+          }
+          return nodePath.normalize(pathname);
+        } catch (e) {
           try {
-            const url = new URL(p);
-            let pathname = decodeURIComponent(url.pathname);
-            // Windows: URL pathname can start with /C:/...
-            if (/^\/[a-zA-Z]:\//.test(pathname)) {
-              pathname = pathname.slice(1);
-            }
-            // Convert to platform-specific separators
-            return nodePath.normalize(pathname);
-          } catch (e) {
             console.log("ElectronDropZone: failed to parse file URI", p, e);
-          }
+          } catch {}
         }
-        return nodePath.normalize(p);
-      };
+      }
+      return nodePath.normalize(p);
+    };
 
-      const handleDragOver = (evt: DragEvent) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-      };
+    const toAbsolutePath = (file: File): string => {
+      if (getTestEnvironment().E2E) {
+        throw new Error(
+          "ElectronDropZone should not be used in E2E tests. See https://linear.app/lameta/issue/LAM-27/using-preload-breaks-e2e-tests"
+        );
+        // probably could mock something here if needed for e2e tests
+      }
+      const raw = (window as any).electronAPI.getPathForFile(file);
+      const normalized = normalizeOsPath(raw);
+      if (!nodePath.isAbsolute(normalized)) {
+        throw new Error(
+          "ElectronDropZone: preload getPathForFile did not return an absolute path"
+        );
+      }
+      return normalized;
+    };
 
-      const handleDragEnter = (evt: DragEvent) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-      };
+    const onDrop = (acceptedFiles: File[]) => {
+      const paths = acceptedFiles.map((f) => toAbsolutePath(f));
+      const filteredPaths = fileCanBeDropped
+        ? paths.filter(fileCanBeDropped)
+        : paths;
+      addFiles(filteredPaths);
+    };
 
-      const handleDragLeave = (evt: DragEvent) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-      };
-
-      const handleDrop = (evt: DragEvent) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-
-        const paths: string[] = [];
-
-        // Use Electron's webUtils to get absolute paths from File objects
-        if (evt.dataTransfer?.files) {
-          for (let i = 0; i < evt.dataTransfer.files.length; i++) {
-            const file = evt.dataTransfer.files.item(i);
-            if (file) {
-              try {
-                // Use webUtils.getPathForFile() which is the modern way to get file paths in Electron
-                const filePath = (window as any).electronAPI?.getPathForFile(
-                  file
-                );
-                if (filePath) {
-                  paths.push(normalizeOsPath(filePath));
-                } else {
-                  throw new Error(
-                    "webUtils.getPathForFile returned null/undefined"
-                  );
-                }
-              } catch (e) {
-                console.error(
-                  "ElectronDropZone: failed to get path for file",
-                  file.name,
-                  e
-                );
-                throw e; // Re-throw to indicate failure
-              }
-            }
-          }
-        }
-
-        if (!paths.length) {
-          NotifyWarning(
-            t`Sorry, we couldn't read any file paths from that drop.`
-          );
-          return;
-        }
-
-        // Filter using the provided function if available
-        const filteredPaths = fileCanBeDropped
-          ? paths.filter(fileCanBeDropped)
-          : paths;
-
-        addFiles(filteredPaths);
-      };
-
-      container.addEventListener("dragover", handleDragOver);
-      container.addEventListener("dragenter", handleDragEnter);
-      container.addEventListener("dragleave", handleDragLeave);
-      container.addEventListener("drop", handleDrop);
-
-      return () => {
-        container.removeEventListener("dragover", handleDragOver);
-        container.removeEventListener("dragenter", handleDragEnter);
-        container.removeEventListener("dragleave", handleDragLeave);
-        container.removeEventListener("drop", handleDrop);
-      };
-    }, [fileCanBeDropped, addFiles]);
-
-    // Clone the first child and add the ref to it without adding an extra div
-    const childElement = React.Children.only(children) as React.ReactElement;
-
-    return React.cloneElement(childElement, {
-      ref: containerRef,
-      ...childElement.props
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      noKeyboard: true,
+      multiple: true,
+      onDrop,
+      noClick: !clickOpensChooser
     });
+
+    // Enhance the single child as the dropzone root, preserving existing props
+    const childElement = React.Children.only(children) as React.ReactElement;
+    const existingClass = childElement.props?.className || "";
+    const className = [existingClass, isDragActive ? "drop-active" : ""]
+      .filter(Boolean)
+      .join(" ");
+
+    const rootProps = getRootProps({ refKey: "ref", className });
+
+    return React.cloneElement(
+      childElement,
+      { ...childElement.props, ...rootProps },
+      <>
+        <input {...getInputProps()} />
+        {childElement.props.children}
+      </>
+    );
   };

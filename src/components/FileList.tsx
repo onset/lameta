@@ -230,6 +230,7 @@ export const _FileList: React.FunctionComponent<{
       addFiles={(filePaths) =>
         addFiles(props.folder, filePaths, setSelectedFile)
       }
+      clickOpensChooser={false}
     >
       <div className="fileList">
         <input type="file" style={{ display: "none" }} />
