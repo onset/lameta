@@ -63,6 +63,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
       "Paul_Hewson",
       "Paul_Hewson_foo.txt"
     );
+
     await fileList.addFile("Paul_Hewson_foo.txt", { page, path: original });
     await expectFileNameInGrid("Paul_Hewson_foo.txt");
 
@@ -71,6 +72,8 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
       `Expected to find ${original}`
     ).toBeTruthy();
 
+  // Select the person file to get back to the person editing form
+  await fileList.selectFile("Paul_Hewson.person");
     await setFullName("Bono");
     await expectFileNameInGrid("Bono_foo.txt");
     const after = Path.join(
@@ -96,12 +99,9 @@ async function expectFileNameInGrid(name: string) {
   ).toBeVisible({ timeout: 1000 });
 }
 async function setFullName(name: string) {
-  const fullNameField = await page.waitForSelector(
-    '[data-testid="field-name-edit"]'
-  );
+  const fullNameField = page.getByTestId("field-name-edit");
+  await fullNameField.waitFor({ state: "visible", timeout: 5000 });
   await fullNameField.click();
   await fullNameField.fill(name);
-  await page.keyboard.press("Tab");
-  // Wait for the file renaming to complete (onBlur has a 100ms setTimeout)
-  await page.waitForTimeout(500);
+  await fullNameField.press("Tab");
 }

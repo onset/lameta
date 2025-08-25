@@ -45,6 +45,25 @@ export class E2eFileList {
       });
     }
   }
+
+  public async selectFile(fileName: string) {
+    // Use DOM readiness signals instead of time-based pauses
+    const fileCell = this.page.getByRole("gridcell", { name: fileName }).first();
+    await fileCell.waitFor({ state: "attached", timeout: 5000 });
+    await fileCell.scrollIntoViewIfNeeded();
+    await fileCell.waitFor({ state: "visible", timeout: 5000 });
+    await fileCell.click({ timeout: 5000 });
+    // After selecting a person file, the name field should be visible
+    await this.page
+      .getByTestId("field-name-edit")
+      .waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  public async selectPerson(personName: string) {
+    const personCell = this.page.getByRole("gridcell", { name: personName });
+    await personCell.waitFor({ state: "visible", timeout: 5000 });
+    await personCell.click();
+  }
 }
 
 async function waitForCondition(page: any, conditionFunction: () => boolean) {
