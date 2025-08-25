@@ -210,40 +210,24 @@ test.describe("Folder Search UI", () => {
 
   test("selecting nth filtered folder shows correct details pane", async () => {
     await project.goToSessions();
-    // Ensure at least two fresh sessions
-    for (let i = 0; i < 2; i++) {
-      await project.addSession();
-    }
-    // Rename first session id to AlphaOne (initial sessions typically New_Session & New_Session1)
-    const firstRow = page
-      .getByRole("gridcell", { name: /^New_Session$/ })
-      .first();
-    await firstRow.waitFor({ state: "visible", timeout: 10000 });
-    await firstRow.click();
-
-    // Wait for details pane to load - wait for the id field to appear
+    // Create and rename first session
+    await project.addSession();
     const idField = page.getByTestId("field-id-edit");
     await idField.waitFor({ state: "visible", timeout: 10000 });
     await idField.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("AlphaFilterTestOne");
     await page.keyboard.press("Enter");
-    // wait for rename to reflect in grid (id column only)
     const alphaOneIdCell = page
       .locator(".folderList .rt-td.id")
       .filter({ hasText: /^AlphaFilterTestOne$/ });
     await expect(alphaOneIdCell).toBeVisible();
-    // Rename second session id to AlphaTwo. Remaining original should be New_Session1.
-    const secondRow = page
-      .getByRole("gridcell", { name: /^New_Session1$/ })
-      .first();
-    await secondRow.waitFor({ state: "visible", timeout: 10000 });
-    await secondRow.click();
 
-    // Wait for details pane to update - wait for the id field to be ready for interaction
-    // We can verify this by checking that it shows the current session's ID
-    await expect(idField).toHaveText(/New_Session1/);
-
+    // Create and rename second session
+    await project.addSession();
+    await idField.waitFor({ state: "visible", timeout: 10000 });
+    // Verify the field shows a default id before renaming
+    await expect(idField).toHaveText(/New_Session/i);
     await idField.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("AlphaFilterTestTwo");
@@ -314,11 +298,17 @@ test.describe("Folder Search UI", () => {
   test("search highlighting: session tab highlights when built-in id matches default name", async () => {
     await project.goToSessions();
     await project.addSession();
-    const cell = page.getByRole("gridcell", { name: /^New_Session$/ }).first();
-    await cell.click();
+    // The newly added session is automatically selected; capture its current ID
+    const idField = page.getByTestId("field-id-edit");
+    await idField.waitFor({ state: "visible", timeout: 10000 });
+    const currentId = (await idField.innerText()).trim();
     const input = page.getByTestId("folder-search-input");
-    await input.fill("New_Session");
-    await page.waitForTimeout(250);
+    await input.fill(currentId);
+    // Re-select the same session explicitly to ensure the details pane shows the Session tabs
+    const exactIdRegex = new RegExp(
+      `^${currentId.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`
+    );
+    await page.getByRole("gridcell", { name: exactIdRegex }).first().click();
     await expect(page.getByTestId("session-tab-highlight")).toBeVisible();
   });
 
