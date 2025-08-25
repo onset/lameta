@@ -37,7 +37,14 @@ app.whenReady().then(async () => {
   const container = document.getElementById("root");
   ReactModal.setAppElement(container!);
 
-  render(<App />, container);
+  render(<App />, container, () => {
+    try {
+      // see test-launch.ts
+      ipcRenderer.send("renderer-ready");
+    } catch (e) {
+      console.error("Failed to notify main of renderer-ready:", e);
+    }
+  });
 });
 
 window.onbeforeunload = (e: BeforeUnloadEvent) => {

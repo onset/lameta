@@ -10,8 +10,11 @@ import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
 import { release } from "os";
 import { join } from "path";
+import { mkdirSync } from "fs";
+import * as path from "path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { initLaunchTest } from "./launchTest";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -53,6 +56,22 @@ const preload = join(__dirname, "../mainProcess/preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, "index.html");
 
+// launch-test parsing and flow handled in ./launchTest
+
+// Allow overriding userData dir from command line: --user-data-dir=PATH
+{
+  const arg = process.argv.find((a) => a.startsWith("--user-data-dir="));
+  if (arg) {
+    const value = arg.substring("--user-data-dir=".length);
+    try {
+      const resolved = path.resolve(value);
+      mkdirSync(resolved, { recursive: true });
+      app.setPath("userData", resolved);
+    } catch (e) {
+      console.error("Failed to set userData dir:", e);
+    }
+  }
+}
 async function createWindow() {
   let x: number | undefined = undefined;
   let y: number | undefined = undefined;
@@ -100,6 +119,7 @@ async function createWindow() {
     win!.maximize();
     win!.show();
   });
+
   // Test actively push message to the Electron-Renderer
   win.webContents.on("did-finish-load", () => {
     win!.show();
@@ -113,6 +133,10 @@ async function createWindow() {
       win!.webContents.openDevTools();
     }
   });
+
+  // Initialize launch-test handling (no-op if not requested)
+  initLaunchTest(win);
+
   function fillLastMonitor() {
     const displays = screen.getAllDisplays();
     win?.setBounds(displays[displays.length - 1].bounds);

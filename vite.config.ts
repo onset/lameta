@@ -52,6 +52,7 @@ export default defineConfig({
       outDir: "dist",
       include: [
         "src/mainProcess/main",
+        "src/mainProcess/launchTest.ts",
         "src/other/locateDependency.ts",
         "src/mainProcess/MainProcessApi.ts",
         "src/mainProcess/preload/index.ts",
