@@ -595,6 +595,9 @@ msgstr "Il existe déjà un projet dans : {path}."
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "Il existe déjà un(e) {folderKind} \"{value}\"."
 
+msgid "There was a problem adding files."
+msgstr ""
+
 msgid "There was a problem exporting:"
 msgstr "Un problème est survenu lors de l'exportation :"
 

@@ -597,6 +597,9 @@ msgstr "در اینجا پروژه ای با این نام وجود دارد، {
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "در اینجا {folderKind} {value} وجود دارد"
 
+msgid "There was a problem adding files."
+msgstr ""
+
 msgid "There was a problem exporting:"
 msgstr "مشکلی در خروجی فایل وجود داشت:"
 

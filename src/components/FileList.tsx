@@ -14,7 +14,7 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
-import { NotifyWarning } from "./Notify";
+import { NotifyError, NotifyWarning } from "./Notify";
 import * as fs from "fs-extra";
 import * as nodePath from "path";
 import { getExtension } from "../other/CopyManager";
@@ -461,29 +461,6 @@ async function addFiles(
       return false;
     }
   });
-  try {
-    console.info("[FileList:addFiles] incoming paths:", paths);
-    console.info("[FileList:addFiles] validPaths:", validPaths);
-  } catch {}
-  if (validPaths.length === 0) {
-    try {
-      const stack = new Error("addFiles no valid paths").stack;
-      console.warn("[FileList:addFiles] No valid file paths provided.", {
-        stack
-      });
-      const rels = rawPaths.filter((p) => p && !nodePath.isAbsolute(p));
-      if (rels.length > 0) {
-        console.warn(
-          "[FileList:addFiles] Relative paths are not supported in Electron:",
-          rels
-        );
-      }
-    } catch {}
-    NotifyWarning(
-      t`No valid file paths were provided. Try dragging from your file manager so lameta receives absolute file paths.`
-    );
-    return;
-  }
 
   // Block lameta internal file types by extension
   if (
@@ -514,13 +491,8 @@ async function addFiles(
       return;
     }
   } catch (err) {
-    // If a path doesn't exist or can't be stat'ed, warn and skip it rather than crashing the UI
-    try {
-      console.error("[FileList:addFiles] Error accessing file(s)", err);
-    } catch {}
-    NotifyWarning(
-      t`One or more files could not be accessed. Please check the paths and try again.`
-    );
+    console.error("[FileList:addFiles] Error accessing file(s)", err);
+    NotifyError(t`There was a problem adding files.`);
     return;
   }
 
