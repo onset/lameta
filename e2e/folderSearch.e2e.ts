@@ -218,8 +218,12 @@ test.describe("Folder Search UI", () => {
     const firstRow = page
       .getByRole("gridcell", { name: /^New_Session$/ })
       .first();
+    await firstRow.waitFor({ state: "visible", timeout: 10000 });
     await firstRow.click();
+
+    // Wait for details pane to load - wait for the id field to appear
     const idField = page.getByTestId("field-id-edit");
+    await idField.waitFor({ state: "visible", timeout: 10000 });
     await idField.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("AlphaFilterTestOne");
@@ -233,7 +237,13 @@ test.describe("Folder Search UI", () => {
     const secondRow = page
       .getByRole("gridcell", { name: /^New_Session1$/ })
       .first();
+    await secondRow.waitFor({ state: "visible", timeout: 10000 });
     await secondRow.click();
+
+    // Wait for details pane to update - wait for the id field to be ready for interaction
+    // We can verify this by checking that it shows the current session's ID
+    await expect(idField).toHaveText(/New_Session1/);
+
     await idField.click();
     await page.keyboard.press("Control+A");
     await page.keyboard.type("AlphaFilterTestTwo");
@@ -241,7 +251,8 @@ test.describe("Folder Search UI", () => {
     // Filter to only Alpha sessions
     const input = page.getByTestId("folder-search-input");
     await input.fill("AlphaFilterTest");
-    await page.waitForTimeout(300);
+
+    // Wait for filtering to complete by waiting for the filtered results to appear
     const idCells = page.locator(".folderList .rt-td.id");
     const alphaOneCell = idCells.filter({ hasText: /^AlphaFilterTestOne$/ });
     const alphaTwoCell = idCells.filter({ hasText: /^AlphaFilterTestTwo$/ });
@@ -262,22 +273,42 @@ test.describe("Folder Search UI", () => {
       .click();
     const fileList = new E2eFileList(lameta, page, project.projectDirectory);
     await fileList.addFile("metaMatchTestAudio.mp3");
-    // Open Notes tab for the file (Audio -> Properties -> Notes). The Audio tab shows first; click Notes tab label
-    // Wait for tabs to render
+
+    // Make sure the file is selected first
+    const fileRow = page.getByRole("gridcell", { name: /metaMatchTestAudio/i });
+    await fileRow.waitFor({ state: "visible", timeout: 10000 });
+    await fileRow.click();
+
+    // Wait for file details to load - wait for tabs to appear (indicates details pane is ready)
     const notesTab = page.getByRole("tab", { name: /Notes/i });
+    await notesTab.waitFor({ state: "visible", timeout: 10000 });
+
+    // Open Notes tab for the file (Audio -> Properties -> Notes). The Audio tab shows first; click Notes tab label
     await notesTab.click();
-    // Find the notes field editable div
-    const notesEditor = page.getByTestId("field-notes-edit");
+
+    // Wait for Notes tab content to load - wait for the notes editor to appear
+    const notesEditor = page.locator(
+      'div[role="textbox"][contenteditable="true"]'
+    );
+    await notesEditor.waitFor({ state: "visible", timeout: 10000 });
+
     const token = "MetaMatchΩ123";
     await notesEditor.click();
-    await page.keyboard.type(token);
-    await page.keyboard.press("Enter"); // blur if single-line; ensure save
-    // Now search for the token at folder level
+    await notesEditor.type(token);
+
+    // blur by focusing search input (ensures editing ends so highlight can apply later)
     const input = page.getByTestId("folder-search-input");
+    await input.click();
+
+    // Now search for the token at folder level
     await input.fill(token);
-    await page.waitForTimeout(300);
+
+    // Wait for search to complete by waiting for the result we expect
+    const fileMetadataMatch = page.getByTestId("file-metadata-match").first();
+    await fileMetadataMatch.waitFor({ state: "visible", timeout: 10000 });
+
     // Expect the file row to have metadata match border (detect via test id)
-    await expect(page.getByTestId("file-metadata-match").first()).toBeVisible();
+    await expect(fileMetadataMatch).toBeVisible();
   });
 
   test("search highlighting: session tab highlights when built-in id matches default name", async () => {
