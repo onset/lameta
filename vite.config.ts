@@ -55,7 +55,8 @@ export default defineConfig({
         "src/other/locateDependency.ts",
         "src/mainProcess/MainProcessApi.ts",
         "src/mainProcess/preload/index.ts",
-        "src/mainProcess/validateImdi.ts"
+        "src/mainProcess/validateImdi.ts",
+        "src/getTestEnvironment.ts"
       ],
       transformOptions: {
         sourcemap: !!process.env.VSCODE_DEBUG

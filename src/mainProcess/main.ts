@@ -11,6 +11,7 @@ import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
 import { release } from "os";
 import { join } from "path";
 import Store from "electron-store";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -73,7 +74,10 @@ async function createWindow() {
     title: "Main window",
     //icon: join(process.env.PUBLIC, "favicon.svg"),
     webPreferences: {
-      preload,
+      // something about preload causes our playwright runs to hit a "noaccess" error.
+      // see https://linear.app/lameta/issue/LAM-27
+      // since we only need preload for drag-n-drop, we can just not use preload when doing e2e tests
+      preload: getTestEnvironment().E2E ? undefined : preload,
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false // this is safe, so long as we have no way of showing external web content

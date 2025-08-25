@@ -1,16 +1,17 @@
 import { webUtils } from "electron";
 
-console.log("[Preload] Starting preload script execution");
+// something about preload causes our playwright runs to hit a "noaccess" error.
+// see https://linear.app/lameta/issue/LAM-27
+// So currently, main.ts only uses preload if we're not in e2e test mode.
 
-// Since contextIsolation is false, we can directly attach to window
 try {
-  // need for DropZone
+  // need for drag n' drop of files.
   (window as any).electronAPI = {
     getPathForFile: (file: File) => webUtils.getPathForFile(file)
   };
-  console.log("[Preload] Successfully set window.electronAPI");
 } catch (error) {
   console.error("[Preload] Failed to set window.electronAPI:", error);
+  throw error;
 }
 
 export {};
