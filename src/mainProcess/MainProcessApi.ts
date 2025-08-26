@@ -82,5 +82,8 @@ export class MainProcessApi {
   }
 }
 
+// Initialize electron-call in the main process
+call.initialize();
+
 const mainProcessInstance = new MainProcessApi();
 call.provide("MainProcessApi", mainProcessInstance);
