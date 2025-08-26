@@ -20,18 +20,36 @@ export class LametaE2ERunner {
     fs.mkdirSync(rootDir, { recursive: true });
 
     const e2eRoot = process.env.E2ERoot || rootDir; // allow caller override, else use unique temp dir
-    this.electronApp = await electron.launch({
-      args: ["."],
+  const exePath = process.env.E2E_LAMETA_EXECUTABLE; // optional path to installed app
+
+    const launchOptions: any = {
+      args: exePath ? undefined : ["."],
+      executablePath: exePath,
       env: {
-        ...process.env, // inherit so PATH etc are preserved
-        NODE_ENV: "test", // used by main & renderer conditionals
-        VITE_NODE_ENV: "test", // some libs look for this (vite conventions)
+        ...process.env,
+        NODE_ENV: "test",
+        VITE_NODE_ENV: "test",
         E2E: "true",
-        E2E_USER_SETTINGS_STORE_NAME: "none", // like we're running for the first time
+        E2E_USER_SETTINGS_STORE_NAME: "none",
         E2ERoot: e2eRoot
       }
-    });
+    };
+
+  // Do not add --remote-debugging-port; Playwright manages debugging flags itself.
+
+    this.electronApp = await electron.launch(launchOptions);
     this.page = await this.electronApp.firstWindow();
+
+    // Auto-dismiss prerelease warning dialog in packaged builds so tests aren't blocked
+    try {
+      await this.page.waitForSelector('text=I understand', { timeout: 3000 });
+      const btn = this.page.getByRole('button', { name: /I understand/i });
+      if (await btn.isVisible()) {
+        await btn.click();
+      }
+    } catch {
+      // no dialog; proceed
+    }
 
     // Attach logging of renderer console + page errors so failing tests can report why windows close
     const attachDebugListeners = (p: Page) => {
