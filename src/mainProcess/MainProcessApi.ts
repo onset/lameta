@@ -82,8 +82,8 @@ export class MainProcessApi {
   }
 }
 
-// Initialize electron-call in the main process
-call.initialize();
+// Note, this causes E2E test to fail in the same way as LAM-27
+//call.initialize();
 
 const mainProcessInstance = new MainProcessApi();
 call.provide("MainProcessApi", mainProcessInstance);
