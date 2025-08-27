@@ -13,6 +13,7 @@ const kDialogPadding = "10px";
 export const LametaDialog: React.FunctionComponent<{
   open: boolean;
   requestClose: () => void;
+  "data-testid"?: string;
 }> = (props) => {
   if (!props.open) {
     return <React.Fragment />;
@@ -35,6 +36,7 @@ export const LametaDialog: React.FunctionComponent<{
   const { requestClose, ...dialogProps } = props;
   return (
     <Dialog
+      data-testid={props["data-testid"]}
       onClose={() => requestClose()}
       onKeyDown={(e) => {
         if (e.key === "Enter") {

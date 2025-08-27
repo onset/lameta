@@ -161,7 +161,8 @@ class HomePage extends React.Component<IProps, IState> {
             title: `TESTING ONLY`,
             text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
             width: "300px",
-            buttonText: "I understand"
+            buttonText: "I understand",
+            testId: "prerelease-warning-dialog"
           });
           break;
         case "beta":
@@ -169,7 +170,8 @@ class HomePage extends React.Component<IProps, IState> {
             title: `Warning`,
             text: "This is a beta test version, so make sure you have a backup of your work.",
             width: "300px",
-            buttonText: "I understand"
+            buttonText: "I understand",
+            testId: "prerelease-warning-dialog"
           });
           break;
         default:

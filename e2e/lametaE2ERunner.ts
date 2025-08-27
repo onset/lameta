@@ -20,7 +20,7 @@ export class LametaE2ERunner {
     fs.mkdirSync(rootDir, { recursive: true });
 
     const e2eRoot = process.env.E2ERoot || rootDir; // allow caller override, else use unique temp dir
-  const exePath = process.env.E2E_LAMETA_EXECUTABLE; // optional path to installed app
+    const exePath = process.env.E2E_LAMETA_EXECUTABLE; // optional path to installed app
 
     const launchOptions: any = {
       args: exePath ? undefined : ["."],
@@ -35,17 +35,47 @@ export class LametaE2ERunner {
       }
     };
 
-  // Do not add --remote-debugging-port; Playwright manages debugging flags itself.
+    // Do not add --remote-debugging-port; Playwright manages debugging flags itself.
 
     this.electronApp = await electron.launch(launchOptions);
     this.page = await this.electronApp.firstWindow();
 
     // Auto-dismiss prerelease warning dialog in packaged builds so tests aren't blocked
     try {
-      await this.page.waitForSelector('text=I understand', { timeout: 3000 });
-      const btn = this.page.getByRole('button', { name: /I understand/i });
-      if (await btn.isVisible()) {
-        await btn.click();
+      // Look specifically for prerelease warning dialog by test ID - works across all localizations
+      const dialogSelector = '[data-testid="prerelease-warning-dialog"]';
+      await this.page.waitForSelector(dialogSelector, { timeout: 3000 });
+      
+      // Wait for the dialog to be fully loaded and visible
+      const prereleaseDialog = this.page.getByTestId("prerelease-warning-dialog");
+      await prereleaseDialog.waitFor({ state: 'visible' });
+      
+      // Try multiple button selectors to be more robust
+      const buttonSelectors = [
+        'button.defaultButton',
+        'button[variant="contained"]', 
+        'button:has-text("I understand")',
+        'button:has-text("Saya mengerti")', // Indonesian translation
+        'button' // fallback to any button in the dialog
+      ];
+      
+      let buttonClicked = false;
+      for (const selector of buttonSelectors) {
+        try {
+          const button = prereleaseDialog.locator(selector).first();
+          if (await button.isVisible({ timeout: 500 })) {
+            await button.click();
+            buttonClicked = true;
+            break;
+          }
+        } catch {
+          // Try next selector
+        }
+      }
+      
+      if (buttonClicked) {
+        // Wait for the dialog to disappear before continuing
+        await prereleaseDialog.waitFor({ state: 'hidden', timeout: 2000 });
       }
     } catch {
       // no dialog; proceed
@@ -197,7 +227,50 @@ export class LametaE2ERunner {
   }
 
   public async cancelRegistration() {
+    // First, try to dismiss any prerelease warning dialog that might be blocking
+    await this.dismissPrereleaseDialogIfPresent();
+    
     const cancel = await this.page.getByTestId("cancel"); //.getByRole("button", { name: "Cancel" });
     await cancel.click();
+  }
+
+  private async dismissPrereleaseDialogIfPresent() {
+    try {
+      const dialogSelector = '[data-testid="prerelease-warning-dialog"]';
+      // Short timeout since this is just a defensive check
+      await this.page.waitForSelector(dialogSelector, { timeout: 1000 });
+      
+      const prereleaseDialog = this.page.getByTestId("prerelease-warning-dialog");
+      if (await prereleaseDialog.isVisible()) {
+        // Try multiple button selectors to be more robust
+        const buttonSelectors = [
+          'button.defaultButton',
+          'button[variant="contained"]', 
+          'button:has-text("I understand")',
+          'button:has-text("Saya mengerti")', // Indonesian translation
+          'button' // fallback to any button in the dialog
+        ];
+        
+        let buttonClicked = false;
+        for (const selector of buttonSelectors) {
+          try {
+            const button = prereleaseDialog.locator(selector).first();
+            if (await button.isVisible({ timeout: 500 })) {
+              await button.click();
+              buttonClicked = true;
+              break;
+            }
+          } catch {
+            // Try next selector
+          }
+        }
+        
+        if (buttonClicked) {
+          await prereleaseDialog.waitFor({ state: 'hidden', timeout: 2000 });
+        }
+      }
+    } catch {
+      // no dialog; proceed
+    }
   }
 }

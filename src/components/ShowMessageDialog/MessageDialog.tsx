@@ -20,6 +20,7 @@ interface IConfig {
   iconPath?: string | undefined | /* alert */ null /* none */;
   content?: React.ReactNode;
   width?: string;
+  testId?: string;
 }
 
 let staticShowMessageDialog: (config: IConfig) => void = () => {};
@@ -38,7 +39,11 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     setIsOpen(true);
   };
   return (
-    <LametaDialog open={isOpen} requestClose={() => setIsOpen(false)}>
+    <LametaDialog
+      open={isOpen}
+      requestClose={() => setIsOpen(false)}
+      data-testid={config.testId}
+    >
       <div className={"dialogTitle "}>
         <div
           css={css`
