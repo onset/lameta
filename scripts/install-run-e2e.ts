@@ -12,7 +12,14 @@ What this does now:
 3) Runs Playwright e2e with that executable
 
 Usage:
-  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure]
+  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [<playwright-args>...]
+
+Examples:
+  # Single file
+  yarn tsx ./scripts/install-run-e2e.ts e2e/peopleSearchByRole.e2e.ts
+
+  # Single test by title grep
+  yarn tsx ./scripts/install-run-e2e.ts -g "typing a role filters and highlights person"
 */
 import * as os from "os";
 import * as fs from "fs";
@@ -86,7 +93,7 @@ const killExistingLameta = async (): Promise<void> => {
 
 const runYarnE2E = async (
   exePath: string,
-  opts?: { stopOnFailure?: boolean }
+  opts?: { stopOnFailure?: boolean; extraArgs?: string[] }
 ): Promise<number> => {
   return new Promise<number>((resolve) => {
     // Use 1 worker to avoid single-instance conflicts with packaged app
@@ -94,6 +101,9 @@ const runYarnE2E = async (
     const args = ["e2e", "--workers=1"];
     if (opts?.stopOnFailure) {
       args.push("--max-failures=1");
+    }
+    if (opts?.extraArgs && opts.extraArgs.length) {
+      args.push(...opts.extraArgs);
     }
     const child = spawn("yarn", args, {
       stdio: "inherit",
@@ -109,7 +119,9 @@ const runYarnE2E = async (
 const main = async () => {
   const platform = os.platform();
   const argv = process.argv.slice(2);
-  const stopOnFailure = argv.includes("--stop-on-failure") || argv.includes("-x");
+  const stopOnFailure =
+    argv.includes("--stop-on-failure") || argv.includes("-x");
+  const extraArgs = argv.filter((a) => a !== "--stop-on-failure" && a !== "-x");
   if (platform !== "win32" && platform !== "darwin") {
     throw new Error(`Unsupported OS for this script: ${platform}`);
   }
@@ -119,8 +131,12 @@ const main = async () => {
   const exePath = await findInstalledPath();
   log(`Using installed executable: ${exePath}`);
 
-  log(`Running e2e${stopOnFailure ? " (stop on first failure)" : ""}...`);
-  const exitCode = await runYarnE2E(exePath, { stopOnFailure });
+  log(
+    `Running e2e${stopOnFailure ? " (stop on first failure)" : ""}${
+      extraArgs.length ? ` with args: ${extraArgs.join(" ")}` : ""
+    }...`
+  );
+  const exitCode = await runYarnE2E(exePath, { stopOnFailure, extraArgs });
   if (exitCode === 0) {
     log("E2E SUCCESS");
     process.exit(0);
