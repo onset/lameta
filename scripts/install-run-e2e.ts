@@ -12,7 +12,7 @@ What this does now:
 3) Runs Playwright e2e with that executable
 
 Usage:
-  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [<playwright-args>...]
+  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [--debug] [--slowmo[=<ms>]] [<playwright-args>...]
 
 Examples:
   # Single file
@@ -93,7 +93,12 @@ const killExistingLameta = async (): Promise<void> => {
 
 const runYarnE2E = async (
   exePath: string,
-  opts?: { stopOnFailure?: boolean; extraArgs?: string[] }
+  opts?: {
+    stopOnFailure?: boolean;
+    debug?: boolean;
+    slowmo?: string | number;
+    extraArgs?: string[];
+  }
 ): Promise<number> => {
   return new Promise<number>((resolve) => {
     // Use 1 worker to avoid single-instance conflicts with packaged app
@@ -101,6 +106,15 @@ const runYarnE2E = async (
     const args = ["e2e", "--workers=1"];
     if (opts?.stopOnFailure) {
       args.push("--max-failures=1");
+    }
+    // Forward optional debug/slowmo flags through to Playwright
+    if (opts?.debug) {
+      args.push("--debug");
+    }
+    if (opts?.slowmo !== undefined) {
+      // Pass through as provided; caller normalizes to a string or number
+      const v = String(opts.slowmo).trim();
+      if (v.length) args.push(`--slowmo=${v}`);
     }
     if (opts?.extraArgs && opts.extraArgs.length) {
       args.push(...opts.extraArgs);
@@ -121,7 +135,37 @@ const main = async () => {
   const argv = process.argv.slice(2);
   const stopOnFailure =
     argv.includes("--stop-on-failure") || argv.includes("-x");
-  const extraArgs = argv.filter((a) => a !== "--stop-on-failure" && a !== "-x");
+
+  // Parse and strip script-level flags we handle explicitly
+  let debug = false;
+  let slowmo: string | number | undefined;
+  const filtered: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--stop-on-failure" || a === "-x") continue;
+    if (a === "--debug") {
+      debug = true;
+      continue;
+    }
+    if (a === "--slowmo") {
+      // Support "--slowmo 50" form
+      const next = argv[i + 1];
+      if (next && !next.startsWith("-")) {
+        slowmo = next;
+        i++; // consume next
+        continue;
+      }
+      // If no value provided, default to 100ms
+      slowmo = 100;
+      continue;
+    }
+    if (a.startsWith("--slowmo=")) {
+      slowmo = a.split("=")[1] ?? "";
+      continue;
+    }
+    filtered.push(a);
+  }
+  const extraArgs = filtered;
   if (platform !== "win32" && platform !== "darwin") {
     throw new Error(`Unsupported OS for this script: ${platform}`);
   }
@@ -136,7 +180,12 @@ const main = async () => {
       extraArgs.length ? ` with args: ${extraArgs.join(" ")}` : ""
     }...`
   );
-  const exitCode = await runYarnE2E(exePath, { stopOnFailure, extraArgs });
+  const exitCode = await runYarnE2E(exePath, {
+    stopOnFailure,
+    debug,
+    slowmo,
+    extraArgs
+  });
   if (exitCode === 0) {
     log("E2E SUCCESS");
     process.exit(0);

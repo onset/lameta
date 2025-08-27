@@ -29,6 +29,7 @@ import { css } from "@emotion/react";
 import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
+import { getTestEnvironment } from "../getTestEnvironment";
 const electron = require("electron");
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
@@ -330,6 +331,13 @@ export const _FileList: React.FunctionComponent<{
               },
               onClick: (e: any, x: any) => {
                 const file = rowInfo.original as File;
+                // if we're in a an e2e test and this click would be ignored because of the copyInProgress flag,
+                // just fail fast. The test probably needs some way of waiting
+                if (file.copyInProgress && getTestEnvironment().E2E) {
+                  throw new Error(
+                    "Click would have been ignored, becuase file copy in progress."
+                  );
+                }
                 if (!file.copyInProgress) {
                   if (props.folder.selectedFile != null) {
                     // will only save if it thinks it is dirty

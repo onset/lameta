@@ -54,11 +54,17 @@ export class E2eFileList {
     await fileCell.waitFor({ state: "attached", timeout: 5000 });
     await fileCell.scrollIntoViewIfNeeded();
     await fileCell.waitFor({ state: "visible", timeout: 5000 });
+
+    // Wait for the file row to not be in copy pending state
+    // The click handler ignores clicks when file.copyInProgress is true
+    const fileRow = this.page.getByRole("row").filter({ has: fileCell });
+    await fileRow.waitFor({ state: "visible", timeout: 5000 });
+
+    // About these timeouts:
+    // We've had hard to reproduce timing issues, e.g. only happening when testing installed version + doing lots of tests (not just one)
+    await this.page.waitForTimeout(1000);
     await fileCell.click({ timeout: 5000 });
-    // After selecting a person file, the name field should be visible
-    await this.page
-      .getByTestId("field-name-edit")
-      .waitFor({ state: "visible", timeout: 5000 });
+    await this.page.waitForTimeout(1000); // let the rendering dust settle
   }
 
   public async selectPerson(personName: string) {

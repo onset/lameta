@@ -50,7 +50,9 @@
     "validate-oni-farms": "yarn tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/farmstofreeways",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "e2e:installed": "yarn tsx ./scripts/install-run-e2e.ts --stop-on-failure"
+    "e2e:installed": "yarn tsx ./scripts/install-run-e2e.ts --stop-on-failure",
+    "e2e:installed:target": "yarn tsx ./scripts/install-run-e2e.ts -g \"changing FullName renames other\"",
+    "e2e:target": "yarn e2e -g \"changing FullName renames other\""
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"

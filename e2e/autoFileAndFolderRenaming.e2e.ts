@@ -101,7 +101,10 @@ async function expectFileNameInGrid(name: string) {
 async function setFullName(name: string) {
   const fullNameField = page.getByTestId("field-name-edit");
   await fullNameField.waitFor({ state: "visible", timeout: 5000 });
-  await fullNameField.click();
-  await fullNameField.fill(name);
+  await expect(fullNameField).not.toBeEmpty({ timeout: 5000 });
+
+  // click, then type the new name
+  await fullNameField.click({ clickCount: 3, timeout: 5000 });
+  await page.keyboard.type(name);
   await fullNameField.press("Tab");
 }
