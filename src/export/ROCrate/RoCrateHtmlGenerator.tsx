@@ -17,18 +17,6 @@ type RoCrateData = {
 
 // --- Constants and Helpers ---
 
-// Fields to exclude from the property display
-const EXCLUDED_FIELDS = new Set([
-  "name",
-  "conformsTo",
-  "datePublished",
-  "dateCreated",
-  "dateModified",
-  "contentSize",
-  "publisher",
-  "hasPart",
-  "pcdm:hasMember"
-]);
 // Entities that don't add any value to the human just wanting to know "what's in this collection"
 const FILTERED_ENTITY_IDS = [
   "#collection-license",
@@ -38,6 +26,88 @@ const FILTERED_ENTITY_IDS = [
   "ldac:AuthorizedAccess"
 ];
 
+// Preferred property whitelist per entity type (ordered)
+// Each item can be a string property name or an object { property, label }
+// Project: order to reflect prior preview expectations
+type OrderEntry = string | { property: string; label?: string };
+
+const PROJECT_FIELDS: OrderEntry[] = [
+  "description",
+
+  { property: "ldac:subjectLanguage", label: "Subject Language" },
+  {
+    property: "collectionWorkingLanguages",
+    label: "Collection Working Languages"
+  },
+
+  "region",
+  "country"
+];
+
+const SESSION_FIELDS: OrderEntry[] = [
+  "description",
+  { property: "ldac:subjectLanguage", label: "Subject Language" },
+  //{ property: "subjectLanguages", label: "Subject Languages" },
+  { property: "inLanguage", label: "Working Language" },
+  { property: "ldac:linguisticGenre", label: "Genre" },
+  { property: "genre", label: "Genre" }, // Alternative property name for compatibility
+  "ldac:participant",
+  { property: "contentLocation", label: "Location" }
+  //"creator",
+  //"license",
+  //"identifier",
+  //"sameAs",
+  //"url"
+];
+
+const PERSON_FIELDS: OrderEntry[] = [
+  // part of the header "name",
+  "description",
+  "gender",
+  "ldac:age"
+];
+
+// Default fields for entities that don't have specific whitelists
+const DEFAULT_FIELDS: OrderEntry[] = [
+  "name",
+  "description",
+  "encodingFormat",
+  "contentSize",
+  "dateCreated",
+  "dateModified",
+  "creator",
+  "license"
+];
+
+// Fields for LDAC DataReuseLicense entities
+const LICENSE_FIELDS: OrderEntry[] = [
+  "name",
+  "description",
+  { property: "ldac:access", label: "Access" },
+  "license"
+];
+
+// Fields for Digital Document entities
+const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
+  { property: "encodingFormat", label: "Encoding format" },
+  { property: "ldac:materialType", label: "Material type" }
+];
+
+const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
+  const types = Array.isArray(entity["@type"])
+    ? entity["@type"]
+    : [entity["@type"]];
+  // Check for Event type first since sessions can have both Dataset and Event types
+  if (types.includes("Event")) return SESSION_FIELDS;
+  if (types.includes("Person")) return PERSON_FIELDS;
+  if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
+  if (types.includes("DigitalDocument")) return DIGITAL_DOCUMENT_FIELDS;
+  if (entity["@id"] === "./" || types.includes("Dataset"))
+    return PROJECT_FIELDS;
+  // Pure whitelist: instead of returning empty array, return default fields
+  return DEFAULT_FIELDS;
+};
+
 // Creates a URL-safe anchor ID from an entity ID
 const createAnchorId = (id: string): string => {
   return id ? `entity_${id.replace(/[^a-zA-Z0-9]/g, "_")}` : "";
@@ -45,6 +115,9 @@ const createAnchorId = (id: string): string => {
 
 // Transforms property labels for display
 function formatPropertyLabel(propertyName: string): string {
+  // Explicit mappings for clarity
+  if (propertyName === "ldac:subjectLanguage") return "Subject Language";
+  if (propertyName === "inLanguage") return "Working Language";
   if (propertyName === "hasPart") return "parts";
   if (propertyName === "pcdm:hasMember") return "events";
   const withoutPrefix = propertyName.replace(/^[a-zA-Z]+:/, "");
@@ -309,8 +382,13 @@ const PropertyValue: React.FC<{
   graph: RoCrateEntity[];
   propertyName?: string;
 }> = ({ value, graph, propertyName }) => {
+  // Handle missing/undefined/null values - show "Unknown" for whitelisted fields
   if (value === null || value === undefined) {
-    return <>{String(value)}</>;
+    return (
+      <span style={{ fontStyle: "italic", color: "var(--color-text-muted)" }}>
+        Unknown
+      </span>
+    );
   }
 
   if (Array.isArray(value)) {
@@ -394,6 +472,17 @@ const PropertyValue: React.FC<{
     if (referencedEntity && isLanguageEntity(referencedEntity)) {
       const displayName = referencedEntity?.name || defaultName;
       const externalUrl = getGlottologUrl(id);
+      return (
+        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
+          {displayName}
+        </a>
+      );
+    }
+
+    // Check if this is an LDAC term ID that should link externally even if not found in graph
+    if (!referencedEntity && id.startsWith("ldac:")) {
+      const displayName = id.replace("ldac:", "");
+      const externalUrl = getLdacTermUrl(id);
       return (
         <a href={externalUrl} target="_blank" rel="noopener noreferrer">
           {displayName}
@@ -568,26 +657,81 @@ const Entity: React.FC<{
     );
   }
 
-  // Generic Entity View
-  const properties = Object.entries(entity).filter(
-    ([key]) => !key.startsWith("@") && !EXCLUDED_FIELDS.has(key)
-  );
-  const specialLists = {
-    Sessions: graph.filter(
-      (e) =>
-        e["@id"]?.startsWith("Sessions/") &&
-        Array.isArray(e["@type"]) &&
-        e["@type"].includes("Event")
-    ),
-    People: graph.filter((e) => {
+  // Generic Entity View - Pure whitelist approach
+  const fields = getFieldsForEntity(entity);
+  const labelOverrideMap = new Map<string, string>();
+  fields.forEach((entry) => {
+    if (typeof entry !== "string" && entry?.label && entry.property) {
+      labelOverrideMap.set(entry.property, entry.label);
+    }
+  });
+
+  // Pure whitelist approach: render ONLY whitelisted fields, always render them regardless of existence
+  const propertiesToRender: Array<[string, any]> = [];
+  const usedLabels = new Set<string>(); // Track labels to avoid duplicates
+
+  fields.forEach((entry) => {
+    const key = typeof entry === "string" ? entry : entry.property;
+    const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+    const value = (entity as any)[key];
+
+    // Check if this property has a value
+    const hasValue = value !== null && value !== undefined;
+
+    // If we already have a label and this property has no value, skip it
+    if (usedLabels.has(label) && !hasValue) {
+      return;
+    }
+
+    // If this property has a value, it can override a previous "Unknown" entry with the same label
+    if (hasValue && usedLabels.has(label)) {
+      // Find and remove any existing entry with this label that has no value
+      const existingIndex = propertiesToRender.findIndex(
+        ([existingKey, existingValue]) => {
+          const existingLabel =
+            labelOverrideMap.get(existingKey) ??
+            formatPropertyLabel(existingKey);
+          return (
+            existingLabel === label &&
+            (existingValue === null || existingValue === undefined)
+          );
+        }
+      );
+      if (existingIndex !== -1) {
+        propertiesToRender.splice(existingIndex, 1);
+      }
+    }
+
+    propertiesToRender.push([key, value]);
+    usedLabels.add(label);
+  });
+
+  // Special lists for root dataset - using direct entity type checking instead of filtering
+  const specialLists: { [key: string]: RoCrateEntity[] } = {};
+
+  // Pure whitelist approach: only populate lists for root dataset, check types directly
+  if (isRootDataset) {
+    specialLists["Sessions"] = [];
+    specialLists["People"] = [];
+    specialLists["Description Documents"] = [];
+    specialLists["Other Documents"] = [];
+
+    // Build lists by checking each entity's type directly (no filtering)
+    graph.forEach((e) => {
       const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
-      return types.includes("Person") && e.name !== "Unknown";
-    }),
-    "Description Documents": graph.filter((e) =>
-      e["@id"]?.startsWith("Description/")
-    ),
-    "Other Documents": graph.filter((e) => e["@id"]?.startsWith("OtherDocs/"))
-  };
+      const entityId = e["@id"];
+
+      if (types.includes("Event") && entityId?.startsWith("Sessions/")) {
+        specialLists["Sessions"].push(e);
+      } else if (types.includes("Person") && e.name !== "Unknown") {
+        specialLists["People"].push(e);
+      } else if (entityId?.startsWith("Description/")) {
+        specialLists["Description Documents"].push(e);
+      } else if (entityId?.startsWith("OtherDocs/")) {
+        specialLists["Other Documents"].push(e);
+      }
+    });
+  }
 
   const isClickable = isClickableFile(entity);
   const displayPath = isClickable ? getDisplayPath(id) : null;
@@ -629,16 +773,17 @@ const Entity: React.FC<{
           (<a href="https://github.com/onset/lameta">github</a>) software.
         </p>
       )}
-      {properties
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, value]) => (
+      {propertiesToRender.map(([key, value]) => {
+        const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+        return (
           <div key={key} className="property">
-            <span className="property-name">{formatPropertyLabel(key)}:</span>
+            <span className="property-name">{label}:</span>
             <span className="property-value">
               <PropertyValue value={value} graph={graph} propertyName={key} />
             </span>
           </div>
-        ))}
+        );
+      })}
       {isRootDataset &&
         Object.entries(specialLists).map(
           ([title, entities]) =>

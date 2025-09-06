@@ -8,15 +8,10 @@ import path from "path";
 const largeSamplePath = path.resolve("sample data", "Large Sample");
 const hasLargeSample = fs.existsSync(largeSamplePath);
 
-(hasLargeSample ? describe : describe.skip)("Large Sample Project Loading", () => {
-  it("should successfully load the Large Sample project via Project.fromDirectory", () => {
-    // Test that Project.fromDirectory can load the comprehensive sample without errors
-  const project = Project.fromDirectory("sample data/Large Sample");
-
-suite("Large Sample Project Loading", () => {
-  (hasLargeSample ? it : it.skip)(
-    "should successfully load the Large Sample project via Project.fromDirectory",
-    () => {
+(hasLargeSample ? describe : describe.skip)(
+  "Large Sample Project Loading",
+  () => {
+    it("should successfully load the Large Sample project via Project.fromDirectory", () => {
       // Test that Project.fromDirectory can load the comprehensive sample without errors
       const project = Project.fromDirectory("sample data/Large Sample");
 
@@ -109,12 +104,9 @@ suite("Large Sample Project Loading", () => {
       // Test that the project can be saved/reopened without data loss
       const projectPath = project.directory;
       expect(projectPath).toBe("sample data/Large Sample");
-    }
-  );
+    });
 
-  (hasLargeSample ? it : it.skip)(
-    "should load session files and their metadata",
-    () => {
+    it("should load session files and their metadata", () => {
       const project = Project.fromDirectory("sample data/Large Sample");
 
       // Check that sessions have files
@@ -128,12 +120,9 @@ suite("Large Sample Project Loading", () => {
         // Verify that the session folder exists and contains files
         expect(creationMyth.directory).toContain("KUR002_CreationMyth");
       }
-    }
-  );
+    });
 
-  (hasLargeSample ? it : it.skip)(
-    "should handle custom fields in all entities",
-    () => {
+    it("should handle custom fields in all entities", () => {
       const project = Project.fromDirectory("sample data/Large Sample");
 
       // Debug: let's see what the actual custom field value is
@@ -143,12 +132,9 @@ suite("Large Sample Project Loading", () => {
 
       // For now, just check that custom fields load (even if empty)
       expect(projectCustomFields).toBeDefined();
-    }
-  );
+    });
 
-  (hasLargeSample ? it : it.skip)(
-    "should load contributions with proper roles",
-    () => {
+    it("should load contributions with proper roles", () => {
       const project = Project.fromDirectory("sample data/Large Sample");
 
       const creationMyth = project.sessions.items.find(
@@ -208,6 +194,6 @@ suite("Large Sample Project Loading", () => {
         expect(researcherContribution).toBeDefined();
         expect(researcherContribution?.role).toBe("researcher");
       }
-    }
-  );
-});
+    });
+  }
+);

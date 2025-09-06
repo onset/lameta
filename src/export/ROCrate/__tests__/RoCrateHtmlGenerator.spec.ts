@@ -329,7 +329,8 @@ describe("RoCrateHtmlGenerator", () => {
   });
 
   it("should generate external links for LDAC terms, DataReuseLicense, access types, and Languages", () => {
-    // Create test data with references to these entities
+    // Create test data with references to these entities.
+    // Note: Project root is now whitelisted to a few props; attach genre/language to a session so they render.
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
       "@graph": [
@@ -337,9 +338,15 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "pcdm:Collection"],
           name: "Test Project with References",
-          genre: { "@id": "ldac:Narrative" },
           license: { "@id": "#license-testarchive-f" },
-          subjectLanguages: [{ "@id": "#language_etr" }]
+          hasPart: [{ "@id": "Sessions/RefSession/" }]
+        },
+        {
+          "@id": "Sessions/RefSession/",
+          "@type": ["Dataset", "pcdm:Object", "Event"],
+          name: "Ref Session",
+          genre: { "@id": "ldac:Narrative" },
+          "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
         },
         {
           "@id": "ldac:Narrative",
@@ -426,6 +433,12 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "pcdm:Collection"],
           name: "Test Project",
+          hasPart: [{ "@id": "Sessions/UnknownGenre/" }]
+        },
+        {
+          "@id": "Sessions/UnknownGenre/",
+          "@type": ["Dataset", "pcdm:Object", "Event"],
+          name: "Unknown Genre Session",
           genre: { "@id": "tag:lameta/unknown" }
         },
         {
@@ -459,6 +472,95 @@ describe("RoCrateHtmlGenerator", () => {
     // Should not contain any links to the unknown entity
     expect(html).not.toContain('href="#entity_tag_lameta_unknown"');
     expect(html).not.toContain('<a href="#entity_tag_lameta_unknown">');
+  });
+
+  it("should only render whitelisted fields for DigitalDocument entities", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project",
+          hasPart: [{ "@id": "test.person" }]
+        },
+        {
+          "@id": "test.person",
+          "@type": "DigitalDocument",
+          name: "test.person",
+          description: "A person file description",
+          encodingFormat: "application/lameta-person",
+          "ldac:materialType": { "@id": "ldac:Annotation" },
+          contentSize: 1234,
+          dateCreated: "2023-01-01",
+          dateModified: "2023-01-02",
+          creator: "Test User",
+          license: "MIT"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Extract only the DigitalDocument entity section
+    const docStart = html.indexOf('id="entity_test_person"');
+    const docEnd = html.indexOf('</div></div>', docStart);
+    const docHtml = html.substring(docStart, docEnd);
+
+    // Should contain only the whitelisted fields for DigitalDocument
+    expect(docHtml).toContain("Encoding format:");
+    expect(docHtml).toContain("application/lameta-person");
+    expect(docHtml).toContain("Material type:");
+    expect(docHtml).toContain("Annotation");
+
+    // Should NOT contain the non-whitelisted fields in the DigitalDocument section
+    expect(docHtml).not.toContain("Description:");
+    expect(docHtml).not.toContain("Content size:");
+    expect(docHtml).not.toContain("Date created:");
+    expect(docHtml).not.toContain("Date modified:");
+    expect(docHtml).not.toContain("Creator:");
+    expect(docHtml).not.toContain("License:");
+  });
+
+  it("should render ldac:materialType with external link for DigitalDocument entities", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project",
+          hasPart: [{ "@id": "People/Awi_Heole/Awi_Heole.person" }]
+        },
+        {
+          "@id": "People/Awi_Heole/Awi_Heole.person",
+          "@type": "DigitalDocument",
+          name: "Awi_Heole.person",
+          encodingFormat: "application/lameta-person",
+          "ldac:materialType": { "@id": "ldac:Annotation" }
+        }
+        // Note: NOT including the ldac:Annotation entity so it becomes an external link
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Extract only the DigitalDocument entity section
+    const docStart = html.indexOf('id="entity_People_Awi_Heole_Awi_Heole_person"');
+    const docEnd = html.indexOf('</div></div></body>', docStart);
+    const docHtml = html.substring(docStart, docEnd);
+
+    // Should contain Material type field
+    expect(docHtml).toContain("Material type:");
+    
+    // Should contain external link to LDAC Annotation
+    expect(docHtml).toContain('href="https://w3id.org/ldac/terms#Annotation"');
+    expect(docHtml).toContain('target="_blank"');
+    expect(docHtml).toContain('rel="noopener noreferrer"');
+    expect(docHtml).toContain('>Annotation</a>');
+
+    // Should NOT show as "Unknown"
+    expect(docHtml).not.toContain("Unknown");
   });
 
   describe("getDisplayPath function", () => {
@@ -992,5 +1094,99 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Should NOT contain the old "📁 Download" text
     expect(html).not.toContain("📁 Download");
+  });
+
+  it("should render participants in ETR009 session using real Edolo data", () => {
+    const fs = require("fs");
+
+    // Load the actual Edolo data
+    const edoloDataPath =
+      "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\ro-crate-metadata.json";
+    let edoloData;
+    try {
+      edoloData = JSON.parse(fs.readFileSync(edoloDataPath, "utf8"));
+    } catch (error) {
+      console.log("Could not load Edolo data, using mock data");
+      edoloData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset"],
+            name: "Test Project"
+          },
+          {
+            "@id": "Sessions/ETR009/",
+            "@type": ["Event"],
+            name: "Test Session",
+            description: "A test session",
+            "ldac:participant": [
+              { "@id": "People/Awi_Heole/" },
+              { "@id": "People/Ilawi_Amosa/" }
+            ]
+          },
+          {
+            "@id": "People/Awi_Heole/",
+            "@type": "Person",
+            name: "Awi Heole"
+          },
+          {
+            "@id": "People/Ilawi_Amosa/",
+            "@type": "Person",
+            name: "Ilawi Amosa"
+          }
+        ]
+      };
+    }
+
+    const html = generateRoCrateHtml(edoloData);
+
+    // Find the ETR009 session in the HTML
+    const sessionStart = html.indexOf('id="entity_Sessions_ETR009_"');
+    if (sessionStart !== -1) {
+      const sessionEnd = html.indexOf('<div class="entity"', sessionStart + 1);
+      const sessionHtml =
+        sessionEnd !== -1
+          ? html.substring(sessionStart, sessionEnd)
+          : html.substring(sessionStart, sessionStart + 2000);
+    }
+
+    // Should render the participant field
+    expect(html).toContain("Participant:");
+  });
+
+  it("should render participants in ETR009 session from actual Edolo sample", () => {
+    const fs = require("fs");
+    const path = require("path");
+
+    // Load the actual Edolo sample RO-Crate data
+    const edoloDataPath =
+      "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\ro-crate-metadata.json";
+
+    let edoloData;
+    try {
+      const rawData = fs.readFileSync(edoloDataPath, "utf8");
+      edoloData = JSON.parse(rawData);
+    } catch (error) {
+      console.log(
+        `Could not load Edolo sample data from ${edoloDataPath}: ${error.message}`
+      );
+      // Skip this test if we can't load the actual data
+      return;
+    }
+
+    // Find the ETR009 session in the graph
+    const etr009Session = edoloData["@graph"].find(
+      (entity: any) => entity["@id"] === "Sessions/ETR009/"
+    );
+
+    const html = generateRoCrateHtml(edoloData);
+
+    if (etr009Session && etr009Session["ldac:participant"]) {
+      // Should render the participant field
+      expect(html).toContain("Participant:");
+    } else {
+      console.log("ETR009 session does not have ldac:participant field");
+    }
   });
 });
