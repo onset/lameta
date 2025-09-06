@@ -1,6 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as Path from "path";
+import filesize from "filesize";
 
 // --- Type Definitions ---
 type RoCrateEntity = {
@@ -26,10 +26,11 @@ const FILTERED_ENTITY_IDS = [
   "ldac:AuthorizedAccess"
 ];
 
-// Preferred property whitelist per entity type (ordered)
-// Each item can be a string property name or an object { property, label }
+// Each item can be a string property name or an object { property, label, type }
 // Project: order to reflect prior preview expectations
-type OrderEntry = string | { property: string; label?: string };
+type OrderEntry =
+  | string
+  | { property: string; label?: string; type?: "date" | "size" };
 
 const PROJECT_FIELDS: OrderEntry[] = [
   "description",
@@ -66,31 +67,31 @@ const PERSON_FIELDS: OrderEntry[] = [
   "gender",
   "ldac:age"
 ];
+const ORGANIZATION_FIELDS: OrderEntry[] = ["description", "url"];
 
-// Default fields for entities that don't have specific whitelists
+// Default fields for entities that don't have specific field lists
 const DEFAULT_FIELDS: OrderEntry[] = [
   "name",
   "description",
   "encodingFormat",
-  "contentSize",
-  "dateCreated",
-  "dateModified",
+  { property: "contentSize", type: "size" },
+  { property: "dateCreated", label: "Date Created", type: "date" },
+  { property: "dateModified", label: "Date Modified", type: "date" },
   "creator",
   "license"
 ];
 
 // Fields for LDAC DataReuseLicense entities
 const LICENSE_FIELDS: OrderEntry[] = [
-  "name",
   "description",
-  { property: "ldac:access", label: "Access" },
-  "license"
+  { property: "ldac:access", label: "Access" }
 ];
 
 // Fields for Digital Document entities
 const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
-  { property: "encodingFormat", label: "Encoding format" },
-  { property: "ldac:materialType", label: "Material type" }
+  { property: "encodingFormat", label: "Encoding Format" },
+  { property: "ldac:materialType", label: "Material type" },
+  { property: "contentSize", label: "Content size", type: "size" }
 ];
 
 const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
@@ -100,6 +101,7 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
   // Check for Event type first since sessions can have both Dataset and Event types
   if (types.includes("Event")) return SESSION_FIELDS;
   if (types.includes("Person")) return PERSON_FIELDS;
+  if (types.includes("Organization")) return ORGANIZATION_FIELDS;
   if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
   // Both DigitalDocument and file entities (ImageObject, VideoObject, AudioObject) should use the same fields
   if (
@@ -111,7 +113,7 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
     return DIGITAL_DOCUMENT_FIELDS;
   if (entity["@id"] === "./" || types.includes("Dataset"))
     return PROJECT_FIELDS;
-  // Pure whitelist: instead of returning empty array, return default fields
+
   return DEFAULT_FIELDS;
 };
 
@@ -123,8 +125,6 @@ const createAnchorId = (id: string): string => {
 // Transforms property labels for display
 function formatPropertyLabel(propertyName: string): string {
   // Explicit mappings for clarity
-  if (propertyName === "ldac:subjectLanguage") return "Subject Language";
-  if (propertyName === "inLanguage") return "Working Language";
   if (propertyName === "hasPart") return "parts";
   if (propertyName === "pcdm:hasMember") return "events";
   const withoutPrefix = propertyName.replace(/^[a-zA-Z]+:/, "");
@@ -388,14 +388,47 @@ const PropertyValue: React.FC<{
   value: any;
   graph: RoCrateEntity[];
   propertyName?: string;
-}> = ({ value, graph, propertyName }) => {
-  // Handle missing/undefined/null values - show "Unknown" for whitelisted fields
+  fieldType?: string;
+}> = ({ value, graph, propertyName, fieldType }) => {
+  // Handle missing/undefined/null values
   if (value === null || value === undefined) {
     return (
       <span style={{ fontStyle: "italic", color: "var(--color-text-muted)" }}>
         Unknown
       </span>
     );
+  }
+
+  // Handle date formatting for fields with type "date"
+  if (fieldType === "date" && typeof value === "string") {
+    try {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        // Format as YYYY-MM-DD (date only, no time)
+        const formattedDate = date.toISOString().split("T")[0];
+        return <>{formattedDate}</>;
+      }
+    } catch (e) {
+      // If date parsing fails, fall through to normal rendering
+    }
+  }
+
+  // Handle size formatting for fields with type "size"
+  if (
+    fieldType === "size" &&
+    (typeof value === "string" || typeof value === "number")
+  ) {
+    try {
+      const sizeInBytes =
+        typeof value === "string" ? parseInt(value, 10) : value;
+      if (!isNaN(sizeInBytes) && sizeInBytes >= 0) {
+        // Format as human readable size (e.g., "74 MB")
+        const formattedSize = filesize(sizeInBytes, { round: 0 });
+        return <>{formattedSize}</>;
+      }
+    } catch (e) {
+      // If size parsing fails, fall through to normal rendering
+    }
   }
 
   if (Array.isArray(value)) {
@@ -407,6 +440,7 @@ const PropertyValue: React.FC<{
               value={item}
               graph={graph}
               propertyName={propertyName}
+              fieldType={fieldType}
             />
             {index < value.length - 1 && ", "}
           </React.Fragment>
@@ -488,7 +522,9 @@ const PropertyValue: React.FC<{
 
     // Check if this is an LDAC term ID that should link externally even if not found in graph
     if (!referencedEntity && id.startsWith("ldac:")) {
-      const displayName = id.replace("ldac:", "");
+      const termName = id.replace("ldac:", "");
+      // Convert camelCase to spaced words using title case (e.g., "PrimaryMaterial" -> "Primary Material")
+      const displayName = termName.replace(/([a-z])([A-Z])/g, "$1 $2");
       const externalUrl = getLdacTermUrl(id);
       return (
         <a href={externalUrl} target="_blank" rel="noopener noreferrer">
@@ -547,7 +583,9 @@ const PropertyValue: React.FC<{
           {languageCodes.map((code, index) => {
             // Try to find a Language entity in the graph for this code
             const languageEntity = graph.find(
-              (entity) => entity["@type"] === "Language" && entity.code === code
+              (entity) =>
+                entity["@type"] === "Language" &&
+                entity["@id"] === `#language_${code}`
             );
 
             if (languageEntity) {
@@ -656,6 +694,54 @@ const Entity: React.FC<{
 
   if (isImage) {
     const displayPath = getDisplayPath(id);
+    const fields = getFieldsForEntity(entity);
+    const labelOverrideMap = new Map<string, string>();
+    fields.forEach((entry) => {
+      if (typeof entry !== "string" && entry?.label && entry.property) {
+        labelOverrideMap.set(entry.property, entry.label);
+      }
+    });
+
+    const propertiesToRender: Array<[string, any, string?]> = [];
+    const usedLabels = new Set<string>(); // Track labels to avoid duplicates
+
+    fields.forEach((entry) => {
+      const key = typeof entry === "string" ? entry : entry.property;
+      const fieldType = typeof entry === "string" ? undefined : entry.type;
+      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+      const value = (entity as any)[key];
+
+      // Check if this property has a value
+      const hasValue = value !== null && value !== undefined;
+
+      // If we already have a label and this property has no value, skip it
+      if (usedLabels.has(label) && !hasValue) {
+        return;
+      }
+
+      // If this property has a value, it can override a previous "Unknown" entry with the same label
+      if (hasValue && usedLabels.has(label)) {
+        // Find and remove any existing entry with this label that has no value
+        const existingIndex = propertiesToRender.findIndex(
+          ([existingKey, existingValue]) => {
+            const existingLabel =
+              labelOverrideMap.get(existingKey) ??
+              formatPropertyLabel(existingKey);
+            return (
+              existingLabel === label &&
+              (existingValue === null || existingValue === undefined)
+            );
+          }
+        );
+        if (existingIndex !== -1) {
+          propertiesToRender.splice(existingIndex, 1);
+        }
+      }
+
+      propertiesToRender.push([key, value, fieldType]);
+      usedLabels.add(label);
+    });
+
     return (
       <div className={entityClasses} id={anchorId}>
         <EntityHeader />
@@ -688,6 +774,22 @@ const Entity: React.FC<{
         >
           Image could not be loaded: {displayPath}
         </div>
+        {propertiesToRender.map(([key, value, fieldType]) => {
+          const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+          return (
+            <div key={key} className="property">
+              <span className="property-name">{label}:</span>
+              <span className="property-value">
+                <PropertyValue
+                  value={value}
+                  graph={graph}
+                  propertyName={key}
+                  fieldType={fieldType}
+                />
+              </span>
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -695,6 +797,54 @@ const Entity: React.FC<{
   if (isVideo || isAudio) {
     const MediaTag = isVideo ? "video" : "audio";
     const displayPath = getDisplayPath(id);
+    const fields = getFieldsForEntity(entity);
+    const labelOverrideMap = new Map<string, string>();
+    fields.forEach((entry) => {
+      if (typeof entry !== "string" && entry?.label && entry.property) {
+        labelOverrideMap.set(entry.property, entry.label);
+      }
+    });
+
+    const propertiesToRender: Array<[string, any, string?]> = [];
+    const usedLabels = new Set<string>(); // Track labels to avoid duplicates
+
+    fields.forEach((entry) => {
+      const key = typeof entry === "string" ? entry : entry.property;
+      const fieldType = typeof entry === "string" ? undefined : entry.type;
+      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+      const value = (entity as any)[key];
+
+      // Check if this property has a value
+      const hasValue = value !== null && value !== undefined;
+
+      // If we already have a label and this property has no value, skip it
+      if (usedLabels.has(label) && !hasValue) {
+        return;
+      }
+
+      // If this property has a value, it can override a previous "Unknown" entry with the same label
+      if (hasValue && usedLabels.has(label)) {
+        // Find and remove any existing entry with this label that has no value
+        const existingIndex = propertiesToRender.findIndex(
+          ([existingKey, existingValue]) => {
+            const existingLabel =
+              labelOverrideMap.get(existingKey) ??
+              formatPropertyLabel(existingKey);
+            return (
+              existingLabel === label &&
+              (existingValue === null || existingValue === undefined)
+            );
+          }
+        );
+        if (existingIndex !== -1) {
+          propertiesToRender.splice(existingIndex, 1);
+        }
+      }
+
+      propertiesToRender.push([key, value, fieldType]);
+      usedLabels.add(label);
+    });
+
     return (
       <div className={entityClasses} id={anchorId}>
         <EntityHeader />
@@ -708,11 +858,26 @@ const Entity: React.FC<{
           <source src={displayPath} type={entity.encodingFormat || ""} />
           Your browser does not support the {MediaTag} tag.
         </MediaTag>
+        {propertiesToRender.map(([key, value, fieldType]) => {
+          const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+          return (
+            <div key={key} className="property">
+              <span className="property-name">{label}:</span>
+              <span className="property-value">
+                <PropertyValue
+                  value={value}
+                  graph={graph}
+                  propertyName={key}
+                  fieldType={fieldType}
+                />
+              </span>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
-  // Generic Entity View - Pure whitelist approach
   const fields = getFieldsForEntity(entity);
   const labelOverrideMap = new Map<string, string>();
   fields.forEach((entry) => {
@@ -721,12 +886,12 @@ const Entity: React.FC<{
     }
   });
 
-  // Pure whitelist approach: render ONLY whitelisted fields, always render them regardless of existence
-  const propertiesToRender: Array<[string, any]> = [];
+  const propertiesToRender: Array<[string, any, string?]> = [];
   const usedLabels = new Set<string>(); // Track labels to avoid duplicates
 
   fields.forEach((entry) => {
     const key = typeof entry === "string" ? entry : entry.property;
+    const fieldType = typeof entry === "string" ? undefined : entry.type;
     const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
     const value = (entity as any)[key];
 
@@ -757,14 +922,13 @@ const Entity: React.FC<{
       }
     }
 
-    propertiesToRender.push([key, value]);
+    propertiesToRender.push([key, value, fieldType]);
     usedLabels.add(label);
   });
 
   // Special lists for root dataset - using direct entity type checking instead of filtering
   const specialLists: { [key: string]: RoCrateEntity[] } = {};
 
-  // Pure whitelist approach: only populate lists for root dataset, check types directly
   if (isRootDataset) {
     specialLists["Sessions"] = [];
     specialLists["People"] = [];
@@ -828,13 +992,18 @@ const Entity: React.FC<{
           (<a href="https://github.com/onset/lameta">github</a>) software.
         </p>
       )}
-      {propertiesToRender.map(([key, value]) => {
+      {propertiesToRender.map(([key, value, fieldType]) => {
         const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
         return (
           <div key={key} className="property">
             <span className="property-name">{label}:</span>
             <span className="property-value">
-              <PropertyValue value={value} graph={graph} propertyName={key} />
+              <PropertyValue
+                value={value}
+                graph={graph}
+                propertyName={key}
+                fieldType={fieldType}
+              />
             </span>
           </div>
         );

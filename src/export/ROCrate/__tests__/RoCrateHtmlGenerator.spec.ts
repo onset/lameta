@@ -508,16 +508,15 @@ describe("RoCrateHtmlGenerator", () => {
     const docHtml = html.substring(docStart, docEnd);
 
     // Should contain only the whitelisted fields for DigitalDocument
-    expect(docHtml).toContain("Encoding format:");
+    expect(docHtml).toContain("Encoding Format:");
     expect(docHtml).toContain("application/lameta-person");
     expect(docHtml).toContain("Material type:");
     expect(docHtml).toContain("Annotation");
 
     // Should NOT contain the non-whitelisted fields in the DigitalDocument section
     expect(docHtml).not.toContain("Description:");
-    expect(docHtml).not.toContain("Content size:");
-    expect(docHtml).not.toContain("Date created:");
-    expect(docHtml).not.toContain("Date modified:");
+    expect(docHtml).not.toContain("Date Created:");
+    expect(docHtml).not.toContain("Date Modified:");
     expect(docHtml).not.toContain("Creator:");
     expect(docHtml).not.toContain("License:");
   });
@@ -585,35 +584,32 @@ describe("RoCrateHtmlGenerator", () => {
     const imgEnd = html.indexOf("</div></div>", imgStart);
     const imgHtml = html.substring(imgStart, imgEnd);
 
-    expect(imgHtml).toContain("Encoding format:");
+    expect(imgHtml).toContain("Encoding Format:");
     expect(imgHtml).toContain("image/jpeg");
     expect(imgHtml).toContain("Material type:");
     expect(imgHtml).toContain("Primary Material");
     expect(imgHtml).not.toContain("Description:");
-    expect(imgHtml).not.toContain("Content size:");
-    expect(imgHtml).not.toContain("Date created:");
+    expect(imgHtml).not.toContain("Date Created:");
 
     // Test VideoObject
     const vidStart = html.indexOf('id="entity_test_mp4"');
     const vidEnd = html.indexOf("</div></div>", vidStart);
     const vidHtml = html.substring(vidStart, vidEnd);
 
-    expect(vidHtml).toContain("Encoding format:");
+    expect(vidHtml).toContain("Encoding Format:");
     expect(vidHtml).toContain("video/mp4");
     expect(vidHtml).toContain("Material type:");
     expect(vidHtml).not.toContain("Description:");
-    expect(vidHtml).not.toContain("Content size:");
 
     // Test AudioObject
     const audStart = html.indexOf('id="entity_test_mp3"');
     const audEnd = html.indexOf("</div></div>", audStart);
     const audHtml = html.substring(audStart, audEnd);
 
-    expect(audHtml).toContain("Encoding format:");
+    expect(audHtml).toContain("Encoding Format:");
     expect(audHtml).toContain("audio/mpeg");
     expect(audHtml).toContain("Material type:");
     expect(audHtml).not.toContain("Description:");
-    expect(audHtml).not.toContain("Content size:");
   });
 
   it("should render ldac:materialType with external link for DigitalDocument entities", () => {
@@ -631,7 +627,8 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": "DigitalDocument",
           name: "Awi_Heole.person",
           encodingFormat: "application/lameta-person",
-          "ldac:materialType": { "@id": "ldac:Annotation" }
+          "ldac:materialType": { "@id": "ldac:Annotation" },
+          contentSize: 2048
         }
         // Note: NOT including the ldac:Annotation entity so it becomes an external link
       ]
@@ -1398,5 +1395,38 @@ describe("RoCrateHtmlGenerator", () => {
     );
     expect(html).toContain(">Italian</a>");
     expect(html).toContain("xyz"); // Raw code for missing language entity
+  });
+
+  it("should format file sizes in human-readable format", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset"],
+          name: "Test Project"
+        },
+        {
+          "@id": "test-file.mp4",
+          "@type": ["File", "VideoObject"],
+          name: "Test Video",
+          contentSize: 77594624 // 74 MB
+        },
+        {
+          "@id": "small-file.txt",
+          "@type": ["File"],
+          name: "Small Text File",
+          contentSize: 1024 // 1 KB
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should format large file size as MB
+    expect(html).toContain("74 MB");
+
+    // Should format small file size as KB
+    expect(html).toContain("1 KB");
   });
 });
