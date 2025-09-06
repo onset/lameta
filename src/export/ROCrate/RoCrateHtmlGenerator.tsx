@@ -101,7 +101,14 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
   if (types.includes("Event")) return SESSION_FIELDS;
   if (types.includes("Person")) return PERSON_FIELDS;
   if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
-  if (types.includes("DigitalDocument")) return DIGITAL_DOCUMENT_FIELDS;
+  // Both DigitalDocument and file entities (ImageObject, VideoObject, AudioObject) should use the same fields
+  if (
+    types.includes("DigitalDocument") ||
+    types.includes("ImageObject") ||
+    types.includes("VideoObject") ||
+    types.includes("AudioObject")
+  )
+    return DIGITAL_DOCUMENT_FIELDS;
   if (entity["@id"] === "./" || types.includes("Dataset"))
     return PROJECT_FIELDS;
   // Pure whitelist: instead of returning empty array, return default fields
@@ -523,6 +530,54 @@ const PropertyValue: React.FC<{
   // Handle "Unknown" as plain text without linking
   if (String(value) === "Unknown" || String(value) === "<Unknown>") {
     return <>Unknown</>;
+  }
+
+  // Special handling for collectionWorkingLanguages - semicolon-separated language codes
+  if (
+    propertyName === "collectionWorkingLanguages" &&
+    typeof value === "string"
+  ) {
+    const languageCodes = value
+      .split(";")
+      .map((code) => code.trim())
+      .filter((code) => code.length > 0);
+    if (languageCodes.length > 0) {
+      return (
+        <>
+          {languageCodes.map((code, index) => {
+            // Try to find a Language entity in the graph for this code
+            const languageEntity = graph.find(
+              (entity) => entity["@type"] === "Language" && entity.code === code
+            );
+
+            if (languageEntity) {
+              // Use the language entity's name and create a Glottolog link
+              const externalUrl = getGlottologUrl(`#language_${code}`);
+              return (
+                <React.Fragment key={code}>
+                  <a
+                    href={externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {languageEntity.name || code}
+                  </a>
+                  {index < languageCodes.length - 1 && ", "}
+                </React.Fragment>
+              );
+            } else {
+              // No language entity found, just show the code
+              return (
+                <React.Fragment key={code}>
+                  {code}
+                  {index < languageCodes.length - 1 && ", "}
+                </React.Fragment>
+              );
+            }
+          })}
+        </>
+      );
+    }
   }
 
   return <>{String(value)}</>;

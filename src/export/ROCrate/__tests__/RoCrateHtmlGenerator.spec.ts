@@ -504,7 +504,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Extract only the DigitalDocument entity section
     const docStart = html.indexOf('id="entity_test_person"');
-    const docEnd = html.indexOf('</div></div>', docStart);
+    const docEnd = html.indexOf("</div></div>", docStart);
     const docHtml = html.substring(docStart, docEnd);
 
     // Should contain only the whitelisted fields for DigitalDocument
@@ -520,6 +520,100 @@ describe("RoCrateHtmlGenerator", () => {
     expect(docHtml).not.toContain("Date modified:");
     expect(docHtml).not.toContain("Creator:");
     expect(docHtml).not.toContain("License:");
+  });
+
+  it("should use DIGITAL_DOCUMENT_FIELDS for file entities (ImageObject, VideoObject, AudioObject)", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project",
+          hasPart: [
+            { "@id": "test.jpg" },
+            { "@id": "test.mp4" },
+            { "@id": "test.mp3" }
+          ]
+        },
+        {
+          "@id": "test.jpg",
+          "@type": "ImageObject",
+          name: "test.jpg",
+          description: "An image file description",
+          encodingFormat: "image/jpeg",
+          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
+          contentSize: 1234,
+          dateCreated: "2023-01-01",
+          dateModified: "2023-01-02",
+          creator: "Test User",
+          license: "MIT"
+        },
+        {
+          "@id": "test.mp4",
+          "@type": "VideoObject",
+          name: "test.mp4",
+          description: "A video file description",
+          encodingFormat: "video/mp4",
+          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
+          contentSize: 5678,
+          dateCreated: "2023-01-01",
+          dateModified: "2023-01-02",
+          creator: "Test User",
+          license: "MIT"
+        },
+        {
+          "@id": "test.mp3",
+          "@type": "AudioObject",
+          name: "test.mp3",
+          description: "An audio file description",
+          encodingFormat: "audio/mpeg",
+          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
+          contentSize: 9012,
+          dateCreated: "2023-01-01",
+          dateModified: "2023-01-02",
+          creator: "Test User",
+          license: "MIT"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Test ImageObject
+    const imgStart = html.indexOf('id="entity_test_jpg"');
+    const imgEnd = html.indexOf("</div></div>", imgStart);
+    const imgHtml = html.substring(imgStart, imgEnd);
+
+    expect(imgHtml).toContain("Encoding format:");
+    expect(imgHtml).toContain("image/jpeg");
+    expect(imgHtml).toContain("Material type:");
+    expect(imgHtml).toContain("Primary Material");
+    expect(imgHtml).not.toContain("Description:");
+    expect(imgHtml).not.toContain("Content size:");
+    expect(imgHtml).not.toContain("Date created:");
+
+    // Test VideoObject
+    const vidStart = html.indexOf('id="entity_test_mp4"');
+    const vidEnd = html.indexOf("</div></div>", vidStart);
+    const vidHtml = html.substring(vidStart, vidEnd);
+
+    expect(vidHtml).toContain("Encoding format:");
+    expect(vidHtml).toContain("video/mp4");
+    expect(vidHtml).toContain("Material type:");
+    expect(vidHtml).not.toContain("Description:");
+    expect(vidHtml).not.toContain("Content size:");
+
+    // Test AudioObject
+    const audStart = html.indexOf('id="entity_test_mp3"');
+    const audEnd = html.indexOf("</div></div>", audStart);
+    const audHtml = html.substring(audStart, audEnd);
+
+    expect(audHtml).toContain("Encoding format:");
+    expect(audHtml).toContain("audio/mpeg");
+    expect(audHtml).toContain("Material type:");
+    expect(audHtml).not.toContain("Description:");
+    expect(audHtml).not.toContain("Content size:");
   });
 
   it("should render ldac:materialType with external link for DigitalDocument entities", () => {
@@ -546,18 +640,20 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(testData);
 
     // Extract only the DigitalDocument entity section
-    const docStart = html.indexOf('id="entity_People_Awi_Heole_Awi_Heole_person"');
-    const docEnd = html.indexOf('</div></div></body>', docStart);
+    const docStart = html.indexOf(
+      'id="entity_People_Awi_Heole_Awi_Heole_person"'
+    );
+    const docEnd = html.indexOf("</div></div></body>", docStart);
     const docHtml = html.substring(docStart, docEnd);
 
     // Should contain Material type field
     expect(docHtml).toContain("Material type:");
-    
+
     // Should contain external link to LDAC Annotation
     expect(docHtml).toContain('href="https://w3id.org/ldac/terms#Annotation"');
     expect(docHtml).toContain('target="_blank"');
     expect(docHtml).toContain('rel="noopener noreferrer"');
-    expect(docHtml).toContain('>Annotation</a>');
+    expect(docHtml).toContain(">Annotation</a>");
 
     // Should NOT show as "Unknown"
     expect(docHtml).not.toContain("Unknown");
@@ -1188,5 +1284,119 @@ describe("RoCrateHtmlGenerator", () => {
     } else {
       console.log("ETR009 session does not have ldac:participant field");
     }
+  });
+
+  it("should render both subject language and collection working languages with proper links", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project with Language Comparison",
+          "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
+          collectionWorkingLanguages: "spa;ita"
+        },
+        {
+          "@id": "#language_etr",
+          "@type": "Language",
+          code: "etr",
+          name: "Edolo"
+        },
+        {
+          "@id": "#language_spa",
+          "@type": "Language",
+          code: "spa",
+          name: "Spanish"
+        },
+        {
+          "@id": "#language_ita",
+          "@type": "Language",
+          code: "ita",
+          name: "Italian"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Subject Language should be linked to Glottolog
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/etr"'
+    );
+    expect(html).toContain(">Edolo</a>");
+
+    // Collection Working Languages should also be linked to Glottolog, not just show raw codes
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/spa"'
+    );
+    expect(html).toContain(">Spanish</a>");
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/ita"'
+    );
+    expect(html).toContain(">Italian</a>");
+
+    // Should NOT contain raw language codes
+    expect(html).not.toContain("Collection Working Languages:spa;ita");
+  });
+
+  it("should handle collection working languages when language entities are not in graph", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project with Missing Languages",
+          collectionWorkingLanguages: "fra;deu"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should show the raw language codes when no Language entities are found
+    expect(html).toContain(
+      'Collection Working Languages:</span><span class="property-value">fra, deu</span>'
+    );
+  });
+
+  it("should handle mixed scenarios with some language entities present and some missing", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "pcdm:Collection"],
+          name: "Test Project with Mixed Languages",
+          collectionWorkingLanguages: "spa;xyz;ita"
+        },
+        {
+          "@id": "#language_spa",
+          "@type": "Language",
+          code: "spa",
+          name: "Spanish"
+        },
+        {
+          "@id": "#language_ita",
+          "@type": "Language",
+          code: "ita",
+          name: "Italian"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should link the found languages and show raw codes for missing ones
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/spa"'
+    );
+    expect(html).toContain(">Spanish</a>");
+    expect(html).toContain(
+      'href="https://glottolog.org/resource/languoid/iso/ita"'
+    );
+    expect(html).toContain(">Italian</a>");
+    expect(html).toContain("xyz"); // Raw code for missing language entity
   });
 });
