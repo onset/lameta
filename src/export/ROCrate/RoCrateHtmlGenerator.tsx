@@ -348,6 +348,7 @@ const Style = () => (
       --color-json-bg: #lightyellow;
     }
     body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; line-height: 1.6; background-color: var(--color-background); }
+    h3 { word-wrap: break-word; overflow-wrap: break-word; }
     a { color: var(--color-primary); text-decoration: underline; }
     a:visited { color: var(--color-primary); }
     a:hover { text-decoration: underline; }
@@ -358,7 +359,7 @@ const Style = () => (
     .entity:target { animation: targetHighlight 1s ease-in-out forwards; }
     @keyframes targetHighlight { 0% { background-color: var(--color-white); } 50% { background-color: #fff581ff; } 100% { background-color: var(--color-white); } }
     .entity-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .entity-id { font-weight: bold; background-color: var(--color-primary-content); color: var(--color-white); padding: 2px 8px; border-radius: 3px; font-size: 0.9em; display: inline-block; flex: 1; }
+    .entity-id { font-weight: bold; background-color: var(--color-primary-content); color: var(--color-white); padding: 2px 8px; border-radius: 3px; font-size: 0.9em; display: inline-block; flex: 1; word-wrap: break-word; overflow-wrap: break-word; }
     .entity-types { display: flex; flex-wrap: wrap; gap: 5px; margin-left: 10px; }
     .entity-types.bottom-right { position: absolute; bottom: 10px; right: 10px; margin-left: 0; }
     .entity-type { background-color: transparent; color: var(--color-primary-content); padding: 2px 8px; font-size: 0.9em; }
@@ -988,8 +989,8 @@ const Entity: React.FC<{
           This is an XML file that is used by{" "}
           <a href="https://sites.google.com/site/metadatatooldiscussion/home">
             lameta
-          </a>{" "}
-          (<a href="https://github.com/onset/lameta">github</a>) software.
+          </a>
+          {" software "}(<a href="https://github.com/onset/lameta">github</a>).
         </p>
       )}
       {propertiesToRender.map(([key, value, fieldType]) => {
