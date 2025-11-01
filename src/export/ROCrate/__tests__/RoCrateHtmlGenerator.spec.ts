@@ -415,7 +415,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain("This is an XML file that is used by");
     expect(html).toContain('href="https://github.com/onset/lameta"');
     expect(html).toContain(
-      'lameta</a> (<a href="https://github.com/onset/lameta">github</a>) software'
+      'lameta</a> software (<a href="https://github.com/onset/lameta">github</a>)'
     );
 
     // Should appear for all lameta XML files (2 existing + 3 new = 5 total)
