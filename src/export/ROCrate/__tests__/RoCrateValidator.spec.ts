@@ -33,7 +33,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
           },
           {
@@ -83,7 +83,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"]
+            "@type": ["Dataset", "RepositoryCollection"]
             // Missing ldac:subjectLanguage
           }
         ]
@@ -103,7 +103,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
           },
           {
@@ -128,7 +128,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
           },
           {
@@ -153,7 +153,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": { "@id": "#language_etr" } // Should be array
           }
         ]
@@ -173,7 +173,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": [] // Empty array
           }
         ]
@@ -196,7 +196,7 @@ describe("RoCrateValidator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
           }
         ]

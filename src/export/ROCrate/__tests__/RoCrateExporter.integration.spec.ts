@@ -190,7 +190,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (item: any) => item["@id"] === "./"
     );
     expect(rootDataset).toBeDefined();
-    expect(rootDataset["@type"]).toEqual(["Dataset", "pcdm:Collection"]);
+    expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
     expect(rootDataset.name).toBe("Edolo Language Documentation");
     expect(rootDataset.description).toBe("Documentation of the Edolo language");
 

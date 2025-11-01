@@ -7,7 +7,7 @@ describe("RoCrateHtmlGenerator", () => {
     "@graph": [
       {
         "@id": "./",
-        "@type": ["Dataset", "pcdm:Collection"],
+        "@type": ["Dataset", "RepositoryCollection"],
         name: "Test Project",
         hasPart: [{ "@id": "People/Awi_Heole/" }, { "@id": "Sessions/ETR009/" }]
       },
@@ -336,7 +336,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with References",
           license: { "@id": "#license-testarchive-f" },
           hasPart: [{ "@id": "Sessions/RefSession/" }]
@@ -431,7 +431,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
           hasPart: [{ "@id": "Sessions/UnknownGenre/" }]
         },
@@ -480,7 +480,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
           hasPart: [{ "@id": "test.person" }]
         },
@@ -527,7 +527,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
           hasPart: [
             { "@id": "test.jpg" },
@@ -618,7 +618,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
           hasPart: [{ "@id": "People/Awi_Heole/Awi_Heole.person" }]
         },
@@ -664,7 +664,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -696,7 +696,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -722,7 +722,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -753,7 +753,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -776,7 +776,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -799,7 +799,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -823,7 +823,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project"
           },
           {
@@ -862,7 +862,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project",
             hasPart: [{ "@id": "People/NZOUMBA Georgine/" }]
           },
@@ -949,7 +949,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@graph": [
           {
             "@id": "./",
-            "@type": ["Dataset", "pcdm:Collection"],
+            "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project",
             hasPart: [{ "@id": "People/BAKALA Michel (@Mfouati)/" }]
           },
@@ -1021,7 +1021,7 @@ describe("RoCrateHtmlGenerator", () => {
       const testGraph = [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project"
         },
         {
@@ -1132,7 +1132,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project"
         },
         {
@@ -1289,7 +1289,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Language Comparison",
           "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
           collectionWorkingLanguages: "spa;ita"
@@ -1343,7 +1343,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Missing Languages",
           collectionWorkingLanguages: "fra;deu"
         }
@@ -1364,7 +1364,7 @@ describe("RoCrateHtmlGenerator", () => {
       "@graph": [
         {
           "@id": "./",
-          "@type": ["Dataset", "pcdm:Collection"],
+          "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Mixed Languages",
           collectionWorkingLanguages: "spa;xyz;ita"
         },
