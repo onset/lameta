@@ -60,4 +60,56 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     expect(typeof sessionEntity.inLanguage).toBe("object");
     expect(sessionEntity.inLanguage).toHaveProperty("@id");
   });
+
+  it("should export inLanguage with 'und' fallback when workingLanguages is missing", async () => {
+    // Create a mock session WITHOUT workingLanguages field
+    const mockSession = createMockSession({
+      filePrefix: "test-session-no-lang",
+      metadata: {
+        title: "Test Session Without Language",
+        description: "A session with no working language specified"
+      }
+    });
+
+    const mockProject = createMockProject({
+      filePrefix: "test-project",
+      metadata: {
+        title: "Test Project"
+      }
+    });
+
+    // Add sessions to the project
+    (mockProject as any).sessions = {
+      items: [mockSession]
+    };
+
+    // Generate RO-Crate
+    const roCrateData = await getRoCrate(mockProject, mockProject);
+    const roCrateJson =
+      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+
+    // Find the session entity in the graph
+    const sessionEntity = roCrateJson["@graph"].find(
+      (entity: any) => entity["@id"] === "Sessions/test-session-no-lang/"
+    );
+
+    expect(sessionEntity).toBeDefined();
+    console.log("Session entity (no lang):", JSON.stringify(sessionEntity, null, 2));
+
+    // inLanguage should be set to "und" (undetermined) when workingLanguages is missing
+    expect(sessionEntity.inLanguage).toBeDefined();
+    expect(typeof sessionEntity.inLanguage).toBe("object");
+    expect(sessionEntity.inLanguage).toHaveProperty("@id");
+    expect(sessionEntity.inLanguage["@id"]).toBe("#language_und");
+
+    // Verify that the "und" language entity exists in the graph
+    const undLanguageEntity = roCrateJson["@graph"].find(
+      (entity: any) => entity["@id"] === "#language_und"
+    );
+
+    expect(undLanguageEntity).toBeDefined();
+    expect(undLanguageEntity["@type"]).toBe("Language");
+    expect(undLanguageEntity.code).toBe("und");
+    expect(undLanguageEntity.name).toBe("Undetermined");
+  });
 });

@@ -194,3 +194,20 @@ export function ensureSubjectLanguage(
     });
   }
 }
+
+/**
+ * Ensure an entity has an inLanguage property
+ * Per LDAC profile, inLanguage should be a single object reference (not an array)
+ */
+export function ensureInLanguage(
+  entity: any,
+  rocrateLanguages: RoCrateLanguages,
+  defaultLanguageCode: string = "und"
+): void {
+  // Only set inLanguage if it's not already set
+  if (!entity["inLanguage"]) {
+    const reference = rocrateLanguages.getLanguageReference(defaultLanguageCode);
+    entity["inLanguage"] = reference;
+    rocrateLanguages.trackUsage(defaultLanguageCode, entity["@id"]);
+  }
+}

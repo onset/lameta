@@ -10,7 +10,7 @@ import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
-import { ensureSubjectLanguage } from "./RoCrateValidator";
+import { ensureSubjectLanguage, ensureInLanguage } from "./RoCrateValidator";
 import {
   sanitizeForIri,
   createSessionId,
@@ -87,6 +87,12 @@ export async function createSessionEntry(
   // Ensure session has ldac:subjectLanguage (fallback if no languages field processed)
   if (!mainSessionEntry["ldac:subjectLanguage"]) {
     ensureSubjectLanguage(mainSessionEntry, rocrateLanguages, ["und"]);
+  }
+
+  // Ensure session has inLanguage (fallback if workingLanguages field not processed)
+  // Per LDAC profile, sessions should have inLanguage indicating the working language
+  if (!mainSessionEntry["inLanguage"]) {
+    ensureInLanguage(mainSessionEntry, rocrateLanguages, "und");
   }
 
   const allEntries: any[] = [mainSessionEntry];
