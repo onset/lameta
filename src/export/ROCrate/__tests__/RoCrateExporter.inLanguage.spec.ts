@@ -94,7 +94,6 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     );
 
     expect(sessionEntity).toBeDefined();
-    console.log("Session entity (no lang):", JSON.stringify(sessionEntity, null, 2));
 
     // inLanguage should be set to "und" (undetermined) when workingLanguages is missing
     expect(sessionEntity.inLanguage).toBeDefined();
