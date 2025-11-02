@@ -9,6 +9,23 @@ import {
 } from "../../model/file/FileTypeInfo";
 import { Project } from "../../model/Project/Project";
 import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
+
+/**
+ * Helper function to get a text property with proper handling of empty/whitespace values.
+ * Returns the default value if the field is empty or contains only whitespace.
+ */
+function getTextPropertyWithDefault(
+  metadataFile: any,
+  key: string,
+  defaultValue: string
+): string {
+  const value = metadataFile?.getTextProperty(key, defaultValue);
+  // If the value is empty or only whitespace, use the default
+  if (!value || !value.trim()) {
+    return defaultValue;
+  }
+  return value;
+}
 import _ from "lodash";
 import {
   getVocabularyMapping,
@@ -161,7 +178,8 @@ async function getRoCrateInternal(
       name:
         folder.metadataFile?.getTextProperty("title") ||
         "No title provided for this project.",
-      description: folder.metadataFile?.getTextProperty(
+      description: getTextPropertyWithDefault(
+        folder.metadataFile,
         "collectionDescription",
         "No description provided for this project."
       ),
