@@ -214,6 +214,57 @@ async function getRoCrateInternal(
     );
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
 
+    // Handle project-level geographic coverage (country/continent) as Place entities
+    // linked via contentLocation instead of plain string properties
+    const contentLocationPlaces: any[] = [];
+
+    // Check for country field
+    const countryValue = folder.metadataFile
+      ?.getTextProperty("country", "")
+      .trim();
+    if (countryValue && countryValue !== "unspecified") {
+      const countryPlaceId = `#place-country-${sanitizeForIri(countryValue)}`;
+      const countryPlace: any = {
+        "@id": countryPlaceId,
+        "@type": "Place",
+        name: countryValue
+      };
+
+      // Check if we also have continent to add to description
+      const continentValue = folder.metadataFile
+        ?.getTextProperty("continent", "")
+        .trim();
+      if (continentValue && continentValue !== "unspecified") {
+        countryPlace.description = `Located in ${continentValue}`;
+      }
+
+      otherEntries.push(countryPlace);
+      contentLocationPlaces.push({ "@id": countryPlaceId });
+    } else {
+      // If no country but we have continent, create a Place for continent
+      const continentValue = folder.metadataFile
+        ?.getTextProperty("continent", "")
+        .trim();
+      if (continentValue && continentValue !== "unspecified") {
+        const continentPlaceId = `#place-continent-${sanitizeForIri(
+          continentValue
+        )}`;
+        const continentPlace: any = {
+          "@id": continentPlaceId,
+          "@type": "Place",
+          name: continentValue
+        };
+
+        otherEntries.push(continentPlace);
+        contentLocationPlaces.push({ "@id": continentPlaceId });
+      }
+    }
+
+    // Add contentLocation to entry if we have any places
+    if (contentLocationPlaces.length > 0) {
+      entry.contentLocation = contentLocationPlaces;
+    }
+
     // Add unknown contributor entity if using fallback
     if (isUnknownContact) {
       otherEntries.push({
@@ -673,7 +724,9 @@ export async function addFieldEntries(
         field.key === "id" ||
         field.key === "locationRegion" ||
         field.key === "locationCountry" ||
-        field.key === "locationContinent"
+        field.key === "locationContinent" ||
+        field.key === "country" ||
+        field.key === "continent"
       ) {
         continue;
       }
