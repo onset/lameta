@@ -2,6 +2,7 @@ import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { IChoice } from "../../model/field/Field";
+import { expandLdacId } from "./RoCrateUtils";
 
 /**
  * Creates a normalized license object for RO-Crate based on access type
@@ -18,11 +19,11 @@ export function createSessionLicense(session: Session, project: Project): any {
   const ldacAccessCategory =
     access && access !== "unspecified" && access !== ""
       ? getLdacAccessCategory(access, project.authorityLists)
-      : "ldac:OpenAccess"; // Default to OpenAccess for unspecified access
+      : expandLdacId("ldac:OpenAccess"); // Default to OpenAccess for unspecified access
 
   const license: any = {
     "@id": getNormalizedLicenseId(normalizedAccess, project),
-    "@type": "ldac:DataReuseLicense",
+    "@type": expandLdacId("ldac:DataReuseLicense"),
     "ldac:access": { "@id": ldacAccessCategory }
   };
 
@@ -152,18 +153,18 @@ function getLdacAccessCategory(
 
   // If the choice has an ldacAccessCategory property, use it
   if (choice && (choice as any).ldacAccessCategory) {
-    return (choice as any).ldacAccessCategory;
+    return expandLdacId((choice as any).ldacAccessCategory);
   }
 
   // Handle common public access terms that might not be in authority lists
   const publicTerms = ["public", "open", "free", "unrestricted"];
   const lowerChoice = choiceLabel.toLowerCase();
   if (publicTerms.some((term) => lowerChoice.includes(term))) {
-    return "ldac:OpenAccess";
+    return expandLdacId("ldac:OpenAccess");
   }
 
   // Fallback to AuthorizedAccess if no specific category is defined
-  return "ldac:AuthorizedAccess";
+  return expandLdacId("ldac:AuthorizedAccess");
 }
 
 /**
@@ -173,28 +174,28 @@ function getLdacAccessCategory(
 export function createLdacAccessTypeDefinitions(): object[] {
   return [
     {
-      "@id": "ldac:AccessTypes",
+      "@id": expandLdacId("ldac:AccessTypes"),
       "@type": "DefinedTermSet",
       name: "Access Types"
     },
     {
-      "@id": "ldac:OpenAccess",
+      "@id": expandLdacId("ldac:OpenAccess"),
       "@type": "DefinedTerm",
       name: "Open Access",
       description:
         "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
-      inDefinedTermSet: { "@id": "ldac:AccessTypes" }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
     },
     {
-      "@id": "ldac:AuthorizedAccess",
+      "@id": expandLdacId("ldac:AuthorizedAccess"),
       "@type": "DefinedTerm",
       name: "Authorized Access",
       description:
         "Data covered by this license requires explicit authorization for access.",
-      inDefinedTermSet: { "@id": "ldac:AccessTypes" }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
     },
     {
-      "@id": "ldac:DataReuseLicense",
+      "@id": expandLdacId("ldac:DataReuseLicense"),
       "@type": "Class",
       subClassOf: { "@id": "http://schema.org/CreativeWork" },
       description: "A license document, setting out terms for reuse of data."

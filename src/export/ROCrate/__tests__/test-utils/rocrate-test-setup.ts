@@ -7,6 +7,25 @@ import {
   fieldDefinitionsOfCurrentConfig,
   prepareGlobalFieldDefinitionCatalog
 } from "../../../../model/field/ConfiguredFieldDefinitions";
+import { expandLdacId } from "../../RoCrateUtils";
+
+export const expandLdacTestValue = (value: any): any => {
+  if (typeof value === "string") {
+    return value.startsWith("ldac:") ? expandLdacId(value) : value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(expandLdacTestValue);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, val]) => [key, expandLdacTestValue(val)])
+    );
+  }
+
+  return value;
+};
 
 /**
  * RO-Crate Test Setup Utilities

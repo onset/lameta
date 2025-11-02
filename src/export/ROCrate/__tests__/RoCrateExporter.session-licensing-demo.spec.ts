@@ -10,9 +10,12 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
+import { expandLdacId } from "../RoCrateUtils";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
+
+const ldac = (term: string) => expandLdacId(term);
 
 describe("RoCrateExporter Session-Specific Licensing Demo", () => {
   let mockProject: Project;
@@ -157,9 +160,11 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     expect(restrictedLicense).toBeDefined();
 
     // They should have different access types
-    expect(publicLicense["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
+    expect(publicLicense["ldac:access"]).toEqual({
+      "@id": ldac("ldac:OpenAccess")
+    });
     expect(restrictedLicense["ldac:access"]).toEqual({
-      "@id": "ldac:AuthorizedAccess"
+      "@id": ldac("ldac:AuthorizedAccess")
     });
 
     // They should have different descriptions
@@ -184,7 +189,7 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
       (item: any) => item["@id"] === "#collection-license"
     );
     expect(collectionLicense).toBeDefined();
-    expect(collectionLicense["@type"]).toBe("ldac:DataReuseLicense");
+    expect(collectionLicense["@type"]).toBe(ldac("ldac:DataReuseLicense"));
     expect(collectionLicense.name).toBe("Collection License");
 
     // Count the total number of session events in the graph

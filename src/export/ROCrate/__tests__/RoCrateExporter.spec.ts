@@ -5,6 +5,10 @@ import { Project } from "../../../model/Project/Project";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 import { RoCrateLicense } from "../RoCrateLicenseManager";
+import { expandLdacId } from "../RoCrateUtils";
+import { expandLdacTestValue } from "./test-utils/rocrate-test-setup";
+
+const ldac = (term: string) => expandLdacId(term);
 
 // Mock the new managers
 vi.mock("./LanguageManager", () => ({
@@ -168,25 +172,25 @@ describe("RoCrateExporter genre handling", () => {
 
     // Check that genre is converted to ldac:linguisticGenre
     expect(sessionEntry).toHaveProperty("ldac:linguisticGenre");
-    expect(sessionEntry["ldac:linguisticGenre"]).toEqual([
-      { "@id": "ldac:Dialogue" }
-    ]);
+    expect(sessionEntry["ldac:linguisticGenre"]).toEqual(
+      expandLdacTestValue([{ "@id": "ldac:Dialogue" }])
+    );
 
     // Check that the genre definition is in the graph
     const genreDefinition = result["@graph"].find(
-      (item: any) => item["@id"] === "ldac:Dialogue"
+      (item: any) => item["@id"] === ldac("ldac:Dialogue")
     );
     expect(genreDefinition).toBeDefined();
     expect(genreDefinition["@type"]).toBe("DefinedTerm");
     expect(genreDefinition.name).toBe("Dialog");
     expect(genreDefinition.description).toContain("interactive discourse");
-    expect(genreDefinition.inDefinedTermSet).toEqual({
-      "@id": "ldac:LinguisticGenreTerms"
-    });
+    expect(genreDefinition.inDefinedTermSet).toEqual(
+      expandLdacTestValue({ "@id": "ldac:LinguisticGenreTerms" })
+    );
 
     // Check that the term set is in the graph
     const termSet = result["@graph"].find(
-      (item: any) => item["@id"] === "ldac:LinguisticGenreTerms"
+      (item: any) => item["@id"] === ldac("ldac:LinguisticGenreTerms")
     );
     expect(termSet).toBeDefined();
     expect(termSet["@type"]).toBe("DefinedTermSet");

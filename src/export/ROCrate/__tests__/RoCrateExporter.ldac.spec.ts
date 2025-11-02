@@ -5,6 +5,9 @@ import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
+import { expandLdacId } from "../RoCrateUtils";
+
+const ldac = (term: string) => expandLdacId(term);
 
 /*
  * NOTE: This test file uses custom vi.fn() mocks instead of standardized mocks from rocrate-test-setup.ts
@@ -225,6 +228,19 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     Object.setPrototypeOf(mockPerson, Person.prototype);
   });
 
+  it("should declare ldac prefix in @context", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+    const context = result["@context"];
+    expect(Array.isArray(context)).toBe(true);
+    const hasLdacPrefix = context.some(
+      (entry: any) =>
+        entry &&
+        typeof entry === "object" &&
+        entry.ldac === "https://w3id.org/ldac/terms#"
+    );
+    expect(hasLdacPrefix).toBe(true);
+  });
+
   describe("LDAC Event Structure", () => {
     it("should create a Session Event entity as the central hub", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
@@ -432,7 +448,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Check that MaterialTypes term set exists
       const materialTypesSet = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:MaterialTypes"
+        (item: any) => item["@id"] === ldac("ldac:MaterialTypes")
       );
       expect(materialTypesSet).toBeDefined();
       expect(materialTypesSet["@type"]).toBe("DefinedTermSet");
@@ -440,7 +456,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Check that PrimaryMaterial definition exists
       const primaryMaterial = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+        (item: any) => item["@id"] === ldac("ldac:PrimaryMaterial")
       );
       expect(primaryMaterial).toBeDefined();
       expect(primaryMaterial["@type"]).toBe("DefinedTerm");
@@ -449,12 +465,12 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "The object of study, such as a literary work, film, or recording of natural discourse."
       );
       expect(primaryMaterial.inDefinedTermSet).toEqual({
-        "@id": "ldac:MaterialTypes"
+        "@id": ldac("ldac:MaterialTypes")
       });
 
       // Check that Annotation definition exists
       const annotation = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:Annotation"
+        (item: any) => item["@id"] === ldac("ldac:Annotation")
       );
       expect(annotation).toBeDefined();
       expect(annotation["@type"]).toBe("DefinedTerm");
@@ -463,7 +479,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "The resource includes material that adds information to some other linguistic record."
       );
       expect(annotation.inDefinedTermSet).toEqual({
-        "@id": "ldac:MaterialTypes"
+        "@id": ldac("ldac:MaterialTypes")
       });
     });
 
@@ -472,19 +488,19 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Check that material type definitions are present even in standalone session export
       const materialTypesSet = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:MaterialTypes"
+        (item: any) => item["@id"] === ldac("ldac:MaterialTypes")
       );
       expect(materialTypesSet).toBeDefined();
       expect(materialTypesSet["@type"]).toBe("DefinedTermSet");
       expect(materialTypesSet.name).toBe("Material Types");
 
       const primaryMaterial = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+        (item: any) => item["@id"] === ldac("ldac:PrimaryMaterial")
       );
       expect(primaryMaterial).toBeDefined();
 
       const annotation = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:Annotation"
+        (item: any) => item["@id"] === ldac("ldac:Annotation")
       );
       expect(annotation).toBeDefined();
     });
@@ -514,7 +530,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
       expect(audioFileEntity).toBeDefined();
       expect(audioFileEntity["ldac:materialType"]).toEqual({
-        "@id": "ldac:PrimaryMaterial"
+        "@id": ldac("ldac:PrimaryMaterial")
       });
 
       // Find the XML file entity
@@ -523,18 +539,19 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
       expect(xmlFileEntity).toBeDefined();
       expect(xmlFileEntity["ldac:materialType"]).toEqual({
-        "@id": "ldac:Annotation"
+        "@id": ldac("ldac:Annotation")
       });
 
       // Verify that the material type definitions are referenced by the files
       const primaryMaterialDef = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:PrimaryMaterial"
+        (item: any) => item["@id"] === ldac("ldac:PrimaryMaterial")
       );
       expect(primaryMaterialDef).toBeDefined();
 
       const annotationDef = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "ldac:Annotation" && item["@type"] === "DefinedTerm"
+          item["@id"] === ldac("ldac:Annotation") &&
+          item["@type"] === "DefinedTerm"
       );
       expect(annotationDef).toBeDefined();
     });
@@ -550,8 +567,10 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(license).toBeDefined();
-      expect(license["@type"]).toBe("ldac:DataReuseLicense");
-      expect(license["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
+      expect(license["@type"]).toBe(ldac("ldac:DataReuseLicense"));
+      expect(license["ldac:access"]).toEqual({
+        "@id": ldac("ldac:OpenAccess")
+      });
       expect(license.description).toContain("TestArchive-specific term");
       expect(license.description).toContain("'F: Free to All'");
       expect(license.description).toContain("'access is Free to all'");
@@ -581,9 +600,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(license).toBeDefined();
-      expect(license["@type"]).toBe("ldac:DataReuseLicense");
+      expect(license["@type"]).toBe(ldac("ldac:DataReuseLicense"));
       expect(license["ldac:access"]).toEqual({
-        "@id": "ldac:AuthorizedAccess"
+        "@id": ldac("ldac:AuthorizedAccess")
       });
       expect(license.description).toContain("TestArchive-specific term");
       expect(license.description).toContain("'U: All Registered Users'");
@@ -597,31 +616,31 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Check for LDAC access type definitions
       const accessTypes = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:AccessTypes"
+        (item: any) => item["@id"] === ldac("ldac:AccessTypes")
       );
       expect(accessTypes).toBeDefined();
       expect(accessTypes["@type"]).toBe("DefinedTermSet");
       expect(accessTypes.name).toBe("Access Types");
 
       const openAccess = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:OpenAccess"
+        (item: any) => item["@id"] === ldac("ldac:OpenAccess")
       );
       expect(openAccess).toBeDefined();
       expect(openAccess["@type"]).toBe("DefinedTerm");
       expect(openAccess.name).toBe("Open Access");
       expect(openAccess.inDefinedTermSet).toEqual({
-        "@id": "ldac:AccessTypes"
+        "@id": ldac("ldac:AccessTypes")
       });
 
       const authorizedAccess = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:AuthorizedAccess"
+        (item: any) => item["@id"] === ldac("ldac:AuthorizedAccess")
       );
       expect(authorizedAccess).toBeDefined();
       expect(authorizedAccess["@type"]).toBe("DefinedTerm");
       expect(authorizedAccess.name).toBe("Authorized Access");
 
       const dataReuseLicense = result["@graph"].find(
-        (item: any) => item["@id"] === "ldac:DataReuseLicense"
+        (item: any) => item["@id"] === ldac("ldac:DataReuseLicense")
       );
       expect(dataReuseLicense).toBeDefined();
       expect(dataReuseLicense["@type"]).toBe("Class");
@@ -654,7 +673,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(license).toBeDefined();
-      expect(license["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
+      expect(license["ldac:access"]).toEqual({
+        "@id": ldac("ldac:OpenAccess")
+      });
     });
 
     it("should fall back to AuthorizedAccess if ldacAccessCategory is missing", async () => {
@@ -690,7 +711,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       expect(license).toBeDefined();
       expect(license["ldac:access"]).toEqual({
-        "@id": "ldac:AuthorizedAccess"
+        "@id": ldac("ldac:AuthorizedAccess")
       });
     });
   });

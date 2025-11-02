@@ -18,7 +18,9 @@ import {
   sanitizeForIri,
   createFileId,
   createPersonId,
-  createSessionId
+  createSessionId,
+  expandLdacId,
+  isLdacIdentifier
 } from "./RoCrateUtils";
 import {
   getLdacMaterialTypeForPath,
@@ -63,7 +65,8 @@ export async function getRoCrate(
           datePublished: "http://schema.org/datePublished",
           license: "http://schema.org/license",
           // ldac-profile calls for PCDM namespace for collection membership
-          pcdm: "http://pcdm.org/models#"
+          pcdm: "http://pcdm.org/models#",
+          ldac: "https://w3id.org/ldac/terms#"
         }
       ],
       "@graph": []
@@ -279,11 +282,11 @@ async function getRoCrateInternal(
     // Add a collection-level license definition
     const collectionLicense = {
       "@id": "#collection-license",
-      "@type": "ldac:DataReuseLicense",
+      "@type": expandLdacId("ldac:DataReuseLicense"),
       name: "Collection License",
       description:
         "License for the collection as a whole. Individual items may have their own specific licenses.",
-      "ldac:access": { "@id": "ldac:OpenAccess" }
+      "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") }
     };
 
     // Add publisher organization entity
@@ -441,7 +444,7 @@ export async function addFieldEntries(
             termReferences.push({ "@id": mapping.id });
             termDefinitions.push(createTermDefinition(mapping));
 
-            if (mapping.id.startsWith("ldac:")) {
+            if (isLdacIdentifier(mapping.id)) {
               hasLdacTerms = true;
             } else {
               hasCustomTerms = true;

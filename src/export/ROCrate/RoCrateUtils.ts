@@ -1,6 +1,32 @@
 import * as Path from "path";
 import genresData from "../../model/Project/Session/genres.json";
 
+export const LDAC_TERMS_NAMESPACE = "https://w3id.org/ldac/terms#";
+
+export function expandLdacId(value: string): string {
+  if (!value) {
+    return value;
+  }
+
+  if (value.startsWith("ldac:")) {
+    return value;
+  }
+
+  if (value.startsWith(LDAC_TERMS_NAMESPACE)) {
+    return `ldac:${value.substring(LDAC_TERMS_NAMESPACE.length)}`;
+  }
+
+  return value;
+}
+
+export function isLdacIdentifier(value: string | undefined | null): boolean {
+  if (!value) {
+    return false;
+  }
+
+  return value.startsWith("ldac:") || value.startsWith(LDAC_TERMS_NAMESPACE);
+}
+
 export interface VocabularyDefinition {
   id: string;
   label: string;
@@ -135,9 +161,10 @@ export function getVocabularyMapping(
   // Check if it has an LDAC mapping
   const ldacMapping = term.mapping?.find((m) => m.vocabulary === "LDAC");
   if (ldacMapping) {
+    const expandedLdacId = expandLdacId(ldacMapping.term);
     return {
-      id: ldacMapping.term,
-      term: ldacMapping.term,
+      id: expandedLdacId,
+      term: expandedLdacId,
       originalTerm: termId,
       definition: term
     };
@@ -168,8 +195,10 @@ export function createTermDefinition(mapping: {
       description: mapping.definition.definition
     };
 
-    if (mapping.id.startsWith("ldac:")) {
-      result.inDefinedTermSet = { "@id": "ldac:LinguisticGenreTerms" };
+    if (isLdacIdentifier(mapping.id)) {
+      result.inDefinedTermSet = {
+        "@id": expandLdacId("ldac:LinguisticGenreTerms")
+      };
     } else {
       result.inDefinedTermSet = { "@id": "#CustomGenreTerms" };
     }
@@ -199,7 +228,7 @@ export function getTermSets(
 
   if (hasLdacTerms) {
     termSets.push({
-      "@id": "ldac:LinguisticGenreTerms",
+      "@id": expandLdacId("ldac:LinguisticGenreTerms"),
       "@type": "DefinedTermSet",
       name: "Linguistic Genre Terms"
     });

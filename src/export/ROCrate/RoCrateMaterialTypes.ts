@@ -1,4 +1,5 @@
 import { GetFileFormatInfoForPath } from "../../model/file/FileTypeInfo";
+import { expandLdacId } from "./RoCrateUtils";
 
 /**
  * Determines the LDAC material type based on file type.
@@ -8,16 +9,16 @@ import { GetFileFormatInfoForPath } from "../../model/file/FileTypeInfo";
  */
 export function getLdacMaterialType(fileType: string): string {
   if (!fileType) {
-    return "ldac:Annotation";
+    return expandLdacId("ldac:Annotation");
   }
 
   switch (fileType) {
     case "Audio":
     case "Video":
     case "Image":
-      return "ldac:PrimaryMaterial";
+      return expandLdacId("ldac:PrimaryMaterial");
     default:
-      return "ldac:Annotation";
+      return expandLdacId("ldac:Annotation");
   }
 }
 
@@ -40,33 +41,33 @@ export function getLdacMaterialTypeForPath(filePath: string): string {
 export function createLdacMaterialTypeDefinitions(): object[] {
   return [
     {
-      "@id": "ldac:MaterialTypes",
+      "@id": expandLdacId("ldac:MaterialTypes"),
       "@type": "DefinedTermSet",
       name: "Material Types"
     },
     {
-      "@id": "ldac:PrimaryMaterial",
+      "@id": expandLdacId("ldac:PrimaryMaterial"),
       "@type": "DefinedTerm",
       name: "Primary Material",
       description:
         "The object of study, such as a literary work, film, or recording of natural discourse.",
-      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:MaterialTypes") }
     },
     {
-      "@id": "ldac:Annotation",
+      "@id": expandLdacId("ldac:Annotation"),
       "@type": "DefinedTerm",
       name: "Annotation",
       description:
         "The resource includes material that adds information to some other linguistic record.",
-      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:MaterialTypes") }
     },
     {
-      "@id": "ldac:DerivedMaterial",
+      "@id": expandLdacId("ldac:DerivedMaterial"),
       "@type": "DefinedTerm",
       name: "Derived Material",
       description:
         "This is derived from another source, such as a Primary Material, via some process, e.g. a downsampled video or a sample or an abstract of a resource that is not an annotation (an analysis or description).",
-      inDefinedTermSet: { "@id": "ldac:MaterialTypes" }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:MaterialTypes") }
     }
   ];
 }

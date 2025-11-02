@@ -1,8 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { generateRoCrateHtml } from "../RoCrateHtmlGenerator";
+import { expandLdacId } from "../RoCrateUtils";
+import { expandLdacTestValue } from "./test-utils/rocrate-test-setup";
+
+const ldac = (term: string) => expandLdacId(term);
 
 describe("RoCrateHtmlGenerator", () => {
-  const mockRoCrateData = {
+  const mockRoCrateData = expandLdacTestValue({
     "@context": "https://w3id.org/ro/crate/1.1/context",
     "@graph": [
       {
@@ -65,28 +69,28 @@ describe("RoCrateHtmlGenerator", () => {
         about: { "@id": "./" }
       },
       {
-        "@id": "ldac:DataReuseLicense",
+        "@id": ldac("ldac:DataReuseLicense"),
         "@type": "Class",
         name: "Data Reuse License",
         description: "A license for reusing data"
       },
       {
-        "@id": "ldac:OpenAccess",
+        "@id": ldac("ldac:OpenAccess"),
         "@type": "DefinedTerm",
         name: "Open Access",
         description: "Data may be accessed without authorization"
       },
       {
-        "@id": "ldac:AuthorizedAccess",
+        "@id": ldac("ldac:AuthorizedAccess"),
         "@type": "DefinedTerm",
         name: "Authorized Access",
         description: "Data requires authorization for access"
       },
       {
         "@id": "#license-testarchive-f",
-        "@type": "ldac:DataReuseLicense",
+        "@type": ldac("ldac:DataReuseLicense"),
         name: "Open Access License",
-        "ldac:access": { "@id": "ldac:OpenAccess" }
+        "ldac:access": { "@id": ldac("ldac:OpenAccess") }
       },
       {
         "@id": "#language_etr",
@@ -124,7 +128,7 @@ describe("RoCrateHtmlGenerator", () => {
         encodingFormat: "application/lameta-project"
       }
     ]
-  };
+  });
 
   it("should detect children correctly", () => {
     const graph = mockRoCrateData["@graph"];
