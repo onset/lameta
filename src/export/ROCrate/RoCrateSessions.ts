@@ -25,9 +25,13 @@ export async function createSessionEntry(
   rocrateLanguages: RoCrateLanguages,
   rocrateLicense: RoCrateLicense
 ): Promise<object[]> {
+  const sessionTypes = isStandaloneSession
+    ? ["Dataset", "RepositoryObject", "Event"]
+    : ["RepositoryObject", "Event"];
+
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : createSessionId(session),
-    "@type": ["Dataset", "pcdm:Object", "Event"],
+    "@type": sessionTypes,
     conformsTo: {
       "@id": "https://w3id.org/ldac/profile#Object"
     },

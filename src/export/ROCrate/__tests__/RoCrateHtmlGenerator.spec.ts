@@ -347,7 +347,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "Sessions/RefSession/",
-          "@type": ["Dataset", "pcdm:Object", "Event"],
+          "@type": ["RepositoryObject", "Event"],
           name: "Ref Session",
           genre: { "@id": "ldac:Narrative" },
           "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
@@ -441,7 +441,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "Sessions/UnknownGenre/",
-          "@type": ["Dataset", "pcdm:Object", "Event"],
+          "@type": ["RepositoryObject", "Event"],
           name: "Unknown Genre Session",
           genre: { "@id": "tag:lameta/unknown" }
         },

@@ -730,7 +730,7 @@ describe("RoCrateExporter Validation Tests", () => {
         (item: any) =>
           item["@type"] &&
           Array.isArray(item["@type"]) &&
-          item["@type"].includes("Dataset") &&
+          item["@type"].includes("RepositoryObject") &&
           item["@id"].startsWith("Sessions/")
       );
 
@@ -795,7 +795,7 @@ describe("RoCrateExporter Validation Tests", () => {
           (item: any) =>
             item["@type"] &&
             Array.isArray(item["@type"]) &&
-            item["@type"].includes("Dataset") &&
+            item["@type"].includes("RepositoryObject") &&
             item["@id"].startsWith("Sessions/")
         );
 
@@ -847,7 +847,7 @@ describe("RoCrateExporter Validation Tests", () => {
           item["@id"] === "Sessions/test-session/" &&
           item["@type"] &&
           Array.isArray(item["@type"]) &&
-          item["@type"].includes("Dataset")
+          item["@type"].includes("RepositoryObject")
       );
 
       expect(sessionEntry).toBeDefined();

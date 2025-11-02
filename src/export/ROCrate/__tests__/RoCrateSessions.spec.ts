@@ -114,7 +114,7 @@ describe("RoCrateSessions", () => {
       expect(sessionEntry["@id"]).toBe("./");
       expect(sessionEntry["@type"]).toEqual([
         "Dataset",
-        "pcdm:Object",
+        "RepositoryObject",
         "Event"
       ]);
       expect(sessionEntry.name).toBe("Test Session");
@@ -133,11 +133,7 @@ describe("RoCrateSessions", () => {
       expect(result).toBeInstanceOf(Array);
       const sessionEntry = result[0] as any;
       expect(sessionEntry["@id"]).toBe("Sessions/test-session/");
-      expect(sessionEntry["@type"]).toEqual([
-        "Dataset",
-        "pcdm:Object",
-        "Event"
-      ]);
+      expect(sessionEntry["@type"]).toEqual(["RepositoryObject", "Event"]);
       expect(sessionEntry.startDate).toBe("2023-01-01");
       expect(sessionEntry.location).toEqual({ "@id": "#Test Location" });
     });

@@ -251,11 +251,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       );
 
       expect(sessionEvent).toBeDefined();
-      expect(sessionEvent["@type"]).toEqual([
-        "Dataset",
-        "pcdm:Object",
-        "Event"
-      ]);
+      expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "Event"]);
       expect(sessionEvent.name).toBe(
         "The story behind how we catch fish with poison bark"
       );

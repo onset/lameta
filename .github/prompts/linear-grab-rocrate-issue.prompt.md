@@ -5,7 +5,7 @@ description: work on a linear issue
 
 We are working on src/export/ROCrate. Tests are at src/export/ROCrate/**tests**. We are constrained by these specs: https://raw.githubusercontent.com/Language-Research-Technology/ldac-profile/refs/heads/master/profile/profile.md and https://www.researchobject.org/ro-crate/specification/1.2/structure.
 
-Get an issue from linear that is assigned to you and is in "Planned" or "In Progress". Move it to "In Progress". Think about the problem and feel free to stop and ask me any clarifying questions.
+Ask linear for at least one the issue assigned to you (your user name is "agent") and where status = "Planned" or "In Progress". Pick one and move it to "In Progress". Think about the problem and feel free to stop and ask me any clarifying questions.
 
 # testing
 
@@ -17,7 +17,7 @@ If the description seems to be about UI interactions, use e2e (playwright) tests
 
 # Committing
 
-Run Prettier on every changed file (from the repo root run `yarn prettier --write path/to/changed-file`) and make sure your editor has saved everything. Stage all code changes, commit with a message referencing the issue key (e.g. "Ro-crate #3: rerouted the power couplings"). Do not push.
+Run Prettier on every changed file (from the repo root run `yarn prettier --write path/to/changed-file`) and make sure your editor has saved everything. Stage all code changes, commit with a message referencing the problem number from the report.md document and issue key from linear (e.g. "Ro-crate #3 / LAM-43 rerouted the power couplings"). Do not push.
 
 # Finishing
 
