@@ -660,6 +660,21 @@ export async function addFieldEntries(
         continue;
       }
 
+      // Skip isAdditional fields that don't have rocrate definitions
+      // These are fields like involvement, planningType, socialContext that are IMDI-specific
+      // and lack proper JSON-LD context definitions (see LAM-52)
+      if (folder.metadataFile!.properties.getFieldDefinition) {
+        const fieldDef = folder.metadataFile!.properties.getFieldDefinition(
+          field.key
+        );
+        if (fieldDef && fieldDef.isAdditional) {
+          console.warn(
+            `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`
+          );
+          continue;
+        }
+      }
+
       // Map 'date' to 'dateCreated' for compliance with the profile
       if (field.key === "date") {
         folderEntry["dateCreated"] = values[0];
