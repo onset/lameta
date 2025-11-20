@@ -406,6 +406,38 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(unknownContributor["@type"]).toBe("Person");
       expect(unknownContributor.name).toBe("Unknown");
     });
+
+    it("should remap archiveConfigurationName into holdingArchive", async () => {
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName is undefined in RO-Crate, so we require holdingArchive.
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset.holdingArchive).toEqual({
+        "@id": "#publisher-testarchive"
+      });
+      expect(rootDataset).not.toHaveProperty("archiveConfigurationName");
+
+      const holdingArchiveOrg = result["@graph"].find(
+        (item: any) => item["@id"] === "#publisher-testarchive"
+      );
+      expect(holdingArchiveOrg).toMatchObject({
+        "@type": "Organization",
+        name: "TestArchive"
+      });
+    });
   });
 
   describe("LDAC Session Role Metadata", () => {

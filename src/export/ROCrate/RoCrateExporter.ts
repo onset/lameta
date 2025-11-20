@@ -80,6 +80,8 @@ type PublisherResolution = {
   entity: RoCrateEntity;
 };
 
+const ARCHIVE_CONFIGURATION_FIELD_KEY = "archiveConfigurationName";
+
 function resolvePublisher(project: Project): PublisherResolution | undefined {
   // It's not 100% clear who the publisher should be, we're using the archive configuration.
   // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
@@ -284,6 +286,9 @@ async function getRoCrateInternal(
     const publisher = resolvePublisher(project);
     if (publisher) {
       entry.publisher = publisher.reference;
+      // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName is not a valid RO-Crate term, so reuse the
+      // resolved Organization as holdingArchive instead of leaking the raw custom field.
+      entry.holdingArchive = publisher.reference;
     }
 
     // Handle project-level geographic coverage (country/continent) as Place entities
@@ -466,6 +471,11 @@ export async function addFieldEntries(
   for (const field of folder.knownFields) {
     // don't export if we know it has been migrated
     if (field.deprecated && field.deprecated.indexOf("migrated") > -1) {
+      continue;
+    }
+
+    if (field.key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
+      // https://linear.app/lameta/issue/LAM-38: handled via holdingArchive so the undefined custom key never leaks.
       continue;
     }
 
@@ -810,6 +820,11 @@ export async function addFieldEntries(
 
     // For Person entities, skip custom fields entirely since we don't know if they contain PII
     if (folder instanceof Person) {
+      return;
+    }
+
+    if (key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
+      // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName gets remapped to holdingArchive above.
       return;
     }
 
