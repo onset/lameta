@@ -1265,7 +1265,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "DescriptionDocuments/README.md"
     );
     expect(descriptionFileEntry).toBeDefined();
-    expect(descriptionFileEntry["@type"]).toBe("DigitalDocument");
+    // LAM-54 regression guard: exported README files must expose the File type (https://linear.app/lameta/issue/LAM-54)
+    expect(descriptionFileEntry["@type"]).toBe("File");
     expect(descriptionFileEntry.name).toBe("README.md");
     expect(descriptionFileEntry.contentSize).toBe(1024);
   });
@@ -1290,7 +1291,7 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileEntry).toBeDefined();
-    expect(otherDocFileEntry["@type"]).toBe("DigitalDocument");
+    expect(otherDocFileEntry["@type"]).toBe("File");
     expect(otherDocFileEntry.name).toBe("notes.txt");
     expect(otherDocFileEntry.contentSize).toBe(1024);
   });
@@ -1334,7 +1335,7 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
     );
     expect(letterFileEntry).toBeDefined();
-    expect(letterFileEntry["@type"]).toBe("DigitalDocument");
+    expect(letterFileEntry["@type"]).toBe("File");
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
   });
 
@@ -1377,7 +1378,7 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "DescriptionDocuments/Project_Overview.txt"
     );
     expect(descriptionFileEntry).toBeDefined();
-    expect(descriptionFileEntry["@type"]).toBe("DigitalDocument");
+    expect(descriptionFileEntry["@type"]).toBe("File");
     expect(descriptionFileEntry.name).toBe("Project_Overview.txt");
   });
 

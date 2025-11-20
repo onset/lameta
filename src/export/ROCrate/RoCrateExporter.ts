@@ -120,7 +120,9 @@ function resolvePublisher(project: Project): PublisherResolution | undefined {
 }
 
 // https://linear.app/lameta/issue/LAM-39/ro-crate-root-dataset-depositor-handling
-function resolveDepositor(project: Project): PersonReferenceResolution | undefined {
+function resolveDepositor(
+  project: Project
+): PersonReferenceResolution | undefined {
   const depositorName = project.metadataFile
     ?.getTextProperty("depositor", "")
     .trim();
@@ -1063,7 +1065,8 @@ export function addChildFileEntries(
     }
 
     // Determine the appropriate @type based on file extension and context
-    let fileType = "File";
+    // LAM-54 fix: https://linear.app/lameta/issue/LAM-54 requires every file data entity to include "File".
+    const fileTypes: string[] = ["File"];
 
     // Use FileTypeInfo to get the file format information
     const fileFormatInfo = GetFileFormatInfoForExtension(
@@ -1071,25 +1074,22 @@ export function addChildFileEntries(
     );
 
     if (fileFormatInfo?.type === "Video") {
-      fileType = "VideoObject";
+      fileTypes.push("VideoObject");
     } else if (fileFormatInfo?.type === "Audio") {
-      fileType = "AudioObject";
+      fileTypes.push("AudioObject");
     } else if (fileFormatInfo?.type === "Image") {
-      fileType = "ImageObject";
-    } else if (
-      fileExt.match(
-        /\.(xml|eaf|txt|doc|docx|rtf|md|pptx|wmv|pdf|person|session)$/
-      )
-    ) {
-      fileType = "DigitalDocument";
+      fileTypes.push("ImageObject");
     }
 
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
 
+    const normalizedFileType =
+      fileTypes.length === 1 ? fileTypes[0] : fileTypes;
+
     const fileEntry: any = {
       "@id": fileId,
-      "@type": fileType,
+      "@type": normalizedFileType,
       contentSize: fs.statSync(path).size,
       dateCreated: fs.statSync(path).birthtime.toISOString(),
       dateModified: file.getModifiedDate()?.toISOString(),
@@ -1138,7 +1138,8 @@ export function addProjectDocumentFolderEntries(
     }
 
     // Determine the appropriate @type based on file extension
-    let fileType = "DigitalDocument"; // Default for project documents
+    // LAM-54 fix: ensure project-level documents also satisfy the File type requirement.
+    const fileTypes: string[] = ["File"];
 
     // Use FileTypeInfo to get the file format information
     const fileFormatInfo = GetFileFormatInfoForExtension(
@@ -1146,23 +1147,26 @@ export function addProjectDocumentFolderEntries(
     );
 
     if (fileFormatInfo?.type === "Image") {
-      fileType = "ImageObject";
+      fileTypes.push("ImageObject");
     } else if (fileFormatInfo?.type === "Audio") {
-      fileType = "AudioObject";
+      fileTypes.push("AudioObject");
     } else if (fileFormatInfo?.type === "Video") {
-      fileType = "VideoObject";
+      fileTypes.push("VideoObject");
     } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
-      fileType = "ImageObject";
+      fileTypes.push("ImageObject");
     } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
-      fileType = "AudioObject";
+      fileTypes.push("AudioObject");
     }
 
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
 
+    const normalizedFileType =
+      fileTypes.length === 1 ? fileTypes[0] : fileTypes;
+
     const fileEntry: any = {
       "@id": fileId,
-      "@type": fileType,
+      "@type": normalizedFileType,
       contentSize: fs.statSync(path).size,
       dateCreated: fs.statSync(path).birthtime.toISOString(),
       dateModified: file.getModifiedDate()?.toISOString(),

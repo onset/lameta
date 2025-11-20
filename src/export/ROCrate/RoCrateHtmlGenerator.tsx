@@ -87,7 +87,7 @@ const LICENSE_FIELDS: OrderEntry[] = [
   { property: "ldac:access", label: "Access" }
 ];
 
-// Fields for Digital Document entities
+// Fields for File entities (LAM-54 fix: https://linear.app/lameta/issue/LAM-54 insists on explicit File type usage)
 const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
   { property: "encodingFormat", label: "Encoding Format" },
   { property: "ldac:materialType", label: "Material type" },
@@ -103,9 +103,9 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
   if (types.includes("Person")) return PERSON_FIELDS;
   if (types.includes("Organization")) return ORGANIZATION_FIELDS;
   if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
-  // Both DigitalDocument and file entities (ImageObject, VideoObject, AudioObject) should use the same fields
+  // Both File entities and richer media-specific types should use the same fields
   if (
-    types.includes("DigitalDocument") ||
+    types.includes("File") ||
     types.includes("ImageObject") ||
     types.includes("VideoObject") ||
     types.includes("AudioObject")

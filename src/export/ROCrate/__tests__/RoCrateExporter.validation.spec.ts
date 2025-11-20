@@ -854,10 +854,14 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(sessionEntry).toBeDefined();
 
       // Find the file entry in the graph
-      const fileEntry = graph.find(
-        (item: any) =>
-          item["@id"]?.includes("BAHOUNGOU") && item["@type"] === "AudioObject"
-      );
+      const fileEntry = graph.find((item: any) => {
+        const types = Array.isArray(item["@type"])
+          ? item["@type"]
+          : [item["@type"]];
+        return (
+          item["@id"]?.includes("BAHOUNGOU") && types.includes("AudioObject")
+        );
+      });
 
       expect(fileEntry).toBeDefined();
 
@@ -952,14 +956,20 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(personEntry).toBeDefined();
 
       // Find the file entries
-      const photoEntry = graph.find(
-        (item: any) =>
-          item["@type"] === "ImageObject" && item["@id"]?.includes("Photo")
-      );
-      const consentEntry = graph.find(
-        (item: any) =>
-          item["@type"] === "AudioObject" && item["@id"]?.includes("Consent")
-      );
+      const photoEntry = graph.find((item: any) => {
+        const types = Array.isArray(item["@type"])
+          ? item["@type"]
+          : [item["@type"]];
+        return types.includes("ImageObject") && item["@id"]?.includes("Photo");
+      });
+      const consentEntry = graph.find((item: any) => {
+        const types = Array.isArray(item["@type"])
+          ? item["@type"]
+          : [item["@type"]];
+        return (
+          types.includes("AudioObject") && item["@id"]?.includes("Consent")
+        );
+      });
 
       expect(photoEntry).toBeDefined();
       expect(consentEntry).toBeDefined();

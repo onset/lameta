@@ -28,7 +28,7 @@ describe("RoCrateHtmlGenerator", () => {
       },
       {
         "@id": "People/Awi_Heole/Awi_Heole.person",
-        "@type": "DigitalDocument",
+        "@type": "File",
         name: "Awi_Heole.person",
         encodingFormat: "application/lameta-person"
       },
@@ -53,7 +53,7 @@ describe("RoCrateHtmlGenerator", () => {
       },
       {
         "@id": "Sessions/ETR009/ETR009.session",
-        "@type": "DigitalDocument",
+        "@type": "File",
         name: "ETR009.session",
         encodingFormat: "application/lameta-session"
       },
@@ -111,19 +111,19 @@ describe("RoCrateHtmlGenerator", () => {
       },
       {
         "@id": "test.session",
-        "@type": "DigitalDocument",
+        "@type": "File",
         name: "Test Session File",
         encodingFormat: "application/lameta-session"
       },
       {
         "@id": "person.person",
-        "@type": "DigitalDocument",
+        "@type": "File",
         name: "Person File",
         encodingFormat: "application/lameta-person"
       },
       {
         "@id": "project.sprj",
-        "@type": "DigitalDocument",
+        "@type": "File",
         name: "Project File",
         encodingFormat: "application/lameta-project"
       }
@@ -478,7 +478,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).not.toContain('<a href="#entity_tag_lameta_unknown">');
   });
 
-  it("should only render whitelisted fields for DigitalDocument entities", () => {
+  it("should only render whitelisted fields for File entities", () => {
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
       "@graph": [
@@ -490,7 +490,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "test.person",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "test.person",
           description: "A person file description",
           encodingFormat: "application/lameta-person",
@@ -506,18 +506,18 @@ describe("RoCrateHtmlGenerator", () => {
 
     const html = generateRoCrateHtml(testData);
 
-    // Extract only the DigitalDocument entity section
+    // Extract only the File entity section
     const docStart = html.indexOf('id="entity_test_person"');
     const docEnd = html.indexOf("</div></div>", docStart);
     const docHtml = html.substring(docStart, docEnd);
 
-    // Should contain only the whitelisted fields for DigitalDocument
+    // Should contain only the whitelisted fields for File
     expect(docHtml).toContain("Encoding Format:");
     expect(docHtml).toContain("application/lameta-person");
     expect(docHtml).toContain("Material type:");
     expect(docHtml).toContain("Annotation");
 
-    // Should NOT contain the non-whitelisted fields in the DigitalDocument section
+    // Should NOT contain the non-whitelisted fields in the File section
     expect(docHtml).not.toContain("Description:");
     expect(docHtml).not.toContain("Date Created:");
     expect(docHtml).not.toContain("Date Modified:");
@@ -616,7 +616,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(audHtml).not.toContain("Description:");
   });
 
-  it("should render ldac:materialType with external link for DigitalDocument entities", () => {
+  it("should render ldac:materialType with external link for File entities", () => {
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
       "@graph": [
@@ -628,7 +628,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "People/Awi_Heole/Awi_Heole.person",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "Awi_Heole.person",
           encodingFormat: "application/lameta-person",
           "ldac:materialType": { "@id": "ldac:Annotation" },
@@ -640,7 +640,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     const html = generateRoCrateHtml(testData);
 
-    // Extract only the DigitalDocument entity section
+    // Extract only the File entity section
     const docStart = html.indexOf(
       'id="entity_People_Awi_Heole_Awi_Heole_person"'
     );
@@ -737,7 +737,7 @@ describe("RoCrateHtmlGenerator", () => {
           },
           {
             "@id": "file:///D:/Research/Data/OtherDocs/readme.txt",
-            "@type": "DigitalDocument",
+            "@type": "File",
             name: "readme.txt"
           }
         ]
@@ -747,7 +747,7 @@ describe("RoCrateHtmlGenerator", () => {
 
       // Should extract relative paths starting from recognized folders
       expect(html).toContain('src="Sessions/session1/recording.mp3"');
-      // For DigitalDocument files, check the entity-id display uses getDisplayPath
+      // For File files, check the entity-id display uses getDisplayPath
       expect(html).toContain(">OtherDocs/readme.txt</div>");
     });
 
@@ -882,7 +882,7 @@ describe("RoCrateHtmlGenerator", () => {
           },
           {
             "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine.person",
-            "@type": "DigitalDocument",
+            "@type": "File",
             name: "NZOUMBA-Georgine.person",
             encodingFormat: "application/lameta-person"
           },
@@ -979,7 +979,7 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id":
               "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
-            "@type": "DigitalDocument",
+            "@type": "File",
             name: "BAKALA Michel (@Mfouati).person",
             encodingFormat: "application/lameta-person"
           },
@@ -1035,7 +1035,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian.person",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "PARKER Brian.person",
           encodingFormat: "application/lameta-person"
         },
@@ -1090,7 +1090,7 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian.person",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "PARKER Brian.person"
         },
         {
@@ -1141,13 +1141,13 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "test-document.pdf",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "Test PDF Document",
           encodingFormat: "application/pdf"
         },
         {
           "@id": "word-document.docx",
-          "@type": "DigitalDocument",
+          "@type": "File",
           name: "Word Document",
           encodingFormat:
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

@@ -93,7 +93,8 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     );
     expect(letterFileEntry).toBeDefined();
     expect(letterFileEntry["@id"]).toBe("OtherDocuments/Letter_from_Jan.txt");
-    expect(letterFileEntry["@type"]).toBe("DigitalDocument");
+    // Regression for https://linear.app/lameta/issue/LAM-54: these project-level documents must now be typed as File
+    expect(letterFileEntry["@type"]).toBe("File");
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
 
     // Verify that no files have the incorrect "OtherDocs" prefix

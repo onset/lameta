@@ -66,6 +66,12 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
     } as any;
 
+    const mockSessionMetadata = {
+      getActualFilePath: () => "/sessions/ETR009/ETR009.session",
+      getModifiedDate: () => new Date("2010-06-06"),
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.session"
+    } as any;
+
     const mockPhoto1 = {
       getActualFilePath: () => "/people/Awi_Heole/Awi_Heole_Photo.JPG",
       getModifiedDate: () => new Date("2010-01-01"),
@@ -142,7 +148,12 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
           forEach: vi.fn()
         }
       },
-      files: [mockAudioFile, mockVideoFile, mockSessionXml],
+      files: [
+        mockAudioFile,
+        mockVideoFile,
+        mockSessionXml,
+        mockSessionMetadata
+      ],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         { personReference: "Awi_Heole", role: "speaker" },
         { personReference: "Ilawi_Amosa", role: "speaker" } // Both are speakers for the test
@@ -270,31 +281,37 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     const audioFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
-    expect(audioFile["@type"]).toBe("AudioObject");
+    expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
     expect(audioFile.role).toBeUndefined();
 
     const videoFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
     );
-    expect(videoFile["@type"]).toBe("VideoObject");
+    expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
     expect(videoFile.role).toBeUndefined();
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
-    expect(xmlFile["@type"]).toBe("DigitalDocument");
+    expect(xmlFile["@type"]).toBe("File");
     expect(xmlFile.role).toBeUndefined();
 
     const photo1 = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
     );
-    expect(photo1["@type"]).toBe("ImageObject");
+    expect(photo1["@type"]).toEqual(["File", "ImageObject"]);
     expect(photo1.role).toBeUndefined();
 
     const personFile = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
     );
-    expect(personFile["@type"]).toBe("DigitalDocument");
+    // LAM-54: session/person metadata blobs are plain files in RO-Crate (https://linear.app/lameta/issue/LAM-54)
+    expect(personFile["@type"]).toBe("File");
+
+    const sessionMetadataFile = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.session"
+    );
+    expect(sessionMetadataFile["@type"]).toBe("File");
     expect(personFile.role).toBeUndefined();
 
     // Verify that no separate Role entities are created (we use LDAC properties directly)

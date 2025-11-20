@@ -137,28 +137,29 @@ describe("RoCrateExporter file handling", () => {
     Object.setPrototypeOf(mockPerson, Person.prototype);
   });
 
-  it("should use specific file types instead of generic File", async () => {
+  it("should include File plus media-specific @types", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const audioFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
     );
-    expect(audioFile["@type"]).toBe("AudioObject");
+    expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
 
     const videoFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
     );
-    expect(videoFile["@type"]).toBe("VideoObject");
+    expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
 
     const imageFile = result["@graph"].find(
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
     );
-    expect(imageFile["@type"]).toBe("ImageObject");
+    expect(imageFile["@type"]).toEqual(["File", "ImageObject"]);
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
-    expect(xmlFile["@type"]).toBe("DigitalDocument");
+    // https://linear.app/lameta/issue/LAM-54: even plain XML exports must be typed as File for RO-Crate compliance
+    expect(xmlFile["@type"]).toBe("File");
   });
 
   it("should not add role property to files", async () => {
