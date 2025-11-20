@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { getRoCrate } from "../RoCrateExporter";
+import { createPersonId } from "../RoCrateUtils";
 import {
   setupCommonMocks,
   createMockProject,
@@ -11,7 +12,7 @@ import { Contribution } from "../../../model/file/File";
 describe("RoCrateExporter - Person Reference Consistency", () => {
   setupCommonMocks(true);
 
-  it("should ensure Person entity @id values match hasPart references after fix", async () => {
+  it("keeps Person entities contextual and excludes them from root hasPart", async () => {
     // Create person with spaces using test utilities
     const personWithSpaces = createMockPerson({
       filePrefix: "BAHOUNGOU Hilaire",
@@ -50,36 +51,35 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     });
 
     const roCrate = await getRoCrate(mockProject, mockProject);
-    const graph = roCrate["@graph"];
-
-    // The person is being treated as an unresolved contributor, not a resolved Person entity
-    // So we should expect the "#unknown-contributor" entity instead
-    const personEntity = graph.find(
-      (item: any) =>
-        item["@type"] === "Person" && item["@id"] === "#unknown-contributor"
-    );
-    expect(personEntity).toBeDefined();
+    const graph = (roCrate as any)["@graph"];
 
     // Find the root dataset
     const rootDataset = graph.find((item: any) => item["@id"] === "./");
     expect(rootDataset).toBeDefined();
 
-    // Find the hasPart reference - this shows the bug!
-    // The hasPart references "People/BAHOUNGOU%20Hilaire/" but the actual Person entity is "#unknown-contributor"
-    const personReference = rootDataset.hasPart.find(
-      (ref: any) => ref["@id"] === "People/BAHOUNGOU%20Hilaire/"
+    // Root hasPart should only include datasets/files, never Person entities
+    const rootHasPartIds =
+      rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
+    rootHasPartIds.forEach((id: string) => {
+      expect(id.startsWith("People/")).toBe(false);
+    });
+
+    // The Person entity should exist with the sanitized @id
+    const expectedPersonId = createPersonId(personWithSpaces);
+    const personEntity = graph.find(
+      (item: any) =>
+        item["@type"] === "Person" && item["@id"] === expectedPersonId
     );
-    expect(personReference).toBeDefined();
+    expect(personEntity).toBeDefined();
 
-    // This demonstrates the BUG: the Person entity @id and hasPart reference do NOT match
-    // The test documents the current broken behavior
-    expect(personEntity["@id"]).toBe("#unknown-contributor");
-    expect(personReference["@id"]).toBe("People/BAHOUNGOU%20Hilaire/");
-
-    // This assertion would fail in the current broken state - this is what should be fixed
-    // expect(personReference["@id"]).toBe(personEntity["@id"]);
-
-    // For now, we document that they DON'T match (the bug)
-    expect(personReference["@id"]).not.toBe(personEntity["@id"]);
+    // The session should reference the Person via ldac role properties instead of root hasPart
+    const sessionEntity = graph.find(
+      (item: any) =>
+        typeof item["@id"] === "string" && item["@id"].startsWith("Sessions/")
+    );
+    expect(sessionEntity).toBeDefined();
+    expect(sessionEntity?.["ldac:speaker"]).toEqual([
+      { "@id": expectedPersonId }
+    ]);
   });
 });

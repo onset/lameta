@@ -925,9 +925,20 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": "Sessions/test_session/"
       });
 
-      // Collection should still use hasPart for people
-      expect(rootDataset.hasPart).toBeDefined();
-      expect(rootDataset.hasPart).toContainEqual({
+      // Root hasPart should no longer list people; they are referenced via session role links
+      const rootHasPart = rootDataset.hasPart ?? [];
+      const peopleLinks = rootHasPart.filter((entry: any) =>
+        entry?.["@id"]?.startsWith("People/")
+      );
+      expect(peopleLinks).toHaveLength(0);
+
+      // Ensure sessions now carry the person references via LDAC roles
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/test_session/" &&
+          item["@type"].includes("Event")
+      );
+      expect(sessionEvent["ldac:speaker"]).toContainEqual({
         "@id": "People/Awi_Heole/"
       });
     });
@@ -985,10 +996,12 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": "Sessions/test_session/"
       });
 
-      // Collection uses hasPart for people (supporting entities)
-      expect(rootDataset.hasPart).toContainEqual({
-        "@id": "People/Awi_Heole/"
-      });
+      // Root hasPart should not contain people anymore
+      const rootHasPart = rootDataset.hasPart ?? [];
+      const peopleLinks = rootHasPart.filter((entry: any) =>
+        entry?.["@id"]?.startsWith("People/")
+      );
+      expect(peopleLinks).toHaveLength(0);
 
       // Sessions use hasPart for their files, not pcdm:hasMember
       expect(sessionEvent.hasPart).toBeDefined();

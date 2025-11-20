@@ -302,24 +302,6 @@ async function getRoCrateInternal(
       });
     });
 
-    // Add people to root dataset hasPart
-    const allPeople = new Set<string>();
-    project.sessions.items.forEach((session) => {
-      (session as Session)
-        .getAllContributionsToAllFiles()
-        .forEach((contribution) => {
-          const person = project.findPerson(
-            contribution.personReference.trim()
-          );
-          if (person) {
-            allPeople.add(createPersonId(person));
-          }
-        });
-    });
-    allPeople.forEach((personId) => {
-      entry.hasPart.push({ "@id": personId });
-    });
-
     // Add description folder files to root dataset hasPart
     if (
       project.descriptionFolder &&
