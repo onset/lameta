@@ -82,6 +82,11 @@ type PublisherResolution = {
 
 const ARCHIVE_CONFIGURATION_FIELD_KEY = "archiveConfigurationName";
 
+type PersonReferenceResolution = {
+  reference: { "@id": string };
+  entity: RoCrateEntity;
+};
+
 function resolvePublisher(project: Project): PublisherResolution | undefined {
   // It's not 100% clear who the publisher should be, we're using the archive configuration.
   // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
@@ -110,6 +115,32 @@ function resolvePublisher(project: Project): PublisherResolution | undefined {
       "@id": publisherId,
       "@type": "Organization",
       name: archiveName
+    }
+  };
+}
+
+// https://linear.app/lameta/issue/LAM-39/ro-crate-root-dataset-depositor-handling
+function resolveDepositor(project: Project): PersonReferenceResolution | undefined {
+  const depositorName = project.metadataFile
+    ?.getTextProperty("depositor", "")
+    .trim();
+
+  if (!depositorName) {
+    return undefined;
+  }
+
+  const slug = depositorName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const depositorId = `#depositor-${slug || "unknown"}`;
+
+  return {
+    reference: { "@id": depositorId },
+    entity: {
+      "@id": depositorId,
+      "@type": "Person",
+      name: depositorName
     }
   };
 }
@@ -289,6 +320,13 @@ async function getRoCrateInternal(
       // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName is not a valid RO-Crate term, so reuse the
       // resolved Organization as holdingArchive instead of leaking the raw custom field.
       entry.holdingArchive = publisher.reference;
+    }
+
+    const depositor = resolveDepositor(project);
+    if (depositor) {
+      // LAM-39: ldac:depositor must reference a Person entity, not a bare string in the root dataset.
+      entry["ldac:depositor"] = depositor.reference;
+      otherEntries.push(depositor.entity);
     }
 
     // Handle project-level geographic coverage (country/continent) as Place entities
@@ -476,6 +514,11 @@ export async function addFieldEntries(
 
     if (field.key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
       // https://linear.app/lameta/issue/LAM-38: handled via holdingArchive so the undefined custom key never leaks.
+      continue;
+    }
+
+    if (field.key === "depositor") {
+      // LAM-39: depositor now maps to ldac:depositor via resolveDepositor, so suppress the legacy string property.
       continue;
     }
 
@@ -825,6 +868,11 @@ export async function addFieldEntries(
 
     if (key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
       // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName gets remapped to holdingArchive above.
+      return;
+    }
+
+    if (key === "depositor") {
+      // LAM-39: prevent the custom-field fallback from reintroducing the deprecated string property.
       return;
     }
 

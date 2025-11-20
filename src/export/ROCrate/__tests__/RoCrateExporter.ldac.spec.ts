@@ -407,6 +407,40 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(unknownContributor.name).toBe("Unknown");
     });
 
+    it("should convert depositor strings into ldac:depositor person references", async () => {
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "depositor") return "Nick Thieberger";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
+
+      // LAM-39: ensure ldac:depositor references a Person entity instead of emitting a bare string property.
+      expect(rootDataset).toBeDefined();
+      expect(rootDataset["ldac:depositor"]).toEqual({
+        "@id": "#depositor-nick-thieberger"
+      });
+      expect(rootDataset).not.toHaveProperty("depositor");
+
+      const depositorEntity = result["@graph"].find(
+        (item: any) => item["@id"] === "#depositor-nick-thieberger"
+      );
+
+      expect(depositorEntity).toMatchObject({
+        "@type": "Person",
+        name: "Nick Thieberger"
+      });
+    });
+
     it("should remap archiveConfigurationName into holdingArchive", async () => {
       (mockProject.metadataFile as any).getTextProperty = vi
         .fn()
