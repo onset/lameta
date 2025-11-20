@@ -40,18 +40,18 @@ describe("RoCrateExporter Publisher Entity", () => {
 
     // Check that publisher is referenced
     expect(rootDataset.publisher).toBeDefined();
-    expect(rootDataset.publisher["@id"]).toBe(
-      "https://github.com/onset/lameta"
-    );
+    // LAM-35 regression guard: publisher must resolve to the archive configuration entity
+    // rather than the lameta GitHub project. https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+    expect(rootDataset.publisher["@id"]).toBe("#publisher-lameta");
 
     // Check that the publisher entity is actually defined in the graph
     const publisherEntity = graph.find(
-      (item: any) => item["@id"] === "https://github.com/onset/lameta"
+      (item: any) => item["@id"] === "#publisher-lameta"
     );
 
     expect(publisherEntity).toBeDefined();
     expect(publisherEntity["@type"]).toContain("Organization");
-    expect(publisherEntity.name).toBeDefined();
+    expect(publisherEntity.name).toBe("lameta");
   });
 
   it("should define publisher entity for session-level exports", async () => {
@@ -65,14 +65,17 @@ describe("RoCrateExporter Publisher Entity", () => {
     );
 
     if (sessionEntity && sessionEntity.publisher) {
-      // Check that the publisher entity is defined in the graph
+      // LAM-35: session entities should re-use the archive publisher node
+      // rather than introducing per-session GitHub placeholders.
+      expect(sessionEntity.publisher["@id"]).toBe("#publisher-lameta");
+
       const publisherEntity = graph.find(
         (item: any) => item["@id"] === sessionEntity.publisher["@id"]
       );
 
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toContain("Organization");
-      expect(publisherEntity.name).toBeDefined();
+      expect(publisherEntity.name).toBe("lameta");
     }
   });
 });

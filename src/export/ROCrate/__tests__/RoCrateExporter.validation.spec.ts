@@ -481,17 +481,18 @@ describe("RoCrateExporter Validation Tests", () => {
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
 
       expect(rootDataset.publisher).toBeDefined();
-      expect(rootDataset.publisher["@id"]).toBe(
-        "https://github.com/onset/lameta"
-      );
+      // LAM-35 regression guard: publisher must reference the archive organisation, not lameta GitHub
+      // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+      const expectedPublisherId = "#publisher-testarchive";
+      expect(rootDataset.publisher["@id"]).toBe(expectedPublisherId);
 
       // Check that the publisher entity is actually defined in the graph
       const publisherEntity = graph.find(
-        (item: any) => item["@id"] === "https://github.com/onset/lameta"
+        (item: any) => item["@id"] === expectedPublisherId
       );
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toBe("Organization");
-      expect(publisherEntity.name).toBeDefined();
+      expect(publisherEntity.name).toBe("TestArchive");
 
       // Validation should run
       expect(validation).toBeDefined();

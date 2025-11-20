@@ -75,6 +75,43 @@ type RoCrateEntity = {
   [key: string]: unknown;
 };
 
+type PublisherResolution = {
+  reference: { "@id": string };
+  entity: RoCrateEntity;
+};
+
+function resolvePublisher(project: Project): PublisherResolution | undefined {
+  // It's not 100% clear who the publisher should be, we're using the archive configuration.
+  // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+
+  const archiveName = project.metadataFile
+    ?.getTextProperty("archiveConfigurationName", "")
+    .trim();
+
+  if (!archiveName) {
+    return undefined;
+  }
+
+  const loweredArchiveName = archiveName.toLowerCase();
+  if (loweredArchiveName === "default" || loweredArchiveName === "unknown") {
+    return undefined;
+  }
+
+  const slugSource = sanitizeForIri(archiveName) || archiveName;
+  const normalizedSlug =
+    slugSource.trim().length > 0 ? slugSource : "unknown-publisher";
+  const publisherId = `#publisher-${normalizedSlug.toLowerCase()}`;
+
+  return {
+    reference: { "@id": publisherId },
+    entity: {
+      "@id": publisherId,
+      "@type": "Organization",
+      name: archiveName
+    }
+  };
+}
+
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
 // https://www.researchobject.org/ro-crate/
@@ -214,7 +251,6 @@ async function getRoCrateInternal(
         "collectionDescription",
         "No description provided for this project."
       ),
-      publisher: { "@id": "https://github.com/onset/lameta" },
       datePublished: new Date().toISOString(),
       // Add required LDAC fields using contactPerson (structured entity reference for better linked data)
       author: contactPersonReference,
@@ -244,6 +280,11 @@ async function getRoCrateInternal(
       rocrateLanguages
     );
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
+
+    const publisher = resolvePublisher(project);
+    if (publisher) {
+      entry.publisher = publisher.reference;
+    }
 
     // Handle project-level geographic coverage (country/continent) as Place entities
     // linked via contentLocation instead of plain string properties
@@ -305,6 +346,10 @@ async function getRoCrateInternal(
       });
     }
 
+    if (publisher) {
+      otherEntries.push(publisher.entity);
+    }
+
     const sessionEntries = await Promise.all(
       project.sessions.items.map(async (session) => {
         return await createSessionEntry(
@@ -312,7 +357,8 @@ async function getRoCrateInternal(
           session as Session,
           false,
           rocrateLanguages,
-          rocrateLicense
+          rocrateLicense,
+          publisher
         );
       })
     );
@@ -371,15 +417,6 @@ async function getRoCrateInternal(
       "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") }
     };
 
-    // Add publisher organization entity
-    const publisherEntity = {
-      "@id": "https://github.com/onset/lameta",
-      "@type": "Organization",
-      name: "LaMeta Project",
-      url: "https://github.com/onset/lameta",
-      description: "A metadata tool for language documentation projects"
-    };
-
     return [
       entry,
       ...sessionEntries.flat(),
@@ -388,7 +425,6 @@ async function getRoCrateInternal(
       ...ldacMaterialTypeDefinitions,
       ...uniqueLicenses,
       collectionLicense,
-      publisherEntity,
       ...rocrateLanguages.getUsedLanguageEntities(),
       ...getUniqueEntries(otherEntries)
     ];
@@ -403,7 +439,8 @@ async function getRoCrateInternal(
     session,
     isStandaloneSession,
     rocrateLanguages,
-    rocrateLicense
+    rocrateLicense,
+    resolvePublisher(project)
   );
 }
 

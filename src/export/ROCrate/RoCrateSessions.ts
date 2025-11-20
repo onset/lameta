@@ -16,18 +16,23 @@ import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
 import {
-  sanitizeForIri,
   createSessionId,
   createPersonId,
   createUnresolvedContributorId
 } from "./RoCrateUtils";
+
+type PublisherDetails = {
+  reference: { "@id": string };
+  entity: { [key: string]: unknown };
+};
 
 export async function createSessionEntry(
   project: Project,
   session: Session,
   isStandaloneSession: boolean = false,
   rocrateLanguages: RoCrateLanguages,
-  rocrateLicense: RoCrateLicense
+  rocrateLicense: RoCrateLicense,
+  publisher?: PublisherDetails
 ): Promise<object[]> {
   const sessionTypes = isStandaloneSession
     ? ["Dataset", "RepositoryObject", "Event"]
@@ -45,10 +50,13 @@ export async function createSessionEntry(
     description:
       session.metadataFile?.getTextProperty("description") ||
       "No description provided for this session.",
-    publisher: { "@id": "https://github.com/onset/lameta" },
     datePublished: new Date().toISOString(),
     hasPart: []
   };
+
+  if (publisher) {
+    mainSessionEntry.publisher = publisher.reference;
+  }
 
   const { reference: contactPersonReference, isUnknown: isUnknownContact } =
     getContactPersonReference(project);
@@ -151,15 +159,12 @@ export async function createSessionEntry(
     otherEntries.push(...createLdacAccessTypeDefinitions());
     otherEntries.push(...createLdacMaterialTypeDefinitions());
 
-    // Add publisher organization entity for standalone sessions
-    const publisherEntity = {
-      "@id": "https://github.com/onset/lameta",
-      "@type": "Organization",
-      name: "LaMeta Project",
-      url: "https://github.com/onset/lameta",
-      description: "A metadata tool for language documentation projects"
-    };
-    otherEntries.push(publisherEntity);
+    if (publisher) {
+      // LAM-35 regression fix: standalone exports must carry the same
+      // configuration-derived publisher entity. See
+      // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+      otherEntries.push(publisher.entity);
+    }
   }
 
   allEntries.push(...boilerplateSessionGraph, ...otherEntries);
