@@ -227,8 +227,11 @@ describe("ensureSubjectLanguage", () => {
 
     ensureSubjectLanguage(entity, rocrateLanguages);
 
+    // LAM-41 regression: ensure the fallback uses the shared Lexvo URI instead
+    // of the legacy #language_und fragment.
+    // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
     expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_und" }
+      { "@id": "https://lexvo.org/id/iso639-3/und" }
     ]);
   });
 

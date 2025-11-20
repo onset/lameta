@@ -68,6 +68,13 @@ import { makeLdacCompliantPersonEntry } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
 
+type RoCrateEntity = {
+  "@id": string;
+  "@type": string | string[];
+  inLanguage?: { "@id": string } | { "@id": string }[];
+  [key: string]: unknown;
+};
+
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
 // https://www.researchobject.org/ro-crate/
@@ -135,7 +142,7 @@ async function getRoCrateInternal(
   const rocrateLicense = new RoCrateLicense();
 
   if (folder instanceof Person || (folder as any).folderType === "person") {
-    const entry = {
+    const entry: RoCrateEntity = {
       "@id": createPersonId(folder),
       "@type": "Person"
     };
@@ -147,6 +154,21 @@ async function getRoCrateInternal(
       otherEntries,
       rocrateLanguages
     );
+    if (
+      !entry.inLanguage ||
+      (Array.isArray(entry.inLanguage) && entry.inLanguage.length === 0)
+    ) {
+      // LAM-41: Guarantee the root dataset exposes inLanguage by
+      // assigning Lexvo's undetermined language identifier whenever no
+      // working language was captured. This replaces the old #language_und
+      // fragment and keeps LDAC validators satisfied.
+      // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
+      rocrateLanguages.getLanguageEntity("und");
+      const undeterminedLanguageReference =
+        rocrateLanguages.getLanguageReference("und");
+      rocrateLanguages.trackUsage("und", entry["@id"] || "./");
+      entry.inLanguage = undeterminedLanguageReference;
+    }
 
     // Apply LDAC compliance for direct person export
     // Try to find a session date from the project for age calculation
@@ -725,16 +747,14 @@ export async function addFieldEntries(
       // Skip isAdditional fields that don't have rocrate definitions
       // These are fields like involvement, planningType, socialContext that are IMDI-specific
       // and lack proper JSON-LD context definitions (see LAM-52)
-      if (folder.metadataFile!.properties.getFieldDefinition) {
-        const fieldDef = folder.metadataFile!.properties.getFieldDefinition(
-          field.key
+      const fieldDef = folder.metadataFile!.properties.getFieldDefinition?.(
+        field.key
+      );
+      if (fieldDef && fieldDef.isAdditional) {
+        console.warn(
+          `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`
         );
-        if (fieldDef && fieldDef.isAdditional) {
-          console.warn(
-            `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`
-          );
-          continue;
-        }
+        continue;
       }
 
       // Map 'date' to 'dateCreated' for compliance with the profile

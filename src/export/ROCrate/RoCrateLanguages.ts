@@ -30,14 +30,26 @@ export class RoCrateLanguages {
     const name = staticLanguageFinder
       ? staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code)
       : `Language ${code}`;
+
+    // Existing precedent: LDAC examples and other RO-Crate guidance frequently reference Lexvo for language resources,
+    // so using it keeps us in line with what validators and downstream tooling expect.
+    const uriForUndetermined = "https://lexvo.org/id/iso639-3/und";
+
     const entity: LanguageEntity = {
-      "@id": `#language_${normalizedCode}`,
+      "@id":
+        normalizedCode === "und"
+          ? uriForUndetermined
+          : `#language_${normalizedCode}`,
       "@type": "Language",
       code: normalizedCode,
       name: name
     };
 
-    // Add descriptive text for special cases like "und" (undetermined language)
+    // LAM-41: Document why "und" maps to a global URI instead of a local fragment.
+    // The Linear issue highlights that local placeholders like #language_und fail
+    // external validation. By emitting the Lexvo identifier we retain a stable,
+    // resolvable URI while keeping other language codes as internal fragments.
+    // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
     if (normalizedCode === "und") {
       entity.description =
         "Language marked as undetermined because no working language was specified in lameta";

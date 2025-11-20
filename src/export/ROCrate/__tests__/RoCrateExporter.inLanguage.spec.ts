@@ -30,7 +30,8 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     const mockProject = createMockProject({
       filePrefix: "test-project",
       metadata: {
-        title: "Test Project"
+        title: "Test Project",
+        collectionWorkingLanguages: "etr"
       }
     });
 
@@ -59,5 +60,16 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     // It should be an object reference
     expect(typeof sessionEntity.inLanguage).toBe("object");
     expect(sessionEntity.inLanguage).toHaveProperty("@id");
+
+    // LAM-41 regression: the root dataset must now surface inLanguage as well,
+    // ensuring the LDAC "MUST" requirement is satisfied without using
+    // #language_und placeholders. https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
+    const rootDataset = roCrateJson["@graph"].find(
+      (entity: any) => entity["@id"] === "./"
+    );
+
+    expect(rootDataset).toBeDefined();
+    expect(Array.isArray(rootDataset.inLanguage)).toBe(true);
+    expect(rootDataset.inLanguage[0]).toEqual({ "@id": "#language_etr" });
   });
 });

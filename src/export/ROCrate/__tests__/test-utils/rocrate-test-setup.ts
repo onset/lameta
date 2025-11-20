@@ -330,10 +330,31 @@ export const setupRealFieldDefinitions = () => {
 export const createMockProject = (overrides: Partial<any> = {}): Project => {
   const mockProperties = new Map();
 
+  const defaultMetadata: { [key: string]: any } = {
+    title: "Test Project Title",
+    description: "Test project description",
+    id: "test-project-001",
+    archiveConfigurationName: "lameta",
+    ...overrides.metadata
+  };
+
+  (mockProperties as any).getHasValue = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      const value = defaultMetadata[key];
+      return value !== undefined && value !== "";
+    });
+
+  (mockProperties as any).getTextStringOrEmpty = vi
+    .fn()
+    .mockImplementation((key: string) => {
+      return defaultMetadata[key] || "";
+    });
+
   const mockProject = {
     displayName: "Test Project",
     directory: "/test/project",
-    knownFields: new Map(),
+    knownFields: fieldDefinitionsOfCurrentConfig.project,
     authorityLists: {
       accessChoicesOfCurrentProtocol: [
         { label: "CC BY 4.0", value: "CC BY 4.0" },
@@ -343,37 +364,18 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
     metadataFile: {
       properties: mockProperties, // Add the Map for properties
       getTextStringOrEmpty: vi.fn().mockImplementation((key: string) => {
-        const defaults: { [key: string]: string } = {
-          title: "Test Project Title",
-          description: "Test project description",
-          id: "test-project-001",
-          archiveConfigurationName: "lameta",
-          ...overrides.metadata
-        };
-        return defaults[key] || "";
+        return defaultMetadata[key] || "";
       }),
       getValue: vi.fn().mockImplementation((key: string) => {
-        const defaults: { [key: string]: any } = {
-          title: "Test Project Title",
-          description: "Test project description",
-          id: "test-project-001",
-          archiveConfigurationName: "lameta",
-          ...overrides.metadata
-        };
-        return defaults[key];
+        return defaultMetadata[key];
       }),
       getTextProperty: vi
         .fn()
         .mockImplementation((key: string, defaultValue: string = "") => {
-          const defaults: { [key: string]: any } = {
-            title: "Test Project Title",
-            description: "Test project description",
-            id: "test-project-001",
-            archiveConfigurationName: "lameta",
-            ...overrides.metadata
-          };
           // Return the value if it exists, otherwise return the defaultValue (which might be "")
-          return defaults[key] !== undefined ? defaults[key] : defaultValue;
+          return defaultMetadata[key] !== undefined
+            ? defaultMetadata[key]
+            : defaultValue;
         }),
       setTextStringProperty: vi.fn(),
       hasValue: vi.fn().mockReturnValue(true)

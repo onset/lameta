@@ -139,7 +139,10 @@ export class RoCrateValidator {
         errors.push(
           `${entityName} ldac:subjectLanguage[${index}] must have an @id property`
         );
-      } else if (!langRef["@id"].startsWith("#language_")) {
+      } else if (
+        !langRef["@id"].startsWith("#language_") &&
+        !langRef["@id"].startsWith("http")
+      ) {
         warnings.push(
           `${entityName} ldac:subjectLanguage[${index}] @id "${langRef["@id"]}" does not follow #language_* pattern`
         );

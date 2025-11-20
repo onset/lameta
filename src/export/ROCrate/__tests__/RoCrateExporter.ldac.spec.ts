@@ -1028,7 +1028,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
     });
 
-    it("should use 'und' as fallback when both subjectLanguages and workingLanguages are missing", async () => {
+    it("should use the shared undetermined language URI when languages are missing", async () => {
       // Mock a session with no language fields
       mockSession.knownFields = [
         {
@@ -1095,20 +1095,23 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         (item: any) => item["@id"] === "./"
       );
 
-      // Both ldac:subjectLanguage and inLanguage should fallback to "und"
+      // LAM-41 regression: expecting the Lexvo ISO 639-3 URI instead of the
+      // legacy #language_und fragment so validators recognise the placeholder.
+      // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
       expect(sessionEntry["ldac:subjectLanguage"]).toBeDefined();
       expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
       expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(1);
       expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({
-        "@id": "#language_und"
+        "@id": "https://lexvo.org/id/iso639-3/und"
       });
 
       expect(sessionEntry["inLanguage"]).toBeDefined();
-      expect(sessionEntry["inLanguage"]).toEqual({ "@id": "#language_und" });
+      expect(sessionEntry["inLanguage"]).toEqual({
+        "@id": "https://lexvo.org/id/iso639-3/und"
+      });
 
-      // Check that "und" language entity is created with descriptive text
       const undLanguageEntity = result["@graph"].find(
-        (item: any) => item["@id"] === "#language_und"
+        (item: any) => item["@id"] === "https://lexvo.org/id/iso639-3/und"
       );
 
       expect(undLanguageEntity).toBeDefined();

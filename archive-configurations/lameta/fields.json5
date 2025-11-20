@@ -276,6 +276,14 @@
       englishLabel: "Working Languages",
       form: "languages",
       type: "languageChoices",
+      // LAM-41: Map collection working languages to schema.org inLanguage so the
+      // root dataset satisfies the LDAC "MUST" requirement without inventing
+      // local placeholders. https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
+      rocrate: {
+        key: "inLanguage",
+        handler: "languages",
+        array: true
+      },
       tabIndex: 2
     }
   ],

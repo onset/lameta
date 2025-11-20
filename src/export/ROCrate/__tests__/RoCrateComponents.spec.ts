@@ -71,8 +71,12 @@ describe("RO-Crate Components", () => {
       it("should create proper undetermined language entity for 'und'", () => {
         const entity = rocrateLanguages.getLanguageEntity("und");
 
+        // LAM-41 regression: verify we emit the shared Lexvo URI instead of
+        // the old #language_und fragment. This keeps validators happy while
+        // still surfacing the descriptive metadata locally.
+        // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
         expect(entity).toEqual({
-          "@id": "#language_und",
+          "@id": "https://lexvo.org/id/iso639-3/und",
           "@type": "Language",
           code: "und",
           name: "Undetermined",
