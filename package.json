@@ -11,6 +11,7 @@
   "scripts": {
     "lint": "tsc --noemit && eslint",
     "test": "yarn vitest",
+    "test:rocrate": "yarn vitest run src/export/ROCrate/__tests__ --maxWorkers=12",
     "testui": "yarn vitest --ui",
     "test-all": "npm run test-unit && npm run build && npm run test-e2e",
     "//note that e2e tests require that you run build to pick up new code in the app (but not in the e2e tests themselves)": "",
