@@ -26,6 +26,22 @@ function getTextPropertyWithDefault(
   }
   return value;
 }
+
+export function getContactPersonReference(project: Project): {
+  reference: string | { "@id": string };
+  isUnknown: boolean;
+} {
+  const rawValue =
+    project.metadataFile?.getTextProperty("contactPerson", "") ?? "";
+  const trimmedValue = rawValue.trim();
+  const contactPersonText = trimmedValue || "Unknown";
+  const isUnknownContact = contactPersonText === "Unknown";
+  const reference = isUnknownContact
+    ? { "@id": "#unknown-contributor" }
+    : contactPersonText;
+
+  return { reference, isUnknown: isUnknownContact };
+}
 import _ from "lodash";
 import {
   getVocabularyMapping,
@@ -159,15 +175,8 @@ async function getRoCrateInternal(
   if (folder instanceof Project || ("sessions" in folder && folder.sessions)) {
     // The default lameta model (lameta/fields.json5) doesn't have these fields.
     // For now, we can give contact person or use "Unknown" as fallback
-    const contactPersonText =
-      folder.metadataFile?.getTextProperty("contactPerson", "").trim() ||
-      "Unknown";
-
-    // Use structured Person entity instead of plain text for better linked data practices
-    const isUnknownContact = contactPersonText === "Unknown";
-    const contactPersonReference = isUnknownContact
-      ? { "@id": "#unknown-contributor" }
-      : contactPersonText;
+    const { reference: contactPersonReference, isUnknown: isUnknownContact } =
+      getContactPersonReference(folder as Project);
 
     const entry: any = {
       "@id": "./",

@@ -6,7 +6,11 @@ import {
   createLdacAccessTypeDefinitions
 } from "./RoCrateLicenseUtils";
 import { createLdacMaterialTypeDefinitions } from "./RoCrateMaterialTypes";
-import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
+import {
+  addFieldEntries,
+  addChildFileEntries,
+  getContactPersonReference
+} from "./RoCrateExporter";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
@@ -46,6 +50,13 @@ export async function createSessionEntry(
     hasPart: []
   };
 
+  const { reference: contactPersonReference, isUnknown: isUnknownContact } =
+    getContactPersonReference(project);
+
+  mainSessionEntry.author = contactPersonReference;
+  mainSessionEntry.accountablePerson = contactPersonReference;
+  mainSessionEntry["dct:rightsHolder"] = contactPersonReference;
+
   // Add bidirectional pcdm:memberOf link for sessions that are part of a collection
   if (!isStandaloneSession) {
     mainSessionEntry["pcdm:memberOf"] = { "@id": "./" };
@@ -79,6 +90,14 @@ export async function createSessionEntry(
   ];
 
   const otherEntries: any[] = [];
+
+  if (isStandaloneSession && isUnknownContact) {
+    otherEntries.push({
+      "@id": "#unknown-contributor",
+      "@type": "Person",
+      name: "Unknown"
+    });
+  }
 
   await addFieldEntries(
     project,

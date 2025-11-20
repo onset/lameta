@@ -408,6 +408,95 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     });
   });
 
+  describe("LDAC Session Role Metadata", () => {
+    it("should mirror contact person roles onto session entities", async () => {
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "contactPerson") return "Dr. John Smith";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+      );
+
+      expect(sessionEvent).toBeDefined();
+      expect(sessionEvent.author).toBe("Dr. John Smith");
+      expect(sessionEvent.accountablePerson).toBe("Dr. John Smith");
+      expect(sessionEvent["dct:rightsHolder"]).toBe("Dr. John Smith");
+    });
+
+    it("should use unknown contributor fallback on sessions when contact person missing", async () => {
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "contactPerson") return "";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const sessionEvent = result["@graph"].find(
+        (item: any) =>
+          item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+      );
+
+      expect(sessionEvent).toBeDefined();
+      expect(sessionEvent.author).toEqual({ "@id": "#unknown-contributor" });
+      expect(sessionEvent.accountablePerson).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(sessionEvent["dct:rightsHolder"]).toEqual({
+        "@id": "#unknown-contributor"
+      });
+    });
+
+    it("should include fallback contributor entity when exporting standalone sessions", async () => {
+      (mockProject.metadataFile as any).getTextProperty = vi
+        .fn()
+        .mockImplementation((key: string) => {
+          if (key === "title") return "Edolo Language Documentation";
+          if (key === "collectionDescription")
+            return "Documentation of the Edolo language";
+          if (key === "archiveConfigurationName") return "TestArchive";
+          if (key === "contactPerson") return "";
+          return "";
+        });
+
+      const result = (await getRoCrate(mockProject, mockSession)) as any;
+      const standaloneSession = result["@graph"].find(
+        (item: any) => item["@id"] === "./" && item["@type"].includes("Event")
+      );
+
+      expect(standaloneSession).toBeDefined();
+      expect(standaloneSession.author).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(standaloneSession.accountablePerson).toEqual({
+        "@id": "#unknown-contributor"
+      });
+      expect(standaloneSession["dct:rightsHolder"]).toEqual({
+        "@id": "#unknown-contributor"
+      });
+
+      const unknownContributor = result["@graph"].find(
+        (item: any) => item["@id"] === "#unknown-contributor"
+      );
+      expect(unknownContributor).toBeDefined();
+      expect(unknownContributor.name).toBe("Unknown");
+    });
+  });
+
   describe("LDAC Person and Place Entities", () => {
     it("should use proper Person IDs with folder paths", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
