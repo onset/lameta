@@ -7,13 +7,17 @@ We are working on src/export/ROCrate. Tests are at src/export/ROCrate/**tests**.
 
 Ask linear for at least one the issue assigned to you (your user name is "agent") and where status = "Planned" or "In Progress". Pick one and move it to "In Progress". Think about the problem and feel free to stop and ask me any clarifying questions.
 
+You may only edit files in src/export/ROCrate and its subdirectories. You may also create temporary files as needed, but delete them when done.
+
+When you have a plan, write it out here. Once I approve the plan, start work. Follow the instructions below carefully.
+
 # Code Comments
 
 By nature of us getting this wrong the first time, we should makes sure to explain in code comments what the problem was and how we fixed it. Include a url to the linear issue in such comments. There should be an explicit comment like this in the tests, but also in the code itself where relevant.s
 
 # testing
 
-Before you start, run all tests. If any fail, stop. As you work, run tests that you think are relevant. Once everythign passes, run all tests again.
+Before you start, run `yarn test:rocrate`. If any fail, stop. As you work, run tests that you think are relevant. Once everything passes, run `yarn test:rocrate` again.
 
 # UI Problems
 
