@@ -4,8 +4,9 @@ import { Project } from "../../model/Project/Project";
 import { getRoCrate } from "./RoCrateExporter";
 import { generateRoCrateHtml } from "./RoCrateHtmlGenerator";
 import { removeFileIfWritableOrThrow } from "./FileUtilities";
+type RoCrateData = Awaited<ReturnType<typeof getRoCrate>>;
 
-export async function writeROCrateFile(project: Project): Promise<void> {
+export async function writeROCrateFile(project: Project): Promise<RoCrateData> {
   if (!project || !project.directory) {
     throw new Error("No valid project provided");
   }
@@ -27,4 +28,5 @@ export async function writeROCrateFile(project: Project): Promise<void> {
   // Write the HTML file
   const htmlContent = generateRoCrateHtml(roCrateData as any);
   await fs.writeFile(roCrateHtmlPath, htmlContent, "utf8");
+  return roCrateData;
 }

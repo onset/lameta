@@ -144,6 +144,12 @@ describe("writeROCrateFile", () => {
         { spaces: 2 }
       );
     });
+
+    it("should return the generated RO-Crate data", async () => {
+      const result = await writeROCrateFile(mockProject);
+
+      expect(result).toEqual(mockRoCrateData);
+    });
   });
 
   describe("when project is invalid", () => {

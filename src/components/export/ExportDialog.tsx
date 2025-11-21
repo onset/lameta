@@ -43,10 +43,41 @@ import { clipboard } from "electron";
 import { Session } from "src/model/Project/Session/Session";
 import ReactMarkdown from "react-markdown";
 import { lameta_dark_green, lameta_green } from "../../containers/theme";
+import { RoCrateValidator } from "../../export/ROCrate/RoCrateValidator";
 const sanitize = require("sanitize-filename");
 
 let staticShowExportDialog: () => void = () => {};
 export { staticShowExportDialog as ShowExportDialog };
+
+async function runRoCrateValidation(roCrateData: any) {
+  const validator = new RoCrateValidator();
+  const result = validator.validate(roCrateData);
+
+  if (result.isValid) {
+    return;
+  }
+
+  const displayedErrors = result.errors.slice(0, 10);
+  const extraCount = result.errors.length - displayedErrors.length;
+  const detailLines = displayedErrors.map(
+    (error, index) => `${index + 1}. ${error}`
+  );
+
+  if (extraCount > 0) {
+    detailLines.push(`…and ${extraCount} more.`);
+  }
+  detailLines.push("See console for full list of errors.");
+  console.error("RO-Crate validation errors:", result.errors);
+
+  const message = [
+    `RO-Crate validation failed (${result.errors.length} issue${
+      result.errors.length === 1 ? "" : "s"
+    })`,
+    ...detailLines
+  ].join("\n");
+
+  throw new Error(message);
+}
 
 enum Mode {
   choosing = 0,
@@ -76,7 +107,6 @@ export const ExportDialog: React.FunctionComponent<{
         document.body.style.cursor = "default";
     }
   }, [mode]);
-
   // // Temporary debugging: pause when mode changes to exporting
   // React.useEffect(() => {
   //   if (mode === Mode.exporting) {
@@ -347,7 +377,10 @@ export const ExportDialog: React.FunctionComponent<{
           case "ro-crate":
             analyticsEvent("Export", "Export RO-Crate");
             // RO-Crate export writes to project directory, path parameter is ignored
-            await writeROCrateFile(props.projectHolder.project!);
+            const roCrateData = await writeROCrateFile(
+              props.projectHolder.project!
+            );
+            await runRoCrateValidation(roCrateData);
             await finishExport();
             setMode(Mode.finished);
             break;
