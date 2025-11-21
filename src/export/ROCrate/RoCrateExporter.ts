@@ -1208,6 +1208,10 @@ export function addProjectDocumentFolderEntries(
     const normalizedFileType =
       fileTypes.length === 1 ? fileTypes[0] : fileTypes;
 
+    // LAM-62: https://linear.app/lameta/issue/LAM-62
+    // Description and other project documents should NOT have materialType.
+    // The materialType "Annotation" was confusing because LDAC uses "annotation" to mean "analysis",
+    // but these documents are project-level descriptions, not analyses of the linguistic data.
     const fileEntry: any = {
       "@id": fileId,
       "@type": normalizedFileType,
@@ -1217,7 +1221,6 @@ export function addProjectDocumentFolderEntries(
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
-      "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
       name: fileName
     };
 
