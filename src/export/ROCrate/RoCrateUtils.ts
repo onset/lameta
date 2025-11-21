@@ -48,23 +48,20 @@ function getVocabularyData(vocabularyFile: string): VocabularyDefinition[] {
 
 /**
  * Sanitizes a string for use in an IRI (Internationalized Resource Identifier).
- * Replaces invalid characters like spaces and parentheses with valid alternatives.
- * Per RFC 3987, IRIs must not contain certain characters unless percent-encoded.
+ * Uses the standard encodeURIComponent function and additionally encodes
+ * parentheses, which can cause issues in file paths and IRIs even though
+ * they are technically allowed by RFC 3986.
  */
 export function sanitizeForIri(input: string | undefined): string {
   if (!input) {
     return ""; // Return empty string for null, undefined, or empty input
   }
-  return (
-    input
-      // URL encode spaces (and other special characters) for proper IRI compliance
-      .replace(/\s+/g, "%20")
-      // Replace parentheses with URL encoding
-      .replace(/\(/g, "%28")
-      .replace(/\)/g, "%29")
-      // Replace exclamation marks with URL encoding
-      .replace(/!/g, "%21")
-  );
+  // Use encodeURIComponent for standard encoding, then encode parentheses
+  // which are allowed by RFC 3986 but can cause issues in practice
+  return encodeURIComponent(input)
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29")
+    .replace(/!/g, "%21");
 }
 
 /**
