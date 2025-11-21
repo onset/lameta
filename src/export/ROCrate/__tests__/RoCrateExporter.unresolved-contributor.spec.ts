@@ -65,7 +65,7 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
 
     // Find the session that references this contributor
     const sessionEntity = graph.find((item: any) =>
-      item["@type"]?.includes("Event")
+      item["@type"]?.includes("CollectionEvent")
     );
     expect(sessionEntity).toBeDefined();
 

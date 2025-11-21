@@ -5,10 +5,11 @@ import { Project } from "../../../model/Project/Project";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 import { RoCrateLicense } from "../RoCrateLicenseManager";
-import { expandLdacId } from "../RoCrateUtils";
+import { createPersonId, expandLdacId } from "../RoCrateUtils";
 import { expandLdacTestValue } from "./test-utils/rocrate-test-setup";
 
 const ldac = (term: string) => expandLdacId(term);
+const expectedAwiPersonId = createPersonId({ filePrefix: "Awi_Heole" });
 
 // Mock the new managers
 vi.mock("./LanguageManager", () => ({
@@ -544,8 +545,9 @@ describe("RoCrateExporter genre handling", () => {
     );
     expect(sessionEntry).toMatchObject({
       "@id": "./",
-      "@type": ["Dataset", "RepositoryObject", "Event"],
+      "@type": ["Dataset", "RepositoryObject", "CollectionEvent"],
       name: "Fishing",
+      collectionEventType: "https://w3id.org/ldac/terms#Session",
       "ldac:linguisticGenre": [{ "@id": "ldac:Dialogue" }]
     });
 
@@ -883,19 +885,25 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     it("should use correct LDAC profile URI for session", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-      // When exporting a project, sessions should be Event entities with correct conformsTo
+      // When exporting a project, sessions should be CollectionEvent entities with correct conformsTo
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
           item["@type"] &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent).toBeDefined();
       expect(sessionEvent.conformsTo["@id"]).toBe(
         "https://w3id.org/ldac/profile#Object"
       );
       // And should be typed as RepositoryObject
-      expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "Event"]);
+      expect(sessionEvent["@type"]).toEqual([
+        "RepositoryObject",
+        "CollectionEvent"
+      ]);
+      expect(sessionEvent.collectionEventType).toBe(
+        "https://w3id.org/ldac/terms#Session"
+      );
     });
 
     it("should use correct LDAC profile URI for standalone session", async () => {
@@ -927,19 +935,31 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Root hasPart should no longer list people; they are referenced via session role links
       const rootHasPart = rootDataset.hasPart ?? [];
-      const peopleLinks = rootHasPart.filter((entry: any) =>
-        entry?.["@id"]?.startsWith("People/")
-      );
+      const peopleLinks = rootHasPart.filter((entry: any) => {
+        const id = entry?.["@id"];
+        if (typeof id !== "string") {
+          return false;
+        }
+        const entity = result["@graph"].find((item: any) => item["@id"] === id);
+        const types = entity?.["@type"];
+        const isPerson = Array.isArray(types)
+          ? types.includes("Person")
+          : types === "Person";
+        // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
+        // switched Person IDs to #Name fragments, so @type is the reliable way
+        // to confirm root hasPart never lists contextual Person entities.
+        return isPerson;
+      });
       expect(peopleLinks).toHaveLength(0);
 
       // Ensure sessions now carry the person references via LDAC roles
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
-        "@id": "People/Awi_Heole/"
+        "@id": expectedAwiPersonId
       });
     });
 
@@ -949,7 +969,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
 
       // Sessions should use hasPart for files, not pcdm:hasMember
@@ -984,12 +1004,18 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent.conformsTo["@id"]).toBe(
         "https://w3id.org/ldac/profile#Object"
       );
-      expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "Event"]);
+      expect(sessionEvent["@type"]).toEqual([
+        "RepositoryObject",
+        "CollectionEvent"
+      ]);
+      expect(sessionEvent.collectionEventType).toBe(
+        "https://w3id.org/ldac/terms#Session"
+      );
 
       // Collection uses pcdm:hasMember for sessions
       expect(rootDataset["pcdm:hasMember"]).toContainEqual({
@@ -998,9 +1024,18 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Root hasPart should not contain people anymore
       const rootHasPart = rootDataset.hasPart ?? [];
-      const peopleLinks = rootHasPart.filter((entry: any) =>
-        entry?.["@id"]?.startsWith("People/")
-      );
+      const peopleLinks = rootHasPart.filter((entry: any) => {
+        const id = entry?.["@id"];
+        if (typeof id !== "string") {
+          return false;
+        }
+        const entity = result["@graph"].find((item: any) => item["@id"] === id);
+        const types = entity?.["@type"];
+        const isPerson = Array.isArray(types)
+          ? types.includes("Person")
+          : types === "Person";
+        return isPerson;
+      });
       expect(peopleLinks).toHaveLength(0);
 
       // Sessions use hasPart for their files, not pcdm:hasMember
@@ -1023,7 +1058,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
 
       // Should NOT have generic participant property
@@ -1036,7 +1071,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // Values should be direct references to Person objects, not Role objects
       expect(sessionEvent["ldac:speaker"]).toEqual([
         {
-          "@id": "People/Awi_Heole/"
+          "@id": expectedAwiPersonId
         }
       ]);
       expect(sessionEvent["ldac:recorder"]).toEqual([
@@ -1050,7 +1085,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
 
       // Check that we're using ldac:speaker and ldac:recorder properties
@@ -1112,7 +1147,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(Array.isArray(sessionEvent["ldac:speaker"])).toBe(true);
       expect(sessionEvent["ldac:speaker"]).toHaveLength(2);
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
-        "@id": "People/Awi_Heole/"
+        "@id": expectedAwiPersonId
       });
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
         "@id": "#contributor-John_Doe"

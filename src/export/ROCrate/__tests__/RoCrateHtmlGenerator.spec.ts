@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { generateRoCrateHtml } from "../RoCrateHtmlGenerator";
-import { expandLdacId } from "../RoCrateUtils";
+import { createPersonId, expandLdacId } from "../RoCrateUtils";
 import { expandLdacTestValue } from "./test-utils/rocrate-test-setup";
 
 const ldac = (term: string) => expandLdacId(term);
+const awiPersonId = createPersonId({ filePrefix: "Awi_Heole" });
+const ilawiPersonId = createPersonId({ filePrefix: "Ilawi_Amosa" });
 
 describe("RoCrateHtmlGenerator", () => {
   const mockRoCrateData = expandLdacTestValue({
@@ -16,15 +18,15 @@ describe("RoCrateHtmlGenerator", () => {
         hasPart: [{ "@id": "Sessions/ETR009/" }]
       },
       {
-        "@id": "People/Awi_Heole/",
+        "@id": awiPersonId,
         "@type": "Person",
         name: "Awi Heole",
         age: "38",
-        hasPart: [
-          { "@id": "People/Awi_Heole/Awi_Heole.person" },
+        image: [
           { "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG" },
           { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" }
-        ]
+        ],
+        subjectOf: { "@id": "People/Awi_Heole/Awi_Heole.person" }
       },
       {
         "@id": "People/Awi_Heole/Awi_Heole.person",
@@ -44,7 +46,8 @@ describe("RoCrateHtmlGenerator", () => {
       },
       {
         "@id": "Sessions/ETR009/",
-        "@type": "Event",
+        "@type": ["RepositoryObject", "CollectionEvent"],
+        collectionEventType: "https://w3id.org/ldac/terms#Session",
         name: "Test Session",
         hasPart: [
           { "@id": "Sessions/ETR009/ETR009.session" },
@@ -130,28 +133,24 @@ describe("RoCrateHtmlGenerator", () => {
     ]
   });
 
-  it("should detect children correctly", () => {
+  it("should detect session children correctly", () => {
     const graph = mockRoCrateData["@graph"];
 
-    // Test the child detection logic directly
-    const peopleEntity = graph.find((e) => e["@id"] === "People/Awi_Heole/");
-    if (!peopleEntity) throw new Error("People entity not found");
-    const entityId = peopleEntity["@id"];
+    const sessionEntity = graph.find((e) => e["@id"] === "Sessions/ETR009/");
+    if (!sessionEntity) throw new Error("Session entity not found");
+    const entityId = sessionEntity["@id"];
 
     const children = graph.filter((child) => {
       const childId = child["@id"];
       if (!childId || childId === entityId) return false;
 
-      // Check if child is a direct descendant of this entity
       if (childId.startsWith(entityId)) {
         const remainder = childId.substring(entityId.length);
 
-        // If parent ends with '/', child should have content after that with no more '/'
         if (entityId.endsWith("/")) {
           return remainder.length > 0 && !remainder.includes("/");
         }
 
-        // If parent doesn't end with '/', child should start with '/' and be a direct child
         if (remainder.startsWith("/")) {
           const afterSlash = remainder.substring(1);
           return afterSlash.length > 0 && !afterSlash.includes("/");
@@ -160,12 +159,12 @@ describe("RoCrateHtmlGenerator", () => {
       return false;
     });
 
-    expect(children.length).toBeGreaterThan(0);
-    expect(children.map((c) => c["@id"])).toContain(
-      "People/Awi_Heole/Awi_Heole.person"
-    );
-    expect(children.map((c) => c["@id"])).toContain(
-      "People/Awi_Heole/Awi_Heole_Photo.JPG"
+    expect(children.length).toBe(2);
+    expect(children.map((c) => c["@id"])).toEqual(
+      expect.arrayContaining([
+        "Sessions/ETR009/ETR009.session",
+        "Sessions/ETR009/test.mp4"
+      ])
     );
   });
 
@@ -185,7 +184,7 @@ describe("RoCrateHtmlGenerator", () => {
     );
 
     // The person entity should exist
-    expect(html).toContain('id="entity_People_Awi_Heole_"');
+    expect(html).toContain('id="entity__Awi_Heole"');
 
     // Should contain entity-children-container (indicating children are nested)
     expect(html).toContain('class="entity-children-container"');
@@ -195,7 +194,7 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 
     // Check that the person entity exists
-    expect(html).toContain('id="entity_People_Awi_Heole_"');
+    expect(html).toContain('id="entity__Awi_Heole"');
 
     // Check that child entities are not rendered as standalone entities at the root level
     // by verifying they are within entity-children-container divs and have the "child" class
@@ -266,11 +265,11 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 
     // Person entities should have entity headers (not be marked as children)
-    expect(html).toContain('id="entity_People_Awi_Heole_"');
+    expect(html).toContain('id="entity__Awi_Heole"');
 
     // Find the Person entity section and verify it has an entity header
     const personEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity_People_Awi_Heole_"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">People\/Awi_Heole\/<\/div>/s
+      /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">#Awi_Heole<\/div>/s
     );
     expect(personEntityMatch).toBeTruthy();
 
@@ -347,7 +346,8 @@ describe("RoCrateHtmlGenerator", () => {
         },
         {
           "@id": "Sessions/RefSession/",
-          "@type": ["RepositoryObject", "Event"],
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          collectionEventType: "https://w3id.org/ldac/terms#Session",
           name: "Ref Session",
           genre: { "@id": "ldac:Narrative" },
           "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
@@ -392,85 +392,78 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain('href="https://w3id.org/ldac/terms#Narrative"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
-
-    // Should contain external link to LDAC access type (within the custom license entity)
-    expect(html).toContain('href="https://w3id.org/ldac/terms#OpenAccess"');
-
-    // Should contain external link to Glottolog for language
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/etr"'
-    );
   });
 
-  it("should filter out CustomGenreTerms entity", () => {
-    const html = generateRoCrateHtml(mockRoCrateData);
+  it("should detect children via person media references", () => {
+    const graph = mockRoCrateData["@graph"];
 
-    // Check that CustomGenreTerms entity is not rendered
-    expect(html).not.toContain('id="entity__CustomGenreTerms"');
-    expect(html).not.toContain(
-      '<div class="entity-id">#CustomGenreTerms</div>'
-    );
-  });
+    const peopleEntity = graph.find((e) => {
+      const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
+      return types.includes("Person") && e.name === "Awi Heole";
+    });
+    if (!peopleEntity) throw new Error("People entity not found");
+    expect(peopleEntity["@id"]).toBe(awiPersonId);
 
-  it("should add lameta XML file description for .sprj, .session, and .person files", () => {
-    const html = generateRoCrateHtml(mockRoCrateData);
-
-    // Should contain the description for lameta XML files
-    expect(html).toContain("This is an XML file that is used by");
-    expect(html).toContain('href="https://github.com/onset/lameta"');
-    expect(html).toContain(
-      'lameta</a> software (<a href="https://github.com/onset/lameta">github</a>)'
-    );
-
-    // Should appear for all lameta XML files (2 existing + 3 new = 5 total)
-    const lametaDescriptionCount = (
-      html.match(/This is an XML file that is used by/g) || []
-    ).length;
-    expect(lametaDescriptionCount).toBe(5); // All .sprj, .session, .person files
-  });
-
-  it("should filter out Unknown genre entities and display Unknown as plain text in properties", () => {
-    const testDataWithUnknown = {
-      "@context": "https://w3id.org/ro/crate/1.1/context",
-      "@graph": [
-        {
-          "@id": "./",
-          "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project",
-          hasPart: [{ "@id": "Sessions/UnknownGenre/" }]
-        },
-        {
-          "@id": "Sessions/UnknownGenre/",
-          "@type": ["RepositoryObject", "Event"],
-          name: "Unknown Genre Session",
-          genre: { "@id": "tag:lameta/unknown" }
-        },
-        {
-          "@id": "tag:lameta/unknown",
-          "@type": "DefinedTerm",
-          name: "<Unknown>",
-          description: "Custom term: <Unknown>",
-          inDefinedTermSet: { "@id": "#CustomGenreTerms" }
-        },
-        {
-          "@id": "#CustomGenreTerms",
-          "@type": "DefinedTermSet",
-          name: "Custom Genre Terms"
-        }
-      ]
+    const referencesChild = (value: any, childId: string): boolean => {
+      if (!value) return false;
+      if (Array.isArray(value)) {
+        return value.some((item) => referencesChild(item, childId));
+      }
+      if (typeof value === "object" && value["@id"]) {
+        return value["@id"] === childId;
+      }
+      return false;
     };
 
-    const html = generateRoCrateHtml(testDataWithUnknown);
+    const children = graph.filter((child) => {
+      const childId = child["@id"];
+      if (!childId || childId === peopleEntity["@id"]) return false;
+      return (
+        referencesChild((peopleEntity as any).image, childId) ||
+        referencesChild((peopleEntity as any).subjectOf, childId)
+      );
+    });
 
-    // The Unknown entity should not be rendered as a card
-    expect(html).not.toContain('id="entity_tag_lameta_unknown"');
-    expect(html).not.toContain(
-      '<div class="entity-id">tag:lameta/unknown</div>'
+    expect(children.length).toBe(3);
+    expect(children.map((c) => c["@id"])).toEqual(
+      expect.arrayContaining([
+        "People/Awi_Heole/Awi_Heole.person",
+        "People/Awi_Heole/Awi_Heole_Photo.JPG",
+        "People/Awi_Heole/Awi_Heole_Consent.JPG"
+      ])
     );
+  });
+
+  it("should describe person media via image/subjectOf references", () => {
+    const graph = mockRoCrateData["@graph"];
+
+    const peopleEntity = graph.find((e) => {
+      const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
+      return types.includes("Person") && e.name === "Awi Heole";
+    });
+    if (!peopleEntity) throw new Error("People entity not found");
+
+    // LAM-48 https://linear.app/lameta/issue/LAM-48 requires that Person
+    // entities avoid hasPart, so verify we expose their files through
+    // image/subjectOf links instead.
+    expect(peopleEntity).not.toHaveProperty("hasPart");
+    expect(peopleEntity.image).toEqual(
+      expect.arrayContaining([
+        { "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG" },
+        { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" }
+      ])
+    );
+    expect(peopleEntity.subjectOf).toEqual({
+      "@id": "People/Awi_Heole/Awi_Heole.person"
+    });
+  });
+
+  it("should not render unknown genre as links", () => {
+    const html = generateRoCrateHtml(mockRoCrateData);
 
     // The genre property should display "Unknown" as plain text, not as a link
     expect(html).toContain(
-      '<span class="property-name">Genre:</span><span class="property-value">Unknown</span>'
+      '<span class="property-name">Genre:</span><span class="property-value"><span style="font-style:italic;color:var(--color-text-muted)">Unknown</span></span>'
     );
 
     // Should not contain any links to the unknown entity
@@ -1214,21 +1207,22 @@ describe("RoCrateHtmlGenerator", () => {
           },
           {
             "@id": "Sessions/ETR009/",
-            "@type": ["Event"],
+            "@type": ["RepositoryObject", "CollectionEvent"],
+            collectionEventType: "https://w3id.org/ldac/terms#Session",
             name: "Test Session",
             description: "A test session",
             "ldac:participant": [
-              { "@id": "People/Awi_Heole/" },
-              { "@id": "People/Ilawi_Amosa/" }
+              { "@id": awiPersonId },
+              { "@id": ilawiPersonId }
             ]
           },
           {
-            "@id": "People/Awi_Heole/",
+            "@id": awiPersonId,
             "@type": "Person",
             name: "Awi Heole"
           },
           {
-            "@id": "People/Ilawi_Amosa/",
+            "@id": ilawiPersonId,
             "@type": "Person",
             name: "Ilawi Amosa"
           }

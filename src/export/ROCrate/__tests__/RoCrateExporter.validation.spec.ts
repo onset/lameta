@@ -983,27 +983,29 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(photoEntry["@id"]).toBe(expectedPhotoId);
       expect(consentEntry["@id"]).toBe(expectedConsentId);
 
-      // Critical test: Verify that the person's hasPart references match the actual file @ids
-      expect(personEntry.hasPart).toBeDefined();
-      expect(Array.isArray(personEntry.hasPart)).toBe(true);
+      // Critical test: Person entities should avoid hasPart per LAM-48 and instead
+      // expose files via schema.org style references.
+      expect(personEntry.hasPart).toBeUndefined();
 
-      const photoReference = personEntry.hasPart.find(
-        (ref: any) => ref["@id"] === expectedPhotoId
-      );
-      const consentReference = personEntry.hasPart.find(
-        (ref: any) => ref["@id"] === expectedConsentId
-      );
+      const imageReferences = Array.isArray(personEntry.image)
+        ? personEntry.image
+        : [personEntry.image].filter(Boolean);
+      const subjectReferences = Array.isArray(personEntry.subjectOf)
+        ? personEntry.subjectOf
+        : [personEntry.subjectOf].filter(Boolean);
 
-      expect(photoReference).toBeDefined();
-      expect(photoReference["@id"]).toBe(expectedPhotoId);
-      expect(consentReference).toBeDefined();
-      expect(consentReference["@id"]).toBe(expectedConsentId);
+      expect(imageReferences).toContainEqual({ "@id": expectedPhotoId });
+      expect(subjectReferences).toContainEqual({ "@id": expectedConsentId });
 
       // Verify no invalid characters in any @id
       expect(photoEntry["@id"]).not.toMatch(/[\s()!]/);
       expect(consentEntry["@id"]).not.toMatch(/[\s()!]/);
-      expect(photoReference["@id"]).not.toMatch(/[\s()!]/);
-      expect(consentReference["@id"]).not.toMatch(/[\s()!]/);
+      imageReferences.forEach((ref: any) =>
+        expect(ref["@id"]).not.toMatch(/[\s()!]/)
+      );
+      subjectReferences.forEach((ref: any) =>
+        expect(ref["@id"]).not.toMatch(/[\s()!]/)
+      );
     });
   });
 });

@@ -1,5 +1,15 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
 
+const stubCreatePersonId = (person: any) => {
+  const baseValue = (person?.filePrefix || "person") as string;
+  const normalized = baseValue
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+  const fragment = normalized.length > 0 ? normalized : "person";
+  return `#${fragment}`;
+};
+
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it
 vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
@@ -48,7 +58,7 @@ vi.mock("./RoCrateUtils", () => ({
   createSessionId: vi.fn(
     (session) => `Sessions/${session.filePrefix || "test"}/`
   ),
-  createPersonId: vi.fn((person) => `People/${person.filePrefix || "test"}/`)
+  createPersonId: vi.fn(stubCreatePersonId)
 }));
 
 describe("RoCrateExporter PII and Custom Fields Filtering", () => {
@@ -182,10 +192,11 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
   it("should exclude PII fields from Person entries in RO-Crate export", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
+    const expectedPersonId = stubCreatePersonId(mockPerson);
     // Find the person entry
     const personEntry = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+        item["@id"] === expectedPersonId && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();
@@ -207,10 +218,11 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
   it("should exclude custom fields from Person entries in RO-Crate export", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
+    const expectedPersonId = stubCreatePersonId(mockPerson);
     // Find the person entry
     const personEntry = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+        item["@id"] === expectedPersonId && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();
@@ -260,9 +272,10 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
 
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
+    const expectedPersonId = stubCreatePersonId(mockPerson);
     const personEntry = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "People/john-doe/" && item["@type"] === "Person"
+        item["@id"] === expectedPersonId && item["@type"] === "Person"
     );
 
     expect(personEntry).toBeDefined();

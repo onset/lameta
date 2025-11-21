@@ -61,7 +61,8 @@ describe("RoCrateExporter Publisher Entity", () => {
     // Find any session entity (they also have publisher references)
     const sessionEntity = graph.find(
       (item: any) =>
-        Array.isArray(item["@type"]) && item["@type"].includes("Event")
+        Array.isArray(item["@type"]) &&
+        item["@type"].includes("CollectionEvent")
     );
 
     if (sessionEntity && sessionEntity.publisher) {

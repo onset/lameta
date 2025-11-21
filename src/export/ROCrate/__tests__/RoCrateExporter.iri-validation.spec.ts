@@ -10,14 +10,17 @@ describe("RO-Crate IRI Validation", () => {
     expect(result).not.toContain(" ");
   });
 
-  it("should create proper Person @id with spaces encoded", () => {
+  it("should create proper Person @id fragments for names with spaces", () => {
     const mockPerson = {
       filePrefix: "BAHOUNGOU Hilaire"
     };
 
     const personId = createPersonId(mockPerson);
 
-    expect(personId).toBe("People/BAHOUNGOU%20Hilaire/");
+    // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
+    // enforces #Name fragments so Person IDs never leak filesystem paths again.
+    expect(personId).toBe("#BAHOUNGOU_Hilaire");
+    expect(personId.startsWith("#")).toBe(true);
     expect(personId).not.toContain(" ");
   });
 
@@ -28,7 +31,7 @@ describe("RO-Crate IRI Validation", () => {
 
     const personId = createPersonId(mockPerson);
 
-    expect(personId).toBe("People/BAKALA%20Michel%20%28@Mfouati%29/");
+    expect(personId).toBe("#BAKALA_Michel___Mfouati_");
     expect(personId).not.toContain(" ");
     expect(personId).not.toContain("(");
     expect(personId).not.toContain(")");

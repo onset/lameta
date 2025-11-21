@@ -135,12 +135,12 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     const publicSession = result["@graph"].find(
       (item: any) =>
         item["@id"] === "Sessions/public_session/" &&
-        item["@type"].includes("Event")
+        item["@type"].includes("CollectionEvent")
     );
     const restrictedSession = result["@graph"].find(
       (item: any) =>
         item["@id"] === "Sessions/restricted_session/" &&
-        item["@type"].includes("Event")
+        item["@type"].includes("CollectionEvent")
     );
 
     // Both sessions should exist in the graph
@@ -194,7 +194,7 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
     // Count the total number of session events in the graph
     const sessionEvents = result["@graph"].filter(
-      (item: any) => item["@type"] && item["@type"].includes("Event")
+      (item: any) => item["@type"] && item["@type"].includes("CollectionEvent")
     );
     expect(sessionEvents).toHaveLength(2);
   });

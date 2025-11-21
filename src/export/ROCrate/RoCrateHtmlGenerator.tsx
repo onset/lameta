@@ -1025,6 +1025,19 @@ const Entity: React.FC<{
   );
 };
 
+const entityReferenceIncludes = (value: any, entityId: string): boolean => {
+  if (!value) {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return value.some((item) => entityReferenceIncludes(item, entityId));
+  }
+  if (typeof value === "object" && value["@id"]) {
+    return value["@id"] === entityId;
+  }
+  return false;
+};
+
 /**
  * Recursively renders an entity and its children based on ID path hierarchy.
  */
@@ -1076,6 +1089,10 @@ function computeHierarchy(graph: RoCrateEntity[]) {
         return false;
       }
 
+      const parentTypes = Array.isArray(parent["@type"])
+        ? parent["@type"]
+        : [parent["@type"]];
+
       // Check if this entity is explicitly listed in the parent's hasPart array
       if (parent.hasPart && Array.isArray(parent.hasPart)) {
         const isInHasPart = parent.hasPart.some((part: any) => {
@@ -1100,6 +1117,17 @@ function computeHierarchy(graph: RoCrateEntity[]) {
           }
           return true;
         }
+      }
+
+      if (
+        parentTypes.includes("Person") &&
+        (entityReferenceIncludes((parent as any).image, entityId) ||
+          entityReferenceIncludes((parent as any).subjectOf, entityId))
+      ) {
+        // LAM-48 https://linear.app/lameta/issue/LAM-48 moved Person media out of
+        // hasPart. The HTML hierarchy now follows image/subjectOf references so
+        // those resources still nest under the Person card.
+        return true;
       }
 
       // Fallback to path-based detection for entities not explicitly listed

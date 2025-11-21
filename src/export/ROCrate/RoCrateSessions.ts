@@ -35,8 +35,8 @@ export async function createSessionEntry(
   publisher?: PublisherDetails
 ): Promise<object[]> {
   const sessionTypes = isStandaloneSession
-    ? ["Dataset", "RepositoryObject", "Event"]
-    : ["RepositoryObject", "Event"];
+    ? ["Dataset", "RepositoryObject", "CollectionEvent"]
+    : ["RepositoryObject", "CollectionEvent"];
 
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : createSessionId(session),
@@ -51,7 +51,10 @@ export async function createSessionEntry(
       session.metadataFile?.getTextProperty("description") ||
       "No description provided for this session.",
     datePublished: new Date().toISOString(),
-    hasPart: []
+    hasPart: [],
+    // LAM-61 https://linear.app/lameta/issue/LAM-61/sessions-should-be-collectionevent
+    // Sessions must be typed as CollectionEvent and carry an explicit LDAC Session classification.
+    collectionEventType: "https://w3id.org/ldac/terms#Session"
   };
 
   if (publisher) {

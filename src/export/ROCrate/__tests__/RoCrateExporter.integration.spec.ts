@@ -15,6 +15,7 @@ import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
+import { createPersonId } from "../RoCrateUtils";
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({
@@ -29,6 +30,8 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
   let mockSession: Session;
   let mockPerson1: Person;
   let mockPerson2: Person;
+  let awiPersonId: string;
+  let ilawiPersonId: string;
 
   beforeEach(() => {
     // Mock field definitions
@@ -127,6 +130,9 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       files: [mockPhoto2]
     } as any;
 
+    awiPersonId = createPersonId(mockPerson1);
+    ilawiPersonId = createPersonId(mockPerson2);
+
     // Mock session ETR009 from the report
     mockSession = {
       filePrefix: "ETR009",
@@ -211,18 +217,39 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     });
     // Root hasPart should no longer contain standalone Person references
     const rootHasPart = rootDataset.hasPart ?? [];
-    const hasPartPeople = rootHasPart.filter((item: any) =>
-      item?.["@id"]?.startsWith("People/")
-    );
+    const hasPartPeople = rootHasPart.filter((item: any) => {
+      const id = item?.["@id"];
+      if (typeof id !== "string") {
+        return false;
+      }
+      const referencedEntity = result["@graph"].find(
+        (entry: any) => entry["@id"] === id
+      );
+      const types = referencedEntity?.["@type"];
+      const isPerson = Array.isArray(types)
+        ? types.includes("Person")
+        : types === "Person";
+      // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
+      // ensures People use #Name fragments, so we must rely on @type instead
+      // of the old #person-* prefix when asserting they are absent from hasPart.
+      return isPerson;
+    });
     expect(hasPartPeople).toHaveLength(0);
 
     // Verify session event entity (central hub)
     const sessionEvent = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+        item["@id"] === "Sessions/ETR009/" &&
+        item["@type"].includes("CollectionEvent")
     );
     expect(sessionEvent).toBeDefined();
-    expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "Event"]);
+    expect(sessionEvent["@type"]).toEqual([
+      "RepositoryObject",
+      "CollectionEvent"
+    ]);
+    expect(sessionEvent.collectionEventType).toBe(
+      "https://w3id.org/ldac/terms#Session"
+    );
     expect(sessionEvent.name).toBe(
       "The story behind how we catch fish with poison bark"
     );
@@ -242,8 +269,8 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       ? sessionEvent["ldac:speaker"]
       : [sessionEvent["ldac:speaker"]];
     const speakerIds = speakers.map((s: any) => s["@id"]);
-    expect(speakerIds).toContain("People/Awi_Heole/");
-    expect(speakerIds).toContain("People/Ilawi_Amosa/");
+    expect(speakerIds).toContain(awiPersonId);
+    expect(speakerIds).toContain(ilawiPersonId);
 
     // Verify session links to its files
     expect(sessionEvent.hasPart).toContainEqual({
@@ -266,14 +293,12 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Verify Person entities with proper IDs
     const person1 = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "People/Awi_Heole/" && item["@type"] === "Person"
+      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person"
     );
     expect(person1).toBeDefined();
 
     const person2 = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "People/Ilawi_Amosa/" && item["@type"] === "Person"
+      (item: any) => item["@id"] === ilawiPersonId && item["@type"] === "Person"
     );
     expect(person2).toBeDefined();
 

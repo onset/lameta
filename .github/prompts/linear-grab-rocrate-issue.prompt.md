@@ -30,7 +30,7 @@ Run Prettier on every changed file (from the repo root run `yarn prettier --writ
 ABSOLUTELY NEVER run destructive git operations (e.g., git reset --hard, rm, git checkout/git restore to an older commit) unless the user gives an explicit, written instruction in this conversation. Treat these commands as catastrophic; if you are even slightly unsure, stop and ask before touching them. (When working within Cursor or Codex Web, these git limitations do not apply; use the tooling's capabilities as needed.)
 Never use git restore (or similar commands) to revert files you didn't author—coordinate with other agents instead so their in-progress work stays intact.
 
-Always double-check git status before any commit
+Always double-check git status before any commit. Make sure you ran prettier on every changed file.
 
 Keep commits atomic: commit only the files you touched and list each path explicitly. For tracked files run git commit -m "<scoped message>" -- path/to/file1 path/to/file2. For brand-new files, use the one-liner git restore --staged :/ && git add "path/to/file1" "path/to/file2" && git commit -m "<scoped message>" -- path/to/file1 path/to/file2.
 Quote any git paths containing brackets or parentheses (e.g., src/app/[candidate]/\*\*) when staging or committing so the shell does not treat them as globs or subshells.
@@ -42,3 +42,7 @@ When you're done add a comment to the ticket telling what you did. Directly addr
 # Cleanup
 
 Finally, if you created any temp files, delete them.
+
+# Keep Going
+
+THere is already an apprroved plan in the linear ticket, so unless you have questions or doubts, just start working on the plan, don't wait.

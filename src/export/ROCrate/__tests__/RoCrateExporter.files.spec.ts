@@ -16,6 +16,7 @@ import { Person } from "../../../model/Project/Person/Person";
 import { File } from "../../../model/file/File";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
+import { createPersonId } from "../RoCrateUtils";
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({
@@ -29,6 +30,7 @@ describe("RoCrateExporter file handling", () => {
   let mockProject: Project;
   let mockSession: Session;
   let mockPerson: Person;
+  let awiPersonId: string;
 
   beforeEach(() => {
     // Mock field definitions
@@ -135,6 +137,8 @@ describe("RoCrateExporter file handling", () => {
     Object.setPrototypeOf(mockProject, Project.prototype);
     Object.setPrototypeOf(mockSession, Session.prototype);
     Object.setPrototypeOf(mockPerson, Person.prototype);
+
+    awiPersonId = createPersonId(mockPerson);
   });
 
   it("should include File plus media-specific @types", async () => {
@@ -204,11 +208,14 @@ describe("RoCrateExporter file handling", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const personEntity = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "People/Awi_Heole/" && item["@type"] === "Person"
+      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person"
     );
 
-    expect(personEntity.hasPart).toContainEqual({
+    expect(personEntity).toBeDefined();
+    const images = Array.isArray(personEntity.image)
+      ? personEntity.image
+      : [personEntity.image].filter(Boolean);
+    expect(images).toContainEqual({
       "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
     });
   });

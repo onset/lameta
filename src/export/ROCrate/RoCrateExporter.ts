@@ -1053,7 +1053,33 @@ export function addChildFileEntries(
   project?: Project
 ): void {
   if (folder.files.length === 0) return;
-  folderEntry["hasPart"] = [];
+  const isPersonFolder = (folder as any).folderType === "person";
+  const shouldAssignHasPart = !isPersonFolder;
+
+  if (shouldAssignHasPart) {
+    folderEntry["hasPart"] = [];
+  }
+
+  const appendReference = (current: any, fileId: string) => {
+    const reference = { "@id": fileId };
+    if (!current) {
+      return reference;
+    }
+    if (Array.isArray(current)) {
+      const alreadyPresent = current.some(
+        (entry) => typeof entry === "object" && entry["@id"] === fileId
+      );
+      if (!alreadyPresent) {
+        current.push(reference);
+      }
+      return current;
+    }
+    if (typeof current === "object" && current["@id"] === fileId) {
+      return current;
+    }
+    return [current, reference];
+  };
+
   folder.files.forEach((file) => {
     const path = file.getActualFilePath();
     const fileName = Path.basename(path);
@@ -1111,9 +1137,27 @@ export function addChildFileEntries(
     );
 
     otherEntries.push(fileEntry);
-    folderEntry["hasPart"].push({
-      "@id": fileId
-    });
+    if (shouldAssignHasPart) {
+      (folderEntry as any)["hasPart"].push({
+        "@id": fileId
+      });
+    }
+
+    if (isPersonFolder) {
+      const target = folderEntry as any;
+      const entryTypes = Array.isArray(fileEntry["@type"])
+        ? fileEntry["@type"]
+        : [fileEntry["@type"]];
+      const hasImageType = entryTypes.includes("ImageObject");
+      // LAM-48 https://linear.app/lameta/issue/LAM-48 forbids hasPart on Person
+      // contextual entities, so we expose related files via schema.org links
+      // instead of structural containment.
+      if (hasImageType) {
+        target.image = appendReference(target.image, fileId);
+      } else {
+        target.subjectOf = appendReference(target.subjectOf, fileId);
+      }
+    }
   });
 }
 

@@ -106,7 +106,17 @@ export function createSessionId(session: any): string {
  * This centralizes the logic for generating Person @id values.
  */
 export function createPersonId(person: any): string {
-  return `People/${sanitizeForIri(person.filePrefix)}/`;
+  const baseValue = (person?.filePrefix || "person") as string;
+  const normalized = baseValue
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+  const fragment = normalized.length > 0 ? normalized : "person";
+  // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
+  // corrected our earlier #person-* scheme by reusing the sanitized filePrefix
+  // so Person entities expose #Name fragments that match HTML anchors and the
+  // LDAC guidance about fragment identifiers.
+  return `#${fragment}`;
 }
 
 /**
