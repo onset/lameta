@@ -190,7 +190,8 @@ describe("RoCrateExporter file handling", () => {
 
     const sessionEvent = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+        item["@id"] === "Sessions/ETR009/" &&
+        item["@type"].includes("CollectionEvent")
     );
 
     expect(sessionEvent.hasPart).toContainEqual({

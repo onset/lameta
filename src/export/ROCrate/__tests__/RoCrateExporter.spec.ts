@@ -1140,7 +1140,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
 
       // Should have array of speakers when multiple people have same role
@@ -1162,7 +1162,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const sessionEvent = result["@graph"].find(
         (item: any) =>
           item["@id"] === "Sessions/test_session/" &&
-          item["@type"].includes("Event")
+          item["@type"].includes("CollectionEvent")
       );
 
       expect(sessionEvent.id).toBeUndefined();

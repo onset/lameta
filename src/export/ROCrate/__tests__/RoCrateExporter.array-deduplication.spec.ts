@@ -36,7 +36,7 @@ describe("RO-Crate Array Deduplication", () => {
       },
       {
         "@id": "Sessions/session1/",
-        "@type": "Event",
+        "@type": ["RepositoryObject", "CollectionEvent"],
         hasPart: [
           { "@id": "audio.wav" },
           { "@id": "transcript.txt" },

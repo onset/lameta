@@ -94,12 +94,15 @@ const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
   { property: "contentSize", label: "Content size", type: "size" }
 ];
 
+const hasSessionType = (types: string[]): boolean =>
+  types.includes("CollectionEvent") || types.includes("Event");
+
 const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
   const types = Array.isArray(entity["@type"])
     ? entity["@type"]
     : [entity["@type"]];
-  // Check for Event type first since sessions can have both Dataset and Event types
-  if (types.includes("Event")) return SESSION_FIELDS;
+  // Check for session-oriented types first since datasets can share some properties
+  if (hasSessionType(types)) return SESSION_FIELDS;
   if (types.includes("Person")) return PERSON_FIELDS;
   if (types.includes("Organization")) return ORGANIZATION_FIELDS;
   if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
@@ -941,7 +944,7 @@ const Entity: React.FC<{
       const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
       const entityId = e["@id"];
 
-      if (types.includes("Event") && entityId?.startsWith("Sessions/")) {
+      if (hasSessionType(types) && entityId?.startsWith("Sessions/")) {
         specialLists["Sessions"].push(e);
       } else if (types.includes("Person") && e.name !== "Unknown") {
         specialLists["People"].push(e);
@@ -1109,7 +1112,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
             : [entity["@type"]];
           const isPersonOrSession =
             entityTypes.includes("Person") ||
-            entityTypes.includes("Event") ||
+            hasSessionType(entityTypes) ||
             entityId.startsWith("People/") ||
             entityId.startsWith("Sessions/");
           if (parentId === "./" && isPersonOrSession) {
@@ -1196,7 +1199,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       if (id?.startsWith("OtherDocs/")) return 2;
 
       // Sessions come fourth
-      if (id?.startsWith("Sessions/") || types.includes("Event")) return 3;
+      if (id?.startsWith("Sessions/") || hasSessionType(types)) return 3;
 
       // People come fifth
       if (types.includes("Person")) return 4;

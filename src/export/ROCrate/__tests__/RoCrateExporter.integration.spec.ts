@@ -396,7 +396,8 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     // Session event links to people via LDAC role properties and files
     const sessionEvent = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "Sessions/ETR009/" && item["@type"].includes("Event")
+        item["@id"] === "Sessions/ETR009/" &&
+        item["@type"].includes("CollectionEvent")
     );
 
     // Count LDAC role properties instead of generic participant

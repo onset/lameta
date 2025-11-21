@@ -557,8 +557,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockSession)) as any;
       const standaloneSession = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "./" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "./" && item["@type"].includes("CollectionEvent")
       );
 
       expect(standaloneSession).toBeDefined();

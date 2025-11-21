@@ -50,12 +50,26 @@ export class RoCrateValidator {
       (item: any) => item["@id"] === "./" && item["@type"]?.includes("Dataset")
     );
 
-    const objects = graph.filter(
-      (item: any) =>
-        (item["@type"]?.includes("Object") ||
-          item["@type"]?.includes("Event")) &&
-        !this.isFileType(item["@type"])
-    );
+    const objects = graph.filter((item: any) => {
+      const rawType = item["@type"];
+      const typeList = Array.isArray(rawType)
+        ? rawType
+        : rawType
+        ? [rawType]
+        : [];
+      const isRepositoryObject = typeList.includes("RepositoryObject");
+      const isObjectType = typeList.includes("Object");
+      const isLegacyEvent = typeList.includes("Event");
+      const isCollectionEvent = typeList.includes("CollectionEvent");
+      // LAM-61 https://linear.app/lameta/issue/LAM-61/sessions-should-be-collectionevent
+      // Sessions now declare CollectionEvent (and RepositoryObject) types, so treat them as LDAC objects.
+      const isRelevantType =
+        isRepositoryObject ||
+        isObjectType ||
+        isLegacyEvent ||
+        isCollectionEvent;
+      return isRelevantType && !this.isFileType(rawType);
+    });
 
     const files = graph.filter((item: any) => this.isFileType(item["@type"]));
 

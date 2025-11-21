@@ -38,7 +38,7 @@ describe("RoCrateValidator", () => {
           },
           {
             "@id": "Sessions/ETR001/",
-            "@type": ["Event", "Object"],
+            "@type": ["RepositoryObject", "CollectionEvent"],
             "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
           },
           {
@@ -108,7 +108,7 @@ describe("RoCrateValidator", () => {
           },
           {
             "@id": "Sessions/ETR001/",
-            "@type": ["Event", "Object"]
+            "@type": ["RepositoryObject", "CollectionEvent"]
             // Missing ldac:subjectLanguage
           }
         ]
@@ -280,7 +280,7 @@ describe("ensureSubjectLanguage", () => {
   it("should track language usage", () => {
     const entity: any = {
       "@id": "Sessions/ETR001/",
-      "@type": "Event"
+      "@type": ["CollectionEvent"]
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages, ["etr"]);
