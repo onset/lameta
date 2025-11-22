@@ -80,6 +80,11 @@ export function createFileId(folder: any, fileName: string): string {
       return `Sessions/${sanitizeForIri(
         folder.filePrefix
       )}/${sanitizedFileName}`;
+    } else if (folder.sessions !== undefined) {
+      // LAM-60: https://linear.app/lameta/issue/LAM-60/wrong-id-for-lameta-project-file-sprj
+      // This is a Project. Project files (like .sprj) live at the RO-Crate root
+      // alongside ro-crate-metadata.json, so they need root-relative @id values (./...).
+      return `./${sanitizedFileName}`;
     } else if (folder.knownFields !== undefined && folder.files !== undefined) {
       // This is a Person
       return `People/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
