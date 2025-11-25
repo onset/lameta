@@ -163,19 +163,17 @@ export async function getRoCrate(
     const roCrate: { "@context": any[]; "@graph": object[] } = {
       "@context": [
         "https://w3id.org/ro/crate/1.2/context",
-        { "@vocab": "http://schema.org/" },
-        "http://purl.archive.org/language-data-commons/context.json",
-        "https://w3id.org/ldac/context",
-        // The following are needed to make the npm ro-crate package happy
         {
+          // LAM-33 https://linear.app/lameta/issue/LAM-33/ro-crate-1-context-configuration
+          // keeps the RO-Crate context single-sourced, but the bundled ro-crate validator
+          // only ships schema.org definitions up to v1.1, so we provide minimal fallbacks
+          // for the root dataset checks here while still exposing the ldac: prefix inline.
+          ldac: "https://w3id.org/ldac/terms#",
           Dataset: "http://schema.org/Dataset",
           name: "http://schema.org/name",
           description: "http://schema.org/description",
           datePublished: "http://schema.org/datePublished",
-          license: "http://schema.org/license",
-          // ldac-profile calls for PCDM namespace for collection membership
-          pcdm: "http://pcdm.org/models#",
-          ldac: "https://w3id.org/ldac/terms#"
+          license: "http://schema.org/license"
         }
       ],
       "@graph": []

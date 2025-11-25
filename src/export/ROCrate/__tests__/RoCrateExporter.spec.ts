@@ -573,8 +573,12 @@ describe("RoCrateExporter genre handling", () => {
       name: "Linguistic Genre Terms"
     });
 
-    // Verify context includes LDAC
-    expect(result["@context"]).toContain("https://w3id.org/ldac/context");
+    // Verify context includes LDAC via the dedicated prefix block (LAM-33 https://linear.app/lameta/issue/LAM-33)
+    const ldacPrefix = result["@context"].find(
+      (ctx: any) => typeof ctx === "object" && ctx.ldac
+    );
+    expect(ldacPrefix).toMatchObject({ ldac: "https://w3id.org/ldac/terms#" });
+    expect(ldacPrefix).toMatchObject({ Dataset: "http://schema.org/Dataset" });
   });
 
   it("should correctly map other LDAC genres like narrative and drama", async () => {
@@ -979,11 +983,26 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
     });
 
-    it("should include pcdm context for collection membership", async () => {
+    it("should rely on the core context while still emitting pcdm membership", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
+      const rootDataset = result["@graph"].find(
+        (item: any) => item["@id"] === "./"
+      );
 
-      // Verify context includes pcdm namespace
-      expect(result["@context"]).toContain("https://w3id.org/ldac/context");
+      expect(rootDataset["pcdm:hasMember"]).toBeDefined();
+      expect(result["@context"]).toEqual([
+        "https://w3id.org/ro/crate/1.2/context",
+        {
+          // LAM-33 https://linear.app/lameta/issue/LAM-33/ro-crate-1-context-configuration
+          // provide schema fallbacks for the ro-crate validator bundled in lameta
+          ldac: "https://w3id.org/ldac/terms#",
+          Dataset: "http://schema.org/Dataset",
+          name: "http://schema.org/name",
+          description: "http://schema.org/description",
+          datePublished: "http://schema.org/datePublished",
+          license: "http://schema.org/license"
+        }
+      ]);
     });
 
     it("should follow complete LDAC collection-object hierarchy correctly", async () => {
@@ -1042,12 +1061,11 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent.hasPart).toBeDefined();
       expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
 
-      // Context should include pcdm namespace
-      const contextObj = result["@context"].find(
+      // LAM-33 regression guard: ensure no redundant pcdm mapping sneaks back in now that only ldac prefix remains.
+      const redundantContext = result["@context"].find(
         (ctx: any) => typeof ctx === "object" && ctx.pcdm
       );
-      expect(contextObj).toBeDefined();
-      expect(contextObj.pcdm).toBe("http://pcdm.org/models#");
+      expect(redundantContext).toBeUndefined();
     });
   });
 
@@ -1093,8 +1111,14 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent["ldac:speaker"]).toBeDefined();
       expect(sessionEvent["ldac:recorder"]).toBeDefined();
 
-      // The context should define ldac: namespace
-      expect(result["@context"]).toContain("https://w3id.org/ldac/context");
+      // The context should define ldac: namespace through the local prefix object
+      const ldacPrefix = result["@context"].find(
+        (ctx: any) => typeof ctx === "object" && ctx.ldac
+      );
+      expect(ldacPrefix).toMatchObject({
+        ldac: "https://w3id.org/ldac/terms#"
+      });
+      expect(ldacPrefix).toHaveProperty("license", "http://schema.org/license");
     });
 
     it("should not have role property on Person entities", async () => {

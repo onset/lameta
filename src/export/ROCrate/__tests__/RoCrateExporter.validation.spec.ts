@@ -284,11 +284,23 @@ describe("RoCrateExporter Validation Tests", () => {
       const context = roCrateData["@context"];
 
       expect(Array.isArray(context)).toBe(true);
-      expect(context).toContain("https://w3id.org/ro/crate/1.2/context");
-      expect(context).toContain(
-        "http://purl.archive.org/language-data-commons/context.json"
-      );
-      expect(context).toContain("https://w3id.org/ldac/context");
+      // LAM-33 https://linear.app/lameta/issue/LAM-33 removed duplicated LDAC contexts,
+      // keeping the RO-Crate core plus a lightweight ldac: prefix object for profile terms.
+      expect(context).toEqual([
+        "https://w3id.org/ro/crate/1.2/context",
+        {
+          // LAM-33 https://linear.app/lameta/issue/LAM-33/ro-crate-1-context-configuration
+          // also needs schema fallbacks so the upstream ro-crate validator (shipped with
+          // embedded 1.1 context tables) still resolves Dataset/name/license, hence the
+          // explicit definitions next to the ldac: prefix block.
+          ldac: "https://w3id.org/ldac/terms#",
+          Dataset: "http://schema.org/Dataset",
+          name: "http://schema.org/name",
+          description: "http://schema.org/description",
+          datePublished: "http://schema.org/datePublished",
+          license: "http://schema.org/license"
+        }
+      ]);
     });
   });
 
