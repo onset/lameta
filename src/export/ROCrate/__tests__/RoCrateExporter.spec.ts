@@ -1301,7 +1301,8 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(descriptionFileEntry).toBeDefined();
     // LAM-54 regression guard: exported README files must expose the File type (https://linear.app/lameta/issue/LAM-54)
-    expect(descriptionFileEntry["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(descriptionFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
     expect(descriptionFileEntry.name).toBe("README.md");
     expect(descriptionFileEntry.contentSize).toBe(1024);
   });
@@ -1326,7 +1327,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileEntry).toBeDefined();
-    expect(otherDocFileEntry["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(otherDocFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
     expect(otherDocFileEntry.name).toBe("notes.txt");
     expect(otherDocFileEntry.contentSize).toBe(1024);
   });
@@ -1370,7 +1372,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
     );
     expect(letterFileEntry).toBeDefined();
-    expect(letterFileEntry["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(letterFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
   });
 
@@ -1413,7 +1416,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "DescriptionDocuments/Project_Overview.txt"
     );
     expect(descriptionFileEntry).toBeDefined();
-    expect(descriptionFileEntry["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(descriptionFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
     expect(descriptionFileEntry.name).toBe("Project_Overview.txt");
   });
 

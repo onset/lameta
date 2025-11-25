@@ -318,7 +318,8 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
-    expect(xmlFile["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(xmlFile["@type"]).toEqual(["File", "CreativeWork"]);
     expect(xmlFile.role).toBeUndefined();
 
     const photo1 = result["@graph"].find(
@@ -331,12 +332,14 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
     );
     // LAM-54: session/person metadata blobs are plain files in RO-Crate (https://linear.app/lameta/issue/LAM-54)
-    expect(personFile["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(personFile["@type"]).toEqual(["File", "CreativeWork"]);
 
     const sessionMetadataFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.session"
     );
-    expect(sessionMetadataFile["@type"]).toBe("File");
+    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
+    expect(sessionMetadataFile["@type"]).toEqual(["File", "CreativeWork"]);
     expect(personFile.role).toBeUndefined();
 
     // Verify that no separate Role entities are created (we use LDAC properties directly)

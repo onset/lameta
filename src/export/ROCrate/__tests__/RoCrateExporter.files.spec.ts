@@ -163,7 +163,8 @@ describe("RoCrateExporter file handling", () => {
       (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
     );
     // https://linear.app/lameta/issue/LAM-54: even plain XML exports must be typed as File for RO-Crate compliance
-    expect(xmlFile["@type"]).toBe("File");
+    // https://linear.app/lameta/issue/LAM-65: non-media files also get CreativeWork type
+    expect(xmlFile["@type"]).toEqual(["File", "CreativeWork"]);
   });
 
   it("should not add role property to files", async () => {
