@@ -1148,6 +1148,12 @@ export function addChildFileEntries(
       (folderEntry as any)["hasPart"].push({
         "@id": fileId
       });
+
+      // LAM-66: Add inverse isPartOf link
+      // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // Per LDAC spec, bidirectional relationships are required:
+      // hasPart/isPartOf for structural containment
+      fileEntry.isPartOf = { "@id": (folderEntry as any)["@id"] };
     }
 
     if (isPersonFolder) {
@@ -1164,6 +1170,10 @@ export function addChildFileEntries(
       } else {
         target.subjectOf = appendReference(target.subjectOf, fileId);
       }
+      // LAM-66: Add inverse about link for both image and subjectOf
+      // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // Per LDAC spec, both image and subjectOf use about as the inverse
+      fileEntry.about = { "@id": target["@id"] };
     }
   });
 }
@@ -1251,6 +1261,12 @@ export function addProjectDocumentFolderEntries(
     projectEntry.hasPart.push({
       "@id": fileId
     });
+
+    // LAM-66: Add inverse isPartOf link pointing to project root
+    // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+    // Per LDAC spec, bidirectional relationships are required:
+    // hasPart/isPartOf for structural containment
+    fileEntry.isPartOf = { "@id": "./" };
   });
 }
 
