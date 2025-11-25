@@ -15,7 +15,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@id": "./",
         "@type": ["Dataset", "RepositoryCollection"],
         name: "Test Project",
-        hasPart: [{ "@id": "Sessions/ETR009/" }]
+        hasPart: [{ "@id": "#session-ETR009" }]
       },
       {
         "@id": awiPersonId,
@@ -45,7 +45,9 @@ describe("RoCrateHtmlGenerator", () => {
         name: "Awi_Heole_Consent.JPG"
       },
       {
-        "@id": "Sessions/ETR009/",
+        // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
+        // Session entity uses a fragment identifier rather than a pseudo-path.
+        "@id": "#session-ETR009",
         "@type": ["RepositoryObject", "CollectionEvent"],
         collectionEventType: "https://w3id.org/ldac/terms#Session",
         name: "Test Session",
@@ -136,28 +138,14 @@ describe("RoCrateHtmlGenerator", () => {
   it("should detect session children correctly", () => {
     const graph = mockRoCrateData["@graph"];
 
-    const sessionEntity = graph.find((e) => e["@id"] === "Sessions/ETR009/");
+    const sessionEntity = graph.find((e) => e["@id"] === "#session-ETR009");
     if (!sessionEntity) throw new Error("Session entity not found");
-    const entityId = sessionEntity["@id"];
-
-    const children = graph.filter((child) => {
-      const childId = child["@id"];
-      if (!childId || childId === entityId) return false;
-
-      if (childId.startsWith(entityId)) {
-        const remainder = childId.substring(entityId.length);
-
-        if (entityId.endsWith("/")) {
-          return remainder.length > 0 && !remainder.includes("/");
-        }
-
-        if (remainder.startsWith("/")) {
-          const afterSlash = remainder.substring(1);
-          return afterSlash.length > 0 && !afterSlash.includes("/");
-        }
-      }
-      return false;
-    });
+    const referencedChildIds = (sessionEntity.hasPart || []).map(
+      (part: any) => part["@id"]
+    );
+    const children = graph.filter((child) =>
+      referencedChildIds.includes(child["@id"])
+    );
 
     expect(children.length).toBe(2);
     expect(children.map((c) => c["@id"])).toEqual(
@@ -226,11 +214,11 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 
     // The session entity should exist
-    expect(html).toContain('id="entity_Sessions_ETR009_"');
+    expect(html).toContain('id="entity__session_ETR009"');
 
     // Find the session entity block
     const sessionEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity_Sessions_ETR009_"[^>]*>.*?(?=<div class="entity"[^>]*id="entity_[^"]*"[^>]*>|<\/div><\/body>)/s
+      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?(?=<div class="entity"[^>]*id="entity_[^"]*"[^>]*>|<\/div><\/body>)/s
     );
 
     if (sessionEntityMatch) {
@@ -274,11 +262,11 @@ describe("RoCrateHtmlGenerator", () => {
     expect(personEntityMatch).toBeTruthy();
 
     // Session entities should have entity headers (not be marked as children)
-    expect(html).toContain('id="entity_Sessions_ETR009_"');
+    expect(html).toContain('id="entity__session_ETR009"');
 
     // Find the Session entity section and verify it has an entity header
     const sessionEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity_Sessions_ETR009_"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Sessions\/ETR009\/<\/div>/s
+      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">#session-ETR009<\/div>/s
     );
     expect(sessionEntityMatch).toBeTruthy();
   });
@@ -342,10 +330,10 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with References",
           license: { "@id": "#license-testarchive-f" },
-          hasPart: [{ "@id": "Sessions/RefSession/" }]
+          hasPart: [{ "@id": "#session-RefSession" }]
         },
         {
-          "@id": "Sessions/RefSession/",
+          "@id": "#session-RefSession",
           "@type": ["RepositoryObject", "CollectionEvent"],
           collectionEventType: "https://w3id.org/ldac/terms#Session",
           name: "Ref Session",
@@ -1152,7 +1140,7 @@ describe("RoCrateHtmlGenerator", () => {
             name: "Test Project"
           },
           {
-            "@id": "Sessions/ETR009/",
+            "@id": "#session-ETR009",
             "@type": ["RepositoryObject", "CollectionEvent"],
             collectionEventType: "https://w3id.org/ldac/terms#Session",
             name: "Test Session",
@@ -1179,7 +1167,7 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(edoloData);
 
     // Find the ETR009 session in the HTML
-    const sessionStart = html.indexOf('id="entity_Sessions_ETR009_"');
+    const sessionStart = html.indexOf('id="entity__session_ETR009"');
     if (sessionStart !== -1) {
       const sessionEnd = html.indexOf('<div class="entity"', sessionStart + 1);
       const sessionHtml =
@@ -1214,7 +1202,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Find the ETR009 session in the graph
     const etr009Session = edoloData["@graph"].find(
-      (entity: any) => entity["@id"] === "Sessions/ETR009/"
+      (entity: any) => entity["@id"] === "#session-ETR009"
     );
 
     const html = generateRoCrateHtml(edoloData);

@@ -137,7 +137,9 @@ describe("RoCrateSessions", () => {
 
       expect(result).toBeInstanceOf(Array);
       const sessionEntry = result[0] as any;
-      expect(sessionEntry["@id"]).toBe("Sessions/test-session/");
+      // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
+      // Session entities now expose #session-* fragments instead of pseudo-paths.
+      expect(sessionEntry["@id"]).toBe("#session-test-session");
       expect(sessionEntry["@type"]).toEqual([
         "RepositoryObject",
         "CollectionEvent"

@@ -100,7 +100,12 @@ export function createFileId(folder: any, fileName: string): string {
  * This centralizes the logic for generating Session @id values.
  */
 export function createSessionId(session: any): string {
-  return `Sessions/${sanitizeForIri(session.filePrefix)}/`;
+  const baseValue = (session?.filePrefix || "session").toString();
+  const sanitized = sanitizeForIri(baseValue) || "session";
+  // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
+  // Session entities must use fragment identifiers (not pseudo-paths) so
+  // non-file nodes still resolve when crates lack a base URI.
+  return `#session-${sanitized}`;
 }
 
 /**

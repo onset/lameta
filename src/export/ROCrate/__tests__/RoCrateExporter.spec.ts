@@ -1,5 +1,6 @@
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import { getRoCrate } from "../RoCrateExporter";
+import { createSessionId } from "../RoCrateUtils";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
@@ -760,6 +761,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
   let mockProject: Project;
   let mockSession: any;
   let mockPerson: any;
+  const getExpectedSessionId = () => createSessionId(mockSession as any);
 
   beforeEach(() => {
     // Mock session as a plain object that looks like Session
@@ -892,7 +894,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // When exporting a project, sessions should be CollectionEvent entities with correct conformsTo
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"] &&
           item["@type"].includes("CollectionEvent")
       );
@@ -934,7 +936,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // Collection should use pcdm:hasMember to link to sessions, not hasPart
       expect(rootDataset["pcdm:hasMember"]).toBeDefined();
       expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-        "@id": "Sessions/test_session/"
+        "@id": getExpectedSessionId()
       });
 
       // Root hasPart should no longer list people; they are referenced via session role links
@@ -959,7 +961,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // Ensure sessions now carry the person references via LDAC roles
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
@@ -972,7 +974,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -1022,7 +1024,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // Sessions should conform to Object profile
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent.conformsTo["@id"]).toBe(
@@ -1038,7 +1040,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Collection uses pcdm:hasMember for sessions
       expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-        "@id": "Sessions/test_session/"
+        "@id": getExpectedSessionId()
       });
 
       // Root hasPart should not contain people anymore
@@ -1075,7 +1077,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -1102,7 +1104,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -1163,7 +1165,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -1185,7 +1187,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/test_session/" &&
+          item["@id"] === getExpectedSessionId() &&
           item["@type"].includes("CollectionEvent")
       );
 

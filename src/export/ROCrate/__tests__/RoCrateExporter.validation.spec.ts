@@ -19,6 +19,7 @@ vi.mock("fs-extra", () => ({
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
+import { createSessionId } from "../RoCrateUtils";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
@@ -744,36 +745,43 @@ describe("RoCrateExporter Validation Tests", () => {
           item["@type"] &&
           Array.isArray(item["@type"]) &&
           item["@type"].includes("RepositoryObject") &&
-          item["@id"].startsWith("Sessions/")
+          item["@id"].startsWith("#session-")
       );
 
       expect(sessionEntry).toBeDefined();
 
+      // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1 ensures session entity IDs are fragments.
       // The @id should be URL encoded
-      expect(sessionEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses in URL
-      expect(sessionEntry["@id"]).toMatch(/^Sessions\/[a-zA-Z0-9_.%-]+\/$/); // Valid IRI format with URL encoding
+      expect(sessionEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses in fragment
+      expect(sessionEntry["@id"]).toMatch(/^#session-[a-zA-Z0-9_.%-]+$/);
 
-      // Should sanitize to URL encoded format
-      expect(sessionEntry["@id"]).toBe("Sessions/dde-houmba-ori%20%28v1%29/");
+      // Should sanitize to URL encoded fragment format
+      expect(sessionEntry["@id"]).toBe(
+        createSessionId(mockSessionWithInvalidChars)
+      );
     });
 
     it("should handle multiple types of invalid characters in session IDs", async () => {
       const testCases = [
         {
           input: "dde-houmba-ori (v2)",
-          expected: "Sessions/dde-houmba-ori%20%28v2%29/"
+          expected: createSessionId({ filePrefix: "dde-houmba-ori (v2)" } as any)
         },
         {
           input: "dde-kabousoulou1-ori (v2)",
-          expected: "Sessions/dde-kabousoulou1-ori%20%28v2%29/"
+          expected: createSessionId({
+            filePrefix: "dde-kabousoulou1-ori (v2)"
+          } as any)
         },
         {
           input: "dde-mahoungou-ori (NO IC!)",
-          expected: "Sessions/dde-mahoungou-ori%20%28NO%20IC%21%29/"
+          expected: createSessionId({
+            filePrefix: "dde-mahoungou-ori (NO IC!)"
+          } as any)
         },
         {
           input: "session with spaces",
-          expected: "Sessions/session%20with%20spaces/"
+          expected: createSessionId({ filePrefix: "session with spaces" } as any)
         }
       ];
 
@@ -809,7 +817,7 @@ describe("RoCrateExporter Validation Tests", () => {
             item["@type"] &&
             Array.isArray(item["@type"]) &&
             item["@type"].includes("RepositoryObject") &&
-            item["@id"].startsWith("Sessions/")
+            item["@id"].startsWith("#session-")
         );
 
         expect(sessionEntry).toBeDefined();
@@ -855,9 +863,13 @@ describe("RoCrateExporter Validation Tests", () => {
       const graph = roCrateData["@graph"];
 
       // Find the session entry in the graph
+      const expectedSessionId = createSessionId(
+        mockSessionWithFileInvalidChars as any
+      );
+
       const sessionEntry = graph.find(
         (item: any) =>
-          item["@id"] === "Sessions/test-session/" &&
+          item["@id"] === expectedSessionId &&
           item["@type"] &&
           Array.isArray(item["@type"]) &&
           item["@type"].includes("RepositoryObject")

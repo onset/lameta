@@ -943,7 +943,7 @@ const Entity: React.FC<{
       const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
       const entityId = e["@id"];
 
-      if (hasSessionType(types) && entityId?.startsWith("Sessions/")) {
+      if (hasSessionType(types)) {
         specialLists["Sessions"].push(e);
       } else if (types.includes("Person") && e.name !== "Unknown") {
         specialLists["People"].push(e);
@@ -1198,7 +1198,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       if (id?.startsWith("OtherDocs/")) return 2;
 
       // Sessions come fourth
-      if (id?.startsWith("Sessions/") || hasSessionType(types)) return 3;
+      if (hasSessionType(types)) return 3;
 
       // People come fifth
       if (types.includes("Person")) return 4;

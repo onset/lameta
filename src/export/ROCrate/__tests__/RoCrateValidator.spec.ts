@@ -37,7 +37,9 @@ describe("RoCrateValidator", () => {
   const createValidRepositoryObject = (
     overrides: Record<string, any> = {}
   ) => ({
-    "@id": "Sessions/ETR001/",
+    // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
+    // RepositoryObject (session) IDs now use fragment identifiers.
+    "@id": "#session-ETR001",
     "@type": ["RepositoryObject", "CollectionEvent"],
     name: ["Session"],
     inLanguage: [{ "@id": "#language_etr" }],
@@ -120,7 +122,7 @@ describe("RoCrateValidator", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Object Sessions/ETR001/ is missing required ldac:subjectLanguage property"
+        "Object #session-ETR001 is missing required ldac:subjectLanguage property"
       );
     });
 
@@ -271,7 +273,7 @@ describe("ensureSubjectLanguage", () => {
 
   it("should track language usage", () => {
     const entity: any = {
-      "@id": "Sessions/ETR001/",
+      "@id": "#session-ETR001",
       "@type": ["CollectionEvent"]
     };
 

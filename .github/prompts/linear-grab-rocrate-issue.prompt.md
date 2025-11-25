@@ -37,7 +37,7 @@ Quote any git paths containing brackets or parentheses (e.g., src/app/[candidate
 
 # Add comment to ticket
 
-When you're done add a comment to the ticket telling what you did. Directly address the original feedback from the user, showing what json used to be produced compared to what is produced now, or in some other way directly explain what has change. Make a note there with a ⚠️ if there there are any further problems. If you made commit, add its SHA to the comment. If you were able to succeed, move the issue to the "Code Review" status. Assign the issue back to me (@hattonjohn).
+When you're done, use the linear-mcp to add a comment to the ticket telling what you did. Directly address the original feedback from the user, showing what json used to be produced compared to what is produced now, or in some other way directly explain what has change. Make a note there with a ⚠️ if there there are any further problems. If you made commit, add its SHA to the comment. If you were able to succeed, move the issue to the "Code Review" status. Assign the issue back to me (@hattonjohn).
 
 # Cleanup
 
