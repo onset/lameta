@@ -1421,69 +1421,6 @@ describe("RoCrateExporter project document folders", () => {
     expect(descriptionFileEntry.name).toBe("Project_Overview.txt");
   });
 
-  // LAM-62: https://linear.app/lameta/issue/LAM-62
-  // Description and other project documents should NOT have materialType
-  it("should NOT include ldac:materialType for DescriptionDocuments files", async () => {
-    const descriptionFile = {
-      getActualFilePath: () =>
-        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\DescriptionDocuments\\pretend description.txt",
-      getModifiedDate: () => new Date("2023-01-04"),
-      filePrefix: "pretend description"
-    };
-
-    const projectWithDescription = {
-      ...mockProject,
-      descriptionFolder: {
-        files: [descriptionFile],
-        filePrefix: "DescriptionDocuments"
-      }
-    } as any;
-
-    const result = (await getRoCrate(
-      projectWithDescription,
-      projectWithDescription
-    )) as any;
-
-    const descriptionFileEntry = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "DescriptionDocuments/pretend%20description.txt"
-    );
-    expect(descriptionFileEntry).toBeDefined();
-    // The key assertion: materialType should NOT be present
-    expect(descriptionFileEntry["ldac:materialType"]).toBeUndefined();
-  });
-
-  // LAM-62: https://linear.app/lameta/issue/LAM-62
-  // OtherDocuments files should also NOT have materialType
-  it("should NOT include ldac:materialType for OtherDocuments files", async () => {
-    const otherDocFile = {
-      getActualFilePath: () =>
-        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\random notes.txt",
-      getModifiedDate: () => new Date("2023-01-05"),
-      filePrefix: "random notes"
-    };
-
-    const projectWithOtherDocs = {
-      ...mockProject,
-      otherDocsFolder: {
-        files: [otherDocFile],
-        filePrefix: "OtherDocuments"
-      }
-    } as any;
-
-    const result = (await getRoCrate(
-      projectWithOtherDocs,
-      projectWithOtherDocs
-    )) as any;
-
-    const otherDocFileEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "OtherDocuments/random%20notes.txt"
-    );
-    expect(otherDocFileEntry).toBeDefined();
-    // The key assertion: materialType should NOT be present
-    expect(otherDocFileEntry["ldac:materialType"]).toBeUndefined();
-  });
-
   it("should handle empty document folders gracefully", async () => {
     // Create project with empty folders
     const emptyProject = {

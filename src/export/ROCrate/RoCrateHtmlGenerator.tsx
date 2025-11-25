@@ -90,7 +90,6 @@ const LICENSE_FIELDS: OrderEntry[] = [
 // Fields for File entities (LAM-54 fix: https://linear.app/lameta/issue/LAM-54 insists on explicit File type usage)
 const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
   { property: "encodingFormat", label: "Encoding Format" },
-  { property: "ldac:materialType", label: "Material type" },
   { property: "contentSize", label: "Content size", type: "size" }
 ];
 

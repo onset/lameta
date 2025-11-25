@@ -55,10 +55,7 @@ import {
   expandLdacId,
   isLdacIdentifier
 } from "./RoCrateUtils";
-import {
-  getLdacMaterialTypeForPath,
-  createLdacMaterialTypeDefinitions
-} from "./RoCrateMaterialTypes";
+
 import {
   createLdacAccessTypeDefinitions,
   createDistinctLicenses
@@ -444,7 +441,6 @@ async function getRoCrateInternal(
 
     // Add LDAC access type definitions to other entries
     const ldacAccessDefinitions = createLdacAccessTypeDefinitions();
-    const ldacMaterialTypeDefinitions = createLdacMaterialTypeDefinitions();
 
     // Create unique licenses for all sessions
     const uniqueLicenses = createDistinctLicenses(
@@ -467,7 +463,6 @@ async function getRoCrateInternal(
       ...sessionEntries.flat(),
       ...boilerplateGraph,
       ...ldacAccessDefinitions,
-      ...ldacMaterialTypeDefinitions,
       ...uniqueLicenses,
       collectionLicense,
       ...rocrateLanguages.getUsedLanguageEntities(),
@@ -1129,7 +1124,6 @@ export function addChildFileEntries(
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
       ),
-      "ldac:materialType": { "@id": getLdacMaterialTypeForPath(path) },
       name: fileName
     };
 

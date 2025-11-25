@@ -5,7 +5,7 @@ import {
   getSessionLicenseId,
   createLdacAccessTypeDefinitions
 } from "./RoCrateLicenseUtils";
-import { createLdacMaterialTypeDefinitions } from "./RoCrateMaterialTypes";
+
 import {
   addFieldEntries,
   addChildFileEntries,
@@ -160,7 +160,6 @@ export async function createSessionEntry(
 
     // Add LDAC access type definitions to the graph
     otherEntries.push(...createLdacAccessTypeDefinitions());
-    otherEntries.push(...createLdacMaterialTypeDefinitions());
 
     if (publisher) {
       // LAM-35 regression fix: standalone exports must carry the same

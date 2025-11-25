@@ -487,7 +487,6 @@ describe("RoCrateHtmlGenerator", () => {
           name: "test.person",
           description: "A person file description",
           encodingFormat: "application/lameta-person",
-          "ldac:materialType": { "@id": "ldac:Annotation" },
           contentSize: 1234,
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
@@ -507,8 +506,6 @@ describe("RoCrateHtmlGenerator", () => {
     // Should contain only the whitelisted fields for File
     expect(docHtml).toContain("Encoding Format:");
     expect(docHtml).toContain("application/lameta-person");
-    expect(docHtml).toContain("Material type:");
-    expect(docHtml).toContain("Annotation");
 
     // Should NOT contain the non-whitelisted fields in the File section
     expect(docHtml).not.toContain("Description:");
@@ -538,7 +535,6 @@ describe("RoCrateHtmlGenerator", () => {
           name: "test.jpg",
           description: "An image file description",
           encodingFormat: "image/jpeg",
-          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
           contentSize: 1234,
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
@@ -551,7 +547,6 @@ describe("RoCrateHtmlGenerator", () => {
           name: "test.mp4",
           description: "A video file description",
           encodingFormat: "video/mp4",
-          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
           contentSize: 5678,
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
@@ -564,7 +559,6 @@ describe("RoCrateHtmlGenerator", () => {
           name: "test.mp3",
           description: "An audio file description",
           encodingFormat: "audio/mpeg",
-          "ldac:materialType": { "@id": "ldac:PrimaryMaterial" },
           contentSize: 9012,
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
@@ -583,8 +577,6 @@ describe("RoCrateHtmlGenerator", () => {
 
     expect(imgHtml).toContain("Encoding Format:");
     expect(imgHtml).toContain("image/jpeg");
-    expect(imgHtml).toContain("Material type:");
-    expect(imgHtml).toContain("Primary Material");
     expect(imgHtml).not.toContain("Description:");
     expect(imgHtml).not.toContain("Date Created:");
 
@@ -595,7 +587,6 @@ describe("RoCrateHtmlGenerator", () => {
 
     expect(vidHtml).toContain("Encoding Format:");
     expect(vidHtml).toContain("video/mp4");
-    expect(vidHtml).toContain("Material type:");
     expect(vidHtml).not.toContain("Description:");
 
     // Test AudioObject
@@ -605,52 +596,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     expect(audHtml).toContain("Encoding Format:");
     expect(audHtml).toContain("audio/mpeg");
-    expect(audHtml).toContain("Material type:");
     expect(audHtml).not.toContain("Description:");
-  });
-
-  it("should render ldac:materialType with external link for File entities", () => {
-    const testData = {
-      "@context": "https://w3id.org/ro/crate/1.1/context",
-      "@graph": [
-        {
-          "@id": "./",
-          "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project",
-          hasPart: [{ "@id": "People/Awi_Heole/Awi_Heole.person" }]
-        },
-        {
-          "@id": "People/Awi_Heole/Awi_Heole.person",
-          "@type": "File",
-          name: "Awi_Heole.person",
-          encodingFormat: "application/lameta-person",
-          "ldac:materialType": { "@id": "ldac:Annotation" },
-          contentSize: 2048
-        }
-        // Note: NOT including the ldac:Annotation entity so it becomes an external link
-      ]
-    };
-
-    const html = generateRoCrateHtml(testData);
-
-    // Extract only the File entity section
-    const docStart = html.indexOf(
-      'id="entity_People_Awi_Heole_Awi_Heole_person"'
-    );
-    const docEnd = html.indexOf("</div></div></body>", docStart);
-    const docHtml = html.substring(docStart, docEnd);
-
-    // Should contain Material type field
-    expect(docHtml).toContain("Material type:");
-
-    // Should contain external link to LDAC Annotation
-    expect(docHtml).toContain('href="https://w3id.org/ldac/terms#Annotation"');
-    expect(docHtml).toContain('target="_blank"');
-    expect(docHtml).toContain('rel="noopener noreferrer"');
-    expect(docHtml).toContain(">Annotation</a>");
-
-    // Should NOT show as "Unknown"
-    expect(docHtml).not.toContain("Unknown");
   });
 
   describe("getDisplayPath function", () => {
