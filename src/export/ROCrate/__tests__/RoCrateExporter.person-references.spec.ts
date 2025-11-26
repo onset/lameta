@@ -56,16 +56,25 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Find the root dataset
     const rootDataset = graph.find((item: any) => item["@id"] === "./");
     expect(rootDataset).toBeDefined();
+    const expectedPersonId = createPersonId(personWithSpaces);
 
-    // Root hasPart should only include datasets/files, never Person entities
+    // Root hasPart should reference the People dataset wrapper but never direct Person IDs
     const rootHasPartIds =
       rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
-    rootHasPartIds.forEach((id: string) => {
-      expect(id.startsWith("People/")).toBe(false);
+    expect(rootHasPartIds).toContain("People/");
+    expect(rootHasPartIds).not.toContain(expectedPersonId);
+
+    // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
+    // Ensure the People dataset hangs all Person nodes via hasPart per the directory data-entity rules
+    const peopleDataset = graph.find((item: any) => item["@id"] === "People/");
+    expect(peopleDataset).toBeDefined();
+    expect(peopleDataset?.["@type"]).toBe("Dataset");
+    expect(peopleDataset?.hasPart).toContainEqual({
+      "@id": expectedPersonId
     });
+    expect(peopleDataset?.isPartOf).toEqual({ "@id": "./" });
 
     // The Person entity should exist with the sanitized @id
-    const expectedPersonId = createPersonId(personWithSpaces);
     const personEntity = graph.find(
       (item: any) =>
         item["@type"] === "Person" && item["@id"] === expectedPersonId

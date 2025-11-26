@@ -402,6 +402,7 @@ async function getRoCrateInternal(
         );
       })
     );
+    const flattenedSessionEntries = sessionEntries.flat();
 
     // Link to session events in the root dataset using pcdm:hasMember
     project.sessions.items.forEach((session) => {
@@ -456,16 +457,33 @@ async function getRoCrateInternal(
       "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") }
     };
 
-    return [
+    const uniqueOtherEntries = getUniqueEntries(otherEntries);
+
+    const baseGraph = [
       entry,
-      ...sessionEntries.flat(),
+      ...flattenedSessionEntries,
       ...boilerplateGraph,
       ...ldacAccessDefinitions,
       ...uniqueLicenses,
       collectionLicense,
       ...rocrateLanguages.getUsedLanguageEntities(),
-      ...getUniqueEntries(otherEntries)
+      ...uniqueOtherEntries
     ];
+
+    // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
+    // Add a People dataset container so Person nodes hang off a proper directory entity.
+    const peopleDatasetEntry = createPeopleDatasetEntry(
+      project,
+      flattenedSessionEntries,
+      uniqueOtherEntries,
+      entry.license
+    );
+    if (peopleDatasetEntry) {
+      entry.hasPart.push({ "@id": peopleDatasetEntry["@id"] });
+      baseGraph.push(peopleDatasetEntry);
+    }
+
+    return baseGraph;
   }
 
   // otherwise, it's a session - but we need to check if we're being called
@@ -1280,6 +1298,60 @@ function deduplicateHasPartArrays(graph: any[]): any[] {
     }
     return entity;
   });
+}
+
+function createPeopleDatasetEntry(
+  project: Project,
+  flattenedSessionEntries: any[],
+  otherEntries: object[],
+  license?: any
+): RoCrateEntity | undefined {
+  const knownPeople = new Set(
+    (project.people?.items ?? []).map((person) => createPersonId(person))
+  );
+  if (knownPeople.size === 0) {
+    return undefined;
+  }
+
+  const candidateEntries = [...flattenedSessionEntries, ...otherEntries];
+  const personIds = new Set(
+    candidateEntries
+      .filter((entry: any) => isPersonEntity(entry))
+      .map((entry: any) => entry["@id"])
+      .filter((id: any) => typeof id === "string" && knownPeople.has(id))
+  );
+
+  if (personIds.size === 0) {
+    return undefined;
+  }
+
+  const sortedIds = Array.from(personIds).sort((a, b) => a.localeCompare(b));
+
+  const dataset: RoCrateEntity = {
+    "@id": "People/",
+    "@type": "Dataset",
+    name: "People",
+    description: "Directory of people associated with this collection.",
+    hasPart: sortedIds.map((id) => ({ "@id": id })),
+    isPartOf: { "@id": "./" }
+  };
+
+  if (license && typeof license === "object") {
+    dataset.license = license;
+  }
+
+  return dataset;
+}
+
+function isPersonEntity(entry: any): boolean {
+  if (!entry || !entry["@type"]) {
+    return false;
+  }
+
+  const types = Array.isArray(entry["@type"])
+    ? entry["@type"]
+    : [entry["@type"]];
+  return types.includes("Person");
 }
 
 function getUniqueEntries(otherEntries: object[]) {
