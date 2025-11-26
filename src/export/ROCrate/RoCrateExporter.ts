@@ -1087,7 +1087,9 @@ export function addChildFileEntries(
     // LAM-54 fix: https://linear.app/lameta/issue/LAM-54 requires every file data entity to include "File".
     // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
     // - ImageObject, VideoObject, AudioObject for media files
-    // - CreativeWork for .sprj, .person, .session, and unknown file types
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
+    // CreativeWork is a superclass and not necessary for non-media files.
     const fileTypes: string[] = ["File"];
 
     // Use FileTypeInfo to get the file format information
@@ -1101,11 +1103,8 @@ export function addChildFileEntries(
       fileTypes.push("AudioObject");
     } else if (fileFormatInfo?.type === "Image") {
       fileTypes.push("ImageObject");
-    } else {
-      // LAM-65: For .sprj, .person, .session, and unknown file types, use CreativeWork
-      // This covers lameta metadata files and any unrecognized file formats
-      fileTypes.push("CreativeWork");
     }
+    // LAM-69: No else clause - non-media files remain as just ["File"]
 
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
@@ -1194,7 +1193,9 @@ export function addProjectDocumentFolderEntries(
     // LAM-54 fix: ensure project-level documents also satisfy the File type requirement.
     // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
     // - ImageObject, VideoObject, AudioObject for media files
-    // - CreativeWork for .sprj, .person, .session, and unknown file types
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
+    // CreativeWork is a superclass and not necessary for non-media files.
     const fileTypes: string[] = ["File"];
 
     // Use FileTypeInfo to get the file format information
@@ -1212,10 +1213,8 @@ export function addProjectDocumentFolderEntries(
       fileTypes.push("ImageObject");
     } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
       fileTypes.push("AudioObject");
-    } else {
-      // LAM-65: For .sprj, .person, .session, and unknown file types, use CreativeWork
-      fileTypes.push("CreativeWork");
     }
+    // LAM-69: No else clause - non-media files remain as just ["File"]
 
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;

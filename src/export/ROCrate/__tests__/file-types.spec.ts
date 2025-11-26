@@ -26,13 +26,15 @@ vi.mock("fs-extra", () => ({
 
 /**
  * LAM-65: https://linear.app/lameta/issue/LAM-65/types-of-files
+ * LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
  *
  * This test verifies that file entities have the correct @type values:
  * - All files MUST include "File" (per LAM-54)
  * - Audio files: ["File", "AudioObject"]
  * - Video files: ["File", "VideoObject"]
  * - Image files: ["File", "ImageObject"]
- * - .sprj, .person, .session, and unknown files: ["File", "CreativeWork"]
+ * - All other files (including .sprj, .person, .session, .eaf, .txt, .docx, etc.): "File"
+ *   (LAM-69: Per RO-Crate spec, CreativeWork is not necessary as it's a superclass)
  */
 describe("LAM-65: File type assignments", () => {
   let mockProject: Project;
@@ -166,37 +168,40 @@ describe("LAM-65: File type assignments", () => {
     expect(imageFile["@type"]).toEqual(["File", "ImageObject"]);
   });
 
-  it("should type .session files as [File, CreativeWork]", async () => {
+  it("should type .session files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const sessionFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/test/test.session"
     );
     expect(sessionFile).toBeDefined();
-    // LAM-65: .session files should have CreativeWork type
-    expect(sessionFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, files only need @type of "File" - CreativeWork is not necessary
+    expect(sessionFile["@type"]).toEqual("File");
   });
 
-  it("should type .xml files as [File, CreativeWork] (unknown to media types)", async () => {
+  it("should type .xml files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const xmlFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/test/data.xml"
     );
     expect(xmlFile).toBeDefined();
-    // LAM-65: unknown file types should have CreativeWork type
-    expect(xmlFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, non-media files only need @type of "File"
+    expect(xmlFile["@type"]).toEqual("File");
   });
 
-  it("should type .eaf files as [File, CreativeWork] (ELAN annotation)", async () => {
+  it("should type .eaf files as File only (ELAN annotation)", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const eafFile = result["@graph"].find(
       (item: any) => item["@id"] === "Sessions/test/transcription.eaf"
     );
     expect(eafFile).toBeDefined();
-    // LAM-65: .eaf files (ELAN) are not media, so get CreativeWork
-    expect(eafFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, .eaf files only need @type of "File" - CreativeWork is not necessary
+    expect(eafFile["@type"]).toEqual("File");
   });
 });
 
@@ -285,7 +290,7 @@ describe("LAM-65: Person file type assignments", () => {
     Object.setPrototypeOf(mockPerson, Person.prototype);
   });
 
-  it("should type .person files as [File, CreativeWork]", async () => {
+  it("should type .person files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockPerson)) as any;
 
     // When exporting a person directly, files are in the result array
@@ -295,8 +300,9 @@ describe("LAM-65: Person file type assignments", () => {
         (item.name && item.name === "John_Doe.person")
     );
     expect(personFile).toBeDefined();
-    // LAM-65: .person files should have CreativeWork type
-    expect(personFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, .person files only need @type of "File"
+    expect(personFile["@type"]).toEqual("File");
   });
 
   it("should type person photo files as [File, ImageObject]", async () => {
@@ -311,7 +317,7 @@ describe("LAM-65: Person file type assignments", () => {
     expect(photoFile["@type"]).toEqual(["File", "ImageObject"]);
   });
 
-  it("should type consent PDF files as [File, CreativeWork]", async () => {
+  it("should type consent PDF files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockPerson)) as any;
 
     // PDF files are "Doc" type in FileTypeInfo, which is not a media type
@@ -321,8 +327,9 @@ describe("LAM-65: Person file type assignments", () => {
         (item.name && item.name === "John_Doe_Consent.pdf")
     );
     expect(consentFile).toBeDefined();
-    // LAM-65: PDF files are documents, not media, so get CreativeWork
-    expect(consentFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, PDF files only need @type of "File"
+    expect(consentFile["@type"]).toEqual("File");
   });
 });
 
@@ -389,7 +396,7 @@ describe("LAM-65: Project-level file type assignments", () => {
     Object.setPrototypeOf(mockProject, Project.prototype);
   });
 
-  it("should type .sprj files as [File, CreativeWork]", async () => {
+  it("should type .sprj files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const sprjFile = result["@graph"].find(
@@ -397,11 +404,12 @@ describe("LAM-65: Project-level file type assignments", () => {
         item.name === "TestProject.sprj" || item["@id"]?.includes(".sprj")
     );
     expect(sprjFile).toBeDefined();
-    // LAM-65: .sprj files should have CreativeWork type
-    expect(sprjFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, .sprj files only need @type of "File"
+    expect(sprjFile["@type"]).toEqual("File");
   });
 
-  it("should type description text files as [File, CreativeWork]", async () => {
+  it("should type description text files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const descFile = result["@graph"].find(
@@ -410,8 +418,9 @@ describe("LAM-65: Project-level file type assignments", () => {
         item.name === "README.txt"
     );
     expect(descFile).toBeDefined();
-    // LAM-65: text files in DescriptionDocuments get CreativeWork
-    expect(descFile["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+    // Per RO-Crate spec, text files only need @type of "File"
+    expect(descFile["@type"]).toEqual("File");
   });
 
   it("should type OtherDocuments image files as [File, ImageObject]", async () => {
