@@ -58,10 +58,10 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
     expect(contributorEntity["@id"]).not.toContain(")"); // Should not contain unencoded special chars
 
     // The entity should have the proper structure
+    // https://linear.app/lameta/issue/LAM-71/person-without-info
+    // When we don't have information about a person, we omit the description field
     expect(contributorEntity.name).toBe(contributorName);
-    expect(contributorEntity.description).toContain(
-      "could not find a matching Person"
-    );
+    expect(contributorEntity.description).toBeUndefined();
 
     // Find the session that references this contributor
     const sessionEntity = graph.find((item: any) =>
@@ -127,7 +127,9 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
     for (const entity of contributorEntities) {
       expect(entity["@id"]).toMatch(/^#/); // Should start with #
       expect(entity["@id"]).not.toContain(" "); // Should not contain spaces
-      expect(entity.description).toContain("could not find a matching Person");
+      // https://linear.app/lameta/issue/LAM-71/person-without-info
+      // When we don't have information about a person, we omit the description field
+      expect(entity.description).toBeUndefined();
     }
   });
 });
