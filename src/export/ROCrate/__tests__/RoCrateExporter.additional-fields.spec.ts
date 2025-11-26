@@ -132,7 +132,7 @@ describe("RoCrateExporter additional fields without context", () => {
       directory: "/project",
       getIdToUseForReferences: () => ".",
       sessions: { items: [mockSession] },
-      people: [],
+      persons: { items: [] },
       files: [],
       knownFields: [
         { key: "title", englishLabel: "Project Title", persist: true },

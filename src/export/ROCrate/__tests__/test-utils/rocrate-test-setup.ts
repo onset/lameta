@@ -381,7 +381,7 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
       hasValue: vi.fn().mockReturnValue(true)
     },
     sessions: { items: [] },
-    persons: [],
+    persons: { items: [] },
     files: [], // Add files array
     ...overrides
   } as unknown as Project;

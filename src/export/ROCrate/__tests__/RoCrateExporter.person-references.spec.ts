@@ -39,7 +39,7 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
       metadata: {
         title: "Test Project"
       },
-      people: { items: [personWithSpaces] },
+      persons: { items: [personWithSpaces] },
       sessions: { items: [mockSession] }
     });
 
@@ -61,12 +61,12 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Root hasPart should reference the People dataset wrapper but never direct Person IDs
     const rootHasPartIds =
       rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
-    expect(rootHasPartIds).toContain("People/");
+    expect(rootHasPartIds).toContain("#People");
     expect(rootHasPartIds).not.toContain(expectedPersonId);
 
     // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
     // Ensure the People dataset hangs all Person nodes via hasPart per the directory data-entity rules
-    const peopleDataset = graph.find((item: any) => item["@id"] === "People/");
+    const peopleDataset = graph.find((item: any) => item["@id"] === "#People");
     expect(peopleDataset).toBeDefined();
     expect(peopleDataset?.["@type"]).toBe("Dataset");
     expect(peopleDataset?.hasPart).toContainEqual({
