@@ -25,8 +25,10 @@ vi.mock("fs-extra", () => ({
 }));
 
 /**
- * LAM-65: https://linear.app/lameta/issue/LAM-65/types-of-files
- * LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+ * File type assignment tests
+ * LAM-54: https://linear.app/lameta/issue/LAM-54 - All files must include "File"
+ * LAM-65: https://linear.app/lameta/issue/LAM-65/types-of-files - Added media-specific types
+ * LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types - Corrected to not use CreativeWork
  *
  * This test verifies that file entities have the correct @type values:
  * - All files MUST include "File" (per LAM-54)
@@ -36,7 +38,7 @@ vi.mock("fs-extra", () => ({
  * - All other files (including .sprj, .person, .session, .eaf, .txt, .docx, etc.): "File"
  *   (LAM-69: Per RO-Crate spec, CreativeWork is not necessary as it's a superclass)
  */
-describe("LAM-65: File type assignments", () => {
+describe("File type assignments", () => {
   let mockProject: Project;
   let mockSession: Session;
 
@@ -205,7 +207,7 @@ describe("LAM-65: File type assignments", () => {
   });
 });
 
-describe("LAM-65: Person file type assignments", () => {
+describe("Person file type assignments", () => {
   let mockProject: Project;
   let mockPerson: Person;
 
@@ -333,7 +335,7 @@ describe("LAM-65: Person file type assignments", () => {
   });
 });
 
-describe("LAM-65: Project-level file type assignments", () => {
+describe("Project-level file type assignments", () => {
   let mockProject: Project;
 
   beforeEach(() => {

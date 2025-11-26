@@ -202,10 +202,7 @@ describe("LAM-66: Inverse Links", () => {
 
       // Find the session entity
       const sessionEntity = graph.find(
-        (e: any) =>
-          e["@id"]?.includes("Sessions/Test_Session/") &&
-          !e["@id"].endsWith(".session") &&
-          !e["@id"].endsWith(".wav")
+        (e: any) => e["@id"] === "#session-Test_Session"
       );
       expect(sessionEntity).toBeDefined();
 

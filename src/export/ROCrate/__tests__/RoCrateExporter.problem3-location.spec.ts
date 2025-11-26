@@ -32,7 +32,7 @@ describe("RoCrateExporter Problem 3 - Location Fields", () => {
     // Find a session that had the problematic location properties
     const sessionWithLocationIssue = roCrate["@graph"].find(
       (entity: any) =>
-        entity["@id"]?.includes("Sessions/") &&
+        entity["@id"]?.startsWith("#session-") &&
         entity.location &&
         // Make sure it doesn't have the problematic properties anymore
         !entity.locationRegion &&
@@ -80,7 +80,7 @@ describe("RoCrateExporter Problem 3 - Location Fields", () => {
     // Verify no session entities have the problematic location properties
     const sessionsWithBadLocationProps = roCrate["@graph"].filter(
       (entity: any) =>
-        entity["@id"]?.includes("Sessions/") &&
+        entity["@id"]?.startsWith("#session-") &&
         (entity.locationRegion ||
           entity.locationCountry ||
           entity.locationContinent)

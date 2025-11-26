@@ -250,7 +250,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -274,7 +274,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -294,7 +294,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -310,13 +310,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         (item: any) => item["@id"] === "./"
       );
       expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-        "@id": "Sessions/ETR009/"
+        "@id": "#session-ETR009"
       });
 
       // Verify session has pcdm:memberOf pointing back to root collection
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent["pcdm:memberOf"]).toEqual({ "@id": "./" });
@@ -503,7 +503,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -528,7 +528,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
 
@@ -602,7 +602,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "Sessions/ETR009/" &&
+          item["@id"] === "#session-ETR009" &&
           item["@type"].includes("CollectionEvent")
       );
       expect(sessionEvent.location).toEqual({ "@id": "#huya" });

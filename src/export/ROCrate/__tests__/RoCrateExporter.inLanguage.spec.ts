@@ -47,7 +47,7 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
 
     // Find the session entity in the graph
     const sessionEntity = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "Sessions/test-session/"
+      (entity: any) => entity["@id"] === "#session-test-session"
     );
 
     expect(sessionEntity).toBeDefined();

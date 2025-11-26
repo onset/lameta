@@ -94,8 +94,8 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     expect(letterFileEntry).toBeDefined();
     expect(letterFileEntry["@id"]).toBe("OtherDocuments/Letter_from_Jan.txt");
     // Regression for https://linear.app/lameta/issue/LAM-54: these project-level documents must now be typed as File
-    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
-    expect(letterFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
+    expect(letterFileEntry["@type"]).toBe("File");
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
 
     // Verify that no files have the incorrect "OtherDocs" prefix

@@ -75,7 +75,7 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // The session should reference the Person via ldac role properties instead of root hasPart
     const sessionEntity = graph.find(
       (item: any) =>
-        typeof item["@id"] === "string" && item["@id"].startsWith("Sessions/")
+        typeof item["@id"] === "string" && item["@id"].startsWith("#session-")
     );
     expect(sessionEntity).toBeDefined();
     expect(sessionEntity?.["ldac:speaker"]).toEqual([

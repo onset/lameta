@@ -125,21 +125,21 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
       (item: any) => item["@id"] === "./"
     );
     expect(projectDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/public_session/"
+      "@id": "#session-public_session"
     });
     expect(projectDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/restricted_session/"
+      "@id": "#session-restricted_session"
     });
 
     // Find the session events - both should be in the graph
     const publicSession = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "Sessions/public_session/" &&
+        item["@id"] === "#session-public_session" &&
         item["@type"].includes("CollectionEvent")
     );
     const restrictedSession = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "Sessions/restricted_session/" &&
+        item["@id"] === "#session-restricted_session" &&
         item["@type"].includes("CollectionEvent")
     );
 

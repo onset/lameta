@@ -1327,8 +1327,8 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(descriptionFileEntry).toBeDefined();
     // LAM-54 regression guard: exported README files must expose the File type (https://linear.app/lameta/issue/LAM-54)
-    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
-    expect(descriptionFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
+    expect(descriptionFileEntry["@type"]).toBe("File");
     expect(descriptionFileEntry.name).toBe("README.md");
     expect(descriptionFileEntry.contentSize).toBe(1024);
   });
@@ -1353,8 +1353,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileEntry).toBeDefined();
-    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
-    expect(otherDocFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
+    expect(otherDocFileEntry["@type"]).toBe("File");
     expect(otherDocFileEntry.name).toBe("notes.txt");
     expect(otherDocFileEntry.contentSize).toBe(1024);
   });
@@ -1398,8 +1398,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
     );
     expect(letterFileEntry).toBeDefined();
-    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
-    expect(letterFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
+    expect(letterFileEntry["@type"]).toBe("File");
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
   });
 
@@ -1442,8 +1442,8 @@ describe("RoCrateExporter project document folders", () => {
       (item: any) => item["@id"] === "DescriptionDocuments/Project_Overview.txt"
     );
     expect(descriptionFileEntry).toBeDefined();
-    // LAM-65: non-media files now also include CreativeWork type (https://linear.app/lameta/issue/LAM-65)
-    expect(descriptionFileEntry["@type"]).toEqual(["File", "CreativeWork"]);
+    // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
+    expect(descriptionFileEntry["@type"]).toBe("File");
     expect(descriptionFileEntry.name).toBe("Project_Overview.txt");
   });
 

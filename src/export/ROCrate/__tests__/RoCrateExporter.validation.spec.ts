@@ -765,7 +765,9 @@ describe("RoCrateExporter Validation Tests", () => {
       const testCases = [
         {
           input: "dde-houmba-ori (v2)",
-          expected: createSessionId({ filePrefix: "dde-houmba-ori (v2)" } as any)
+          expected: createSessionId({
+            filePrefix: "dde-houmba-ori (v2)"
+          } as any)
         },
         {
           input: "dde-kabousoulou1-ori (v2)",
@@ -781,7 +783,9 @@ describe("RoCrateExporter Validation Tests", () => {
         },
         {
           input: "session with spaces",
-          expected: createSessionId({ filePrefix: "session with spaces" } as any)
+          expected: createSessionId({
+            filePrefix: "session with spaces"
+          } as any)
         }
       ];
 
