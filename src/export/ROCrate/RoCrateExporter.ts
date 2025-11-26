@@ -78,6 +78,7 @@ type PublisherResolution = {
 };
 
 const ARCHIVE_CONFIGURATION_FIELD_KEY = "archiveConfigurationName";
+const DESCRIPTION_PROTOCOL_NODE_ID = "#descriptionDocuments";
 
 type PersonReferenceResolution = {
   reference: { "@id": string };
@@ -411,19 +412,53 @@ async function getRoCrateInternal(
       });
     });
 
-    // Add description folder files to root dataset hasPart
+    // Add description folder files to a dedicated ldac:CollectionProtocol node.
+    // LAM-70 https://linear.app/lameta/issue/LAM-70/collectionprotocol moved
+    // these project-level descriptions out of the root hasPart list so LDAC
+    // validators can see them via ldac:hasCollectionProtocol instead.
     if (
       project.descriptionFolder &&
       project.descriptionFolder.files.length > 0
     ) {
-      addProjectDocumentFolderEntries(
+      const descriptionDocsResult = addProjectDocumentFolderEntries(
         project.descriptionFolder,
         "DescriptionDocuments",
         entry,
         otherEntries,
         rocrateLicense,
-        project
+        project,
+        { attachToRootHasPart: false, parentId: DESCRIPTION_PROTOCOL_NODE_ID }
       );
+
+      if (descriptionDocsResult.fileIds.length > 0) {
+        const protocolEntry = createDescriptionCollectionProtocolEntry(
+          project,
+          descriptionDocsResult.fileIds,
+          contactPersonReference,
+          entry.datePublished,
+          descriptionDocsResult.earliestFileDate
+        );
+
+        otherEntries.push(protocolEntry);
+        const protocolReference = { "@id": protocolEntry["@id"] };
+        const currentProtocols = entry["ldac:hasCollectionProtocol"];
+
+        if (!currentProtocols) {
+          entry["ldac:hasCollectionProtocol"] = [protocolReference];
+        } else if (Array.isArray(currentProtocols)) {
+          const alreadyPresent = currentProtocols.some(
+            (item: any) => item?.["@id"] === protocolReference["@id"]
+          );
+          if (!alreadyPresent) {
+            currentProtocols.push(protocolReference);
+          }
+        } else if (currentProtocols["@id"] !== protocolReference["@id"]) {
+          entry["ldac:hasCollectionProtocol"] = [
+            currentProtocols,
+            protocolReference
+          ];
+        }
+      }
     }
 
     // Add other docs folder files to root dataset hasPart
@@ -1193,9 +1228,18 @@ export function addProjectDocumentFolderEntries(
   projectEntry: any,
   otherEntries: object[],
   rocrateLicense: RoCrateLicense,
-  project?: Project
-): void {
-  if (folder.files.length === 0) return;
+  project?: Project,
+  options?: { attachToRootHasPart?: boolean; parentId?: string }
+): { fileIds: string[]; earliestFileDate?: Date } {
+  const result: { fileIds: string[]; earliestFileDate?: Date } = {
+    fileIds: [],
+    earliestFileDate: undefined
+  };
+
+  if (folder.files.length === 0) return result;
+
+  const attachToRootHasPart = options?.attachToRootHasPart !== false;
+  const parentId = options?.parentId || "./";
 
   folder.files.forEach((file) => {
     const path = file.getActualFilePath();
@@ -1244,11 +1288,12 @@ export function addProjectDocumentFolderEntries(
     // Description and other project documents should NOT have materialType.
     // The materialType "Annotation" was confusing because LDAC uses "annotation" to mean "analysis",
     // but these documents are project-level descriptions, not analyses of the linguistic data.
+    const stats = fs.statSync(path);
     const fileEntry: any = {
       "@id": fileId,
       "@type": normalizedFileType,
-      contentSize: fs.statSync(path).size,
-      dateCreated: fs.statSync(path).birthtime.toISOString(),
+      contentSize: stats.size,
+      dateCreated: stats.birthtime.toISOString(),
       dateModified: file.getModifiedDate()?.toISOString(),
       encodingFormat: getMimeType(
         Path.extname(fileName).toLowerCase().replace(/\./g, "")
@@ -1267,16 +1312,29 @@ export function addProjectDocumentFolderEntries(
     );
 
     otherEntries.push(fileEntry);
-    projectEntry.hasPart.push({
-      "@id": fileId
-    });
+    if (attachToRootHasPart) {
+      projectEntry.hasPart.push({
+        "@id": fileId
+      });
+    }
 
-    // LAM-66: Add inverse isPartOf link pointing to project root
+    // LAM-66: Add inverse isPartOf link pointing to the structural parent
     // https://linear.app/lameta/issue/LAM-66/add-inverse-links
     // Per LDAC spec, bidirectional relationships are required:
     // hasPart/isPartOf for structural containment
-    fileEntry.isPartOf = { "@id": "./" };
+    fileEntry.isPartOf = { "@id": parentId };
+
+    const preferredDate = file.getModifiedDate?.() || stats.birthtime;
+    if (preferredDate instanceof Date) {
+      if (!result.earliestFileDate || preferredDate < result.earliestFileDate) {
+        result.earliestFileDate = preferredDate;
+      }
+    }
+
+    result.fileIds.push(fileId);
   });
+
+  return result;
 }
 
 /**
@@ -1306,8 +1364,26 @@ function createPeopleDatasetEntry(
   otherEntries: object[],
   license?: any
 ): RoCrateEntity | undefined {
+  const collectPersonRecords = (source: any): any[] => {
+    if (!source) {
+      return [];
+    }
+
+    if (Array.isArray(source)) {
+      return source;
+    }
+
+    if (Array.isArray(source.items)) {
+      return source.items;
+    }
+
+    return [];
+  };
+
   const knownPeople = new Set(
-    (project.people?.items ?? []).map((person) => createPersonId(person))
+    collectPersonRecords((project as any).persons).map((person) =>
+      createPersonId(person)
+    )
   );
   if (knownPeople.size === 0) {
     return undefined;
@@ -1328,7 +1404,7 @@ function createPeopleDatasetEntry(
   const sortedIds = Array.from(personIds).sort((a, b) => a.localeCompare(b));
 
   const dataset: RoCrateEntity = {
-    "@id": "People/",
+    "@id": "#People",
     "@type": "Dataset",
     name: "People",
     description: "Directory of people associated with this collection.",
@@ -1378,4 +1454,41 @@ function getUniqueEntries(otherEntries: object[]) {
   });
 
   return unique;
+}
+
+function createDescriptionCollectionProtocolEntry(
+  project: Project,
+  fileIds: string[],
+  authorReference: any,
+  fallbackDatePublished?: string,
+  earliestFileDate?: Date
+): RoCrateEntity {
+  const projectTitle = project.metadataFile
+    ?.getTextProperty("title", "")
+    ?.trim();
+  const protocolName = projectTitle
+    ? `${projectTitle} collection protocol`
+    : "Collection protocol documents";
+  const descriptionSource = project.metadataFile
+    ?.getTextProperty("collectionDescription", "")
+    ?.trim();
+  const protocolDescription =
+    descriptionSource && descriptionSource.length > 0
+      ? descriptionSource
+      : "DescriptionDocuments exported from lameta summarizing how this collection was gathered.";
+  const datePublished =
+    earliestFileDate?.toISOString() ||
+    fallbackDatePublished ||
+    new Date().toISOString();
+
+  return {
+    "@id": DESCRIPTION_PROTOCOL_NODE_ID,
+    "@type": expandLdacId("ldac:CollectionProtocol"),
+    name: protocolName,
+    description: protocolDescription,
+    author: authorReference,
+    datePublished,
+    hasPart: fileIds.map((id) => ({ "@id": id })),
+    isPartOf: { "@id": "./" }
+  };
 }

@@ -227,11 +227,12 @@ describe("LAM-66: Inverse Links", () => {
         (e: any) => e["@id"] === "DescriptionDocuments/description.txt"
       );
 
-      // LAM-66: Verify project-level files have isPartOf pointing to root
+      // LAM-70: Description documents now live under an ldac:CollectionProtocol
+      // so their isPartOf reference should point to that entity instead of root
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
       if (descFile) {
         expect(descFile).toHaveProperty("isPartOf");
-        expect(descFile.isPartOf).toEqual({ "@id": "./" });
+        expect(descFile.isPartOf).toEqual({ "@id": "#descriptionDocuments" });
       }
     });
 

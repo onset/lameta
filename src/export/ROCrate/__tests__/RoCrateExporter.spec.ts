@@ -1306,7 +1306,7 @@ describe("RoCrateExporter project document folders", () => {
     }));
   });
 
-  it("should include description folder files in RO-Crate", async () => {
+  it("should expose description folder files via ldac:hasCollectionProtocol", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset entry
@@ -1315,11 +1315,29 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Check that the description file is included in hasPart
+    // Description documents no longer sit directly in hasPart after LAM-70.
+    // https://linear.app/lameta/issue/LAM-70/collectionprotocol ensures LDAC
+    // validators find them via ldac:hasCollectionProtocol instead.
     const descriptionFileRef = rootEntry.hasPart.find(
       (part: any) => part["@id"] === "DescriptionDocuments/README.md"
     );
-    expect(descriptionFileRef).toBeDefined();
+    expect(descriptionFileRef).toBeUndefined();
+
+    const protocolRefs = rootEntry["ldac:hasCollectionProtocol"];
+    expect(protocolRefs).toBeDefined();
+    const protocolId = Array.isArray(protocolRefs)
+      ? protocolRefs[0]["@id"]
+      : protocolRefs["@id"];
+    expect(protocolId).toBe("#descriptionDocuments");
+
+    const protocolEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "#descriptionDocuments"
+    );
+    expect(protocolEntry).toBeDefined();
+    expect(protocolEntry["@type"]).toBe("ldac:CollectionProtocol");
+    expect(protocolEntry.hasPart).toEqual(
+      expect.arrayContaining([{ "@id": "DescriptionDocuments/README.md" }])
+    );
 
     // Find the actual file entry in the graph
     const descriptionFileEntry = result["@graph"].find(
@@ -1431,11 +1449,21 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Check that the description file is included with correct ID
-    const descriptionFileRef = rootEntry.hasPart.find(
-      (part: any) => part["@id"] === "DescriptionDocuments/Project_Overview.txt"
+    const descriptionProtocol = rootEntry["ldac:hasCollectionProtocol"];
+    const protocolId = Array.isArray(descriptionProtocol)
+      ? descriptionProtocol[0]["@id"]
+      : descriptionProtocol?.["@id"];
+    expect(protocolId).toBe("#descriptionDocuments");
+
+    const protocolEntry = result["@graph"].find(
+      (item: any) => item["@id"] === "#descriptionDocuments"
     );
-    expect(descriptionFileRef).toBeDefined();
+    expect(protocolEntry).toBeDefined();
+    expect(protocolEntry.hasPart).toEqual(
+      expect.arrayContaining([
+        { "@id": "DescriptionDocuments/Project_Overview.txt" }
+      ])
+    );
 
     // Find the actual file entry in the graph
     const descriptionFileEntry = result["@graph"].find(
