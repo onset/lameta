@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import {
   getVocabularyMapping,
   createTermDefinition,
-  sanitizeForIri
+  sanitizeForIri,
+  createFragmentId,
+  createSessionId,
+  createPersonId,
+  createUnresolvedContributorId,
+  createFileId
 } from "../RoCrateUtils";
 
 describe("RoCrateUtils - Vocabulary Handling", () => {
@@ -229,6 +234,139 @@ describe("RoCrateUtils - IRI Sanitization", () => {
       expect(result).not.toContain("<");
       expect(result).not.toContain(">");
       expect(decodeURIComponent(result)).toBe("report_2024<draft>.pdf");
+    });
+  });
+});
+
+describe("RoCrateUtils - ID Generation", () => {
+  describe("createFragmentId", () => {
+    it("should create fragment ID with prefix and sanitized value", () => {
+      expect(createFragmentId("test", "Value")).toBe("#test-Value");
+      expect(createFragmentId("session", "My Session")).toBe(
+        "#session-My_Session"
+      );
+    });
+
+    it("should handle special characters by replacing with underscores", () => {
+      expect(createFragmentId("contributor", "John (Smith)")).toBe(
+        "#contributor-John__Smith_"
+      );
+    });
+
+    it("should handle empty values by using prefix as fallback", () => {
+      expect(createFragmentId("contributor", "")).toBe(
+        "#contributor-contributor"
+      );
+      expect(createFragmentId("test", "   ")).toBe("#test-test");
+    });
+
+    it("should trim whitespace from values", () => {
+      expect(createFragmentId("prefix", "  value  ")).toBe("#prefix-value");
+    });
+  });
+
+  describe("createSessionId", () => {
+    it("should create session fragment ID from filePrefix", () => {
+      expect(createSessionId({ filePrefix: "Session001" })).toBe(
+        "#session-Session001"
+      );
+    });
+
+    it("should handle sessions with special characters", () => {
+      expect(createSessionId({ filePrefix: "My Session (2024)" })).toBe(
+        "#session-My%20Session%20%282024%29"
+      );
+    });
+
+    it("should use 'session' as default for missing filePrefix", () => {
+      expect(createSessionId({})).toBe("#session-session");
+      expect(createSessionId(null)).toBe("#session-session");
+      expect(createSessionId(undefined)).toBe("#session-session");
+    });
+  });
+
+  describe("createPersonId", () => {
+    it("should create person fragment ID without prefix", () => {
+      expect(createPersonId({ filePrefix: "John_Smith" })).toBe("#John_Smith");
+    });
+
+    it("should normalize spaces to underscores", () => {
+      expect(createPersonId({ filePrefix: "John Smith" })).toBe("#John_Smith");
+    });
+
+    it("should replace special characters with underscores", () => {
+      expect(createPersonId({ filePrefix: "John (Smith)" })).toBe(
+        "#John__Smith_"
+      );
+    });
+
+    it("should use 'person' as default for missing filePrefix", () => {
+      expect(createPersonId({})).toBe("#person");
+      expect(createPersonId(null)).toBe("#person");
+      expect(createPersonId(undefined)).toBe("#person");
+    });
+  });
+
+  describe("createUnresolvedContributorId", () => {
+    it("should create contributor fragment ID with prefix", () => {
+      expect(createUnresolvedContributorId("John Smith")).toBe(
+        "#contributor-John_Smith"
+      );
+    });
+
+    it("should handle special characters", () => {
+      expect(createUnresolvedContributorId("John (Consultant)")).toBe(
+        "#contributor-John__Consultant_"
+      );
+    });
+
+    it("should handle empty contributor names", () => {
+      expect(createUnresolvedContributorId("")).toBe(
+        "#contributor-contributor"
+      );
+    });
+  });
+
+  describe("createFileId", () => {
+    it("should create session file path for session folders", () => {
+      const sessionFolder = {
+        filePrefix: "Session001",
+        getAllContributionsToAllFiles: () => []
+      };
+      expect(createFileId(sessionFolder, "audio.wav")).toBe(
+        "Sessions/Session001/audio.wav"
+      );
+    });
+
+    it("should create person file path for person folders", () => {
+      const personFolder = {
+        filePrefix: "John_Smith",
+        knownFields: [],
+        files: []
+      };
+      expect(createFileId(personFolder, "photo.jpg")).toBe(
+        "People/John_Smith/photo.jpg"
+      );
+    });
+
+    it("should create root-relative path for project folders", () => {
+      const projectFolder = {
+        filePrefix: "MyProject",
+        sessions: []
+      };
+      expect(createFileId(projectFolder, "project.sprj")).toBe(
+        "./project.sprj"
+      );
+    });
+
+    it("should sanitize special characters in file names", () => {
+      const sessionFolder = {
+        filePrefix: "Session001",
+        getAllContributionsToAllFiles: () => []
+      };
+      expect(createFileId(sessionFolder, "file with spaces.wav")).toBe(
+        "Sessions/Session001/file%20with%20spaces.wav"
+      );
     });
   });
 });

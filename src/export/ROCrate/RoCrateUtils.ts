@@ -65,9 +65,25 @@ export function sanitizeForIri(input: string | undefined): string {
 }
 
 /**
+ * Creates a fragment identifier with a prefix and sanitized value.
+ * This is the base helper for generating consistent RO-Crate entity IDs.
+ * @param prefix - The type prefix (e.g., 'session', 'contributor')
+ * @param value - The value to sanitize and append
+ * @returns A fragment identifier in the format `#prefix-sanitizedValue`
+ */
+export function createFragmentId(prefix: string, value: string): string {
+  const sanitized = value
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+  const fragment = sanitized.length > 0 ? sanitized : prefix;
+  return `#${prefix}-${fragment}`;
+}
+
+/**
  * Creates a consistent file ID for RO-Crate entities.
- * This centralizes the logic for generating file @id values to ensure
- * consistency between file entities and their hasPart references.
+ * Unlike other entity IDs, file IDs use path-based identifiers rather than
+ * fragment identifiers because they reference actual files in the crate.
  */
 export function createFileId(folder: any, fileName: string): string {
   const sanitizedFileName = sanitizeForIri(fileName);
@@ -97,20 +113,17 @@ export function createFileId(folder: any, fileName: string): string {
 
 /**
  * Creates a consistent Session ID for RO-Crate entities.
- * This centralizes the logic for generating Session @id values.
+ * Uses createFragmentId to ensure consistent fragment identifier format.
  */
 export function createSessionId(session: any): string {
   const baseValue = (session?.filePrefix || "session").toString();
   const sanitized = sanitizeForIri(baseValue) || "session";
-  // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
-  // Session entities must use fragment identifiers (not pseudo-paths) so
-  // non-file nodes still resolve when crates lack a base URI.
   return `#session-${sanitized}`;
 }
 
 /**
  * Creates a consistent Person ID for RO-Crate entities.
- * This centralizes the logic for generating Person @id values.
+ * Person IDs use a bare fragment without a prefix per LDAC guidance.
  */
 export function createPersonId(person: any): string {
   const baseValue = (person?.filePrefix || "person") as string;
@@ -119,27 +132,16 @@ export function createPersonId(person: any): string {
     .replace(/\s+/g, "_")
     .replace(/[^a-zA-Z0-9_-]/g, "_");
   const fragment = normalized.length > 0 ? normalized : "person";
-  // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
-  // corrected our earlier #person-* scheme by reusing the sanitized filePrefix
-  // so Person entities expose #Name fragments that match HTML anchors and the
-  // LDAC guidance about fragment identifiers.
   return `#${fragment}`;
 }
 
 /**
  * Creates a consistent fragment identifier for unresolved contributors.
  * Unresolved contributors are people mentioned in sessions who don't have
- * matching Person records in the project.
+ * matching Person records in the project. Uses createFragmentId for consistency.
  */
 export function createUnresolvedContributorId(contributorName: string): string {
-  // Create a fragment identifier starting with #
-  // Replace spaces and special characters to make a valid identifier
-  const sanitized = contributorName
-    .replace(/\s+/g, "_") // Replace spaces with underscores
-    .replace(/[()]/g, "") // Remove parentheses
-    .replace(/[^a-zA-Z0-9_-]/g, "_"); // Replace other special chars with underscores
-
-  return `#contributor-${sanitized}`;
+  return createFragmentId("contributor", contributorName);
 }
 
 export function getVocabularyMapping(
