@@ -1091,6 +1091,106 @@ function addFileLicenseProperty(
   }
 }
 
+/**
+ * Options for building a file entry in the RO-Crate graph.
+ * LAM-73: Extracted to consolidate duplicate logic from addChildFileEntries and addProjectDocumentFolderEntries.
+ */
+interface BuildFileEntryOptions {
+  /** The file object from the folder */
+  file: any;
+  /** The @id to use for this file entity */
+  fileId: string;
+  /** The RoCrateLicense manager for license handling */
+  rocrateLicense: RoCrateLicense;
+  /** Optional folder containing this file (for session license inheritance) */
+  folder?: Folder;
+  /** Optional parent entry for license inheritance */
+  parentEntry?: any;
+  /** Optional project for license normalization */
+  project?: Project;
+}
+
+/**
+ * Result from building a file entry.
+ */
+interface BuildFileEntryResult {
+  /** The built file entry object for the RO-Crate graph */
+  fileEntry: any;
+  /** File stats (birthtime, mtime) for optional further processing */
+  stats: fs.Stats;
+}
+
+/**
+ * Builds a file entry for the RO-Crate graph with all common properties.
+ * LAM-73: Consolidated from addChildFileEntries and addProjectDocumentFolderEntries
+ * to eliminate ~150 lines of duplicate logic for deriving @type arrays,
+ * collecting stats, setting encodingFormat/contentSize, and wiring license links.
+ *
+ * @param options - Configuration for building the file entry
+ * @returns The built file entry and file stats
+ */
+function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
+  const { file, fileId, rocrateLicense, folder, parentEntry, project } =
+    options;
+  const path = file.getActualFilePath();
+  const fileName = Path.basename(path);
+  const fileExt = Path.extname(fileName).toLowerCase();
+
+  // Determine the appropriate @type based on file extension and context
+  // LAM-54 fix: https://linear.app/lameta/issue/LAM-54 requires every file data entity to include "File".
+  // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
+  // - ImageObject, VideoObject, AudioObject for media files
+  // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
+  // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
+  // CreativeWork is a superclass and not necessary for non-media files.
+  const fileTypes: string[] = ["File"];
+
+  // Use FileTypeInfo to get the file format information
+  const fileFormatInfo = GetFileFormatInfoForExtension(
+    fileExt.replace(".", "")
+  );
+
+  if (fileFormatInfo?.type === "Video") {
+    fileTypes.push("VideoObject");
+  } else if (fileFormatInfo?.type === "Audio") {
+    fileTypes.push("AudioObject");
+  } else if (fileFormatInfo?.type === "Image") {
+    fileTypes.push("ImageObject");
+  } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
+    // Fallback for image extensions not in FileTypeInfo
+    fileTypes.push("ImageObject");
+  } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
+    // Fallback for audio extensions not in FileTypeInfo
+    fileTypes.push("AudioObject");
+  }
+  // LAM-69: No else clause - non-media files remain as just ["File"]
+
+  const normalizedFileType = fileTypes.length === 1 ? fileTypes[0] : fileTypes;
+
+  const stats = fs.statSync(path);
+  const fileEntry: any = {
+    "@id": fileId,
+    "@type": normalizedFileType,
+    contentSize: stats.size,
+    dateCreated: stats.birthtime.toISOString(),
+    dateModified: file.getModifiedDate()?.toISOString(),
+    encodingFormat: getMimeType(fileExt.replace(/\./g, "")),
+    name: fileName
+  };
+
+  // Add license information - per LDAC spec, files must have license properties
+  addFileLicenseProperty(
+    fileEntry,
+    path,
+    rocrateLicense,
+    folder,
+    parentEntry,
+    project
+  );
+
+  return { fileEntry, stats };
+}
+
 export function addChildFileEntries(
   folder: Folder,
   folderEntry: object,
@@ -1129,63 +1229,24 @@ export function addChildFileEntries(
   folder.files.forEach((file) => {
     const path = file.getActualFilePath();
     const fileName = Path.basename(path);
-    const fileExt = Path.extname(fileName).toLowerCase();
 
     // Skip RO-Crate metadata files to avoid circular references
     if (fileName.startsWith("ro-crate")) {
       return;
     }
 
-    // Determine the appropriate @type based on file extension and context
-    // LAM-54 fix: https://linear.app/lameta/issue/LAM-54 requires every file data entity to include "File".
-    // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
-    // - ImageObject, VideoObject, AudioObject for media files
-    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
-    // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
-    // CreativeWork is a superclass and not necessary for non-media files.
-    const fileTypes: string[] = ["File"];
-
-    // Use FileTypeInfo to get the file format information
-    const fileFormatInfo = GetFileFormatInfoForExtension(
-      fileExt.replace(".", "")
-    );
-
-    if (fileFormatInfo?.type === "Video") {
-      fileTypes.push("VideoObject");
-    } else if (fileFormatInfo?.type === "Audio") {
-      fileTypes.push("AudioObject");
-    } else if (fileFormatInfo?.type === "Image") {
-      fileTypes.push("ImageObject");
-    }
-    // LAM-69: No else clause - non-media files remain as just ["File"]
-
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
 
-    const normalizedFileType =
-      fileTypes.length === 1 ? fileTypes[0] : fileTypes;
-
-    const fileEntry: any = {
-      "@id": fileId,
-      "@type": normalizedFileType,
-      contentSize: fs.statSync(path).size,
-      dateCreated: fs.statSync(path).birthtime.toISOString(),
-      dateModified: file.getModifiedDate()?.toISOString(),
-      encodingFormat: getMimeType(
-        Path.extname(fileName).toLowerCase().replace(/\./g, "")
-      ),
-      name: fileName
-    };
-
-    // Add license information - per LDAC spec, files must have license properties
-    addFileLicenseProperty(
-      fileEntry,
-      path,
+    // LAM-73: Use shared helper to build the file entry
+    const { fileEntry } = buildFileEntry({
+      file,
+      fileId,
       rocrateLicense,
       folder,
-      folderEntry,
+      parentEntry: folderEntry,
       project
-    );
+    });
 
     otherEntries.push(fileEntry);
     if (shouldAssignHasPart) {
@@ -1244,72 +1305,28 @@ export function addProjectDocumentFolderEntries(
   folder.files.forEach((file) => {
     const path = file.getActualFilePath();
     const fileName = Path.basename(path);
-    const fileExt = Path.extname(fileName).toLowerCase();
 
     // Skip RO-Crate metadata files to avoid circular references
     if (fileName.startsWith("ro-crate")) {
       return;
     }
 
-    // Determine the appropriate @type based on file extension
-    // LAM-54 fix: ensure project-level documents also satisfy the File type requirement.
-    // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
-    // - ImageObject, VideoObject, AudioObject for media files
-    // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
-    // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
-    // CreativeWork is a superclass and not necessary for non-media files.
-    const fileTypes: string[] = ["File"];
-
-    // Use FileTypeInfo to get the file format information
-    const fileFormatInfo = GetFileFormatInfoForExtension(
-      fileExt.replace(".", "")
-    );
-
-    if (fileFormatInfo?.type === "Image") {
-      fileTypes.push("ImageObject");
-    } else if (fileFormatInfo?.type === "Audio") {
-      fileTypes.push("AudioObject");
-    } else if (fileFormatInfo?.type === "Video") {
-      fileTypes.push("VideoObject");
-    } else if (fileExt.match(/\.(jpg|jpeg|png|gif|bmp|tiff)$/)) {
-      fileTypes.push("ImageObject");
-    } else if (fileExt.match(/\.(mp3|wav|m4a|aac|flac)$/)) {
-      fileTypes.push("AudioObject");
-    }
-    // LAM-69: No else clause - non-media files remain as just ["File"]
-
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
 
-    const normalizedFileType =
-      fileTypes.length === 1 ? fileTypes[0] : fileTypes;
-
+    // LAM-73: Use shared helper to build the file entry
     // LAM-62: https://linear.app/lameta/issue/LAM-62
     // Description and other project documents should NOT have materialType.
     // The materialType "Annotation" was confusing because LDAC uses "annotation" to mean "analysis",
     // but these documents are project-level descriptions, not analyses of the linguistic data.
-    const stats = fs.statSync(path);
-    const fileEntry: any = {
-      "@id": fileId,
-      "@type": normalizedFileType,
-      contentSize: stats.size,
-      dateCreated: stats.birthtime.toISOString(),
-      dateModified: file.getModifiedDate()?.toISOString(),
-      encodingFormat: getMimeType(
-        Path.extname(fileName).toLowerCase().replace(/\./g, "")
-      ),
-      name: fileName
-    };
-
-    // Add license information - per LDAC spec, files must have license properties
-    addFileLicenseProperty(
-      fileEntry,
-      path,
+    const { fileEntry, stats } = buildFileEntry({
+      file,
+      fileId,
       rocrateLicense,
-      undefined,
-      projectEntry,
+      folder: undefined, // No folder for project documents - license inheritance differs
+      parentEntry: projectEntry,
       project
-    );
+    });
 
     otherEntries.push(fileEntry);
     if (attachToRootHasPart) {
