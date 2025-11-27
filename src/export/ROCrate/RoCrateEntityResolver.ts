@@ -1,13 +1,9 @@
 import { Project } from "../../model/Project/Project";
 
 /**
- * RoCrateEntityResolver.ts
+ * Centralized helpers for producing consistent RO-Crate entity references.
  *
- * LAM-84: This module centralizes entity reference resolution for RO-Crate export.
- * It consolidates the nearly-identical resolvePublisher and resolveDepositor patterns
- * into a single, generalized approach.
- *
- * Entity references in RO-Crate are JSON-LD references of the form { "@id": "#some-id" }
+ * Entity references in RO-Crate are JSON-LD objects of the form { "@id": "#some-id" }
  * that point to entities defined elsewhere in the @graph.
  */
 
@@ -109,8 +105,8 @@ function generateSlug(value: string): string {
 /**
  * Resolves the publisher entity from a project's archive configuration.
  *
- * The publisher is derived from the archiveConfigurationName field.
- * See: https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+ * The LDAC profile expects the archive configuration to resolve to a concrete
+ * Organization entity instead of leaving the raw custom field in the payload.
  *
  * @param project - The project to resolve the publisher from
  * @returns The resolved publisher entity, or undefined if not available
@@ -129,8 +125,8 @@ export function resolvePublisher(
 /**
  * Resolves the depositor entity from a project.
  *
- * The depositor is the person who deposited the collection with the archive.
- * See: https://linear.app/lameta/issue/LAM-39/ro-crate-root-dataset-depositor-handling
+ * LDAC requires ldac:depositor to link to a Person entity, so we always emit a
+ * structured node instead of a plain string when metadata is available.
  *
  * @param project - The project to resolve the depositor from
  * @returns The resolved depositor entity, or undefined if not available
@@ -175,8 +171,8 @@ export function getContactPersonReference(project: Project): {
 /**
  * Sets contact person properties on an entry.
  *
- * LAM-84: This consolidates the duplicated pattern of setting
- * author, accountablePerson, and dct:rightsHolder to the contact person.
+ * Author, accountablePerson, and dct:rightsHolder all mirror the contact person
+ * so that downstream consumers can reason over a single point of contact.
  *
  * @param entry - The entry to set properties on
  * @param contactPersonReference - The contact person reference value

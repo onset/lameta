@@ -188,8 +188,7 @@ export class RoCrateValidator {
       const isObjectType = typeList.includes("Object");
       const isLegacyEvent = typeList.includes("Event");
       const isCollectionEvent = typeList.includes("CollectionEvent");
-      // LAM-61 https://linear.app/lameta/issue/LAM-61/sessions-should-be-collectionevent
-      // Sessions now declare CollectionEvent (and RepositoryObject) types, so treat them as LDAC objects.
+      // Sessions declare CollectionEvent (and RepositoryObject) types, so treat them as LDAC objects.
       const isRelevantType =
         isRepositoryObject ||
         isObjectType ||

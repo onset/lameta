@@ -45,11 +45,9 @@ export class RoCrateLanguages {
       name: name
     };
 
-    // LAM-41: Document why "und" maps to a global URI instead of a local fragment.
-    // The Linear issue highlights that local placeholders like #language_und fail
-    // external validation. By emitting the Lexvo identifier we retain a stable,
-    // resolvable URI while keeping other language codes as internal fragments.
-    // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
+    // Lexvo's undetermined identifier is globally resolvable; local placeholders such as
+    // #language_und fail validation. Keep other languages as fragments but use the Lexvo URI
+    // when the metadata only indicates an undetermined language.
     if (normalizedCode === "und") {
       entity.description =
         "Language marked as undetermined because no working language was specified in lameta";

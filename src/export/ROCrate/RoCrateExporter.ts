@@ -105,10 +105,9 @@ export async function getRoCrate(
       "@context": [
         "https://w3id.org/ro/crate/1.2/context",
         {
-          // LAM-33 https://linear.app/lameta/issue/LAM-33/ro-crate-1-context-configuration
-          // keeps the RO-Crate context single-sourced, but the bundled ro-crate validator
-          // only ships schema.org definitions up to v1.1, so we provide minimal fallbacks
-          // for the root dataset checks here while still exposing the ldac: prefix inline.
+          // Keep the RO-Crate context single-sourced while providing minimal schema.org
+          // fallbacks for validators that only ship RO-Crate 1.1 definitions and still need
+          // direct access to ldac-prefixed terms.
           ldac: "https://w3id.org/ldac/terms#",
           Dataset: "http://schema.org/Dataset",
           name: "http://schema.org/name",
@@ -166,11 +165,8 @@ async function getRoCrateInternal(
       !entry.inLanguage ||
       (Array.isArray(entry.inLanguage) && entry.inLanguage.length === 0)
     ) {
-      // LAM-41: Guarantee the root dataset exposes inLanguage by
-      // assigning Lexvo's undetermined language identifier whenever no
-      // working language was captured. This replaces the old #language_und
-      // fragment and keeps LDAC validators satisfied.
-      // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
+      // Always expose inLanguage; fall back to Lexvo's UND identifier whenever
+      // no working language was captured so LDAC validators stay satisfied.
       rocrateLanguages.getLanguageEntity("und");
       const undeterminedLanguageReference =
         rocrateLanguages.getLanguageReference("und");
@@ -255,14 +251,14 @@ async function getRoCrateInternal(
     const publisher = resolvePublisher(project);
     if (publisher) {
       entry.publisher = publisher.reference;
-      // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName is not a valid RO-Crate term, so reuse the
-      // resolved Organization as holdingArchive instead of leaking the raw custom field.
+      // archiveConfigurationName is Lameta-specific, so surface the resolved Organization
+      // via holdingArchive instead of leaking the raw custom field name.
       entry.holdingArchive = publisher.reference;
     }
 
     const depositor = resolveDepositor(project);
     if (depositor) {
-      // LAM-39: ldac:depositor must reference a Person entity, not a bare string in the root dataset.
+      // ldac:depositor must reference a Person entity, not a bare string in the root dataset.
       entry["ldac:depositor"] = depositor.reference;
       otherEntries.push(depositor.entity);
     }
@@ -318,8 +314,7 @@ async function getRoCrateInternal(
       entry.contentLocation = contentLocationPlaces;
     }
 
-    // Add unknown contributor entity if using fallback
-    // LAM-84: Use consolidated helper for unknown contributor entity
+    // Add unknown contributor entity if using fallback so references remain resolvable
     if (isUnknownContact) {
       otherEntries.push(createUnknownContributorEntity());
     }
@@ -349,10 +344,8 @@ async function getRoCrateInternal(
       });
     });
 
-    // Add description folder files to a dedicated ldac:CollectionProtocol node.
-    // LAM-70 https://linear.app/lameta/issue/LAM-70/collectionprotocol moved
-    // these project-level descriptions out of the root hasPart list so LDAC
-    // validators can see them via ldac:hasCollectionProtocol instead.
+    // Keep project-level description files under ldac:CollectionProtocol so LDAC validators
+    // discover them via ldac:hasCollectionProtocol instead of the root hasPart list.
     if (
       project.descriptionFolder &&
       project.descriptionFolder.files.length > 0
@@ -442,7 +435,6 @@ async function getRoCrateInternal(
       ...uniqueOtherEntries
     ];
 
-    // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
     // Add a People dataset container so Person nodes hang off a proper directory entity.
     const peopleDatasetEntry = createPeopleDatasetEntry(
       project,
@@ -483,8 +475,8 @@ export function addFieldIfNotEmpty(
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
-// LAM-74: Refactored to use modular handlers from RoCrateFieldHandlers.ts
-// This reduces the function from ~250 lines to ~50 lines by delegating to specialized handlers.
+// Delegates to specialized handlers so this function stays focused on orchestration
+// instead of housing a long list of one-off field conditionals.
 export async function addFieldEntries(
   project: Project,
   folder: Folder,
@@ -542,12 +534,12 @@ function handleCustomFields(folder: Folder, folderEntry: object): void {
     }
 
     if (key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
-      // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName gets remapped to holdingArchive above.
+      // archiveConfigurationName already maps to holdingArchive above; skip the raw field.
       return;
     }
 
     if (key === "depositor") {
-      // LAM-39: prevent the custom-field fallback from reintroducing the deprecated string property.
+      // ldac:depositor is emitted as a structured entity reference, so ignore the raw string value.
       return;
     }
 
@@ -636,8 +628,8 @@ function addFileLicenseProperty(
 }
 
 /**
- * Options for building a file entry in the RO-Crate graph.
- * LAM-73: Extracted to consolidate duplicate logic from addChildFileEntries and addProjectDocumentFolderEntries.
+ * Options for building a file entry in the RO-Crate graph. Shared by session and project helpers
+ * so the logic for deriving @type, license links, and file metadata lives in one place.
  */
 interface BuildFileEntryOptions {
   /** The file object from the folder */
@@ -665,10 +657,8 @@ interface BuildFileEntryResult {
 }
 
 /**
- * Builds a file entry for the RO-Crate graph with all common properties.
- * LAM-73: Consolidated from addChildFileEntries and addProjectDocumentFolderEntries
- * to eliminate ~150 lines of duplicate logic for deriving @type arrays,
- * collecting stats, setting encodingFormat/contentSize, and wiring license links.
+ * Builds a file entry for the RO-Crate graph with all common properties while avoiding
+ * duplicate logic between session exports and project document exports.
  *
  * @param options - Configuration for building the file entry
  * @returns The built file entry and file stats
@@ -680,13 +670,9 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
   const fileName = Path.basename(path);
   const fileExt = Path.extname(fileName).toLowerCase();
 
-  // Determine the appropriate @type based on file extension and context
-  // LAM-54 fix: https://linear.app/lameta/issue/LAM-54 requires every file data entity to include "File".
-  // LAM-65: https://linear.app/lameta/issue/LAM-65 adds schema.org types:
-  // - ImageObject, VideoObject, AudioObject for media files
-  // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
-  // Per RO-Crate spec, files only need @type of ["File"] since RO-Crate maps MediaObject to File.
-  // CreativeWork is a superclass and not necessary for non-media files.
+  // Determine the appropriate @type based on file extension and context. Every file entity must
+  // include "File", and media assets also advertise the matching schema.org MediaObject type so
+  // downstream tooling can distinguish audio/video/image content.
   const fileTypes: string[] = ["File"];
 
   // Use FileTypeInfo to get the file format information
@@ -707,7 +693,7 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
     // Fallback for audio extensions not in FileTypeInfo
     fileTypes.push("AudioObject");
   }
-  // LAM-69: No else clause - non-media files remain as just ["File"]
+  // Non-media files intentionally remain typed solely as ["File"].
 
   const normalizedFileType = fileTypes.length === 1 ? fileTypes[0] : fileTypes;
 
@@ -782,7 +768,7 @@ export function addChildFileEntries(
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
 
-    // LAM-73: Use shared helper to build the file entry
+    // Use the shared helper so file metadata, licenses, and @type logic stay consistent
     const { fileEntry } = buildFileEntry({
       file,
       fileId,
@@ -798,10 +784,7 @@ export function addChildFileEntries(
         "@id": fileId
       });
 
-      // LAM-66: Add inverse isPartOf link
-      // https://linear.app/lameta/issue/LAM-66/add-inverse-links
-      // Per LDAC spec, bidirectional relationships are required:
-      // hasPart/isPartOf for structural containment
+      // Add the inverse isPartOf link because LDAC expects hasPart/isPartOf pairs for containment
       fileEntry.isPartOf = { "@id": (folderEntry as any)["@id"] };
     }
 
@@ -811,17 +794,13 @@ export function addChildFileEntries(
         ? fileEntry["@type"]
         : [fileEntry["@type"]];
       const hasImageType = entryTypes.includes("ImageObject");
-      // LAM-48 https://linear.app/lameta/issue/LAM-48 forbids hasPart on Person
-      // contextual entities, so we expose related files via schema.org links
-      // instead of structural containment.
+      // Person entities cannot use hasPart, so expose related files via schema.org links instead
       if (hasImageType) {
         target.image = appendReference(target.image, fileId);
       } else {
         target.subjectOf = appendReference(target.subjectOf, fileId);
       }
-      // LAM-66: Add inverse about link for both image and subjectOf
-      // https://linear.app/lameta/issue/LAM-66/add-inverse-links
-      // Per LDAC spec, both image and subjectOf use about as the inverse
+      // Provide the about inverse for both image and subjectOf so references remain bidirectional
       fileEntry.about = { "@id": target["@id"] };
     }
   });
@@ -858,11 +837,9 @@ export function addProjectDocumentFolderEntries(
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
 
-    // LAM-73: Use shared helper to build the file entry
-    // LAM-62: https://linear.app/lameta/issue/LAM-62
-    // Description and other project documents should NOT have materialType.
-    // The materialType "Annotation" was confusing because LDAC uses "annotation" to mean "analysis",
-    // but these documents are project-level descriptions, not analyses of the linguistic data.
+    // Use the shared helper to build the file entry. Description and other project documents should
+    // not declare ldac:materialType because these files describe the collection rather than serving
+    // as LDAC annotations.
     const { fileEntry, stats } = buildFileEntry({
       file,
       fileId,
@@ -879,10 +856,7 @@ export function addProjectDocumentFolderEntries(
       });
     }
 
-    // LAM-66: Add inverse isPartOf link pointing to the structural parent
-    // https://linear.app/lameta/issue/LAM-66/add-inverse-links
-    // Per LDAC spec, bidirectional relationships are required:
-    // hasPart/isPartOf for structural containment
+    // Add the inverse isPartOf link pointing to the structural parent to keep containment bidirectional
     fileEntry.isPartOf = { "@id": parentId };
 
     const preferredDate = file.getModifiedDate?.() || stats.birthtime;

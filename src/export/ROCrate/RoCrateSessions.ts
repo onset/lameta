@@ -53,8 +53,8 @@ export async function createSessionEntry(
       "No description provided for this session.",
     datePublished: new Date().toISOString(),
     hasPart: [],
-    // LAM-61 https://linear.app/lameta/issue/LAM-61/sessions-should-be-collectionevent
-    // Sessions must be typed as CollectionEvent and carry an explicit LDAC Session classification.
+    // Sessions need the CollectionEvent type plus the LDAC Session classification so
+    // downstream tools recognise them as event objects rather than generic datasets.
     collectionEventType: "https://w3id.org/ldac/terms#Session"
   };
 
@@ -65,7 +65,7 @@ export async function createSessionEntry(
   const { reference: contactPersonReference, isUnknown: isUnknownContact } =
     getContactPersonReference(project);
 
-  // LAM-84: Use consolidated helper to set contact person properties
+  // Keep author/accountablePerson/rightsHolder in sync with the contact person metadata
   setContactPersonProperties(mainSessionEntry, contactPersonReference);
 
   // Add bidirectional pcdm:memberOf link for sessions that are part of a collection
@@ -103,7 +103,7 @@ export async function createSessionEntry(
   const otherEntries: any[] = [];
 
   if (isStandaloneSession && isUnknownContact) {
-    // LAM-84: Use consolidated helper for unknown contributor entity
+    // Standalone sessions still need a concrete node when no contact information exists
     otherEntries.push(createUnknownContributorEntity());
   }
 
@@ -159,9 +159,7 @@ export async function createSessionEntry(
     otherEntries.push(...createLdacAccessTypeDefinitions());
 
     if (publisher) {
-      // LAM-35 regression fix: standalone exports must carry the same
-      // configuration-derived publisher entity. See
-      // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
+      // Standalone exports share the same archive-level publisher entity as collections
       otherEntries.push(publisher.entity);
     }
   }

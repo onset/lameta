@@ -6,9 +6,9 @@ import { IChoice } from "../../model/field/Field";
 import { expandLdacId } from "./RoCrateUtils";
 
 // =============================================================================
-// LAM-85: Consolidated license handling
-// This module is the single source of truth for all RO-Crate license operations.
-// Previously split across RoCrateLicenseUtils.ts and RoCrateLicenseManager.ts.
+// Centralized license handling
+// This module is the single source of truth for all RO-Crate license operations,
+// replacing the earlier split between RoCrateLicenseUtils.ts and RoCrateLicenseManager.ts.
 // =============================================================================
 
 // Cache for LDAC access type definitions (static content, no need to regenerate)

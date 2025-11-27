@@ -173,10 +173,8 @@ export async function makeEntriesFromParticipant(
         rocrateLicense
       );
     } else {
-      // Create a stub entity for contributors without matching person records
-      // https://linear.app/lameta/issue/LAM-71/person-without-info
-      // When we don't have information about a person, we simply omit the description field
-      // rather than adding a placeholder message
+      // Create a stub entity for contributors without matching person records by omitting
+      // description fields instead of inventing placeholder text
       (personElement as any).name = name;
     }
     // Note: roles are now handled in the participant property of the Event, not on Person entities
