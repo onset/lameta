@@ -58,12 +58,12 @@ import {
 
 import {
   createLdacAccessTypeDefinitions,
-  createDistinctLicenses
-} from "./RoCrateLicenseUtils";
+  createDistinctLicenses,
+  RoCrateLicense
+} from "./RoCrateLicenseManager";
 import { createSessionEntry } from "./RoCrateSessions";
 import { makeLdacCompliantPersonEntry } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicenseManager";
 import {
   FieldHandlerContext,
   handleLanguageField,

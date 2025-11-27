@@ -3,8 +3,9 @@ import { Project } from "../../model/Project/Project";
 import {
   createSessionLicense,
   getSessionLicenseId,
-  createLdacAccessTypeDefinitions
-} from "./RoCrateLicenseUtils";
+  createLdacAccessTypeDefinitions,
+  RoCrateLicense
+} from "./RoCrateLicenseManager";
 
 import {
   addFieldEntries,
@@ -13,7 +14,6 @@ import {
 } from "./RoCrateExporter";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
-import { RoCrateLicense } from "./RoCrateLicenseManager";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
 import {
   createSessionId,

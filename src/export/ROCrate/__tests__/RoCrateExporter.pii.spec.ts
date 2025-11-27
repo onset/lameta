@@ -34,11 +34,23 @@ vi.mock("fs-extra", () => ({
   })
 }));
 
-// Mock the RoCrateLicenseUtils module
-vi.mock("./RoCrateLicenseUtils", () => ({
+// Mock the RoCrateLicenseManager module
+vi.mock("../RoCrateLicenseManager", () => ({
   createLdacAccessTypeDefinitions: vi.fn().mockReturnValue([]),
   createDistinctLicenses: vi.fn().mockReturnValue([]),
-  getSessionLicenseId: vi.fn().mockReturnValue("#license-default")
+  getSessionLicenseId: vi.fn().mockReturnValue("#license-default"),
+  RoCrateLicense: class {
+    ensureFileLicense = vi.fn();
+    getSessionLicenseId = vi.fn().mockReturnValue("#license-default");
+    setFileLicense = vi.fn();
+    getFileLicense = vi.fn();
+    clear = vi.fn();
+    getAllFileLicenses = vi.fn().mockReturnValue(new Map());
+    static getRepositoryCollectionTypes = () => [
+      "Dataset",
+      "RepositoryCollection"
+    ];
+  }
 }));
 
 // Mock the RoCrateMaterialTypes module
