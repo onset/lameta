@@ -17,106 +17,230 @@ type RoCrateData = {
 
 // --- Constants and Helpers ---
 
-// Entities that don't add any value to the human just wanting to know "what's in this collection"
-const FILTERED_ENTITY_IDS = [
-  "#collection-license",
-  "#CustomGenreTerms",
-  "ldac:DataReuseLicense",
-  "ldac:OpenAccess",
-  "ldac:AuthorizedAccess"
-];
-
 // Each item can be a string property name or an object { property, label, type }
 // Project: order to reflect prior preview expectations
 type OrderEntry =
   | string
   | { property: string; label?: string; type?: "date" | "size" };
 
-const PROJECT_FIELDS: OrderEntry[] = [
-  "description",
+// --- Entity Classification ---
 
-  { property: "ldac:subjectLanguage", label: "Subject Language" },
-  {
-    property: "collectionWorkingLanguages",
-    label: "Collection Working Languages"
+// Helper to get normalized type array from an entity
+const getEntityTypes = (entity: RoCrateEntity): string[] =>
+  Array.isArray(entity["@type"]) ? entity["@type"] : [entity["@type"]];
+
+// Entities that don't add any value to the human just wanting to know "what's in this collection"
+const FILTERED_ENTITY_IDS = new Set([
+  "#collection-license",
+  "#CustomGenreTerms",
+  "ldac:DataReuseLicense",
+  "ldac:OpenAccess",
+  "ldac:AuthorizedAccess"
+]);
+
+/**
+ * EntityClassifier - Unified entity classification logic.
+ * Consolidates all the filtering and categorization checks.
+ */
+const EntityClassifier = {
+  /** Check if entity is a Language that should link to Glottolog */
+  isLanguage(entity: RoCrateEntity): boolean {
+    return (
+      getEntityTypes(entity).includes("Language") &&
+      entity["@id"]?.startsWith("#language_")
+    );
   },
 
-  "region",
-  "country"
-];
+  /** Check if entity is a Place */
+  isPlace(entity: RoCrateEntity): boolean {
+    return getEntityTypes(entity).includes("Place");
+  },
 
-const SESSION_FIELDS: OrderEntry[] = [
-  "description",
-  { property: "ldac:subjectLanguage", label: "Subject Language" },
-  //{ property: "subjectLanguages", label: "Subject Languages" },
-  { property: "inLanguage", label: "Working Language" },
-  { property: "ldac:linguisticGenre", label: "Genre" },
-  { property: "genre", label: "Genre" }, // Alternative property name for compatibility
-  "ldac:participant",
-  { property: "contentLocation", label: "Location" }
-  //"creator",
-  //"license",
-  //"identifier",
-  //"sameAs",
-  //"url"
-];
+  /** Check if entity is an official LDAC term that should link externally */
+  isOfficialLdacTerm(entity: RoCrateEntity): boolean {
+    const types = getEntityTypes(entity);
+    return (
+      types.includes("DefinedTerm") &&
+      entity["@id"]?.startsWith("ldac:") &&
+      entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
+    );
+  },
 
-const PERSON_FIELDS: OrderEntry[] = [
-  // part of the header "name",
-  "description",
-  "gender",
-  "ldac:age"
-];
-const ORGANIZATION_FIELDS: OrderEntry[] = ["description", "url"];
+  /** Check if entity should be filtered out entirely from the display */
+  isFiltered(entity: RoCrateEntity): boolean {
+    const id = entity["@id"];
 
-// Default fields for entities that don't have specific field lists
-const DEFAULT_FIELDS: OrderEntry[] = [
-  "name",
-  "description",
-  "encodingFormat",
-  { property: "contentSize", type: "size" },
-  { property: "dateCreated", label: "Date Created", type: "date" },
-  { property: "dateModified", label: "Date Modified", type: "date" },
-  "creator",
-  "license"
-];
+    // Filter by specific entity IDs
+    if (FILTERED_ENTITY_IDS.has(id)) return true;
 
-// Fields for LDAC DataReuseLicense entities
-const LICENSE_FIELDS: OrderEntry[] = [
-  "description",
-  { property: "ldac:access", label: "Access" }
-];
+    // Filter entities with unknown/placeholder IDs
+    if (id === "tag:lameta/unknown") return true;
 
-// Fields for File entities (LAM-54 fix: https://linear.app/lameta/issue/LAM-54 insists on explicit File type usage)
-const DIGITAL_DOCUMENT_FIELDS: OrderEntry[] = [
-  { property: "encodingFormat", label: "Encoding Format" },
-  { property: "contentSize", label: "Content size", type: "size" }
-];
+    const types = getEntityTypes(entity);
+
+    // Filter official LDAC DefinedTerms
+    if (this.isOfficialLdacTerm(entity)) return true;
+
+    // Filter official LDAC DefinedTermSets
+    if (types.includes("DefinedTermSet") && id?.startsWith("ldac:"))
+      return true;
+
+    return false;
+  },
+
+  /** Check if entity is a lameta XML file */
+  isLametaXml(entity: RoCrateEntity): boolean {
+    const id = entity["@id"];
+    return (
+      id?.endsWith(".sprj") ||
+      id?.endsWith(".session") ||
+      id?.endsWith(".person")
+    );
+  },
+
+  /** Check if entity represents a browser-handleable file */
+  isClickableFile(entity: RoCrateEntity): boolean {
+    const id = entity["@id"];
+    if (!id) return false;
+
+    // Skip special metadata files and non-file references
+    if (
+      id === "ro-crate-metadata.json" ||
+      id.startsWith("ro-crate") ||
+      id.startsWith("#") ||
+      id.startsWith("ldac:") ||
+      id.startsWith("tag:")
+    )
+      return false;
+
+    const browserSupportedExtensions = new Set([
+      // Images
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "svg",
+      "webp",
+      "bmp",
+      // Video
+      "mp4",
+      "webm",
+      "ogg",
+      // Audio
+      "mp3",
+      "wav",
+      "m4a",
+      // Text files
+      "txt",
+      "html",
+      "htm",
+      "css",
+      "js",
+      "json",
+      "xml",
+      "csv",
+      // PDFs
+      "pdf"
+    ]);
+
+    const extension = id.toLowerCase().split(".").pop();
+    return extension ? browserSupportedExtensions.has(extension) : false;
+  },
+
+  /** Get the media type of an entity (image, video, audio, or null) */
+  getMediaType(entity: RoCrateEntity): "image" | "video" | "audio" | null {
+    const { "@id": id, encodingFormat } = entity;
+    const types = getEntityTypes(entity);
+    const format = String(encodingFormat || "");
+
+    if (
+      types.includes("ImageObject") ||
+      format.startsWith("image/") ||
+      (id && /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(id))
+    )
+      return "image";
+
+    if (
+      types.includes("VideoObject") ||
+      format.startsWith("video/") ||
+      (id && /\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i.test(id))
+    )
+      return "video";
+
+    if (
+      types.includes("AudioObject") ||
+      format.startsWith("audio/") ||
+      (id && /\.(mp3|wav|ogg|aac|flac|m4a|wma)$/i.test(id))
+    )
+      return "audio";
+
+    return null;
+  }
+};
+
+// --- Field Configuration ---
+// Centralized field definitions by entity type
+
+const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
+  Project: [
+    "description",
+    { property: "ldac:subjectLanguage", label: "Subject Language" },
+    {
+      property: "collectionWorkingLanguages",
+      label: "Collection Working Languages"
+    },
+    "region",
+    "country"
+  ],
+  Session: [
+    "description",
+    { property: "ldac:subjectLanguage", label: "Subject Language" },
+    { property: "inLanguage", label: "Working Language" },
+    { property: "ldac:linguisticGenre", label: "Genre" },
+    { property: "genre", label: "Genre" },
+    "ldac:participant",
+    { property: "contentLocation", label: "Location" }
+  ],
+  Person: ["description", "gender", "ldac:age"],
+  Organization: ["description", "url"],
+  License: ["description", { property: "ldac:access", label: "Access" }],
+  DigitalDocument: [
+    { property: "encodingFormat", label: "Encoding Format" },
+    { property: "contentSize", label: "Content size", type: "size" }
+  ],
+  Default: [
+    "name",
+    "description",
+    "encodingFormat",
+    { property: "contentSize", type: "size" },
+    { property: "dateCreated", label: "Date Created", type: "date" },
+    { property: "dateModified", label: "Date Modified", type: "date" },
+    "creator",
+    "license"
+  ]
+};
 
 const hasSessionType = (types: string[]): boolean =>
   types.includes("CollectionEvent") || types.includes("Event");
 
 const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  // Check for session-oriented types first since datasets can share some properties
-  if (hasSessionType(types)) return SESSION_FIELDS;
-  if (types.includes("Person")) return PERSON_FIELDS;
-  if (types.includes("Organization")) return ORGANIZATION_FIELDS;
-  if (types.includes("ldac:DataReuseLicense")) return LICENSE_FIELDS;
-  // Both File entities and richer media-specific types should use the same fields
+  const types = getEntityTypes(entity);
+
+  if (hasSessionType(types)) return ENTITY_FIELDS.Session;
+  if (types.includes("Person")) return ENTITY_FIELDS.Person;
+  if (types.includes("Organization")) return ENTITY_FIELDS.Organization;
+  if (types.includes("ldac:DataReuseLicense")) return ENTITY_FIELDS.License;
   if (
     types.includes("File") ||
     types.includes("ImageObject") ||
     types.includes("VideoObject") ||
     types.includes("AudioObject")
   )
-    return DIGITAL_DOCUMENT_FIELDS;
+    return ENTITY_FIELDS.DigitalDocument;
   if (entity["@id"] === "./" || types.includes("Dataset"))
-    return PROJECT_FIELDS;
+    return ENTITY_FIELDS.Project;
 
-  return DEFAULT_FIELDS;
+  return ENTITY_FIELDS.Default;
 };
 
 // Creates a URL-safe anchor ID from an entity ID
@@ -136,126 +260,6 @@ function formatPropertyLabel(propertyName: string): string {
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
-// Helper function to check if an entity is a Language that should link to Glottolog
-function isLanguageEntity(entity: RoCrateEntity): boolean {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  return types.includes("Language") && entity["@id"]?.startsWith("#language_");
-}
-
-// Helper function to check if an entity should be filtered out by ID or type
-function isFilteredEntity(entity: RoCrateEntity): boolean {
-  // Filter by specific entity IDs
-  if (FILTERED_ENTITY_IDS.includes(entity["@id"])) {
-    return true;
-  }
-
-  // Filter entities with unknown/placeholder IDs
-  if (entity["@id"] === "tag:lameta/unknown") {
-    return true;
-  }
-
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-
-  // Filter official LDAC DefinedTerms
-  if (
-    types.includes("DefinedTerm") &&
-    entity["@id"]?.startsWith("ldac:") &&
-    entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
-  ) {
-    return true;
-  }
-
-  // Filter official LDAC DefinedTermSets
-  if (types.includes("DefinedTermSet") && entity["@id"]?.startsWith("ldac:")) {
-    return true;
-  }
-
-  return false;
-}
-
-// Helper function to check if an entity is an official LDAC term that should link externally
-function shouldLinkToLdacTerm(entity: RoCrateEntity): boolean {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  return (
-    types.includes("DefinedTerm") &&
-    entity["@id"]?.startsWith("ldac:") &&
-    entity.inDefinedTermSet?.["@id"]?.startsWith("ldac:")
-  );
-}
-
-// Helper function to check if an entity is a lameta XML file
-function isLametaXmlFile(entity: RoCrateEntity): boolean {
-  const id = entity["@id"];
-  return (
-    id?.endsWith(".sprj") || id?.endsWith(".session") || id?.endsWith(".person")
-  );
-}
-
-// Helper function to check if an entity represents a file that browsers can handle
-function isClickableFile(entity: RoCrateEntity): boolean {
-  const id = entity["@id"];
-  if (!id) return false;
-
-  // Skip special metadata files
-  if (id === "ro-crate-metadata.json" || id.startsWith("ro-crate")) {
-    return false;
-  }
-
-  // Skip entities that are just references or don't represent actual files
-  if (id.startsWith("#") || id.startsWith("ldac:") || id.startsWith("tag:")) {
-    return false;
-  }
-
-  // Check if the file extension is something a browser can handle
-  const browserSupportedExtensions = [
-    // Images
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "svg",
-    "webp",
-    "bmp",
-    // Video
-    "mp4",
-    "webm",
-    "ogg",
-    // Audio
-    "mp3",
-    "wav",
-    "ogg",
-    "m4a",
-    // Text files
-    "txt",
-    "html",
-    "htm",
-    "css",
-    "js",
-    "json",
-    "xml",
-    "csv",
-    // PDFs (browsers can display these)
-    "pdf"
-  ];
-
-  const extension = id.toLowerCase().split(".").pop();
-  return extension ? browserSupportedExtensions.includes(extension) : false;
-}
-
-// Helper function to check if an entity is a Place that should be filtered out
-function isPlaceEntity(entity: RoCrateEntity): boolean {
-  const types = Array.isArray(entity["@type"])
-    ? entity["@type"]
-    : [entity["@type"]];
-  return types.includes("Place");
-}
-
 // Helper function to get the web URL for an official LDAC term
 function getLdacTermUrl(termId: string): string {
   // Convert ldac:TermName to the web URL format
@@ -270,6 +274,124 @@ function getGlottologUrl(languageCode: string): string {
   const code = languageCode.replace("#language_", "").split(":")[0];
   return `https://glottolog.org/resource/languoid/iso/${code}`;
 }
+
+// --- Link Resolution ---
+
+type LinkTarget =
+  | { type: "plain"; text: string }
+  | { type: "internal"; href: string; text: string }
+  | { type: "external"; href: string; text: string };
+
+/**
+ * LinkResolver - Unified link resolution logic.
+ * Determines whether an entity reference should be:
+ * - Plain text (for unknown/place entities)
+ * - External link (LDAC terms, Glottolog)
+ * - Internal anchor link
+ */
+const LinkResolver = {
+  resolve(
+    id: string,
+    defaultName: string,
+    graph: RoCrateEntity[],
+    propertyName?: string
+  ): LinkTarget {
+    const entity = graph.find((e) => e["@id"] === id);
+
+    // Unknown entities - show plain text
+    if (
+      id === "tag:lameta/unknown" ||
+      entity?.name === "Unknown" ||
+      entity?.name === "<Unknown>" ||
+      defaultName === "Unknown" ||
+      defaultName === "<Unknown>"
+    ) {
+      return { type: "plain", text: "Unknown" };
+    }
+
+    // Place entities in contentLocation - show plain text name
+    if (
+      propertyName === "contentLocation" &&
+      entity &&
+      EntityClassifier.isPlace(entity)
+    ) {
+      return { type: "plain", text: entity.name || defaultName };
+    }
+
+    // Official LDAC terms - external link
+    if (entity && EntityClassifier.isOfficialLdacTerm(entity)) {
+      return {
+        type: "external",
+        href: getLdacTermUrl(id),
+        text: entity.name || defaultName
+      };
+    }
+
+    // LDAC DataReuseLicense class - external link
+    if (entity && id === "ldac:DataReuseLicense") {
+      return {
+        type: "external",
+        href: getLdacTermUrl(id),
+        text: entity.name || defaultName
+      };
+    }
+
+    // LDAC access types - external link
+    if (
+      entity &&
+      (id === "ldac:OpenAccess" || id === "ldac:AuthorizedAccess")
+    ) {
+      return {
+        type: "external",
+        href: getLdacTermUrl(id),
+        text: entity.name || defaultName
+      };
+    }
+
+    // Language entities - external Glottolog link
+    if (entity && EntityClassifier.isLanguage(entity)) {
+      return {
+        type: "external",
+        href: getGlottologUrl(id),
+        text: entity.name || defaultName
+      };
+    }
+
+    // LDAC term ID not in graph - external link
+    if (!entity && id.startsWith("ldac:")) {
+      const termName = id.replace("ldac:", "");
+      const displayName = termName.replace(/([a-z])([A-Z])/g, "$1 $2");
+      return {
+        type: "external",
+        href: getLdacTermUrl(id),
+        text: displayName
+      };
+    }
+
+    // Default - internal anchor link
+    return {
+      type: "internal",
+      href: `#${createAnchorId(id)}`,
+      text: entity?.name || defaultName
+    };
+  },
+
+  /** Render a resolved link target as JSX */
+  render(target: LinkTarget): JSX.Element {
+    switch (target.type) {
+      case "plain":
+        return <>{target.text}</>;
+      case "external":
+        return (
+          <a href={target.href} target="_blank" rel="noopener noreferrer">
+            {target.text}
+          </a>
+        );
+      case "internal":
+        return <a href={target.href}>{target.text}</a>;
+    }
+  }
+};
 
 // Helper function to convert file:// URLs and URL-encoded paths to display paths for HTML
 function getDisplayPath(id: string): string {
@@ -453,92 +575,8 @@ const PropertyValue: React.FC<{
   }
 
   const renderLink = (id: string, defaultName: string) => {
-    const referencedEntity = graph.find((entity) => entity["@id"] === id);
-
-    // Special handling for "Unknown" entities - don't link, just show text
-    if (
-      id === "tag:lameta/unknown" ||
-      referencedEntity?.name === "Unknown" ||
-      referencedEntity?.name === "<Unknown>" ||
-      defaultName === "Unknown" ||
-      defaultName === "<Unknown>"
-    ) {
-      return <>Unknown</>;
-    }
-
-    // Special handling for contentLocation (Place entities) - just show the name
-    if (
-      propertyName === "contentLocation" &&
-      referencedEntity &&
-      isPlaceEntity(referencedEntity)
-    ) {
-      return <>{referencedEntity.name || defaultName}</>;
-    }
-
-    // Check if this is an official LDAC term that should link externally
-    if (referencedEntity && shouldLinkToLdacTerm(referencedEntity)) {
-      const displayName = referencedEntity?.name || defaultName;
-      const externalUrl = getLdacTermUrl(id);
-      return (
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          {displayName}
-        </a>
-      );
-    }
-
-    // Check if this is an official LDAC DataReuseLicense that should link externally
-    // This includes the class definition
-    if (referencedEntity && id === "ldac:DataReuseLicense") {
-      const displayName = referencedEntity?.name || defaultName;
-      const externalUrl = getLdacTermUrl("ldac:DataReuseLicense");
-      return (
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          {displayName}
-        </a>
-      );
-    }
-
-    // Check if this is an official LDAC access type that should link externally
-    if (
-      referencedEntity &&
-      (id === "ldac:OpenAccess" || id === "ldac:AuthorizedAccess")
-    ) {
-      const displayName = referencedEntity?.name || defaultName;
-      const externalUrl = getLdacTermUrl(id);
-      return (
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          {displayName}
-        </a>
-      );
-    }
-
-    // Check if this is a Language entity that should link to Glottolog
-    if (referencedEntity && isLanguageEntity(referencedEntity)) {
-      const displayName = referencedEntity?.name || defaultName;
-      const externalUrl = getGlottologUrl(id);
-      return (
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          {displayName}
-        </a>
-      );
-    }
-
-    // Check if this is an LDAC term ID that should link externally even if not found in graph
-    if (!referencedEntity && id.startsWith("ldac:")) {
-      const termName = id.replace("ldac:", "");
-      // Convert camelCase to spaced words using title case (e.g., "PrimaryMaterial" -> "Primary Material")
-      const displayName = termName.replace(/([a-z])([A-Z])/g, "$1 $2");
-      const externalUrl = getLdacTermUrl(id);
-      return (
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          {displayName}
-        </a>
-      );
-    }
-
-    const displayName = referencedEntity?.name || defaultName;
-    const anchorId = createAnchorId(id);
-    return <a href={`#${anchorId}`}>{displayName}</a>;
+    const target = LinkResolver.resolve(id, defaultName, graph, propertyName);
+    return LinkResolver.render(target);
   };
 
   if (typeof value === "object" && value["@id"]) {
@@ -749,24 +787,13 @@ const Entity: React.FC<{
   if (!entity) return null;
 
   const { "@id": id, "@type": type, name } = entity;
-  const types = Array.isArray(type) ? type : [type];
+  const types = getEntityTypes(entity);
   const anchorId = createAnchorId(id);
 
-  const isImage =
-    types.includes("ImageObject") ||
-    (entity.encodingFormat &&
-      String(entity.encodingFormat).startsWith("image/")) ||
-    (id && /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(id));
-  const isVideo =
-    types.includes("VideoObject") ||
-    (entity.encodingFormat &&
-      String(entity.encodingFormat).startsWith("video/")) ||
-    (id && /\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i.test(id));
-  const isAudio =
-    types.includes("AudioObject") ||
-    (entity.encodingFormat &&
-      String(entity.encodingFormat).startsWith("audio/")) ||
-    (id && /\.(mp3|wav|ogg|aac|flac|m4a|wma)$/i.test(id));
+  const mediaType = EntityClassifier.getMediaType(entity);
+  const isImage = mediaType === "image";
+  const isVideo = mediaType === "video";
+  const isAudio = mediaType === "audio";
 
   const entityClasses = `entity ${isChild ? "child" : ""} ${
     isImage ? "image-entity" : ""
@@ -885,12 +912,12 @@ const Entity: React.FC<{
 
     // Build lists by checking each entity's type directly (no filtering)
     graph.forEach((e) => {
-      const types = Array.isArray(e["@type"]) ? e["@type"] : [e["@type"]];
+      const eTypes = getEntityTypes(e);
       const entityId = e["@id"];
 
-      if (hasSessionType(types)) {
+      if (hasSessionType(eTypes)) {
         specialLists["Sessions"].push(e);
-      } else if (types.includes("Person") && e.name !== "Unknown") {
+      } else if (eTypes.includes("Person") && e.name !== "Unknown") {
         specialLists["People"].push(e);
       } else if (entityId?.startsWith("Description/")) {
         specialLists["Description Documents"].push(e);
@@ -900,7 +927,7 @@ const Entity: React.FC<{
     });
   }
 
-  const isClickable = isClickableFile(entity);
+  const isClickable = EntityClassifier.isClickableFile(entity);
   const displayPath = isClickable ? getDisplayPath(id) : null;
 
   return (
@@ -925,7 +952,7 @@ const Entity: React.FC<{
           )}
         </h3>
       )}
-      {isLametaXmlFile(entity) && (
+      {EntityClassifier.isLametaXml(entity) && (
         <p
           style={{
             margin: "10px 0",
@@ -975,9 +1002,6 @@ const entityReferenceIncludes = (value: any, entityId: string): boolean => {
 };
 
 /**
- * Recursively renders an entity and its children based on ID path hierarchy.
- */
-/**
  * Pre-compute the hierarchical structure of entities
  */
 function computeHierarchy(graph: RoCrateEntity[]) {
@@ -990,44 +1014,31 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     if (!entityId) return;
 
     // Skip ro-crate-metadata.json file
-    if (entityId === "ro-crate-metadata.json") {
-      return;
-    }
+    if (entityId === "ro-crate-metadata.json") return;
 
     // Filter out entities by ID and type
-    if (isFilteredEntity(entity)) {
-      return;
-    }
+    if (EntityClassifier.isFiltered(entity)) return;
 
     // Skip Language entities - they should link to Glottolog
-    if (isLanguageEntity(entity)) {
-      return;
-    }
+    if (EntityClassifier.isLanguage(entity)) return;
 
     // Skip Place entities - they should only show their name in contentLocation
-    if (isPlaceEntity(entity)) {
-      return;
-    }
+    if (EntityClassifier.isPlace(entity)) return;
 
     // Skip entities with "Unknown" names
     if (
       entity.name === "Unknown" ||
       entity.name === "<Unknown>" ||
-      entity["@id"] === "tag:lameta/unknown"
-    ) {
+      entityId === "tag:lameta/unknown"
+    )
       return;
-    }
 
     // Check if this entity is a child of any other entity in the graph
     const parentEntity = graph.find((parent) => {
       const parentId = parent["@id"];
-      if (!parentId || parentId === entityId) {
-        return false;
-      }
+      if (!parentId || parentId === entityId) return false;
 
-      const parentTypes = Array.isArray(parent["@type"])
-        ? parent["@type"]
-        : [parent["@type"]];
+      const parentTypes = getEntityTypes(parent);
 
       // Check if this entity is explicitly listed in the parent's hasPart array
       if (parent.hasPart && Array.isArray(parent.hasPart)) {
@@ -1040,17 +1051,13 @@ function computeHierarchy(graph: RoCrateEntity[]) {
         if (isInHasPart) {
           // Special case: Person and Session entities should not be treated as children
           // of the root project even if they're in hasPart - they should have their own headers
-          const entityTypes = Array.isArray(entity["@type"])
-            ? entity["@type"]
-            : [entity["@type"]];
+          const entityTypes = getEntityTypes(entity);
           const isPersonOrSession =
             entityTypes.includes("Person") ||
             hasSessionType(entityTypes) ||
             entityId.startsWith("People/") ||
             entityId.startsWith("Sessions/");
-          if (parentId === "./" && isPersonOrSession) {
-            return false;
-          }
+          if (parentId === "./" && isPersonOrSession) return false;
           return true;
         }
       }
@@ -1067,9 +1074,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       }
 
       // Fallback to path-based detection for entities not explicitly listed
-      if (!entityId.startsWith(parentId)) {
-        return false;
-      }
+      if (!entityId.startsWith(parentId)) return false;
 
       // More precise parent-child detection
       const remainder = entityId.substring(parentId.length);
@@ -1096,9 +1101,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       entityId.endsWith(".sprj")
     ) {
       const rootProject = graph.find((e) => e["@id"] === "./");
-      if (rootProject) {
-        finalParentEntity = rootProject;
-      }
+      if (rootProject) finalParentEntity = rootProject;
     }
 
     if (finalParentEntity) {
@@ -1114,68 +1117,40 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     }
   });
 
+  // Sort function for entity priority
+  const getSortPriority = (entity: RoCrateEntity) => {
+    const id = entity["@id"];
+    const types = getEntityTypes(entity);
+
+    if (id === "./" || types.includes("Dataset")) return 0;
+    if (id?.startsWith("Description/")) return 1;
+    if (id?.startsWith("OtherDocs/")) return 2;
+    if (hasSessionType(types)) return 3;
+    if (types.includes("Person")) return 4;
+    return 5;
+  };
+
   // Sort root entities
   rootEntities.sort((a, b) => {
-    const getSortPriority = (entity: RoCrateEntity) => {
-      const id = entity["@id"];
-      const types = Array.isArray(entity["@type"])
-        ? entity["@type"]
-        : [entity["@type"]];
-
-      // Project comes first
-      if (id === "./" || types.includes("Dataset")) return 0;
-
-      // Description documents come second
-      if (id?.startsWith("Description/")) return 1;
-
-      // Other documents come third
-      if (id?.startsWith("OtherDocs/")) return 2;
-
-      // Sessions come fourth
-      if (hasSessionType(types)) return 3;
-
-      // People come fifth
-      if (types.includes("Person")) return 4;
-
-      // Everything else comes last
-      return 5;
-    };
-
     const priorityA = getSortPriority(a);
     const priorityB = getSortPriority(b);
-
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB;
-    }
-
-    // Within the same priority group, sort alphabetically by @id
+    if (priorityA !== priorityB) return priorityA - priorityB;
     return a["@id"].localeCompare(b["@id"]);
   });
 
-  // Sort children within each parent as well
+  // Sort children within each parent
+  const getChildSortPriority = (entity: RoCrateEntity) => {
+    const id = entity["@id"];
+    if (id?.startsWith("Description/")) return 0;
+    if (id?.startsWith("OtherDocs/")) return 1;
+    return 2;
+  };
+
   childrenMap.forEach((children) => {
     children.sort((a, b) => {
-      const getSortPriority = (entity: RoCrateEntity) => {
-        const id = entity["@id"];
-
-        // Description documents come first
-        if (id?.startsWith("Description/")) return 0;
-
-        // Other documents come second
-        if (id?.startsWith("OtherDocs/")) return 1;
-
-        // Everything else comes after
-        return 2;
-      };
-
-      const priorityA = getSortPriority(a);
-      const priorityB = getSortPriority(b);
-
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
-      }
-
-      // Within the same priority group, sort alphabetically by @id
+      const priorityA = getChildSortPriority(a);
+      const priorityB = getChildSortPriority(b);
+      if (priorityA !== priorityB) return priorityA - priorityB;
       return a["@id"].localeCompare(b["@id"]);
     });
   });
