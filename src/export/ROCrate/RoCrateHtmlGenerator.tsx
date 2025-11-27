@@ -682,7 +682,7 @@ const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
   );
 };
 
-// --- DRY helpers for property rendering (LAM-75) ---
+// --- DRY helpers for property rendering ---
 
 type PropertyTuple = [string, any, string?]; // [propertyKey, value, fieldType?]
 
@@ -1067,9 +1067,8 @@ function computeHierarchy(graph: RoCrateEntity[]) {
         (entityReferenceIncludes((parent as any).image, entityId) ||
           entityReferenceIncludes((parent as any).subjectOf, entityId))
       ) {
-        // LAM-48 https://linear.app/lameta/issue/LAM-48 moved Person media out of
-        // hasPart. The HTML hierarchy now follows image/subjectOf references so
-        // those resources still nest under the Person card.
+        // Person media is linked via image/subjectOf rather than hasPart, so keep
+        // the HTML hierarchy aligned with those relationships.
         return true;
       }
 
