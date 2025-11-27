@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getRoCrate } from "../RoCrateExporter";
-import { Project } from "../../../model/Project/Project";
+import { getRoCrate } from "../../RoCrateExporter";
+import { Project } from "../../../../model/Project/Project";
 import path from "path";
 import fs from "fs-extra";
 
