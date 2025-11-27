@@ -644,6 +644,99 @@ const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
   );
 };
 
+// --- DRY helpers for property rendering (LAM-75) ---
+
+type PropertyTuple = [string, any, string?]; // [propertyKey, value, fieldType?]
+
+interface BuildEntityPropertiesResult {
+  labelOverrideMap: Map<string, string>;
+  propertiesToRender: PropertyTuple[];
+}
+
+/**
+ * Builds the label-override map and deduplicated property list for an entity.
+ * Consolidates logic previously repeated in image, media, and default branches.
+ */
+function buildEntityProperties(
+  entity: RoCrateEntity,
+  fields: OrderEntry[]
+): BuildEntityPropertiesResult {
+  const labelOverrideMap = new Map<string, string>();
+  fields.forEach((entry) => {
+    if (typeof entry !== "string" && entry?.label && entry.property) {
+      labelOverrideMap.set(entry.property, entry.label);
+    }
+  });
+
+  const propertiesToRender: PropertyTuple[] = [];
+  const usedLabels = new Set<string>();
+
+  fields.forEach((entry) => {
+    const key = typeof entry === "string" ? entry : entry.property;
+    const fieldType = typeof entry === "string" ? undefined : entry.type;
+    const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+    const value = (entity as any)[key];
+
+    const hasValue = value !== null && value !== undefined;
+
+    // Skip duplicate labels when the current property has no value
+    if (usedLabels.has(label) && !hasValue) {
+      return;
+    }
+
+    // If this property has a value, remove any previous "Unknown" entry with the same label
+    if (hasValue && usedLabels.has(label)) {
+      const existingIndex = propertiesToRender.findIndex(
+        ([existingKey, existingValue]) => {
+          const existingLabel =
+            labelOverrideMap.get(existingKey) ??
+            formatPropertyLabel(existingKey);
+          return (
+            existingLabel === label &&
+            (existingValue === null || existingValue === undefined)
+          );
+        }
+      );
+      if (existingIndex !== -1) {
+        propertiesToRender.splice(existingIndex, 1);
+      }
+    }
+
+    propertiesToRender.push([key, value, fieldType]);
+    usedLabels.add(label);
+  });
+
+  return { labelOverrideMap, propertiesToRender };
+}
+
+/**
+ * Renders the property list for an entity.
+ */
+const EntityProperties: React.FC<{
+  labelOverrideMap: Map<string, string>;
+  propertiesToRender: PropertyTuple[];
+  graph: RoCrateEntity[];
+}> = ({ labelOverrideMap, propertiesToRender, graph }) => (
+  <>
+    {propertiesToRender.map(([key, value, fieldType]) => {
+      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+      return (
+        <div key={key} className="property">
+          <span className="property-name">{label}:</span>
+          <span className="property-value">
+            <PropertyValue
+              value={value}
+              graph={graph}
+              propertyName={key}
+              fieldType={fieldType}
+            />
+          </span>
+        </div>
+      );
+    })}
+  </>
+);
+
 /**
  * Renders a single entity, adapting its display based on its type (e.g., Image, Generic).
  */
@@ -698,52 +791,10 @@ const Entity: React.FC<{
   if (isImage) {
     const displayPath = getDisplayPath(id);
     const fields = getFieldsForEntity(entity);
-    const labelOverrideMap = new Map<string, string>();
-    fields.forEach((entry) => {
-      if (typeof entry !== "string" && entry?.label && entry.property) {
-        labelOverrideMap.set(entry.property, entry.label);
-      }
-    });
-
-    const propertiesToRender: Array<[string, any, string?]> = [];
-    const usedLabels = new Set<string>(); // Track labels to avoid duplicates
-
-    fields.forEach((entry) => {
-      const key = typeof entry === "string" ? entry : entry.property;
-      const fieldType = typeof entry === "string" ? undefined : entry.type;
-      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-      const value = (entity as any)[key];
-
-      // Check if this property has a value
-      const hasValue = value !== null && value !== undefined;
-
-      // If we already have a label and this property has no value, skip it
-      if (usedLabels.has(label) && !hasValue) {
-        return;
-      }
-
-      // If this property has a value, it can override a previous "Unknown" entry with the same label
-      if (hasValue && usedLabels.has(label)) {
-        // Find and remove any existing entry with this label that has no value
-        const existingIndex = propertiesToRender.findIndex(
-          ([existingKey, existingValue]) => {
-            const existingLabel =
-              labelOverrideMap.get(existingKey) ??
-              formatPropertyLabel(existingKey);
-            return (
-              existingLabel === label &&
-              (existingValue === null || existingValue === undefined)
-            );
-          }
-        );
-        if (existingIndex !== -1) {
-          propertiesToRender.splice(existingIndex, 1);
-        }
-      }
-
-      propertiesToRender.push([key, value, fieldType]);
-      usedLabels.add(label);
-    });
+    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
+      entity,
+      fields
+    );
 
     return (
       <div className={entityClasses} id={anchorId}>
@@ -777,22 +828,11 @@ const Entity: React.FC<{
         >
           Image could not be loaded: {displayPath}
         </div>
-        {propertiesToRender.map(([key, value, fieldType]) => {
-          const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-          return (
-            <div key={key} className="property">
-              <span className="property-name">{label}:</span>
-              <span className="property-value">
-                <PropertyValue
-                  value={value}
-                  graph={graph}
-                  propertyName={key}
-                  fieldType={fieldType}
-                />
-              </span>
-            </div>
-          );
-        })}
+        <EntityProperties
+          labelOverrideMap={labelOverrideMap}
+          propertiesToRender={propertiesToRender}
+          graph={graph}
+        />
       </div>
     );
   }
@@ -801,52 +841,10 @@ const Entity: React.FC<{
     const MediaTag = isVideo ? "video" : "audio";
     const displayPath = getDisplayPath(id);
     const fields = getFieldsForEntity(entity);
-    const labelOverrideMap = new Map<string, string>();
-    fields.forEach((entry) => {
-      if (typeof entry !== "string" && entry?.label && entry.property) {
-        labelOverrideMap.set(entry.property, entry.label);
-      }
-    });
-
-    const propertiesToRender: Array<[string, any, string?]> = [];
-    const usedLabels = new Set<string>(); // Track labels to avoid duplicates
-
-    fields.forEach((entry) => {
-      const key = typeof entry === "string" ? entry : entry.property;
-      const fieldType = typeof entry === "string" ? undefined : entry.type;
-      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-      const value = (entity as any)[key];
-
-      // Check if this property has a value
-      const hasValue = value !== null && value !== undefined;
-
-      // If we already have a label and this property has no value, skip it
-      if (usedLabels.has(label) && !hasValue) {
-        return;
-      }
-
-      // If this property has a value, it can override a previous "Unknown" entry with the same label
-      if (hasValue && usedLabels.has(label)) {
-        // Find and remove any existing entry with this label that has no value
-        const existingIndex = propertiesToRender.findIndex(
-          ([existingKey, existingValue]) => {
-            const existingLabel =
-              labelOverrideMap.get(existingKey) ??
-              formatPropertyLabel(existingKey);
-            return (
-              existingLabel === label &&
-              (existingValue === null || existingValue === undefined)
-            );
-          }
-        );
-        if (existingIndex !== -1) {
-          propertiesToRender.splice(existingIndex, 1);
-        }
-      }
-
-      propertiesToRender.push([key, value, fieldType]);
-      usedLabels.add(label);
-    });
+    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
+      entity,
+      fields
+    );
 
     return (
       <div className={entityClasses} id={anchorId}>
@@ -861,73 +859,20 @@ const Entity: React.FC<{
           <source src={displayPath} type={entity.encodingFormat || ""} />
           Your browser does not support the {MediaTag} tag.
         </MediaTag>
-        {propertiesToRender.map(([key, value, fieldType]) => {
-          const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-          return (
-            <div key={key} className="property">
-              <span className="property-name">{label}:</span>
-              <span className="property-value">
-                <PropertyValue
-                  value={value}
-                  graph={graph}
-                  propertyName={key}
-                  fieldType={fieldType}
-                />
-              </span>
-            </div>
-          );
-        })}
+        <EntityProperties
+          labelOverrideMap={labelOverrideMap}
+          propertiesToRender={propertiesToRender}
+          graph={graph}
+        />
       </div>
     );
   }
 
   const fields = getFieldsForEntity(entity);
-  const labelOverrideMap = new Map<string, string>();
-  fields.forEach((entry) => {
-    if (typeof entry !== "string" && entry?.label && entry.property) {
-      labelOverrideMap.set(entry.property, entry.label);
-    }
-  });
-
-  const propertiesToRender: Array<[string, any, string?]> = [];
-  const usedLabels = new Set<string>(); // Track labels to avoid duplicates
-
-  fields.forEach((entry) => {
-    const key = typeof entry === "string" ? entry : entry.property;
-    const fieldType = typeof entry === "string" ? undefined : entry.type;
-    const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-    const value = (entity as any)[key];
-
-    // Check if this property has a value
-    const hasValue = value !== null && value !== undefined;
-
-    // If we already have a label and this property has no value, skip it
-    if (usedLabels.has(label) && !hasValue) {
-      return;
-    }
-
-    // If this property has a value, it can override a previous "Unknown" entry with the same label
-    if (hasValue && usedLabels.has(label)) {
-      // Find and remove any existing entry with this label that has no value
-      const existingIndex = propertiesToRender.findIndex(
-        ([existingKey, existingValue]) => {
-          const existingLabel =
-            labelOverrideMap.get(existingKey) ??
-            formatPropertyLabel(existingKey);
-          return (
-            existingLabel === label &&
-            (existingValue === null || existingValue === undefined)
-          );
-        }
-      );
-      if (existingIndex !== -1) {
-        propertiesToRender.splice(existingIndex, 1);
-      }
-    }
-
-    propertiesToRender.push([key, value, fieldType]);
-    usedLabels.add(label);
-  });
+  const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
+    entity,
+    fields
+  );
 
   // Special lists for root dataset - using direct entity type checking instead of filtering
   const specialLists: { [key: string]: RoCrateEntity[] } = {};
@@ -995,22 +940,11 @@ const Entity: React.FC<{
           {" software "}(<a href="https://github.com/onset/lameta">github</a>).
         </p>
       )}
-      {propertiesToRender.map(([key, value, fieldType]) => {
-        const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
-        return (
-          <div key={key} className="property">
-            <span className="property-name">{label}:</span>
-            <span className="property-value">
-              <PropertyValue
-                value={value}
-                graph={graph}
-                propertyName={key}
-                fieldType={fieldType}
-              />
-            </span>
-          </div>
-        );
-      })}
+      <EntityProperties
+        labelOverrideMap={labelOverrideMap}
+        propertiesToRender={propertiesToRender}
+        graph={graph}
+      />
       {isRootDataset &&
         Object.entries(specialLists).map(
           ([title, entities]) =>
