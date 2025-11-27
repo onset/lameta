@@ -64,6 +64,21 @@ import { createSessionEntry } from "./RoCrateSessions";
 import { makeLdacCompliantPersonEntry } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
+import {
+  FieldHandlerContext,
+  handleLanguageField,
+  handleVocabularyField,
+  handlePlaceField,
+  handleDefaultTemplateField,
+  handleRocrateKeyField,
+  handlePlainValueField,
+  shouldSkipField,
+  getFieldValues,
+  getElementUsingTemplate
+} from "./RoCrateFieldHandlers";
+
+// Re-export getElementUsingTemplate for other modules that import it from here
+export { getElementUsingTemplate } from "./RoCrateFieldHandlers";
 
 type RoCrateEntity = {
   "@id": string;
@@ -546,6 +561,8 @@ export function addFieldIfNotEmpty(
 }
 
 // for every field in fields.json5, if it's in the folder, add it to the rocrate
+// LAM-74: Refactored to use modular handlers from RoCrateFieldHandlers.ts
+// This reduces the function from ~250 lines to ~50 lines by delegating to specialized handlers.
 export async function addFieldEntries(
   project: Project,
   folder: Folder,
@@ -555,357 +572,45 @@ export async function addFieldEntries(
 ) {
   // First handle the known fields
   for (const field of folder.knownFields) {
-    // don't export if we know it has been migrated
-    if (field.deprecated && field.deprecated.indexOf("migrated") > -1) {
-      continue;
-    }
-
-    if (field.key === ARCHIVE_CONFIGURATION_FIELD_KEY) {
-      // https://linear.app/lameta/issue/LAM-38: handled via holdingArchive so the undefined custom key never leaks.
-      continue;
-    }
-
-    if (field.key === "depositor") {
-      // LAM-39: depositor now maps to ldac:depositor via resolveDepositor, so suppress the legacy string property.
-      continue;
-    }
-
     const values: string[] = getFieldValues(folder, field);
-    // Skip empty fields, except for language fields which need to process empty values
-    // to trigger "und" fallback behavior for LDAC compliance
-    const isLanguageField = field.rocrate?.handler === "languages";
-    if (
-      (values.length === 0 || values[0] === "unspecified") &&
-      !isLanguageField
-    )
-      continue;
 
-    // For Person entities, skip PII fields entirely
-    if (folder instanceof Person && field.personallyIdentifiableInformation) {
+    // Check if this field should be skipped
+    if (shouldSkipField(field, folder, values)) {
       continue;
     }
 
     const propertyKey = field.rocrate?.key || field.key;
 
-    // does the fields.json5 specify how we should handle this field in the rocrate?
-    if (field.rocrate) {
-      // Special handling for language fields
-      // Note: the spec is ambiguous about whether languages should be just BCP47 codes or
-      // full entities. This confusion is especially found around "inLanguage" because it
-      // has a direct schema.org type, "http://schema.org/inLanguage".
-      // Perhaps both are supported. Until we find out otherwise, we have decided to always create entities,
-      // which then gives us room for things like how people want to see the language named,
-      // as opposed to some official name.
-      if (field.rocrate?.handler === "languages") {
-        const languageReferences: any[] = [];
+    // Build context for handlers
+    const context: FieldHandlerContext = {
+      project,
+      folder,
+      field,
+      values,
+      folderEntry,
+      otherEntries,
+      rocrateLanguages,
+      propertyKey
+    };
 
-        values.forEach((languageValue: string) => {
-          // Parse language value (could be "etr" or "etr: Edolo")
-          const [code] = languageValue.split(":").map((s) => s.trim());
-          if (code) {
-            const reference = rocrateLanguages.getLanguageReference(code);
-
-            // Track usage
-            rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
-
-            languageReferences.push(reference);
-          }
-        });
-
-        // Normal language field handling (ldac:subjectLanguage, etc.)
-        if (languageReferences.length > 0) {
-          // Check if field should be array or single object
-          if (field.rocrate?.array === false) {
-            // Use only the first language reference (single object)
-            folderEntry[propertyKey] = languageReferences[0];
-          } else {
-            // Use array (default behavior)
-            folderEntry[propertyKey] = languageReferences;
-          }
-        } else {
-          // No language values found, fallback to "und" (undetermined language)
-          const languageEntity = rocrateLanguages.getLanguageEntity("und");
-          const reference = rocrateLanguages.getLanguageReference("und");
-          rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
-
-          if (field.rocrate?.array === false) {
-            folderEntry[propertyKey] = reference;
-          } else {
-            folderEntry[propertyKey] = [reference];
-          }
-        }
-
-        continue; // Skip the normal template processing for language fields
-      }
-
-      // Special handling for fields with vocabularyFile
-      if (field.vocabularyFile) {
-        const termValues = values[0]
-          .split(",")
-          .map((term) => term.trim())
-          .filter((term) => term);
-        const termReferences: any[] = [];
-        const termDefinitions: any[] = [];
-        let hasLdacTerms = false;
-        let hasCustomTerms = false;
-
-        for (const termId of termValues) {
-          try {
-            // Get project title for custom ID generation
-            const projectTitle =
-              project.metadataFile?.getTextProperty("title") ||
-              "unknown-project";
-
-            const mapping = getVocabularyMapping(
-              termId,
-              field.vocabularyFile,
-              projectTitle
-            );
-            termReferences.push({ "@id": mapping.id });
-            termDefinitions.push(createTermDefinition(mapping));
-
-            if (isLdacIdentifier(mapping.id)) {
-              hasLdacTerms = true;
-            } else {
-              hasCustomTerms = true;
-            }
-          } catch (error) {
-            // If vocabulary loading fails, treat as custom term
-            console.warn(`Failed to load vocabulary for ${termId}:`, error);
-
-            // Fallback to creating a custom term directly (this should rarely happen now)
-            const projectTitle =
-              project.metadataFile?.getTextProperty("title") ||
-              "unknown-project";
-            const customId = getCustomUri(`genre/${termId}`, projectTitle);
-
-            termReferences.push({ "@id": customId });
-            termDefinitions.push({
-              "@id": customId,
-              "@type": "DefinedTerm",
-              name: termId,
-              description: `Custom term: ${termId}`,
-              inDefinedTermSet: { "@id": "#CustomGenreTerms" }
-            });
-            hasCustomTerms = true;
-          }
-        }
-
-        // Add term references to the main entry
-        if (termReferences.length > 0) {
-          folderEntry[propertyKey] = termReferences;
-        }
-
-        // Add term definitions and term sets to the graph
-        otherEntries.push(...termDefinitions);
-        otherEntries.push(...getTermSets(hasLdacTerms, hasCustomTerms));
-      } else {
-        const leafTemplate = getRoCrateTemplate(field);
-
-        if (leafTemplate) {
-          // Check if this is a language-related template
-          const isLanguageTemplate =
-            field.type === "languageChoices" &&
-            leafTemplate["@id"] &&
-            leafTemplate["@id"].includes("#language_");
-
-          if (isLanguageTemplate) {
-            // Use RoCrateLanguages system for language templates to ensure proper tracking
-            const languageReferences: any[] = [];
-            values.forEach((languageValue: string) => {
-              // Parse language value (could be "etr" or "etr: Edolo")
-              const [code] = languageValue.split(":").map((s) => s.trim());
-              if (code) {
-                // Create language entity and get reference using RoCrateLanguages system
-                const languageEntity = rocrateLanguages.getLanguageEntity(code);
-                const reference = rocrateLanguages.getLanguageReference(code);
-
-                // Track usage
-                rocrateLanguages.trackUsage(code, folderEntry["@id"] || "./");
-
-                // Add reference to the field
-                languageReferences.push(reference);
-              }
-            });
-
-            if (languageReferences.length > 0) {
-              // Apply array vs single object logic based on field configuration
-              if (field.rocrate?.array === false) {
-                // For fields like workingLanguages with array:false, use single object
-                folderEntry[propertyKey] = languageReferences[0];
-              } else {
-                // For fields like languages with array:true, use array
-                folderEntry[propertyKey] = languageReferences;
-              }
-            } else {
-              // No language values found, fallback to "und" (undetermined language)
-              const languageEntity = rocrateLanguages.getLanguageEntity("und");
-              const reference = rocrateLanguages.getLanguageReference("und");
-              rocrateLanguages.trackUsage("und", folderEntry["@id"] || "./");
-
-              if (field.rocrate?.array === false) {
-                folderEntry[propertyKey] = reference;
-              } else {
-                folderEntry[propertyKey] = [reference];
-              }
-            }
-          } else if (
-            field.key === "location" &&
-            leafTemplate["@type"] === "Place"
-          ) {
-            // Special handling for location field - combine with region/country/continent
-            values.forEach((c: string) => {
-              // Create the basic Place entity from the template
-              const leaf = getElementUsingTemplate(leafTemplate, c);
-
-              // Build description from companion location fields
-              const locationParts: string[] = [];
-
-              // Check for locationRegion
-              try {
-                const regionField =
-                  folder.metadataFile!.properties.getValueOrThrow(
-                    "locationRegion"
-                  );
-                if (
-                  regionField &&
-                  regionField.text &&
-                  regionField.text.trim() &&
-                  regionField.text !== "unspecified"
-                ) {
-                  locationParts.push(regionField.text.trim());
-                }
-              } catch {
-                // Field doesn't exist, skip
-              }
-
-              // Check for locationCountry
-              try {
-                const countryField =
-                  folder.metadataFile!.properties.getValueOrThrow(
-                    "locationCountry"
-                  );
-                if (
-                  countryField &&
-                  countryField.text &&
-                  countryField.text.trim() &&
-                  countryField.text !== "unspecified"
-                ) {
-                  locationParts.push(countryField.text.trim());
-                }
-              } catch {
-                // Field doesn't exist, skip
-              }
-
-              // Check for locationContinent
-              try {
-                const continentField =
-                  folder.metadataFile!.properties.getValueOrThrow(
-                    "locationContinent"
-                  );
-                if (
-                  continentField &&
-                  continentField.text &&
-                  continentField.text.trim() &&
-                  continentField.text !== "unspecified"
-                ) {
-                  locationParts.push(continentField.text.trim());
-                }
-              } catch {
-                // Field doesn't exist, skip
-              }
-
-              // Add description if we have location parts
-              if (locationParts.length > 0) {
-                leaf["description"] = `Located in ${locationParts.join(", ")}`;
-              }
-
-              otherEntries.push(leaf);
-              const reference = leaf["@id"];
-
-              if (field.rocrate?.array) {
-                if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
-                folderEntry[propertyKey].push({ "@id": reference });
-              } else folderEntry[propertyKey] = { "@id": reference };
-            });
-          } else {
-            // Regular template processing for non-language fields
-            values.forEach((c: string) => {
-              // For each value, create a graph entry that is the template, filled in with the value
-              const leaf = getElementUsingTemplate(leafTemplate, c); // make the free-standing element representing this value. E.g. { "@id": "#en", "name": "English" }
-              otherEntries.push(leaf);
-              const reference = leaf["@id"]; // refer to it however the leaf entry has its @id
-              // Now create the links to those from the parent object
-              if (field.rocrate?.array) {
-                if (!folderEntry[propertyKey]) folderEntry[propertyKey] = [];
-                // add a link to it in field the array. E.g. "workingLanguages": [ { "@id": "#en" }, { "@id": "#fr" } ]
-                folderEntry[propertyKey].push({ "@id": reference });
-              } else folderEntry[propertyKey] = { "@id": reference };
-            });
-          }
-        } else {
-          folderEntry[propertyKey] = values[0]; // we have a key, but nothing else. Can use, e.g. to rename "keyword" to "keywords"
-        }
-      }
-    }
-
-    // if there's no rocrate field definition, so just add it as a simple text property using the same name as lameta does
-    else {
-      // Skip certain fields that are redundant or handled elsewhere
-      if (field.key === "access") {
-        // Access is now handled through the license system, skip the redundant top-level property
-        continue;
-      }
-      if (field.key === "collectionDescription") {
-        // collectionDescription is mapped to the standard 'description' property, skip the original
-        continue;
-      }
-      if (field.key === "title" && folderEntry["name"]) {
-        // Skip redundant title property when it's identical to name
-        const titleValue = values[0];
-        const nameValue = folderEntry["name"];
-        if (titleValue === nameValue) {
-          continue;
-        }
-      }
-      // Skip non-standard properties
-      if (
-        field.key === "status" ||
-        field.key === "topic" ||
-        field.key === "id" ||
-        field.key === "locationRegion" ||
-        field.key === "locationCountry" ||
-        field.key === "locationContinent" ||
-        field.key === "country" ||
-        field.key === "continent"
-      ) {
-        continue;
-      }
-
-      // Skip isAdditional fields that don't have rocrate definitions
-      // These are fields like involvement, planningType, socialContext that are IMDI-specific
-      // and lack proper JSON-LD context definitions (see LAM-52)
-      const fieldDef = folder.metadataFile!.properties.getFieldDefinition?.(
-        field.key
-      );
-      if (fieldDef && fieldDef.isAdditional) {
-        console.warn(
-          `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`
-        );
-        continue;
-      }
-
-      // Map 'date' to 'dateCreated' for compliance with the profile
-      if (field.key === "date") {
-        folderEntry["dateCreated"] = values[0];
-      } else {
-        folderEntry[propertyKey] = values[0];
-      }
-    }
+    // Try each handler in priority order - first one to return true wins
+    if (handleLanguageField(context)) continue;
+    if (handleVocabularyField(context)) continue;
+    if (handlePlaceField(context)) continue;
+    if (handleDefaultTemplateField(context)) continue;
+    if (handleRocrateKeyField(context)) continue;
+    handlePlainValueField(context);
   }
 
-  // Now handle any custom fields from the properties
+  // Handle custom fields from the properties
+  handleCustomFields(folder, folderEntry);
+}
 
+/**
+ * Handles custom fields from folder properties.
+ * These are user-defined fields not in the standard field definitions.
+ */
+function handleCustomFields(folder: Folder, folderEntry: object): void {
   folder.metadataFile!.properties.forEach((key, field) => {
     if (!field.definition || !field.definition.isCustom) return;
 
@@ -963,89 +668,6 @@ export function getRoCrateTemplate(field: any): any {
 
   // no handler specified, assume this is just a normal value but one that we want to list as "[ {@id:'#blah'} ]"
   return field.rocrate?.template;
-}
-
-function getFieldValues(folder: Folder, field: any): string[] {
-  if (field.omitExport) return [];
-  //console.log("getFieldValues(", field.key);
-
-  if (field.rocrate?.handler === "languages") {
-    // Handle languages for any folder type (Project, Session, Person)
-    const languageString =
-      folder.metadataFile?.properties.getTextStringOrEmpty(field.key) || "";
-    return languageString
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-  } else {
-    const v = folder.metadataFile?.properties.getHasValue(field.key)
-      ? folder.metadataFile?.getTextProperty(field.key, "").trim()
-      : "";
-
-    // Check if this is a language-related field with a template (no handler)
-    // This handles cases where templates are used without the language handler
-    if (v && field.rocrate?.template && field.type === "languageChoices") {
-      // Parse as languages: split by semicolon and trim
-      return v
-        .split(";")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-    }
-
-    return v ? [v] : [];
-  }
-}
-
-export function getElementUsingTemplate(
-  template: object,
-  value: string
-): object {
-  const output = {};
-  Object.keys(template).forEach((key) => {
-    // when we're handling person languages, those are whole objects with various properties
-    // and we handle them in getPersonLanguageElement(). But other places we just have
-    // the code, and end up in this function, where we do use the same template for languages
-    // but insted of [v], that template has [code] which we replace with the value
-    let replacedValue = template[key];
-
-    // For language-related templates, extract just the language code from "code: Name" format
-    const extractLanguageCode = (langValue: string): string => {
-      // Handle "etr: Edolo" format - extract just "etr"
-      const [code] = langValue.split(":").map((s) => s.trim());
-      return code || langValue;
-    };
-
-    // Replace [v] with the value - but for @id fields with #language_ prefix, use just the code
-    if (replacedValue.includes("[v]")) {
-      let replacementValue = value;
-
-      // Special handling for language @id fields
-      if (key === "@id" && replacedValue.includes("#language_")) {
-        replacementValue = extractLanguageCode(value);
-      }
-
-      replacedValue = replacedValue.replace("[v]", replacementValue);
-    }
-
-    // Replace [code] with sanitized language code for language templates
-    if (replacedValue.includes("[code]")) {
-      const sanitizedCode = sanitizeLanguageCode(extractLanguageCode(value));
-      replacedValue = replacedValue.replace("[code]", sanitizedCode);
-    }
-
-    output[key] = replacedValue;
-  });
-
-  return output;
-}
-
-function sanitizeLanguageCode(code: string): string {
-  // If already starts with #language_, don't add another prefix
-  if (code.startsWith("#language_")) {
-    return code;
-  }
-  // Remove spaces and colons, replace with underscores for valid IDs
-  return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
 /**
