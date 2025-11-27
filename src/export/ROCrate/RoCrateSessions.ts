@@ -7,11 +7,12 @@ import {
   RoCrateLicense
 } from "./RoCrateLicenseManager";
 
+import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
 import {
-  addFieldEntries,
-  addChildFileEntries,
-  getContactPersonReference
-} from "./RoCrateExporter";
+  getContactPersonReference,
+  setContactPersonProperties,
+  createUnknownContributorEntity
+} from "./RoCrateEntityResolver";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
@@ -64,9 +65,8 @@ export async function createSessionEntry(
   const { reference: contactPersonReference, isUnknown: isUnknownContact } =
     getContactPersonReference(project);
 
-  mainSessionEntry.author = contactPersonReference;
-  mainSessionEntry.accountablePerson = contactPersonReference;
-  mainSessionEntry["dct:rightsHolder"] = contactPersonReference;
+  // LAM-84: Use consolidated helper to set contact person properties
+  setContactPersonProperties(mainSessionEntry, contactPersonReference);
 
   // Add bidirectional pcdm:memberOf link for sessions that are part of a collection
   if (!isStandaloneSession) {
@@ -103,11 +103,8 @@ export async function createSessionEntry(
   const otherEntries: any[] = [];
 
   if (isStandaloneSession && isUnknownContact) {
-    otherEntries.push({
-      "@id": "#unknown-contributor",
-      "@type": "Person",
-      name: "Unknown"
-    });
+    // LAM-84: Use consolidated helper for unknown contributor entity
+    otherEntries.push(createUnknownContributorEntity());
   }
 
   await addFieldEntries(

@@ -9,6 +9,16 @@ import {
 } from "../../model/file/FileTypeInfo";
 import { Project } from "../../model/Project/Project";
 import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
+import {
+  resolvePublisher,
+  resolveDepositor,
+  getContactPersonReference,
+  setContactPersonProperties,
+  createUnknownContributorEntity
+} from "./RoCrateEntityResolver";
+
+// Re-export getContactPersonReference for backward compatibility
+export { getContactPersonReference } from "./RoCrateEntityResolver";
 
 /**
  * Helper function to get a text property with proper handling of empty/whitespace values.
@@ -27,21 +37,6 @@ function getTextPropertyWithDefault(
   return value;
 }
 
-export function getContactPersonReference(project: Project): {
-  reference: string | { "@id": string };
-  isUnknown: boolean;
-} {
-  const rawValue =
-    project.metadataFile?.getTextProperty("contactPerson", "") ?? "";
-  const trimmedValue = rawValue.trim();
-  const contactPersonText = trimmedValue || "Unknown";
-  const isUnknownContact = contactPersonText === "Unknown";
-  const reference = isUnknownContact
-    ? { "@id": "#unknown-contributor" }
-    : contactPersonText;
-
-  return { reference, isUnknown: isUnknownContact };
-}
 import _ from "lodash";
 import {
   getVocabularyMapping,
@@ -87,78 +82,8 @@ type RoCrateEntity = {
   [key: string]: unknown;
 };
 
-type PublisherResolution = {
-  reference: { "@id": string };
-  entity: RoCrateEntity;
-};
-
 const ARCHIVE_CONFIGURATION_FIELD_KEY = "archiveConfigurationName";
 const DESCRIPTION_PROTOCOL_NODE_ID = "#descriptionDocuments";
-
-type PersonReferenceResolution = {
-  reference: { "@id": string };
-  entity: RoCrateEntity;
-};
-
-function resolvePublisher(project: Project): PublisherResolution | undefined {
-  // It's not 100% clear who the publisher should be, we're using the archive configuration.
-  // https://linear.app/lameta/issue/LAM-35/ro-crate-4-publisher-metadata
-
-  const archiveName = project.metadataFile
-    ?.getTextProperty("archiveConfigurationName", "")
-    .trim();
-
-  if (!archiveName) {
-    return undefined;
-  }
-
-  const loweredArchiveName = archiveName.toLowerCase();
-  if (loweredArchiveName === "default" || loweredArchiveName === "unknown") {
-    return undefined;
-  }
-
-  const slugSource = sanitizeForIri(archiveName) || archiveName;
-  const normalizedSlug =
-    slugSource.trim().length > 0 ? slugSource : "unknown-publisher";
-  const publisherId = `#publisher-${normalizedSlug.toLowerCase()}`;
-
-  return {
-    reference: { "@id": publisherId },
-    entity: {
-      "@id": publisherId,
-      "@type": "Organization",
-      name: archiveName
-    }
-  };
-}
-
-// https://linear.app/lameta/issue/LAM-39/ro-crate-root-dataset-depositor-handling
-function resolveDepositor(
-  project: Project
-): PersonReferenceResolution | undefined {
-  const depositorName = project.metadataFile
-    ?.getTextProperty("depositor", "")
-    .trim();
-
-  if (!depositorName) {
-    return undefined;
-  }
-
-  const slug = depositorName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  const depositorId = `#depositor-${slug || "unknown"}`;
-
-  return {
-    reference: { "@id": depositorId },
-    entity: {
-      "@id": depositorId,
-      "@type": "Person",
-      name: depositorName
-    }
-  };
-}
 
 // Info:
 // ./comprehensive-ldac.json <--- the full LDAC profile that we neeed to conform to
@@ -394,12 +319,9 @@ async function getRoCrateInternal(
     }
 
     // Add unknown contributor entity if using fallback
+    // LAM-84: Use consolidated helper for unknown contributor entity
     if (isUnknownContact) {
-      otherEntries.push({
-        "@id": "#unknown-contributor",
-        "@type": "Person",
-        name: "Unknown"
-      });
+      otherEntries.push(createUnknownContributorEntity());
     }
 
     if (publisher) {
