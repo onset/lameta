@@ -192,55 +192,13 @@ export function handlePlaceField(context: FieldHandlerContext): boolean {
     const leaf = getElementUsingTemplate(leafTemplate, value);
 
     // Build description from companion location fields
-    const locationParts: string[] = [];
-
-    // Check for locationRegion
-    try {
-      const regionField =
-        folder.metadataFile!.properties.getValueOrThrow("locationRegion");
-      if (
-        regionField &&
-        regionField.text &&
-        regionField.text.trim() &&
-        regionField.text !== "unspecified"
-      ) {
-        locationParts.push(regionField.text.trim());
-      }
-    } catch {
-      // Field doesn't exist, skip
-    }
-
-    // Check for locationCountry
-    try {
-      const countryField =
-        folder.metadataFile!.properties.getValueOrThrow("locationCountry");
-      if (
-        countryField &&
-        countryField.text &&
-        countryField.text.trim() &&
-        countryField.text !== "unspecified"
-      ) {
-        locationParts.push(countryField.text.trim());
-      }
-    } catch {
-      // Field doesn't exist, skip
-    }
-
-    // Check for locationContinent
-    try {
-      const continentField =
-        folder.metadataFile!.properties.getValueOrThrow("locationContinent");
-      if (
-        continentField &&
-        continentField.text &&
-        continentField.text.trim() &&
-        continentField.text !== "unspecified"
-      ) {
-        locationParts.push(continentField.text.trim());
-      }
-    } catch {
-      // Field doesn't exist, skip
-    }
+    const locationParts = [
+      "locationRegion",
+      "locationCountry",
+      "locationContinent"
+    ]
+      .map((key) => getOptionalFieldValue(folder, key))
+      .filter((part): part is string => part !== null);
 
     // Add description if we have location parts
     if (locationParts.length > 0) {
@@ -524,4 +482,32 @@ function sanitizeLanguageCode(code: string): string {
   }
   // Remove spaces and colons, replace with underscores for valid IDs
   return "#language_" + code.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+/**
+ * Retrieves an optional field value from a folder, returning null if the field
+ * doesn't exist or has no meaningful value.
+ *
+ * This helper encapsulates the common pattern of:
+ * 1. Trying to get a field value (which may throw if the field doesn't exist)
+ * 2. Validating the value is non-empty and not "unspecified"
+ * 3. Returning the trimmed value or null
+ *
+ * @param folder - The folder containing the metadata
+ * @param fieldKey - The key of the field to retrieve
+ * @returns The trimmed field value, or null if not available
+ */
+export function getOptionalFieldValue(
+  folder: Folder,
+  fieldKey: string
+): string | null {
+  try {
+    const field = folder.metadataFile!.properties.getValueOrThrow(fieldKey);
+    if (field?.text?.trim() && field.text !== "unspecified") {
+      return field.text.trim();
+    }
+  } catch {
+    // Field doesn't exist, skip
+  }
+  return null;
 }
