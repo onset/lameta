@@ -10,16 +10,113 @@ type LdacProfileClass = {
   }>;
 };
 
+interface LdacRequiredInput {
+  id: string;
+  multiple?: boolean;
+  aliases: string[];
+  primaryAlias: string;
+}
+
 interface LdacClassRule {
   name: string;
-  inputs: Array<{
-    id: string;
-    required: boolean;
-    multiple?: boolean;
-    aliases: string[];
-    primaryAlias: string;
-  }>;
+  inputs: LdacRequiredInput[];
+  aliasMap: Record<string, LdacRequiredInput>;
 }
+
+const namespaceAliasHints: Array<{ marker: string; prefix: string }> = [
+  { marker: "w3id.org/ldac/terms", prefix: "ldac" },
+  { marker: "purl.org/dc/terms", prefix: "dct" },
+  { marker: "pcdm.org/models", prefix: "pcdm" }
+];
+
+const typeAliasCache = new Map<string, string[]>();
+const propertyAliasCache = new Map<string, string[]>();
+
+function collectTypeAliases(typeName: string): string[] {
+  if (!typeName) {
+    return [];
+  }
+
+  if (typeAliasCache.has(typeName)) {
+    return typeAliasCache.get(typeName)!;
+  }
+
+  const aliases = new Set<string>([typeName]);
+  const hashFragment = extractFragment(typeName);
+  if (hashFragment) {
+    aliases.add(hashFragment);
+  }
+
+  const colonShortName = extractPrefixedLocalName(typeName);
+  if (colonShortName) {
+    aliases.add(colonShortName);
+  }
+
+  const result = Array.from(aliases).filter(Boolean);
+  typeAliasCache.set(typeName, result);
+  return result;
+}
+
+function collectPropertyAliases(propertyId: string): string[] {
+  if (!propertyId) {
+    return [];
+  }
+
+  if (propertyAliasCache.has(propertyId)) {
+    return propertyAliasCache.get(propertyId)!;
+  }
+
+  const aliases = new Set<string>([propertyId]);
+  const localName = extractFragment(propertyId) ?? extractPathLeaf(propertyId);
+  if (localName) {
+    aliases.add(localName);
+    namespaceAliasHints.forEach(({ marker, prefix }) => {
+      if (propertyId.includes(marker)) {
+        aliases.add(`${prefix}:${localName}`);
+      }
+    });
+  } else {
+    const prefixedName = extractPrefixedLocalName(propertyId);
+    if (prefixedName) {
+      aliases.add(prefixedName);
+    }
+  }
+
+  const result = Array.from(aliases).filter(Boolean);
+  propertyAliasCache.set(propertyId, result);
+  return result;
+}
+
+function extractFragment(identifier: string): string | undefined {
+  if (!identifier || !identifier.includes("#")) {
+    return undefined;
+  }
+  const fragment = identifier.split("#").pop();
+  return fragment && fragment.length > 0 ? fragment : undefined;
+}
+
+function extractPathLeaf(identifier: string): string | undefined {
+  if (!identifier.includes("/")) {
+    return undefined;
+  }
+  const segment = identifier.split("/").pop();
+  return segment && segment.length > 0 ? segment : undefined;
+}
+
+function extractPrefixedLocalName(identifier: string): string | undefined {
+  if (!identifier || !identifier.includes(":")) {
+    return undefined;
+  }
+  if (identifier.startsWith("http")) {
+    return undefined;
+  }
+  const [, localName] = identifier.split(":");
+  return localName && localName.length > 0 ? localName : undefined;
+}
+
+const subjectLanguagePropertyAliases = collectPropertyAliases(
+  "https://w3id.org/ldac/terms#subjectLanguage"
+);
 
 const ldacClassIndex = buildLdacClassIndex(
   (ldacProfile as { classes?: Record<string, LdacProfileClass> }).classes ?? {}
@@ -157,31 +254,40 @@ export class RoCrateValidator {
         return;
       }
 
+      const matchedInputs = new Map<
+        string,
+        { rule: LdacRequiredInput; value: any }
+      >();
+      Object.entries(entity).forEach(([key, value]) => {
+        const rule = classRule.aliasMap[key];
+        if (!rule) {
+          return;
+        }
+
+        const dedupeKey = `${classRule.name}:${rule.primaryAlias}`;
+        if (matchedInputs.has(dedupeKey)) {
+          return;
+        }
+
+        matchedInputs.set(dedupeKey, { rule, value });
+      });
+
       classRule.inputs.forEach((input) => {
-        if (!input.required) {
-          return;
-        }
-
-        const valueKey = input.aliases.find((alias) => alias in entity);
-        if (!valueKey || this.isEmptyValue(entity[valueKey])) {
-          // Avoid spamming duplicate errors when multiple types share the same property
-          const dedupeKey = `${classRule.name}:${input.primaryAlias}`;
-          if (!evaluatedProperties.has(dedupeKey)) {
-            errors.push(
-              `${entityName} (${classRule.name}) is missing required ${input.primaryAlias} property`
-            );
-            evaluatedProperties.add(dedupeKey);
-          }
-          return;
-        }
-
-        const value = entity[valueKey];
         const dedupeKey = `${classRule.name}:${input.primaryAlias}`;
         if (evaluatedProperties.has(dedupeKey)) {
           return;
         }
 
-        if (input.multiple === false && Array.isArray(value)) {
+        const match = matchedInputs.get(dedupeKey);
+        if (!match || this.isEmptyValue(match.value)) {
+          errors.push(
+            `${entityName} (${classRule.name}) is missing required ${input.primaryAlias} property`
+          );
+          evaluatedProperties.add(dedupeKey);
+          return;
+        }
+
+        if (input.multiple === false && Array.isArray(match.value)) {
           errors.push(
             `${entityName} (${classRule.name}) expects ${input.primaryAlias} to be a single value`
           );
@@ -189,12 +295,15 @@ export class RoCrateValidator {
           return;
         }
 
-        if (Array.isArray(value) && value.length === 0) {
+        if (Array.isArray(match.value) && match.value.length === 0) {
           errors.push(
             `${entityName} (${classRule.name}) has an empty ${input.primaryAlias} array`
           );
           evaluatedProperties.add(dedupeKey);
+          return;
         }
+
+        evaluatedProperties.add(dedupeKey);
       });
     });
   }
@@ -231,7 +340,10 @@ export class RoCrateValidator {
     errors: string[],
     warnings: string[]
   ): void {
-    const subjectLanguages = entity["ldac:subjectLanguage"];
+    const subjectLanguages = this.getPropertyByAliases(
+      entity,
+      subjectLanguagePropertyAliases
+    );
 
     if (!subjectLanguages) {
       errors.push(
@@ -267,6 +379,15 @@ export class RoCrateValidator {
     });
   }
 
+  private getPropertyByAliases(entity: any, aliases: string[]): any {
+    for (const alias of aliases) {
+      if (alias in entity) {
+        return entity[alias];
+      }
+    }
+    return undefined;
+  }
+
   /**
    * Validate that a file's license, when present, is well-formed.
    */
@@ -296,23 +417,33 @@ function buildLdacClassIndex(
   const index: Record<string, LdacClassRule> = {};
 
   Object.entries(classes).forEach(([className, metadata]) => {
-    const inputs = (metadata.inputs ?? []).map((input) => {
-      const aliases = buildPropertyAliases(input.id);
-      return {
-        id: input.id,
-        required: Boolean(input.required),
-        multiple: input.multiple,
-        aliases,
-        primaryAlias: aliases[1] ?? aliases[0] ?? input.id
-      };
+    const inputs = (metadata.inputs ?? [])
+      .filter((input) => Boolean(input.required))
+      .map((input) => {
+        const aliases = collectPropertyAliases(input.id);
+        const rule: LdacRequiredInput = {
+          id: input.id,
+          multiple: input.multiple,
+          aliases,
+          primaryAlias: aliases[1] ?? aliases[0] ?? input.id
+        };
+        return rule;
+      });
+
+    const aliasMap: Record<string, LdacRequiredInput> = {};
+    inputs.forEach((inputRule) => {
+      inputRule.aliases.forEach((alias) => {
+        aliasMap[alias] = inputRule;
+      });
     });
 
     const rule: LdacClassRule = {
       name: className,
-      inputs
+      inputs,
+      aliasMap
     };
 
-    buildTypeAliases(className).forEach((alias) => {
+    collectTypeAliases(className).forEach((alias) => {
       if (!alias) {
         return;
       }
@@ -321,49 +452,6 @@ function buildLdacClassIndex(
   });
 
   return index;
-}
-
-function buildTypeAliases(typeName: string): string[] {
-  const aliases = new Set<string>();
-  if (typeName) {
-    aliases.add(typeName);
-    if (typeName.includes(":")) {
-      const [, shortName] = typeName.split(":");
-      if (shortName) {
-        aliases.add(shortName);
-      }
-    }
-    if (typeName.includes("#")) {
-      const fragment = typeName.split("#").pop();
-      if (fragment) {
-        aliases.add(fragment);
-      }
-    }
-  }
-  return Array.from(aliases).filter(Boolean);
-}
-
-function buildPropertyAliases(propertyId: string): string[] {
-  const aliases: string[] = [];
-  if (propertyId) {
-    aliases.push(propertyId);
-    const fragment = propertyId.includes("#")
-      ? propertyId.split("#").pop()
-      : propertyId.split("/").pop();
-    if (fragment) {
-      aliases.push(fragment);
-      if (propertyId.includes("w3id.org/ldac/terms")) {
-        aliases.push(`ldac:${fragment}`);
-      }
-      if (propertyId.includes("purl.org/dc/terms")) {
-        aliases.push(`dct:${fragment}`);
-      }
-      if (propertyId.includes("pcdm.org/models")) {
-        aliases.push(`pcdm:${fragment}`);
-      }
-    }
-  }
-  return Array.from(new Set(aliases)).filter(Boolean);
 }
 
 /**

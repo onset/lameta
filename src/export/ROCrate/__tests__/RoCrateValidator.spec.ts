@@ -203,6 +203,62 @@ describe("RoCrateValidator", () => {
         )
       ).toBe(true);
     });
+
+    it("should honor alias mapping for ldac subject language URIs", () => {
+      const dataset = createValidDataset() as Record<string, any>;
+      dataset["https://w3id.org/ldac/terms#subjectLanguage"] =
+        dataset["ldac:subjectLanguage"];
+      delete dataset["ldac:subjectLanguage"];
+
+      const repositoryObject = createValidRepositoryObject() as Record<
+        string,
+        any
+      >;
+      repositoryObject["https://w3id.org/ldac/terms#subjectLanguage"] =
+        repositoryObject["ldac:subjectLanguage"];
+      delete repositoryObject["ldac:subjectLanguage"];
+
+      const validRoCrate = {
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
+        "@graph": [
+          dataset,
+          repositoryObject,
+          {
+            "@id": "Sessions/ETR001/audio.wav",
+            "@type": "AudioObject",
+            license: { "@id": "#license-open" }
+          },
+          {
+            "@id": "#language_etr",
+            "@type": "Language",
+            code: "etr",
+            name: "Edolo"
+          }
+        ]
+      };
+
+      const result = validator.validate(validRoCrate);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should match required properties when using full dct URIs", () => {
+      const dataset = createValidDataset() as Record<string, any>;
+      dataset["http://purl.org/dc/terms/rightsHolder"] =
+        dataset["dct:rightsHolder"];
+      delete dataset["dct:rightsHolder"];
+
+      const validRoCrate = {
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
+        "@graph": [dataset]
+      };
+
+      const result = validator.validate(validRoCrate);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
   });
 });
 
