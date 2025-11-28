@@ -135,6 +135,21 @@ export function createPersonId(person: any): string {
 }
 
 /**
+ * Creates a consistent Dataset ID for grouping a person's files.
+ * LAM-98: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
+ * This creates an intermediate Dataset to group all files associated with a person
+ * (photos, consent forms, .person metadata files) under a single container.
+ * Format: #<sanitized-name>-files
+ * Non-Latin characters are properly encoded via sanitizeForIri().
+ */
+export function createPersonFilesDatasetId(person: any): string {
+  const baseValue = (person?.filePrefix || "person") as string;
+  // Use sanitizeForIri to handle non-Latin characters properly
+  const sanitized = sanitizeForIri(baseValue);
+  return `#${sanitized}-files`;
+}
+
+/**
  * Creates a consistent fragment identifier for unresolved contributors.
  * Unresolved contributors are people mentioned in sessions who don't have
  * matching Person records in the project. Uses createFragmentId for consistency.

@@ -230,8 +230,11 @@ describe("RoCrateExporter file handling", () => {
   // LAM-97: Per RO-Crate 1.2 spec (line 1032), data entities MUST be linked from root via hasPart.
   // Since Person entities cannot have hasPart, person files should be attached to the #People
   // Dataset entity instead. This ensures they are reachable from the root data entity.
+  // LAM-98: Each person now gets their own intermediate Dataset (e.g., #Awi_Heole-files) that contains
+  // the person entity and their files. The #People dataset references these intermediate datasets.
   // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
-  it("should include person files in #People dataset hasPart", async () => {
+  // See: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
+  it("should include person files in #People dataset hasPart via intermediate dataset", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const peopleDataset = result["@graph"].find(
@@ -241,11 +244,21 @@ describe("RoCrateExporter file handling", () => {
     expect(peopleDataset).toBeDefined();
     expect(peopleDataset["@type"]).toBe("Dataset");
 
-    // The #People dataset should include both the Person entity AND their files
+    // LAM-98: The #People dataset now references intermediate per-person datasets
     expect(peopleDataset.hasPart).toContainEqual({
+      "@id": "#Awi_Heole-files"
+    });
+
+    // The intermediate dataset contains the person entity and their files
+    const personFilesDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "#Awi_Heole-files"
+    );
+    expect(personFilesDataset).toBeDefined();
+    expect(personFilesDataset["@type"]).toBe("Dataset");
+    expect(personFilesDataset.hasPart).toContainEqual({
       "@id": awiPersonId
     });
-    expect(peopleDataset.hasPart).toContainEqual({
+    expect(personFilesDataset.hasPart).toContainEqual({
       "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
     });
   });

@@ -46,6 +46,7 @@ import {
   sanitizeForIri,
   createFileId,
   createPersonId,
+  createPersonFilesDatasetId,
   createSessionId,
   expandLdacId,
   isLdacIdentifier
@@ -436,15 +437,17 @@ async function getRoCrateInternal(
     ];
 
     // Add a People dataset container so Person nodes hang off a proper directory entity.
-    const peopleDatasetEntry = createPeopleDatasetEntry(
+    // LAM-98: Now returns an array including #People plus individual person-files Datasets.
+    const peopleDatasetEntries = createPeopleDatasetEntry(
       project,
       flattenedSessionEntries,
       uniqueOtherEntries,
       entry.license
     );
-    if (peopleDatasetEntry) {
-      entry.hasPart.push({ "@id": peopleDatasetEntry["@id"] });
-      baseGraph.push(peopleDatasetEntry);
+    if (peopleDatasetEntries && peopleDatasetEntries.length > 0) {
+      // The first entry is always the #People Dataset
+      entry.hasPart.push({ "@id": peopleDatasetEntries[0]["@id"] });
+      baseGraph.push(...peopleDatasetEntries);
     }
 
     return baseGraph;
@@ -898,7 +901,7 @@ function createPeopleDatasetEntry(
   flattenedSessionEntries: any[],
   otherEntries: object[],
   license?: any
-): RoCrateEntity | undefined {
+): RoCrateEntity[] | undefined {
   const collectPersonRecords = (source: any): any[] => {
     if (!source) {
       return [];
@@ -915,60 +918,110 @@ function createPeopleDatasetEntry(
     return [];
   };
 
+  // Get actual person records from project to create per-person Datasets
+  const personRecords = collectPersonRecords((project as any).persons);
   const knownPeople = new Set(
-    collectPersonRecords((project as any).persons).map((person) =>
-      createPersonId(person)
-    )
+    personRecords.map((person) => createPersonId(person))
   );
+
   if (knownPeople.size === 0) {
     return undefined;
   }
 
   const candidateEntries = [...flattenedSessionEntries, ...otherEntries];
-  const personIds = new Set(
-    candidateEntries
-      .filter((entry: any) => isPersonEntity(entry))
-      .map((entry: any) => entry["@id"])
-      .filter((id: any) => typeof id === "string" && knownPeople.has(id))
+  const personEntries = candidateEntries.filter(
+    (entry: any) =>
+      isPersonEntity(entry) &&
+      typeof entry["@id"] === "string" &&
+      knownPeople.has(entry["@id"])
   );
 
-  if (personIds.size === 0) {
+  if (personEntries.length === 0) {
     return undefined;
   }
 
-  // LAM-97: Collect file IDs associated with people (photos, consent forms, .person files).
-  // Per RO-Crate 1.2 spec (line 1032), data entities MUST be linked from the root via hasPart.
-  // Person entities are contextual (not subclass of CreativeWork) so cannot have hasPart.
-  // We link person files to the #People Dataset instead.
-  // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
-  const personFileIds = candidateEntries
-    .filter((entry: any) => {
-      // A file is associated with a person if its `about` property references a known person
-      const aboutRef = entry.about?.["@id"];
-      return aboutRef && personIds.has(aboutRef);
-    })
-    .map((entry: any) => entry["@id"])
-    .filter((id: any) => typeof id === "string");
+  // LAM-98: Create intermediate Dataset for each person with files.
+  // This groups all files associated with a person under a unique dataset,
+  // which is then connected to #People.
+  // See: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
 
-  // Combine person IDs and their file IDs, then sort for consistency
-  const allIds = [...personIds, ...personFileIds].sort((a, b) =>
-    a.localeCompare(b)
-  );
+  // Group files by the person they're about
+  const filesByPerson = new Map<string, any[]>();
+  candidateEntries.forEach((entry: any) => {
+    const aboutRef = entry.about?.["@id"];
+    if (aboutRef && knownPeople.has(aboutRef)) {
+      const existing = filesByPerson.get(aboutRef) || [];
+      existing.push(entry);
+      filesByPerson.set(aboutRef, existing);
+    }
+  });
 
-  const dataset: RoCrateEntity = {
+  // Create per-person Dataset entries
+  const personFilesDatasets: RoCrateEntity[] = [];
+  const peopleDatasetHasPart: { "@id": string }[] = [];
+
+  // Map person IDs to person records for name lookup
+  const personIdToRecord = new Map<string, any>();
+  personRecords.forEach((person) => {
+    personIdToRecord.set(createPersonId(person), person);
+  });
+
+  personEntries.forEach((personEntry: any) => {
+    const personId = personEntry["@id"];
+    const personRecord = personIdToRecord.get(personId);
+    const personFiles = filesByPerson.get(personId) || [];
+
+    // Get the person's display name for the Dataset name
+    const personName =
+      personRecord?.filePrefix || personEntry.name || "Unknown";
+    const datasetId = createPersonFilesDatasetId(
+      personRecord || { filePrefix: personName }
+    );
+
+    // Create the person-files Dataset with person entity + all their files
+    const personFilesDataset: RoCrateEntity = {
+      "@id": datasetId,
+      "@type": "Dataset",
+      name: `${personName} files`,
+      description: `Files associated with ${personName}.`,
+      hasPart: [
+        { "@id": personId },
+        ...personFiles.map((file: any) => ({ "@id": file["@id"] }))
+      ],
+      isPartOf: { "@id": "#People" }
+    };
+
+    if (license && typeof license === "object") {
+      personFilesDataset.license = license;
+    }
+
+    personFilesDatasets.push(personFilesDataset);
+    peopleDatasetHasPart.push({ "@id": datasetId });
+
+    // Update file entries to point isPartOf to the person-files Dataset instead of #People
+    personFiles.forEach((file: any) => {
+      file.isPartOf = { "@id": datasetId };
+    });
+  });
+
+  // Sort hasPart for consistency
+  peopleDatasetHasPart.sort((a, b) => a["@id"].localeCompare(b["@id"]));
+
+  // Create the main #People Dataset that references all person-files Datasets
+  const peopleDataset: RoCrateEntity = {
     "@id": "#People",
     "@type": "Dataset",
     name: "People",
     description: "Directory of people associated with this collection.",
-    hasPart: allIds.map((id) => ({ "@id": id })),
+    hasPart: peopleDatasetHasPart,
     isPartOf: { "@id": "./" }
   };
 
   if (license && typeof license === "object") {
-    dataset.license = license;
+    peopleDataset.license = license;
   }
 
-  return dataset;
+  return [peopleDataset, ...personFilesDatasets];
 }
 
 function isPersonEntity(entry: any): boolean {

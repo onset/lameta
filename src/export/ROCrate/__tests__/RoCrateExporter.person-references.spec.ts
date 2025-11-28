@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { getRoCrate } from "../RoCrateExporter";
-import { createPersonId } from "../RoCrateUtils";
+import { createPersonId, createPersonFilesDatasetId } from "../RoCrateUtils";
 import {
   setupCommonMocks,
   createMockProject,
@@ -65,6 +65,8 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     const rootDataset = graph.find((item: any) => item["@id"] === "./");
     expect(rootDataset).toBeDefined();
     const expectedPersonId = createPersonId(personWithSpaces);
+    const expectedPersonFilesDatasetId =
+      createPersonFilesDatasetId(personWithSpaces);
 
     // Root hasPart should reference the People dataset wrapper but never direct Person IDs
     const rootHasPartIds =
@@ -73,14 +75,27 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     expect(rootHasPartIds).not.toContain(expectedPersonId);
 
     // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
-    // Ensure the People dataset hangs all Person nodes via hasPart per the directory data-entity rules
+    // LAM-98 https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
+    // The #People dataset now contains references to person-files Datasets, not Person entities directly
     const peopleDataset = graph.find((item: any) => item["@id"] === "#People");
     expect(peopleDataset).toBeDefined();
     expect(peopleDataset?.["@type"]).toBe("Dataset");
+    // #People.hasPart now references person-files Datasets
     expect(peopleDataset?.hasPart).toContainEqual({
-      "@id": expectedPersonId
+      "@id": expectedPersonFilesDatasetId
     });
     expect(peopleDataset?.isPartOf).toEqual({ "@id": "./" });
+
+    // LAM-98: The person-files Dataset should contain the Person entity
+    const personFilesDataset = graph.find(
+      (item: any) => item["@id"] === expectedPersonFilesDatasetId
+    );
+    expect(personFilesDataset).toBeDefined();
+    expect(personFilesDataset?.["@type"]).toBe("Dataset");
+    expect(personFilesDataset?.hasPart).toContainEqual({
+      "@id": expectedPersonId
+    });
+    expect(personFilesDataset?.isPartOf).toEqual({ "@id": "#People" });
 
     // The Person entity should exist with the sanitized @id
     const personEntity = graph.find(
@@ -101,10 +116,12 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
   });
 
   // LAM-97: Test that person files (photos, consent forms, .person files) are included
-  // in the #People dataset's hasPart, not just the Person entities themselves.
+  // in the person-files dataset's hasPart, not directly in #People.
+  // LAM-98: Files are now grouped under an intermediate #<person>-files Dataset.
   // Per RO-Crate 1.2 spec (line 1032), data entities MUST be linked from root via hasPart.
   // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
-  it("includes person files in #People dataset hasPart alongside Person entities", async () => {
+  // See: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
+  it("includes person files in person-files dataset hasPart alongside Person entities", async () => {
     // Mock files for the person
     const mockPhotoFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person_Photo.JPG",
@@ -161,19 +178,50 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     const roCrate = await getRoCrate(mockProject, mockProject);
     const graph = (roCrate as any)["@graph"];
 
+    const expectedPersonId = createPersonId(personWithFiles);
+    const expectedPersonFilesDatasetId =
+      createPersonFilesDatasetId(personWithFiles);
+
+    // LAM-98: #People now references person-files Datasets, not entities directly
     const peopleDataset = graph.find((item: any) => item["@id"] === "#People");
     expect(peopleDataset).toBeDefined();
+    const peopleHasPartIds = peopleDataset.hasPart.map(
+      (ref: any) => ref["@id"]
+    );
+    // #People should reference the person-files Dataset
+    expect(peopleHasPartIds).toContain(expectedPersonFilesDatasetId);
+    // #People should NOT directly contain the person entity or files
+    expect(peopleHasPartIds).not.toContain(expectedPersonId);
+    expect(peopleHasPartIds).not.toContain(
+      "People/Test_Person/Test_Person_Photo.JPG"
+    );
 
-    const expectedPersonId = createPersonId(personWithFiles);
-    const hasPartIds = peopleDataset.hasPart.map((ref: any) => ref["@id"]);
+    // LAM-98: The person-files Dataset should contain the person entity and all files
+    const personFilesDataset = graph.find(
+      (item: any) => item["@id"] === expectedPersonFilesDatasetId
+    );
+    expect(personFilesDataset).toBeDefined();
+    expect(personFilesDataset?.["@type"]).toBe("Dataset");
+    expect(personFilesDataset?.name).toBe("Test_Person files");
+    expect(personFilesDataset?.isPartOf).toEqual({ "@id": "#People" });
+
+    const personFilesHasPartIds = personFilesDataset.hasPart.map(
+      (ref: any) => ref["@id"]
+    );
 
     // Should include the Person entity
-    expect(hasPartIds).toContain(expectedPersonId);
+    expect(personFilesHasPartIds).toContain(expectedPersonId);
 
     // Should include all person files
-    expect(hasPartIds).toContain("People/Test_Person/Test_Person_Photo.JPG");
-    expect(hasPartIds).toContain("People/Test_Person/Test_Person_Consent.JPG");
-    expect(hasPartIds).toContain("People/Test_Person/Test_Person.person");
+    expect(personFilesHasPartIds).toContain(
+      "People/Test_Person/Test_Person_Photo.JPG"
+    );
+    expect(personFilesHasPartIds).toContain(
+      "People/Test_Person/Test_Person_Consent.JPG"
+    );
+    expect(personFilesHasPartIds).toContain(
+      "People/Test_Person/Test_Person.person"
+    );
 
     // Verify the files have the `about` property pointing to the person
     const photoFile = graph.find(
@@ -181,6 +229,9 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     );
     expect(photoFile).toBeDefined();
     expect(photoFile.about).toEqual({ "@id": expectedPersonId });
+
+    // LAM-98: Files should have isPartOf pointing to the person-files Dataset
+    expect(photoFile.isPartOf).toEqual({ "@id": expectedPersonFilesDatasetId });
 
     // Verify person entity has image property pointing to photo
     const personEntity = graph.find(
