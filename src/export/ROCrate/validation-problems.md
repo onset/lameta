@@ -4,40 +4,6 @@ This document lists validation problems found by running the enhanced `RoCrateVa
 
 ---
 
-## Problem 1: `datePublished` Must Be a String, Not an Array
-
-### Rule Violated
-
-> **(line 884-891)** The _Root Data Entity_ MUST have all of the following properties:
->
-> - `datePublished`: MUST be a single string value in [ISO 8601 date format](http://schema.org/DateTime), SHOULD be specified to at least the precision of a day, and MAY be a timestamp down to the millisecond
-
-### Actual Output
-
-```json
-{
-  "@id": "./",
-  "@type": ["Dataset", "RepositoryCollection"],
-  "datePublished": ["2024-01-01"]
-}
-```
-
-### Why It Breaks the Rule
-
-The `datePublished` property is an **array** containing `"2024-01-01"`, but the spec requires it to be a **single string value**. The validator expects:
-
-```json
-"datePublished": "2024-01-01"
-```
-
-### Error Message
-
-```
-Root Data Entity datePublished must be a string in ISO 8601 format
-```
-
----
-
 ## Problem 2: Referenced Entities Not Described in RO-Crate
 
 ### Rule Violated
@@ -298,3 +264,217 @@ Dataset "subfolder" @id should end with / (line 1164)
 ### Fix 6: Reference All Entities from Root or Other Entities
 
 Ensure every entity is reachable from the root via property references like `hasPart`, `author`, `mentions`, etc.
+
+---
+
+# Problems Found in Real Data: hewya Project
+
+The following problems were found when validating `C:\Users\hatto\OneDrive\Documents\lameta\hewya\ro-crate-metadata.json` (November 28, 2025).
+
+---
+
+## Problem 7: Contextual Entities Not Referenced (Orphaned Entities)
+
+### Rule Violated
+
+> **(line 431)** Any referenced _contextual entities_ SHOULD be described in the _RO-Crate Metadata Document_ with the same identifier. Any _contextual entity_ in the _RO-Crate Metadata Document_ SHOULD be linked to from at least one of the other entities using the same identifier.
+>
+> **(line 654)** The entity SHOULD be ultimately referenceable from the root data entity (possibly through another reachable data entity or contextual entity).
+
+### Actual Output
+
+```json
+{
+  "@id": "ldac:AuthorizedAccess",
+  "@type": "DefinedTerm",
+  "name": "Authorized Access",
+  "description": "Data covered by this license requires explicit authorization for access.",
+  "inDefinedTermSet": { "@id": "ldac:AccessTypes" }
+},
+{
+  "@id": "ldac:DataReuseLicense",
+  "@type": "Class",
+  "subClassOf": { "@id": "http://schema.org/CreativeWork" },
+  "description": "A license document, setting out terms for reuse of data."
+}
+```
+
+These entities exist in the `@graph` but are not referenced by any other entity in the RO-Crate.
+
+### Why It Breaks the Rule
+
+While `ldac:OpenAccess` is correctly referenced by the licenses, `ldac:AuthorizedAccess` is defined but never used. Similarly, `ldac:DataReuseLicense` is defined as a class but no entity references it directly. All entities should be reachable from the root data entity through a chain of references. Orphaned entities suggest either incomplete metadata or entities that serve no purpose.
+
+### Warning Messages
+
+```
+Entity "ldac:AuthorizedAccess" is not referenced by any other entity (line 431, 654)
+Entity "ldac:DataReuseLicense" is not referenced by any other entity (line 431, 654)
+```
+
+### Recommended Fix
+
+Either remove the unreferenced entities, or ensure they are referenced by another entity. For `ldac:AuthorizedAccess`, consider whether any files in the collection should use this access level.
+
+---
+
+## Problem 8: Files in Nested Structures Not Linked via `hasPart`
+
+### Rule Violated
+
+> **(line 1032)** Where files and folders are represented as _Data Entities_ in the RO-Crate JSON-LD, these MUST be linked to, either directly or indirectly, from the [Root Data Entity](#root-data-entity) using the [hasPart](http://schema.org/hasPart) property. Directory hierarchies MAY be represented with nested [Dataset](http://schema.org/Dataset) _Data Entities_, or the Root Data Entity MAY refer to files anywhere in the hierarchy using [hasPart](http://schema.org/hasPart).
+
+### Actual Output
+
+The root entity `./` has:
+
+```json
+{
+  "@id": "./",
+  "hasPart": [
+    { "@id": "./hewya.sprj" },
+    { "@id": "OtherDocuments/some%20other%20doc.txt" },
+    { "@id": "#People" }
+  ]
+}
+```
+
+And session objects have their own `hasPart`:
+
+```json
+{
+  "@id": "#session-ETR009",
+  "hasPart": [
+    { "@id": "Sessions/ETR009/ETR009.session" },
+    { "@id": "Sessions/ETR009/SceneHouse.JPG" },
+    ...
+  ]
+}
+```
+
+But the session entities (`#session-ETR008`, `#session-ETR009`) are linked via `pcdm:hasMember`, not `hasPart`.
+
+### Why It Breaks the Rule
+
+The RO-Crate specification requires data entities (Files and Datasets) to be linked from the Root Data Entity via `hasPart`, either directly or indirectly. While the session entities are linked via `pcdm:hasMember`, the validator cannot traverse this property to find the nested files. The files within sessions are orphaned from the `hasPart` hierarchy.
+
+### Warning Messages
+
+```
+Data entity "People/Awi_Heole/Awi_Heole.person" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "People/Awi_Heole/Awi_Heole_Photo.JPG" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "People/Awi_Heole/Awi_Heole_Consent.JPG" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR008/ETR008.session" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "People/Ilawi_Amosa/Ilawi_Amosa.person" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "People/Ilawi_Amosa/Ilawi_Amosa_Photo.jpg" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "People/Ilawi_Amosa/Ilawi_Amosa_Consent.JPG" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009.session" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/SceneHouse.JPG" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/SceneAroundCamera.JPG" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009_XDoc.docx" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009_Tiny_StandardAudio.wav.annotations.eaf" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009_Tiny.mp4" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009_Careful.mp3" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "Sessions/ETR009/ETR009_AText.txt" is not linked from Root Data Entity via hasPart (line 1032)
+Data entity "DescriptionDocuments/pretend%20description.txt" is not linked from Root Data Entity via hasPart (line 1032)
+```
+
+### Recommended Fix
+
+**Option A**: Add intermediate `Dataset` entities for session directories and link them via `hasPart`:
+
+```json
+{
+  "@id": "./",
+  "hasPart": [
+    { "@id": "Sessions/" },
+    { "@id": "People/" },
+    { "@id": "DescriptionDocuments/" },
+    { "@id": "./hewya.sprj" },
+    { "@id": "OtherDocuments/some%20other%20doc.txt" }
+  ]
+}
+```
+
+Then create Dataset entities:
+
+```json
+{
+  "@id": "Sessions/",
+  "@type": "Dataset",
+  "name": "Sessions",
+  "hasPart": [
+    { "@id": "Sessions/ETR008/" },
+    { "@id": "Sessions/ETR009/" }
+  ]
+},
+{
+  "@id": "Sessions/ETR009/",
+  "@type": "Dataset",
+  "name": "ETR009",
+  "hasPart": [
+    { "@id": "Sessions/ETR009/ETR009.session" },
+    { "@id": "Sessions/ETR009/SceneHouse.JPG" },
+    ...
+  ]
+}
+```
+
+**Option B**: Alternatively, extend the validator to follow `pcdm:hasMember` relationships when traversing the hierarchy (this would be a custom extension for LDAC-specific profiles).
+
+---
+
+## Problem 9: License Entities Missing `name` Property
+
+### Rule Violated
+
+> **(line 651)** The entity SHOULD have a human-readable `name`, in particular if its `@id` does not go to a human-readable Web page.
+
+### Actual Output
+
+```json
+{
+  "@id": "#license-paradisec-open",
+  "@type": "ldac:DataReuseLicense",
+  "ldac:access": { "@id": "ldac:OpenAccess" },
+  "description": "Marked with the PARADISEC-specific term, 'Open' which means 'Open (subject to PARADISEC access conditions)'"
+}
+```
+
+The entity has a `description` but no `name`.
+
+### Why It Breaks the Rule
+
+All entities should have a human-readable `name` property to identify them to users and consumers of the RO-Crate. This is especially important for entities with fragment identifiers like `#license-paradisec-open` that don't resolve to a web page.
+
+### Warning Messages
+
+```
+Entity "#license-paradisec-open" should have a name property (line 651)
+Entity "ldac:DataReuseLicense" should have a name property (line 651)
+```
+
+### Recommended Fix
+
+```diff
+{
+  "@id": "#license-paradisec-open",
+  "@type": "ldac:DataReuseLicense",
++ "name": "PARADISEC Open Access License",
+  "ldac:access": { "@id": "ldac:OpenAccess" },
+  "description": "Marked with the PARADISEC-specific term, 'Open' which means 'Open (subject to PARADISEC access conditions)'"
+}
+```
+
+---
+
+## Summary: hewya Project Validation Results
+
+| Issue                          | Count  | Type    | Spec Reference |
+| ------------------------------ | ------ | ------- | -------------- |
+| Orphaned contextual entities   | 2      | WARNING | line 431, 654  |
+| Files not linked via hasPart   | 16     | WARNING | line 1032      |
+| Entities missing name property | 2      | WARNING | line 651       |
+| **Total**                      | **20** | WARNING | -              |
+
+The hewya project RO-Crate is **technically valid** (no errors), but has **20 warnings** that should be addressed for better RO-Crate 1.2 compliance.

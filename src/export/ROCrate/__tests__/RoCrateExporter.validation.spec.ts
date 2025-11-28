@@ -712,6 +712,10 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(rootDataset).toHaveProperty("datePublished");
       expect(rootDataset).toHaveProperty("license");
 
+      // datePublished must be a string (ISO 8601), not an array (RO-Crate 1.2 spec line 884-891)
+      expect(typeof rootDataset.datePublished).toBe("string");
+      expect(rootDataset.datePublished).toMatch(/^\d{4}-\d{2}-\d{2}/); // ISO 8601 format
+
       // The validation should not have errors about missing required properties
       const missingLicenseError = validation.errors.find((error) =>
         error.message.includes("Missing required property: license")
