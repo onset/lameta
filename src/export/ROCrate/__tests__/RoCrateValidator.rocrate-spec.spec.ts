@@ -276,7 +276,8 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "files\\test.txt",
         "@type": "File",
-        name: "Test File"
+        name: "Test File",
+        encodingFormat: "text/plain"
       });
 
       const result = validator.validate(roCrate);
@@ -292,7 +293,8 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "files/test.txt",
         "@type": "File",
-        name: "Test File"
+        name: "Test File",
+        encodingFormat: "text/plain"
       });
 
       const result = validator.validate(roCrate);
@@ -343,7 +345,8 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "data/file.txt",
         "@type": "File",
-        name: "Test File"
+        name: "Test File",
+        encodingFormat: "text/plain"
       });
 
       const result = validator.validate(roCrate);
@@ -354,15 +357,19 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
     it("should accept File type aliases (AudioObject, VideoObject, etc.)", () => {
       const roCrate = createMinimalValidRoCrate();
+      // LAM-88: File entities SHOULD have encodingFormat per RO-Crate 1.2 spec line 1144
+      // https://linear.app/lameta/issue/LAM-88/ro-crate-file-entities-missing-encodingformat
       roCrate["@graph"].push({
         "@id": "audio.mp3",
         "@type": "AudioObject",
-        name: "Audio File"
+        name: "Audio File",
+        encodingFormat: "audio/mpeg"
       });
       roCrate["@graph"].push({
         "@id": "video.mp4",
         "@type": "VideoObject",
-        name: "Video File"
+        name: "Video File",
+        encodingFormat: "video/mp4"
       });
 
       const result = validator.validate(roCrate);

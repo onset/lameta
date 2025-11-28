@@ -48,7 +48,7 @@ describe("RoCrateValidator", () => {
     author: [{ "@id": "#person" }],
     accountablePerson: [{ "@id": "#person" }],
     publisher: [{ "@id": "#org" }],
-    datePublished: ["2024-01-01"],
+    datePublished: "2024-01-01",
     "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
     ...overrides
   });
@@ -79,10 +79,13 @@ describe("RoCrateValidator", () => {
           createValidDataset(),
           createValidRepositoryObject(),
           {
+            // LAM-88: File entities SHOULD have encodingFormat per RO-Crate 1.2 spec line 1144
+            // https://linear.app/lameta/issue/LAM-88/ro-crate-file-entities-missing-encodingformat
             "@id": "Sessions/ETR001/audio.wav",
             "@type": "AudioObject",
             name: "Audio file",
-            license: { "@id": "#license-open" }
+            license: { "@id": "#license-open" },
+            encodingFormat: "audio/wav"
           },
           {
             "@id": "#language_etr",
