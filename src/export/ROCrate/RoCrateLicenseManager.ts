@@ -124,16 +124,18 @@ export function createSessionLicense(session: Session, project: Project): any {
       ? getLdacAccessCategory(access, project.authorityLists)
       : expandLdacId("ldac:OpenAccess"); // Default to OpenAccess for unspecified access
 
-  const license: any = {
-    "@id": getNormalizedLicenseId(normalizedAccess, project),
-    "@type": expandLdacId("ldac:DataReuseLicense"),
-    "ldac:access": { "@id": ldacAccessCategory }
-  };
-
-  // Add description from access choice with archive-specific format
   const archiveConfigurationName =
     project.metadataFile?.getTextProperty("archiveConfigurationName") ||
     "current archive";
+
+  // LAM-96: License entities must have a human-readable name property per RO-Crate spec line 651
+  // https://linear.app/lameta/issue/LAM-96/ro-crate-license-entities-missing-name-property-hewya-project
+  const license: any = {
+    "@id": getNormalizedLicenseId(normalizedAccess, project),
+    "@type": expandLdacId("ldac:DataReuseLicense"),
+    name: `${archiveConfigurationName} ${normalizedAccess} License`,
+    "ldac:access": { "@id": ldacAccessCategory }
+  };
 
   if (access && access !== "unspecified" && access !== "") {
     const accessDescription = getDescriptionFromAccessChoice(
@@ -228,9 +230,12 @@ export function createLdacAccessTypeDefinitions(): object[] {
         "Data covered by this license requires explicit authorization for access.",
       inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
     },
+    // LAM-96: Class entity needs name property per RO-Crate spec line 651
+    // https://linear.app/lameta/issue/LAM-96/ro-crate-license-entities-missing-name-property-hewya-project
     {
       "@id": expandLdacId("ldac:DataReuseLicense"),
       "@type": "Class",
+      name: "Data Reuse License",
       subClassOf: { "@id": "http://schema.org/CreativeWork" },
       description: "A license document, setting out terms for reuse of data."
     }
