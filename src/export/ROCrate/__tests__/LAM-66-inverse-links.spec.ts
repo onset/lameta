@@ -212,10 +212,12 @@ describe("LAM-66: Inverse Links", () => {
       );
       expect(audioFile).toBeDefined();
 
-      // LAM-66: Verify the file has isPartOf pointing back to session
+      // LAM-66 + LAM-99: Session files now point to their session directory Dataset
+      // for RO-Crate 1.2 hasPart chain compliance
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // https://linear.app/lameta/issue/LAM-99/add-sessions-dataset
       expect(audioFile).toHaveProperty("isPartOf");
-      expect(audioFile.isPartOf).toEqual({ "@id": sessionEntity["@id"] });
+      expect(audioFile.isPartOf).toEqual({ "@id": "Sessions/Test_Session/" });
     });
 
     it("should add isPartOf to project document files pointing back to project root", async () => {
@@ -343,16 +345,58 @@ describe("LAM-66: Inverse Links", () => {
         }
       });
 
-      // LAM-66: Verify each child has isPartOf pointing back to parent
+      // LAM-66 + LAM-99: Verify each child has isPartOf pointing back to parent
+      // Exception: Session entities (#session-*) have files in hasPart but files'
+      // isPartOf points to the session directory (Sessions/sessionId/) instead.
+      // This is correct per LAM-99 for RO-Crate 1.2 hasPart chain compliance.
+      // Also skip contextual entities (Person, Organization) which don't need isPartOf.
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // https://linear.app/lameta/issue/LAM-99/add-sessions-dataset
       hasPartRefs.forEach(({ parentId, childId }) => {
         const childEntity = graph.find((e: any) => e["@id"] === childId);
         if (childEntity) {
-          expect(
-            childEntity,
-            `File ${childId} should have isPartOf`
-          ).toHaveProperty("isPartOf");
-          expect(childEntity.isPartOf).toEqual({ "@id": parentId });
+          // Skip contextual entities (Person, Organization, etc.) - they don't need isPartOf
+          const childTypes = Array.isArray(childEntity["@type"])
+            ? childEntity["@type"]
+            : [childEntity["@type"]];
+          const isContextualEntity = childTypes.some((t: string) =>
+            [
+              "Person",
+              "Organization",
+              "Place",
+              "DefinedTerm",
+              "Language"
+            ].includes(t)
+          );
+          if (isContextualEntity) {
+            return;
+          }
+
+          // Skip session entity → file relationships (files point to session directory)
+          const isSessionEntity = parentId.startsWith("#session-");
+          const isFileChild =
+            childEntity["@id"] &&
+            typeof childEntity["@id"] === "string" &&
+            childEntity["@id"].startsWith("Sessions/") &&
+            !childEntity["@id"].endsWith("/");
+
+          if (isSessionEntity && isFileChild) {
+            // For session files, isPartOf should point to the session directory
+            const sessionName = parentId.replace("#session-", "");
+            expect(
+              childEntity,
+              `File ${childId} should have isPartOf`
+            ).toHaveProperty("isPartOf");
+            expect(childEntity.isPartOf).toEqual({
+              "@id": `Sessions/${sessionName}/`
+            });
+          } else {
+            expect(
+              childEntity,
+              `File ${childId} should have isPartOf`
+            ).toHaveProperty("isPartOf");
+            expect(childEntity.isPartOf).toEqual({ "@id": parentId });
+          }
         }
       });
     });

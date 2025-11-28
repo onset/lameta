@@ -345,6 +345,19 @@ async function getRoCrateInternal(
       });
     });
 
+    // LAM-99: Create Sessions/ Dataset hierarchy for RO-Crate 1.2 compliance
+    // Data entities (files) must be reachable from root via hasPart chain
+    // See: https://linear.app/lameta/issue/LAM-99/add-sessions-dataset
+    const sessionsDatasetEntries = createSessionsDatasetHierarchy(
+      project,
+      flattenedSessionEntries,
+      entry.license
+    );
+    if (sessionsDatasetEntries.length > 0) {
+      // Add Sessions/ to root hasPart
+      entry.hasPart.push({ "@id": "Sessions/" });
+    }
+
     // Keep project-level description files under ldac:CollectionProtocol so LDAC validators
     // discover them via ldac:hasCollectionProtocol instead of the root hasPart list.
     if (
@@ -443,6 +456,7 @@ async function getRoCrateInternal(
     const baseGraph = [
       entry,
       ...flattenedSessionEntries,
+      ...sessionsDatasetEntries, // LAM-99: Sessions/ Dataset hierarchy
       ...boilerplateGraph,
       ...ldacAccessDefinitions,
       ...uniqueLicenses,
@@ -909,6 +923,101 @@ function deduplicateHasPartArrays(graph: any[]): any[] {
     }
     return entity;
   });
+}
+
+/**
+ * LAM-99: Creates a Sessions/ Dataset hierarchy for RO-Crate 1.2 compliance.
+ * Data entities (files) must be reachable from the root via hasPart chain.
+ *
+ * Creates:
+ * - Sessions/ Dataset (parent of all session directories)
+ * - Sessions/{sessionId}/ Dataset for each session (contains session files)
+ *
+ * Updates file entries' isPartOf to point to their session directory Dataset.
+ */
+function createSessionsDatasetHierarchy(
+  project: Project,
+  flattenedSessionEntries: any[],
+  license?: any
+): RoCrateEntity[] {
+  if (project.sessions.items.length === 0) {
+    return [];
+  }
+
+  const results: RoCrateEntity[] = [];
+  const sessionsDatasetHasPart: { "@id": string }[] = [];
+
+  // Group file entries by session directory
+  // Files have IDs like "Sessions/ETR008/ETR008.session"
+  // Session events have IDs like "#session-ETR008"
+  const filesBySessionDir = new Map<string, any[]>();
+
+  flattenedSessionEntries.forEach((entry: any) => {
+    const id = entry["@id"];
+    if (!id || typeof id !== "string") return;
+
+    // Skip session event entities (fragments like #session-ETR008)
+    if (id.startsWith("#")) return;
+
+    // Only process files in Sessions/ directory
+    if (!id.startsWith("Sessions/")) return;
+
+    // Extract session directory from file path: "Sessions/ETR008/file.ext" -> "Sessions/ETR008/"
+    const parts = id.split("/");
+    if (parts.length < 3) return; // Need at least Sessions/sessionId/filename
+
+    const sessionDirId = `Sessions/${parts[1]}/`;
+    const existing = filesBySessionDir.get(sessionDirId) || [];
+    existing.push(entry);
+    filesBySessionDir.set(sessionDirId, existing);
+  });
+
+  // Create a Dataset for each session directory
+  filesBySessionDir.forEach((files, sessionDirId) => {
+    // Extract session name from directory ID
+    const sessionName = sessionDirId.split("/")[1];
+
+    const sessionDirDataset: RoCrateEntity = {
+      "@id": sessionDirId,
+      "@type": "Dataset",
+      name: `Session ${sessionName}`,
+      description: `Files for session ${sessionName}.`,
+      hasPart: files.map((file: any) => ({ "@id": file["@id"] })),
+      isPartOf: { "@id": "Sessions/" }
+    };
+
+    if (license && typeof license === "object") {
+      sessionDirDataset.license = license;
+    }
+
+    results.push(sessionDirDataset);
+    sessionsDatasetHasPart.push({ "@id": sessionDirId });
+
+    // Update file entries' isPartOf to point to session directory Dataset
+    files.forEach((file: any) => {
+      file.isPartOf = { "@id": sessionDirId };
+    });
+  });
+
+  // Sort hasPart for consistency
+  sessionsDatasetHasPart.sort((a, b) => a["@id"].localeCompare(b["@id"]));
+
+  // Create the main Sessions/ Dataset
+  const sessionsDataset: RoCrateEntity = {
+    "@id": "Sessions/",
+    "@type": "Dataset",
+    name: "Sessions",
+    description: "Directory of sessions in this collection.",
+    hasPart: sessionsDatasetHasPart,
+    isPartOf: { "@id": "./" }
+  };
+
+  if (license && typeof license === "object") {
+    sessionsDataset.license = license;
+  }
+
+  // Return with Sessions/ first, then individual session directories
+  return [sessionsDataset, ...results];
 }
 
 function createPeopleDatasetEntry(
