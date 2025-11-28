@@ -117,6 +117,7 @@ describe("RoCrateExporter file handling", () => {
     mockProject = {
       filePrefix: "TestProject",
       sessions: { items: [mockSession] },
+      persons: { items: [mockPerson] }, // Required for #People dataset to be created
       findPerson: vi.fn().mockImplementation((name: string) => {
         if (name === "Awi_Heole") return mockPerson;
         return null;
@@ -206,7 +207,11 @@ describe("RoCrateExporter file handling", () => {
     });
   });
 
-  it("should link person files to person hasPart", async () => {
+  // LAM-97: Renamed from "should link person files to person hasPart" because Person entities
+  // cannot have hasPart (Person is not a subclass of CreativeWork). This test verifies the
+  // semantically-appropriate `image` property is used instead.
+  // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
+  it("should link person images via image property", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const personEntity = result["@graph"].find(
@@ -218,6 +223,29 @@ describe("RoCrateExporter file handling", () => {
       ? personEntity.image
       : [personEntity.image].filter(Boolean);
     expect(images).toContainEqual({
+      "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
+    });
+  });
+
+  // LAM-97: Per RO-Crate 1.2 spec (line 1032), data entities MUST be linked from root via hasPart.
+  // Since Person entities cannot have hasPart, person files should be attached to the #People
+  // Dataset entity instead. This ensures they are reachable from the root data entity.
+  // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
+  it("should include person files in #People dataset hasPart", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+
+    const peopleDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "#People"
+    );
+
+    expect(peopleDataset).toBeDefined();
+    expect(peopleDataset["@type"]).toBe("Dataset");
+
+    // The #People dataset should include both the Person entity AND their files
+    expect(peopleDataset.hasPart).toContainEqual({
+      "@id": awiPersonId
+    });
+    expect(peopleDataset.hasPart).toContainEqual({
       "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
     });
   });

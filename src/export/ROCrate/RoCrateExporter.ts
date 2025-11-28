@@ -936,14 +936,31 @@ function createPeopleDatasetEntry(
     return undefined;
   }
 
-  const sortedIds = Array.from(personIds).sort((a, b) => a.localeCompare(b));
+  // LAM-97: Collect file IDs associated with people (photos, consent forms, .person files).
+  // Per RO-Crate 1.2 spec (line 1032), data entities MUST be linked from the root via hasPart.
+  // Person entities are contextual (not subclass of CreativeWork) so cannot have hasPart.
+  // We link person files to the #People Dataset instead.
+  // See: https://linear.app/lameta/issue/LAM-97/attach-people-files-via-haspart
+  const personFileIds = candidateEntries
+    .filter((entry: any) => {
+      // A file is associated with a person if its `about` property references a known person
+      const aboutRef = entry.about?.["@id"];
+      return aboutRef && personIds.has(aboutRef);
+    })
+    .map((entry: any) => entry["@id"])
+    .filter((id: any) => typeof id === "string");
+
+  // Combine person IDs and their file IDs, then sort for consistency
+  const allIds = [...personIds, ...personFileIds].sort((a, b) =>
+    a.localeCompare(b)
+  );
 
   const dataset: RoCrateEntity = {
     "@id": "#People",
     "@type": "Dataset",
     name: "People",
     description: "Directory of people associated with this collection.",
-    hasPart: sortedIds.map((id) => ({ "@id": id })),
+    hasPart: allIds.map((id) => ({ "@id": id })),
     isPartOf: { "@id": "./" }
   };
 
