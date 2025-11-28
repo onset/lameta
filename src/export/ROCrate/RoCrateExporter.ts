@@ -933,25 +933,23 @@ function createPeopleDatasetEntry(
     return [];
   };
 
-  // Get actual person records from project to create per-person Datasets
+  // Get actual person records from project (people with folders)
   const personRecords = collectPersonRecords((project as any).persons);
-  const knownPeople = new Set(
+  const knownPeopleWithFolders = new Set(
     personRecords.map((person) => createPersonId(person))
   );
 
-  if (knownPeople.size === 0) {
-    return undefined;
-  }
-
   const candidateEntries = [...flattenedSessionEntries, ...otherEntries];
-  const personEntries = candidateEntries.filter(
-    (entry: any) =>
-      isPersonEntity(entry) &&
-      typeof entry["@id"] === "string" &&
-      knownPeople.has(entry["@id"])
+
+  // Find ALL Person entities in the graph, including:
+  // 1. People with folders (from project.persons)
+  // 2. Unresolved contributors (people mentioned in sessions without person folders)
+  // 3. #unknown-contributor entity
+  const allPersonEntries = candidateEntries.filter(
+    (entry: any) => isPersonEntity(entry) && typeof entry["@id"] === "string"
   );
 
-  if (personEntries.length === 0) {
+  if (allPersonEntries.length === 0) {
     return undefined;
   }
 
@@ -960,38 +958,48 @@ function createPeopleDatasetEntry(
   // which is then connected to #People.
   // See: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
 
-  // Group files by the person they're about
+  // Group files by the person they're about (only for people with folders who have files)
   const filesByPerson = new Map<string, any[]>();
   candidateEntries.forEach((entry: any) => {
     const aboutRef = entry.about?.["@id"];
-    if (aboutRef && knownPeople.has(aboutRef)) {
+    if (aboutRef && knownPeopleWithFolders.has(aboutRef)) {
       const existing = filesByPerson.get(aboutRef) || [];
       existing.push(entry);
       filesByPerson.set(aboutRef, existing);
     }
   });
 
-  // Create per-person Dataset entries
+  // Create per-person Dataset entries (only for people with files)
   const personFilesDatasets: RoCrateEntity[] = [];
   const peopleDatasetHasPart: { "@id": string }[] = [];
 
-  // Map person IDs to person records for name lookup
+  // Map person IDs to person records for name lookup (only for people with folders)
   const personIdToRecord = new Map<string, any>();
   personRecords.forEach((person) => {
     personIdToRecord.set(createPersonId(person), person);
   });
 
-  personEntries.forEach((personEntry: any) => {
+  allPersonEntries.forEach((personEntry: any) => {
     const personId = personEntry["@id"];
     const personRecord = personIdToRecord.get(personId);
     const personFiles = filesByPerson.get(personId) || [];
 
+    // If the person has no files, reference them directly in #People.hasPart
+    // (no intermediate Dataset needed)
+    if (personFiles.length === 0) {
+      peopleDatasetHasPart.push({ "@id": personId });
+      return;
+    }
+
+    // Person has files - create an intermediate Dataset
     // Get the person's display name for the Dataset name
     const personName =
       personRecord?.filePrefix || personEntry.name || "Unknown";
-    const datasetId = createPersonFilesDatasetId(
-      personRecord || { filePrefix: personName }
-    );
+
+    // Create a dataset ID based on whether this is a known person with folder or not
+    const datasetId = personRecord
+      ? createPersonFilesDatasetId(personRecord)
+      : createPersonFilesDatasetId({ filePrefix: personName });
 
     // Create the person-files Dataset with person entity + all their files
     const personFilesDataset: RoCrateEntity = {

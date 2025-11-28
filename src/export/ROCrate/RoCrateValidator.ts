@@ -194,6 +194,7 @@ const SCHEMA_ORG_TYPES = new Set([
 ]);
 
 // Properties that reference other entities and must use {@id} form
+// Note: encodingFormat is NOT included because MIME type strings are valid per RO-Crate spec
 const REFERENCE_PROPERTIES = new Set([
   "author",
   "creator",
@@ -218,7 +219,6 @@ const REFERENCE_PROPERTIES = new Set([
   "temporalCoverage",
   "thumbnail",
   "image",
-  "encodingFormat",
   "programmingLanguage",
   "instrument",
   "object",

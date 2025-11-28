@@ -21,12 +21,21 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
   setupCommonMocks(true);
 
   it("keeps Person entities contextual and excludes them from root hasPart", async () => {
-    // Create person with spaces using test utilities
+    // Mock files for the person - needed for intermediate dataset creation
+    const mockPersonFile = {
+      getActualFilePath: () =>
+        "/people/BAHOUNGOU Hilaire/BAHOUNGOU Hilaire.person",
+      getModifiedDate: () => new Date("2024-01-01"),
+      pathInFolderToLinkFileOrLocalCopy: "BAHOUNGOU Hilaire.person"
+    } as any;
+
+    // Create person with spaces using test utilities (must have files to get intermediate dataset)
     const personWithSpaces = createMockPerson({
       filePrefix: "BAHOUNGOU Hilaire",
       metadata: {
         fullName: "BAHOUNGOU Hilaire"
-      }
+      },
+      files: [mockPersonFile]
     });
 
     // Create session with contribution using test utilities
