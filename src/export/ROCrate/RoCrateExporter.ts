@@ -404,9 +404,6 @@ async function getRoCrateInternal(
       );
     }
 
-    // Add LDAC access type definitions to other entries
-    const ldacAccessDefinitions = createLdacAccessTypeDefinitions();
-
     // Create unique licenses for all sessions
     const uniqueLicenses = createDistinctLicenses(
       project.sessions.items as Session[],
@@ -422,6 +419,24 @@ async function getRoCrateInternal(
         "License for the collection as a whole. Individual items may have their own specific licenses.",
       "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") }
     };
+
+    // LAM-92: Collect used access types from all licenses to avoid orphaned entities
+    // Only include LDAC access type definitions that are actually referenced
+    // https://linear.app/lameta/issue/LAM-92/ro-crate-contextual-entities-not-referenced-orphaned-entities-hewya
+    const usedAccessTypes = new Set<string>();
+    uniqueLicenses.forEach((license: any) => {
+      if (license["ldac:access"]?.["@id"]) {
+        usedAccessTypes.add(license["ldac:access"]["@id"]);
+      }
+    });
+    // Also include the collection license's access type
+    if (collectionLicense["ldac:access"]?.["@id"]) {
+      usedAccessTypes.add(collectionLicense["ldac:access"]["@id"]);
+    }
+
+    // Add LDAC access type definitions for only the types that are actually used
+    const ldacAccessDefinitions =
+      createLdacAccessTypeDefinitions(usedAccessTypes);
 
     const uniqueOtherEntries = getUniqueEntries(otherEntries);
 

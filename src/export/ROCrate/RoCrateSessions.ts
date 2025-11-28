@@ -155,8 +155,13 @@ export async function createSessionEntry(
     const license = createSessionLicense(session, project);
     allEntries.push(license);
 
-    // Add LDAC access type definitions to the graph
-    otherEntries.push(...createLdacAccessTypeDefinitions());
+    // LAM-92: Only include LDAC access type definitions that are actually used
+    // https://linear.app/lameta/issue/LAM-92/ro-crate-contextual-entities-not-referenced-orphaned-entities-hewya
+    const usedAccessTypes = new Set<string>();
+    if (license["ldac:access"]?.["@id"]) {
+      usedAccessTypes.add(license["ldac:access"]["@id"]);
+    }
+    otherEntries.push(...createLdacAccessTypeDefinitions(usedAccessTypes));
 
     if (publisher) {
       // Standalone exports share the same archive-level publisher entity as collections

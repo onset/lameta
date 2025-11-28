@@ -11,9 +11,6 @@ import { expandLdacId } from "./RoCrateUtils";
 // replacing the earlier split between RoCrateLicenseUtils.ts and RoCrateLicenseManager.ts.
 // =============================================================================
 
-// Cache for LDAC access type definitions (static content, no need to regenerate)
-let cachedLdacAccessTypeDefinitions: object[] | null = null;
-
 /**
  * Check if a license value is a raw access value that needs normalization.
  * Raw access values are archive-specific labels that don't start with "#"
@@ -200,56 +197,71 @@ export function createDistinctLicenses(
 
 /**
  * Creates LDAC access type definitions for the RO-Crate graph.
- * Results are cached since the definitions are static.
- * @returns Array of LDAC access type definition objects
+ * Only includes definitions for access types that are actually used.
+ *
+ * LAM-92: Previously, this function always returned ALL LDAC access type definitions
+ * regardless of what was actually used, causing orphaned entity warnings.
+ * https://linear.app/lameta/issue/LAM-92/ro-crate-contextual-entities-not-referenced-orphaned-entities-hewya
+ *
+ * @param usedAccessTypes Set of access type IDs that are actually referenced by licenses
+ * @returns Array of LDAC access type definition objects for only the used types
  */
-export function createLdacAccessTypeDefinitions(): object[] {
-  if (cachedLdacAccessTypeDefinitions) {
-    return cachedLdacAccessTypeDefinitions;
+export function createLdacAccessTypeDefinitions(
+  usedAccessTypes: Set<string>
+): object[] {
+  // If no access types are used, return empty array to avoid orphaned entities
+  if (usedAccessTypes.size === 0) {
+    return [];
   }
 
-  cachedLdacAccessTypeDefinitions = [
-    {
-      "@id": expandLdacId("ldac:AccessTypes"),
-      "@type": "DefinedTermSet",
-      name: "Access Types"
-    },
-    {
+  const definitions: object[] = [];
+
+  // Always include the AccessTypes container (DefinedTermSet) if any access types are used
+  definitions.push({
+    "@id": expandLdacId("ldac:AccessTypes"),
+    "@type": "DefinedTermSet",
+    name: "Access Types"
+  });
+
+  // Only include OpenAccess if it's actually used
+  if (usedAccessTypes.has(expandLdacId("ldac:OpenAccess"))) {
+    definitions.push({
       "@id": expandLdacId("ldac:OpenAccess"),
       "@type": "DefinedTerm",
       name: "Open Access",
       description:
         "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
       inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
-    },
-    {
+    });
+  }
+
+  // Only include AuthorizedAccess if it's actually used
+  if (usedAccessTypes.has(expandLdacId("ldac:AuthorizedAccess"))) {
+    definitions.push({
       "@id": expandLdacId("ldac:AuthorizedAccess"),
       "@type": "DefinedTerm",
       name: "Authorized Access",
       description:
         "Data covered by this license requires explicit authorization for access.",
       inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
-    },
-    // LAM-96: Class entity needs name property per RO-Crate spec line 651
-    // https://linear.app/lameta/issue/LAM-96/ro-crate-license-entities-missing-name-property-hewya-project
-    {
-      "@id": expandLdacId("ldac:DataReuseLicense"),
-      "@type": "Class",
-      name: "Data Reuse License",
-      subClassOf: { "@id": "http://schema.org/CreativeWork" },
-      description: "A license document, setting out terms for reuse of data."
-    }
-  ];
+    });
+  }
 
-  return cachedLdacAccessTypeDefinitions;
+  // LAM-92: Do NOT include ldac:DataReuseLicense class definition.
+  // It's used as "@type": "ldac:DataReuseLicense" in licenses, not as an @id reference.
+  // Including it causes orphaned entity warnings since nothing references it by @id.
+
+  return definitions;
 }
 
 /**
  * Clears the LDAC access type definitions cache.
- * Primarily used for testing.
+ * This is now a no-op since LAM-92 removed caching (results depend on input parameters).
+ * Kept for backward compatibility with existing tests.
  */
 export function clearLdacAccessTypeDefinitionsCache(): void {
-  cachedLdacAccessTypeDefinitions = null;
+  // No-op: caching was removed in LAM-92 because createLdacAccessTypeDefinitions
+  // now takes a usedAccessTypes parameter and returns different results based on input.
 }
 
 // =============================================================================

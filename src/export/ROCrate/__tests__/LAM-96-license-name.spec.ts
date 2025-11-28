@@ -139,21 +139,30 @@ describe("LAM-96: License entities must have name property", () => {
   });
 
   describe("createLdacAccessTypeDefinitions", () => {
-    it("should include name property on ldac:DataReuseLicense class entity", () => {
-      const definitions = createLdacAccessTypeDefinitions();
+    // LAM-92: ldac:DataReuseLicense is no longer included in output because it was
+    // causing orphaned entity warnings (it's used as @type, not referenced by @id).
+    // https://linear.app/lameta/issue/LAM-92/ro-crate-contextual-entities-not-referenced-orphaned-entities-hewya
+    it("should NOT include ldac:DataReuseLicense class entity (LAM-92 fix)", () => {
+      const usedAccessTypes = new Set([
+        expandLdacId("ldac:OpenAccess"),
+        expandLdacId("ldac:AuthorizedAccess")
+      ]);
+      const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const licenseClass = definitions.find(
         (d: any) => d["@id"] === expandLdacId("ldac:DataReuseLicense")
       );
 
-      expect(licenseClass).toBeDefined();
-      expect((licenseClass as any).name).toBeDefined();
-      expect(typeof (licenseClass as any).name).toBe("string");
-      expect((licenseClass as any).name).toBe("Data Reuse License");
+      // LAM-92: This entity should NOT be in the output - it causes orphaned entity warnings
+      expect(licenseClass).toBeUndefined();
     });
 
     it("should have name on all DefinedTerm entities", () => {
-      const definitions = createLdacAccessTypeDefinitions();
+      const usedAccessTypes = new Set([
+        expandLdacId("ldac:OpenAccess"),
+        expandLdacId("ldac:AuthorizedAccess")
+      ]);
+      const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const definedTerms = definitions.filter(
         (d: any) => d["@type"] === "DefinedTerm"
@@ -169,7 +178,8 @@ describe("LAM-96: License entities must have name property", () => {
     });
 
     it("should have name on DefinedTermSet entities", () => {
-      const definitions = createLdacAccessTypeDefinitions();
+      const usedAccessTypes = new Set([expandLdacId("ldac:OpenAccess")]);
+      const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const termSet = definitions.find(
         (d: any) => d["@type"] === "DefinedTermSet"
