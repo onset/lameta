@@ -4,19 +4,19 @@
 
 ## Root Data Entity
 
-- [ ] **(line 192)** The _Root Data Entity_ MUST have `@type` `Dataset` (though it MAY have more than one type).
+- [x] **(line 192)** The _Root Data Entity_ MUST have `@type` `Dataset` (though it MAY have more than one type).
 
 ## RO-Crate Metadata Document Requirements
 
 - [ ] **(line 428)** The _RO-Crate Metadata Document_ MUST be valid [JSON-LD 1.0](https://www.w3.org/TR/2014/REC-json-ld-20140116/) in [flattened](https://www.w3.org/TR/json-ld/#flattened-document-form) and [compacted](https://www.w3.org/TR/json-ld/#compacted-document-form) form.
 - [x] **(line 429)** The _RO-Crate JSON-LD_ MUST use the _RO-Crate JSON-LD Context_ <https://w3id.org/ro/crate/1.2/context> by reference.
-- [ ] **(line 431)** Any referenced _contextual entities_ SHOULD be described in the _RO-Crate Metadata Document_ with the same identifier. Any _contextual entity_ in the _RO-Crate Metadata Document_ SHOULD be linked to from at least one of the other entities using the same identifier.
+- [x] **(line 431)** Any referenced _contextual entities_ SHOULD be described in the _RO-Crate Metadata Document_ with the same identifier. Any _contextual entity_ in the _RO-Crate Metadata Document_ SHOULD be linked to from at least one of the other entities using the same identifier.
 
 ## Attached RO-Crate Package Requirements
 
 - [ ] **(line 455)** When processing an _Attached RO-Crate Package_ the _RO-Crate Metadata Document_ MUST be present in the _RO-Crate Root_ and MUST be named `ro-crate-metadata.json`.
 - [ ] **(line 466-477)** The file path structure of an _Attached RO-Crate Package_ MUST include `ro-crate-metadata.json` in the root. It MAY include `ro-crate-preview.html` and `ro-crate-preview_files/` directory. Payload files and directories MAY be described within the _RO-Crate Metadata File_ as Data Entities.
-- [ ] **(line 479)** The `@id` of the _Root Data Entity_ in an _Attached RO-Crate Package_ MUST be either `./` or a URI (such as a DOI URL or other persistent URL).
+- [x] **(line 479)** The `@id` of the _Root Data Entity_ in an _Attached RO-Crate Package_ MUST be either `./` or a URI (such as a DOI URL or other persistent URL).
 
 ## Payload files and directories
 
@@ -37,15 +37,15 @@
 
 - [x] **(line 648)** Every entity MUST have an `@id`.
 - [x] **(line 649)** Every entity MUST have a `@type`, which MAY be an array.
-- [ ] **(line 650)** The `@type` SHOULD include at least one [Schema.org](http://schema.org) type that accurately describes the entity. [Thing](http://schema.org/Thing) or [CreativeWork](http://schema.org/CreativeWork) are valid fallbacks.
+- [x] **(line 650)** The `@type` SHOULD include at least one [Schema.org](http://schema.org) type that accurately describes the entity. [Thing](http://schema.org/Thing) or [CreativeWork](http://schema.org/CreativeWork) are valid fallbacks.
 - [x] **(line 651)** The entity SHOULD have a human-readable `name`, in particular if its `@id` does not go to a human-readable Web page.
-- [ ] **(line 653)** Property references to other entities (e.g. `author` property to a `Person` entity) MUST use the `{ "@id": "..."}` object form.
-- [ ] **(line 654)** The entity SHOULD be ultimately referenceable from the root data entity (possibly through another reachable data entity or contextual entity).
+- [x] **(line 653)** Property references to other entities (e.g. `author` property to a `Person` entity) MUST use the `{ "@id": "..."}` object form.
+- [x] **(line 654)** The entity SHOULD be ultimately referenceable from the root data entity (possibly through another reachable data entity or contextual entity).
 
 ## Differences from Schema.org
 
 - [ ] **(line 669-671)** Generally, the standard _type_ and _property_ names (_terms_) from [Schema.org](http://schema.org) should be used. RO-Crate uses `File` mapped to <http://schema.org/MediaObject>.
-- [ ] **(line 674)** Any nested entities in _RO-Crate JSON-LD_ MUST be described as separate contextual entities in the flat `@graph` list.
+- [x] **(line 674)** Any nested entities in _RO-Crate JSON-LD_ MUST be described as separate contextual entities in the flat `@graph` list.
 - [ ] **(line 782)** RO-Crates SHOULD contain stable persistent URIs to identify all entities wherever possible.
 
 ## RO-Crate Metadata Descriptor
@@ -55,7 +55,7 @@
 
 ## Root Data Entity Requirements
 
-- [ ] **(line 884-891)** The _Root Data Entity_ MUST have all of the following properties:
+- [x] **(line 884-891)** The _Root Data Entity_ MUST have all of the following properties:
   - `@type`: MUST be [Dataset](http://schema.org/Dataset) or an array that contains `Dataset`
   - `@id`: SHOULD be the string `./` or an absolute URI
   - `name`: SHOULD identify the dataset to humans well enough to disambiguate it from other RO-Crates
@@ -65,8 +65,8 @@
 
 ## Root Data Entity identifier
 
-- [ ] **(line 903)** The _Root Data Entity_'s `@id` SHOULD be either `./` (indicating the directory of `ro-crate-metadata.json` is the RO-Crate Root), or an absolute URI.
-- [ ] **(line 907)** If using a `PropertyValue` for `identifier`, it MUST have a human readable `value`, and SHOULD have a `url` if the identifier is Web-resolvable.
+- [x] **(line 903)** The _Root Data Entity_'s `@id` SHOULD be either `./` (indicating the directory of `ro-crate-metadata.json` is the RO-Crate Root), or an absolute URI.
+- [x] **(line 907)** If using a `PropertyValue` for `identifier`, it MUST have a human readable `value`, and SHOULD have a `url` if the identifier is Web-resolvable.
 
 ## Resolvable persistent identifiers and citation text
 
@@ -75,7 +75,7 @@
 
 ## Data Entities
 
-- [ ] **(line 1032)** Where files and folders are represented as _Data Entities_ in the RO-Crate JSON-LD, these MUST be linked to, either directly or indirectly, from the [Root Data Entity](#root-data-entity) using the [hasPart](http://schema.org/hasPart) property. Directory hierarchies MAY be represented with nested [Dataset](http://schema.org/Dataset) _Data Entities_, or the Root Data Entity MAY refer to files anywhere in the hierarchy using [hasPart](http://schema.org/hasPart).
+- [x] **(line 1032)** Where files and folders are represented as _Data Entities_ in the RO-Crate JSON-LD, these MUST be linked to, either directly or indirectly, from the [Root Data Entity](#root-data-entity) using the [hasPart](http://schema.org/hasPart) property. Directory hierarchies MAY be represented with nested [Dataset](http://schema.org/Dataset) _Data Entities_, or the Root Data Entity MAY refer to files anywhere in the hierarchy using [hasPart](http://schema.org/hasPart).
 - [ ] **(line 1034)** _Data Entities_ representing files MUST have `"File"` as a value for `@type`. `File` is an RO-Crate alias for <http://schema.org/MediaObject>. The term _File_ includes:
 - [ ] **(line 1041)** In all cases, `@type` MAY be an array to also specify a more specific type, e.g. `"@type": ["File", "ComputationalWorkflow"]`
 - [ ] **(line 1045)** In any of the above cases where files are not described, a directory containing a set of files MAY be described using a `Dataset` _Data Entity_ that encapsulates the files with a `description` property that explains the contents. If the RO-Crate file structure is flat, or files are not grouped together, a `description` property on the _Root Data Entity_ may be used, or a `Dataset` with a local reference beginning with `#` (e.g. to describe a certain type of file which occurs throughout the crate). This approach is recommended for RO-Crates which are to be deposited in a long-term archive.
@@ -88,9 +88,9 @@
   - `@type`: MUST be `File`, or an array where `File` is one of the values.
   - `@id`: MUST be a relative or absolute URI. The `@id` MUST be one of either: a. A relative URI, indicating that a file MUST be present at the path `@id` relative to the _RO-Crate Root_. b. An absolute URI, indicating that the entity is a [Web-based Data Entity](#web-based-data-entities).
 - [ ] **(line 1140)** A [File](http://schema.org/MediaObject) in an _Attached RO-Crate Package_ MAY have also a `contentURL` property which corresponds to a download link for the file. Following the link (allowing for HTTP redirects) SHOULD directly download the file.
-- [ ] **(line 1144)** Additionally, `File` entities SHOULD have:
+- [x] **(line 1144)** Additionally, `File` entities SHOULD have:
 - [ ] **(line 1152)** RO-Crate's `File` is an alias for schema.org type [MediaObject](http://schema.org/MediaObject), any of its properties MAY also be used (adding contextual entities as needed). [Files on the web](#data-entities-in-an-attached-ro-crate-that-are-also-on-the-web) SHOULD also use `identifier`, `url`, `subjectOf`, and/or `mainEntityOfPage`.
-- [ ] **(line 1154)** A `File` entity MAY have an `@id` that is a local identifier beginning with `#`, in which case it is **not** considered to be a Data Entity, though it MAY still be linked to the _Root Data Entity_ via [hasPart](http://schema.org/hasPart). This is useful for describing physical files which are deliberately not present, for example if they are expected to be created by running a process. In this case, the `localPath` property SHOULD be used to indicate that a `File` could be found at that path in some circumstances.
+- [x] **(line 1154)** A `File` entity MAY have an `@id` that is a local identifier beginning with `#`, in which case it is **not** considered to be a Data Entity, though it MAY still be linked to the _Root Data Entity_ via [hasPart](http://schema.org/hasPart). This is useful for describing physical files which are deliberately not present, for example if they are expected to be created by running a process. In this case, the `localPath` property SHOULD be used to indicate that a `File` could be found at that path in some circumstances.
 
 ## Directory Data Entity
 
@@ -99,16 +99,16 @@
   - `@id` MUST be either:
     - In an _Attached RO-Crate Package_ ONLY -- a _URI Path_ that SHOULD end with `/`. This MUST resolve to a directory which is present in the RO-Crate Root along with its parent directories.
     - An absolute URI which SHOULD resolve to a programmatic listing of the content of the "directory" (e.g. another RO-Crate).
-- [ ] **(line 1169)** Additionally, `Dataset` entities SHOULD have:
-- [ ] **(line 1175)** Any of the properties of schema.org [Dataset](http://schema.org/Dataset) MAY additionally be used (adding contextual entities as needed). [Directories on the web](#directories-on-the-web-dataset-distributions) SHOULD also provide `distribution`.
-- [ ] **(line 1177)** A [Dataset](http://schema.org/Dataset) which has an `@id` that is a local identifier beginning with `#` is **not** considered a Data Entity -- but MAY be used to describe a set of files or other resources, and MAY still be linked to the _Root Data Entity_ via [hasPart](http://schema.org/hasPart). For example, if the dataset contained a large number of `*.ai` files which were spread throughout the crate structure and which did not have corresponding File Data Entities, then a approach to describing these files would be:
+- [x] **(line 1169)** Additionally, `Dataset` entities SHOULD have:
+- [x] **(line 1175)** Any of the properties of schema.org [Dataset](http://schema.org/Dataset) MAY additionally be used (adding contextual entities as needed). [Directories on the web](#directories-on-the-web-dataset-distributions) SHOULD also provide `distribution`.
+- [x] **(line 1177)** A [Dataset](http://schema.org/Dataset) which has an `@id` that is a local identifier beginning with `#` is **not** considered a Data Entity -- but MAY be used to describe a set of files or other resources, and MAY still be linked to the _Root Data Entity_ via [hasPart](http://schema.org/hasPart). For example, if the dataset contained a large number of `*.ai` files which were spread throughout the crate structure and which did not have corresponding File Data Entities, then a approach to describing these files would be:
 
 ## Web-based Data Entities
 
 - [ ] **(line 1247)** Additional care SHOULD be taken to improve persistence and long-term preservation of web resources included in an RO-Crate, as they can be more difficult to archive or move along with the _RO-Crate Root_, and may change intentionally or unintentionally, leaving the RO-Crate with incomplete or outdated information.
 - [ ] **(line 1249)** File Data Entities with an `@id` URI outside the _RO-Crate Root_ SHOULD at the time of RO-Crate creation be directly downloadable by a simple non-interactive retrieval (e.g. HTTP GET) of a single data stream, permitting redirections and HTTP/HTTPS authentication. For instance, in the example above, <https://zenodo.org/record/3541888> and <https://doi.org/10.5281/zenodo.3541888> cannot be used as `@id` as retrieving these URLs gives a HTML landing page rather than the desired PDF as indicated by `encodingFormat`.
 - [ ] **(line 1251)** _Web-based Data Entities_ SHOULD NOT reference intermediate resources such as splash-pages, search services or web-based viewer applications.
-- [ ] **(line 1253)** As files on the web may change, the timestamp property [sdDatePublished](http://schema.org/sdDatePublished) SHOULD be included to indicate when the absolute URL was accessed, and derived metadata like [encodingFormat](http://schema.org/encodingFormat) and [contentSize](http://schema.org/contentSize) were considered to be representative:
+- [x] **(line 1253)** As files on the web may change, the timestamp property [sdDatePublished](http://schema.org/sdDatePublished) SHOULD be included to indicate when the absolute URL was accessed, and derived metadata like [encodingFormat](http://schema.org/encodingFormat) and [contentSize](http://schema.org/contentSize) were considered to be representative:
 - [ ] **(line 1266)** Web-based entities MAY use the property [localPath](https://w3id.org/ro/terms#localPath) to indicate a path that can be used to when downloading the data in an _Attached RO-Crate Package_ context. This may be used to instantiate local copies of web-based resources in an _Attached RO-Crate Package_.
 
 ## Data entities in an _Attached RO-Crate_ that are also on the web

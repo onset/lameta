@@ -1,3 +1,13 @@
+/**
+ * RoCrateExporter.validation.spec.ts - Integration tests for RO-Crate export
+ *
+ * This file contains INTEGRATION TESTS that generate actual RO-Crate output
+ * using the getRoCrate() function with mocked project/session data, and then
+ * validate the generated output meets RO-Crate and LDAC profile requirements.
+ *
+ * For UNIT TESTS of the validation logic itself (RoCrateValidator class and
+ * ensureSubjectLanguage function), see RoCrateValidator.spec.ts.
+ */
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import * as fs from "fs-extra";
 

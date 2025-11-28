@@ -1,3 +1,13 @@
+/**
+ * RoCrateValidator.spec.ts - Unit tests for the RoCrateValidator class
+ *
+ * This file contains UNIT TESTS for the validation logic itself, testing the
+ * RoCrateValidator class and ensureSubjectLanguage function in isolation with
+ * hand-crafted test data.
+ *
+ * For INTEGRATION TESTS that generate actual RO-Crate output via getRoCrate()
+ * and then validate it, see RoCrateExporter.validation.spec.ts.
+ */
 import { vi, describe, it, beforeEach, expect } from "vitest";
 import { RoCrateValidator, ensureSubjectLanguage } from "../RoCrateValidator";
 import { RoCrateLanguages } from "../RoCrateLanguages";
@@ -19,6 +29,15 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
 
 describe("RoCrateValidator", () => {
   let validator: RoCrateValidator;
+
+  // Helper for creating the required metadata descriptor entity (RO-Crate 1.2 line 822)
+  const createMetadataDescriptor = () => ({
+    "@id": "ro-crate-metadata.json",
+    "@type": "CreativeWork",
+    about: { "@id": "./" },
+    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" }
+  });
+
   const createValidDataset = (overrides: Record<string, any> = {}) => ({
     "@id": "./",
     "@type": ["Dataset", "RepositoryCollection"],
@@ -56,11 +75,13 @@ describe("RoCrateValidator", () => {
       const validRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
+          createMetadataDescriptor(),
           createValidDataset(),
           createValidRepositoryObject(),
           {
             "@id": "Sessions/ETR001/audio.wav",
             "@type": "AudioObject",
+            name: "Audio file",
             license: { "@id": "#license-open" }
           },
           {
@@ -92,7 +113,9 @@ describe("RoCrateValidator", () => {
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("RO-Crate must have a @graph array");
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@graph array")
+      );
     });
 
     it("should fail for root collection without ldac:subjectLanguage", () => {
@@ -221,11 +244,13 @@ describe("RoCrateValidator", () => {
       const validRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
+          createMetadataDescriptor(),
           dataset,
           repositoryObject,
           {
             "@id": "Sessions/ETR001/audio.wav",
             "@type": "AudioObject",
+            name: "Audio file",
             license: { "@id": "#license-open" }
           },
           {
@@ -251,7 +276,7 @@ describe("RoCrateValidator", () => {
 
       const validRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": [dataset]
+        "@graph": [createMetadataDescriptor(), dataset]
       };
 
       const result = validator.validate(validRoCrate);
