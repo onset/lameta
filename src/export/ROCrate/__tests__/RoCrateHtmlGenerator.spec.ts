@@ -1361,4 +1361,37 @@ describe("RoCrateHtmlGenerator", () => {
     // Should format small file size as KB
     expect(html).toContain("1 KB");
   });
+
+  it("should display Country from contentLocation Place entity", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project",
+          contentLocation: [{ "@id": "#place-country-Papua_New_Guinea" }]
+        },
+        {
+          "@id": "#place-country-Papua_New_Guinea",
+          "@type": "Place",
+          name: "Papua New Guinea",
+          description: "Located in Oceania"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should render the Country field with the place name
+    expect(html).toContain("Country:");
+    expect(html).toContain("Papua New Guinea");
+
+    // Should NOT render as "Unknown"
+    const countrySection = html.match(
+      /Country:<\/span><span class="property-value">([^<]+)/
+    );
+    expect(countrySection).toBeTruthy();
+    expect(countrySection![1]).not.toContain("Unknown");
+  });
 });

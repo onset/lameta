@@ -190,7 +190,7 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
       label: "Collection Working Languages"
     },
     "region",
-    "country"
+    { property: "contentLocation", label: "Country" }
   ],
   Session: [
     "description",
