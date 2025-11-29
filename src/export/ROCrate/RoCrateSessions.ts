@@ -18,6 +18,7 @@ import { RoCrateLanguages } from "./RoCrateLanguages";
 import { ensureSubjectLanguage } from "./RoCrateValidator";
 import {
   createSessionId,
+  createSessionDirectoryId,
   createPersonId,
   createUnresolvedContributorId
 } from "./RoCrateUtils";
@@ -71,6 +72,12 @@ export async function createSessionEntry(
   // Add bidirectional pcdm:memberOf link for sessions that are part of a collection
   if (!isStandaloneSession) {
     mainSessionEntry["pcdm:memberOf"] = { "@id": "./" };
+
+    // LAM-100: Link CollectionEvent to its session directory Dataset via `subjectOf`
+    // The CollectionEvent describes the session metadata; the Dataset contains the files.
+    // The inverse (Dataset.about -> CollectionEvent) is added in createSessionsDatasetHierarchy.
+    // See: https://linear.app/lameta/issue/LAM-100/new-session-structure
+    mainSessionEntry.subjectOf = { "@id": createSessionDirectoryId(session) };
   }
 
   // Add session-specific properties for Events

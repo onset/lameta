@@ -121,6 +121,22 @@ export function createSessionId(session: any): string {
 }
 
 /**
+ * Creates a consistent session directory Dataset ID.
+ * LAM-100: https://linear.app/lameta/issue/LAM-100/new-session-structure
+ *
+ * The session directory Dataset contains files and is linked to its
+ * corresponding CollectionEvent via about/subjectOf relationships.
+ *
+ * Format: Sessions/{sanitized-filePrefix}/
+ * Uses sanitizeForIri to handle special characters properly.
+ */
+export function createSessionDirectoryId(session: any): string {
+  const baseValue = (session?.filePrefix || "session").toString();
+  const sanitized = sanitizeForIri(baseValue) || "session";
+  return `Sessions/${sanitized}/`;
+}
+
+/**
  * Creates a consistent Person ID for RO-Crate entities.
  * Person IDs use a bare fragment without a prefix per LDAC guidance.
  */

@@ -977,13 +977,20 @@ function createSessionsDatasetHierarchy(
     // Extract session name from directory ID
     const sessionName = sessionDirId.split("/")[1];
 
+    // LAM-100: Link session directory Dataset to its CollectionEvent via `about`
+    // The Dataset contains the files and is "about" the CollectionEvent (the session metadata).
+    // The inverse (CollectionEvent.subjectOf -> Dataset) is added in RoCrateSessions.ts.
+    // See: https://linear.app/lameta/issue/LAM-100/new-session-structure
+    const sessionEventId = `#session-${sessionName}`;
+
     const sessionDirDataset: RoCrateEntity = {
       "@id": sessionDirId,
       "@type": "Dataset",
       name: `Session ${sessionName}`,
       description: `Files for session ${sessionName}.`,
       hasPart: files.map((file: any) => ({ "@id": file["@id"] })),
-      isPartOf: { "@id": "Sessions/" }
+      isPartOf: { "@id": "Sessions/" },
+      about: { "@id": sessionEventId } // LAM-100: Dataset is about the CollectionEvent
     };
 
     if (license && typeof license === "object") {
