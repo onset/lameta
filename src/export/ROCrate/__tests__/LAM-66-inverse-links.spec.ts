@@ -220,7 +220,7 @@ describe("LAM-66: Inverse Links", () => {
       expect(audioFile.isPartOf).toEqual({ "@id": "Sessions/Test_Session/" });
     });
 
-    it("should add isPartOf to project document files pointing back to project root", async () => {
+    it("should add isPartOf to project document files pointing back to DescriptionDocuments/ Dataset", async () => {
       const roCrate = (await getRoCrate(mockProject, mockProject)) as any;
       const graph = roCrate["@graph"];
 
@@ -229,12 +229,15 @@ describe("LAM-66: Inverse Links", () => {
         (e: any) => e["@id"] === "DescriptionDocuments/description.txt"
       );
 
-      // LAM-70: Description documents now live under an ldac:CollectionProtocol
-      // so their isPartOf reference should point to that entity instead of root
+      // LAM-102: Description documents now live under a DescriptionDocuments/ Dataset
+      // (similar to LAM-101 OtherDocuments/) so their isPartOf points to the Dataset.
+      // The #descriptionDocuments CollectionProtocol still exists for LDAC compliance
+      // but files' containment hierarchy uses the Dataset.
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // https://linear.app/lameta/issue/LAM-102/add-descriptiondocuments-dataset
       if (descFile) {
         expect(descFile).toHaveProperty("isPartOf");
-        expect(descFile.isPartOf).toEqual({ "@id": "#descriptionDocuments" });
+        expect(descFile.isPartOf).toEqual({ "@id": "DescriptionDocuments/" });
       }
     });
 
@@ -346,13 +349,19 @@ describe("LAM-66: Inverse Links", () => {
         }
       });
 
-      // LAM-66 + LAM-99: Verify each child has isPartOf pointing back to parent
-      // Exception: Session entities (#session-*) have files in hasPart but files'
-      // isPartOf points to the session directory (Sessions/sessionId/) instead.
-      // This is correct per LAM-99 for RO-Crate 1.2 hasPart chain compliance.
+      // LAM-66 + LAM-99 + LAM-102: Verify each child has isPartOf pointing back to parent
+      // Exceptions:
+      // 1. Session entities (#session-*) have files in hasPart but files'
+      //    isPartOf points to the session directory (Sessions/sessionId/) instead.
+      //    This is correct per LAM-99 for RO-Crate 1.2 hasPart chain compliance.
+      // 2. CollectionProtocol (#descriptionDocuments) has files in hasPart but files'
+      //    isPartOf points to DescriptionDocuments/ Dataset instead.
+      //    This is correct per LAM-102 - Protocol references files for LDAC discoverability,
+      //    but containment hierarchy uses the Dataset.
       // Also skip contextual entities (Person, Organization) which don't need isPartOf.
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
       // https://linear.app/lameta/issue/LAM-99/add-sessions-dataset
+      // https://linear.app/lameta/issue/LAM-102/add-descriptiondocuments-dataset
       hasPartRefs.forEach(({ parentId, childId }) => {
         const childEntity = graph.find((e: any) => e["@id"] === childId);
         if (childEntity) {
@@ -390,6 +399,16 @@ describe("LAM-66: Inverse Links", () => {
             ).toHaveProperty("isPartOf");
             expect(childEntity.isPartOf).toEqual({
               "@id": `Sessions/${sessionName}/`
+            });
+          } else if (parentId === "#descriptionDocuments") {
+            // LAM-102: CollectionProtocol references files for LDAC,
+            // but files' isPartOf points to DescriptionDocuments/ Dataset
+            expect(
+              childEntity,
+              `File ${childId} should have isPartOf`
+            ).toHaveProperty("isPartOf");
+            expect(childEntity.isPartOf).toEqual({
+              "@id": "DescriptionDocuments/"
             });
           } else {
             expect(

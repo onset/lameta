@@ -358,53 +358,79 @@ async function getRoCrateInternal(
       entry.hasPart.push({ "@id": "Sessions/" });
     }
 
-    // Keep project-level description files under ldac:CollectionProtocol so LDAC validators
-    // discover them via ldac:hasCollectionProtocol instead of the root hasPart list.
+    // LAM-102: Create DescriptionDocuments/ Dataset to wrap description files.
+    // This ensures files are reachable from root via hasPart chain (RO-Crate 1.2 compliance).
+    // The CollectionProtocol still exists for LDAC compliance - it references the same files
+    // but files' isPartOf points to the Dataset.
+    // See: https://linear.app/lameta/issue/LAM-102/add-descriptiondocuments-dataset
+    let descDocsDatasetEntry: RoCrateEntity | undefined;
     if (
       project.descriptionFolder &&
       project.descriptionFolder.files.length > 0
     ) {
-      const descriptionDocsResult = addProjectDocumentFolderEntries(
+      // First, create the DescriptionDocuments/ Dataset (this also creates file entries)
+      descDocsDatasetEntry = createDescriptionDocumentsDataset(
         project.descriptionFolder,
-        "DescriptionDocuments",
-        entry,
         otherEntries,
         rocrateLicense,
-        project,
-        { attachToRootHasPart: false, parentId: DESCRIPTION_PROTOCOL_NODE_ID }
+        entry,
+        project
       );
 
-      if (descriptionDocsResult.fileIds.length > 0) {
-        const protocolEntry = createDescriptionCollectionProtocolEntry(
-          project,
-          descriptionDocsResult.fileIds,
-          contactPersonReference,
-          entry.datePublished,
-          descriptionDocsResult.earliestFileDate
-        );
+      if (descDocsDatasetEntry) {
+        // Add Dataset to root's hasPart for RO-Crate 1.2 compliance
+        entry.hasPart.push({ "@id": descDocsDatasetEntry["@id"] });
 
-        otherEntries.push(protocolEntry);
-        const protocolReference = { "@id": protocolEntry["@id"] };
+        // Get file IDs from the Dataset's hasPart
+        const fileIds = descDocsDatasetEntry.hasPart
+          ? (descDocsDatasetEntry.hasPart as { "@id": string }[]).map(
+              (p) => p["@id"]
+            )
+          : [];
 
-        // Add to root hasPart for RO-Crate 1.2 compliance (data entities must be reachable via hasPart)
-        entry.hasPart.push(protocolReference);
-
-        const currentProtocols = entry["ldac:hasCollectionProtocol"];
-
-        if (!currentProtocols) {
-          entry["ldac:hasCollectionProtocol"] = [protocolReference];
-        } else if (Array.isArray(currentProtocols)) {
-          const alreadyPresent = currentProtocols.some(
-            (item: any) => item?.["@id"] === protocolReference["@id"]
-          );
-          if (!alreadyPresent) {
-            currentProtocols.push(protocolReference);
+        // Find earliest file date from the created file entries
+        let earliestFileDate: Date | undefined;
+        otherEntries.forEach((entry: any) => {
+          if (fileIds.includes(entry["@id"]) && entry.dateCreated) {
+            const fileDate = new Date(entry.dateCreated);
+            if (!earliestFileDate || fileDate < earliestFileDate) {
+              earliestFileDate = fileDate;
+            }
           }
-        } else if (currentProtocols["@id"] !== protocolReference["@id"]) {
-          entry["ldac:hasCollectionProtocol"] = [
-            currentProtocols,
-            protocolReference
-          ];
+        });
+
+        // Create the CollectionProtocol for LDAC compliance
+        // Note: Files' isPartOf already points to DescriptionDocuments/ Dataset (set in createDescriptionDocumentsDataset)
+        // but the Protocol still references them via hasPart for LDAC discoverability
+        if (fileIds.length > 0) {
+          const protocolEntry = createDescriptionCollectionProtocolEntry(
+            project,
+            fileIds,
+            contactPersonReference,
+            entry.datePublished,
+            earliestFileDate
+          );
+
+          otherEntries.push(protocolEntry);
+          const protocolReference = { "@id": protocolEntry["@id"] };
+
+          const currentProtocols = entry["ldac:hasCollectionProtocol"];
+
+          if (!currentProtocols) {
+            entry["ldac:hasCollectionProtocol"] = [protocolReference];
+          } else if (Array.isArray(currentProtocols)) {
+            const alreadyPresent = currentProtocols.some(
+              (item: any) => item?.["@id"] === protocolReference["@id"]
+            );
+            if (!alreadyPresent) {
+              currentProtocols.push(protocolReference);
+            }
+          } else if (currentProtocols["@id"] !== protocolReference["@id"]) {
+            entry["ldac:hasCollectionProtocol"] = [
+              currentProtocols,
+              protocolReference
+            ];
+          }
         }
       }
     }
@@ -473,6 +499,11 @@ async function getRoCrateInternal(
       ...rocrateLanguages.getUsedLanguageEntities(),
       ...uniqueOtherEntries
     ];
+
+    // LAM-102: Add DescriptionDocuments/ Dataset if it exists
+    if (descDocsDatasetEntry) {
+      baseGraph.push(descDocsDatasetEntry);
+    }
 
     // LAM-101: Add OtherDocuments/ Dataset if it exists
     if (otherDocsDatasetEntry) {
@@ -1039,6 +1070,83 @@ function createSessionsDatasetHierarchy(
 
   // Return with Sessions/ first, then individual session directories
   return [sessionsDataset, ...results];
+}
+
+/**
+ * LAM-102: Creates a DescriptionDocuments/ Dataset for RO-Crate 1.2 compliance.
+ * Similar to OtherDocuments/ (LAM-101) and Sessions/ (LAM-99), this groups
+ * description documents under a dedicated Dataset so files are reachable from
+ * root via hasPart chain.
+ *
+ * The existing #descriptionDocuments CollectionProtocol remains for LDAC compliance,
+ * but the files' isPartOf now points to the Dataset rather than the Protocol.
+ *
+ * See: https://linear.app/lameta/issue/LAM-102/add-descriptiondocuments-dataset
+ */
+function createDescriptionDocumentsDataset(
+  descriptionFolder: Folder,
+  otherEntries: object[],
+  rocrateLicense: RoCrateLicense,
+  projectEntry: any,
+  project?: Project
+): RoCrateEntity | undefined {
+  if (!descriptionFolder || descriptionFolder.files.length === 0) {
+    return undefined;
+  }
+
+  const datasetId = "DescriptionDocuments/";
+  const fileIds: string[] = [];
+
+  // Process each file in the DescriptionDocuments folder
+  descriptionFolder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    const fileName = Path.basename(path);
+
+    // Skip RO-Crate metadata files to avoid circular references
+    if (fileName.startsWith("ro-crate")) {
+      return;
+    }
+
+    const fileId = `DescriptionDocuments/${sanitizeForIri(fileName)}`;
+
+    // Build the file entry using shared helper
+    const { fileEntry } = buildFileEntry({
+      file,
+      fileId,
+      rocrateLicense,
+      folder: undefined, // No folder for project documents
+      parentEntry: projectEntry,
+      project
+    });
+
+    // LAM-102: File's isPartOf points to the DescriptionDocuments/ Dataset
+    fileEntry.isPartOf = { "@id": datasetId };
+
+    otherEntries.push(fileEntry);
+    fileIds.push(fileId);
+  });
+
+  // Create the DescriptionDocuments/ Dataset
+  const descDocsDataset: RoCrateEntity = {
+    "@id": datasetId,
+    "@type": "Dataset",
+    name: "Description Documents",
+    description:
+      "Documents describing the collection methodology and protocols.",
+    hasPart: fileIds.map((id) => ({ "@id": id })),
+    isPartOf: { "@id": "./" }
+  };
+
+  // Inherit collection license
+  if (
+    projectEntry?.license &&
+    typeof projectEntry.license === "object" &&
+    projectEntry.license["@id"]
+  ) {
+    descDocsDataset.license = { "@id": projectEntry.license["@id"] };
+  }
+
+  return descDocsDataset;
 }
 
 /**
