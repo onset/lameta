@@ -914,9 +914,16 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks in URL
       expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
 
-      // Critical test: Verify that the session's hasPart references match the actual file @id
-      expect(sessionEntry.hasPart).toBeDefined();
-      const hasPartReference = sessionEntry.hasPart.find(
+      // LAM-103: Session CollectionEvent should NOT have hasPart - files are in session directory Dataset
+      expect(sessionEntry.hasPart).toBeUndefined();
+
+      // Find the session directory Dataset and verify it has hasPart with the file
+      const sessionDir = graph.find(
+        (item: any) => item["@id"] === "Sessions/test-session/"
+      );
+      expect(sessionDir).toBeDefined();
+      expect(sessionDir.hasPart).toBeDefined();
+      const hasPartReference = sessionDir.hasPart.find(
         (ref: any) => ref["@id"] === expectedFileId
       );
       expect(hasPartReference).toBeDefined();

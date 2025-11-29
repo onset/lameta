@@ -289,7 +289,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       ]);
     });
 
-    it("should link Session Event to all its files", async () => {
+    // LAM-103: Session CollectionEvent should NOT have hasPart - files belong to session directory Dataset
+    it("should not have hasPart on Session CollectionEvent (LAM-103)", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const sessionEvent = result["@graph"].find(
@@ -298,8 +299,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           item["@type"].includes("CollectionEvent")
       );
 
-      expect(sessionEvent.hasPart).toBeDefined();
-      expect(Array.isArray(sessionEvent.hasPart)).toBe(true);
+      // Session CollectionEvent should NOT have hasPart per LAM-103
+      // Files are attached to the session directory Dataset, not the CollectionEvent
+      expect(sessionEvent.hasPart).toBeUndefined();
     });
 
     it("should establish bidirectional pcdm:memberOf relationship between sessions and root collection", async () => {

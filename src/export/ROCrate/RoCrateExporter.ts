@@ -807,7 +807,17 @@ export function addChildFileEntries(
 ): void {
   if (folder.files.length === 0) return;
   const isPersonFolder = (folder as any).folderType === "person";
-  const shouldAssignHasPart = !isPersonFolder;
+
+  // LAM-103: Session CollectionEvent entities (e.g., #session-ETR008) should NOT have hasPart.
+  // Files belong to the session directory Dataset (Sessions/sessionId/), not the CollectionEvent.
+  // The CollectionEvent and Dataset are linked via bidirectional subjectOf/about relationships.
+  // Only standalone sessions (exported alone, where @id is "./") need hasPart.
+  // https://linear.app/lameta/issue/LAM-103/fix-relation
+  const folderId = (folderEntry as any)["@id"];
+  const isNonStandaloneSession =
+    typeof folderId === "string" && folderId.startsWith("#session-");
+
+  const shouldAssignHasPart = !isPersonFolder && !isNonStandaloneSession;
 
   if (shouldAssignHasPart) {
     folderEntry["hasPart"] = [];

@@ -187,22 +187,33 @@ describe("RoCrateExporter file handling", () => {
     expect(imageFile.role).toBeUndefined();
   });
 
-  it("should link session files to session hasPart", async () => {
+  // LAM-103: Session files should be in the session directory Dataset, not the CollectionEvent.
+  // The CollectionEvent (#session-*) represents the event metadata and should NOT have hasPart.
+  // Instead, files belong to the session directory Dataset (Sessions/ETR009/) via hasPart.
+  // See: https://linear.app/lameta/issue/LAM-103/fix-relation
+  it("should link session files to session directory Dataset hasPart, not CollectionEvent", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
+    // The session CollectionEvent should NOT have hasPart
     const sessionEvent = result["@graph"].find(
       (item: any) =>
         item["@id"] === "#session-ETR009" &&
         item["@type"].includes("CollectionEvent")
     );
+    expect(sessionEvent.hasPart).toBeUndefined();
 
-    expect(sessionEvent.hasPart).toContainEqual({
+    // Files should be in the session directory Dataset
+    const sessionDir = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/"
+    );
+    expect(sessionDir).toBeDefined();
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009_Careful.mp3"
     });
-    expect(sessionEvent.hasPart).toContainEqual({
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
     });
-    expect(sessionEvent.hasPart).toContainEqual({
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009.xml"
     });
   });

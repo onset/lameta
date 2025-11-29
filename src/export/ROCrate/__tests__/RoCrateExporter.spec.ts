@@ -969,7 +969,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
     });
 
-    it("should ensure sessions use hasPart for their files, not pcdm:hasMember", async () => {
+    // LAM-103: Session CollectionEvent should NOT have hasPart - files belong to session directory Dataset
+    it("should ensure session CollectionEvent does not have hasPart (LAM-103)", async () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const sessionEvent = result["@graph"].find(
@@ -978,9 +979,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           item["@type"].includes("CollectionEvent")
       );
 
-      // Sessions should use hasPart for files, not pcdm:hasMember
-      expect(sessionEvent.hasPart).toBeDefined();
-      expect(Array.isArray(sessionEvent.hasPart)).toBe(true);
+      // LAM-103: Session CollectionEvent should NOT have hasPart
+      // Files are attached to the session directory Dataset, not the CollectionEvent
+      expect(sessionEvent.hasPart).toBeUndefined();
       // Should NOT have pcdm:hasMember on sessions
       expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
     });
@@ -1059,8 +1060,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
       expect(peopleLinks).toHaveLength(0);
 
-      // Sessions use hasPart for their files, not pcdm:hasMember
-      expect(sessionEvent.hasPart).toBeDefined();
+      // LAM-103: Session CollectionEvent should NOT have hasPart - files are in directory Dataset
+      expect(sessionEvent.hasPart).toBeUndefined();
       expect(sessionEvent["pcdm:hasMember"]).toBeUndefined();
 
       // LAM-33 regression guard: ensure no redundant pcdm mapping sneaks back in now that only ldac prefix remains.

@@ -40,6 +40,11 @@ export async function createSessionEntry(
     ? ["Dataset", "RepositoryObject", "CollectionEvent"]
     : ["RepositoryObject", "CollectionEvent"];
 
+  // LAM-103: Session CollectionEvent entities should NOT have hasPart.
+  // Files belong to the session directory Dataset (Sessions/sessionId/), not the CollectionEvent.
+  // The CollectionEvent and Dataset are linked via bidirectional subjectOf/about relationships.
+  // For standalone sessions (exported alone), the session IS the root Dataset and needs hasPart.
+  // https://linear.app/lameta/issue/LAM-103/fix-relation
   const mainSessionEntry: any = {
     "@id": isStandaloneSession ? "./" : createSessionId(session),
     "@type": sessionTypes,
@@ -53,11 +58,15 @@ export async function createSessionEntry(
       session.metadataFile?.getTextProperty("description") ||
       "No description provided for this session.",
     datePublished: new Date().toISOString(),
-    hasPart: [],
     // Sessions need the CollectionEvent type plus the LDAC Session classification so
     // downstream tools recognise them as event objects rather than generic datasets.
     collectionEventType: "https://w3id.org/ldac/terms#Session"
   };
+
+  // Only add hasPart for standalone sessions (when session IS the root Dataset)
+  if (isStandaloneSession) {
+    mainSessionEntry.hasPart = [];
+  }
 
   if (publisher) {
     mainSessionEntry.publisher = publisher.reference;

@@ -272,14 +272,20 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     expect(speakerIds).toContain(awiPersonId);
     expect(speakerIds).toContain(ilawiPersonId);
 
-    // Verify session links to its files
-    expect(sessionEvent.hasPart).toContainEqual({
+    // LAM-103: Session files should be in the session directory Dataset, not the CollectionEvent
+    // The CollectionEvent (#session-*) should NOT have hasPart - files belong to Sessions/ETR009/
+    expect(sessionEvent.hasPart).toBeUndefined();
+    const sessionDir = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/"
+    );
+    expect(sessionDir).toBeDefined();
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009_Careful.mp3"
     });
-    expect(sessionEvent.hasPart).toContainEqual({
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
     });
-    expect(sessionEvent.hasPart).toContainEqual({
+    expect(sessionDir.hasPart).toContainEqual({
       "@id": "Sessions/ETR009/ETR009.xml"
     });
 
@@ -411,6 +417,12 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
         (Array.isArray(sessionEvent[key]) || sessionEvent[key]["@id"])
     ).length;
     expect(roleCount).toBeGreaterThan(0);
-    expect(sessionEvent.hasPart.length).toBeGreaterThan(0);
+
+    // LAM-103: Session CollectionEvent should NOT have hasPart, files are in the directory Dataset
+    expect(sessionEvent.hasPart).toBeUndefined();
+    const sessionDir = result["@graph"].find(
+      (item: any) => item["@id"] === "Sessions/ETR009/"
+    );
+    expect(sessionDir.hasPart.length).toBeGreaterThan(0);
   });
 });
