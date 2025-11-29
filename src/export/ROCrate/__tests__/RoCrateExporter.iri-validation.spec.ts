@@ -2,11 +2,11 @@ import { describe, it, expect } from "vitest";
 import { createPersonId, sanitizeForIri } from "../RoCrateUtils";
 
 describe("RO-Crate IRI Validation", () => {
-  it("should percent-encode spaces in sanitizeForIri function", () => {
+  it("should convert spaces to underscores in sanitizeForIri function", () => {
     const input = "BAHOUNGOU Hilaire";
     const result = sanitizeForIri(input);
 
-    expect(result).toBe("BAHOUNGOU%20Hilaire");
+    expect(result).toBe("BAHOUNGOU_Hilaire");
     expect(result).not.toContain(" ");
   });
 
@@ -18,22 +18,24 @@ describe("RO-Crate IRI Validation", () => {
     const personId = createPersonId(mockPerson);
 
     // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
-    // enforces #Name fragments so Person IDs never leak filesystem paths again.
+    // Person IDs use underscores for spaces (IRI-safe)
     expect(personId).toBe("#BAHOUNGOU_Hilaire");
     expect(personId.startsWith("#")).toBe(true);
-    expect(personId).not.toContain(" ");
+    expect(personId).not.toContain(" "); // Raw space should not appear
   });
 
-  it("should handle special characters in Person IDs", () => {
+  it("should encode parentheses but preserve @ in Person IDs", () => {
     const mockPerson = {
       filePrefix: "BAKALA Michel (@Mfouati)"
     };
 
     const personId = createPersonId(mockPerson);
 
-    expect(personId).toBe("#BAKALA_Michel___Mfouati_");
-    expect(personId).not.toContain(" ");
-    expect(personId).not.toContain("(");
-    expect(personId).not.toContain(")");
+    // Parentheses are encoded, @ is preserved (valid in IRIs)
+    expect(personId).toBe("#BAKALA_Michel_%28@Mfouati%29");
+    expect(personId).not.toContain(" "); // Raw space
+    expect(personId).toContain("%28"); // Encoded (
+    expect(personId).toContain("%29"); // Encoded )
+    expect(personId).toContain("@"); // @ is preserved in IRIs
   });
 });

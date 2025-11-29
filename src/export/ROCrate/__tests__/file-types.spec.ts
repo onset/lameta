@@ -148,6 +148,9 @@ describe("File type assignments", () => {
     );
     expect(audioFile).toBeDefined();
     expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
+    // Verify encodingFormat is present for audio files
+    expect(audioFile.encodingFormat).toBeDefined();
+    expect(audioFile.encodingFormat).toMatch(/^audio\//);
   });
 
   it("should type video files as [File, VideoObject]", async () => {
@@ -158,6 +161,9 @@ describe("File type assignments", () => {
     );
     expect(videoFile).toBeDefined();
     expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
+    // Verify encodingFormat is present for video files
+    expect(videoFile.encodingFormat).toBeDefined();
+    expect(videoFile.encodingFormat).toMatch(/^video\//);
   });
 
   it("should type image files as [File, ImageObject]", async () => {
@@ -168,6 +174,9 @@ describe("File type assignments", () => {
     );
     expect(imageFile).toBeDefined();
     expect(imageFile["@type"]).toEqual(["File", "ImageObject"]);
+    // Verify encodingFormat is present for image files
+    expect(imageFile.encodingFormat).toBeDefined();
+    expect(imageFile.encodingFormat).toMatch(/^image\//);
   });
 
   it("should type .session files as File only", async () => {

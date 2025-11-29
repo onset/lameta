@@ -907,11 +907,11 @@ describe("RoCrateExporter Validation Tests", () => {
 
       expect(fileEntry).toBeDefined();
 
-      // The key test: the @id should be sanitized (URL encoded) and include full path
+      // The key test: the @id should be sanitized (underscores for spaces) and include full path
       const expectedFileId =
-        "Sessions/test-session/BAHOUNGOU%20Hilaire_Consent%20%28final%29%21.wav";
+        "Sessions/test-session/BAHOUNGOU_Hilaire_Consent_%28final%29!.wav";
       expect(fileEntry["@id"]).toBe(expectedFileId);
-      expect(fileEntry["@id"]).not.toMatch(/[\s()!]/); // No spaces, parentheses, or exclamation marks in URL
+      expect(fileEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses in IRI
       expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
 
       // LAM-103: Session CollectionEvent should NOT have hasPart - files are in session directory Dataset
@@ -1023,11 +1023,11 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(photoEntry).toBeDefined();
       expect(consentEntry).toBeDefined();
 
-      // Verify file IDs are URL encoded
+      // Verify file IDs use underscores for spaces and encode parentheses
       const expectedPhotoId =
-        "People/BAHOUNGOU%20Hilaire/BAHOUNGOU%20Hilaire_Photo%20%28v2%29%21.JPG";
+        "People/BAHOUNGOU_Hilaire/BAHOUNGOU_Hilaire_Photo_%28v2%29!.JPG";
       const expectedConsentId =
-        "People/BAHOUNGOU%20Hilaire/BAHOUNGOU%20Hilaire_Consent%20%28final%29.wav";
+        "People/BAHOUNGOU_Hilaire/BAHOUNGOU_Hilaire_Consent_%28final%29.wav";
 
       expect(photoEntry["@id"]).toBe(expectedPhotoId);
       expect(consentEntry["@id"]).toBe(expectedConsentId);
@@ -1046,14 +1046,14 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(imageReferences).toContainEqual({ "@id": expectedPhotoId });
       expect(subjectReferences).toContainEqual({ "@id": expectedConsentId });
 
-      // Verify no invalid characters in any @id
-      expect(photoEntry["@id"]).not.toMatch(/[\s()!]/);
-      expect(consentEntry["@id"]).not.toMatch(/[\s()!]/);
+      // Verify no invalid characters in any @id (spaces and parentheses encoded)
+      expect(photoEntry["@id"]).not.toMatch(/[\s()]/);
+      expect(consentEntry["@id"]).not.toMatch(/[\s()]/);
       imageReferences.forEach((ref: any) =>
-        expect(ref["@id"]).not.toMatch(/[\s()!]/)
+        expect(ref["@id"]).not.toMatch(/[\s()]/)
       );
       subjectReferences.forEach((ref: any) =>
-        expect(ref["@id"]).not.toMatch(/[\s()!]/)
+        expect(ref["@id"]).not.toMatch(/[\s()]/)
       );
     });
   });

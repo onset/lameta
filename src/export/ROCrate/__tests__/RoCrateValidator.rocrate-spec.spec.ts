@@ -235,7 +235,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("missing required @id")
+        expect.stringContaining("invalid @id: missing @id property")
       );
     });
 
@@ -250,7 +250,87 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("missing required @type")
+        expect.stringContaining("invalid @type: missing @type property")
+      );
+    });
+
+    it("should fail when @id is empty string", () => {
+      const roCrate = createMinimalValidRoCrate();
+      roCrate["@graph"].push({
+        "@id": "",
+        "@type": "Person",
+        name: "Test Person"
+      });
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@id is empty or whitespace-only")
+      );
+    });
+
+    it("should fail when @id is whitespace-only", () => {
+      const roCrate = createMinimalValidRoCrate();
+      roCrate["@graph"].push({
+        "@id": "   ",
+        "@type": "Person",
+        name: "Test Person"
+      });
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@id is empty or whitespace-only")
+      );
+    });
+
+    it("should fail when @id is null", () => {
+      const roCrate = createMinimalValidRoCrate();
+      roCrate["@graph"].push({
+        "@id": null,
+        "@type": "Person",
+        name: "Test Person"
+      });
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@id is null")
+      );
+    });
+
+    it("should fail when @type is empty array", () => {
+      const roCrate = createMinimalValidRoCrate();
+      roCrate["@graph"].push({
+        "@id": "#person1",
+        "@type": [],
+        name: "Test Person"
+      });
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@type array is empty")
+      );
+    });
+
+    it("should fail when @type array contains only empty strings", () => {
+      const roCrate = createMinimalValidRoCrate();
+      roCrate["@graph"].push({
+        "@id": "#person1",
+        "@type": ["", "   "],
+        name: "Test Person"
+      });
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining("@type array contains no valid string values")
       );
     });
 

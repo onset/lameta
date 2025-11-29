@@ -33,6 +33,68 @@ vi.mock("fs-extra", () => ({
 describe("RO-Crate #People dataset includes all contributors", () => {
   setupCommonMocks(true);
 
+  describe("ID collision handling for contributors", () => {
+    it("should generate unique IDs for contributors with special characters", async () => {
+      // These names have special characters that will be percent-encoded differently
+      const contributors = [
+        "José García", // Accented characters will be percent-encoded
+        "Jose Garcia" // Plain ASCII version
+      ];
+
+      const contributions = contributors.map(
+        (name) => new Contribution(name, "speaker", "")
+      );
+
+      const mockSession = createMockSession({
+        filePrefix: "test-session",
+        metadata: { title: "Unicode Test Session" }
+      });
+
+      mockSession.getAllContributionsToAllFiles = vi
+        .fn()
+        .mockReturnValue(contributions);
+
+      const mockProject = createMockProject({
+        metadata: { title: "Test Project" },
+        persons: { items: [] },
+        sessions: { items: [mockSession] }
+      });
+
+      mockProject.findPerson = vi.fn().mockReturnValue(null);
+
+      // Verify that the ID generation produces unique IDs
+      const id1 = createUnresolvedContributorId(contributors[0]);
+      const id2 = createUnresolvedContributorId(contributors[1]);
+
+      // IDs should be different because special characters are percent-encoded
+      expect(id1).not.toBe(id2);
+
+      const roCrate = await getRoCrate(mockProject, mockProject);
+      const graph = (roCrate as any)["@graph"];
+
+      // Both should exist as separate entities
+      for (const name of contributors) {
+        const contributorId = createUnresolvedContributorId(name);
+        const entity = graph.find((e: any) => e["@id"] === contributorId);
+        expect(entity).toBeDefined();
+        expect(entity.name).toBe(name);
+      }
+    });
+
+    it("should handle contributors with leading/trailing whitespace consistently", async () => {
+      // Note: Whitespace is trimmed before encoding, so these will produce the same ID
+      // This test documents the expected behavior
+      const baseName = "Mary Jones";
+      const trimmedId = createUnresolvedContributorId(baseName);
+      const leadingSpaceId = createUnresolvedContributorId(` ${baseName}`);
+      const trailingSpaceId = createUnresolvedContributorId(`${baseName} `);
+
+      // All should produce the same ID after trimming
+      expect(leadingSpaceId).toBe(trimmedId);
+      expect(trailingSpaceId).toBe(trimmedId);
+    });
+  });
+
   describe("unresolved contributors without person folders", () => {
     it("should include unresolved contributors in #People dataset", async () => {
       // Create a contributor with a role, but no person folder

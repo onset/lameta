@@ -66,23 +66,41 @@
 
 ## Code-level Issues
 
-- [ ] **RoCrateValidator.ts#433** — The validation logic for required fields in entities does not account for all possible edge cases. Consider adding stricter checks for mandatory properties like @id and @type. (Severity: 5/5)
+- [x] **RoCrateValidator.ts#433** — The validation logic for required fields in entities does not account for all possible edge cases. Consider adding stricter checks for mandatory properties like @id and @type. (Severity: 5/5)
 
-- [ ] **RoCrateUtils.ts#74** — The createFragmentId function does not handle special characters consistently. This could lead to invalid @id values for entities with non-Latin characters. (Severity: 4/5)
+  - **Status: SOLVED** — Added `hasValidId()`, `getIdInvalidReason()`, `hasValidType()`, and `getTypeInvalidReason()` helper methods to handle edge cases: undefined, null, empty string, whitespace-only, non-string types, empty arrays, arrays with only invalid values. Added corresponding test coverage.
 
-- [ ] **RoCrateExporter.ldac.spec.ts#234** — The test references ldac:DataReuseLicense, but this entity is not defined in the test setup. This may lead to false negatives during validation. (Severity: 4/5)
+- [x] **RoCrateUtils.ts#74** — The createFragmentId function does not handle special characters consistently. This could lead to invalid @id values for entities with non-Latin characters. (Severity: 4/5)
 
-- [ ] **RoCrateExporter.people-dataset-all-contributors.spec.ts#63** — The test assumes createUnresolvedContributorId will always generate unique IDs. Add a test case to handle potential ID collisions. (Severity: 4/5)
+  - **Status: SOLVED** — Updated `sanitizeForIri()` to be IRI-compliant: spaces become underscores, and non-Latin characters (é, ñ, 中文, العربية, etc.) are preserved since they're valid in IRIs per RFC 3987. Only IRI-breaking characters (#, ?, /) and parentheses are encoded. Now "José" becomes `#contributor-José`.
 
-- [ ] **RoCrateExporter.project-geographic-coverage.spec.ts#48** — The test does not verify that contentLocation references valid Place entities. Add assertions to ensure referenced entities exist. (Severity: 4/5)
+- [x] **RoCrateExporter.ldac.spec.ts#234** — The test references ldac:DataReuseLicense, but this entity is not defined in the test setup. This may lead to false negatives during validation. (Severity: 4/5)
 
-- [ ] **RoCrateExporter.publisher-entity.spec.ts#44** — The test assumes #publisher-lameta is always defined. Add a setup step to ensure this entity exists in the graph. (Severity: 4/5)
+  - **Status: NOT AN ISSUE** — Per LAM-92, `ldac:DataReuseLicense` is intentionally NOT defined as a separate entity. It's used as a `@type` value on license entities, which doesn't require an entity definition in `@graph`. The test at line 702 explicitly verifies this is undefined.
 
-- [ ] **file-types.spec.ts#144** — The test for audio file types does not verify the presence of encodingFormat. Add an assertion to ensure this property is included. (Severity: 4/5)
+- [x] **RoCrateExporter.people-dataset-all-contributors.spec.ts#63** — The test assumes createUnresolvedContributorId will always generate unique IDs. Add a test case to handle potential ID collisions. (Severity: 4/5)
 
-- [ ] **RoCrateExporter.ts#820** — The logic for handling hasPart/isPartOf relationships is repeated across multiple functions. Consider refactoring this into a shared utility function. (Severity: 3/5)
+  - **Status: SOLVED** — Added "ID collision handling for contributors" test suite with tests for: (1) unique IDs for special characters via percent-encoding, (2) consistent whitespace handling.
 
-- [ ] **RoCrateHtmlGenerator.tsx#75** — The EntityProperties component is overly complex and mixes rendering logic with data processing. Consider separating the data processing into a helper function. (Severity: 3/5)
+- [x] **RoCrateExporter.project-geographic-coverage.spec.ts#48** — The test does not verify that contentLocation references valid Place entities. Add assertions to ensure referenced entities exist. (Severity: 4/5)
+
+  - **Status: SOLVED** — Added comprehensive assertions that: (1) verify ALL contentLocation references use proper JSON-LD format, (2) ensure each referenced Place entity exists in the graph with correct `@type` and `name`.
+
+- [x] **RoCrateExporter.publisher-entity.spec.ts#44** — The test assumes #publisher-lameta is always defined. Add a setup step to ensure this entity exists in the graph. (Severity: 4/5)
+
+  - **Status: SOLVED** — Added guard assertion with detailed error message if entity is missing, making test failures more informative.
+
+- [x] **file-types.spec.ts#144** — The test for audio file types does not verify the presence of encodingFormat. Add an assertion to ensure this property is included. (Severity: 4/5)
+
+  - **Status: SOLVED** — Added `encodingFormat` assertions to audio, video, and image file type tests using regex patterns like `expect(audioFile.encodingFormat).toMatch(/^audio\//)`.
+
+- [x] **RoCrateExporter.ts#820** — The logic for handling hasPart/isPartOf relationships is repeated across multiple functions. Consider refactoring this into a shared utility function. (Severity: 3/5)
+
+  - **Status: SOLVED** — Added `linkContainment()`, `createHasPartReferences()`, `createIsPartOfReference()`, and `addToHasPart()` utility functions in RoCrateUtils.ts. Refactored 6 sites in RoCrateExporter.ts to use these utilities.
+
+- [x] **RoCrateHtmlGenerator.tsx#75** — The EntityProperties component is overly complex and mixes rendering logic with data processing. Consider separating the data processing into a helper function. (Severity: 3/5)
+
+  - **Status: ALREADY SOLVED** — The code already has clean separation: `buildEntityProperties()` (lines 745-797) handles data processing, while `EntityProperties` component (lines 800-822) is a pure renderer.
 
 - [ ] **RoCrateExporter.otherdocuments-fix.spec.ts#91** — The test duplicates logic for verifying OtherDocuments/ dataset existence. Consider refactoring this into a helper function. (Severity: 3/5)
 

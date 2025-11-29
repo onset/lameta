@@ -49,7 +49,11 @@ import {
   createPersonFilesDatasetId,
   createSessionId,
   expandLdacId,
-  isLdacIdentifier
+  isLdacIdentifier,
+  linkContainment,
+  createHasPartReferences,
+  createIsPartOfReference,
+  addToHasPart
 } from "./RoCrateUtils";
 
 import {
@@ -867,12 +871,8 @@ export function addChildFileEntries(
 
     otherEntries.push(fileEntry);
     if (shouldAssignHasPart) {
-      (folderEntry as any)["hasPart"].push({
-        "@id": fileId
-      });
-
-      // Add the inverse isPartOf link because LDAC expects hasPart/isPartOf pairs for containment
-      fileEntry.isPartOf = { "@id": (folderEntry as any)["@id"] };
+      // Use utility function for consistent containment relationship handling
+      linkContainment(folderEntry, fileEntry);
     }
 
     if (isPersonFolder) {
@@ -937,14 +937,11 @@ export function addProjectDocumentFolderEntries(
     });
 
     otherEntries.push(fileEntry);
-    if (attachToRootHasPart) {
-      projectEntry.hasPart.push({
-        "@id": fileId
-      });
-    }
-
-    // Add the inverse isPartOf link pointing to the structural parent to keep containment bidirectional
-    fileEntry.isPartOf = { "@id": parentId };
+    // Use utility function for consistent containment relationship handling
+    linkContainment(projectEntry, fileEntry, {
+      skipHasPart: !attachToRootHasPart,
+      parentIdOverride: parentId
+    });
 
     const preferredDate = file.getModifiedDate?.() || stats.birthtime;
     if (preferredDate instanceof Date) {
@@ -1038,13 +1035,14 @@ function createSessionsDatasetHierarchy(
     // See: https://linear.app/lameta/issue/LAM-100/new-session-structure
     const sessionEventId = `#session-${sessionName}`;
 
+    const fileIds = files.map((file: any) => file["@id"]);
     const sessionDirDataset: RoCrateEntity = {
       "@id": sessionDirId,
       "@type": "Dataset",
       name: `Session ${sessionName}`,
       description: `Files for session ${sessionName}.`,
-      hasPart: files.map((file: any) => ({ "@id": file["@id"] })),
-      isPartOf: { "@id": "Sessions/" },
+      hasPart: createHasPartReferences(fileIds),
+      isPartOf: createIsPartOfReference("Sessions/"),
       about: { "@id": sessionEventId } // LAM-100: Dataset is about the CollectionEvent
     };
 
@@ -1057,7 +1055,7 @@ function createSessionsDatasetHierarchy(
 
     // Update file entries' isPartOf to point to session directory Dataset
     files.forEach((file: any) => {
-      file.isPartOf = { "@id": sessionDirId };
+      file.isPartOf = createIsPartOfReference(sessionDirId);
     });
   });
 
@@ -1130,7 +1128,7 @@ function createDescriptionDocumentsDataset(
     });
 
     // LAM-102: File's isPartOf points to the DescriptionDocuments/ Dataset
-    fileEntry.isPartOf = { "@id": datasetId };
+    fileEntry.isPartOf = createIsPartOfReference(datasetId);
 
     otherEntries.push(fileEntry);
     fileIds.push(fileId);
@@ -1143,8 +1141,8 @@ function createDescriptionDocumentsDataset(
     name: "Description Documents",
     description:
       "Documents describing the collection methodology and protocols.",
-    hasPart: fileIds.map((id) => ({ "@id": id })),
-    isPartOf: { "@id": "./" }
+    hasPart: createHasPartReferences(fileIds),
+    isPartOf: createIsPartOfReference("./")
   };
 
   // Inherit collection license
@@ -1203,7 +1201,7 @@ function createOtherDocumentsDataset(
     });
 
     // LAM-101: File's isPartOf points to the OtherDocuments/ Dataset, not root
-    fileEntry.isPartOf = { "@id": datasetId };
+    fileEntry.isPartOf = createIsPartOfReference(datasetId);
 
     otherEntries.push(fileEntry);
     fileIds.push(fileId);
@@ -1215,8 +1213,8 @@ function createOtherDocumentsDataset(
     "@type": "Dataset",
     name: "Other Documents",
     description: "Additional documents associated with this collection.",
-    hasPart: fileIds.map((id) => ({ "@id": id })),
-    isPartOf: { "@id": "./" }
+    hasPart: createHasPartReferences(fileIds),
+    isPartOf: createIsPartOfReference("./")
   };
 
   // Inherit collection license
@@ -1436,7 +1434,7 @@ function createDescriptionCollectionProtocolEntry(
     description: protocolDescription,
     author: authorReference,
     datePublished,
-    hasPart: fileIds.map((id) => ({ "@id": id })),
-    isPartOf: { "@id": "./" }
+    hasPart: createHasPartReferences(fileIds),
+    isPartOf: createIsPartOfReference("./")
   };
 }

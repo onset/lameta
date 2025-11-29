@@ -10,7 +10,7 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 
 - [x] **Session anchor links broken**: Links to sessions from root collection point to `#entity__session_ETR008` but the actual session content at path `Sessions/ETR008/` has ID `entity_Sessions_ETR008_`.
       Action: Fix the links. There should be a unit test checking all links in the document.
-      Done: Added unit test "should have all internal anchor links point to valid entity IDs" that validates all href="#entity_..." links have corresponding id="entity_..." targets. Test passes - all anchor links are valid.
+      Done: Added unit test "should have all internal anchor links point to valid entity IDs" that validates all href="#entity*..." links have corresponding id="entity*..." targets. Test passes - all anchor links are valid.
 
 - [x] **Country field missing value**: The current version shows `Unknown` for Country, but the old version shows `Papua New Guinea`
       Action: Find out why, update tests, fix.
@@ -24,7 +24,7 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 
 - [x] **Extra "Awi_Heole files" and "Ilawi_Amosa files" Dataset wrappers**: These intermediate entities don't exist in published version - person files should be direct children of the person entity
       Action: remove those wrappers.
-      Done: Filters #*-files pattern (person file wrapper Datasets).
+      Done: Filters #\*-files pattern (person file wrapper Datasets).
 
 - [x] **Extra "Sessions/" Dataset wrapper**: Sessions should be rendered as top-level entities directly under root collection, not nested inside a `Sessions/` Dataset
       Action: remove those wrappers.

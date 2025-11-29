@@ -54,7 +54,22 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
     expect(Array.isArray(rootDataset.contentLocation)).toBe(true);
     expect(rootDataset.contentLocation.length).toBeGreaterThan(0);
 
-    // Find the Place entity referenced by contentLocation
+    // Verify ALL contentLocation references point to valid Place entities
+    rootDataset.contentLocation.forEach((locationRef: { "@id": string }) => {
+      // Verify reference uses proper JSON-LD format
+      expect(locationRef).toHaveProperty("@id");
+      expect(Object.keys(locationRef)).toHaveLength(1); // Should only have @id
+
+      // Find and validate the referenced Place entity
+      const entity = roCrateJson["@graph"].find(
+        (e: any) => e["@id"] === locationRef["@id"]
+      );
+      expect(entity).toBeDefined();
+      expect(entity["@type"]).toBe("Place");
+      expect(entity.name).toBeDefined();
+    });
+
+    // Find the first Place entity referenced by contentLocation
     const placeId = rootDataset.contentLocation[0]["@id"];
     expect(placeId).toBeDefined();
 

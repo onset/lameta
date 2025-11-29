@@ -291,6 +291,71 @@ export class RoCrateValidator {
   }
 
   /**
+   * Check if an entity has a valid @id property.
+   * Handles edge cases: undefined, null, empty string, whitespace-only, non-string.
+   */
+  private hasValidId(entity: any): boolean {
+    const id = entity["@id"];
+    if (id === undefined || id === null) return false;
+    if (typeof id !== "string") return false;
+    if (id.trim().length === 0) return false;
+    return true;
+  }
+
+  /**
+   * Get a human-readable reason why @id is invalid.
+   */
+  private getIdInvalidReason(entity: any): string {
+    const id = entity["@id"];
+    if (id === undefined) return "missing @id property";
+    if (id === null) return "@id is null";
+    if (typeof id !== "string") return `@id must be string, got ${typeof id}`;
+    if (id.trim().length === 0) return "@id is empty or whitespace-only";
+    return "unknown";
+  }
+
+  /**
+   * Check if an entity has a valid @type property.
+   * Handles edge cases: undefined, null, empty string, whitespace-only,
+   * non-string, empty array, array with only invalid values.
+   */
+  private hasValidType(entity: any): boolean {
+    const type = entity["@type"];
+    if (type === undefined || type === null) return false;
+    if (Array.isArray(type)) {
+      // Array must contain at least one valid non-empty string
+      const validTypes = type.filter(
+        (t) => typeof t === "string" && t.trim().length > 0
+      );
+      return validTypes.length > 0;
+    }
+    if (typeof type !== "string") return false;
+    return type.trim().length > 0;
+  }
+
+  /**
+   * Get a human-readable reason why @type is invalid.
+   */
+  private getTypeInvalidReason(entity: any): string {
+    const type = entity["@type"];
+    if (type === undefined) return "missing @type property";
+    if (type === null) return "@type is null";
+    if (Array.isArray(type)) {
+      if (type.length === 0) return "@type array is empty";
+      const invalidCount = type.filter(
+        (t) => typeof t !== "string" || t.trim().length === 0
+      ).length;
+      if (invalidCount === type.length)
+        return "@type array contains no valid string values";
+      return "@type array contains invalid elements";
+    }
+    if (typeof type !== "string")
+      return `@type must be string or array, got ${typeof type}`;
+    if (type.trim().length === 0) return "@type is empty or whitespace-only";
+    return "unknown";
+  }
+
+  /**
    * Validate the complete RO-Crate structure
    */
   validate(roCrate: any): ValidationResult {
@@ -1086,26 +1151,30 @@ export class RoCrateValidator {
     errors: string[],
     warnings: string[]
   ): void {
-    graph.forEach((entity: any) => {
-      const entityId = entity["@id"] || "(no @id)";
-
-      // Line 648: Entity MUST have @id
-      if (!entity["@id"]) {
-        errors.push(`Entity is missing required @id property (line 648)`);
+    graph.forEach((entity: any, index: number) => {
+      // Line 648: Entity MUST have @id - with comprehensive edge case handling
+      if (!this.hasValidId(entity)) {
+        const reason = this.getIdInvalidReason(entity);
+        errors.push(
+          `Entity at index ${index} has invalid @id: ${reason} (line 648)`
+        );
         return;
       }
 
+      const entityId = entity["@id"];
+
       // Check @id is valid URI reference (line 1050)
-      if (!this.isValidUriReference(entity["@id"])) {
+      if (!this.isValidUriReference(entityId)) {
         errors.push(
           `Entity "${entityId}" has invalid @id - must be valid URI reference (line 1050)`
         );
       }
 
-      // Line 649: Entity MUST have @type
-      if (!entity["@type"]) {
+      // Line 649: Entity MUST have @type - with comprehensive edge case handling
+      if (!this.hasValidType(entity)) {
+        const reason = this.getTypeInvalidReason(entity);
         errors.push(
-          `Entity "${entityId}" is missing required @type property (line 649)`
+          `Entity "${entityId}" has invalid @type: ${reason} (line 649)`
         );
         return;
       }

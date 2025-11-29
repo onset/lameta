@@ -86,17 +86,18 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
 });
 
 describe("RoCrateUtils - IRI Sanitization", () => {
-  it("should URL encode spaces", () => {
-    expect(sanitizeForIri("BAKEMBA Martine")).toBe("BAKEMBA%20Martine");
-    expect(sanitizeForIri("NGOMA Martin")).toBe("NGOMA%20Martin");
-    expect(sanitizeForIri("Multiple  Spaces")).toBe("Multiple%20%20Spaces");
+  it("should convert spaces to underscores", () => {
+    expect(sanitizeForIri("BAKEMBA Martine")).toBe("BAKEMBA_Martine");
+    expect(sanitizeForIri("NGOMA Martin")).toBe("NGOMA_Martin");
+    expect(sanitizeForIri("Multiple  Spaces")).toBe("Multiple__Spaces");
   });
 
-  it("should URL encode parentheses and special punctuation", () => {
+  it("should encode parentheses", () => {
     expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe(
-      "BAKALA%20Michel%20%28%40Mfouati%29"
+      "BAKALA_Michel_%28@Mfouati%29"
     );
-    expect(sanitizeForIri("File with!")).toBe("File%20with%21");
+    // Exclamation marks are allowed in IRIs
+    expect(sanitizeForIri("File with!")).toBe("File_with!");
   });
 
   it("should handle empty and undefined inputs", () => {
@@ -105,8 +106,6 @@ describe("RoCrateUtils - IRI Sanitization", () => {
   });
 
   it("should preserve unreserved URI characters", () => {
-    // encodeURIComponent preserves: A-Z a-z 0-9 - _ . ~ * '
-    // But our sanitizer additionally encodes: ( ) !
     expect(sanitizeForIri("NGOMA-Martin")).toBe("NGOMA-Martin");
     expect(sanitizeForIri("file_name.ext")).toBe("file_name.ext");
     expect(sanitizeForIri("Test123")).toBe("Test123");
@@ -115,125 +114,125 @@ describe("RoCrateUtils - IRI Sanitization", () => {
     expect(sanitizeForIri("test*file")).toBe("test*file");
   });
 
-  describe("exotic and non-Latin character handling", () => {
-    it("should properly encode Chinese characters", () => {
+  describe("non-Latin character handling", () => {
+    it("should preserve Chinese characters (IRIs allow Unicode)", () => {
       const result = sanitizeForIri("张伟");
-      expect(result).toBe("%E5%BC%A0%E4%BC%9F");
-      // Verify it decodes back correctly
-      expect(decodeURIComponent(result)).toBe("张伟");
+      expect(result).toBe("张伟");
     });
 
-    it("should properly encode Arabic characters", () => {
+    it("should preserve Arabic characters", () => {
       const result = sanitizeForIri("محمد");
-      expect(result).toBe("%D9%85%D8%AD%D9%85%D8%AF");
-      expect(decodeURIComponent(result)).toBe("محمد");
+      expect(result).toBe("محمد");
     });
 
-    it("should properly encode Cyrillic characters", () => {
+    it("should preserve Cyrillic characters with spaces as underscores", () => {
       const result = sanitizeForIri("Иван Петров");
-      expect(result).toBe(
-        "%D0%98%D0%B2%D0%B0%D0%BD%20%D0%9F%D0%B5%D1%82%D1%80%D0%BE%D0%B2"
-      );
-      expect(decodeURIComponent(result)).toBe("Иван Петров");
+      expect(result).toBe("Иван_Петров");
     });
 
-    it("should properly encode Japanese characters (Hiragana, Katakana, Kanji)", () => {
+    it("should preserve Japanese characters (Hiragana, Katakana, Kanji)", () => {
       const result = sanitizeForIri("田中さん");
-      expect(result).toBe("%E7%94%B0%E4%B8%AD%E3%81%95%E3%82%93");
-      expect(decodeURIComponent(result)).toBe("田中さん");
+      expect(result).toBe("田中さん");
     });
 
-    it("should properly encode Korean characters", () => {
+    it("should preserve Korean characters", () => {
       const result = sanitizeForIri("김철수");
-      expect(result).toBe("%EA%B9%80%EC%B2%A0%EC%88%98");
-      expect(decodeURIComponent(result)).toBe("김철수");
+      expect(result).toBe("김철수");
     });
 
-    it("should properly encode Hebrew characters", () => {
+    it("should preserve Hebrew characters with spaces as underscores", () => {
       const result = sanitizeForIri("דוד כהן");
-      expect(result).toBe("%D7%93%D7%95%D7%93%20%D7%9B%D7%94%D7%9F");
-      expect(decodeURIComponent(result)).toBe("דוד כהן");
+      expect(result).toBe("דוד_כהן");
     });
 
-    it("should properly encode characters with diacritics", () => {
-      expect(sanitizeForIri("José García")).toBe("Jos%C3%A9%20Garc%C3%ADa");
-      expect(sanitizeForIri("François Müller")).toBe(
-        "Fran%C3%A7ois%20M%C3%BCller"
-      );
-      expect(sanitizeForIri("Søren Østergård")).toBe(
-        "S%C3%B8ren%20%C3%98sterg%C3%A5rd"
-      );
+    it("should preserve characters with diacritics", () => {
+      expect(sanitizeForIri("José García")).toBe("José_García");
+      expect(sanitizeForIri("François Müller")).toBe("François_Müller");
+      expect(sanitizeForIri("Søren Østergård")).toBe("Søren_Østergård");
     });
 
-    it("should properly encode emoji", () => {
+    it("should preserve emoji", () => {
       const result = sanitizeForIri("User 😀");
-      expect(result).toBe("User%20%F0%9F%98%80");
-      expect(decodeURIComponent(result)).toBe("User 😀");
+      expect(result).toBe("User_😀");
     });
   });
 
-  describe("dangerous punctuation and special characters", () => {
-    it("should encode URL-reserved characters", () => {
-      expect(sanitizeForIri("a&b")).toBe("a%26b");
-      expect(sanitizeForIri("a=b")).toBe("a%3Db");
-      expect(sanitizeForIri("a?b")).toBe("a%3Fb");
+  describe("IRI-reserved characters that must be encoded", () => {
+    it("should encode hash (would start a new fragment)", () => {
       expect(sanitizeForIri("a#b")).toBe("a%23b");
+    });
+
+    it("should encode question mark (would start query string)", () => {
+      expect(sanitizeForIri("a?b")).toBe("a%3Fb");
+    });
+
+    it("should encode slash (would be path separator)", () => {
       expect(sanitizeForIri("a/b")).toBe("a%2Fb");
-      expect(sanitizeForIri("a\\b")).toBe("a%5Cb");
     });
 
-    it("should encode square brackets and curly braces", () => {
-      expect(sanitizeForIri("file[1]")).toBe("file%5B1%5D");
-      expect(sanitizeForIri("data{key}")).toBe("data%7Bkey%7D");
+    it("should encode parentheses (can cause issues in some contexts)", () => {
+      expect(sanitizeForIri("file(1)")).toBe("file%281%29");
+    });
+  });
+
+  describe("characters allowed in IRIs (not encoded)", () => {
+    it("should preserve ampersand, equals, etc.", () => {
+      expect(sanitizeForIri("a&b")).toBe("a&b");
+      expect(sanitizeForIri("a=b")).toBe("a=b");
+      expect(sanitizeForIri("a\\b")).toBe("a\\b");
     });
 
-    it("should encode angle brackets", () => {
-      expect(sanitizeForIri("<script>")).toBe("%3Cscript%3E");
-      expect(sanitizeForIri("a<b>c")).toBe("a%3Cb%3Ec");
+    it("should preserve square brackets and curly braces", () => {
+      expect(sanitizeForIri("file[1]")).toBe("file[1]");
+      expect(sanitizeForIri("data{key}")).toBe("data{key}");
     });
 
-    it("should encode quotes and backticks", () => {
-      expect(sanitizeForIri('file"name')).toBe("file%22name");
-      expect(sanitizeForIri("file`name")).toBe("file%60name");
+    it("should preserve angle brackets", () => {
+      expect(sanitizeForIri("<script>")).toBe("<script>");
+      expect(sanitizeForIri("a<b>c")).toBe("a<b>c");
     });
 
-    it("should encode semicolons and colons", () => {
-      expect(sanitizeForIri("a;b")).toBe("a%3Bb");
-      expect(sanitizeForIri("a:b")).toBe("a%3Ab");
+    it("should preserve quotes and backticks", () => {
+      expect(sanitizeForIri('file"name')).toBe('file"name');
+      expect(sanitizeForIri("file`name")).toBe("file`name");
     });
 
-    it("should encode comma and pipe", () => {
-      expect(sanitizeForIri("a,b")).toBe("a%2Cb");
-      expect(sanitizeForIri("a|b")).toBe("a%7Cb");
+    it("should preserve semicolons and colons", () => {
+      expect(sanitizeForIri("a;b")).toBe("a;b");
+      expect(sanitizeForIri("a:b")).toBe("a:b");
     });
 
-    it("should encode percent signs", () => {
-      expect(sanitizeForIri("100%")).toBe("100%25");
-      expect(sanitizeForIri("a%20b")).toBe("a%2520b");
+    it("should preserve comma and pipe", () => {
+      expect(sanitizeForIri("a,b")).toBe("a,b");
+      expect(sanitizeForIri("a|b")).toBe("a|b");
     });
 
-    it("should encode plus and dollar signs", () => {
-      expect(sanitizeForIri("a+b")).toBe("a%2Bb");
-      expect(sanitizeForIri("$100")).toBe("%24100");
+    it("should preserve percent signs", () => {
+      expect(sanitizeForIri("100%")).toBe("100%");
+      expect(sanitizeForIri("a%20b")).toBe("a%20b");
+    });
+
+    it("should preserve plus and dollar signs", () => {
+      expect(sanitizeForIri("a+b")).toBe("a+b");
+      expect(sanitizeForIri("$100")).toBe("$100");
     });
   });
 
   describe("complex real-world names", () => {
     it("should handle names with multiple special character types", () => {
       const result = sanitizeForIri("O'Brien-Smith (Jr.)");
-      expect(decodeURIComponent(result)).toBe("O'Brien-Smith (Jr.)");
+      expect(result).toBe("O'Brien-Smith_%28Jr.%29");
     });
 
     it("should handle names with mixed scripts", () => {
       const result = sanitizeForIri("Александр Smith");
-      expect(decodeURIComponent(result)).toBe("Александр Smith");
+      expect(result).toBe("Александр_Smith");
     });
 
-    it("should handle file names with dangerous characters", () => {
+    it("should handle file names with various characters", () => {
       const result = sanitizeForIri("report_2024<draft>.pdf");
-      expect(result).not.toContain("<");
-      expect(result).not.toContain(">");
-      expect(decodeURIComponent(result)).toBe("report_2024<draft>.pdf");
+      // Angle brackets are allowed, only spaces/hash/question/slash/parens encoded
+      expect(result).toBe("report_2024<draft>.pdf");
     });
   });
 });
@@ -242,15 +241,21 @@ describe("RoCrateUtils - ID Generation", () => {
   describe("createFragmentId", () => {
     it("should create fragment ID with prefix and sanitized value", () => {
       expect(createFragmentId("test", "Value")).toBe("#test-Value");
+      // Spaces become underscores
       expect(createFragmentId("session", "My Session")).toBe(
         "#session-My_Session"
       );
     });
 
-    it("should handle special characters by replacing with underscores", () => {
+    it("should encode parentheses", () => {
       expect(createFragmentId("contributor", "John (Smith)")).toBe(
-        "#contributor-John__Smith_"
+        "#contributor-John_%28Smith%29"
       );
+    });
+
+    it("should preserve non-Latin characters", () => {
+      // Non-Latin characters are preserved in IRIs
+      expect(createFragmentId("contributor", "José")).toBe("#contributor-José");
     });
 
     it("should handle empty values by using prefix as fallback", () => {
@@ -274,7 +279,7 @@ describe("RoCrateUtils - ID Generation", () => {
 
     it("should handle sessions with special characters", () => {
       expect(createSessionId({ filePrefix: "My Session (2024)" })).toBe(
-        "#session-My%20Session%20%282024%29"
+        "#session-My_Session_%282024%29"
       );
     });
 
@@ -290,13 +295,13 @@ describe("RoCrateUtils - ID Generation", () => {
       expect(createPersonId({ filePrefix: "John_Smith" })).toBe("#John_Smith");
     });
 
-    it("should normalize spaces to underscores", () => {
+    it("should convert spaces to underscores", () => {
       expect(createPersonId({ filePrefix: "John Smith" })).toBe("#John_Smith");
     });
 
-    it("should replace special characters with underscores", () => {
+    it("should encode parentheses", () => {
       expect(createPersonId({ filePrefix: "John (Smith)" })).toBe(
-        "#John__Smith_"
+        "#John_%28Smith%29"
       );
     });
 
@@ -309,15 +314,21 @@ describe("RoCrateUtils - ID Generation", () => {
 
   describe("createUnresolvedContributorId", () => {
     it("should create contributor fragment ID with prefix", () => {
+      // Spaces become underscores
       expect(createUnresolvedContributorId("John Smith")).toBe(
         "#contributor-John_Smith"
       );
     });
 
-    it("should handle special characters", () => {
+    it("should encode parentheses", () => {
       expect(createUnresolvedContributorId("John (Consultant)")).toBe(
-        "#contributor-John__Consultant_"
+        "#contributor-John_%28Consultant%29"
       );
+    });
+
+    it("should preserve non-Latin characters", () => {
+      // Non-Latin characters are preserved in IRIs
+      expect(createUnresolvedContributorId("José")).toBe("#contributor-José");
     });
 
     it("should handle empty contributor names", () => {
@@ -364,8 +375,9 @@ describe("RoCrateUtils - ID Generation", () => {
         filePrefix: "Session001",
         getAllContributionsToAllFiles: () => []
       };
+      // Spaces become underscores
       expect(createFileId(sessionFolder, "file with spaces.wav")).toBe(
-        "Sessions/Session001/file%20with%20spaces.wav"
+        "Sessions/Session001/file_with_spaces.wav"
       );
     });
   });

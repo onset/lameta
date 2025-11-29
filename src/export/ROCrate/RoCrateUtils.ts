@@ -48,20 +48,26 @@ function getVocabularyData(vocabularyFile: string): VocabularyDefinition[] {
 
 /**
  * Sanitizes a string for use in an IRI (Internationalized Resource Identifier).
- * Uses the standard encodeURIComponent function and additionally encodes
- * parentheses, which can cause issues in file paths and IRIs even though
- * they are technically allowed by RFC 3986.
+ * Per RFC 3987, IRIs allow Unicode characters directly, so we only encode
+ * characters that are actually problematic:
+ * - Spaces -> underscores (common convention for readability)
+ * - Reserved delimiters that conflict with IRI structure: # ? /
+ * - Parentheses (can cause issues in some contexts)
+ *
+ * Non-Latin characters (é, ñ, 中文, العربية, etc.) are preserved as-is
+ * since they are valid in IRIs.
  */
 export function sanitizeForIri(input: string | undefined): string {
   if (!input) {
     return ""; // Return empty string for null, undefined, or empty input
   }
-  // Use encodeURIComponent for standard encoding, then encode parentheses
-  // which are allowed by RFC 3986 but can cause issues in practice
-  return encodeURIComponent(input)
-    .replace(/\(/g, "%28")
-    .replace(/\)/g, "%29")
-    .replace(/!/g, "%21");
+  return input
+    .replace(/ /g, "_") // Spaces to underscores for readability
+    .replace(/#/g, "%23") // Hash would start a new fragment
+    .replace(/\?/g, "%3F") // Question mark would start query string
+    .replace(/\//g, "%2F") // Slash would be path separator
+    .replace(/\(/g, "%28") // Parentheses can cause issues
+    .replace(/\)/g, "%29");
 }
 
 /**
@@ -70,12 +76,15 @@ export function sanitizeForIri(input: string | undefined): string {
  * @param prefix - The type prefix (e.g., 'session', 'contributor')
  * @param value - The value to sanitize and append
  * @returns A fragment identifier in the format `#prefix-sanitizedValue`
+ *
+ * Uses sanitizeForIri() for proper handling of non-Latin characters via
+ * percent-encoding, ensuring consistent IDs across all character sets.
  */
 export function createFragmentId(prefix: string, value: string): string {
-  const sanitized = value
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-zA-Z0-9_-]/g, "_");
+  const trimmed = value.trim();
+  // Use sanitizeForIri for proper encoding of special and non-Latin characters
+  // This preserves the original information via percent-encoding (e.g., "محمد" -> "%D9%85...")
+  const sanitized = sanitizeForIri(trimmed);
   const fragment = sanitized.length > 0 ? sanitized : prefix;
   return `#${prefix}-${fragment}`;
 }
@@ -139,15 +148,14 @@ export function createSessionDirectoryId(session: any): string {
 /**
  * Creates a consistent Person ID for RO-Crate entities.
  * Person IDs use a bare fragment without a prefix per LDAC guidance.
+ * Uses sanitizeForIri() for proper handling of non-Latin characters via
+ * percent-encoding, ensuring consistent IDs across all character sets.
  */
 export function createPersonId(person: any): string {
   const baseValue = (person?.filePrefix || "person") as string;
-  const normalized = baseValue
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-zA-Z0-9_-]/g, "_");
-  const fragment = normalized.length > 0 ? normalized : "person";
-  return `#${fragment}`;
+  // Use sanitizeForIri to handle non-Latin characters properly (e.g., "محمد" -> "%D9%85...")
+  const sanitized = sanitizeForIri(baseValue.trim()) || "person";
+  return `#${sanitized}`;
 }
 
 /**
@@ -325,4 +333,92 @@ function createCustomTermId(termLabel: string, projectTitle?: string): string {
   }
 
   return getCustomUri(`genre/${termLabel}`, projectTitle);
+}
+
+// ============================================================================
+// Containment Relationship Utilities
+// ============================================================================
+// These utilities handle hasPart/isPartOf relationships consistently across
+// the RO-Crate export. In RO-Crate 1.2, data entities must be reachable from
+// root via hasPart chain. LDAC expects hasPart/isPartOf pairs for proper
+// containment representation.
+// ============================================================================
+
+/**
+ * Creates a bidirectional containment relationship between parent and child entities.
+ * Adds the child to the parent's hasPart array (if not skipped) and sets isPartOf on the child.
+ *
+ * @param parentEntry - The parent entity (Dataset, RepositoryCollection, etc.)
+ * @param childEntry - The child entity (File, Dataset, etc.)
+ * @param options - Optional configuration
+ * @param options.skipHasPart - If true, only sets isPartOf on child (for non-owned references)
+ * @param options.parentIdOverride - Use this ID instead of parent's @id for isPartOf
+ */
+export function linkContainment(
+  parentEntry: any,
+  childEntry: any,
+  options?: {
+    skipHasPart?: boolean;
+    parentIdOverride?: string;
+  }
+): void {
+  const parentId = options?.parentIdOverride || parentEntry["@id"];
+  const childId = childEntry["@id"];
+
+  if (!options?.skipHasPart) {
+    if (!parentEntry.hasPart) {
+      parentEntry.hasPart = [];
+    }
+    const alreadyPresent = parentEntry.hasPart.some(
+      (item: any) => item["@id"] === childId
+    );
+    if (!alreadyPresent) {
+      parentEntry.hasPart.push({ "@id": childId });
+    }
+  }
+
+  childEntry.isPartOf = { "@id": parentId };
+}
+
+/**
+ * Creates hasPart reference objects for multiple child IDs.
+ * Use this when building a new entity with a hasPart array.
+ *
+ * @param childIds - Array of @id values for child entities
+ * @returns Array of reference objects with @id properties
+ */
+export function createHasPartReferences(
+  childIds: string[]
+): { "@id": string }[] {
+  return childIds.map((id) => ({ "@id": id }));
+}
+
+/**
+ * Creates an isPartOf reference object.
+ * Use this when setting the isPartOf property on a child entity.
+ *
+ * @param parentId - The @id of the parent entity
+ * @returns Reference object with @id property
+ */
+export function createIsPartOfReference(parentId: string): { "@id": string } {
+  return { "@id": parentId };
+}
+
+/**
+ * Adds a child ID to a parent's hasPart array if not already present.
+ * Creates the hasPart array if it doesn't exist.
+ *
+ * @param parentEntry - The parent entity
+ * @param childId - The @id of the child to add
+ */
+export function addToHasPart(parentEntry: any, childId: string): void {
+  if (!parentEntry.hasPart) {
+    parentEntry.hasPart = [];
+  }
+  const alreadyPresent = parentEntry.hasPart.some(
+    (item: any) => item["@id"] === childId
+  );
+  if (!alreadyPresent) {
+    parentEntry.hasPart.push({ "@id": childId });
+  }
 }

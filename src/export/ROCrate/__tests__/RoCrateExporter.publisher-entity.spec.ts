@@ -45,11 +45,20 @@ describe("RoCrateExporter Publisher Entity", () => {
     expect(rootDataset.publisher["@id"]).toBe("#publisher-lameta");
 
     // Check that the publisher entity is actually defined in the graph
+    // This ensures the entity exists before we try to access its properties
     const publisherEntity = graph.find(
       (item: any) => item["@id"] === "#publisher-lameta"
     );
 
+    // Guard: Ensure entity exists before checking properties (prevents test false negatives)
     expect(publisherEntity).toBeDefined();
+    if (!publisherEntity) {
+      throw new Error(
+        "#publisher-lameta entity is not defined in the graph. " +
+          "Check RoCrateExporter to ensure publisher entity is being created."
+      );
+    }
+
     expect(publisherEntity["@type"]).toContain("Organization");
     expect(publisherEntity.name).toBe("lameta");
   });
