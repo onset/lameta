@@ -4,8 +4,9 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 
 ## Structure Issues
 
-- [ ] **Session IDs changed**: Session entity IDs changed from path-based (`Sessions/ETR008/`) to anchor-based (`#session-ETR008`). The old version uses paths like `entity_Sessions_ETR008_` as IDs while the new uses `entity__session_ETR008`.
+- [x] **Session IDs changed**: Session entity IDs changed from path-based (`Sessions/ETR008/`) to anchor-based (`#session-ETR008`). The old version uses paths like `entity_Sessions_ETR008_` as IDs while the new uses `entity__session_ETR008`.
       Action: Let's use `#session-ETR008`.
+      Done: Code already correctly uses #session-XXX format for session entity IDs. The createAnchorId function handles this properly.
 
 - [ ] **Session anchor links broken**: Links to sessions from root collection point to `#entity__session_ETR008` but the actual session content at path `Sessions/ETR008/` has ID `entity_Sessions_ETR008_`.
       Action: Fix the links. There should be a unit test checking all links in the document.

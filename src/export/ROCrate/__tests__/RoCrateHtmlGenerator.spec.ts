@@ -1455,4 +1455,87 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain('id="entity__Awi_Heole"');
     expect(html).toContain('id="entity__session_ETR009"');
   });
+
+  it("should have all internal anchor links point to valid entity IDs", () => {
+    // This test ensures all href="#entity_..." links have a corresponding id="entity_..." target
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project",
+          hasPart: [{ "@id": "#session-ETR008" }, { "@id": "#session-ETR009" }],
+          "pcdm:hasMember": [
+            { "@id": "#session-ETR008" },
+            { "@id": "#session-ETR009" }
+          ]
+        },
+        {
+          "@id": "#session-ETR008",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR008",
+          hasPart: [{ "@id": "Sessions/ETR008/audio.mp3" }],
+          "ldac:participant": [{ "@id": "#Awi_Heole" }]
+        },
+        {
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR009",
+          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }]
+        },
+        {
+          "@id": "Sessions/ETR008/audio.mp3",
+          "@type": "AudioObject",
+          name: "audio.mp3"
+        },
+        {
+          "@id": "Sessions/ETR009/video.mp4",
+          "@type": "VideoObject",
+          name: "video.mp4"
+        },
+        {
+          "@id": "#Awi_Heole",
+          "@type": "Person",
+          name: "Awi Heole"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Extract all internal anchor links (href="#entity_...")
+    const linkMatches = html.match(/href="#(entity_[^"]+)"/g) || [];
+    const linkedIds = linkMatches
+      .map((match) => {
+        const m = match.match(/href="#(entity_[^"]+)"/);
+        return m ? m[1] : null;
+      })
+      .filter(Boolean) as string[];
+
+    // Extract all entity IDs (id="entity_...")
+    const idMatches = html.match(/id="(entity_[^"]+)"/g) || [];
+    const definedIds = new Set(
+      idMatches
+        .map((match) => {
+          const m = match.match(/id="(entity_[^"]+)"/);
+          return m ? m[1] : null;
+        })
+        .filter(Boolean) as string[]
+    );
+
+    // Verify all linked IDs exist as defined entity IDs
+    const brokenLinks = linkedIds.filter((id) => !definedIds.has(id));
+
+    // Log for debugging if there are broken links
+    if (brokenLinks.length > 0) {
+      console.log("Broken links found:", brokenLinks);
+      console.log("Defined entity IDs:", Array.from(definedIds));
+    }
+
+    expect(brokenLinks).toEqual([]);
+
+    // Ensure we actually tested some links (sanity check)
+    expect(linkedIds.length).toBeGreaterThan(0);
+  });
 });
