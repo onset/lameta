@@ -400,30 +400,40 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
     it("should not warn when directory @id ends with /", () => {
       const roCrate = createMinimalValidRoCrate();
+      // Add the subfolder entity
       roCrate["@graph"].push({
         "@id": "subfolder/",
         "@type": "Dataset",
         name: "Subfolder"
       });
+      // Link it from root dataset via hasPart to avoid orphaned entity warnings
+      const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
+      rootDataset.hasPart = [{ "@id": "subfolder/" }];
 
       const result = validator.validate(roCrate);
+      // Should not warn about missing trailing slash (that's for when it doesn't end with /)
       expect(result.warnings).not.toContainEqual(
-        expect.stringContaining("subfolder/")
+        expect.stringContaining("should end with /")
       );
     });
 
     it("should not warn for Dataset with fragment @id", () => {
       const roCrate = createMinimalValidRoCrate();
+      // Add the fragment-ID dataset entity
       roCrate["@graph"].push({
         "@id": "#ai-files",
         "@type": "Dataset",
         name: "AI Files Collection",
         description: "Collection of .ai files"
       });
+      // Link it from root dataset via hasPart to avoid orphaned entity warnings
+      const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
+      rootDataset.hasPart = [{ "@id": "#ai-files" }];
 
       const result = validator.validate(roCrate);
+      // Should not warn about missing trailing slash for fragment IDs
       expect(result.warnings).not.toContainEqual(
-        expect.stringContaining("#ai-files")
+        expect.stringContaining("should end with /")
       );
     });
   });

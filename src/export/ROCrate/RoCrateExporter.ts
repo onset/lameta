@@ -385,6 +385,10 @@ async function getRoCrateInternal(
 
         otherEntries.push(protocolEntry);
         const protocolReference = { "@id": protocolEntry["@id"] };
+
+        // Add to root hasPart for RO-Crate 1.2 compliance (data entities must be reachable via hasPart)
+        entry.hasPart.push(protocolReference);
+
         const currentProtocols = entry["ldac:hasCollectionProtocol"];
 
         if (!currentProtocols) {
@@ -405,16 +409,21 @@ async function getRoCrateInternal(
       }
     }
 
-    // Add other docs folder files to root dataset hasPart
+    // LAM-101: Create OtherDocuments/ Dataset to group miscellaneous project documents
+    // Similar to Sessions/ (LAM-99), files are nested under a Dataset for RO-Crate 1.2 compliance.
+    // See: https://linear.app/lameta/issue/LAM-101/add-otherdocuments-dataset
+    let otherDocsDatasetEntry: RoCrateEntity | undefined;
     if (project.otherDocsFolder && project.otherDocsFolder.files.length > 0) {
-      addProjectDocumentFolderEntries(
+      otherDocsDatasetEntry = createOtherDocumentsDataset(
         project.otherDocsFolder,
-        "OtherDocuments",
-        entry,
         otherEntries,
         rocrateLicense,
+        entry,
         project
       );
+      if (otherDocsDatasetEntry) {
+        entry.hasPart.push({ "@id": otherDocsDatasetEntry["@id"] });
+      }
     }
 
     // Create unique licenses for all sessions
@@ -464,6 +473,11 @@ async function getRoCrateInternal(
       ...rocrateLanguages.getUsedLanguageEntities(),
       ...uniqueOtherEntries
     ];
+
+    // LAM-101: Add OtherDocuments/ Dataset if it exists
+    if (otherDocsDatasetEntry) {
+      baseGraph.push(otherDocsDatasetEntry);
+    }
 
     // Add a People dataset container so Person nodes hang off a proper directory entity.
     // LAM-98: Now returns an array including #People plus individual person-files Datasets.
@@ -1025,6 +1039,78 @@ function createSessionsDatasetHierarchy(
 
   // Return with Sessions/ first, then individual session directories
   return [sessionsDataset, ...results];
+}
+
+/**
+ * LAM-101: Creates an OtherDocuments/ Dataset for RO-Crate 1.2 compliance.
+ * Similar to Sessions/, this groups miscellaneous project documents under a
+ * dedicated Dataset so files are reachable from root via hasPart chain.
+ *
+ * See: https://linear.app/lameta/issue/LAM-101/add-otherdocuments-dataset
+ */
+function createOtherDocumentsDataset(
+  otherDocsFolder: Folder,
+  otherEntries: object[],
+  rocrateLicense: RoCrateLicense,
+  projectEntry: any,
+  project?: Project
+): RoCrateEntity | undefined {
+  if (!otherDocsFolder || otherDocsFolder.files.length === 0) {
+    return undefined;
+  }
+
+  const datasetId = "OtherDocuments/";
+  const fileIds: string[] = [];
+
+  // Process each file in the OtherDocuments folder
+  otherDocsFolder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    const fileName = Path.basename(path);
+
+    // Skip RO-Crate metadata files to avoid circular references
+    if (fileName.startsWith("ro-crate")) {
+      return;
+    }
+
+    const fileId = `OtherDocuments/${sanitizeForIri(fileName)}`;
+
+    // Build the file entry using shared helper
+    const { fileEntry } = buildFileEntry({
+      file,
+      fileId,
+      rocrateLicense,
+      folder: undefined, // No folder for project documents
+      parentEntry: projectEntry,
+      project
+    });
+
+    // LAM-101: File's isPartOf points to the OtherDocuments/ Dataset, not root
+    fileEntry.isPartOf = { "@id": datasetId };
+
+    otherEntries.push(fileEntry);
+    fileIds.push(fileId);
+  });
+
+  // Create the OtherDocuments/ Dataset
+  const otherDocsDataset: RoCrateEntity = {
+    "@id": datasetId,
+    "@type": "Dataset",
+    name: "Other Documents",
+    description: "Additional documents associated with this collection.",
+    hasPart: fileIds.map((id) => ({ "@id": id })),
+    isPartOf: { "@id": "./" }
+  };
+
+  // Inherit collection license
+  if (
+    projectEntry?.license &&
+    typeof projectEntry.license === "object" &&
+    projectEntry.license["@id"]
+  ) {
+    otherDocsDataset.license = { "@id": projectEntry.license["@id"] };
+  }
+
+  return otherDocsDataset;
 }
 
 function createPeopleDatasetEntry(

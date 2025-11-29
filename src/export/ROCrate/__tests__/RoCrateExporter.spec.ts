@@ -1360,8 +1360,19 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Check that the other docs file is included in hasPart
-    const otherDocFileRef = rootEntry.hasPart.find(
+    // LAM-101: OtherDocuments files are now inside the OtherDocuments/ Dataset
+    // Check that the OtherDocuments/ Dataset is in root's hasPart
+    const otherDocsDatasetRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDatasetRef).toBeDefined();
+
+    // Find the OtherDocuments/ Dataset and check it has the file
+    const otherDocsDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDataset).toBeDefined();
+    const otherDocFileRef = otherDocsDataset.hasPart.find(
       (part: any) => part["@id"] === "OtherDocuments/notes.txt"
     );
     expect(otherDocFileRef).toBeDefined();
@@ -1405,8 +1416,19 @@ describe("RoCrateExporter project document folders", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Check that the letter file is included with correct ID
-    const letterFileRef = rootEntry.hasPart.find(
+    // LAM-101: OtherDocuments files are now inside the OtherDocuments/ Dataset
+    // Check that the OtherDocuments/ Dataset is in root's hasPart
+    const otherDocsDatasetRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDatasetRef).toBeDefined();
+
+    // Find the OtherDocuments/ Dataset and check it has the file
+    const otherDocsDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDataset).toBeDefined();
+    const letterFileRef = otherDocsDataset.hasPart.find(
       (part: any) => part["@id"] === "OtherDocuments/Letter_from_Jan.txt"
     );
     expect(letterFileRef).toBeDefined();

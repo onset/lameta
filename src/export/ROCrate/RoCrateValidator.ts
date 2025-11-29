@@ -247,6 +247,13 @@ const FILE_TYPES = new Set([
   "MediaObject"
 ]);
 
+// Known LDAC types that are valid alternatives to Schema.org types
+const KNOWN_LDAC_TYPES = new Set([
+  "ldac:DataReuseLicense",
+  "ldac:CollectionProtocol",
+  "ldac:CollectionEvent"
+]);
+
 /**
  * Validates RO-Crate export for LDAC profile compliance and RO-Crate 1.2 specification
  */
@@ -854,6 +861,7 @@ export class RoCrateValidator {
 
   /**
    * RO-Crate 1.2 line 650: Validate @type includes Schema.org type
+   * Also accepts known LDAC types as valid alternatives
    */
   private validateSchemaOrgType(
     types: string[],
@@ -861,7 +869,8 @@ export class RoCrateValidator {
     warnings: string[]
   ): void {
     const hasSchemaOrgType = types.some((t) => SCHEMA_ORG_TYPES.has(t));
-    if (!hasSchemaOrgType) {
+    const hasKnownLdacType = types.some((t) => KNOWN_LDAC_TYPES.has(t));
+    if (!hasSchemaOrgType && !hasKnownLdacType) {
       warnings.push(
         `Entity "${entityId}" @type should include at least one Schema.org type (line 650)`
       );

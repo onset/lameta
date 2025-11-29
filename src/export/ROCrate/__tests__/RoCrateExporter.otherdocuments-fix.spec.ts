@@ -21,6 +21,13 @@ vi.mock("fs-extra", () => ({
   })
 }));
 
+/**
+ * Test for verifying that OtherDocuments files use the correct folder prefix.
+ *
+ * LAM-101: Updated to reflect new structure where files are grouped under
+ * an OtherDocuments/ Dataset entity for RO-Crate 1.2 compliance.
+ * See: https://linear.app/lameta/issue/LAM-101/add-otherdocuments-dataset
+ */
 describe("RoCrateExporter OtherDocuments folder fix", () => {
   beforeEach(() => {
     // Mock field definitions
@@ -80,12 +87,23 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // Verify that the file is referenced with the correct folder prefix
-    const letterFileRef = rootEntry.hasPart.find(
+    // LAM-101: Root now references the OtherDocuments/ Dataset, not individual files
+    const otherDocsDatasetRef = rootEntry.hasPart.find(
+      (part: any) => part["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDatasetRef).toBeDefined();
+    expect(otherDocsDatasetRef["@id"]).toBe("OtherDocuments/");
+
+    // Verify the OtherDocuments/ Dataset exists and references the file
+    const otherDocsDataset = result["@graph"].find(
+      (item: any) => item["@id"] === "OtherDocuments/"
+    );
+    expect(otherDocsDataset).toBeDefined();
+    expect(otherDocsDataset["@type"]).toBe("Dataset");
+    const fileRefInDataset = otherDocsDataset.hasPart.find(
       (part: any) => part["@id"] === "OtherDocuments/Letter_from_Jan.txt"
     );
-    expect(letterFileRef).toBeDefined();
-    expect(letterFileRef["@id"]).toBe("OtherDocuments/Letter_from_Jan.txt");
+    expect(fileRefInDataset).toBeDefined();
 
     // Verify that the file entry itself has the correct @id
     const letterFileEntry = result["@graph"].find(
@@ -97,6 +115,8 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
     expect(letterFileEntry["@type"]).toBe("File");
     expect(letterFileEntry.name).toBe("Letter_from_Jan.txt");
+    // LAM-101: File should point to OtherDocuments/ Dataset, not root
+    expect(letterFileEntry.isPartOf).toEqual({ "@id": "OtherDocuments/" });
 
     // Verify that no files have the incorrect "OtherDocs" prefix
     const incorrectFileRefs = result["@graph"].filter(

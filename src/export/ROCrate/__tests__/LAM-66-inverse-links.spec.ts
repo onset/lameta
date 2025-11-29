@@ -238,7 +238,7 @@ describe("LAM-66: Inverse Links", () => {
       }
     });
 
-    it("should add isPartOf to other document files pointing back to project root", async () => {
+    it("should add isPartOf to other document files pointing back to OtherDocuments/ Dataset", async () => {
       const roCrate = (await getRoCrate(mockProject, mockProject)) as any;
       const graph = roCrate["@graph"];
 
@@ -247,11 +247,12 @@ describe("LAM-66: Inverse Links", () => {
         (e: any) => e["@id"] === "OtherDocuments/readme.txt"
       );
 
-      // LAM-66: Verify project-level files have isPartOf pointing to root
+      // LAM-66 + LAM-101: Verify project-level files have isPartOf pointing to OtherDocuments/ Dataset
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
+      // https://linear.app/lameta/issue/LAM-101/add-otherdocuments-dataset
       if (otherFile) {
         expect(otherFile).toHaveProperty("isPartOf");
-        expect(otherFile.isPartOf).toEqual({ "@id": "./" });
+        expect(otherFile.isPartOf).toEqual({ "@id": "OtherDocuments/" });
       }
     });
   });
