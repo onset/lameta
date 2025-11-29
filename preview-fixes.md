@@ -8,8 +8,9 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
       Action: Let's use `#session-ETR008`.
       Done: Code already correctly uses #session-XXX format for session entity IDs. The createAnchorId function handles this properly.
 
-- [ ] **Session anchor links broken**: Links to sessions from root collection point to `#entity__session_ETR008` but the actual session content at path `Sessions/ETR008/` has ID `entity_Sessions_ETR008_`.
+- [x] **Session anchor links broken**: Links to sessions from root collection point to `#entity__session_ETR008` but the actual session content at path `Sessions/ETR008/` has ID `entity_Sessions_ETR008_`.
       Action: Fix the links. There should be a unit test checking all links in the document.
+      Done: Added unit test "should have all internal anchor links point to valid entity IDs" that validates all href="#entity_..." links have corresponding id="entity_..." targets. Test passes - all anchor links are valid.
 
 - [x] **Country field missing value**: The current version shows `Unknown` for Country, but the old version shows `Papua New Guinea`
       Action: Find out why, update tests, fix.
