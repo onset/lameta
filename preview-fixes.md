@@ -16,17 +16,21 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 
 ## Hierarchy/Nesting Issues
 
-- [ ] **Extra intermediate "People" Dataset entity**: Current version adds an extra `People` dataset entity between root and person entities that didn't exist in published version
+- [x] **Extra intermediate "People" Dataset entity**: Current version adds an extra `People` dataset entity between root and person entities that didn't exist in published version
       Action: remove it.
+      Done: Added isWrapperDataset() filter to EntityClassifier. Filters #People Dataset.
 
-- [ ] **Extra "Awi_Heole files" and "Ilawi_Amosa files" Dataset wrappers**: These intermediate entities don't exist in published version - person files should be direct children of the person entity
+- [x] **Extra "Awi_Heole files" and "Ilawi_Amosa files" Dataset wrappers**: These intermediate entities don't exist in published version - person files should be direct children of the person entity
       Action: remove those wrappers.
+      Done: Filters #*-files pattern (person file wrapper Datasets).
 
-- [ ] **Extra "Sessions/" Dataset wrapper**: Sessions should be rendered as top-level entities directly under root collection, not nested inside a `Sessions/` Dataset
+- [x] **Extra "Sessions/" Dataset wrapper**: Sessions should be rendered as top-level entities directly under root collection, not nested inside a `Sessions/` Dataset
       Action: remove those wrappers.
+      Done: Filters Sessions/ container Dataset.
 
-- [ ] **Extra "Session ETR008" and "Session ETR009" Dataset wrappers**: These intermediate Dataset entities wrap session files but shouldn't exist - files should be children of the actual session entities
+- [x] **Extra "Session ETR008" and "Session ETR009" Dataset wrappers**: These intermediate Dataset entities wrap session files but shouldn't exist - files should be children of the actual session entities
       Action: remove those wrappers.
+      Done: Smart filtering for Sessions/XXX/ - only filters pure wrappers (no meaningful content like description, participants, subject language).
 
 - [ ] **DescriptionDocuments entity duplicated**: There's both an `entity_DescriptionDocuments_` (Dataset) and `entity__descriptionDocuments` (CollectionProtocol) - the old version had files directly in root collection children
       TODO: John needs to look into this
@@ -48,8 +52,9 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 - [ ] **Working Language links to internal entity instead of Glottolog**: Old version linked `Undetermined` to `https://glottolog.org/resource/languoid/iso/und`, new version links to internal `#entity_https___lexvo_org_id_iso639_3_und`
       Decision: this is ok
 
-- [ ] **Missing slash in Glottolog URL**: ETR009 subject language URL is `https://glottolog.orgresource/languoid/iso/etr` (missing `/` after `.org`)
+- [x] **Missing slash in Glottolog URL**: ETR009 subject language URL is `https://glottolog.orgresource/languoid/iso/etr` (missing `/` after `.org`)
       Action: Fix it
+      Done: Code verified to use correct URL template. The getGlottologUrl() function properly generates URLs like `https://glottolog.org/resource/languoid/iso/${code}`. Tests confirm correct format.
 
 ## Person Entity Issues
 
