@@ -1394,4 +1394,65 @@ describe("RoCrateHtmlGenerator", () => {
     expect(countrySection).toBeTruthy();
     expect(countrySection![1]).not.toContain("Unknown");
   });
+
+  it("should filter out wrapper Dataset entities (People, Sessions, person-files)", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project",
+          hasPart: [{ "@id": "#People" }, { "@id": "Sessions/" }]
+        },
+        {
+          "@id": "#People",
+          "@type": "Dataset",
+          name: "People",
+          description: "Directory of people",
+          hasPart: [{ "@id": "#Awi_Heole-files" }]
+        },
+        {
+          "@id": "#Awi_Heole-files",
+          "@type": "Dataset",
+          name: "Awi_Heole files",
+          hasPart: [{ "@id": "#Awi_Heole" }]
+        },
+        {
+          "@id": "#Awi_Heole",
+          "@type": "Person",
+          name: "Awi Heole"
+        },
+        {
+          "@id": "Sessions/",
+          "@type": "Dataset",
+          name: "Sessions",
+          hasPart: [{ "@id": "Sessions/ETR009/" }]
+        },
+        {
+          "@id": "Sessions/ETR009/",
+          "@type": "Dataset",
+          name: "Session ETR009",
+          hasPart: [{ "@id": "#session-ETR009" }]
+        },
+        {
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Test Session"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should NOT render wrapper Datasets
+    expect(html).not.toContain('id="entity__People"');
+    expect(html).not.toContain('id="entity__Awi_Heole_files"');
+    expect(html).not.toContain('id="entity_Sessions_"');
+    expect(html).not.toContain('id="entity_Sessions_ETR009_"');
+
+    // Should still render the actual Person and Session entities
+    expect(html).toContain('id="entity__Awi_Heole"');
+    expect(html).toContain('id="entity__session_ETR009"');
+  });
 });

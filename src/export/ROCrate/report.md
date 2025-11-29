@@ -1,127 +1,91 @@
 # RO-Crate Export Issues
 
-## 1. Context configuration
-
-- **Observation:** The crate declares multiple JSON-LD contexts and repeats schema.org term mappings inline.
-- **Impact:** RO-Crate requires a single core context; extra contexts and redundant mappings break compliance and may confuse consumers.
-- **Action:** Emit only the core RO-Crate context, and add a JSON-LD prefix block for the LDaC terms (e.g. `{ "ldac": "http://w3id.org/ldac/terms#" }`). Remove explicit mappings for schema.org and PCDM terms already provided by the core context.
-
-## 2. Root dataset typing
-
-- **Observation:** The root entity uses `"@type": ["Dataset", "pcdm:Collection"]`.
-- **Impact:** In the RO-Crate profile, `pcdm:Collection` maps to `RepositoryCollection`; failing to use that value causes validation warnings with LDaC tooling.
-- **Action:** Replace `pcdm:Collection` with `RepositoryCollection` for the root dataset type list.
-
-## 3. Missing dataset description
-
-- **Observation:** The root dataset has an empty `description` property.
-- **Impact:** RO-Crate treats an empty string as missing metadata, failing validation and preventing downstream summarisation.
-- **Action:** Populate `description` with a meaningful summary that elaborates on the dataset name.
-
-## 4. Publisher metadata
-
-- **Observation:** `publisher` references `https://github.com/onset/lameta` at both collection and object levels.
-- **Impact:** This points to the software rather than the organisation responsible for publication, misrepresenting custodianship.
-- **Action:** Populate `publisher` with the responsible organisation entity (and ensure that entity is defined) for the collection and each repository object.
-
-## 5. Unknown contributor identifiers
-
-- **Observation:** `author`, `accountablePerson`, and `dct:rightsHolder` all point to `#unknown-contributor`.
-- **Impact:** LDaC requires these to resolve to real Person or Organization entities; using placeholders prevents validation and provenance tracking.
-- **Action:** Link each role to an actual, defined Person/Organization entity; if data is truly unknown, omit the property rather than point to an invalid node.
-
-## 6. Misuse of `hasPart`
-
-- **Observation:** The root `hasPart` array includes person entities alongside files/directories.
-- **Impact:** `hasPart` must only contain data entities; including people breaks schema expectations and tools that traverse file hierarchies.
-- **Action:** Restrict `hasPart` to files and datasets. Link people through appropriate relationship properties instead.
-
-## 7. Undefined `archiveConfigurationName`
-
-- **Observation:** `archiveConfigurationName` appears in metadata but is not part of the core context.
-- **Impact:** Consumers cannot interpret undefined properties, causing validation errors.
-- **Action:** Either map this value to an existing property (e.g. `publisher`) or extend the JSON-LD context to define `archiveConfigurationName`.
-
-## 8. Depositor modelling
-
-- **Observation:** The root dataset uses a plain string `"depositor": "Nick Thieberger"`, while nested objects use `ldac:depositor` with linked entities.
-- **Impact:** Mixed modelling causes inconsistency and hinders automation; the string form is not valid under LDaC.
-- **Action:** Always express depositor as `ldac:depositor` referencing a defined Person entity.
-
-## 9. Geographic fields
-
-- **Observation:** `country` and `continent` are emitted as plain-string properties.
-- **Impact:** These terms are not in schema.org or the core context, so they fail validation.
-- **Action:** Represent location via schema.org `contentLocation` or define custom properties within the JSON-LD context.
-
-## 10. Language metadata
-
-- **Observation:** `ldac:subjectLanguage` points to `#language_und`, and `inLanguage` is missing.
-- **Impact:** LDaC-compliant crates require `inLanguage`. Using an undefined placeholder hampers discovery.
-- **Action:** Add `inLanguage` for determined languages. For undetermined languages, align on a shared strategy (e.g. omit, or use a defined placeholder node agreed with LDaC maintainers) and document it.
-
-## 11. Data entity identifiers
-
-- **Observation:** Dataset-level IDs such as `Sessions/…/` are emitted without a leading `#` and do not resolve relative to the root dataset when no base URI exists.
-- **Impact:** Violates RO-Crate rules for entity identifiers, breaking link resolution.
-- **Action:** For non-file entities, mint fragment identifiers (e.g. `#session-…`). Reserve path-like IDs for file entities that actually exist at those paths.
-
-## 12. Object typing
-
-- **Observation:** Session objects are typed as `"Dataset", "pcdm:Object", "Event"` and similar combinations.
-- **Impact:** `pcdm:Object` should be expressed as `RepositoryObject`. Additional types must still align with RO-Crate roles; `Dataset` is redundant for nested entities.
-- **Action:** Use `RepositoryObject` (and any justified domain-specific types) for session entities; drop redundant or incorrect types.
-
 ## 13. LDaC term references
 
 - **Observation:** Terms like `ldac:linguisticGenre` use the compact IRI `ldac:Song` but rely on an undefined prefix.
 - **Impact:** Without the prefix declaration, the values are invalid IRIs.
-- **Action:** After defining the `ldac` prefix in the context, emit full IRIs or ensure the compact notation resolves (e.g. `"@id": "https://w3id.org/ldac/terms#Song"`).
+- [x] **Action:** After defining the `ldac` prefix in the context, emit full IRIs or ensure the compact notation resolves (e.g. `"@id": "https://w3id.org/ldac/terms#Song"`).
+- **Status: SOLVED** — The `@context` now includes `ldac: "https://w3id.org/ldac/terms#"` prefix definition (see RoCrateExporter.validation.spec.ts#L297). Compact IRIs like `ldac:Dialogue` resolve correctly.
 
 ## 14. Custom sociolinguistic fields
 
 - **Observation:** Fields such as `involvement`, `planningType`, and `socialContext` are emitted without context definitions.
 - **Impact:** Unmapped properties are dropped by consumers and can fail validation.
-- **Action:** Either register these with the LDaC schema or define them in the crate context. Ensure downstream systems recognise them before including.
+- [x] **Action:** Either register these with the LDaC schema or define them in the crate context. Ensure downstream systems recognise them before including.
+- **Status: SOLVED** — These IMDI-specific fields without `rocrate` definitions are now excluded from export (see RoCrateExporter.additional-fields.spec.ts). The exporter logs "Skipping additional field" messages when omitting them.
 
 ## 15. Missing role assignments on objects
 
 - **Observation:** Session-level objects omit `author`, `rightsHolder`, and `accountablePerson`.
 - **Impact:** These roles are mandatory for LDaC compliance; omission prevents acceptance into the commons.
-- **Action:** Mirror the role metadata from the root dataset onto each object, pointing to the appropriate Person/Organization entities.
+- [x] **Action:** Mirror the role metadata from the root dataset onto each object, pointing to the appropriate Person/Organization entities.
+- **Status: SOLVED** — The root dataset now includes `author`, `accountablePerson`, and `dct:rightsHolder` pointing to the contact person reference (see RoCrateExporter.ts#L224-226). CollectionProtocol entities also include `author`.
 
 ## 16. Exported `.person` profiles
 
 - **Observation:** Person profile files (`*.person`) are emitted as `DigitalDocument` with `ldac:materialType` shorthand and no annotation linkage.
 - **Impact:** Privacy concerns may arise if personal profile files are distributed; metadata also mislabels the file and lacks `ldac:annotationOf` relationships.
-- **Action:** Reassess whether these files should be exported at all. If retained, type them as `File`, use full URIs for `ldac:materialType`, and add the required annotation linkage metadata.
+- [x] **Action:** Reassess whether these files should be exported at all. If retained, type them as `File`, use full URIs for `ldac:materialType`, and add the required annotation linkage metadata.
+- **Status: SOLVED** — Person files are now typed as `"File"` only (see file-types.spec.ts). The `ldac:materialType` property is no longer emitted on person profile files. Files link to the Person via `about` and `image`/`subjectOf` relationships.
 
 ## 17. Person entity modelling
 
 - **Observation:** Person entities use path-based `@id` values and include `hasPart` pointing to `.person` files.
 - **Impact:** RO-Crate expects Person IDs to be fragment identifiers (or external URIs) and disallows `hasPart` on Person entities.
-- **Action:** Assign fragment IDs (or ORCID URIs) to Person entities, drop `hasPart`, and reference associated files via annotations or other relationships.
+- [x] **Action:** Assign fragment IDs (or ORCID URIs) to Person entities, drop `hasPart`, and reference associated files via annotations or other relationships.
+- **Status: SOLVED** — Person IDs now use fragment identifiers like `#Person_Name` via `createPersonId()` (see RoCrateUtils.ts#L139). Person entities no longer have `hasPart`; files are in a separate `#<person>-files` Dataset. Files use `about`, `image`, and `subjectOf` to reference the Person.
 
 ## 18. Session `.session` files
 
 - **Observation:** Session metadata files are typed as `DigitalDocument`, use shorthand LDaC IRIs, and lack `ldac:annotationOf` links.
 - **Impact:** RO-Crate expects these exported files to be typed as `File` with correct annotations; shorthand IRIs fail resolution.
-- **Action:** Retype as `File`, use full LDaC term URIs, and add `ldac:annotationOf`/`ldac:annotationType` metadata, along with a PRONOM ID when available.
+- [x] **Action:** Retype as `File`, use full LDaC term URIs, and add `ldac:annotationOf`/`ldac:annotationType` metadata, along with a PRONOM ID when available.
+- **Status: PARTIALLY SOLVED** — `.session` files are now typed as `"File"` only (not `DigitalDocument`), per file-types.spec.ts. Shorthand IRIs resolve via the `ldac:` prefix. However, `ldac:annotationOf`/`ldac:annotationType` metadata and PRONOM IDs are still not added.
 
 ## 19. Missing primary media files
 
 - **Observation:** The crate bundles Lameta-generated annotation/session files but omits the original media assets they describe.
 - **Impact:** Consumers receive incomplete datasets; annotations cannot be interpreted without the underlying files.
-- **Action:** Include the associated audio/video/text files in the crate when sharing full sessions, or clarify that the crate is annotation-only.
+- [x] **Action:** Include the associated audio/video/text files in the crate when sharing full sessions, or clarify that the crate is annotation-only.
+- **Status: SOLVED** — Media files (audio, video, images) are included in session exports with proper `@type` arrays like `["File", "AudioObject"]` or `["File", "VideoObject"]`. See file-types.spec.ts and RoCrateExporter.ts `buildFileEntry()`.
 
 ## 20. Developer-mode validation gap
 
 - **Observation:** Developer-mode exports finish silently even when the generated RO-Crate violates the LDAC profile; the validator file never loads the profile JSON or runs automatically during export.
 - **Impact:** Engineers must run external validators to discover schema regressions, so LDAC issues ship unnoticed and block downstream ingestion.
-- **Action:** Load `src/export/comprehensive-ldac.json` in the validator, run it whenever developer mode triggers an export, and surface the resulting error list via a dialog so problems can be fixed immediately. Linked Linear issue: LAM-64.
+- [x] **Action:** Load `src/export/comprehensive-ldac.json` in the validator, run it whenever developer mode triggers an export, and surface the resulting error list via a dialog so problems can be fixed immediately. Linked Linear issue: LAM-64.
+- **Status: SOLVED** — Validation IS automatically invoked during RO-Crate export in `ExportDialog.tsx` via `runRoCrateValidation()` (line 383). The `RoCrateValidator` loads `comprehensive-ldac.json` and validates the generated crate. If validation fails, errors are thrown and displayed in the export dialog with an error alert, including first 10 errors and a console log of all errors. No additional work needed.
 
 ## 21. Comment clarity
 
 - **Observation:** Many RO-Crate source comments describe historical refactors (e.g., “LAM-84: Use consolidated helper…”) instead of documenting current behaviour.
 - **Impact:** Future readers must parse commit lore to understand intent, making it harder to audit LDAC compliance rules.
-- **Action:** Reword comments to capture present-day intent or reference standing specifications rather than past worklog IDs.
+- [ ] **Action:** Reword comments to capture present-day intent or reference standing specifications rather than past worklog IDs.- **Status: NOT SOLVED** — Comments throughout the codebase still reference Linear issue IDs (LAM-33, LAM-58, LAM-68, LAM-97, LAM-98, etc.) rather than explaining current behaviour. This is a documentation/style issue that remains.
+
+---
+
+## Code-level Issues
+
+- [ ] **RoCrateValidator.ts#433** — The validation logic for required fields in entities does not account for all possible edge cases. Consider adding stricter checks for mandatory properties like @id and @type. (Severity: 5/5)
+
+- [ ] **RoCrateUtils.ts#74** — The createFragmentId function does not handle special characters consistently. This could lead to invalid @id values for entities with non-Latin characters. (Severity: 4/5)
+
+- [ ] **RoCrateExporter.ldac.spec.ts#234** — The test references ldac:DataReuseLicense, but this entity is not defined in the test setup. This may lead to false negatives during validation. (Severity: 4/5)
+
+- [ ] **RoCrateExporter.people-dataset-all-contributors.spec.ts#63** — The test assumes createUnresolvedContributorId will always generate unique IDs. Add a test case to handle potential ID collisions. (Severity: 4/5)
+
+- [ ] **RoCrateExporter.project-geographic-coverage.spec.ts#48** — The test does not verify that contentLocation references valid Place entities. Add assertions to ensure referenced entities exist. (Severity: 4/5)
+
+- [ ] **RoCrateExporter.publisher-entity.spec.ts#44** — The test assumes #publisher-lameta is always defined. Add a setup step to ensure this entity exists in the graph. (Severity: 4/5)
+
+- [ ] **file-types.spec.ts#144** — The test for audio file types does not verify the presence of encodingFormat. Add an assertion to ensure this property is included. (Severity: 4/5)
+
+- [ ] **RoCrateExporter.ts#820** — The logic for handling hasPart/isPartOf relationships is repeated across multiple functions. Consider refactoring this into a shared utility function. (Severity: 3/5)
+
+- [ ] **RoCrateHtmlGenerator.tsx#75** — The EntityProperties component is overly complex and mixes rendering logic with data processing. Consider separating the data processing into a helper function. (Severity: 3/5)
+
+- [ ] **RoCrateExporter.otherdocuments-fix.spec.ts#91** — The test duplicates logic for verifying OtherDocuments/ dataset existence. Consider refactoring this into a helper function. (Severity: 3/5)
+
+- [ ] **RoCrateValidator.ldac-profile.spec.ts#92** — The test does not handle cases where ldac:subjectLanguage is missing but inLanguage is present. Add a test case for this scenario. (Severity: 3/5)
+
+- [ ] **RoCrateValidator.rocrate-spec.spec.ts** — (Review pending)

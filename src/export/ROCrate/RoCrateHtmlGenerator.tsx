@@ -66,6 +66,50 @@ const EntityClassifier = {
     );
   },
 
+  /** Check if entity is a structural wrapper Dataset that shouldn't be rendered */
+  isWrapperDataset(entity: RoCrateEntity): boolean {
+    const id = entity["@id"];
+    const types = getEntityTypes(entity);
+
+    // Only filter Dataset types
+    if (!types.includes("Dataset")) return false;
+
+    // Don't filter if it has session types - it's a real session, not a wrapper
+    if (hasSessionType(types)) return false;
+
+    // Filter #People Dataset
+    if (id === "#People") return true;
+
+    // Filter person-files Datasets (e.g., #Awi_Heole-files)
+    if (id?.startsWith("#") && id.endsWith("-files")) return true;
+
+    // Filter Sessions/ top-level directory Dataset
+    if (id === "Sessions/") return true;
+
+    // Filter session directory Datasets (e.g., Sessions/ETR008/) ONLY if they're pure wrappers
+    // A pure wrapper has only hasPart and structural properties, no session content like description
+    if (id?.startsWith("Sessions/") && id.endsWith("/") && id !== "Sessions/") {
+      // Check if this is a pure wrapper (no meaningful session content)
+      // If it has description, name (other than the ID), or session-specific properties, keep it
+      const hasSessionContent =
+        entity.description ||
+        entity["ldac:participant"] ||
+        entity["ldac:subjectLanguage"] ||
+        (entity.name &&
+          entity.name !== id &&
+          !entity.name.startsWith("Session "));
+      if (!hasSessionContent) return true;
+    }
+
+    // Filter People/ directory Dataset
+    if (id === "People/") return true;
+
+    // Filter DescriptionDocuments/ and OtherDocuments/ directory Datasets
+    if (id === "DescriptionDocuments/" || id === "OtherDocuments/") return true;
+
+    return false;
+  },
+
   /** Check if entity should be filtered out entirely from the display */
   isFiltered(entity: RoCrateEntity): boolean {
     const id = entity["@id"];
@@ -84,6 +128,9 @@ const EntityClassifier = {
     // Filter official LDAC DefinedTermSets
     if (types.includes("DefinedTermSet") && id?.startsWith("ldac:"))
       return true;
+
+    // Filter structural wrapper Datasets
+    if (this.isWrapperDataset(entity)) return true;
 
     return false;
   },
@@ -1034,9 +1081,14 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       return;
 
     // Check if this entity is a child of any other entity in the graph
+    // Skip filtered entities when looking for parents - if a wrapper Dataset is filtered,
+    // its children should become root entities
     const parentEntity = graph.find((parent) => {
       const parentId = parent["@id"];
       if (!parentId || parentId === entityId) return false;
+
+      // Don't consider filtered entities as potential parents
+      if (EntityClassifier.isFiltered(parent)) return false;
 
       const parentTypes = getEntityTypes(parent);
 
