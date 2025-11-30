@@ -517,4 +517,103 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       );
     });
   });
+
+  describe("hasPart/isPartOf type validation", () => {
+    it("should fail when hasPart references a Person entity", () => {
+      const roCrate = createMinimalValidRoCrate();
+      // Add a Person entity
+      roCrate["@graph"].push({
+        "@id": "#jane-doe",
+        "@type": "Person",
+        name: "Jane Doe"
+      });
+      // Add a People/ Dataset that incorrectly references the Person via hasPart
+      roCrate["@graph"].push({
+        "@id": "People/",
+        "@type": "Dataset",
+        name: "People",
+        hasPart: [{ "@id": "#jane-doe" }]
+      });
+      // Link People/ from root
+      const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
+      rootDataset.hasPart = [{ "@id": "People/" }];
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining(
+          'hasPart reference to "#jane-doe" which is type "Person"'
+        )
+      );
+    });
+
+    it("should pass when hasPart only references Files and Datasets", () => {
+      const roCrate = createMinimalValidRoCrate();
+      // Add a Person entity (referenced elsewhere, not via hasPart)
+      roCrate["@graph"].push({
+        "@id": "#jane-doe",
+        "@type": "Person",
+        name: "Jane Doe"
+      });
+      // Add a File entity
+      roCrate["@graph"].push({
+        "@id": "People/Jane_Doe/photo.jpg",
+        "@type": ["File", "ImageObject"],
+        name: "photo.jpg",
+        about: { "@id": "#jane-doe" },
+        isPartOf: { "@id": "People/Jane_Doe/" }
+      });
+      // Add an intermediate Dataset for the person's files
+      roCrate["@graph"].push({
+        "@id": "People/Jane_Doe/",
+        "@type": "Dataset",
+        name: "Jane Doe files",
+        about: { "@id": "#jane-doe" },
+        hasPart: [{ "@id": "People/Jane_Doe/photo.jpg" }],
+        isPartOf: { "@id": "People/" }
+      });
+      // Add People/ Dataset that references only Datasets (not Person)
+      roCrate["@graph"].push({
+        "@id": "People/",
+        "@type": "Dataset",
+        name: "People",
+        hasPart: [{ "@id": "People/Jane_Doe/" }],
+        isPartOf: { "@id": "./" }
+      });
+      // Link People/ from root
+      const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
+      rootDataset.hasPart = [{ "@id": "People/" }];
+
+      const result = validator.validate(roCrate);
+
+      // Should not have errors about hasPart referencing non-File/Dataset types
+      const hasPartErrors = result.errors.filter((e) =>
+        e.includes("hasPart reference to")
+      );
+      expect(hasPartErrors).toHaveLength(0);
+    });
+
+    it("should fail when hasPart references an Organization entity", () => {
+      const roCrate = createMinimalValidRoCrate();
+      // Add an Organization entity
+      roCrate["@graph"].push({
+        "@id": "#acme-corp",
+        "@type": "Organization",
+        name: "ACME Corporation"
+      });
+      // Root dataset incorrectly uses hasPart to reference Organization
+      const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
+      rootDataset.hasPart = [{ "@id": "#acme-corp" }];
+
+      const result = validator.validate(roCrate);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.stringContaining(
+          'hasPart reference to "#acme-corp" which is type "Organization"'
+        )
+      );
+    });
+  });
 });

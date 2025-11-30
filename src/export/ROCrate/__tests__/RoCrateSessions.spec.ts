@@ -183,9 +183,10 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
-      expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "#John_Doe" }]);
+      // Person IDs use percent-encoding for spaces per sanitizeForIri
+      expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "#John%20Doe" }]);
       expect(sessionEntry["ldac:interviewer"]).toEqual([
-        { "@id": "#Jane_Smith" }
+        { "@id": "#Jane%20Smith" }
       ]);
     });
 
@@ -198,9 +199,10 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
+      // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#John_Doe" },
-        { "@id": "#Jane_Smith" }
+        { "@id": "#John%20Doe" },
+        { "@id": "#Jane%20Smith" }
       ]);
     });
 
@@ -215,11 +217,14 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       // Both single and multiple role values should be arrays
+      // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#John_Doe" },
-        { "@id": "#Jane_Smith" }
+        { "@id": "#John%20Doe" },
+        { "@id": "#Jane%20Smith" }
       ]);
-      expect(sessionEntry["ldac:recorder"]).toEqual([{ "@id": "#Bob_Wilson" }]);
+      expect(sessionEntry["ldac:recorder"]).toEqual([
+        { "@id": "#Bob%20Wilson" }
+      ]);
     });
 
     it("should avoid duplicate person IDs in the same role", () => {
@@ -232,9 +237,10 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
+      // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#John_Doe" },
-        { "@id": "#Jane_Smith" }
+        { "@id": "#John%20Doe" },
+        { "@id": "#Jane%20Smith" }
       ]);
       expect(sessionEntry["ldac:speaker"]).toHaveLength(2); // Only unique entries
     });

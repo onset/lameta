@@ -111,8 +111,8 @@ export function createFileId(folder: any, fileName: string): string {
       )}/${sanitizedFileName}`;
     } else if (folder.sessions !== undefined) {
       // This is a Project. Project files (like .sprj) live at the RO-Crate root alongside
-      // ro-crate-metadata.json, so they need root-relative @id values (./...).
-      return `./${sanitizedFileName}`;
+      // ro-crate-metadata.json, so they use simple filenames as @id values.
+      return sanitizedFileName;
     } else if (folder.knownFields !== undefined && folder.files !== undefined) {
       // This is a Person
       return `People/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
@@ -167,14 +167,14 @@ export function createPersonId(person: any): string {
  * LAM-98: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
  * This creates an intermediate Dataset to group all files associated with a person
  * (photos, consent forms, .person metadata files) under a single container.
- * Format: #<sanitized-name>-files
+ * Format: People/<sanitized-name>/
  * Non-Latin characters are properly encoded via sanitizeForIri().
  */
 export function createPersonFilesDatasetId(person: any): string {
   const baseValue = (person?.filePrefix || "person") as string;
   // Use sanitizeForIri to handle non-Latin characters properly
   const sanitized = sanitizeForIri(baseValue);
-  return `#${sanitized}-files`;
+  return `People/${sanitized}/`;
 }
 
 /**

@@ -1422,25 +1422,27 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          hasPart: [{ "@id": "#People" }, { "@id": "Sessions/" }]
+          hasPart: [{ "@id": "People/" }, { "@id": "Sessions/" }]
         },
         {
-          "@id": "#People",
+          "@id": "People/",
           "@type": "Dataset",
           name: "People",
           description: "Directory of people",
-          hasPart: [{ "@id": "#Awi_Heole-files" }]
+          hasPart: [{ "@id": "People/Awi_Heole/" }]
         },
         {
-          "@id": "#Awi_Heole-files",
+          "@id": "People/Awi_Heole/",
           "@type": "Dataset",
           name: "Awi_Heole files",
-          hasPart: [{ "@id": "#Awi_Heole" }]
+          about: { "@id": "#Awi_Heole" },
+          hasPart: []
         },
         {
           "@id": "#Awi_Heole",
           "@type": "Person",
-          name: "Awi Heole"
+          name: "Awi Heole",
+          subjectOf: { "@id": "#Awi_Heole-files" }
         },
         {
           "@id": "Sessions/",
@@ -1464,8 +1466,8 @@ describe("RoCrateHtmlGenerator", () => {
 
     const html = generateRoCrateHtml(testData);
 
-    // Should NOT render wrapper Datasets (People, person-files, Sessions/)
-    expect(html).not.toContain('id="entity__People"');
+    // Should NOT render wrapper Datasets (People/, person-files, Sessions/)
+    expect(html).not.toContain('id="entity_People_"');
     expect(html).not.toContain('id="entity__Awi_Heole_files"');
     expect(html).not.toContain('id="entity_Sessions_"');
 

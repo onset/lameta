@@ -354,6 +354,9 @@ export class RoCrateValidator {
       warnings
     );
 
+    // RO-Crate 1.2: hasPart/isPartOf should only reference Files and Datasets, not other entity types
+    this.validateHasPartTypes(graph, entityIndex, errors);
+
     return {
       isValid: errors.length === 0,
       errors,
@@ -704,6 +707,73 @@ export class RoCrateValidator {
             visited
           );
         }
+      }
+    });
+  }
+
+  /**
+   * RO-Crate 1.2: Validate that hasPart/isPartOf relationships only reference
+   * Files and Datasets. Other entity types (like Person, Organization, etc.)
+   * should not participate in these containment relationships.
+   */
+  private validateHasPartTypes(
+    graph: any[],
+    entityIndex: Map<string, any>,
+    errors: string[]
+  ): void {
+    graph.forEach((entity: any) => {
+      const entityId = entity["@id"] || "(unknown)";
+
+      // Check hasPart references
+      if (entity.hasPart) {
+        const hasParts = Array.isArray(entity.hasPart)
+          ? entity.hasPart
+          : [entity.hasPart];
+        hasParts.forEach((partRef: any) => {
+          const partId = typeof partRef === "object" ? partRef["@id"] : partRef;
+          if (partId) {
+            const targetEntity = entityIndex.get(partId);
+            if (targetEntity) {
+              const targetTypes = this.normalizeTypeList(targetEntity["@type"]);
+              const isFileOrDataset =
+                this.isFileType(targetTypes) || this.isDatasetType(targetTypes);
+              if (!isFileOrDataset) {
+                errors.push(
+                  `Entity "${entityId}" has hasPart reference to "${partId}" which is type "${targetTypes.join(
+                    ", "
+                  )}" - hasPart should only reference File or Dataset entities`
+                );
+              }
+            }
+          }
+        });
+      }
+
+      // Check isPartOf references
+      if (entity.isPartOf) {
+        const isPartOfRefs = Array.isArray(entity.isPartOf)
+          ? entity.isPartOf
+          : [entity.isPartOf];
+        isPartOfRefs.forEach((partOfRef: any) => {
+          const partOfId =
+            typeof partOfRef === "object" ? partOfRef["@id"] : partOfRef;
+          if (partOfId) {
+            const targetEntity = entityIndex.get(partOfId);
+            if (targetEntity) {
+              const targetTypes = this.normalizeTypeList(targetEntity["@type"]);
+              // isPartOf should point to Datasets (not Files typically, but allow both for flexibility)
+              const isFileOrDataset =
+                this.isFileType(targetTypes) || this.isDatasetType(targetTypes);
+              if (!isFileOrDataset) {
+                errors.push(
+                  `Entity "${entityId}" has isPartOf reference to "${partOfId}" which is type "${targetTypes.join(
+                    ", "
+                  )}" - isPartOf should only reference Dataset entities`
+                );
+              }
+            }
+          }
+        });
       }
     });
   }

@@ -4,7 +4,7 @@
  *
  * This test file verifies that:
  * 1. Each person with files gets an intermediate Dataset (#<name>-files)
- * 2. The #People Dataset references person-files Datasets (not individual files/persons)
+ * 2. The People/ Dataset references person-files Datasets (not individual files/persons)
  * 3. Person names with non-Latin characters are properly encoded in Dataset IDs
  * 4. Files have isPartOf pointing to their person-files Dataset
  */
@@ -79,8 +79,8 @@ describe("LAM-98: Person Files Dataset", () => {
     const alicePersonId = createPersonId(personAlice);
     const aliceFilesDatasetId = createPersonFilesDatasetId(personAlice);
 
-    // Verify #People contains reference to person-files Dataset
-    const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+    // Verify People/ contains reference to person-files Dataset
+    const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
     expect(peopleDataset).toBeDefined();
     expect(peopleDataset.hasPart).toContainEqual({
       "@id": aliceFilesDatasetId
@@ -93,13 +93,16 @@ describe("LAM-98: Person Files Dataset", () => {
     expect(aliceFilesDataset).toBeDefined();
     expect(aliceFilesDataset["@type"]).toBe("Dataset");
     expect(aliceFilesDataset.name).toBe("Alice_Smith files");
-    expect(aliceFilesDataset.isPartOf).toEqual({ "@id": "#People" });
+    expect(aliceFilesDataset.isPartOf).toEqual({ "@id": "People/" });
 
-    // Verify person-files Dataset contains person entity and files
+    // Verify person-files Dataset uses 'about' to reference the person
+    expect(aliceFilesDataset.about).toEqual({ "@id": alicePersonId });
+
+    // Verify person-files Dataset contains files (not person) in hasPart
     const aliceFilesHasPart = aliceFilesDataset.hasPart.map(
       (ref: any) => ref["@id"]
     );
-    expect(aliceFilesHasPart).toContain(alicePersonId);
+    expect(aliceFilesHasPart).not.toContain(alicePersonId);
     expect(aliceFilesHasPart).toContain(
       "People/Alice_Smith/Alice_Smith_Photo.jpg"
     );
@@ -153,7 +156,7 @@ describe("LAM-98: Person Files Dataset", () => {
 
     // The Dataset ID should be properly encoded
     const expectedDatasetId = createPersonFilesDatasetId(personYamada);
-    expect(expectedDatasetId).toBe(`#${sanitizeForIri("山田太郎")}-files`);
+    expect(expectedDatasetId).toBe(`People/${sanitizeForIri("山田太郎")}/`);
 
     // Verify the person-files Dataset exists
     const yamadaFilesDataset = graph.find(
@@ -263,8 +266,8 @@ describe("LAM-98: Person Files Dataset", () => {
     const roCrate = await getRoCrate(mockProject, mockProject);
     const graph = (roCrate as any)["@graph"];
 
-    // Verify #People contains references to both person-files Datasets
-    const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+    // Verify People/ contains references to both person-files Datasets
+    const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
     expect(peopleDataset).toBeDefined();
 
     const aliceFilesDatasetId = createPersonFilesDatasetId(personAlice);
@@ -286,14 +289,18 @@ describe("LAM-98: Person Files Dataset", () => {
     expect(aliceFilesDataset).toBeDefined();
     expect(bobFilesDataset).toBeDefined();
 
-    // Verify each dataset contains its own person entity
+    // Verify each dataset references its person via 'about' (not hasPart)
     const alicePersonId = createPersonId(personAlice);
     const bobPersonId = createPersonId(personBob);
 
-    expect(aliceFilesDataset.hasPart.map((ref: any) => ref["@id"])).toContain(
-      alicePersonId
-    );
-    expect(bobFilesDataset.hasPart.map((ref: any) => ref["@id"])).toContain(
+    expect(aliceFilesDataset.about).toEqual({ "@id": alicePersonId });
+    expect(bobFilesDataset.about).toEqual({ "@id": bobPersonId });
+
+    // Verify person is NOT in hasPart
+    expect(
+      aliceFilesDataset.hasPart.map((ref: any) => ref["@id"])
+    ).not.toContain(alicePersonId);
+    expect(bobFilesDataset.hasPart.map((ref: any) => ref["@id"])).not.toContain(
       bobPersonId
     );
 
@@ -304,6 +311,74 @@ describe("LAM-98: Person Files Dataset", () => {
     expect(bobFilesDataset.hasPart.map((ref: any) => ref["@id"])).toContain(
       "People/Bob/Bob_Photo.jpg"
     );
+  });
+
+  // Person-files Dataset should use 'about' to reference person, not 'hasPart'.
+  // A Dataset can hasPart files, but a Person is not "part of" the Dataset -
+  // rather, the Dataset is "about" the Person.
+  it("uses about/subjectOf relationship between person-files Dataset and Person (not hasPart)", async () => {
+    const mockPhotoFile = {
+      getActualFilePath: () => "/people/Alice/Alice_Photo.jpg",
+      getModifiedDate: () => new Date("2024-01-15"),
+      pathInFolderToLinkFileOrLocalCopy: "Alice_Photo.jpg"
+    } as any;
+
+    const personAlice = createMockPerson({
+      filePrefix: "Alice",
+      metadata: { fullName: "Alice Person" },
+      files: [mockPhotoFile]
+    });
+
+    const mockSession = createMockSession({
+      filePrefix: "test-session",
+      metadata: { title: "Test Session" }
+    });
+
+    mockSession.getAllContributionsToAllFiles = vi
+      .fn()
+      .mockReturnValue([new Contribution("Alice", "speaker", "")]);
+
+    const mockProject = createMockProject({
+      metadata: { title: "Test Project" },
+      persons: { items: [personAlice] },
+      sessions: { items: [mockSession] }
+    });
+
+    mockProject.findPerson = vi.fn().mockImplementation((ref: string) => {
+      return ref.trim() === "Alice" ? personAlice : undefined;
+    });
+
+    const roCrate = await getRoCrate(mockProject, mockProject);
+    const graph = (roCrate as any)["@graph"];
+
+    const alicePersonId = createPersonId(personAlice);
+    const aliceFilesDatasetId = createPersonFilesDatasetId(personAlice);
+
+    // Verify person-files Dataset exists
+    const aliceFilesDataset = graph.find(
+      (e: any) => e["@id"] === aliceFilesDatasetId
+    );
+    expect(aliceFilesDataset).toBeDefined();
+    expect(aliceFilesDataset["@type"]).toBe("Dataset");
+
+    // The person-files Dataset should use 'about' to reference the person
+    expect(aliceFilesDataset.about).toEqual({ "@id": alicePersonId });
+
+    // The Person should NOT be in hasPart - hasPart is for files only
+    const hasPartIds = aliceFilesDataset.hasPart.map((ref: any) => ref["@id"]);
+    expect(hasPartIds).not.toContain(alicePersonId);
+
+    // Files should still be in hasPart
+    expect(hasPartIds).toContain("People/Alice/Alice_Photo.jpg");
+
+    // Verify the Person has subjectOf pointing back to the Dataset
+    const personEntity = graph.find((e: any) => e["@id"] === alicePersonId);
+    expect(personEntity).toBeDefined();
+    // The person's subjectOf should include reference to the person-files dataset
+    const subjectOfRefs = Array.isArray(personEntity.subjectOf)
+      ? personEntity.subjectOf.map((ref: any) => ref["@id"])
+      : [personEntity.subjectOf?.["@id"]].filter(Boolean);
+    expect(subjectOfRefs).toContain(aliceFilesDatasetId);
   });
 
   it("preserves person entity image/subjectOf properties", async () => {

@@ -364,7 +364,7 @@ describe("RoCrateUtils - ID Generation", () => {
         sessions: []
       };
       expect(createFileId(projectFolder, "project.sprj")).toBe(
-        "./project.sprj"
+        "project.sprj"
       );
     });
 

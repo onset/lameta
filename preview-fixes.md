@@ -20,7 +20,7 @@ Comparison between the published version (`ro-crate-preview-3.0.5.html`) and the
 
 - [x] **Extra intermediate "People" Dataset entity**: Current version adds an extra `People` dataset entity between root and person entities that didn't exist in published version
       Action: remove it.
-      Done: Added isWrapperDataset() filter to EntityClassifier. Filters #People Dataset.
+      Done: Added isWrapperDataset() filter to EntityClassifier. Filters People/ Dataset.
 
 - [x] **Extra "Awi_Heole files" and "Ilawi_Amosa files" Dataset wrappers**: These intermediate entities don't exist in published version - person files should be direct children of the person entity
       Action: remove those wrappers.

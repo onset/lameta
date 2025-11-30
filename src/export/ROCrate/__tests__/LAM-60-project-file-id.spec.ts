@@ -76,10 +76,10 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
     Object.setPrototypeOf(mockProject, Project.prototype);
   });
 
-  it("should use root-relative @id (./hewya.sprj) for project .sprj file, not People/hewya/hewya.sprj", async () => {
+  it("should use simple filename @id (hewya.sprj) for project .sprj file, not People/hewya/hewya.sprj", async () => {
     // LAM-60: https://linear.app/lameta/issue/LAM-60/wrong-id-for-lameta-project-file-sprj
     // The .sprj file lives at the RO-Crate root next to ro-crate-metadata.json,
-    // so its @id must be root-relative (./...) per RO-Crate 1.2 structure guidance.
+    // so its @id uses a simple filename without './' prefix.
     // Previously, createFileId incorrectly treated Projects like Persons because both
     // have knownFields and files properties, resulting in People/<prefix>/<file> paths.
     const result = (await getRoCrate(mockProject, mockProject)) as any;
@@ -89,7 +89,7 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
     );
 
     expect(projectFile).toBeDefined();
-    expect(projectFile["@id"]).toBe("./hewya.sprj");
+    expect(projectFile["@id"]).toBe("hewya.sprj");
 
     // Verify it's NOT using the incorrect People path
     expect(projectFile["@id"]).not.toBe("People/hewya/hewya.sprj");
@@ -98,6 +98,6 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
     const rootDataset = result["@graph"].find(
       (item: any) => item["@id"] === "./"
     );
-    expect(rootDataset.hasPart).toContainEqual({ "@id": "./hewya.sprj" });
+    expect(rootDataset.hasPart).toContainEqual({ "@id": "hewya.sprj" });
   });
 });

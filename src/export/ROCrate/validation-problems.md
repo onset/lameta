@@ -334,7 +334,7 @@ The root entity `./` has:
   "hasPart": [
     { "@id": "./hewya.sprj" },
     { "@id": "OtherDocuments/some%20other%20doc.txt" },
-    { "@id": "#People" }
+    { "@id": "People/" }
   ]
 }
 ```

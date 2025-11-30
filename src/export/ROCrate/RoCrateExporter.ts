@@ -502,7 +502,7 @@ async function getRoCrateInternal(
     }
 
     // Add a People dataset container so Person nodes hang off a proper directory entity.
-    // LAM-98: Now returns an array including #People plus individual person-files Datasets.
+    // LAM-98: Now returns an array including People/ plus individual person-files Datasets.
     const peopleDatasetEntries = createPeopleDatasetEntry(
       project,
       flattenedSessionEntries,
@@ -510,7 +510,7 @@ async function getRoCrateInternal(
       entry.license
     );
     if (peopleDatasetEntries && peopleDatasetEntries.length > 0) {
-      // The first entry is always the #People Dataset
+      // The first entry is always the People/ Dataset
       entry.hasPart.push({ "@id": peopleDatasetEntries[0]["@id"] });
       baseGraph.push(...peopleDatasetEntries);
     }
@@ -1260,7 +1260,7 @@ function createPeopleDatasetEntry(
 
   // LAM-98: Create intermediate Dataset for each person with files.
   // This groups all files associated with a person under a unique dataset,
-  // which is then connected to #People.
+  // which is then connected to People/.
   // See: https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
 
   // Group files by the person they're about (only for people with folders who have files)
@@ -1289,10 +1289,11 @@ function createPeopleDatasetEntry(
     const personRecord = personIdToRecord.get(personId);
     const personFiles = filesByPerson.get(personId) || [];
 
-    // If the person has no files, reference them directly in #People.hasPart
-    // (no intermediate Dataset needed)
+    // If the person has no files, they should NOT be added to People/.hasPart
+    // hasPart/isPartOf relationships are only for Files and Datasets, not Person entities.
+    // The Person entity exists in the graph and is referenced by sessions/contributions.
     if (personFiles.length === 0) {
-      peopleDatasetHasPart.push({ "@id": personId });
+      // Skip - do not add to peopleDatasetHasPart
       return;
     }
 
@@ -1306,18 +1307,29 @@ function createPeopleDatasetEntry(
       ? createPersonFilesDatasetId(personRecord)
       : createPersonFilesDatasetId({ filePrefix: personName });
 
-    // Create the person-files Dataset with person entity + all their files
+    // Create the person-files Dataset with files and 'about' reference to person.
+    // The person is not "part of" the dataset - rather, the dataset is "about" the person.
+    // Files are linked via hasPart since they are actual parts of the dataset.
     const personFilesDataset: RoCrateEntity = {
       "@id": datasetId,
       "@type": "Dataset",
       name: `${personName} files`,
       description: `Files associated with ${personName}.`,
-      hasPart: [
-        { "@id": personId },
-        ...personFiles.map((file: any) => ({ "@id": file["@id"] }))
-      ],
-      isPartOf: { "@id": "#People" }
+      about: { "@id": personId },
+      hasPart: personFiles.map((file: any) => ({ "@id": file["@id"] })),
+      isPartOf: { "@id": "People/" }
     };
+
+    // Add the inverse subjectOf reference from person to the dataset
+    // This creates a bidirectional about/subjectOf relationship
+    const datasetRef = { "@id": datasetId };
+    if (!personEntry.subjectOf) {
+      personEntry.subjectOf = datasetRef;
+    } else if (Array.isArray(personEntry.subjectOf)) {
+      personEntry.subjectOf.push(datasetRef);
+    } else {
+      personEntry.subjectOf = [personEntry.subjectOf, datasetRef];
+    }
 
     if (license && typeof license === "object") {
       personFilesDataset.license = license;
@@ -1326,7 +1338,7 @@ function createPeopleDatasetEntry(
     personFilesDatasets.push(personFilesDataset);
     peopleDatasetHasPart.push({ "@id": datasetId });
 
-    // Update file entries to point isPartOf to the person-files Dataset instead of #People
+    // Update file entries to point isPartOf to the person-files Dataset instead of People/
     personFiles.forEach((file: any) => {
       file.isPartOf = { "@id": datasetId };
     });
@@ -1335,9 +1347,9 @@ function createPeopleDatasetEntry(
   // Sort hasPart for consistency
   peopleDatasetHasPart.sort((a, b) => a["@id"].localeCompare(b["@id"]));
 
-  // Create the main #People Dataset that references all person-files Datasets
+  // Create the main People/ Dataset that references all person-files Datasets
   const peopleDataset: RoCrateEntity = {
-    "@id": "#People",
+    "@id": "People/",
     "@type": "Dataset",
     name: "People",
     description: "Directory of people associated with this collection.",

@@ -1,9 +1,9 @@
 /**
  * Tests for ensuring all contributors (including unresolved ones and unknown-contributor)
- * are connected to the #People dataset in RO-Crate export.
+ * are connected to the People/ dataset in RO-Crate export.
  *
  * Issue: Contributors that are #unknown-contributor or contributors that have a role
- * but don't have an actual person folder need to be connected to the #People dataset.
+ * but don't have an actual person folder need to be connected to the People/ dataset.
  *
  * Related: LAM-98 person-files dataset structure
  */
@@ -30,7 +30,7 @@ vi.mock("fs-extra", () => ({
   })
 }));
 
-describe("RO-Crate #People dataset includes all contributors", () => {
+describe("RO-Crate People/ dataset includes all contributors", () => {
   setupCommonMocks(true);
 
   describe("ID collision handling for contributors", () => {
@@ -96,7 +96,7 @@ describe("RO-Crate #People dataset includes all contributors", () => {
   });
 
   describe("unresolved contributors without person folders", () => {
-    it("should include unresolved contributors in #People dataset", async () => {
+    it("should include unresolved contributors as Person entities but NOT in People/ hasPart", async () => {
       // Create a contributor with a role, but no person folder
       const contributorName = "Jane Doe (Researcher)";
 
@@ -130,20 +130,20 @@ describe("RO-Crate #People dataset includes all contributors", () => {
       expect(contributorEntity["@type"]).toBe("Person");
       expect(contributorEntity.name).toBe(contributorName);
 
-      // The #People dataset should exist and reference the contributor directly
-      // (no intermediate Dataset since contributor has no files)
-      const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+      // The People/ dataset should exist
+      const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
       expect(peopleDataset).toBeDefined();
       expect(peopleDataset["@type"]).toBe("Dataset");
 
-      // The contributor should be referenced directly in #People.hasPart (no files = no intermediate dataset)
-      const peopleHasPartIds = peopleDataset.hasPart.map(
+      // The contributor should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
+      // Person entities without files exist in the graph but don't participate in hasPart hierarchy
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
         (ref: any) => ref["@id"]
       );
-      expect(peopleHasPartIds).toContain(contributorId);
+      expect(peopleHasPartIds).not.toContain(contributorId);
     });
 
-    it("should include multiple unresolved contributors in #People dataset", async () => {
+    it("should include multiple unresolved contributors as Person entities but NOT in People/ hasPart", async () => {
       const contributors = [
         "Mary Smith",
         "Dr. John Wilson (Linguist)",
@@ -185,24 +185,24 @@ describe("RO-Crate #People dataset includes all contributors", () => {
         expect(contributorEntity["@type"]).toBe("Person");
       }
 
-      // The #People dataset should exist
-      const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+      // The People/ dataset should exist
+      const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
       expect(peopleDataset).toBeDefined();
 
-      // All contributors should be referenced directly in #People.hasPart (no files = no intermediate datasets)
-      const peopleHasPartIds = peopleDataset.hasPart.map(
+      // Contributors should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
         (ref: any) => ref["@id"]
       );
 
       for (const name of contributors) {
         const contributorId = createUnresolvedContributorId(name);
-        expect(peopleHasPartIds).toContain(contributorId);
+        expect(peopleHasPartIds).not.toContain(contributorId);
       }
     });
   });
 
   describe("#unknown-contributor entity", () => {
-    it("should include #unknown-contributor in #People dataset when used", async () => {
+    it("should include #unknown-contributor as Person entity but NOT in People/ hasPart", async () => {
       const mockSession = createMockSession({
         filePrefix: "test-session",
         metadata: { title: "Test Session" }
@@ -232,22 +232,21 @@ describe("RO-Crate #People dataset includes all contributors", () => {
       expect(unknownContributor["@type"]).toBe("Person");
       expect(unknownContributor.name).toBe("Unknown");
 
-      // The #People dataset should exist and include #unknown-contributor directly
-      // (no intermediate Dataset since it has no files)
-      const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+      // The People/ dataset should exist
+      const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
       expect(peopleDataset).toBeDefined();
 
-      const peopleHasPartIds = peopleDataset.hasPart.map(
+      // #unknown-contributor should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
+      // Person entities exist in the graph but don't participate in hasPart hierarchy
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
         (ref: any) => ref["@id"]
       );
-
-      // #unknown-contributor should be referenced directly in #People.hasPart
-      expect(peopleHasPartIds).toContain("#unknown-contributor");
+      expect(peopleHasPartIds).not.toContain("#unknown-contributor");
     });
   });
 
   describe("mixed contributors (with and without person folders)", () => {
-    it("should include both resolved and unresolved contributors in #People", async () => {
+    it("should include resolved person with files in People/ hasPart, but NOT unresolved contributor", async () => {
       // Person with folder AND files (should get intermediate dataset)
       const mockPhotoFile = {
         getActualFilePath: () => "/people/Alice_Smith/Alice_Smith_Photo.jpg",
@@ -261,7 +260,7 @@ describe("RO-Crate #People dataset includes all contributors", () => {
         files: [mockPhotoFile]
       });
 
-      // Unresolved contributor (no folder, no files - should be referenced directly)
+      // Unresolved contributor (no folder, no files - should NOT be in hasPart)
       const unresolvedContributorName = "Bob Jones (No Folder)";
 
       const mockSession = createMockSession({
@@ -301,20 +300,20 @@ describe("RO-Crate #People dataset includes all contributors", () => {
       expect(aliceEntity).toBeDefined();
       expect(bobEntity).toBeDefined();
 
-      // The #People dataset should exist
-      const peopleDataset = graph.find((e: any) => e["@id"] === "#People");
+      // The People/ dataset should exist
+      const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
       expect(peopleDataset).toBeDefined();
 
-      const peopleHasPartIds = peopleDataset.hasPart.map(
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
         (ref: any) => ref["@id"]
       );
 
-      // Alice (with folder) should be connected via her person-files dataset
+      // Alice (with folder and files) should be connected via her person-files dataset
       const aliceFilesDatasetId = createPersonFilesDatasetId(personAlice);
       expect(peopleHasPartIds).toContain(aliceFilesDatasetId);
 
-      // Bob (unresolved, no files) should be referenced directly in #People.hasPart
-      expect(peopleHasPartIds).toContain(bobContributorId);
+      // Bob (unresolved, no files) should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
+      expect(peopleHasPartIds).not.toContain(bobContributorId);
     });
   });
 });

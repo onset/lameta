@@ -1174,8 +1174,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
         "@id": expectedAwiPersonId
       });
+      // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
-        "@id": "#John_Doe"
+        "@id": "#John%20Doe"
       });
     });
   });

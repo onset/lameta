@@ -11,7 +11,7 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
  * through nested Datasets.
  *
  * Previously, OtherDocuments files were added directly to the root's hasPart list.
- * Following the pattern established by LAM-99 (Sessions/) and LAM-98 (#People),
+ * Following the pattern established by LAM-99 (Sessions/) and LAM-98 (People/),
  * we now create an OtherDocuments/ Dataset entity that:
  * 1. Is included in root's hasPart
  * 2. Contains hasPart references to all files in the OtherDocuments folder

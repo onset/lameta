@@ -80,11 +80,12 @@ const EntityClassifier = {
     // Don't filter if it has session types - it's a real session, not a wrapper
     if (hasSessionType(types)) return false;
 
-    // Filter #People Dataset
-    if (id === "#People") return true;
+    // Filter People/ Dataset
+    if (id === "People/") return true;
 
-    // Filter person-files Datasets (e.g., #Awi_Heole-files)
-    if (id?.startsWith("#") && id.endsWith("-files")) return true;
+    // Filter person-files Datasets (e.g., People/Awi_Heole/)
+    if (id?.startsWith("People/") && id.endsWith("/") && id !== "People/")
+      return true;
 
     // Filter Sessions/ top-level directory Dataset
     if (id === "Sessions/") return true;
