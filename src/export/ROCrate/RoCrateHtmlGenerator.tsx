@@ -1287,6 +1287,15 @@ const Entity: React.FC<{
         specialLists["People"].push(e);
       }
     });
+
+    // Sort sessions alphabetically by name (with support for non-Latin scripts)
+    // Using Intl.Collator with numeric: true for natural sorting of numbers in names
+    const collator = new Intl.Collator([], { numeric: true, sensitivity: "base" });
+    specialLists["Sessions"].sort((a, b) => {
+      const nameA = a.name || a["@id"] || "";
+      const nameB = b.name || b["@id"] || "";
+      return collator.compare(nameA, nameB);
+    });
   }
 
   const isClickable = EntityClassifier.isClickableFile(entity);
