@@ -313,28 +313,24 @@ describe("RoCrateUtils - ID Generation", () => {
   });
 
   describe("createUnresolvedContributorId", () => {
-    it("should create contributor fragment ID with prefix", () => {
-      // Spaces become underscores
-      expect(createUnresolvedContributorId("John Smith")).toBe(
-        "#contributor-John_Smith"
-      );
+    it("should create bare fragment ID without prefix", () => {
+      // Spaces become underscores, but no prefix
+      expect(createUnresolvedContributorId("John Smith")).toBe("#John_Smith");
     });
 
     it("should encode parentheses", () => {
       expect(createUnresolvedContributorId("John (Consultant)")).toBe(
-        "#contributor-John_%28Consultant%29"
+        "#John_%28Consultant%29"
       );
     });
 
     it("should preserve non-Latin characters", () => {
       // Non-Latin characters are preserved in IRIs
-      expect(createUnresolvedContributorId("José")).toBe("#contributor-José");
+      expect(createUnresolvedContributorId("José")).toBe("#José");
     });
 
     it("should handle empty contributor names", () => {
-      expect(createUnresolvedContributorId("")).toBe(
-        "#contributor-contributor"
-      );
+      expect(createUnresolvedContributorId("")).toBe("#contributor");
     });
   });
 

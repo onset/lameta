@@ -1,4 +1,8 @@
 import { Project } from "../../model/Project/Project";
+import * as fs from "fs-extra";
+import * as Path from "path";
+import JSON5 from "json5";
+import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 
 /**
  * Centralized helpers for producing consistent RO-Crate entity references.
@@ -6,6 +10,46 @@ import { Project } from "../../model/Project/Project";
  * Entity references in RO-Crate are JSON-LD objects of the form { "@id": "#some-id" }
  * that point to entities defined elsewhere in the @graph.
  */
+
+/**
+ * Archive configuration metadata loaded from settings.json5 files.
+ */
+export interface ArchiveConfigurationMetadata {
+  configurationFullName: string;
+  description?: string;
+  url?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Looks up archive configuration metadata from the settings.json5 file.
+ *
+ * @param archiveName - The archive configuration name (e.g., "PARADISEC", "ELAR")
+ * @returns The archive metadata, or undefined if not found
+ */
+export function getArchiveConfigurationMetadata(
+  archiveName: string
+): ArchiveConfigurationMetadata | undefined {
+  if (!archiveName || archiveName === "default" || archiveName === "unknown") {
+    return undefined;
+  }
+
+  try {
+    const archiveConfigPath = locateDependencyForFilesystemCall(
+      `archive-configurations/${archiveName}/settings.json5`
+    );
+
+    if (!fs.existsSync(archiveConfigPath)) {
+      return undefined;
+    }
+
+    const settingsText = fs.readFileSync(archiveConfigPath, "utf8");
+    return JSON5.parse(settingsText) as ArchiveConfigurationMetadata;
+  } catch (error) {
+    // If we can't read the settings file, return undefined
+    return undefined;
+  }
+}
 
 /**
  * Result of resolving an entity reference.
@@ -107,6 +151,7 @@ function generateSlug(value: string): string {
  *
  * The LDAC profile expects the archive configuration to resolve to a concrete
  * Organization entity instead of leaving the raw custom field in the payload.
+ * This function also includes description and url from the archive's settings.json5.
  *
  * @param project - The project to resolve the publisher from
  * @returns The resolved publisher entity, or undefined if not available
@@ -114,12 +159,46 @@ function generateSlug(value: string): string {
 export function resolvePublisher(
   project: Project
 ): EntityResolution | undefined {
-  return resolveEntityReference(project, {
-    fieldKey: "archiveConfigurationName",
-    idPrefix: "#publisher-",
-    entityType: "Organization",
-    emptyValues: ["default", "unknown"]
-  });
+  const archiveName = project.metadataFile
+    ?.getTextProperty("archiveConfigurationName", "")
+    .trim();
+
+  if (!archiveName) {
+    return undefined;
+  }
+
+  // Check for empty/invalid values
+  const emptyValues = ["default", "unknown"];
+  const loweredValue = archiveName.toLowerCase();
+  if (emptyValues.some((v) => v.toLowerCase() === loweredValue)) {
+    return undefined;
+  }
+
+  // Generate a URL-safe slug from the archive name
+  const slug = generateSlug(archiveName);
+  const entityId = `#publisher-${slug}`;
+
+  // Look up additional metadata from the archive configuration
+  const archiveMetadata = getArchiveConfigurationMetadata(archiveName);
+
+  const entity: RoCrateEntity = {
+    "@id": entityId,
+    "@type": "Organization",
+    name: archiveName
+  };
+
+  // Add description and url if available from the archive configuration
+  if (archiveMetadata?.description) {
+    entity.description = archiveMetadata.description;
+  }
+  if (archiveMetadata?.url) {
+    entity.url = archiveMetadata.url;
+  }
+
+  return {
+    reference: { "@id": entityId },
+    entity
+  };
 }
 
 /**

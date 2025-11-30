@@ -1096,7 +1096,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         }
       ]);
       expect(sessionEvent["ldac:recorder"]).toEqual([
-        { "@id": "#contributor-Hatton" }
+        { "@id": "#Hatton" }
       ]);
     });
 
@@ -1177,7 +1177,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": expectedAwiPersonId
       });
       expect(sessionEvent["ldac:speaker"]).toContainEqual({
-        "@id": "#contributor-John_Doe"
+        "@id": "#John_Doe"
       });
     });
   });

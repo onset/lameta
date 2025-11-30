@@ -1,3 +1,5 @@
 {
-  configurationFullName: "The Archive of the Indigenous Languages of Latin America"
+  configurationFullName: "The Archive of the Indigenous Languages of Latin America",
+  description: "A digital repository for audio and text resources documenting the indigenous languages of Latin America",
+  url: "https://www.ailla.utexas.org/"
 }

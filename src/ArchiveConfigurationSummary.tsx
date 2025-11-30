@@ -145,11 +145,16 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
       {props.configurationChoice.extra &&
         Object.entries(props.configurationChoice.extra).length > 0 && (
           <div css={sectionBoxStyle}>
-            <h3>User Interface</h3>
+            <h3>About</h3>
             {Object.entries(props.configurationChoice.extra).map(
-              (setting: [string, any]) => (
-                <li key={setting[0]}>{`${setting[0]}: ${setting[1]}`}</li>
-              )
+              (setting: [string, any]) => {
+                const [key, value] = setting;
+                // For description and url, show just the value without the label
+                if (key === "description" || key === "url") {
+                  return <li key={key}>{value}</li>;
+                }
+                return <li key={key}>{`${key}: ${value}`}</li>;
+              }
             )}
           </div>
         )}

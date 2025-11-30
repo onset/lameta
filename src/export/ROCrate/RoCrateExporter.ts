@@ -181,20 +181,7 @@ async function getRoCrateInternal(
 
     // Apply LDAC compliance for direct person export
     // Try to find a session date from the project for age calculation
-    let sessionDate: Date | undefined;
-    if (
-      project &&
-      (project as any).sessions &&
-      (project as any).sessions.items
-    ) {
-      const firstSession = (project as any).sessions.items[0];
-      if (firstSession && firstSession.metadataFile) {
-        const dateString = firstSession.metadataFile.getTextProperty("date");
-        if (dateString) {
-          sessionDate = new Date(dateString);
-        }
-      }
-    }
+    const sessionDate = findFirstSessionWithDate(project);
 
     makeLdacCompliantPersonEntry(folder as Person, sessionDate, entry);
 
@@ -1437,4 +1424,30 @@ function createDescriptionCollectionProtocolEntry(
     hasPart: createHasPartReferences(fileIds),
     isPartOf: createIsPartOfReference("./")
   };
+}
+
+/**
+ * Finds the first session in the project that has a valid date.
+ * This is used for age calculation when exporting Person entities.
+ * @param project The project to search for sessions with dates
+ * @returns The date of the first session with a date, or undefined if none found
+ */
+export function findFirstSessionWithDate(project: Project): Date | undefined {
+  if (!project || !(project as any).sessions || !(project as any).sessions.items) {
+    return undefined;
+  }
+
+  for (const session of (project as any).sessions.items) {
+    if (session && session.metadataFile) {
+      const dateString = session.metadataFile.getTextProperty("date", "");
+      if (dateString && dateString.trim() !== "") {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+          return date;
+        }
+      }
+    }
+  }
+
+  return undefined;
 }

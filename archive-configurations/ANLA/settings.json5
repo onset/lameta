@@ -1,3 +1,5 @@
 {
-  configurationFullName: "Alaska Native Language Archive"
+  configurationFullName: "Alaska Native Language Archive",
+  description: "A repository for materials in and about Alaska Native languages at the University of Alaska Fairbanks",
+  url: "https://www.uaf.edu/anla/"
 }

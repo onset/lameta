@@ -35,7 +35,10 @@ const FILTERED_ENTITY_IDS = new Set([
   "#CustomGenreTerms",
   "ldac:DataReuseLicense",
   "ldac:OpenAccess",
-  "ldac:AuthorizedAccess"
+  "ldac:AuthorizedAccess",
+  "https://lexvo.org/id/iso639-3/und", // "undetermined" language
+  "#descriptionDocuments",
+  "#otherDocuments"
 ]);
 
 /**
@@ -248,7 +251,11 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
     "ldac:participant",
     { property: "contentLocation", label: "Location" }
   ],
-  Person: ["description", "gender", "ldac:age"],
+  Person: [
+    "description",
+    { property: "ldac:age", label: "Age" }
+    // Note: Person contributions are generated dynamically as prose below these fields
+  ],
   Organization: ["description", "url"],
   License: ["description", { property: "ldac:access", label: "Access" }],
   DigitalDocument: [
@@ -466,7 +473,9 @@ function getDisplayPath(id: string): string {
           pathSegments[i] === "People" ||
           pathSegments[i] === "Sessions" ||
           pathSegments[i] === "Description" ||
-          pathSegments[i] === "OtherDocs"
+          pathSegments[i] === "DescriptionDocuments" ||
+          pathSegments[i] === "OtherDocs" ||
+          pathSegments[i] === "OtherDocuments"
         ) {
           startIndex = i;
           break;
@@ -706,6 +715,19 @@ const PropertyValue: React.FC<{
     }
   }
 
+  // Handle URL strings - make them clickable links
+  if (
+    propertyName === "url" &&
+    typeof value === "string" &&
+    (value.startsWith("http://") || value.startsWith("https://"))
+  ) {
+    return (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        {value}
+      </a>
+    );
+  }
+
   return <>{String(value)}</>;
 };
 
@@ -729,6 +751,27 @@ const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
   );
 };
 
+/**
+ * Renders an inline comma-separated list of links to other entities.
+ */
+const InlineLinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
+  entities
+}) => {
+  if (entities.length === 0) return null;
+  return (
+    <span>
+      {entities.map((entity, index) => (
+        <span key={entity["@id"]}>
+          <a href={`#${createAnchorId(entity["@id"])}`}>
+            {entity.name || entity["@id"]}
+          </a>
+          {index < entities.length - 1 && ", "}
+        </span>
+      ))}
+    </span>
+  );
+};
+
 // --- DRY helpers for property rendering ---
 
 type PropertyTuple = [string, any, string?]; // [propertyKey, value, fieldType?]
@@ -741,10 +784,32 @@ interface BuildEntityPropertiesResult {
 /**
  * Builds the label-override map and deduplicated property list for an entity.
  * Consolidates logic previously repeated in image, media, and default branches.
+ * @param skipUnknown If true, properties with null/undefined values are omitted entirely
  */
+/** Check if a value is effectively "unknown" (null, undefined, or Unknown placeholder) */
+function isUnknownValue(value: any): boolean {
+  if (value === null || value === undefined) return true;
+  if (typeof value === "string") {
+    return value === "Unknown" || value === "<Unknown>";
+  }
+  if (typeof value === "object" && value["@id"]) {
+    return (
+      value["@id"] === "tag:lameta/unknown" ||
+      value.name === "Unknown" ||
+      value.name === "<Unknown>"
+    );
+  }
+  if (Array.isArray(value)) {
+    // If all items in array are unknown, treat the whole value as unknown
+    return value.length === 0 || value.every((item) => isUnknownValue(item));
+  }
+  return false;
+}
+
 function buildEntityProperties(
   entity: RoCrateEntity,
-  fields: OrderEntry[]
+  fields: OrderEntry[],
+  skipUnknown: boolean = false
 ): BuildEntityPropertiesResult {
   const labelOverrideMap = new Map<string, string>();
   fields.forEach((entry) => {
@@ -763,23 +828,26 @@ function buildEntityProperties(
     const value = (entity as any)[key];
 
     const hasValue = value !== null && value !== undefined;
+    const isUnknown = isUnknownValue(value);
 
-    // Skip duplicate labels when the current property has no value
-    if (usedLabels.has(label) && !hasValue) {
+    // Skip properties with no value or unknown values entirely if skipUnknown is true
+    if (skipUnknown && isUnknown) {
       return;
     }
 
-    // If this property has a value, remove any previous "Unknown" entry with the same label
-    if (hasValue && usedLabels.has(label)) {
+    // Skip duplicate labels when the current property has no value or is unknown
+    if (usedLabels.has(label) && isUnknown) {
+      return;
+    }
+
+    // If this property has a real value, remove any previous "Unknown" entry with the same label
+    if (!isUnknown && usedLabels.has(label)) {
       const existingIndex = propertiesToRender.findIndex(
         ([existingKey, existingValue]) => {
           const existingLabel =
             labelOverrideMap.get(existingKey) ??
             formatPropertyLabel(existingKey);
-          return (
-            existingLabel === label &&
-            (existingValue === null || existingValue === undefined)
-          );
+          return existingLabel === label && isUnknownValue(existingValue);
         }
       );
       if (existingIndex !== -1) {
@@ -804,7 +872,15 @@ const EntityProperties: React.FC<{
 }> = ({ labelOverrideMap, propertiesToRender, graph }) => (
   <>
     {propertiesToRender.map(([key, value, fieldType]) => {
-      const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+      let label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
+      // Special case: pluralize 'Participant' if multiple participants
+      if (
+        (key === "ldac:participant" || label === "Participant") &&
+        Array.isArray(value) &&
+        value.length > 1
+      ) {
+        label = "Participants";
+      }
       return (
         <div key={key} className="property">
           <span className="property-name">{label}:</span>
@@ -822,6 +898,216 @@ const EntityProperties: React.FC<{
   </>
 );
 
+// LDAC role properties that link persons to sessions
+const LDAC_ROLE_PROPERTIES = [
+  "ldac:speaker",
+  "ldac:signer",
+  "ldac:singer",
+  "ldac:performer",
+  "ldac:interviewer",
+  "ldac:recorder",
+  "ldac:researcher",
+  "ldac:author",
+  "ldac:compiler",
+  "ldac:consultant",
+  "ldac:translator",
+  "ldac:transcriber",
+  "ldac:annotator",
+  "ldac:participant",
+  "ldac:depositor"
+];
+
+// Mapping from LDAC role property to human-readable role name
+const ROLE_DISPLAY_NAMES: Record<string, string> = {
+  "ldac:speaker": "speaker",
+  "ldac:signer": "signer",
+  "ldac:singer": "singer",
+  "ldac:performer": "performer",
+  "ldac:interviewer": "interviewer",
+  "ldac:recorder": "recorder",
+  "ldac:researcher": "researcher",
+  "ldac:author": "author",
+  "ldac:compiler": "compiler",
+  "ldac:consultant": "consultant",
+  "ldac:translator": "translator",
+  "ldac:transcriber": "transcriber",
+  "ldac:annotator": "annotator",
+  "ldac:participant": "participant",
+  "ldac:depositor": "depositor"
+};
+
+/**
+ * Helper function to extract a short session ID for display.
+ * E.g., "#session-ETR009" -> "ETR009", "Sessions/ETR009/" -> "ETR009"
+ */
+function getShortSessionId(sessionId: string): string {
+  // Handle #session-XXX format
+  if (sessionId.startsWith("#session-")) {
+    return sessionId.replace("#session-", "");
+  }
+  // Handle Sessions/XXX/ format
+  if (sessionId.startsWith("Sessions/") && sessionId.endsWith("/")) {
+    return sessionId.replace("Sessions/", "").replace(/\/$/, "");
+  }
+  // Fallback: return the full ID
+  return sessionId;
+}
+
+/**
+ * Helper function to find the correct anchor ID for a session.
+ * Sessions may be rendered with merged IDs (Sessions/ETR009/) but linked via
+ * their original CollectionEvent IDs (#session-ETR009).
+ * This function finds the corresponding session directory path for proper linking.
+ */
+function findSessionAnchorId(
+  sessionId: string,
+  graph: RoCrateEntity[]
+): string {
+  // For #session-XXX format, look for corresponding Sessions/XXX/ entity
+  if (sessionId.startsWith("#session-")) {
+    const shortId = sessionId.replace("#session-", "");
+    const directoryPath = `Sessions/${shortId}/`;
+
+    // Check if there's a directory Dataset that links to this session via "about"
+    const directoryEntity = graph.find(
+      (e) =>
+        e["@id"] === directoryPath ||
+        (e["@id"]?.startsWith("Sessions/") &&
+          e["@id"]?.endsWith("/") &&
+          (e.about?.["@id"] === sessionId ||
+            (Array.isArray(e.hasPart) &&
+              e.hasPart.some((p: any) => p["@id"] === sessionId))))
+    );
+
+    if (directoryEntity) {
+      return createAnchorId(directoryEntity["@id"]);
+    }
+  }
+
+  // Fallback to the original session ID anchor
+  return createAnchorId(sessionId);
+}
+
+/**
+ * Generates contribution list for a Person entity.
+ * Scans the graph to find sessions where this person contributed,
+ * and displays as "SessionID: Role1, Role2" format.
+ */
+const PersonContributions: React.FC<{
+  personEntity: RoCrateEntity;
+  graph: RoCrateEntity[];
+}> = ({ personEntity, graph }) => {
+  const personId = personEntity["@id"];
+
+  // Find all sessions and their roles for this person
+  // Map: sessionId -> list of role names
+  const sessionToRoles = new Map<string, string[]>();
+
+  graph.forEach((entity) => {
+    const types = getEntityTypes(entity);
+    if (!hasSessionType(types)) return;
+
+    const sessionId = entity["@id"];
+
+    // Check each LDAC role property
+    LDAC_ROLE_PROPERTIES.forEach((roleProp) => {
+      const roleValue = entity[roleProp];
+      if (!roleValue) return;
+
+      // Check if this person is referenced in this role
+      const references = Array.isArray(roleValue) ? roleValue : [roleValue];
+      const isReferenced = references.some((ref: any) => {
+        if (typeof ref === "object" && ref["@id"]) {
+          return ref["@id"] === personId;
+        }
+        return ref === personId;
+      });
+
+      if (isReferenced) {
+        if (!sessionToRoles.has(sessionId)) {
+          sessionToRoles.set(sessionId, []);
+        }
+        const roleName = ROLE_DISPLAY_NAMES[roleProp] || roleProp;
+        // Capitalize first letter for display
+        const displayRole =
+          roleName.charAt(0).toUpperCase() + roleName.slice(1);
+        if (!sessionToRoles.get(sessionId)!.includes(displayRole)) {
+          sessionToRoles.get(sessionId)!.push(displayRole);
+        }
+      }
+    });
+  });
+
+  if (sessionToRoles.size === 0) {
+    return null;
+  }
+
+  // Group sessions by their role combination
+  // e.g., sessions with [Speaker, Recorder] grouped together, sessions with just [Recorder] grouped together
+  const roleComboToSessions = new Map<string, string[]>();
+  sessionToRoles.forEach((roles, sessionId) => {
+    // Sort roles for consistent key generation
+    const sortedRoles = [...roles].sort();
+    const key = sortedRoles.join("|");
+    if (!roleComboToSessions.has(key)) {
+      roleComboToSessions.set(key, []);
+    }
+    roleComboToSessions.get(key)!.push(sessionId);
+  });
+
+  // Sort each group's sessions by short ID
+  roleComboToSessions.forEach((sessionIds) => {
+    sessionIds.sort((a, b) => {
+      const aShort = getShortSessionId(a);
+      const bShort = getShortSessionId(b);
+      return aShort.localeCompare(bShort);
+    });
+  });
+
+  // Sort role combinations for consistent output (by first session ID in each group)
+  const sortedRoleCombos = Array.from(roleComboToSessions.entries()).sort(
+    ([, aSessionIds], [, bSessionIds]) => {
+      const aFirst = getShortSessionId(aSessionIds[0]);
+      const bFirst = getShortSessionId(bSessionIds[0]);
+      return aFirst.localeCompare(bFirst);
+    }
+  );
+
+  // Build contribution items: "Session1, Session2: Role1, Role2"
+  const contributionItems = sortedRoleCombos.map(
+    ([roleComboKey, sessionIds], idx) => {
+      const roles = roleComboKey.split("|");
+      const rolesText = roles.join(", ");
+
+      // Build session links
+      const sessionLinks = sessionIds.map((sessionId, sessionIdx) => {
+        const shortId = getShortSessionId(sessionId);
+        const anchorId = findSessionAnchorId(sessionId, graph);
+        return (
+          <React.Fragment key={sessionId}>
+            <a href={`#${anchorId}`}>{shortId}</a>
+            {sessionIdx < sessionIds.length - 1 && ", "}
+          </React.Fragment>
+        );
+      });
+
+      return (
+        <React.Fragment key={roleComboKey}>
+          {sessionLinks}: {rolesText}
+          {idx < sortedRoleCombos.length - 1 && ". "}
+        </React.Fragment>
+      );
+    }
+  );
+
+  return (
+    <div className="property">
+      <span className="property-name">Contributions:</span>
+      <span className="property-value">{contributionItems}</span>
+    </div>
+  );
+};
+
 /**
  * Renders a single entity, adapting its display based on its type (e.g., Image, Generic).
  */
@@ -836,6 +1122,11 @@ const Entity: React.FC<{
   const { "@id": id, "@type": type, name } = entity;
   const types = getEntityTypes(entity);
   const anchorId = createAnchorId(id);
+  // For merged session entities, also create anchor for original CollectionEvent ID
+  const originalCollectionEventId = (entity as any)._originalCollectionEventId;
+  const secondaryAnchorId = originalCollectionEventId
+    ? createAnchorId(originalCollectionEventId)
+    : null;
 
   const mediaType = EntityClassifier.getMediaType(entity);
   const isImage = mediaType === "image";
@@ -846,10 +1137,32 @@ const Entity: React.FC<{
     isImage ? "image-entity" : ""
   } ${isVideo || isAudio ? "media-entity" : ""}`.trim();
 
+  // Hidden anchor for secondary ID (used for merged session entities)
+  const SecondaryAnchor = () =>
+    secondaryAnchorId ? (
+      <span id={secondaryAnchorId} style={{ display: "none" }} />
+    ) : null;
+
+  // Format display ID for the header - Person and Session entities get special treatment
+  const getHeaderDisplayId = () => {
+    if (types.includes("Person") && id.startsWith("#")) {
+      // Display as "Person: #Ilawi_Amosa" (keeping original ID format)
+      return `Person: ${id}`;
+    }
+    // Convert "Sessions/ETR009" or "Sessions/ETR009/" to "Session: ETR009"
+    if (id.startsWith("Sessions/")) {
+      const match = id.match(/^Sessions\/([^\/]+)\/?$/);
+      if (match) {
+        return `Session: ${match[1]}`;
+      }
+    }
+    return getDisplayPath(id) || "Unknown ID";
+  };
+
   const EntityHeader = () =>
     !isChild ? (
       <div className="entity-header">
-        <div className="entity-id">{getDisplayPath(id) || "Unknown ID"}</div>
+        <div className="entity-id">{getHeaderDisplayId()}</div>
       </div>
     ) : null;
   const EntityTypes = () => (
@@ -872,6 +1185,7 @@ const Entity: React.FC<{
 
     return (
       <div className={entityClasses} id={anchorId}>
+        <SecondaryAnchor />
         <EntityHeader />
         <EntityTypes />
         {name && (
@@ -922,6 +1236,7 @@ const Entity: React.FC<{
 
     return (
       <div className={entityClasses} id={anchorId}>
+        <SecondaryAnchor />
         <EntityHeader />
         <EntityTypes />
         {name && (
@@ -943,33 +1258,31 @@ const Entity: React.FC<{
   }
 
   const fields = getFieldsForEntity(entity);
+  // For Person and Session entities, skip showing unknown/missing values
+  const isPerson = types.includes("Person");
+  const isSession = hasSessionType(types);
   const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
     entity,
-    fields
+    fields,
+    isPerson || isSession // skipUnknown for Person and Session entities
   );
 
   // Special lists for root dataset - using direct entity type checking instead of filtering
+  // Note: Description Documents and Other Documents are now shown as separate cards after the root
   const specialLists: { [key: string]: RoCrateEntity[] } = {};
 
   if (isRootDataset) {
     specialLists["Sessions"] = [];
     specialLists["People"] = [];
-    specialLists["Description Documents"] = [];
-    specialLists["Other Documents"] = [];
 
     // Build lists by checking each entity's type directly (no filtering)
     graph.forEach((e) => {
       const eTypes = getEntityTypes(e);
-      const entityId = e["@id"];
 
       if (hasSessionType(eTypes)) {
         specialLists["Sessions"].push(e);
       } else if (eTypes.includes("Person") && e.name !== "Unknown") {
         specialLists["People"].push(e);
-      } else if (entityId?.startsWith("Description/")) {
-        specialLists["Description Documents"].push(e);
-      } else if (entityId?.startsWith("OtherDocs/")) {
-        specialLists["Other Documents"].push(e);
       }
     });
   }
@@ -979,6 +1292,7 @@ const Entity: React.FC<{
 
   return (
     <div className={entityClasses} id={anchorId}>
+      <SecondaryAnchor />
       <EntityHeader />
       <EntityTypes />
       {name && (
@@ -1019,15 +1333,24 @@ const Entity: React.FC<{
         propertiesToRender={propertiesToRender}
         graph={graph}
       />
+      {types.includes("Person") && (
+        <PersonContributions personEntity={entity} graph={graph} />
+      )}
       {isRootDataset &&
         Object.entries(specialLists).map(
           ([title, entities]) =>
             entities.length > 0 && (
               <div key={title} className="property">
                 <span className="property-name">{title}:</span>
-                <div className="property-value">
-                  <LinkedEntityList entities={entities} />
-                </div>
+                {title === "People" ? (
+                  <span className="property-value">
+                    <InlineLinkedEntityList entities={entities} />
+                  </span>
+                ) : (
+                  <div className="property-value">
+                    <LinkedEntityList entities={entities} />
+                  </div>
+                )}
               </div>
             )
         )}
@@ -1049,14 +1372,136 @@ const entityReferenceIncludes = (value: any, entityId: string): boolean => {
 };
 
 /**
+ * Merge session directory Datasets with their CollectionEvent entities.
+ * This creates merged entities that have the directory path as the display ID
+ * but contain the CollectionEvent's metadata.
+ */
+function mergeSessionEntities(graph: RoCrateEntity[]): {
+  mergedGraph: RoCrateEntity[];
+  sessionDirectoryToCollectionEvent: Map<string, string>;
+} {
+  // Map from session directory ID (e.g., "Sessions/ETR009/") to CollectionEvent ID (e.g., "#session-ETR009")
+  const sessionDirectoryToCollectionEvent = new Map<string, string>();
+  // Map from CollectionEvent ID to session directory ID
+  const collectionEventToSessionDirectory = new Map<string, string>();
+
+  // First, find all session directory Datasets and their linked CollectionEvents
+  // The link can be via:
+  // 1. hasPart (older format): directory has hasPart pointing to #session-XXX
+  // 2. about (newer format): directory has about pointing to #session-XXX
+  graph.forEach((entity) => {
+    const id = entity["@id"];
+    const types = getEntityTypes(entity);
+
+    // Check if this is a session directory Dataset (e.g., Sessions/ETR009/)
+    if (
+      types.includes("Dataset") &&
+      id?.startsWith("Sessions/") &&
+      id.endsWith("/") &&
+      id !== "Sessions/"
+    ) {
+      // Look for a CollectionEvent via "about" property (preferred/newer format)
+      if (entity.about) {
+        const aboutId =
+          typeof entity.about === "object" ? entity.about["@id"] : entity.about;
+        if (aboutId?.startsWith("#session-")) {
+          const collectionEvent = graph.find((e) => e["@id"] === aboutId);
+          if (
+            collectionEvent &&
+            hasSessionType(getEntityTypes(collectionEvent))
+          ) {
+            sessionDirectoryToCollectionEvent.set(id, aboutId);
+            collectionEventToSessionDirectory.set(aboutId, id);
+            return; // Found via about, skip hasPart check
+          }
+        }
+      }
+
+      // Fallback: Look for a CollectionEvent in hasPart (older format)
+      if (entity.hasPart && Array.isArray(entity.hasPart)) {
+        entity.hasPart.forEach((part: any) => {
+          const partId = typeof part === "object" ? part["@id"] : part;
+          if (partId?.startsWith("#session-")) {
+            const collectionEvent = graph.find((e) => e["@id"] === partId);
+            if (
+              collectionEvent &&
+              hasSessionType(getEntityTypes(collectionEvent))
+            ) {
+              sessionDirectoryToCollectionEvent.set(id, partId);
+              collectionEventToSessionDirectory.set(partId, id);
+            }
+          }
+        });
+      }
+    }
+  });
+
+  // Create merged graph with combined session entities
+  const mergedGraph: RoCrateEntity[] = [];
+  const processedCollectionEvents = new Set<string>();
+
+  graph.forEach((entity) => {
+    const id = entity["@id"];
+    const types = getEntityTypes(entity);
+
+    // Skip session directory Datasets - they'll be merged with CollectionEvents
+    if (sessionDirectoryToCollectionEvent.has(id)) {
+      return;
+    }
+
+    // For CollectionEvents that have a corresponding session directory, create merged entity
+    if (collectionEventToSessionDirectory.has(id)) {
+      const directoryId = collectionEventToSessionDirectory.get(id)!;
+      const directoryEntity = graph.find((e) => e["@id"] === directoryId);
+
+      // Create merged entity with directory path as ID but CollectionEvent's metadata
+      const mergedEntity: RoCrateEntity = {
+        ...entity,
+        "@id": directoryId, // Use directory path for display
+        _originalCollectionEventId: id // Keep reference to original for internal links
+      };
+
+      // The directory Dataset contains the files via hasPart, so use its hasPart
+      // (The CollectionEvent shouldn't have hasPart per LAM-103)
+      if (directoryEntity?.hasPart) {
+        const parts = Array.isArray(directoryEntity.hasPart)
+          ? directoryEntity.hasPart
+          : [directoryEntity.hasPart];
+        // Filter out the CollectionEvent reference from hasPart
+        const fileParts = parts.filter((part: any) => {
+          const partId = typeof part === "object" ? part["@id"] : part;
+          return !partId?.startsWith("#session-");
+        });
+        if (fileParts.length > 0) {
+          mergedEntity.hasPart = fileParts;
+        }
+      }
+
+      mergedGraph.push(mergedEntity);
+      processedCollectionEvents.add(id);
+      return;
+    }
+
+    // For all other entities, pass through unchanged
+    mergedGraph.push(entity);
+  });
+
+  return { mergedGraph, sessionDirectoryToCollectionEvent };
+}
+
+/**
  * Pre-compute the hierarchical structure of entities
  */
 function computeHierarchy(graph: RoCrateEntity[]) {
+  // First, merge session directory Datasets with their CollectionEvents
+  const { mergedGraph, sessionDirectoryToCollectionEvent } =
+    mergeSessionEntities(graph);
+
   const rootEntities: RoCrateEntity[] = [];
   const childrenMap = new Map<string, RoCrateEntity[]>();
 
   // First pass: identify all root entities and build children map
-  graph.forEach((entity) => {
+  mergedGraph.forEach((entity) => {
     const entityId = entity["@id"];
     if (!entityId) return;
 
@@ -1083,7 +1528,7 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     // Check if this entity is a child of any other entity in the graph
     // Skip filtered entities when looking for parents - if a wrapper Dataset is filtered,
     // its children should become root entities
-    const parentEntity = graph.find((parent) => {
+    const parentEntity = mergedGraph.find((parent) => {
       const parentId = parent["@id"];
       if (!parentId || parentId === entityId) return false;
 
@@ -1144,14 +1589,17 @@ function computeHierarchy(graph: RoCrateEntity[]) {
       return false;
     });
 
-    // Special case: Description/, OtherDocs/, and *.sprj entities should be children of root project entity
+    // Special case: Description docs, Other docs, and *.sprj entities should be children of root project entity
+    // Support both path naming conventions (Description/DescriptionDocuments and OtherDocs/OtherDocuments)
     let finalParentEntity = parentEntity;
     if (
       entityId.startsWith("Description/") ||
+      entityId.startsWith("DescriptionDocuments/") ||
       entityId.startsWith("OtherDocs/") ||
+      entityId.startsWith("OtherDocuments/") ||
       entityId.endsWith(".sprj")
     ) {
-      const rootProject = graph.find((e) => e["@id"] === "./");
+      const rootProject = mergedGraph.find((e) => e["@id"] === "./");
       if (rootProject) finalParentEntity = rootProject;
     }
 
@@ -1173,10 +1621,21 @@ function computeHierarchy(graph: RoCrateEntity[]) {
     const id = entity["@id"];
     const types = getEntityTypes(entity);
 
-    if (id === "./" || types.includes("Dataset")) return 0;
-    if (id?.startsWith("Description/")) return 1;
-    if (id?.startsWith("OtherDocs/")) return 2;
-    if (hasSessionType(types)) return 3;
+    // Root dataset first
+    if (id === "./") return 0;
+    if (
+      id?.startsWith("Description/") ||
+      id?.startsWith("DescriptionDocuments/")
+    )
+      return 1;
+    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/"))
+      return 2;
+    // Sessions - either by type or by merged directory path
+    if (
+      hasSessionType(types) ||
+      (id?.startsWith("Sessions/") && id.endsWith("/"))
+    )
+      return 3;
     if (types.includes("Person")) return 4;
     return 5;
   };
@@ -1192,8 +1651,13 @@ function computeHierarchy(graph: RoCrateEntity[]) {
   // Sort children within each parent
   const getChildSortPriority = (entity: RoCrateEntity) => {
     const id = entity["@id"];
-    if (id?.startsWith("Description/")) return 0;
-    if (id?.startsWith("OtherDocs/")) return 1;
+    if (
+      id?.startsWith("Description/") ||
+      id?.startsWith("DescriptionDocuments/")
+    )
+      return 0;
+    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/"))
+      return 1;
     return 2;
   };
 

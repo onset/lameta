@@ -1,3 +1,5 @@
 {
-  configurationFullName: "The Language Archive"
+  configurationFullName: "The Language Archive",
+  description: "A unit of the Max Planck Institute for Psycholinguistics in Nijmegen, Netherlands",
+  url: "https://archive.mpi.nl/"
 }

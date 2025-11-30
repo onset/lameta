@@ -256,8 +256,9 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain('id="entity__Awi_Heole"');
 
     // Find the Person entity section and verify it has an entity header
+    // Person entities display as "Person: #Name_Name" keeping original ID
     const personEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">#Awi_Heole<\/div>/s
+      /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Person: #Awi_Heole<\/div>/s
     );
     expect(personEntityMatch).toBeTruthy();
 
@@ -446,17 +447,16 @@ describe("RoCrateHtmlGenerator", () => {
     });
   });
 
-  it("should not render unknown genre as links", () => {
+  it("should not render unknown genre fields for sessions", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 
-    // The genre property should display "Unknown" as plain text, not as a link
-    expect(html).toContain(
-      '<span class="property-name">Genre:</span><span class="property-value"><span style="font-style:italic;color:var(--color-text-muted)">Unknown</span></span>'
-    );
-
-    // Should not contain any links to the unknown entity
+    // Session entities should skip rendering unknown values entirely
+    // So there should be no Genre field shown when the value is unknown
     expect(html).not.toContain('href="#entity_tag_lameta_unknown"');
     expect(html).not.toContain('<a href="#entity_tag_lameta_unknown">');
+
+    // The session should not have a Genre property rendered at all when it's unknown
+    // (The session in mockRoCrateData has no genre defined, so it should be skipped)
   });
 
   it("should only render whitelisted fields for File entities", () => {
@@ -1120,64 +1120,83 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).not.toContain("📁 Download");
   });
 
-  it("should render participants in ETR009 session using real Edolo data", () => {
-    const fs = require("fs");
+  it("should render participants in ETR009 session when participants are valid persons", () => {
+    // Test that sessions with valid participant data show the Participant field
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          collectionEventType: "https://w3id.org/ldac/terms#Session",
+          name: "Test Session",
+          description: "A test session",
+          "ldac:participant": [{ "@id": awiPersonId }, { "@id": ilawiPersonId }]
+        },
+        {
+          "@id": awiPersonId,
+          "@type": "Person",
+          name: "Awi Heole"
+        },
+        {
+          "@id": ilawiPersonId,
+          "@type": "Person",
+          name: "Ilawi Amosa"
+        }
+      ]
+    };
 
-    // Load the actual Edolo data
-    const edoloDataPath =
-      "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\ro-crate-metadata.json";
-    let edoloData;
-    try {
-      edoloData = JSON.parse(fs.readFileSync(edoloDataPath, "utf8"));
-    } catch (error) {
-      console.log("Could not load Edolo data, using mock data");
-      edoloData = {
-        "@context": "https://w3id.org/ro/crate/1.1/context",
-        "@graph": [
-          {
-            "@id": "./",
-            "@type": ["Dataset"],
-            name: "Test Project"
-          },
-          {
-            "@id": "#session-ETR009",
-            "@type": ["RepositoryObject", "CollectionEvent"],
-            collectionEventType: "https://w3id.org/ldac/terms#Session",
-            name: "Test Session",
-            description: "A test session",
-            "ldac:participant": [
-              { "@id": awiPersonId },
-              { "@id": ilawiPersonId }
-            ]
-          },
-          {
-            "@id": awiPersonId,
-            "@type": "Person",
-            name: "Awi Heole"
-          },
-          {
-            "@id": ilawiPersonId,
-            "@type": "Person",
-            name: "Ilawi Amosa"
-          }
-        ]
-      };
-    }
+    const html = generateRoCrateHtml(testData);
 
-    const html = generateRoCrateHtml(edoloData);
+    // Should render the participant field when participants are valid persons
+    expect(html).toContain("Participant");
+    expect(html).toContain("Awi Heole");
+    expect(html).toContain("Ilawi Amosa");
+  });
 
-    // Find the ETR009 session in the HTML
-    const sessionStart = html.indexOf('id="entity__session_ETR009"');
-    if (sessionStart !== -1) {
-      const sessionEnd = html.indexOf('<div class="entity"', sessionStart + 1);
-      const sessionHtml =
-        sessionEnd !== -1
-          ? html.substring(sessionStart, sessionEnd)
-          : html.substring(sessionStart, sessionStart + 2000);
-    }
+  it("should NOT render participant field when all participants are unknown", () => {
+    // Test that sessions with only unknown participants don't show the Participant field
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-TEST",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          collectionEventType: "https://w3id.org/ldac/terms#Session",
+          name: "Test Session",
+          description: "A test session",
+          "ldac:participant": [{ "@id": "tag:lameta/unknown" }]
+        },
+        {
+          "@id": "tag:lameta/unknown",
+          "@type": "Person",
+          name: "Unknown"
+        }
+      ]
+    };
 
-    // Should render the participant field
-    expect(html).toContain("Participant:");
+    const html = generateRoCrateHtml(testData);
+
+    // Find the session section
+    const sessionStart = html.indexOf('id="entity__session_TEST"');
+    const sessionEnd = html.indexOf('<div class="entity"', sessionStart + 1);
+    const sessionHtml =
+      sessionEnd !== -1
+        ? html.substring(sessionStart, sessionEnd)
+        : html.substring(sessionStart, sessionStart + 2000);
+
+    // Session should NOT have a Participant property when all participants are unknown
+    expect(sessionHtml).not.toContain("Participant:");
   });
 
   it("should render participants in ETR009 session from actual Edolo sample", () => {
@@ -1445,15 +1464,101 @@ describe("RoCrateHtmlGenerator", () => {
 
     const html = generateRoCrateHtml(testData);
 
-    // Should NOT render wrapper Datasets
+    // Should NOT render wrapper Datasets (People, person-files, Sessions/)
     expect(html).not.toContain('id="entity__People"');
     expect(html).not.toContain('id="entity__Awi_Heole_files"');
     expect(html).not.toContain('id="entity_Sessions_"');
-    expect(html).not.toContain('id="entity_Sessions_ETR009_"');
 
-    // Should still render the actual Person and Session entities
-    expect(html).toContain('id="entity__Awi_Heole"');
+    // Session directory Datasets (Sessions/ETR009/) SHOULD now be rendered as merged entities
+    // with their CollectionEvent metadata. The directory path is used as the main ID.
+    expect(html).toContain('id="entity_Sessions_ETR009_"');
+    // The original CollectionEvent ID should exist as a secondary anchor for link resolution
     expect(html).toContain('id="entity__session_ETR009"');
+
+    // Should still render the actual Person entities
+    expect(html).toContain('id="entity__Awi_Heole"');
+  });
+
+  it("should merge session directory Datasets with their CollectionEvent entities", () => {
+    // This test verifies that session directory Datasets (Sessions/ETR009/) are merged
+    // with their corresponding CollectionEvent (#session-ETR009) into a single entity.
+    // The link is via the "about" property on the directory Dataset.
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "Sessions/",
+          "@type": "Dataset",
+          name: "Sessions",
+          hasPart: [{ "@id": "Sessions/ETR009/" }]
+        },
+        {
+          // Session directory Dataset - linked to CollectionEvent via "about"
+          "@id": "Sessions/ETR009/",
+          "@type": "Dataset",
+          name: "ETR009 Directory",
+          about: { "@id": "#session-ETR009" },
+          hasPart: [
+            { "@id": "Sessions/ETR009/audio.mp3" },
+            { "@id": "Sessions/ETR009/video.mp4" }
+          ]
+        },
+        {
+          // Session CollectionEvent - has metadata but files are in the directory
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Test Session from CollectionEvent",
+          description: "A test session description",
+          subjectOf: { "@id": "Sessions/ETR009/" },
+          "ldac:participant": [{ "@id": "#person-1" }]
+        },
+        {
+          "@id": "Sessions/ETR009/audio.mp3",
+          "@type": "AudioObject",
+          name: "audio.mp3"
+        },
+        {
+          "@id": "Sessions/ETR009/video.mp4",
+          "@type": "VideoObject",
+          name: "video.mp4"
+        },
+        {
+          "@id": "#person-1",
+          "@type": "Person",
+          name: "Test Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // The merged entity should use the directory path as its ID
+    expect(html).toContain('id="entity_Sessions_ETR009_"');
+
+    // The merged entity should display "Session: ETR009" format
+    expect(html).toContain(">Session: ETR009<");
+
+    // The merged entity should have the CollectionEvent's name
+    expect(html).toContain("Test Session from CollectionEvent");
+
+    // The merged entity should have the CollectionEvent's description
+    expect(html).toContain("A test session description");
+
+    // The original CollectionEvent ID should exist as a secondary anchor for link resolution
+    expect(html).toContain('id="entity__session_ETR009"');
+
+    // The session files should be rendered (as children of the session)
+    expect(html).toContain("audio.mp3");
+    expect(html).toContain("video.mp4");
+
+    // Links to #session-ETR009 should work (secondary anchor exists)
+    // The Sessions list on the root card should link to the session
+    expect(html).toContain('href="#entity__session_ETR009"');
   });
 
   it("should have all internal anchor links point to valid entity IDs", () => {
@@ -1537,5 +1642,461 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Ensure we actually tested some links (sanity check)
     expect(linkedIds.length).toBeGreaterThan(0);
+  });
+
+  it("should render person contributions grouped by role combination", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR008",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR008",
+          "ldac:speaker": [{ "@id": "#Test_Person" }],
+          "ldac:recorder": [{ "@id": "#Test_Person" }]
+        },
+        {
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR009",
+          "ldac:speaker": [{ "@id": "#Test_Person" }]
+        },
+        {
+          "@id": "#session-ETR010",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR010",
+          "ldac:recorder": [{ "@id": "#Test_Person" }]
+        },
+        {
+          "@id": "#session-ETR011",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR011",
+          "ldac:recorder": [{ "@id": "#Test_Person" }]
+        },
+        {
+          "@id": "#Test_Person",
+          "@type": "Person",
+          name: "Test Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should have a "Contributions:" field label
+    expect(html).toContain("Contributions:");
+
+    // Should contain the session IDs as links
+    expect(html).toMatch(/href="#entity__session_ETR008"[^>]*>ETR008<\/a>/);
+    expect(html).toMatch(/href="#entity__session_ETR009"[^>]*>ETR009<\/a>/);
+    expect(html).toMatch(/href="#entity__session_ETR010"[^>]*>ETR010<\/a>/);
+    expect(html).toMatch(/href="#entity__session_ETR011"[^>]*>ETR011<\/a>/);
+
+    // ETR010 and ETR011 both have only Recorder role, so they should be grouped together
+    // Format: "ETR010, ETR011: Recorder" (sessions with same roles grouped)
+    expect(html).toMatch(/ETR010<\/a>,\s*<a[^>]*>ETR011<\/a>:\s*Recorder/);
+  });
+
+  it("should render single session with single role", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Single_Role_Person" }]
+        },
+        {
+          "@id": "#Single_Role_Person",
+          "@type": "Person",
+          name: "Single Role Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should have Contributions field
+    expect(html).toContain("Contributions:");
+    // Should show "ETR001: Speaker"
+    expect(html).toMatch(/ETR001<\/a>:\s*Speaker/);
+  });
+
+  it("should render single session with multiple roles", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Multi_Role_Person" }],
+          "ldac:recorder": [{ "@id": "#Multi_Role_Person" }],
+          "ldac:researcher": [{ "@id": "#Multi_Role_Person" }]
+        },
+        {
+          "@id": "#Multi_Role_Person",
+          "@type": "Person",
+          name: "Multi Role Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should have Contributions field
+    expect(html).toContain("Contributions:");
+    // Should show ETR001 with all three roles (alphabetically sorted)
+    expect(html).toMatch(/ETR001<\/a>:\s*Recorder,\s*Researcher,\s*Speaker/);
+  });
+
+  it("should render multiple sessions each with different single roles", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Varied_Role_Person" }]
+        },
+        {
+          "@id": "#session-ETR002",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR002",
+          "ldac:recorder": [{ "@id": "#Varied_Role_Person" }]
+        },
+        {
+          "@id": "#session-ETR003",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR003",
+          "ldac:researcher": [{ "@id": "#Varied_Role_Person" }]
+        },
+        {
+          "@id": "#Varied_Role_Person",
+          "@type": "Person",
+          name: "Varied Role Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should have Contributions field
+    expect(html).toContain("Contributions:");
+    // Each session should be separate since they have different roles
+    expect(html).toMatch(/ETR001<\/a>:\s*Speaker/);
+    expect(html).toMatch(/ETR002<\/a>:\s*Recorder/);
+    expect(html).toMatch(/ETR003<\/a>:\s*Researcher/);
+  });
+
+  it("should not render Contributions field for person with no session roles", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Other_Person" }]
+        },
+        {
+          "@id": "#No_Contribution_Person",
+          "@type": "Person",
+          name: "No Contribution Person"
+        },
+        {
+          "@id": "#Other_Person",
+          "@type": "Person",
+          name: "Other Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Find the No_Contribution_Person entity section
+    const personStart = html.indexOf('id="entity__No_Contribution_Person"');
+    expect(personStart).toBeGreaterThan(-1);
+
+    const personEnd = html.indexOf('<div class="entity"', personStart + 1);
+    const personHtml =
+      personEnd > -1
+        ? html.substring(personStart, personEnd)
+        : html.substring(personStart, personStart + 2000);
+
+    // Should NOT have Contributions field for this person
+    expect(personHtml).not.toContain("Contributions:");
+  });
+
+  it("should handle person referenced in multiple sessions with same role combination", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+        },
+        {
+          "@id": "#session-ETR002",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR002",
+          "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+        },
+        {
+          "@id": "#session-ETR003",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR003",
+          "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+        },
+        {
+          "@id": "#Same_Roles_Person",
+          "@type": "Person",
+          name: "Same Roles Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // All three sessions have the same role combination, so they should be grouped
+    // Format: "ETR001, ETR002, ETR003: Recorder, Speaker"
+    expect(html).toMatch(
+      /ETR001<\/a>,\s*<a[^>]*>ETR002<\/a>,\s*<a[^>]*>ETR003<\/a>:\s*Recorder,\s*Speaker/
+    );
+  });
+
+  it("should handle mixed grouping with some sessions sharing roles and others not", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "#session-ETR001",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR001",
+          "ldac:speaker": [{ "@id": "#Mixed_Person" }]
+        },
+        {
+          "@id": "#session-ETR002",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR002",
+          "ldac:speaker": [{ "@id": "#Mixed_Person" }]
+        },
+        {
+          "@id": "#session-ETR003",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR003",
+          "ldac:recorder": [{ "@id": "#Mixed_Person" }]
+        },
+        {
+          "@id": "#session-ETR004",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR004",
+          "ldac:speaker": [{ "@id": "#Mixed_Person" }],
+          "ldac:recorder": [{ "@id": "#Mixed_Person" }]
+        },
+        {
+          "@id": "#Mixed_Person",
+          "@type": "Person",
+          name: "Mixed Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // ETR001 and ETR002 share "Speaker" role only
+    expect(html).toMatch(/ETR001<\/a>,\s*<a[^>]*>ETR002<\/a>:\s*Speaker/);
+
+    // ETR003 has "Recorder" role only
+    expect(html).toMatch(/ETR003<\/a>:\s*Recorder/);
+
+    // ETR004 has both "Recorder, Speaker" roles
+    expect(html).toMatch(/ETR004<\/a>:\s*Recorder,\s*Speaker/);
+  });
+
+  it("should link person contributions to correct session anchors even with merged entities", () => {
+    // Test that contributions link to the correct session anchors when sessions
+    // are merged from CollectionEvent into directory Datasets
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          "@id": "Sessions/",
+          "@type": "Dataset",
+          name: "Sessions",
+          hasPart: [{ "@id": "Sessions/ETR010/" }]
+        },
+        {
+          "@id": "Sessions/ETR010/",
+          "@type": "Dataset",
+          name: "ETR010 Directory",
+          about: { "@id": "#session-ETR010" }
+        },
+        {
+          "@id": "#session-ETR010",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Test Session ETR010",
+          "ldac:speaker": [{ "@id": "#Contributor_Person" }]
+        },
+        {
+          "@id": "#Contributor_Person",
+          "@type": "Person",
+          name: "Contributor Person"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // The person entity should have a Contributions field
+    const personStart = html.indexOf('id="entity__Contributor_Person"');
+    expect(personStart).toBeGreaterThan(-1);
+
+    // Find the person entity section
+    const personEnd = html.indexOf('<div class="entity"', personStart + 1);
+    const personHtml =
+      personEnd > -1
+        ? html.substring(personStart, personEnd)
+        : html.substring(personStart, personStart + 2000);
+
+    // Should have Contributions label
+    expect(personHtml).toContain("Contributions:");
+
+    // Should link to the session using the directory path anchor (merged entity)
+    // The session should be accessible via the Sessions/ETR010/ path
+    expect(personHtml).toMatch(
+      /href="#entity_Sessions_ETR010_"[^>]*>ETR010<\/a>/
+    );
+  });
+
+  it("should render Organization description and url as clickable link", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project",
+          publisher: { "@id": "#publisher-paradisec" }
+        },
+        {
+          "@id": "#publisher-paradisec",
+          "@type": "Organization",
+          name: "PARADISEC",
+          description:
+            "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
+          url: "https://www.paradisec.org.au/"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should render the Organization entity
+    expect(html).toContain('id="entity__publisher_paradisec"');
+
+    // Find the Organization entity section
+    const orgStart = html.indexOf('id="entity__publisher_paradisec"');
+    const orgEnd = html.indexOf('<div class="entity"', orgStart + 1);
+    const orgHtml =
+      orgEnd > -1
+        ? html.substring(orgStart, orgEnd)
+        : html.substring(orgStart, orgStart + 2000);
+
+    // Should render the description
+    expect(orgHtml).toContain("Description:");
+    expect(orgHtml).toContain(
+      "Pacific and Regional Archive for Digital Sources in Endangered Cultures"
+    );
+
+    // Should render the URL as a clickable link
+    expect(orgHtml).toContain("Url:");
+    expect(orgHtml).toContain('href="https://www.paradisec.org.au/"');
+    expect(orgHtml).toContain('target="_blank"');
+    expect(orgHtml).toContain(">https://www.paradisec.org.au/</a>");
+  });
+
+  it("should handle Organization without description or url gracefully", () => {
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project",
+          publisher: { "@id": "#publisher-unknown" }
+        },
+        {
+          "@id": "#publisher-unknown",
+          "@type": "Organization",
+          name: "Unknown Archive"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Should render the Organization entity
+    expect(html).toContain('id="entity__publisher_unknown"');
+
+    // Find the Organization entity section
+    const orgStart = html.indexOf('id="entity__publisher_unknown"');
+    const orgEnd = html.indexOf('<div class="entity"', orgStart + 1);
+    const orgHtml =
+      orgEnd > -1
+        ? html.substring(orgStart, orgEnd)
+        : html.substring(orgStart, orgStart + 2000);
+
+    // Should show "Unknown" for missing description and url
+    expect(orgHtml).toContain("Description:");
+    expect(orgHtml).toContain("Unknown");
+    expect(orgHtml).toContain("Url:");
   });
 });

@@ -6,7 +6,8 @@ import { RoCrateLicense } from "./RoCrateLicenseManager";
 import {
   addChildFileEntries,
   getRoCrateTemplate,
-  getElementUsingTemplate
+  getElementUsingTemplate,
+  findFirstSessionWithDate
 } from "./RoCrateExporter";
 import {
   sanitizeForIri,
@@ -141,12 +142,18 @@ export async function makeEntriesFromParticipant(
   const entriesForAllContributors: object[] = [];
 
   // Get session date for age calculation - handle cases where session might not have proper date access
+  // If this session has no date, fall back to the first session in the project that has a date
   let sessionDate: Date | undefined;
   try {
     sessionDate = session.properties?.getDateField?.("date")?.asDate?.();
   } catch (error) {
     // If session doesn't have proper date field access, sessionDate remains undefined
     sessionDate = undefined;
+  }
+  
+  // Fall back to first dated session if current session has no date
+  if (!sessionDate) {
+    sessionDate = findFirstSessionWithDate(project);
   }
 
   for (const name of Object.keys(uniqueContributors)) {

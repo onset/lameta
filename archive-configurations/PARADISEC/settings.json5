@@ -1,4 +1,6 @@
 {
   configurationFullName: "PARADISEC",
+  description: "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
+  url: "https://www.paradisec.org.au/",
   archiveUsesParadisec: true
 }

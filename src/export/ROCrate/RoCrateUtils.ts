@@ -176,10 +176,13 @@ export function createPersonFilesDatasetId(person: any): string {
 /**
  * Creates a consistent fragment identifier for unresolved contributors.
  * Unresolved contributors are people mentioned in sessions who don't have
- * matching Person records in the project. Uses createFragmentId for consistency.
+ * matching Person records in the project. Uses a bare fragment identifier
+ * (e.g., #Hatton) to match the format used for Person IDs with folders.
  */
 export function createUnresolvedContributorId(contributorName: string): string {
-  return createFragmentId("contributor", contributorName);
+  const trimmed = contributorName.trim();
+  const sanitized = sanitizeForIri(trimmed) || "contributor";
+  return `#${sanitized}`;
 }
 
 export function getVocabularyMapping(

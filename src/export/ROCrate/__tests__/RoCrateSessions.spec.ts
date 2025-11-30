@@ -184,10 +184,10 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#contributor-John_Doe" }
+        { "@id": "#John_Doe" }
       ]);
       expect(sessionEntry["ldac:interviewer"]).toEqual([
-        { "@id": "#contributor-Jane_Smith" }
+        { "@id": "#Jane_Smith" }
       ]);
     });
 
@@ -201,8 +201,8 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#contributor-John_Doe" },
-        { "@id": "#contributor-Jane_Smith" }
+        { "@id": "#John_Doe" },
+        { "@id": "#Jane_Smith" }
       ]);
     });
 
@@ -218,11 +218,11 @@ describe("RoCrateSessions", () => {
 
       // Both single and multiple role values should be arrays
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#contributor-John_Doe" },
-        { "@id": "#contributor-Jane_Smith" }
+        { "@id": "#John_Doe" },
+        { "@id": "#Jane_Smith" }
       ]);
       expect(sessionEntry["ldac:recorder"]).toEqual([
-        { "@id": "#contributor-Bob_Wilson" }
+        { "@id": "#Bob_Wilson" }
       ]);
     });
 
@@ -237,8 +237,8 @@ describe("RoCrateSessions", () => {
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
       expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#contributor-John_Doe" },
-        { "@id": "#contributor-Jane_Smith" }
+        { "@id": "#John_Doe" },
+        { "@id": "#Jane_Smith" }
       ]);
       expect(sessionEntry["ldac:speaker"]).toHaveLength(2); // Only unique entries
     });

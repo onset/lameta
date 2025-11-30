@@ -1,3 +1,5 @@
 {
-  configurationFullName: "SIL International Language & Culture Archives"
+  configurationFullName: "SIL International Language & Culture Archives",
+  description: "SIL International's archive for language and culture documentation",
+  url: "https://www.sil.org/resources/language-culture-archives"
 }
