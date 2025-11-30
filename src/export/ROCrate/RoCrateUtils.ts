@@ -50,19 +50,23 @@ function getVocabularyData(vocabularyFile: string): VocabularyDefinition[] {
  * Sanitizes a string for use in an IRI (Internationalized Resource Identifier).
  * Per RFC 3987, IRIs allow Unicode characters directly, so we only encode
  * characters that are actually problematic:
- * - Spaces -> underscores (common convention for readability)
+ * - Spaces -> %20 (percent-encoded, reversible via decodeURIComponent)
  * - Reserved delimiters that conflict with IRI structure: # ? /
  * - Parentheses (can cause issues in some contexts)
  *
  * Non-Latin characters (é, ñ, 中文, العربية, etc.) are preserved as-is
  * since they are valid in IRIs.
+ *
+ * IMPORTANT: We use percent-encoding (%20) for spaces instead of underscores
+ * so that the original path can be recovered via decodeURIComponent() when
+ * generating HTML src/href attributes that need to point to actual files.
  */
 export function sanitizeForIri(input: string | undefined): string {
   if (!input) {
     return ""; // Return empty string for null, undefined, or empty input
   }
   return input
-    .replace(/ /g, "_") // Spaces to underscores for readability
+    .replace(/ /g, "%20") // Spaces to %20 (reversible encoding)
     .replace(/#/g, "%23") // Hash would start a new fragment
     .replace(/\?/g, "%3F") // Question mark would start query string
     .replace(/\//g, "%2F") // Slash would be path separator

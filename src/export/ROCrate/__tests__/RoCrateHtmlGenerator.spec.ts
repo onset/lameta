@@ -256,7 +256,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain('id="entity__Awi_Heole"');
 
     // Find the Person entity section and verify it has an entity header
-    // Person entities display as "Person: #Name_Name" keeping original ID
+    // Person entities display decoded for readability
     const personEntityMatch = html.match(
       /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Person: #Awi_Heole<\/div>/s
     );
@@ -1644,6 +1644,141 @@ describe("RoCrateHtmlGenerator", () => {
     expect(linkedIds.length).toBeGreaterThan(0);
   });
 
+  it("should have working session links in root Sessions list when sessions are merged with directory Datasets", () => {
+    // This test specifically verifies that the Sessions list on the root dataset
+    // contains working links when sessions are merged from CollectionEvent entities
+    // into their corresponding session directory Datasets.
+    // This is a regression test for the issue where session links in the root's
+    // Sessions list didn't work because they pointed to the original CollectionEvent
+    // IDs but the rendered entities had merged directory IDs.
+    const testData = {
+      "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@id": "./",
+          "@type": ["Dataset", "RepositoryCollection"],
+          name: "Test Project"
+        },
+        {
+          // Top-level Sessions directory (filtered out)
+          "@id": "Sessions/",
+          "@type": "Dataset",
+          name: "Sessions",
+          hasPart: [
+            { "@id": "Sessions/ETR008/" },
+            { "@id": "Sessions/ETR009/" }
+          ]
+        },
+        {
+          // Session directory Dataset - linked to CollectionEvent via "about"
+          "@id": "Sessions/ETR008/",
+          "@type": "Dataset",
+          name: "ETR008 Directory",
+          about: { "@id": "#session-ETR008" },
+          hasPart: [{ "@id": "Sessions/ETR008/audio.mp3" }]
+        },
+        {
+          // Session CollectionEvent - has metadata
+          "@id": "#session-ETR008",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR008",
+          description: "First test session"
+        },
+        {
+          // Session directory Dataset
+          "@id": "Sessions/ETR009/",
+          "@type": "Dataset",
+          name: "ETR009 Directory",
+          about: { "@id": "#session-ETR009" },
+          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }]
+        },
+        {
+          // Session CollectionEvent
+          "@id": "#session-ETR009",
+          "@type": ["RepositoryObject", "CollectionEvent"],
+          name: "Session ETR009",
+          description: "Second test session"
+        },
+        {
+          "@id": "Sessions/ETR008/audio.mp3",
+          "@type": "AudioObject",
+          name: "audio.mp3"
+        },
+        {
+          "@id": "Sessions/ETR009/video.mp4",
+          "@type": "VideoObject",
+          name: "video.mp4"
+        }
+      ]
+    };
+
+    const html = generateRoCrateHtml(testData);
+
+    // Find the root dataset section
+    const rootStart = html.indexOf('id="entity___"');
+    expect(rootStart).toBeGreaterThan(-1);
+
+    // Find the Sessions list in the root dataset
+    const sessionsLabelIndex = html.indexOf("Sessions:", rootStart);
+    expect(sessionsLabelIndex).toBeGreaterThan(-1);
+
+    // Extract session links from the Sessions list (they're in a ul.sessions-list)
+    const sessionsListStart = html.indexOf(
+      '<ul class="sessions-list">',
+      sessionsLabelIndex
+    );
+    expect(sessionsListStart).toBeGreaterThan(-1);
+    const sessionsListEnd = html.indexOf("</ul>", sessionsListStart);
+    const sessionsListHtml = html.substring(sessionsListStart, sessionsListEnd);
+
+    // Extract all href values from the Sessions list
+    const sessionLinkMatches =
+      sessionsListHtml.match(/href="#(entity_[^"]+)"/g) || [];
+    const sessionLinkIds = sessionLinkMatches
+      .map((match) => {
+        const m = match.match(/href="#(entity_[^"]+)"/);
+        return m ? m[1] : null;
+      })
+      .filter(Boolean) as string[];
+
+    // Should have links to both sessions
+    expect(sessionLinkIds.length).toBe(2);
+
+    // Extract all entity IDs from the entire document (including secondary anchors)
+    const idMatches = html.match(/id="(entity_[^"]+)"/g) || [];
+    const definedIds = new Set(
+      idMatches
+        .map((match) => {
+          const m = match.match(/id="(entity_[^"]+)"/);
+          return m ? m[1] : null;
+        })
+        .filter(Boolean) as string[]
+    );
+
+    // Verify all session links have corresponding anchors
+    const brokenSessionLinks = sessionLinkIds.filter(
+      (id) => !definedIds.has(id)
+    );
+
+    // Log for debugging if there are broken links
+    if (brokenSessionLinks.length > 0) {
+      console.log(
+        "Broken session links in root Sessions list:",
+        brokenSessionLinks
+      );
+      console.log("All defined entity IDs:", Array.from(definedIds));
+      console.log("Sessions list HTML:", sessionsListHtml);
+    }
+
+    expect(brokenSessionLinks).toEqual([]);
+
+    // Verify that the sessions are being rendered (either as merged or with secondary anchors)
+    // The merged entities should have IDs like "entity_Sessions_ETR008_"
+    // AND secondary anchors like "entity__session_ETR008" for backward compatibility
+    expect(definedIds.has("entity_Sessions_ETR008_")).toBe(true);
+    expect(definedIds.has("entity_Sessions_ETR009_")).toBe(true);
+  });
+
   it("should render person contributions grouped by role combination", () => {
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
@@ -2098,5 +2233,316 @@ describe("RoCrateHtmlGenerator", () => {
     expect(orgHtml).toContain("Description:");
     expect(orgHtml).toContain("Unknown");
     expect(orgHtml).toContain("Url:");
+  });
+
+  describe("File path encoding - percent-encoded paths", () => {
+    // Issue: RO-Crate JSON uses @id with percent-encoded spaces (%20),
+    // and the HTML generator decodes them to create working file paths.
+
+    it("should decode percent-encoded spaces in People folder paths", () => {
+      // RO-Crate @id uses %20 for spaces, HTML src should have actual spaces
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "#HANGUILA%20Fidel",
+            "@type": "Person",
+            name: "HANGUILA Fidel",
+            image: [
+              { "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG" },
+              { "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Consent.jpg" }
+            ]
+          },
+          {
+            "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG",
+            "@type": ["File", "ImageObject"],
+            name: "HANGUILA Fidel_Photo.JPG",
+            encodingFormat: "image/jpeg"
+          },
+          {
+            "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Consent.jpg",
+            "@type": ["File", "ImageObject"],
+            name: "HANGUILA Fidel_Consent.jpg",
+            encodingFormat: "image/jpeg"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // The src attribute should have decoded spaces to match actual file paths
+      expect(html).toContain(
+        'src="People/HANGUILA Fidel/HANGUILA Fidel_Photo.JPG"'
+      );
+      expect(html).toContain(
+        'src="People/HANGUILA Fidel/HANGUILA Fidel_Consent.jpg"'
+      );
+
+      // Should NOT contain the percent-encoded version
+      expect(html).not.toContain(
+        'src="People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG"'
+      );
+    });
+
+    it("should decode percent-encoded spaces in Sessions folder paths", () => {
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "#session-Test%20Session%20001",
+            "@type": ["RepositoryObject", "CollectionEvent"],
+            name: "Test Session 001",
+            hasPart: [
+              {
+                "@id":
+                  "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3"
+              }
+            ]
+          },
+          {
+            "@id":
+              "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3",
+            "@type": ["File", "AudioObject"],
+            name: "Test Session 001_Audio.mp3",
+            encodingFormat: "audio/mpeg"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // The src attribute should have decoded spaces
+      expect(html).toContain(
+        'src="Sessions/Test Session 001/Test Session 001_Audio.mp3"'
+      );
+
+      // Should NOT contain the percent-encoded version in src attributes
+      expect(html).not.toContain('src="Sessions/Test%20Session%20001');
+    });
+
+    it("should decode percent-encoded parentheses and spaces", () => {
+      // Names like "BAKALA Michel (@Mfouati)" have parentheses and spaces
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "#BAKALA%20Michel%20%28@Mfouati%29",
+            "@type": "Person",
+            name: "BAKALA Michel (@Mfouati)",
+            image: [
+              {
+                "@id":
+                  "People/BAKALA%20Michel%20%28@Mfouati%29/BAKALA%20Michel%20%28@Mfouati%29_Photo.JPG"
+              }
+            ]
+          },
+          {
+            "@id":
+              "People/BAKALA%20Michel%20%28@Mfouati%29/BAKALA%20Michel%20%28@Mfouati%29_Photo.JPG",
+            "@type": ["File", "ImageObject"],
+            name: "BAKALA Michel (@Mfouati)_Photo.JPG",
+            encodingFormat: "image/jpeg"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // Should decode all percent-encoded characters in src attributes
+      expect(html).toContain(
+        'src="People/BAKALA Michel (@Mfouati)/BAKALA Michel (@Mfouati)_Photo.JPG"'
+      );
+
+      // Should NOT contain percent-encoded characters in src/href attributes
+      expect(html).not.toContain('src="People/BAKALA%20');
+      expect(html).not.toContain('href="People/BAKALA%20');
+    });
+
+    it("should handle video files with percent-encoded paths", () => {
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id":
+              "Sessions/Interview%20With%20Speaker/Interview%20With%20Speaker_Video.mp4",
+            "@type": ["File", "VideoObject"],
+            name: "Interview With Speaker_Video.mp4",
+            encodingFormat: "video/mp4"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // Video elements should have decoded paths
+      expect(html).toContain(
+        'src="Sessions/Interview With Speaker/Interview With Speaker_Video.mp4"'
+      );
+    });
+
+    it("should handle audio consent files with percent-encoded paths", () => {
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "#BINDOUMOUNOU%20Jean-Pierre",
+            "@type": "Person",
+            name: "BINDOUMOUNOU Jean-Pierre",
+            image: [
+              {
+                "@id":
+                  "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav"
+              }
+            ]
+          },
+          {
+            "@id":
+              "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav",
+            "@type": ["File", "AudioObject"],
+            name: "BINDOUMOUNOU Jean-Pierre_Consent.wav",
+            encodingFormat: "audio/wav"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // Audio consent file should have decoded spaces
+      expect(html).toContain(
+        'src="People/BINDOUMOUNOU Jean-Pierre/BINDOUMOUNOU Jean-Pierre_Consent.wav"'
+      );
+    });
+
+    it("should preserve underscores that are part of actual filenames", () => {
+      // Underscores that are in the original filename should stay as underscores
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "People/Smith/Smith_Photo.JPG",
+            "@type": ["File", "ImageObject"],
+            name: "Smith_Photo.JPG",
+            encodingFormat: "image/jpeg"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // Underscores in original filenames should be preserved
+      expect(html).toContain('src="People/Smith/Smith_Photo.JPG"');
+    });
+
+    it("should handle clickable file links with percent-encoded paths", () => {
+      // File links (for PDFs, text files, etc.) should also have decoded paths
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id":
+              "Sessions/Field%20Recording%20Day%201/Field%20Recording%20Notes.pdf",
+            "@type": "File",
+            name: "Field Recording Notes.pdf",
+            encodingFormat: "application/pdf"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // Clickable file link should have decoded spaces
+      expect(html).toContain(
+        'href="Sessions/Field Recording Day 1/Field Recording Notes.pdf"'
+      );
+    });
+
+    it("should decode percent-encoded session IDs in entity headers", () => {
+      // Session headers should display "Session: dde-houmba-ori (v1)" not "Session: dde-houmba-ori_%28v1%29"
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "Sessions/dde-houmba-ori%20%28v1%29/",
+            "@type": "Dataset",
+            name: "Session with special characters",
+            // Add description to prevent filtering as "pure wrapper"
+            description: "A test session with special characters in the name"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // The session header should display decoded ID
+      expect(html).toContain(">Session: dde-houmba-ori (v1)<");
+      // Should NOT contain the encoded version in the display
+      expect(html).not.toContain(">Session: dde-houmba-ori%20%28v1%29<");
+    });
+
+    it("should decode percent-encoded person IDs in entity headers", () => {
+      // Person headers should display "Person: #José García" not "Person: #José%20García"
+      const testData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "./",
+            "@type": ["Dataset", "RepositoryCollection"],
+            name: "Test Project"
+          },
+          {
+            "@id": "#Jos%C3%A9%20Garc%C3%ADa",
+            "@type": "Person",
+            name: "José García"
+          }
+        ]
+      };
+
+      const html = generateRoCrateHtml(testData);
+
+      // The person header should display decoded ID
+      expect(html).toContain(">Person: #José García<");
+      // Should NOT contain the encoded version in the display
+      expect(html).not.toContain(">Person: #Jos%C3%A9%20Garc%C3%ADa<");
+    });
   });
 });

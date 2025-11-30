@@ -449,8 +449,22 @@ const LinkResolver = {
   }
 };
 
-// Helper function to convert file:// URLs and URL-encoded paths to display paths for HTML
+// Helper function to convert RO-Crate @id values to display paths for HTML src/href attributes.
+// The @id values are percent-encoded via sanitizeForIri() in RoCrateUtils.ts, so we simply
+// decode them to get the original file paths that match the actual files on disk.
 function getDisplayPath(id: string): string {
+  // Skip non-file references
+  if (
+    !id ||
+    id.startsWith("#") ||
+    id.startsWith("ldac:") ||
+    id.startsWith("tag:") ||
+    id.startsWith("http://") ||
+    id.startsWith("https://")
+  ) {
+    return id;
+  }
+
   if (id.startsWith("file://")) {
     // Convert file:// URL to relative path
     try {
@@ -464,8 +478,6 @@ function getDisplayPath(id: string): string {
       path = path.replace(/\\/g, "/");
 
       // Extract just the relative path from the project directory
-      // The path should be relative to where the HTML file is located
-      // Since we're generating the HTML in the project root, we just need the relative part
       const pathSegments = path.split("/");
 
       // Find the segment that starts our relative path (usually "People", "Sessions", etc.)
@@ -485,29 +497,23 @@ function getDisplayPath(id: string): string {
       }
 
       if (startIndex !== -1) {
-        // Return the path starting from the recognized folder
         return pathSegments.slice(startIndex).join("/");
       }
 
       // Fallback: return just the filename
       return pathSegments[pathSegments.length - 1] || path;
     } catch (e) {
-      // If URL parsing fails, return the original id
       return id;
     }
   }
 
-  // Handle URL-encoded relative paths (e.g., "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Photo.JPG")
-  if (id.includes("%")) {
-    try {
-      return decodeURIComponent(id);
-    } catch (e) {
-      // If decoding fails, return the original id
-      return id;
-    }
+  // For relative paths, simply decode the percent-encoded characters
+  try {
+    return decodeURIComponent(id);
+  } catch (e) {
+    // If decoding fails, return the original id
+    return id;
   }
-
-  return id;
 }
 
 // --- React Components ---
@@ -735,17 +741,41 @@ const PropertyValue: React.FC<{
 
 /**
  * Renders a standard list of links to other entities.
+ * For sessions, displays as "ID: Name" (e.g., "ETR008: Under the House").
  */
 const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
   entities
 }) => {
   if (entities.length === 0) return null;
+
+  const getDisplayText = (entity: RoCrateEntity): string => {
+    const types = getEntityTypes(entity);
+    const isSession =
+      hasSessionType(types) ||
+      (entity["@id"]?.startsWith("Sessions/") && entity["@id"]?.endsWith("/"));
+
+    if (isSession && entity.name) {
+      // Extract short session ID (e.g., "ETR008" from "Sessions/ETR008/")
+      const shortId = getShortSessionId(entity["@id"]);
+      // Decode any percent-encoded characters for display
+      let decodedId: string;
+      try {
+        decodedId = decodeURIComponent(shortId);
+      } catch {
+        decodedId = shortId;
+      }
+      // Return "ID: Name" format
+      return `${decodedId}: ${entity.name}`;
+    }
+    return entity.name || entity["@id"];
+  };
+
   return (
     <ul className="sessions-list">
       {entities.map((entity) => (
         <li key={entity["@id"]}>
           <a href={`#${createAnchorId(entity["@id"])}`}>
-            {entity.name || entity["@id"]}
+            {getDisplayText(entity)}
           </a>
         </li>
       ))}
@@ -1139,23 +1169,43 @@ const Entity: React.FC<{
     isImage ? "image-entity" : ""
   } ${isVideo || isAudio ? "media-entity" : ""}`.trim();
 
-  // Hidden anchor for secondary ID (used for merged session entities)
+  // Secondary anchor for merged session entities - allows links using original
+  // CollectionEvent IDs (#session-XXX) to navigate to merged entities (Sessions/XXX/).
+  // Uses position:absolute with zero dimensions instead of display:none to ensure
+  // browsers can scroll to this anchor target.
   const SecondaryAnchor = () =>
     secondaryAnchorId ? (
-      <span id={secondaryAnchorId} style={{ display: "none" }} />
+      <span
+        id={secondaryAnchorId}
+        style={{
+          position: "absolute",
+          width: 0,
+          height: 0,
+          overflow: "hidden"
+        }}
+      />
     ) : null;
 
   // Format display ID for the header - Person and Session entities get special treatment
   const getHeaderDisplayId = () => {
+    // Helper to decode percent-encoded characters for display
+    const decodeForDisplay = (str: string) => {
+      try {
+        return decodeURIComponent(str);
+      } catch {
+        return str;
+      }
+    };
+
     if (types.includes("Person") && id.startsWith("#")) {
-      // Display as "Person: #Ilawi_Amosa" (keeping original ID format)
-      return `Person: ${id}`;
+      // Display as "Person: #Ilawi Amosa" (decoded for readability)
+      return `Person: ${decodeForDisplay(id)}`;
     }
     // Convert "Sessions/ETR009" or "Sessions/ETR009/" to "Session: ETR009"
     if (id.startsWith("Sessions/")) {
       const match = id.match(/^Sessions\/([^\/]+)\/?$/);
       if (match) {
-        return `Session: ${match[1]}`;
+        return `Session: ${decodeForDisplay(match[1])}`;
       }
     }
     return getDisplayPath(id) || "Unknown ID";
@@ -1288,13 +1338,29 @@ const Entity: React.FC<{
       }
     });
 
-    // Sort sessions alphabetically by name (with support for non-Latin scripts)
-    // Using Intl.Collator with numeric: true for natural sorting of numbers in names
-    const collator = new Intl.Collator([], { numeric: true, sensitivity: "base" });
+    // Sort sessions alphabetically by display text (ID: Name format)
+    // Using Intl.Collator with numeric: true for natural sorting of numbers in IDs
+    const collator = new Intl.Collator([], {
+      numeric: true,
+      sensitivity: "base"
+    });
+    const getSessionDisplayText = (entity: RoCrateEntity): string => {
+      const shortId = getShortSessionId(entity["@id"]);
+      let decodedId: string;
+      try {
+        decodedId = decodeURIComponent(shortId);
+      } catch {
+        decodedId = shortId;
+      }
+      if (entity.name) {
+        return `${decodedId}: ${entity.name}`;
+      }
+      return decodedId;
+    };
     specialLists["Sessions"].sort((a, b) => {
-      const nameA = a.name || a["@id"] || "";
-      const nameB = b.name || b["@id"] || "";
-      return collator.compare(nameA, nameB);
+      const displayA = getSessionDisplayText(a);
+      const displayB = getSessionDisplayText(b);
+      return collator.compare(displayA, displayB);
     });
   }
 

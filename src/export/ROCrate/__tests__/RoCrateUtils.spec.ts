@@ -86,18 +86,18 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
 });
 
 describe("RoCrateUtils - IRI Sanitization", () => {
-  it("should convert spaces to underscores", () => {
-    expect(sanitizeForIri("BAKEMBA Martine")).toBe("BAKEMBA_Martine");
-    expect(sanitizeForIri("NGOMA Martin")).toBe("NGOMA_Martin");
-    expect(sanitizeForIri("Multiple  Spaces")).toBe("Multiple__Spaces");
+  it("should percent-encode spaces as %20", () => {
+    expect(sanitizeForIri("BAKEMBA Martine")).toBe("BAKEMBA%20Martine");
+    expect(sanitizeForIri("NGOMA Martin")).toBe("NGOMA%20Martin");
+    expect(sanitizeForIri("Multiple  Spaces")).toBe("Multiple%20%20Spaces");
   });
 
   it("should encode parentheses", () => {
     expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe(
-      "BAKALA_Michel_%28@Mfouati%29"
+      "BAKALA%20Michel%20%28@Mfouati%29"
     );
     // Exclamation marks are allowed in IRIs
-    expect(sanitizeForIri("File with!")).toBe("File_with!");
+    expect(sanitizeForIri("File with!")).toBe("File%20with!");
   });
 
   it("should handle empty and undefined inputs", () => {
@@ -125,9 +125,9 @@ describe("RoCrateUtils - IRI Sanitization", () => {
       expect(result).toBe("محمد");
     });
 
-    it("should preserve Cyrillic characters with spaces as underscores", () => {
+    it("should preserve Cyrillic characters with spaces percent-encoded", () => {
       const result = sanitizeForIri("Иван Петров");
-      expect(result).toBe("Иван_Петров");
+      expect(result).toBe("Иван%20Петров");
     });
 
     it("should preserve Japanese characters (Hiragana, Katakana, Kanji)", () => {
@@ -140,20 +140,20 @@ describe("RoCrateUtils - IRI Sanitization", () => {
       expect(result).toBe("김철수");
     });
 
-    it("should preserve Hebrew characters with spaces as underscores", () => {
+    it("should preserve Hebrew characters with spaces percent-encoded", () => {
       const result = sanitizeForIri("דוד כהן");
-      expect(result).toBe("דוד_כהן");
+      expect(result).toBe("דוד%20כהן");
     });
 
     it("should preserve characters with diacritics", () => {
-      expect(sanitizeForIri("José García")).toBe("José_García");
-      expect(sanitizeForIri("François Müller")).toBe("François_Müller");
-      expect(sanitizeForIri("Søren Østergård")).toBe("Søren_Østergård");
+      expect(sanitizeForIri("José García")).toBe("José%20García");
+      expect(sanitizeForIri("François Müller")).toBe("François%20Müller");
+      expect(sanitizeForIri("Søren Østergård")).toBe("Søren%20Østergård");
     });
 
     it("should preserve emoji", () => {
       const result = sanitizeForIri("User 😀");
-      expect(result).toBe("User_😀");
+      expect(result).toBe("User%20😀");
     });
   });
 
@@ -221,12 +221,12 @@ describe("RoCrateUtils - IRI Sanitization", () => {
   describe("complex real-world names", () => {
     it("should handle names with multiple special character types", () => {
       const result = sanitizeForIri("O'Brien-Smith (Jr.)");
-      expect(result).toBe("O'Brien-Smith_%28Jr.%29");
+      expect(result).toBe("O'Brien-Smith%20%28Jr.%29");
     });
 
     it("should handle names with mixed scripts", () => {
       const result = sanitizeForIri("Александр Smith");
-      expect(result).toBe("Александр_Smith");
+      expect(result).toBe("Александр%20Smith");
     });
 
     it("should handle file names with various characters", () => {
@@ -241,15 +241,15 @@ describe("RoCrateUtils - ID Generation", () => {
   describe("createFragmentId", () => {
     it("should create fragment ID with prefix and sanitized value", () => {
       expect(createFragmentId("test", "Value")).toBe("#test-Value");
-      // Spaces become underscores
+      // Spaces become %20
       expect(createFragmentId("session", "My Session")).toBe(
-        "#session-My_Session"
+        "#session-My%20Session"
       );
     });
 
     it("should encode parentheses", () => {
       expect(createFragmentId("contributor", "John (Smith)")).toBe(
-        "#contributor-John_%28Smith%29"
+        "#contributor-John%20%28Smith%29"
       );
     });
 
@@ -279,7 +279,7 @@ describe("RoCrateUtils - ID Generation", () => {
 
     it("should handle sessions with special characters", () => {
       expect(createSessionId({ filePrefix: "My Session (2024)" })).toBe(
-        "#session-My_Session_%282024%29"
+        "#session-My%20Session%20%282024%29"
       );
     });
 
@@ -295,13 +295,15 @@ describe("RoCrateUtils - ID Generation", () => {
       expect(createPersonId({ filePrefix: "John_Smith" })).toBe("#John_Smith");
     });
 
-    it("should convert spaces to underscores", () => {
-      expect(createPersonId({ filePrefix: "John Smith" })).toBe("#John_Smith");
+    it("should convert spaces to percent-encoding", () => {
+      expect(createPersonId({ filePrefix: "John Smith" })).toBe(
+        "#John%20Smith"
+      );
     });
 
     it("should encode parentheses", () => {
       expect(createPersonId({ filePrefix: "John (Smith)" })).toBe(
-        "#John_%28Smith%29"
+        "#John%20%28Smith%29"
       );
     });
 
@@ -314,13 +316,13 @@ describe("RoCrateUtils - ID Generation", () => {
 
   describe("createUnresolvedContributorId", () => {
     it("should create bare fragment ID without prefix", () => {
-      // Spaces become underscores, but no prefix
-      expect(createUnresolvedContributorId("John Smith")).toBe("#John_Smith");
+      // Spaces become %20, but no prefix
+      expect(createUnresolvedContributorId("John Smith")).toBe("#John%20Smith");
     });
 
     it("should encode parentheses", () => {
       expect(createUnresolvedContributorId("John (Consultant)")).toBe(
-        "#John_%28Consultant%29"
+        "#John%20%28Consultant%29"
       );
     });
 
@@ -371,9 +373,9 @@ describe("RoCrateUtils - ID Generation", () => {
         filePrefix: "Session001",
         getAllContributionsToAllFiles: () => []
       };
-      // Spaces become underscores
+      // Spaces become %20
       expect(createFileId(sessionFolder, "file with spaces.wav")).toBe(
-        "Sessions/Session001/file_with_spaces.wav"
+        "Sessions/Session001/file%20with%20spaces.wav"
       );
     });
   });
