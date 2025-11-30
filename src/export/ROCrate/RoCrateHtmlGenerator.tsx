@@ -258,6 +258,7 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
   ],
   Organization: ["description", "url"],
   License: ["description", { property: "ldac:access", label: "Access" }],
+  DefinedTerm: ["name", "description"],
   DigitalDocument: [
     { property: "encodingFormat", label: "Encoding Format" },
     { property: "contentSize", label: "Content size", type: "size" }
@@ -284,6 +285,7 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
   if (types.includes("Person")) return ENTITY_FIELDS.Person;
   if (types.includes("Organization")) return ENTITY_FIELDS.Organization;
   if (types.includes("ldac:DataReuseLicense")) return ENTITY_FIELDS.License;
+  if (types.includes("DefinedTerm")) return ENTITY_FIELDS.DefinedTerm;
   if (
     types.includes("File") ||
     types.includes("ImageObject") ||

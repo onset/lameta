@@ -150,7 +150,7 @@ export async function makeEntriesFromParticipant(
     // If session doesn't have proper date field access, sessionDate remains undefined
     sessionDate = undefined;
   }
-  
+
   // Fall back to first dated session if current session has no date
   if (!sessionDate) {
     sessionDate = findFirstSessionWithDate(project);

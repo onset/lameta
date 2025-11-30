@@ -32,9 +32,9 @@ describe("birthYear casing read test", () => {
   <birthYear type="string">1972</birthYear>
   <gender type="string">Male</gender>
 </Person>`;
-    
+
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
-    
+
     const personFile = new PersonMetadataFile(
       tempDir,
       new EncounteredVocabularyRegistry()
@@ -42,7 +42,7 @@ describe("birthYear casing read test", () => {
 
     const birthYear = personFile.getTextProperty("birthYear");
     console.log("Lowercase <birthYear> result:", birthYear);
-    
+
     expect(birthYear).toBe("1972");
   });
 
@@ -54,9 +54,9 @@ describe("birthYear casing read test", () => {
   <BirthYear type="string">1960</BirthYear>
   <Gender type="string">Male</Gender>
 </Person>`;
-    
+
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
-    
+
     const personFile = new PersonMetadataFile(
       tempDir,
       new EncounteredVocabularyRegistry()
@@ -64,7 +64,7 @@ describe("birthYear casing read test", () => {
 
     const birthYear = personFile.getTextProperty("birthYear");
     console.log("PascalCase <BirthYear> result:", birthYear);
-    
+
     expect(birthYear).toBe("1960");
   });
 
@@ -77,7 +77,10 @@ describe("birthYear casing read test", () => {
       `<?xml version="1.0" encoding="utf-8"?>
 <Person><birthYear type="string">1972</birthYear></Person>`
     );
-    const file1 = new PersonMetadataFile(tempDir1, new EncounteredVocabularyRegistry());
+    const file1 = new PersonMetadataFile(
+      tempDir1,
+      new EncounteredVocabularyRegistry()
+    );
 
     // Test 2: PascalCase
     const tempDir2 = temp.mkdirSync("test-pascal");
@@ -87,7 +90,10 @@ describe("birthYear casing read test", () => {
       `<?xml version="1.0" encoding="utf-8"?>
 <Person><BirthYear type="string">1960</BirthYear></Person>`
     );
-    const file2 = new PersonMetadataFile(tempDir2, new EncounteredVocabularyRegistry());
+    const file2 = new PersonMetadataFile(
+      tempDir2,
+      new EncounteredVocabularyRegistry()
+    );
 
     console.log("=== ALL Property keys in file1 (lowercase <birthYear>) ===");
     file1.properties.forEach((key, field) => {

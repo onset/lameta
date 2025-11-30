@@ -7,7 +7,10 @@ import { EncounteredVocabularyRegistry } from "../../../model/Project/Encountere
 import { setupLanguageFinderForTests } from "../../../languageFinder/LanguageFinder";
 import { FolderMetadataFile } from "../../../model/file/FolderMetaDataFile";
 import { findFirstSessionWithDate } from "../RoCrateExporter";
-import { makeLdacCompliantPersonEntry, makeEntriesFromParticipant } from "../RoCratePeople";
+import {
+  makeLdacCompliantPersonEntry,
+  makeEntriesFromParticipant
+} from "../RoCratePeople";
 
 describe("findFirstSessionWithDate", () => {
   beforeAll(() => {
@@ -159,7 +162,9 @@ describe("Person age calculation with first dated session", () => {
       metadataFile: personFile,
       knownFields: [],
       ageOn: (refDate: Date) => {
-        return personFile.properties.getDateField("birthYear").yearsSince(refDate);
+        return personFile.properties
+          .getDateField("birthYear")
+          .yearsSince(refDate);
       }
     } as any;
 
@@ -208,7 +213,9 @@ describe("Person age calculation with first dated session", () => {
       metadataFile: personFile,
       knownFields: [],
       ageOn: (refDate: Date) => {
-        return personFile.properties.getDateField("birthYear").yearsSince(refDate);
+        return personFile.properties
+          .getDateField("birthYear")
+          .yearsSince(refDate);
       }
     } as any;
 

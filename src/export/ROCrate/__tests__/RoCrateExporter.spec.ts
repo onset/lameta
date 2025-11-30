@@ -1095,9 +1095,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           "@id": expectedAwiPersonId
         }
       ]);
-      expect(sessionEvent["ldac:recorder"]).toEqual([
-        { "@id": "#Hatton" }
-      ]);
+      expect(sessionEvent["ldac:recorder"]).toEqual([{ "@id": "#Hatton" }]);
     });
 
     it("should use correct LDAC role URIs with ldac: namespace", async () => {

@@ -183,9 +183,7 @@ describe("RoCrateSessions", () => {
       const sessionEntry = {};
       addParticipantProperties(sessionEntry, mockSession, mockProject);
 
-      expect(sessionEntry["ldac:speaker"]).toEqual([
-        { "@id": "#John_Doe" }
-      ]);
+      expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "#John_Doe" }]);
       expect(sessionEntry["ldac:interviewer"]).toEqual([
         { "@id": "#Jane_Smith" }
       ]);
@@ -221,9 +219,7 @@ describe("RoCrateSessions", () => {
         { "@id": "#John_Doe" },
         { "@id": "#Jane_Smith" }
       ]);
-      expect(sessionEntry["ldac:recorder"]).toEqual([
-        { "@id": "#Bob_Wilson" }
-      ]);
+      expect(sessionEntry["ldac:recorder"]).toEqual([{ "@id": "#Bob_Wilson" }]);
     });
 
     it("should avoid duplicate person IDs in the same role", () => {

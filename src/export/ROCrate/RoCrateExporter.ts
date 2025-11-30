@@ -1433,7 +1433,11 @@ function createDescriptionCollectionProtocolEntry(
  * @returns The date of the first session with a date, or undefined if none found
  */
 export function findFirstSessionWithDate(project: Project): Date | undefined {
-  if (!project || !(project as any).sessions || !(project as any).sessions.items) {
+  if (
+    !project ||
+    !(project as any).sessions ||
+    !(project as any).sessions.items
+  ) {
     return undefined;
   }
 
