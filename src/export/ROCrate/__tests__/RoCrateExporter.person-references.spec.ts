@@ -80,8 +80,12 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Root hasPart should reference the People dataset wrapper but never direct Person IDs
     const rootHasPartIds =
       rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
-    expect(rootHasPartIds).toContain("People/");
+    expect(rootHasPartIds).not.toContain("People/");
     expect(rootHasPartIds).not.toContain(expectedPersonId);
+    // People/ is now linked via pcdm:hasMember, not hasPart
+    const rootHasMemberIds =
+      rootDataset["pcdm:hasMember"]?.map((ref: any) => ref["@id"]) ?? [];
+    expect(rootHasMemberIds).toContain("People/");
 
     // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
     // LAM-98 https://linear.app/lameta/issue/LAM-98/dataset-for-each-person
@@ -93,7 +97,7 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     expect(peopleDataset?.hasPart).toContainEqual({
       "@id": expectedPersonFilesDatasetId
     });
-    expect(peopleDataset?.isPartOf).toEqual({ "@id": "./" });
+    expect(peopleDataset?.["pcdm:memberOf"]).toEqual({ "@id": "./" });
 
     // LAM-98: The person-files Dataset should reference the Person via about, not hasPart
     const personFilesDataset = graph.find(

@@ -534,9 +534,9 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         name: "People",
         hasPart: [{ "@id": "#jane-doe" }]
       });
-      // Link People/ from root
+      // Link People/ from root via pcdm:hasMember
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset.hasPart = [{ "@id": "People/" }];
+      rootDataset["pcdm:hasMember"] = [{ "@id": "People/" }];
 
       const result = validator.validate(roCrate);
 
@@ -579,11 +579,11 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@type": "Dataset",
         name: "People",
         hasPart: [{ "@id": "People/Jane_Doe/" }],
-        isPartOf: { "@id": "./" }
+        "pcdm:memberOf": { "@id": "./" }
       });
-      // Link People/ from root
+      // Link People/ from root via pcdm:hasMember
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset.hasPart = [{ "@id": "People/" }];
+      rootDataset["pcdm:hasMember"] = [{ "@id": "People/" }];
 
       const result = validator.validate(roCrate);
 

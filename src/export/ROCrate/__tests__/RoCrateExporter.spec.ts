@@ -1361,8 +1361,8 @@ describe("RoCrateExporter project document folders", () => {
     expect(rootEntry).toBeDefined();
 
     // LAM-101: OtherDocuments files are now inside the OtherDocuments/ Dataset
-    // Check that the OtherDocuments/ Dataset is in root's hasPart
-    const otherDocsDatasetRef = rootEntry.hasPart.find(
+    // Check that the OtherDocuments/ Dataset is in root's pcdm:hasMember
+    const otherDocsDatasetRef = rootEntry["pcdm:hasMember"]?.find(
       (part: any) => part["@id"] === "OtherDocuments/"
     );
     expect(otherDocsDatasetRef).toBeDefined();
@@ -1417,8 +1417,8 @@ describe("RoCrateExporter project document folders", () => {
     expect(rootEntry).toBeDefined();
 
     // LAM-101: OtherDocuments files are now inside the OtherDocuments/ Dataset
-    // Check that the OtherDocuments/ Dataset is in root's hasPart
-    const otherDocsDatasetRef = rootEntry.hasPart.find(
+    // Check that the OtherDocuments/ Dataset is in root's pcdm:hasMember
+    const otherDocsDatasetRef = rootEntry["pcdm:hasMember"]?.find(
       (part: any) => part["@id"] === "OtherDocuments/"
     );
     expect(otherDocsDatasetRef).toBeDefined();

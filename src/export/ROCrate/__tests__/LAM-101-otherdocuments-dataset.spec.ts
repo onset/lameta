@@ -121,27 +121,30 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     expect(otherDocsDataset.description).toBeDefined();
   });
 
-  it("should link OtherDocuments/ Dataset from root entity via hasPart", async () => {
+  it("should link OtherDocuments/ Dataset from root entity via pcdm:hasMember", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
 
     expect(rootEntity).toBeDefined();
-    expect(rootEntity.hasPart).toContainEqual({ "@id": "OtherDocuments/" });
+    expect(rootEntity["pcdm:hasMember"]).toContainEqual({
+      "@id": "OtherDocuments/"
+    });
   });
 
-  it("should NOT have individual OtherDocuments files directly in root hasPart", async () => {
+  it("should NOT have individual OtherDocuments files directly in root pcdm:hasMember", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
 
-    // Individual files should NOT be in root's hasPart anymore
-    const hasPartIds = rootEntity.hasPart.map((p: any) => p["@id"]);
-    expect(hasPartIds).not.toContain("OtherDocuments/Letter_from_Jan.txt");
-    expect(hasPartIds).not.toContain("OtherDocuments/Project_Notes.docx");
-    expect(hasPartIds).not.toContain("OtherDocuments/Budget.pdf");
+    // Individual files should NOT be in root's pcdm:hasMember or hasPart
+    const hasMemberIds =
+      rootEntity["pcdm:hasMember"]?.map((p: any) => p["@id"]) || [];
+    expect(hasMemberIds).not.toContain("OtherDocuments/Letter_from_Jan.txt");
+    expect(hasMemberIds).not.toContain("OtherDocuments/Project_Notes.docx");
+    expect(hasMemberIds).not.toContain("OtherDocuments/Budget.pdf");
   });
 
   it("should have OtherDocuments/ Dataset with hasPart pointing to files", async () => {
@@ -161,7 +164,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     expect(hasPartIds).toContain("OtherDocuments/Budget.pdf");
   });
 
-  it("should have OtherDocuments/ Dataset with isPartOf pointing to root", async () => {
+  it("should have OtherDocuments/ Dataset with pcdm:memberOf pointing to root", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -169,7 +172,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
       (item: any) => item["@id"] === "OtherDocuments/"
     );
 
-    expect(otherDocsDataset.isPartOf).toEqual({ "@id": "./" });
+    expect(otherDocsDataset["pcdm:memberOf"]).toEqual({ "@id": "./" });
   });
 
   it("should have OtherDocuments files with isPartOf pointing to OtherDocuments/", async () => {
@@ -208,8 +211,10 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     expect(otherDocsDataset.license).toEqual({ "@id": "#collection-license" });
   });
 
-  it("should make all OtherDocuments files reachable from root via hasPart chain", async () => {
+  it("should make all OtherDocuments files reachable from root via pcdm:hasMember and hasPart chain", async () => {
     // The key validation - all data entities should be reachable from root
+    // IMPORTANT: pcdm:hasMember is ONLY used for the first hop from root to top-level datasets.
+    // All subsequent hops must use hasPart.
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -221,31 +226,48 @@ describe("LAM-101: OtherDocuments Dataset", () => {
       }
     });
 
-    // Collect all entities reachable from root via hasPart
+    // Collect all entities reachable from root via pcdm:hasMember and hasPart
     const reachableFromRoot = new Set<string>();
-    const collectHasPart = (entity: any, visited: Set<string> = new Set()) => {
-      const id = entity["@id"];
-      if (!id || visited.has(id)) return;
-      visited.add(id);
-
-      const hasPart = entity.hasPart;
-      if (!hasPart) return;
-
-      const parts = Array.isArray(hasPart) ? hasPart : [hasPart];
-      parts.forEach((part: any) => {
-        const partId = typeof part === "object" ? part["@id"] : part;
-        if (partId) {
-          reachableFromRoot.add(partId);
-          const partEntity = entityIndex.get(partId);
-          if (partEntity) {
-            collectHasPart(partEntity, visited);
+    const collectReachable = (entity: any, visited: Set<string>) => {
+      // Follow pcdm:hasMember
+      const hasMember = entity["pcdm:hasMember"];
+      if (hasMember) {
+        const members = Array.isArray(hasMember) ? hasMember : [hasMember];
+        members.forEach((member: any) => {
+          const memberId = typeof member === "object" ? member["@id"] : member;
+          if (memberId && !visited.has(memberId)) {
+            visited.add(memberId);
+            reachableFromRoot.add(memberId);
+            const memberEntity = entityIndex.get(memberId);
+            if (memberEntity) {
+              collectReachable(memberEntity, visited);
+            }
           }
-        }
-      });
+        });
+      }
+
+      // Follow hasPart
+      const hasPart = entity.hasPart;
+      if (hasPart) {
+        const parts = Array.isArray(hasPart) ? hasPart : [hasPart];
+        parts.forEach((part: any) => {
+          const partId = typeof part === "object" ? part["@id"] : part;
+          if (partId && !visited.has(partId)) {
+            visited.add(partId);
+            reachableFromRoot.add(partId);
+            const partEntity = entityIndex.get(partId);
+            if (partEntity) {
+              collectReachable(partEntity, visited);
+            }
+          }
+        });
+      }
     };
 
     const rootEntity = entityIndex.get("./");
-    collectHasPart(rootEntity);
+    const visited = new Set<string>();
+    visited.add("./");
+    collectReachable(rootEntity, visited);
 
     // Verify OtherDocuments/ and files are reachable
     expect(reachableFromRoot.has("OtherDocuments/")).toBe(true);

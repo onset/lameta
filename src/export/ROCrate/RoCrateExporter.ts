@@ -337,7 +337,7 @@ async function getRoCrateInternal(
     });
 
     // LAM-99: Create Sessions/ Dataset hierarchy for RO-Crate 1.2 compliance
-    // Data entities (files) must be reachable from root via hasPart chain
+    // Data entities (files) must be reachable from root via pcdm:hasMember chain
     // See: https://linear.app/lameta/issue/LAM-99/add-sessions-dataset
     const sessionsDatasetEntries = createSessionsDatasetHierarchy(
       project,
@@ -345,8 +345,8 @@ async function getRoCrateInternal(
       entry.license
     );
     if (sessionsDatasetEntries.length > 0) {
-      // Add Sessions/ to root hasPart
-      entry.hasPart.push({ "@id": "Sessions/" });
+      // Add Sessions/ to root pcdm:hasMember
+      entry["pcdm:hasMember"].push({ "@id": "Sessions/" });
     }
 
     // LAM-102: Create DescriptionDocuments/ Dataset to wrap description files.
@@ -369,8 +369,8 @@ async function getRoCrateInternal(
       );
 
       if (descDocsDatasetEntry) {
-        // Add Dataset to root's hasPart for RO-Crate 1.2 compliance
-        entry.hasPart.push({ "@id": descDocsDatasetEntry["@id"] });
+        // Add Dataset to root's pcdm:hasMember for RO-Crate 1.2 compliance
+        entry["pcdm:hasMember"].push({ "@id": descDocsDatasetEntry["@id"] });
 
         // Get file IDs from the Dataset's hasPart
         const fileIds = descDocsDatasetEntry.hasPart
@@ -439,7 +439,7 @@ async function getRoCrateInternal(
         project
       );
       if (otherDocsDatasetEntry) {
-        entry.hasPart.push({ "@id": otherDocsDatasetEntry["@id"] });
+        entry["pcdm:hasMember"].push({ "@id": otherDocsDatasetEntry["@id"] });
       }
     }
 
@@ -511,7 +511,7 @@ async function getRoCrateInternal(
     );
     if (peopleDatasetEntries && peopleDatasetEntries.length > 0) {
       // The first entry is always the People/ Dataset
-      entry.hasPart.push({ "@id": peopleDatasetEntries[0]["@id"] });
+      entry["pcdm:hasMember"].push({ "@id": peopleDatasetEntries[0]["@id"] });
       baseGraph.push(...peopleDatasetEntries);
     }
 
@@ -1029,7 +1029,7 @@ function createSessionsDatasetHierarchy(
       name: `Session ${sessionName}`,
       description: `Files for session ${sessionName}.`,
       hasPart: createHasPartReferences(fileIds),
-      isPartOf: createIsPartOfReference("Sessions/"),
+      "pcdm:memberOf": { "@id": "Sessions/" },
       about: { "@id": sessionEventId } // LAM-100: Dataset is about the CollectionEvent
     };
 
@@ -1046,17 +1046,18 @@ function createSessionsDatasetHierarchy(
     });
   });
 
-  // Sort hasPart for consistency
+  // Sort pcdm:hasMember for consistency
   sessionsDatasetHasPart.sort((a, b) => a["@id"].localeCompare(b["@id"]));
 
   // Create the main Sessions/ Dataset
+  // Uses pcdm:hasMember (not hasPart) to link to individual session directories
   const sessionsDataset: RoCrateEntity = {
     "@id": "Sessions/",
     "@type": "Dataset",
     name: "Sessions",
     description: "Directory of sessions in this collection.",
-    hasPart: sessionsDatasetHasPart,
-    isPartOf: { "@id": "./" }
+    "pcdm:hasMember": sessionsDatasetHasPart,
+    "pcdm:memberOf": { "@id": "./" }
   };
 
   if (license && typeof license === "object") {
@@ -1129,7 +1130,7 @@ function createDescriptionDocumentsDataset(
     description:
       "Documents describing the collection methodology and protocols.",
     hasPart: createHasPartReferences(fileIds),
-    isPartOf: createIsPartOfReference("./")
+    "pcdm:memberOf": { "@id": "./" }
   };
 
   // Inherit collection license
@@ -1201,7 +1202,7 @@ function createOtherDocumentsDataset(
     name: "Other Documents",
     description: "Additional documents associated with this collection.",
     hasPart: createHasPartReferences(fileIds),
-    isPartOf: createIsPartOfReference("./")
+    "pcdm:memberOf": { "@id": "./" }
   };
 
   // Inherit collection license
@@ -1354,7 +1355,7 @@ function createPeopleDatasetEntry(
     name: "People",
     description: "Directory of people associated with this collection.",
     hasPart: peopleDatasetHasPart,
-    isPartOf: { "@id": "./" }
+    "pcdm:memberOf": { "@id": "./" }
   };
 
   if (license && typeof license === "object") {

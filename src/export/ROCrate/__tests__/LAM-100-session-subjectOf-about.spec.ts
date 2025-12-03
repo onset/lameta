@@ -230,7 +230,7 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
   /**
    * Ensure existing LAM-99 structure is preserved alongside new relationships
    */
-  it("should still maintain LAM-99 hasPart/isPartOf structure", async () => {
+  it("should still maintain LAM-99 pcdm:hasMember/pcdm:memberOf structure", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -242,16 +242,16 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
       (item: any) => item["@id"] === "Sessions/ETR008/"
     );
 
-    // Root -> Sessions/ via hasPart
-    expect(rootEntity.hasPart).toContainEqual({ "@id": "Sessions/" });
+    // Root -> Sessions/ via pcdm:hasMember
+    expect(rootEntity["pcdm:hasMember"]).toContainEqual({ "@id": "Sessions/" });
 
-    // Sessions/ -> Sessions/ETR008/ via hasPart
-    expect(sessionsDataset.hasPart).toContainEqual({
+    // Sessions/ -> Sessions/ETR008/ via pcdm:hasMember
+    expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
       "@id": "Sessions/ETR008/"
     });
 
-    // Sessions/ETR008/ -> Sessions/ via isPartOf
-    expect(session1Dir.isPartOf).toEqual({ "@id": "Sessions/" });
+    // Sessions/ETR008/ -> Sessions/ via pcdm:memberOf
+    expect(session1Dir["pcdm:memberOf"]).toEqual({ "@id": "Sessions/" });
   });
 
   /**

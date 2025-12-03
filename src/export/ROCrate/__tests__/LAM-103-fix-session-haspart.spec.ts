@@ -232,9 +232,9 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
   });
 
   /**
-   * LAM-103: Root dataset's hasPart should point to Sessions/ Dataset, not to session CollectionEvents.
+   * LAM-103: Root dataset's pcdm:hasMember should point to Sessions/ Dataset, not hasPart.
    */
-  it("root dataset hasPart should contain Sessions/ Dataset, not CollectionEvents", async () => {
+  it("root dataset pcdm:hasMember should contain Sessions/ Dataset, not CollectionEvents in hasPart", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -242,13 +242,15 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
 
     expect(rootDataset).toBeDefined();
 
-    // hasPart should include Sessions/ directory Dataset
-    expect(rootDataset.hasPart).toContainEqual({ "@id": "Sessions/" });
+    // pcdm:hasMember should include Sessions/ directory Dataset
+    expect(rootDataset["pcdm:hasMember"]).toContainEqual({
+      "@id": "Sessions/"
+    });
 
-    // hasPart should NOT include the session CollectionEvent directly
-    const hasSessionEvent = rootDataset.hasPart.some(
-      (p: any) => p["@id"] === "#session-ETR008"
+    // hasPart should NOT include Sessions/ or session CollectionEvents
+    const hasSessionInHasPart = rootDataset.hasPart?.some(
+      (p: any) => p["@id"] === "Sessions/" || p["@id"] === "#session-ETR008"
     );
-    expect(hasSessionEvent).toBe(false);
+    expect(hasSessionInHasPart).toBeFalsy();
   });
 });

@@ -1422,7 +1422,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          hasPart: [{ "@id": "People/" }, { "@id": "Sessions/" }]
+          "pcdm:hasMember": [{ "@id": "People/" }, { "@id": "Sessions/" }]
         },
         {
           "@id": "People/",

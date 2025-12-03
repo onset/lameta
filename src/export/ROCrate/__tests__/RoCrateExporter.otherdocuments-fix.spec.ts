@@ -87,8 +87,8 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     );
     expect(rootEntry).toBeDefined();
 
-    // LAM-101: Root now references the OtherDocuments/ Dataset, not individual files
-    const otherDocsDatasetRef = rootEntry.hasPart.find(
+    // LAM-101: Root now references the OtherDocuments/ Dataset via pcdm:hasMember, not hasPart
+    const otherDocsDatasetRef = rootEntry["pcdm:hasMember"]?.find(
       (part: any) => part["@id"] === "OtherDocuments/"
     );
     expect(otherDocsDatasetRef).toBeDefined();
@@ -124,11 +124,12 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     );
     expect(incorrectFileRefs).toHaveLength(0);
 
-    // Also verify in the hasPart array
-    const incorrectHasPartRefs = rootEntry.hasPart.filter(
-      (part: any) => part["@id"] && part["@id"].startsWith("OtherDocs/")
-    );
-    expect(incorrectHasPartRefs).toHaveLength(0);
+    // Also verify in the pcdm:hasMember array
+    const incorrectHasMemberRefs =
+      rootEntry["pcdm:hasMember"]?.filter(
+        (part: any) => part["@id"] && part["@id"].startsWith("OtherDocs/")
+      ) || [];
+    expect(incorrectHasMemberRefs).toHaveLength(0);
 
     console.log(
       "✅ Fix verified: Letter_from_Jan.txt correctly uses 'OtherDocuments/' prefix"

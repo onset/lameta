@@ -167,17 +167,17 @@ describe("LAM-99: Sessions Dataset", () => {
     expect(sessionsDataset.name).toBeDefined();
   });
 
-  it("should link Sessions/ Dataset from root entity via hasPart", async () => {
+  it("should link Sessions/ Dataset from root entity via pcdm:hasMember", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
 
     expect(rootEntity).toBeDefined();
-    expect(rootEntity.hasPart).toContainEqual({ "@id": "Sessions/" });
+    expect(rootEntity["pcdm:hasMember"]).toContainEqual({ "@id": "Sessions/" });
   });
 
-  it("should link individual session directories from Sessions/ via hasPart", async () => {
+  it("should link individual session directories from Sessions/ via pcdm:hasMember", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -186,11 +186,11 @@ describe("LAM-99: Sessions Dataset", () => {
     );
 
     expect(sessionsDataset).toBeDefined();
-    expect(sessionsDataset.hasPart).toBeDefined();
-    expect(sessionsDataset.hasPart).toContainEqual({
+    expect(sessionsDataset["pcdm:hasMember"]).toBeDefined();
+    expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
       "@id": "Sessions/ETR008/"
     });
-    expect(sessionsDataset.hasPart).toContainEqual({
+    expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
       "@id": "Sessions/ETR009/"
     });
   });
@@ -229,7 +229,7 @@ describe("LAM-99: Sessions Dataset", () => {
     expect(hasPartIds).toContain("Sessions/ETR009/ETR009.session");
   });
 
-  it("should have session directory Dataset with isPartOf pointing to Sessions/", async () => {
+  it("should have session directory Dataset with pcdm:memberOf pointing to Sessions/", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -240,11 +240,11 @@ describe("LAM-99: Sessions Dataset", () => {
       (item: any) => item["@id"] === "Sessions/ETR009/"
     );
 
-    expect(session1Dir.isPartOf).toEqual({ "@id": "Sessions/" });
-    expect(session2Dir.isPartOf).toEqual({ "@id": "Sessions/" });
+    expect(session1Dir["pcdm:memberOf"]).toEqual({ "@id": "Sessions/" });
+    expect(session2Dir["pcdm:memberOf"]).toEqual({ "@id": "Sessions/" });
   });
 
-  it("should have Sessions/ Dataset with isPartOf pointing to root", async () => {
+  it("should have Sessions/ Dataset with pcdm:memberOf pointing to root", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -252,7 +252,7 @@ describe("LAM-99: Sessions Dataset", () => {
       (item: any) => item["@id"] === "Sessions/"
     );
 
-    expect(sessionsDataset.isPartOf).toEqual({ "@id": "./" });
+    expect(sessionsDataset["pcdm:memberOf"]).toEqual({ "@id": "./" });
   });
 
   it("should have session files with isPartOf pointing to their session directory", async () => {
@@ -283,8 +283,9 @@ describe("LAM-99: Sessions Dataset", () => {
     });
   });
 
-  it("should make all session files reachable from root via hasPart chain", async () => {
+  it("should make all session files reachable from root via pcdm:hasMember and hasPart chain", async () => {
     // The key validation - all data entities should be reachable from root
+    // pcdm:hasMember and hasPart can be used at any level in the hierarchy
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
@@ -296,31 +297,48 @@ describe("LAM-99: Sessions Dataset", () => {
       }
     });
 
-    // Collect all entities reachable from root via hasPart
+    // Collect all entities reachable from root via pcdm:hasMember and hasPart
     const reachableFromRoot = new Set<string>();
-    const collectHasPart = (entity: any, visited: Set<string> = new Set()) => {
-      const id = entity["@id"];
-      if (!id || visited.has(id)) return;
-      visited.add(id);
-
-      const hasPart = entity.hasPart;
-      if (!hasPart) return;
-
-      const parts = Array.isArray(hasPart) ? hasPart : [hasPart];
-      parts.forEach((part: any) => {
-        const partId = typeof part === "object" ? part["@id"] : part;
-        if (partId) {
-          reachableFromRoot.add(partId);
-          const partEntity = entityIndex.get(partId);
-          if (partEntity) {
-            collectHasPart(partEntity, visited);
+    const collectReachable = (entity: any, visited: Set<string>) => {
+      // Follow pcdm:hasMember
+      const hasMember = entity["pcdm:hasMember"];
+      if (hasMember) {
+        const members = Array.isArray(hasMember) ? hasMember : [hasMember];
+        members.forEach((member: any) => {
+          const memberId = typeof member === "object" ? member["@id"] : member;
+          if (memberId && !visited.has(memberId)) {
+            visited.add(memberId);
+            reachableFromRoot.add(memberId);
+            const memberEntity = entityIndex.get(memberId);
+            if (memberEntity) {
+              collectReachable(memberEntity, visited);
+            }
           }
-        }
-      });
+        });
+      }
+
+      // Follow hasPart
+      const hasPart = entity.hasPart;
+      if (hasPart) {
+        const parts = Array.isArray(hasPart) ? hasPart : [hasPart];
+        parts.forEach((part: any) => {
+          const partId = typeof part === "object" ? part["@id"] : part;
+          if (partId && !visited.has(partId)) {
+            visited.add(partId);
+            reachableFromRoot.add(partId);
+            const partEntity = entityIndex.get(partId);
+            if (partEntity) {
+              collectReachable(partEntity, visited);
+            }
+          }
+        });
+      }
     };
 
     const rootEntity = entityIndex.get("./");
-    collectHasPart(rootEntity);
+    const visited = new Set<string>();
+    visited.add("./");
+    collectReachable(rootEntity, visited);
 
     // Verify session files are reachable
     expect(reachableFromRoot.has("Sessions/")).toBe(true);
