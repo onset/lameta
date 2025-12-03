@@ -82,8 +82,14 @@ export class MainProcessApi {
   }
 }
 
-// Note, this causes E2E test to fail in the same way as LAM-27
-//call.initialize();
+// Note: call.initialize() was previously completely commented out because it caused
+// E2E tests to fail with "noaccess" errors (LAM-27). However, without it, the IPC
+// bridge for mainProcessApi doesn't work in packaged apps, causing IMDI export to hang.
+// Solution: Only initialize electron-call when NOT running E2E tests.
+// E2E tests don't need mainProcessApi functions (they don't test IMDI export, etc.)
+if (!process.env.E2E) {
+  call.initialize();
+}
 
 const mainProcessInstance = new MainProcessApi();
 call.provide("MainProcessApi", mainProcessInstance);

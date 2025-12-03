@@ -28,6 +28,9 @@ export default class ImdiBundler {
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
   ): Promise<void> {
+    console.log("[ImdiBundler] saveImdiBundleToFolder started");
+    console.log("[ImdiBundler] rootDirectory:", rootDirectory);
+    console.log("[ImdiBundler] imdiMode:", imdiMode);
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
     return new Promise(async (resolve, reject) => {
       sentryBreadCrumb("Starting saveImdiBundleToFolder");
@@ -86,7 +89,7 @@ export default class ImdiBundler {
 
       try {
         //---- Project Documents -----
-
+        console.log("[ImdiBundler] Processing OtherDocuments...");
         this.outputDocumentFolder(
           project,
           "OtherDocuments",
@@ -99,6 +102,7 @@ export default class ImdiBundler {
           copyInProjectFiles
         );
 
+        console.log("[ImdiBundler] Processing DescriptionDocuments...");
         this.outputDocumentFolder(
           project,
           "DescriptionDocuments",
@@ -112,6 +116,7 @@ export default class ImdiBundler {
         );
 
         // ELAR wants an IMDI for consent files even if we aren't copying them in
+        console.log("[ImdiBundler] Processing consent bundle...");
         await this.addConsentBundle(
           project,
           rootDirectory,
@@ -122,11 +127,16 @@ export default class ImdiBundler {
           folderFilter,
           omitNamespaces
         );
+        console.log("[ImdiBundler] Consent bundle done");
 
         //---- Sessions ----
 
         const sessions = project.sessions.items.filter(folderFilter);
+        console.log("[ImdiBundler] Processing", sessions.length, "sessions...");
+        let sessionIndex = 0;
         for await (const session of sessions as Array<Session>) {
+          sessionIndex++;
+          console.log("[ImdiBundler] Processing session", sessionIndex, "of", sessions.length, ":", session.displayName);
           const sessionImdi = ImdiGenerator.generateSession(
             imdiMode,
             session,
@@ -138,6 +148,7 @@ export default class ImdiBundler {
             console.log(e);
             throw e;
           }
+          console.log("[ImdiBundler] Session", session.displayName, "validated successfully");
           const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
           if (imdiMode === IMDIMode.OPEX) {
             fs.ensureDirSync(
@@ -176,13 +187,16 @@ export default class ImdiBundler {
         //childrenSubpaths.push(..something for consent if we have it---);
 
         // ---  Now that we know what all the child imdi's are, we can output the root  ---
+        console.log("[ImdiBundler] All sessions done, generating corpus IMDI...");
         const corpusImdi = ImdiGenerator.generateCorpus(
           imdiMode,
           project,
           childrenSubpaths,
           false
         );
+        console.log("[ImdiBundler] Validating corpus IMDI...");
         await this.validateImdiOrThrow(corpusImdi, project.displayName);
+        console.log("[ImdiBundler] Corpus IMDI validated");
         const targetDirForProjectFile = Path.join(
           rootDirectory,
           imdiMode === IMDIMode.OPEX
@@ -197,6 +211,7 @@ export default class ImdiBundler {
           ),
           corpusImdi
         );
+        console.log("[ImdiBundler] Export complete, resolving promise");
         // const waitForCopying = () => {
         //   if (filesAreStillCopying()) {
         //     setTimeout(() => waitForCopying(), 1000);
@@ -442,10 +457,15 @@ export default class ImdiBundler {
     imdiXml: string,
     displayNameForThisFile?: string
   ) {
+    console.log("[ImdiBundler] validateImdiOrThrow called for:", displayNameForThisFile);
     if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
+      console.log("[ImdiBundler] Skipping validation in test environment");
       return; // we don't yet have a way to validate in test environment
     }
+    console.log("[ImdiBundler] Calling mainProcessApi.validateImdiAsync...");
+    const startTime = Date.now();
     const result = await mainProcessApi.validateImdiAsync(imdiXml);
+    console.log("[ImdiBundler] validateImdiAsync returned after", Date.now() - startTime, "ms, valid:", result.valid);
     if (!result.valid) {
       throw new Error(
         `The IMDI for ${displayNameForThisFile} did not pass validation.\r\n${result.errors
