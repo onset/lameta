@@ -1,6 +1,6 @@
 {
   configurationFullName: "ELAR - Endangered Languages Archive",
-  description: "Endangered Languages Archive at SOAS University of London",
+  description: "Endangered Languages Archive",
   url: "https://www.elararchive.org/",
   archiveUsesImdi: true
 }
