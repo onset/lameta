@@ -38,7 +38,8 @@ export class E2eFileList {
         return fs.existsSync(Path.dirname(wait.path));
       });
 
-      fs.writeFileSync(wait.path, "hello world");
+      // Retry writing the file in case it's temporarily locked by the app's copy operation
+      await retryWriteFile(wait.page, wait.path, "hello world");
 
       await waitForCondition(wait.page, () => {
         return fs.existsSync(wait.path);
@@ -83,5 +84,27 @@ async function waitForCondition(page: any, conditionFunction: () => boolean) {
       return;
     }
     await page.waitForTimeout(1000); // wait for 1 second before checking the condition again
+  }
+}
+
+// Retry writing a file with exponential backoff if it's temporarily locked
+async function retryWriteFile(
+  page: any,
+  filePath: string,
+  content: string,
+  maxRetries = 5
+) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      fs.writeFileSync(filePath, content);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" && attempt < maxRetries - 1) {
+        // Wait with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms
+        await page.waitForTimeout(100 * Math.pow(2, attempt));
+      } else {
+        throw err;
+      }
+    }
   }
 }

@@ -27,7 +27,6 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
   });
 
   test("changing FullName renames the file", async () => {
-    page.setDefaultTimeout(1000);
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Bono Vox");
@@ -41,7 +40,6 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     await expectFileNameInGrid("Bono_Vox_Paul.person");
   });
   test("changing FullName renames other files that have been renamed to match the person", async () => {
-    page.setDefaultTimeout(1000);
     await project.goToPeople();
     await project.addPerson();
     await setFullName("Paul Hewson");
