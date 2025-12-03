@@ -196,6 +196,19 @@ ipcMain.handle("getAppPath", () => {
   return app.getAppPath();
 });
 
+// On Windows/Linux, when a user double-clicks an .sprj file, the OS launches the app
+// with the file path as a command line argument. We need to capture this and set
+// global.arguments so the renderer process can access it.
+{
+  const sprjArg = process.argv.find(
+    (arg) => arg.endsWith(".sprj") && !arg.startsWith("-")
+  );
+  if (sprjArg) {
+    console.log(`Found .sprj file in command line args: ${sprjArg}`);
+    (global as any).arguments = ["ignore", sprjArg];
+  }
+}
+
 // on macos, this will be called if the user directly opens an sprj file.
 app.on("open-file", (event, path: string) => {
   console.log(`main got open-file(${path})`);
