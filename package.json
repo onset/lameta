@@ -134,7 +134,6 @@
     "express": "^4.14.0",
     "globals": "^15.13.0",
     "happy-dom": "^8.1.1",
-    "husky": "0.14.3",
     "identity-obj-proxy": "^3.0.0",
     "jiti": "^2.4.1",
     "patch-package": "^6.2.2",

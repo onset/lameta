@@ -133,7 +133,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
           if (key === "keyword") return "fishing, poison";
-          if (key === "access") return "F: Free to All";
+          if (key === "access") return "F"; // store id/code, not label
           if (key === "languages") return "etr: Edolo;tpi: Tok Pisin";
           return "";
         }),
@@ -626,7 +626,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": ldac("ldac:OpenAccess")
       });
       expect(license.description).toContain("TestArchive-specific term");
-      expect(license.description).toContain("'F: Free to All'");
+      expect(license.description).toContain("'F'"); // the stored id/code
       expect(license.description).toContain("'access is Free to all'");
     });
 
@@ -641,7 +641,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
           if (key === "keyword") return "fishing, poison";
-          if (key === "access") return "U: All Registered Users";
+          if (key === "access") return "U"; // store id/code, not label
           if (key === "languages") return "etr: Edolo;tpi: Tok Pisin";
           return "";
         });
@@ -659,7 +659,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         "@id": ldac("ldac:AuthorizedAccess")
       });
       expect(license.description).toContain("TestArchive-specific term");
-      expect(license.description).toContain("'U: All Registered Users'");
+      expect(license.description).toContain("'U'"); // the stored id/code
       expect(license.description).toContain(
         "'all Users can access (requires registration)'"
       );

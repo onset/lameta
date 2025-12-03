@@ -235,6 +235,9 @@ msgstr "Mengekspor..."
 msgid "Field"
 msgstr "Kotak"
 
+msgid "Field Changes"
+msgstr ""
+
 msgid "File"
 msgstr "File"
 

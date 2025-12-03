@@ -7,13 +7,20 @@ import { translateFieldLabel } from "../../other/localization";
 import { FieldDefinition } from "./FieldDefinition";
 import * as DateFns from "date-fns";
 
+export interface IChoiceExtra {
+  archiveUsesImdi?: boolean;
+  url?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
 export interface IChoice {
   id: string;
   label: string;
   description: string;
   examples?: string[];
   source?: string;
-  extra?: object;
+  extra?: IChoiceExtra;
 }
 
 export enum FieldType {

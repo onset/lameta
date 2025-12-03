@@ -4,10 +4,16 @@ import { Field } from "../model/field/Field";
 import Tooltip from "react-tooltip-lite";
 import { FieldLabel } from "./FieldLabel";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { LanguageAxis } from "src/model/field/TextHolder";
+import { LanguageAxis } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
 import { tooltipBackground } from "../containers/theme";
+import {
+  AddTranslationControl,
+  normalizeLanguageTag,
+  useMultilingualField
+} from "./MultilingualTextFieldControls";
+import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -32,10 +38,15 @@ export const TextFieldEdit: React.FunctionComponent<
       (Math.random().toString(36) + "00000000000000000").slice(2, 7)
   );
 
-  // TODO: we need a way to define what languages to use in these fields (e.g. Description). The Project's working Language doesn't seem quit right.
-  const testAxes: LanguageAxis[] = [
-    { tag: "en", label: "eng", name: "English" }
-  ];
+  const isMultilingual = props.field.definition.multilingual;
+  const {
+    languageTags,
+    axes,
+    newlyAddedTag,
+    handleAddLanguage,
+    handleRemoveLanguage,
+    clearNewlyAddedTag
+  } = useMultilingualField(props.field, isMultilingual);
 
   return (
     <div
@@ -69,19 +80,30 @@ export const TextFieldEdit: React.FunctionComponent<
             background-color: white;
             border: ${props.borderless ? "none !important" : ""};
             ${props.field.definition.multipleLines
-              ? "min-height: 4em; display: flex; flex-direction: column; height:100%"
+              ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
+                 ${isMultilingual ? "overflow-y: auto;" : ""}`
               : // improve: the height part here is a hack
                 "max-height: 24px; overflow: hidden;"}
           `}
         >
-          {props.field.definition.multilingual ? (
-            testAxes.map((axis) => (
-              <SingleLanguageTextFieldEdit
-                key={axis.tag}
-                {...props}
-                axis={axis}
+          {isMultilingual ? (
+            <>
+              {axes.map((axis) => (
+                <SingleLanguageTextFieldEdit
+                  key={axis.tag}
+                  {...props}
+                  axis={axis}
+                  canRemoveAxis={axes.length > 1}
+                  onRemoveAxis={handleRemoveLanguage}
+                  shouldFocusOnMount={axis.tag === newlyAddedTag}
+                  onFocused={clearNewlyAddedTag}
+                />
+              ))}
+              <AddTranslationControl
+                existingTags={languageTags}
+                onAddLanguage={handleAddLanguage}
               />
-            ))
+            </>
           ) : (
             <SingleLanguageTextFieldEdit
               {...props}
@@ -100,6 +122,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     React.HTMLAttributes<HTMLDivElement> & {
       axis?: LanguageAxis;
       editorId?: string;
+      canRemoveAxis?: boolean;
+      onRemoveAxis?: (tag: string) => void;
+      onChangeLanguage?: (oldTag: string, newTag: string) => void;
+      shouldFocusOnMount?: boolean;
+      onFocused?: () => void;
     }
 > = mobx.observer((props) => {
   const [validationMessage, setValidationMessage] = useState<string>();
@@ -107,6 +134,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   const [previous, setPrevious] = useState<string>(() => getValue(props.field));
   const [editing, setEditing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     validateValue(props.field.text);
@@ -116,6 +144,18 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   useEffect(() => {
     applyHighlight();
   }, []);
+
+  // Focus and scroll into view when newly added
+  useEffect(() => {
+    if (props.shouldFocusOnMount && contentRef.current) {
+      containerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+      contentRef.current.focus();
+      props.onFocused?.();
+    }
+  }, [props.shouldFocusOnMount]);
 
   // re-highlight when search changes or underlying value changes (and not editing)
   useEffect(() => {
@@ -229,16 +269,21 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   }
   return (
     <div
+      ref={containerRef}
       key={props.axis?.tag || "monolingual"}
       css={css`
         display: flex;
-        height: ${props.axis ? "auto" : "100%"};
-        min-height: ${props.axis ? "2em" : "1.2em"};
-        flex: ${props.axis ? "1" : "none"};
+        flex-direction: column;
+        min-height: ${props.axis ? "auto" : "1.2em"};
+        flex-shrink: 0; /* prevent individual fields from shrinking */
         padding-left: 2px;
-        padding-top: 2px;
+        padding-top: ${props.axis ? "4px" : "2px"};
         padding-right: 2px;
-        padding-bottom: 0;
+        padding-bottom: ${props.axis ? "4px" : "0"};
+        ${props.axis ? "border-top: 1px solid #e8e8e8;" : ""}
+        &:first-of-type {
+          border-top: none;
+        }
         ${props.showAffordancesAfter &&
         props.field.definition.separatorWithCommaInstructions
           ? "padding-right: 2px;" // leave a little space after the icon
@@ -246,14 +291,67 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       `}
     >
       {props.axis && (
-        <span
+        <div
           css={css`
-            width: 2em; // it's important to nail down the width so that the following text blocks are aligned
-            color: #81c21e; // todo use theme with colors to match the form
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 2px;
+            justify-content: flex-end;
+            &:hover .remove-translation-btn {
+              opacity: 1;
+            }
           `}
         >
-          {props.axis.label}
-        </span>
+          {props.canRemoveAxis && props.onRemoveAxis && (
+            <button
+              type="button"
+              className="remove-translation-btn"
+              aria-label={`Remove ${props.axis.name} translation`}
+              onClick={() => props.onRemoveAxis!(props.axis!.tag)}
+              css={css`
+                border: none;
+                background: transparent;
+                color: #6b6b6b;
+                cursor: pointer;
+                padding: 0;
+                line-height: 1;
+                font-size: 0.75em;
+                opacity: 0;
+                transition: opacity 200ms ease-in-out;
+                display: flex;
+                align-items: center;
+                &:hover {
+                  color: #c73f1d;
+                }
+              `}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          )}
+          <span
+            css={css`
+              color: #81c21e;
+              font-size: 0.85em;
+              font-weight: 500;
+            `}
+          >
+            {props.axis.name}
+          </span>
+        </div>
       )}
 
       <Tooltip
@@ -272,6 +370,8 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           ref={contentRef}
           tabIndex={props.tabIndex}
           autoFocus={props.autoFocus}
+          lang={props.axis?.tag}
+          spellCheck={!props.axis || hasSpellCheckSupport(props.axis.tag)}
           // Provide stable selectors for E2E tests, e.g., field-id-edit, field-notes-edit
           data-testid={`field-${props.field.key}-edit`}
           className={validationMessage ? "invalid" : ""}

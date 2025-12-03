@@ -237,6 +237,9 @@ msgstr "در حال خروجی گرفتن"
 msgid "Field"
 msgstr "فیلد"
 
+msgid "Field Changes"
+msgstr ""
+
 msgid "File"
 msgstr "فایل"
 

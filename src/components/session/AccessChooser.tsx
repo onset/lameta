@@ -1,11 +1,9 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
 import { observer } from "mobx-react";
 import { Field, IChoice } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
 import ReactSelectClass from "react-select";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
-import { translateAccessProtocolLabelOrDescription } from "../../other/localization";
 import { lameta_orange } from "../../containers/theme";
 import { FieldLabel } from "../FieldLabel";
 import { SearchContext } from "../SearchContext";
@@ -24,33 +22,25 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
 
   const options = props.authorityLists.accessChoicesOfCurrentProtocol.map(
     (c: IChoice) => {
-      // console.log(
-      //   `translateAccessProtocol(${c.label})--> ${JSON.stringify(
-      //     translateAccessProtocolLabelOrDescription(c.label),
-      //     null,
-      //     2
-      //   )}`
-      // );
-      const { label, description } = translateAccessProtocolLabelOrDescription(
-        c.label
-      );
+      // The choice already has a human-readable label (e.g., "U: open to users")
+      // which may include localized text. We use the id as the stored value
+      // but display the label to the user.
       return new Object({
-        value: c.label, // we use english as the value, that's what we store on disk
-        label: description ? `${label}: ${description}` : label
+        value: c.id, // we store the code (e.g. "U") on disk, not the label
+        label: c.label // display the full label from the vocabulary
       });
     }
   );
 
   let currentOption: object | null = null;
   if (props.field.text.trim().length > 0) {
-    const matchingOption = options.find(
-      (o: any) => o.value === props.field.text
-    );
+    const storedValue = props.field.text;
+    const matchingOption = options.find((o: any) => o.value === storedValue);
     currentOption = matchingOption
       ? matchingOption
       : {
-          value: props.field.text,
-          label: props.field.text + " <-- Invalid Access",
+          value: storedValue,
+          label: storedValue + " <-- Invalid Access",
           title: "This value is not in the current access protocol."
         };
   }

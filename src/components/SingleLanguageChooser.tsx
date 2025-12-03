@@ -43,6 +43,10 @@ export const SingleLanguageChooser: React.FunctionComponent<
     clearIndicator: (styles) => ({
       ...styles,
       color: "#e4e4e4" // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999
     })
   };
 
@@ -83,11 +87,13 @@ export const SingleLanguageChooser: React.FunctionComponent<
           DropdownIndicator: null
         }}
         className="select"
-        placeholder=""
+        placeholder="Type a language name or code..."
         isClearable={true}
         loadOptions={_.debounce(loadMatchingOptions, 100)}
         value={currentValue}
         styles={customStyles}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
         onChange={(choice: any) => {
           const v = choice && choice.value ? choice.value : "";
           props.onChange(v);

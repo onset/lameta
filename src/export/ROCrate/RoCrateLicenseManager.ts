@@ -54,34 +54,34 @@ function getNormalizedLicenseId(access: string, project: Project): string {
 }
 
 /**
- * Gets the description text from an access choice label
- * @param choiceLabel The access choice label (e.g., "F: Free to All")
+ * Gets the description text from an access choice id
+ * @param choiceId The access choice id/code (e.g., "U" or "Level 1")
  * @param authorityLists The authority lists containing access choices
  * @returns The description text for the access choice
  */
 function getDescriptionFromAccessChoice(
-  choiceLabel: string,
+  choiceId: string,
   authorityLists: AuthorityLists
 ): string {
   const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
-    (c: IChoice) => c.label === choiceLabel
+    (c: IChoice) => c.id === choiceId
   );
   if (!choice) return "";
   return choice.description;
 }
 
 /**
- * Gets the LDAC access category from an access choice label
- * @param choiceLabel The access choice label (e.g., "F: Free to All")
+ * Gets the LDAC access category from an access choice id
+ * @param choiceId The access choice id/code (e.g., "U" or "Level 1")
  * @param authorityLists The authority lists containing access choices
  * @returns The LDAC access category URI (ldac:OpenAccess or ldac:AuthorizedAccess)
  */
 function getLdacAccessCategory(
-  choiceLabel: string,
+  choiceId: string,
   authorityLists: AuthorityLists
 ): string {
   const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
-    (c: IChoice) => c.label === choiceLabel
+    (c: IChoice) => c.id === choiceId
   );
 
   // If the choice has an ldacAccessCategory property, use it
@@ -91,7 +91,7 @@ function getLdacAccessCategory(
 
   // Handle common public access terms that might not be in authority lists
   const publicTerms = ["public", "open", "free", "unrestricted"];
-  const lowerChoice = choiceLabel.toLowerCase();
+  const lowerChoice = choiceId.toLowerCase();
   if (publicTerms.some((term) => lowerChoice.includes(term))) {
     return expandLdacId("ldac:OpenAccess");
   }

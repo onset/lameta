@@ -7,7 +7,7 @@ process.env.PUBLIC = app.isPackaged
 import { dialog } from "electron";
 
 import { is } from "@electron-toolkit/utils";
-import { app, BrowserWindow, shell, ipcMain, screen } from "electron";
+import { app, BrowserWindow, shell, ipcMain, screen, session } from "electron";
 import { release } from "os";
 import { join } from "path";
 import { mkdirSync } from "fs";
@@ -15,6 +15,7 @@ import * as path from "path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { initLaunchTest } from "./launchTest";
+import { spellCheckLanguages } from "../other/spellCheckLanguages";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -105,6 +106,9 @@ async function createWindow() {
 
   require("@electron/remote/main").enable(win.webContents);
   require("@electron/remote/main").initialize();
+
+  // Enable spell checking for multiple languages
+  session.defaultSession.setSpellCheckerLanguages(spellCheckLanguages);
 
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
