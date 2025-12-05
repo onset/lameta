@@ -1,7 +1,6 @@
-import call from "electron-call";
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { app, dialog, shell } from "electron";
+import { app, dialog, shell, ipcMain } from "electron";
 import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
@@ -125,14 +124,77 @@ export class MainProcessApi {
   }
 }
 
-// Note: call.initialize() was previously completely commented out because it caused
-// Initialize electron-call for IPC bridge between renderer and main process.
-// NOTE: Skipped for E2E tests due to "noaccess" race condition (LAM-27).
-// This causes E2E tests that need mainProcessApi to fail - including hybrid export tests.
-// See https://linear.app/lameta/issue/LAM-27
-if (!process.env.E2E) {
-  call.initialize();
-}
-
 const mainProcessInstance = new MainProcessApi();
-call.provide("MainProcessApi", mainProcessInstance);
+
+// =============================================================================
+// Native Electron IPC handlers
+// =============================================================================
+// Using ipcMain.handle() instead of electron-call because:
+// 1. No race conditions - ipcMain is always available
+// 2. Works with Playwright E2E tests
+// 3. Simpler, no magic preload injection
+// =============================================================================
+
+ipcMain.handle("MainProcessApi.trashItem", async (_event, path: string) => {
+  return mainProcessInstance.trashItem(path);
+});
+
+ipcMain.handle(
+  "MainProcessApi.validateImdiAsync",
+  async (_event, imdiContents: string) => {
+    return mainProcessInstance.validateImdiAsync(imdiContents);
+  }
+);
+
+ipcMain.handle("MainProcessApi.findInPage", async (_event, pattern: string) => {
+  return mainProcessInstance.findInPage(pattern);
+});
+
+ipcMain.handle(
+  "MainProcessApi.stopFindInPage",
+  async (
+    _event,
+    action: "clearSelection" | "keepSelection" | "activateSelection"
+  ) => {
+    return mainProcessInstance.stopFindInPage(action);
+  }
+);
+
+ipcMain.handle(
+  "MainProcessApi.prepareImdiExportDirectory",
+  async (_event, rootDirectory: string) => {
+    return mainProcessInstance.prepareImdiExportDirectory(rootDirectory);
+  }
+);
+
+ipcMain.handle(
+  "MainProcessApi.writeImdiSessionData",
+  async (_event, data: ExportSessionData) => {
+    return mainProcessInstance.writeImdiSessionData(data);
+  }
+);
+
+ipcMain.handle(
+  "MainProcessApi.writeImdiCorpusData",
+  async (_event, data: ExportCorpusData) => {
+    return mainProcessInstance.writeImdiCorpusData(data);
+  }
+);
+
+ipcMain.handle(
+  "MainProcessApi.cleanupImdiExportDirectory",
+  async (_event, rootDirectory: string) => {
+    return mainProcessInstance.cleanupImdiExportDirectory(rootDirectory);
+  }
+);
+
+ipcMain.handle(
+  "MainProcessApi.cancelImdiExportCopyOperations",
+  async (_event) => {
+    return mainProcessInstance.cancelImdiExportCopyOperations();
+  }
+);
+
+ipcMain.handle("MainProcessApi.hasActiveImdiCopyOperations", async (_event) => {
+  return mainProcessInstance.hasActiveImdiCopyOperations();
+});

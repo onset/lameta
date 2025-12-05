@@ -94,9 +94,9 @@ async function createWindow() {
     title: "Main window",
     //icon: join(process.env.PUBLIC, "favicon.svg"),
     webPreferences: {
-      // something about preload causes our playwright runs to hit a "noaccess" error.
-      // see https://linear.app/lameta/issue/LAM-27
-      // since we only need preload for drag-n-drop, we can just not use preload when doing e2e tests
+      // LAM-27: The preload script causes issues with E2E tests. Keep disabled for E2E
+      // while we investigate further. The lazy initialization in MainProcessApiAccess.ts
+      // fixes the race condition for normal runs.
       preload: getTestEnvironment().E2E ? undefined : preload,
       nodeIntegration: true,
       contextIsolation: false,
