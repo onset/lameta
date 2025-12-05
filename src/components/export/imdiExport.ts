@@ -4,7 +4,10 @@ import { Project } from "../../model/Project/Project";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import ImdiBundler from "../../export/ImdiBundler";
-import { IMDIMode, resetTildeBirthYearWarning } from "../../export/ImdiGenerator";
+import {
+  IMDIMode,
+  resetTildeBirthYearWarning
+} from "../../export/ImdiGenerator";
 import {
   startCollectingWarnings,
   stopCollectingWarnings,
@@ -22,6 +25,40 @@ export interface HybridImdiExportCallbacks {
 /**
  * Runs hybrid IMDI export: renderer generates XML, main process handles file I/O.
  * Returns true if successful, false if cancelled.
+ *
+ * ## How Progress Updates Work (for future reference)
+ *
+ * Previously, export would block the UI completely - no progress updates, no cancel
+ * button response, nothing. The fix is the **async generator pattern**.
+ *
+ * ### The Key Insight
+ *
+ * Each `await` statement is a point where JavaScript's event loop can:
+ * - Process pending UI updates (React re-renders from setExportProgress)
+ * - Handle user input (Cancel button clicks)
+ * - Run other async tasks
+ *
+ * ### How It Works Here
+ *
+ * 1. `ImdiBundler.generateExportData()` is an **async generator** (note the `async *`).
+ *    It `yield`s data for each session, pausing execution and returning control.
+ *
+ * 2. This loop calls `await generator.next()` for each session. Between sessions,
+ *    the event loop runs, allowing:
+ *    - `setExportProgress()` calls to actually update the UI
+ *    - `cancelRequestedRef.current` checks to see the Cancel button was clicked
+ *
+ * 3. We use `useRef` for cancel (not `useState`) because refs update immediately
+ *    without waiting for a React render cycle.
+ *
+ * ### Would This Work Without Main Process Offloading?
+ *
+ * Yes! The async generator alone provides responsive progress. The main process
+ * offloading adds two benefits:
+ * - Finer-grained progress (individual file copy events, not just per-session)
+ * - Non-blocking large file copies (a 500MB file won't freeze the UI)
+ *
+ * But for basic progress/cancel functionality, the generator pattern is sufficient.
  */
 export const runHybridImdiExport = async (
   project: Project,
@@ -62,7 +99,9 @@ export const runHybridImdiExport = async (
     // Prepare export directory via main process
     await mainProcessApi.prepareImdiExportDirectory(outputPath);
 
-    // Get the async generator for export data
+    // Get the async generator for export data.
+    // This generator yields one ExportSessionData at a time, allowing us to
+    // update progress between sessions. See the function comment above for details.
     const generator = ImdiBundler.generateExportData(
       project,
       outputPath,
@@ -74,9 +113,13 @@ export const runHybridImdiExport = async (
     let sessionIndex = 0;
     let result = await generator.next();
 
-    // Process each session
+    // Process each session one at a time.
+    // Each iteration of this loop is an opportunity for the UI to update
+    // because we `await` the generator and the main process API calls.
     while (!result.done) {
-      // Check for cancellation
+      // Check for cancellation BETWEEN sessions.
+      // This is why the Cancel button works - we check the ref here,
+      // and refs update immediately (unlike useState which waits for render).
       if (cancelRequestedRef.current) {
         // Clean up partial export
         await mainProcessApi.cleanupImdiExportDirectory(outputPath);
@@ -87,7 +130,8 @@ export const runHybridImdiExport = async (
       sessionIndex++;
       const sessionData = result.value;
 
-      // Update progress
+      // Update progress state. This triggers a React re-render, but the actual
+      // DOM update happens when we hit the next `await` and yield to the event loop.
       const percentage = Math.round(
         (sessionIndex / jobInfo.totalSessions) * 100
       );
@@ -100,7 +144,11 @@ export const runHybridImdiExport = async (
         message: t`Exporting ${sessionData.sessionId}...`
       });
 
-      // Write session data via main process
+      // Write session data via main process.
+      // This `await` yields control to the event loop, allowing:
+      // - The progress UI to actually repaint
+      // - Click handlers to process (including Cancel)
+      // The main process also sends file-level progress events during large copies.
       const writeResult = await mainProcessApi.writeImdiSessionData(
         sessionData
       );
@@ -117,6 +165,8 @@ export const runHybridImdiExport = async (
       }
       clearCollectedWarnings();
 
+      // Get the next session from the generator.
+      // This `await` is another yield point for the event loop.
       result = await generator.next();
     }
 

@@ -9,23 +9,23 @@ export async function validateImdiOrThrow(
   imdiXml: string,
   displayNameForThisFile?: string
 ) {
-  console.log(
-    "[ImdiValidation] validateImdiOrThrow called for:",
-    displayNameForThisFile
-  );
+  // console.log(
+  //   "[ImdiValidation] validateImdiOrThrow called for:",
+  //   displayNameForThisFile
+  // );
   if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
-    console.log("[ImdiValidation] Skipping validation in test environment");
+    // console.log("[ImdiValidation] Skipping validation in test environment");
     return; // we don't yet have a way to validate in test environment
   }
-  console.log("[ImdiValidation] Calling mainProcessApi.validateImdiAsync...");
-  const startTime = Date.now();
+  // console.log("[ImdiValidation] Calling mainProcessApi.validateImdiAsync...");
+  // const startTime = Date.now();
   const result = await mainProcessApi.validateImdiAsync(imdiXml);
-  console.log(
-    "[ImdiValidation] validateImdiAsync returned after",
-    Date.now() - startTime,
-    "ms, valid:",
-    result.valid
-  );
+  // console.log(
+  //   "[ImdiValidation] validateImdiAsync returned after",
+  //   Date.now() - startTime,
+  //   "ms, valid:",
+  //   result.valid
+  // );
   if (!result.valid) {
     const lines = imdiXml.split("\n");
 

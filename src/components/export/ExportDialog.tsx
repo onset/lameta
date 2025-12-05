@@ -129,6 +129,20 @@ export const ExportDialog: React.FunctionComponent<{
   staticShowExportDialog = () => {
     setMode(Mode.choosing);
     resetCategoryColors(); // Reset warning color assignments for fresh dialog
+    // Reset all export-related state for a fresh dialog
+    setExportLog([]);
+    setExportProgress({
+      phase: "preparing",
+      currentSession: 0,
+      totalSessions: 0,
+      currentSessionName: "",
+      percentage: 0,
+      message: ""
+    });
+    setImdiValidated(false);
+    SetRulesBasedValidationResult(undefined);
+    setOutputPath(undefined);
+    cancelRequestedRef.current = false;
     showDialog();
     analyticsLocation("Export Dialog");
   };
