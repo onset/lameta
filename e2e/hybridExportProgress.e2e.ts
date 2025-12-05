@@ -7,17 +7,12 @@ import * as Path from "path";
 let lameta: LametaE2ERunner;
 let project: E2eProject;
 
-// NOTE: These tests are currently SKIPPED because the hybrid export uses mainProcessApi
-// for file I/O, which requires electron-call to be initialized. However, electron-call
-// cannot be initialized in E2E tests due to a race condition that causes "noaccess" errors.
-// See https://linear.app/lameta/issue/LAM-27/using-preload-breaks-e2e-tests
-// 
 // These tests validate:
 // 1. Progress bar appears during export
 // 2. Session count and name are shown during progress
 // 3. Cancel button is clickable during export
 // 4. Export warnings appear in the log area
-test.describe.skip("Hybrid Export Progress UI", () => {
+test.describe("Hybrid Export Progress UI", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
     await lameta.launch();

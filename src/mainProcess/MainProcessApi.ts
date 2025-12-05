@@ -104,13 +104,15 @@ export class MainProcessApi {
 
   /**
    * Write a session's export data (IMDI XML and copy files)
-   * Returns the number of files successfully copied
+   * Returns the number of files successfully copied.
+   * Emits 'export-file-progress' events to renderer for each file.
    */
   public async writeExportSessionData(
     data: ExportSessionData
   ): Promise<{ filesWritten: number; errors: string[] }> {
     const errors: string[] = [];
     let filesWritten = 0;
+    const totalFiles = data.filesToCopy.length;
 
     try {
       // Create required directories
@@ -121,13 +123,24 @@ export class MainProcessApi {
       // Write IMDI XML file
       await fs.writeFile(data.imdiPath, data.imdiXml, "utf8");
 
-      // Copy files
-      for (const copyReq of data.filesToCopy) {
+      // Copy files with progress events
+      for (let i = 0; i < data.filesToCopy.length; i++) {
+        const copyReq = data.filesToCopy[i];
+        const fileName = Path.basename(copyReq.source);
+
+        // Emit progress event before copying
+        mainWindow?.webContents.send("export-file-progress", {
+          sessionName: data.displayName,
+          currentFile: fileName,
+          currentFileIndex: i + 1,
+          totalFiles
+        });
+
         try {
           await this.copyFileForExport(copyReq.source, copyReq.destination);
           filesWritten++;
         } catch (err) {
-          const msg = `Failed to copy ${Path.basename(copyReq.source)}: ${err.message}`;
+          const msg = `Failed to copy ${fileName}: ${err.message}`;
           errors.push(msg);
           console.error(msg);
         }

@@ -84,4 +84,10 @@ export interface ExportProgress {
   /** 0-100 */
   percentage: number;
   message: string;
+  /** Current file being copied (if any) */
+  currentFile?: string;
+  /** Current file index within the session */
+  currentFileIndex?: number;
+  /** Total files in the current session */
+  totalFilesInSession?: number;
 }

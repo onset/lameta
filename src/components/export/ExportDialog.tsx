@@ -5,7 +5,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { observer } from "mobx-react";
 import "./ExportDialog.css";
 import { ProjectHolder } from "../../model/Project/Project";
@@ -13,6 +13,7 @@ import { revealInFolder } from "../../other/crossPlatformUtilities";
 import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
+import { ipcRenderer } from "electron";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";
 import ImdiBundler from "../../export/ImdiBundler";
 import moment from "moment";
@@ -151,6 +152,32 @@ export const ExportDialog: React.FunctionComponent<{
   });
   const [exportLog, setExportLog] = useState<string[]>([]);
   const cancelRequestedRef = useRef(false);
+  const exportPathRef = useRef<string>("");
+
+  // Listen for file-level progress events from main process
+  useEffect(() => {
+    const handleFileProgress = (
+      _event: any,
+      progress: {
+        sessionName: string;
+        currentFile: string;
+        currentFileIndex: number;
+        totalFiles: number;
+      }
+    ) => {
+      setExportProgress((prev) => ({
+        ...prev,
+        currentFile: progress.currentFile,
+        currentFileIndex: progress.currentFileIndex,
+        totalFilesInSession: progress.totalFiles
+      }));
+    };
+
+    ipcRenderer.on("export-file-progress", handleFileProgress);
+    return () => {
+      ipcRenderer.off("export-file-progress", handleFileProgress);
+    };
+  }, []);
 
   // Helper to add a log entry
   const addLogEntry = useCallback((entry: string) => {
@@ -362,6 +389,9 @@ export const ExportDialog: React.FunctionComponent<{
   ) => {
     const project = props.projectHolder.project!;
 
+    // Track export path for cleanup on cancel
+    exportPathRef.current = path;
+
     // Reset progress state
     cancelRequestedRef.current = false;
     setExportLog([]);
@@ -401,7 +431,9 @@ export const ExportDialog: React.FunctionComponent<{
           phase: "cancelled",
           message: t`Export cancelled`
         }));
-        addLogEntry(t`Export cancelled by user`);
+        addLogEntry(t`Export cancelled.`);
+        // Clean up partial export
+        await mainProcessApi.cleanupExportDirectory(path);
         return false;
       }
 
@@ -409,7 +441,9 @@ export const ExportDialog: React.FunctionComponent<{
       sessionIndex++;
 
       // Update progress
-      const percentage = Math.round((sessionIndex / jobInfo.totalSessions) * 90); // Reserve 10% for corpus file
+      const percentage = Math.round(
+        (sessionIndex / jobInfo.totalSessions) * 90
+      ); // Reserve 10% for corpus file
       setExportProgress({
         phase: "sessions",
         currentSession: sessionIndex,
@@ -420,7 +454,9 @@ export const ExportDialog: React.FunctionComponent<{
       });
 
       // Write session data via main process
-      const writeResult = await mainProcessApi.writeExportSessionData(sessionData);
+      const writeResult = await mainProcessApi.writeExportSessionData(
+        sessionData
+      );
 
       // Log any errors
       for (const error of writeResult.errors) {
@@ -509,7 +545,12 @@ export const ExportDialog: React.FunctionComponent<{
           case "imdi":
             analyticsEvent("Export", "Export IMDI Xml");
 
-            await runHybridImdiExport(path, IMDIMode.RAW_IMDI, false, folderFilter);
+            await runHybridImdiExport(
+              path,
+              IMDIMode.RAW_IMDI,
+              false,
+              folderFilter
+            );
             await finishExport();
             setMode(Mode.finished);
             setImdiValidated(true);
@@ -522,7 +563,12 @@ export const ExportDialog: React.FunctionComponent<{
               );
               setMode(Mode.choosing);
             } else {
-              const success = await runHybridImdiExport(path, IMDIMode.OPEX, true, folderFilter);
+              const success = await runHybridImdiExport(
+                path,
+                IMDIMode.OPEX,
+                true,
+                folderFilter
+              );
               if (success) {
                 await finishExport();
                 setMode(Mode.finished);
@@ -631,15 +677,37 @@ export const ExportDialog: React.FunctionComponent<{
                 <div
                   css={css`
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: right;
                     margin-top: 4px;
                     font-size: 12px;
                     color: #666;
                   `}
                 >
-                  <span>{exportProgress.message}</span>
                   <span>{exportProgress.percentage}%</span>
                 </div>
+              </div>
+
+              {/* Session and file progress info */}
+              <div
+                css={css`
+                  font-size: 13px;
+                  color: #333;
+                `}
+              >
+                <div>{exportProgress.message}</div>
+                {exportProgress.currentFile && (
+                  <div
+                    css={css`
+                      color: #666;
+                      margin-top: 4px;
+                    `}
+                  >
+                    {t`Copying ${exportProgress.currentFile}`}
+                    {exportProgress.totalFilesInSession &&
+                      exportProgress.totalFilesInSession > 1 &&
+                      ` (${exportProgress.currentFileIndex} of ${exportProgress.totalFilesInSession})`}
+                  </div>
+                )}
               </div>
 
               {/* Mini log for warnings/errors */}
@@ -757,6 +825,8 @@ export const ExportDialog: React.FunctionComponent<{
             color="secondary"
             onClick={() => {
               cancelRequestedRef.current = true;
+              // Also cancel any active file copy operations in the main process
+              mainProcessApi.cancelExportCopyOperations();
               setExportProgress((prev) => ({
                 ...prev,
                 message: t`Cancelling...`

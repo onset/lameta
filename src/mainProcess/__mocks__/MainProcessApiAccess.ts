@@ -6,15 +6,14 @@ import {
 
 /**
  * MOCK VERSION of MainProcessApi
- * 
+ *
  * This is a mock implementation used during Vitest testing. It provides safe,
  * predictable implementations of electron main process functions that don't
  * rely on the actual Electron environment during testing.
- * 
+ *
  * This mock is automatically loaded when tests run due to environment detection
- * in the main MainProcessApiAccess.ts file (checking for VITEST_POOL_ID and 
+ * in the main MainProcessApiAccess.ts file (checking for VITEST_POOL_ID and
  * VITEST_WORKER_ID environment variables).
-
  */
 export class MainProcessApi {
   public trashItem(path: string): Promise<boolean> {
@@ -57,6 +56,10 @@ export class MainProcessApi {
     // Mock - do nothing in tests
   }
 
+  public async cleanupExportDirectory(rootDirectory: string): Promise<void> {
+    // Mock - do nothing in tests
+  }
+
   public async writeExportSessionData(
     data: ExportSessionData
   ): Promise<{ filesWritten: number; errors: string[] }> {
@@ -66,5 +69,14 @@ export class MainProcessApi {
 
   public async writeExportCorpusData(data: ExportCorpusData): Promise<void> {
     // Mock - do nothing in tests
+  }
+
+  public cancelExportCopyOperations(): void {
+    // Mock implementation - nothing to cancel in tests
+  }
+
+  public hasActiveCopyOperations(): boolean {
+    // Mock implementation - no active operations in tests
+    return false;
   }
 }

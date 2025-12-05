@@ -15,8 +15,11 @@ type MainProcessApiPublic = Pick<
   | "findInPage"
   | "stopFindInPage"
   | "prepareExportDirectory"
+  | "cleanupExportDirectory"
   | "writeExportSessionData"
   | "writeExportCorpusData"
+  | "cancelExportCopyOperations"
+  | "hasActiveCopyOperations"
 >;
 
 let mainProcessApi: MainProcessApiPublic;

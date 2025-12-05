@@ -24,12 +24,17 @@ temp.track(true);
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
+  /**
+   * Save an IMDI bundle to a folder using synchronous file I/O.
+   * This is the legacy method that blocks the UI during export.
+   * For responsive UI with progress, use generateExportData() instead.
+   *
+   * Internally uses the generator but writes files synchronously.
+   */
   public static async saveImdiBundleToFolder(
     project: Project,
     rootDirectory: string,
     imdiMode: IMDIMode,
-    // If this is false, we're just making the IMDI files.
-    // If true, then we're also copying in most of the project files (but not some Saymore-specific ones).
     copyInProjectFiles: boolean,
     folderFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
@@ -37,204 +42,73 @@ export default class ImdiBundler {
     console.log("[ImdiBundler] saveImdiBundleToFolder started");
     console.log("[ImdiBundler] rootDirectory:", rootDirectory);
     console.log("[ImdiBundler] imdiMode:", imdiMode);
-    const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    return new Promise(async (resolve, reject) => {
-      sentryBreadCrumb("Starting saveImdiBundleToFolder");
-      try {
-        if (fs.existsSync(rootDirectory)) {
-          fs.removeSync(rootDirectory);
-        }
-        // make all parts of the directory as needed
-        fs.ensureDirSync(rootDirectory);
-      } catch (error) {
-        console.log(error);
-        NotifyError(
-          `There was a problem getting the directory ${rootDirectory} ready. Maybe close any open Finder/Explorer windows or other programs that might be showing file from that directory,  and try again. \r\n\r\n${error}`
-        );
-        reject();
-        return;
-      }
-      /* we want (from saymore classic)
-     myproject_3-6-2019/  <--- rootDirectory
-        myproject.imdi
-        myproject/     <--- "secondLevel"
-          session1.imdi
-          session2.imdi
-          session1/
-             ...files...
-          session2/
-             ...files...
-    */
-      /* for opex, we want
-     myproject_3-6-2019/  <--- rootDirectory
-        
-        myproject/     <--- "secondLevel"
-          myproject.opex
-          session1/
-            session1.opex
-            ...files
-          session2/
-            session2.opex
-             ...files
-    */
 
-      const childrenSubpaths: string[] = new Array<string>();
-      const secondLevel = Path.basename(project.directory); // ?
-      try {
-        fs.ensureDirSync(Path.join(rootDirectory, secondLevel));
-      } catch (error) {
-        NotifyError(
-          `There was a problem getting the directory ${Path.join(
-            rootDirectory,
-            secondLevel
-          )} ready. Maybe close any open Finder/Explorer windows and try again.`
-        );
-        reject();
-        return;
+    // Prepare root directory
+    try {
+      if (fs.existsSync(rootDirectory)) {
+        fs.removeSync(rootDirectory);
+      }
+      fs.ensureDirSync(rootDirectory);
+    } catch (error) {
+      console.log(error);
+      NotifyError(
+        `There was a problem getting the directory ${rootDirectory} ready. Maybe close any open Finder/Explorer windows or other programs that might be showing file from that directory, and try again. \r\n\r\n${error}`
+      );
+      throw error;
+    }
+
+    // Use the generator to get export data, then write synchronously
+    const generator = this.generateExportData(
+      project,
+      rootDirectory,
+      imdiMode,
+      copyInProjectFiles,
+      folderFilter,
+      omitNamespaces
+    );
+
+    let sessionIndex = 0;
+    let result = await generator.next();
+
+    // Process each yielded session/folder data
+    while (!result.done) {
+      const data = result.value;
+      sessionIndex++;
+      console.log("[ImdiBundler] Processing:", data.displayName, `(${sessionIndex})`);
+
+      // Create directories
+      for (const dir of data.directoriesToCreate) {
+        fs.ensureDirSync(dir);
       }
 
-      try {
-        //---- Project Documents -----
-        console.log("[ImdiBundler] Processing OtherDocuments...");
-        this.outputDocumentFolder(
-          project,
-          "OtherDocuments",
-          "OtherDocuments" + extensionWithDot,
-          rootDirectory,
-          secondLevel,
-          project.otherDocsFolder,
-          childrenSubpaths,
-          imdiMode,
-          copyInProjectFiles
-        );
+      // Write IMDI XML
+      fs.writeFileSync(data.imdiPath, data.imdiXml);
 
-        console.log("[ImdiBundler] Processing DescriptionDocuments...");
-        this.outputDocumentFolder(
-          project,
-          "DescriptionDocuments",
-          "DescriptionDocuments" + extensionWithDot,
-          rootDirectory,
-          secondLevel,
-          project.descriptionFolder,
-          childrenSubpaths,
-          imdiMode,
-          copyInProjectFiles
-        );
-
-        // ELAR wants an IMDI for consent files even if we aren't copying them in
-        console.log("[ImdiBundler] Processing consent bundle...");
-        await this.addConsentBundle(
-          project,
-          rootDirectory,
-          secondLevel,
-          childrenSubpaths,
-          imdiMode,
-          copyInProjectFiles,
-          folderFilter,
-          omitNamespaces
-        );
-        console.log("[ImdiBundler] Consent bundle done");
-
-        //---- Sessions ----
-
-        const sessions = project.sessions.items.filter(folderFilter);
-        console.log("[ImdiBundler] Processing", sessions.length, "sessions...");
-        let sessionIndex = 0;
-        for await (const session of sessions as Array<Session>) {
-          sessionIndex++;
-          console.log("[ImdiBundler] Processing session", sessionIndex, "of", sessions.length, ":", session.displayName);
-          const sessionImdi = ImdiGenerator.generateSession(
-            imdiMode,
-            session,
-            project
-          );
+      // Copy files if requested
+      if (copyInProjectFiles && data.filesToCopy.length > 0) {
+        for (const copyReq of data.filesToCopy) {
           try {
-            await this.validateImdiOrThrow(sessionImdi, session.displayName);
-          } catch (e) {
-            console.log(e);
-            throw e;
-          }
-          console.log("[ImdiBundler] Session", session.displayName, "validated successfully");
-          const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
-          if (imdiMode === IMDIMode.OPEX) {
-            fs.ensureDirSync(
-              Path.join(
-                rootDirectory,
-                secondLevel,
-                Path.basename(session.directory)
-              )
+            CopyManager.safeAsyncCopyFileWithErrorNotification(
+              copyReq.source,
+              copyReq.destination,
+              () => {}
             );
-          }
-          fs.writeFileSync(
-            Path.join(
-              rootDirectory,
-              secondLevel,
-              imdiMode === IMDIMode.OPEX
-                ? Path.basename(session.directory)
-                : "", // with opex, the metadata file goes into the folder it describes. Else, on the level above.
-              sanitizeForArchive(imdiFileName, "ASCII")
-            ),
-            sessionImdi
-          );
-          childrenSubpaths.push(secondLevel + "/" + imdiFileName);
-
-          if (copyInProjectFiles) {
-            this.copyFolderOfFiles(
-              session.files,
-              Path.join(
-                rootDirectory,
-                secondLevel,
-                Path.basename(session.directory)
-              )
-            );
+          } catch (error) {
+            console.error(`Problem copying ${Path.basename(copyReq.source)}: ${error}`);
           }
         }
-
-        //childrenSubpaths.push(..something for consent if we have it---);
-
-        // ---  Now that we know what all the child imdi's are, we can output the root  ---
-        console.log("[ImdiBundler] All sessions done, generating corpus IMDI...");
-        const corpusImdi = ImdiGenerator.generateCorpus(
-          imdiMode,
-          project,
-          childrenSubpaths,
-          false
-        );
-        console.log("[ImdiBundler] Validating corpus IMDI...");
-        await this.validateImdiOrThrow(corpusImdi, project.displayName);
-        console.log("[ImdiBundler] Corpus IMDI validated");
-        const targetDirForProjectFile = Path.join(
-          rootDirectory,
-          imdiMode === IMDIMode.OPEX
-            ? Path.basename(Path.basename(project.directory))
-            : "" // with opex, the metadata file goes into the folder it describes. Else, on the level above.
-        );
-
-        fs.writeFileSync(
-          Path.join(
-            targetDirForProjectFile,
-            `${project.displayName}${extensionWithDot}`
-          ),
-          corpusImdi
-        );
-        console.log("[ImdiBundler] Export complete, resolving promise");
-        // const waitForCopying = () => {
-        //   if (filesAreStillCopying()) {
-        //     setTimeout(() => waitForCopying(), 1000);
-        //   } else {
-        //     sentryBreadCrumb("Done with saveImdiBundleToFolder");
-        //     resolve();
-        //   }
-        // };
-        // sentryBreadCrumb("saveImdiBundleToFolder waiting for copying to finish");
-        // waitForCopying();
-
-        resolve();
-      } catch (error) {
-        reject(`${error.message}`);
-        return;
       }
-    });
+
+      result = await generator.next();
+    }
+
+    // Write corpus IMDI (the generator's return value)
+    const corpusData = result.value;
+    console.log("[ImdiBundler] Writing corpus IMDI...");
+    fs.ensureDirSync(Path.dirname(corpusData.imdiPath));
+    fs.writeFileSync(corpusData.imdiPath, corpusData.imdiXml);
+
+    console.log("[ImdiBundler] Export complete");
   }
 
   /**
