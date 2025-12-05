@@ -85,18 +85,29 @@ test.describe("Hybrid Export Progress UI", () => {
     }
 
     // 7. Wait for export to complete
-    // Look for the "Export Completed" success message 
+    // Look for the "Done" success message 
     try {
-      // Wait for successful completion indicator - the green checkmark and text
-      await expect(page.locator("text=Export Completed")).toBeVisible({ timeout: 30000 });
+      // Wait for successful completion indicator - "Done" text (may have warnings)
+      // Use a more specific selector that matches the h3 heading
+      await expect(page.locator("h3:has-text('Done')")).toBeVisible({ timeout: 30000 });
       console.log("✓ Export completed successfully");
     } catch {
-      // Check if still in progress or error
-      const dialogText = await page.locator('dialog, [role="dialog"]').textContent();
-      console.log(`Dialog content after timeout: ${dialogText?.substring(0, 500)}`);
-      // If we see "Error", fail immediately
-      if (dialogText?.includes("Error")) {
-        throw new Error("Export failed with error: " + dialogText);
+      // Check if still in progress or error - but handle page being closed
+      try {
+        const dialogText = await page.locator('dialog, [role="dialog"]').textContent();
+        console.log(`Dialog content after timeout: ${dialogText?.substring(0, 500)}`);
+        // If we see "Done" in the dialog, the export succeeded even if we missed the visibility check
+        if (dialogText?.includes("Done")) {
+          console.log("✓ Export completed (detected via dialog content)");
+        } else if (dialogText?.includes("Error")) {
+          throw new Error("Export failed with error: " + dialogText);
+        }
+      } catch (e) {
+        if ((e as Error).message?.includes("Export failed")) {
+          throw e;
+        }
+        // Page might be closed - just throw a descriptive error
+        throw new Error("Export timed out - page may have closed or export failed");
       }
     }
     
@@ -142,6 +153,18 @@ test.describe("Hybrid Export Progress UI", () => {
     // Clean up
     if (fs.existsSync(exportParent)) {
       fs.rmSync(exportParent, { recursive: true, force: true });
+    }
+
+    // Close the export dialog
+    try {
+      const closeButton = page.getByRole("button", { name: /Close/i });
+      if (await closeButton.isVisible({ timeout: 500 })) {
+        await closeButton.click();
+        // Wait for dialog to close
+        await page.waitForTimeout(500);
+      }
+    } catch {
+      // Dialog may already be closed
     }
   });
 
