@@ -20,6 +20,7 @@ import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
+import { collectExportWarning } from "./ExportWarningCollector";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import {
   capitalCase,
@@ -641,15 +642,20 @@ export default class ImdiGenerator {
         if (status.missing) {
           // At the moment we're not even exporting metadata if the file is
           // missing. With some work to avoid some errors, it would be possible.
-          NotifyWarning(
+          const missingMsg =
             f.getNameToUseWhenExportingUsingTheActualFile() +
-              ": " +
-              getStatusOfFile(f).info
-          );
+            ": " +
+            getStatusOfFile(f).info;
+          if (!collectExportWarning(missingMsg)) {
+            NotifyWarning(missingMsg);
+          }
         } else {
           if (status.status === "fileNamingProblem") {
-            // enhance would be nicer to have a way to pipe message to the export
-            NotifyWarning(f.getActualFilePath() + ": " + status.info); // but still export it
+            // Funnel to export log if collecting, otherwise show toast
+            const namingMsg = f.getActualFilePath() + ": " + status.info;
+            if (!collectExportWarning(namingMsg)) {
+              NotifyWarning(namingMsg); // but still export it
+            }
           }
           switch (type) {
             case "MediaFile":

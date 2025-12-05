@@ -5,6 +5,9 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import WarningIcon from "@mui/icons-material/Warning";
+import { IconButton, Tooltip } from "@mui/material";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { observer } from "mobx-react";
 import "./ExportDialog.css";
@@ -39,6 +42,12 @@ import { IMDIMode } from "../../export/ImdiGenerator";
 import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
+import {
+  startCollectingWarnings,
+  stopCollectingWarnings,
+  getCollectedWarnings,
+  clearCollectedWarnings
+} from "../../export/ExportWarningCollector";
 
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
@@ -381,117 +390,6 @@ export const ExportDialog: React.FunctionComponent<{
     return folder;
   };
 
-  // New hybrid export function that uses generator and main process for file I/O
-  const runHybridImdiExport = async (
-    path: string,
-    imdiMode: IMDIMode,
-    copyFiles: boolean,
-    folderFilter: (f: Folder) => boolean
-  ) => {
-    const project = props.projectHolder.project!;
-
-    // Track export path for cleanup on cancel
-    exportPathRef.current = path;
-
-    // Reset progress state
-    cancelRequestedRef.current = false;
-    setExportLog([]);
-
-    // Get job info for progress calculation
-    const jobInfo = ImdiBundler.getExportJobInfo(project, path, folderFilter);
-    setExportProgress({
-      phase: "preparing",
-      currentSession: 0,
-      totalSessions: jobInfo.totalSessions,
-      currentSessionName: "",
-      percentage: 0,
-      message: t`Preparing export directory...`
-    });
-
-    // Prepare output directory via main process
-    await mainProcessApi.prepareExportDirectory(path);
-
-    // Create the generator
-    const generator = ImdiBundler.generateExportData(
-      project,
-      path,
-      imdiMode,
-      copyFiles,
-      folderFilter
-    );
-
-    let sessionIndex = 0;
-    let result = await generator.next();
-
-    // Process each yielded session data
-    while (!result.done) {
-      // Check for cancellation
-      if (cancelRequestedRef.current) {
-        setExportProgress((prev) => ({
-          ...prev,
-          phase: "cancelled",
-          message: t`Export cancelled`
-        }));
-        addLogEntry(t`Export cancelled.`);
-        // Clean up partial export
-        await mainProcessApi.cleanupExportDirectory(path);
-        return false;
-      }
-
-      const sessionData = result.value;
-      sessionIndex++;
-
-      // Update progress
-      const percentage = Math.round(
-        (sessionIndex / jobInfo.totalSessions) * 90
-      ); // Reserve 10% for corpus file
-      setExportProgress({
-        phase: "sessions",
-        currentSession: sessionIndex,
-        totalSessions: jobInfo.totalSessions,
-        currentSessionName: sessionData.displayName,
-        percentage,
-        message: t`Exporting Session ${sessionIndex} of ${jobInfo.totalSessions}`
-      });
-
-      // Write session data via main process
-      const writeResult = await mainProcessApi.writeExportSessionData(
-        sessionData
-      );
-
-      // Log any errors
-      for (const error of writeResult.errors) {
-        addLogEntry(`⚠️ ${error}`);
-      }
-
-      // Get next session
-      result = await generator.next();
-    }
-
-    // Write corpus file (final return value from generator)
-    setExportProgress((prev) => ({
-      ...prev,
-      phase: "corpus",
-      percentage: 95,
-      message: t`Writing corpus metadata...`
-    }));
-
-    const corpusData = result.value;
-    await mainProcessApi.writeExportCorpusData(corpusData);
-
-    // Done!
-    setExportProgress({
-      phase: "done",
-      currentSession: jobInfo.totalSessions,
-      totalSessions: jobInfo.totalSessions,
-      currentSessionName: "",
-      percentage: 100,
-      message: t`Export complete!`
-    });
-
-    return true;
-  };
-
   const saveFilesAsync = async (path: string) => {
     const startTime = Date.now();
     const MIN_EXPORT_TIME = 1000; // 1 seconds minimum to give user some confirmation that we did do something (ro-crate export is very fast)
@@ -624,24 +522,23 @@ export const ExportDialog: React.FunctionComponent<{
             /* margin-left: 20px; */
           `}
         >
-          {rulesBasedValidationResult &&
-            (mode === Mode.error || mode === Mode.finished) && (
-              <div
-                css={css`
-                  margin-top: 50px; // just looks better
-                `}
-              >
-                <Alert severity="warning">
-                  <ReactMarkdown
-                    children={rulesBasedValidationResult!}
-                    renderers={{
-                      paragraph: ({ children }) => <div>{children}</div>
-                    }}
-                  />
-                </Alert>
-                <br />
-              </div>
-            )}
+          {rulesBasedValidationResult && mode === Mode.error && (
+            <div
+              css={css`
+                margin-top: 50px; // just looks better
+              `}
+            >
+              <Alert severity="warning">
+                <ReactMarkdown
+                  children={rulesBasedValidationResult!}
+                  renderers={{
+                    paragraph: ({ children }) => <div>{children}</div>
+                  }}
+                />
+              </Alert>
+              <br />
+            </div>
+          )}
           {mode === Mode.error && (
             <div>
               <Alert severity="error">
@@ -733,64 +630,125 @@ export const ExportDialog: React.FunctionComponent<{
               )}
             </div>
           )}
-          {mode === Mode.finished && (
-            <div
-              css={css`
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 10px;
-                min-height: 200px;
-              `}
-            >
-              {imdiValidated && (
-                <Alert severity="success">
-                  {t`The IMDI files were validated.`}
-                </Alert>
-              )}
+          {mode === Mode.finished &&
+            (() => {
+              // Format rules-based validation warnings to match export log style
+              const projectDir = props.projectHolder.project?.directory || "";
 
-              <h2
-                css={css`
-                  display: flex;
-                  align-items: center;
-                  gap: 8px;
-                `}
-              >
-                <CheckCircleIcon
+              // Convert rulesBasedValidationResult to plain warning lines
+              const rulesWarnings: string[] = [];
+              if (rulesBasedValidationResult) {
+                // Parse markdown: **Session Name**\n\nviolation text
+                const sections = rulesBasedValidationResult
+                  .split(/\*\*([^*]+)\*\*/)
+                  .filter((s) => s.trim());
+                for (let i = 0; i < sections.length; i += 2) {
+                  const sessionName = sections[i]?.trim();
+                  const violation = sections[i + 1]?.trim();
+                  if (sessionName && violation) {
+                    rulesWarnings.push(`⚠️ ${sessionName}: ${violation}`);
+                  }
+                }
+              }
+
+              // Strip project path from export log warnings
+              const cleanedExportLog = exportLog.map((entry) => {
+                if (projectDir && entry.includes(projectDir)) {
+                  return entry
+                    .replace(projectDir + Path.sep, "")
+                    .replace(projectDir, "");
+                }
+                return entry;
+              });
+
+              const allWarnings = [...rulesWarnings, ...cleanedExportLog];
+              const hasWarnings = allWarnings.length > 0;
+
+              const copyWarningsToClipboard = () => {
+                clipboard.writeText(allWarnings.join("\n"));
+              };
+
+              return (
+                <div
                   css={css`
-                    color: ${lameta_dark_green};
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 10px;
+                    min-height: 200px;
                   `}
-                />
-                <Trans>Done</Trans>
-              </h2>
-
-              {/* Show warnings log if any */}
-              {exportLog.length > 0 && (
-                <div>
-                  <Alert severity="warning">
-                    {t`Export completed with ${exportLog.length} warning(s)`}
-                  </Alert>
-                  <div
+                >
+                  <h2
                     css={css`
-                      max-height: 150px;
-                      overflow-y: auto;
-                      background: #f5f5f5;
-                      border: 1px solid #ddd;
-                      border-radius: 4px;
-                      padding: 8px;
-                      margin-top: 8px;
-                      font-size: 12px;
-                      font-family: monospace;
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
                     `}
                   >
-                    {exportLog.map((entry, i) => (
-                      <div key={i}>{entry}</div>
-                    ))}
-                  </div>
+                    {hasWarnings ? (
+                      <WarningIcon color="warning" />
+                    ) : (
+                      <CheckCircleIcon
+                        css={css`
+                          color: ${lameta_dark_green};
+                        `}
+                      />
+                    )}
+                    {hasWarnings ? (
+                      <Trans>Done with warnings</Trans>
+                    ) : (
+                      <Trans>Done</Trans>
+                    )}
+                  </h2>
+
+                  {/* Show warnings log if any */}
+                  {hasWarnings && (
+                    <div>
+                      <div
+                        css={css`
+                          display: flex;
+                          justify-content: flex-end;
+                          margin-bottom: 4px;
+                        `}
+                      >
+                        <Tooltip title={t`Copy to clipboard`}>
+                          <IconButton
+                            size="small"
+                            onClick={copyWarningsToClipboard}
+                            css={css`
+                              padding: 4px;
+                            `}
+                          >
+                            <ContentCopyIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                      <div
+                        css={css`
+                          max-height: 300px;
+                          overflow-y: auto;
+                          background: #fffbe6;
+                          border: 1px solid #ffe58f;
+                          border-radius: 4px;
+                          padding: 8px;
+                          font-size: 12px;
+                        `}
+                      >
+                        {allWarnings.map((entry, i) => (
+                          <div key={i}>{entry}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {imdiValidated && (
+                    <Alert severity="success">
+                      {t`The IMDI files were validated.`}
+                    </Alert>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
+              );
+            })()}
           {mode === Mode.copying && (
             <div>
               <h1>
