@@ -14,12 +14,12 @@ type MainProcessApiPublic = Pick<
   | "validateImdiAsync"
   | "findInPage"
   | "stopFindInPage"
-  | "prepareExportDirectory"
-  | "cleanupExportDirectory"
-  | "writeExportSessionData"
-  | "writeExportCorpusData"
-  | "cancelExportCopyOperations"
-  | "hasActiveCopyOperations"
+  | "prepareImdiExportDirectory"
+  | "cleanupImdiExportDirectory"
+  | "writeImdiSessionData"
+  | "writeImdiCorpusData"
+  | "cancelImdiExportCopyOperations"
+  | "hasActiveImdiCopyOperations"
 >;
 
 let mainProcessApi: MainProcessApiPublic;

@@ -6,6 +6,7 @@ import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
 import { mainWindow } from "./main";
+import { MainProcessImdiExport } from "./MainProcessImdiExport";
 import {
   ExportSessionData,
   ExportCorpusData,
@@ -22,6 +23,8 @@ if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
 // This is is using `electron-call` to produce type-safe wrappers that hide the IPC stuff.
 // See MainProcessApiAccess for instructions on using this from the Render process.
 export class MainProcessApi {
+  private imdiExportHandler = new MainProcessImdiExport(() => mainWindow);
+
   // electron's trashItem not working in render process, so we provide this here
   // see https://github.com/electron/electron/issues/29598
   public trashItem(path: string): Promise<boolean> {
@@ -88,122 +91,37 @@ export class MainProcessApi {
   }
 
   // ============================================================================
-  // Export file I/O methods
-  // These handle all file operations for export, keeping renderer responsive
+  // IMDI Export file I/O methods - delegated to MainProcessImdiExport
   // ============================================================================
 
-  /**
-   * Prepare the export root directory (remove if exists, create fresh)
-   */
-  public async prepareExportDirectory(rootDirectory: string): Promise<void> {
-    if (fs.existsSync(rootDirectory)) {
-      await fs.remove(rootDirectory);
-    }
-    await fs.ensureDir(rootDirectory);
+  public async prepareImdiExportDirectory(
+    rootDirectory: string
+  ): Promise<void> {
+    return this.imdiExportHandler.prepareImdiExportDirectory(rootDirectory);
   }
 
-  /**
-   * Write a session's export data (IMDI XML and copy files)
-   * Returns the number of files successfully copied.
-   * Emits 'export-file-progress' events to renderer for each file.
-   */
-  public async writeExportSessionData(
+  public async writeImdiSessionData(
     data: ExportSessionData
   ): Promise<{ filesWritten: number; errors: string[] }> {
-    const errors: string[] = [];
-    let filesWritten = 0;
-    const totalFiles = data.filesToCopy.length;
-
-    try {
-      // Create required directories
-      for (const dir of data.directoriesToCreate) {
-        await fs.ensureDir(dir);
-      }
-
-      // Write IMDI XML file
-      await fs.writeFile(data.imdiPath, data.imdiXml, "utf8");
-
-      // Copy files with progress events
-      for (let i = 0; i < data.filesToCopy.length; i++) {
-        const copyReq = data.filesToCopy[i];
-        const fileName = Path.basename(copyReq.source);
-
-        // Emit progress event before copying
-        mainWindow?.webContents.send("export-file-progress", {
-          sessionName: data.displayName,
-          currentFile: fileName,
-          currentFileIndex: i + 1,
-          totalFiles
-        });
-
-        try {
-          await this.copyFileForExport(copyReq.source, copyReq.destination);
-          filesWritten++;
-        } catch (err) {
-          const msg = `Failed to copy ${fileName}: ${err.message}`;
-          errors.push(msg);
-          console.error(msg);
-        }
-      }
-    } catch (err) {
-      errors.push(`Failed to write session data: ${err.message}`);
-    }
-
-    return { filesWritten, errors };
+    return this.imdiExportHandler.writeImdiSessionData(data);
   }
 
-  /**
-   * Write the corpus IMDI file
-   */
-  public async writeExportCorpusData(data: ExportCorpusData): Promise<void> {
-    const dir = Path.dirname(data.imdiPath);
-    await fs.ensureDir(dir);
-    await fs.writeFile(data.imdiPath, data.imdiXml, "utf8");
+  public async writeImdiCorpusData(data: ExportCorpusData): Promise<void> {
+    return this.imdiExportHandler.writeImdiCorpusData(data);
   }
 
-  /**
-   * Clean up a partial export directory (e.g., when export is cancelled)
-   */
-  public async cleanupExportDirectory(rootDirectory: string): Promise<void> {
-    if (fs.existsSync(rootDirectory)) {
-      await fs.remove(rootDirectory);
-    }
-  }
-
-  /**
-   * Cancel any active export copy operations
-   * Currently a no-op since we use fs.copyFile which is not cancellable
-   */
-  public cancelExportCopyOperations(): void {
-    // Currently using fs.copyFile which completes atomically
-    // If we need cancellable copies in the future, we could use streams
-  }
-
-  /**
-   * Check if there are any active copy operations
-   */
-  public hasActiveCopyOperations(): boolean {
-    // Currently no tracking of active operations
-    return false;
-  }
-
-  /**
-   * Copy a single file for export, preserving timestamps
-   * Uses async fs operations for better performance
-   */
-  private async copyFileForExport(
-    source: string,
-    destination: string
+  public async cleanupImdiExportDirectory(
+    rootDirectory: string
   ): Promise<void> {
-    // Ensure destination directory exists
-    await fs.ensureDir(Path.dirname(destination));
+    return this.imdiExportHandler.cleanupImdiExportDirectory(rootDirectory);
+  }
 
-    // Copy the file
-    await fs.copyFile(source, destination);
+  public cancelImdiExportCopyOperations(): void {
+    return this.imdiExportHandler.cancelImdiExportCopyOperations();
+  }
 
-    // Preserve modification time
-    const stat = await fs.stat(source);
-    await fs.utimes(destination, stat.atime, stat.mtime);
+  public hasActiveImdiCopyOperations(): boolean {
+    return this.imdiExportHandler.hasActiveImdiCopyOperations();
   }
 }
 

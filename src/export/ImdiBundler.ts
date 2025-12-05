@@ -13,7 +13,7 @@ import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocab
 import { NotifyError } from "../components/Notify";
 import { CopyManager } from "../other/CopyManager";
 import moment from "moment";
-import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
+import { validateImdiOrThrow } from "./ImdiValidation";
 import {
   ExportSessionData,
   ExportCorpusData,
@@ -74,7 +74,11 @@ export default class ImdiBundler {
     while (!result.done) {
       const data = result.value;
       sessionIndex++;
-      console.log("[ImdiBundler] Processing:", data.displayName, `(${sessionIndex})`);
+      console.log(
+        "[ImdiBundler] Processing:",
+        data.displayName,
+        `(${sessionIndex})`
+      );
 
       // Create directories
       for (const dir of data.directoriesToCreate) {
@@ -94,7 +98,9 @@ export default class ImdiBundler {
               () => {}
             );
           } catch (error) {
-            console.error(`Problem copying ${Path.basename(copyReq.source)}: ${error}`);
+            console.error(
+              `Problem copying ${Path.basename(copyReq.source)}: ${error}`
+            );
           }
         }
       }
@@ -146,7 +152,9 @@ export default class ImdiBundler {
       copyInProjectFiles
     );
     if (otherDocsData) {
-      childrenSubpaths.push(secondLevel + "/" + "OtherDocuments" + extensionWithDot);
+      childrenSubpaths.push(
+        secondLevel + "/" + "OtherDocuments" + extensionWithDot
+      );
       yield otherDocsData;
     }
 
@@ -161,7 +169,9 @@ export default class ImdiBundler {
       copyInProjectFiles
     );
     if (descDocsData) {
-      childrenSubpaths.push(secondLevel + "/" + "DescriptionDocuments" + extensionWithDot);
+      childrenSubpaths.push(
+        secondLevel + "/" + "DescriptionDocuments" + extensionWithDot
+      );
       yield descDocsData;
     }
 
@@ -176,7 +186,9 @@ export default class ImdiBundler {
       omitNamespaces
     );
     if (consentData) {
-      childrenSubpaths.push(secondLevel + "/" + "ConsentDocuments" + extensionWithDot);
+      childrenSubpaths.push(
+        secondLevel + "/" + "ConsentDocuments" + extensionWithDot
+      );
       yield consentData;
     }
 
@@ -191,7 +203,9 @@ export default class ImdiBundler {
         imdiMode,
         copyInProjectFiles
       );
-      childrenSubpaths.push(secondLevel + "/" + session.filePrefix + extensionWithDot);
+      childrenSubpaths.push(
+        secondLevel + "/" + session.filePrefix + extensionWithDot
+      );
       yield sessionData;
     }
 
@@ -202,7 +216,7 @@ export default class ImdiBundler {
       childrenSubpaths,
       false
     );
-    await this.validateImdiOrThrow(corpusImdi, project.displayName);
+    await validateImdiOrThrow(corpusImdi, project.displayName);
 
     const targetDirForProjectFile = Path.join(
       rootDirectory,
@@ -211,7 +225,10 @@ export default class ImdiBundler {
 
     return {
       imdiXml: corpusImdi,
-      imdiPath: Path.join(targetDirForProjectFile, `${project.displayName}${extensionWithDot}`),
+      imdiPath: Path.join(
+        targetDirForProjectFile,
+        `${project.displayName}${extensionWithDot}`
+      ),
       displayName: project.displayName
     };
   }
@@ -249,24 +266,43 @@ export default class ImdiBundler {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
     const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
 
-    const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
-    await this.validateImdiOrThrow(sessionImdi, session.displayName);
+    const sessionImdi = ImdiGenerator.generateSession(
+      imdiMode,
+      session,
+      project
+    );
+    await validateImdiOrThrow(sessionImdi, session.displayName);
 
     const sessionDirName = Path.basename(session.directory);
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
-      const sessionOutputDir = Path.join(rootDirectory, secondLevel, sessionDirName);
+      const sessionOutputDir = Path.join(
+        rootDirectory,
+        secondLevel,
+        sessionDirName
+      );
       directoriesToCreate.push(sessionOutputDir);
-      imdiPath = Path.join(sessionOutputDir, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(
+        sessionOutputDir,
+        sanitizeForArchive(imdiFileName, "ASCII")
+      );
     } else {
-      imdiPath = Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(
+        rootDirectory,
+        secondLevel,
+        sanitizeForArchive(imdiFileName, "ASCII")
+      );
     }
 
     const filesToCopy: FileCopyRequest[] = [];
     if (copyInProjectFiles) {
-      const targetDirectory = Path.join(rootDirectory, secondLevel, sessionDirName);
+      const targetDirectory = Path.join(
+        rootDirectory,
+        secondLevel,
+        sessionDirName
+      );
       directoriesToCreate.push(targetDirectory);
 
       session.files.forEach((f: File) => {
@@ -275,7 +311,10 @@ export default class ImdiBundler {
             source: f.getActualFilePath(),
             destination: Path.join(
               targetDirectory,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII")
+              sanitizeForArchive(
+                f.getNameToUseWhenExportingUsingTheActualFile(),
+                "ASCII"
+              )
             )
           });
         }
@@ -283,6 +322,7 @@ export default class ImdiBundler {
     }
 
     return {
+      sessionId: session.id,
       displayName: session.displayName,
       imdiXml: sessionImdi,
       imdiPath,
@@ -315,18 +355,28 @@ export default class ImdiBundler {
       imdiFileName,
       imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi"
     );
-    const destinationFolderPath = Path.join(rootDirectory, secondLevel, folderName);
+    const destinationFolderPath = Path.join(
+      rootDirectory,
+      secondLevel,
+      folderName
+    );
 
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
       directoriesToCreate.push(destinationFolderPath);
-      imdiPath = Path.join(destinationFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(
+        destinationFolderPath,
+        sanitizeForArchive(imdiFileName, "ASCII")
+      );
     } else {
       const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
       directoriesToCreate.push(imdiOnlyFolderPath);
-      imdiPath = Path.join(imdiOnlyFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(
+        imdiOnlyFolderPath,
+        sanitizeForArchive(imdiFileName, "ASCII")
+      );
     }
 
     const filesToCopy: FileCopyRequest[] = [];
@@ -338,7 +388,10 @@ export default class ImdiBundler {
             source: f.getActualFilePath(),
             destination: Path.join(
               destinationFolderPath,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII")
+              sanitizeForArchive(
+                f.getNameToUseWhenExportingUsingTheActualFile(),
+                "ASCII"
+              )
             )
           });
         }
@@ -346,6 +399,7 @@ export default class ImdiBundler {
     }
 
     return {
+      sessionId: name,
       displayName: name,
       imdiXml,
       imdiPath,
@@ -369,13 +423,21 @@ export default class ImdiBundler {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
     const dir = temp.mkdirSync("imdiConsentBundle");
 
-    const dummySession = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
+    const dummySession = Session.fromDirectory(
+      dir,
+      new EncounteredVocabularyRegistry()
+    );
 
-    dummySession.properties.setText("date", moment(new Date()).format("YYYY-MM-DD"));
+    dummySession.properties.setText(
+      "date",
+      moment(new Date()).format("YYYY-MM-DD")
+    );
     dummySession.properties.setText("id", "ConsentDocuments");
     dummySession.properties.setText(
       "title",
-      `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty("title")}`
+      `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty(
+        "title"
+      )}`
     );
     dummySession.properties.setText(
       "description",
@@ -383,17 +445,29 @@ export default class ImdiBundler {
     );
     dummySession.properties.setText("genre", "Consent");
 
-    if (project.properties.getTextStringOrEmpty("archiveConfigurationName") === "ELAR") {
+    if (
+      project.properties.getTextStringOrEmpty("archiveConfigurationName") ===
+      "ELAR"
+    ) {
       dummySession.properties.setText("access", "S");
       dummySession.properties.setText("accessDescription", "Consent documents");
     }
 
     // Collect consent files and contributions
     const filesToCopy: FileCopyRequest[] = [];
-    const destinationFolderPath = Path.join(rootDirectory, secondLevel, "ConsentDocuments");
+    const destinationFolderPath = Path.join(
+      rootDirectory,
+      secondLevel,
+      "ConsentDocuments"
+    );
 
     // addDummyFileForConsentActors returns the original consent files (for use in file copying)
-    const originalConsentFiles = ImdiBundler.addDummyFileForConsentActors(project, sessionFilter, dummySession, dir);
+    const originalConsentFiles = ImdiBundler.addDummyFileForConsentActors(
+      project,
+      sessionFilter,
+      dummySession,
+      dir
+    );
 
     // Build filesToCopy from the ORIGINAL consent files (not the temp copies)
     if (copyInProjectFiles) {
@@ -401,7 +475,10 @@ export default class ImdiBundler {
       const addedFiles = new Set<string>();
       originalConsentFiles.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          const destName = sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII");
+          const destName = sanitizeForArchive(
+            f.getNameToUseWhenExportingUsingTheActualFile(),
+            "ASCII"
+          );
           if (!addedFiles.has(destName)) {
             addedFiles.add(destName);
             filesToCopy.push({
@@ -425,19 +502,30 @@ export default class ImdiBundler {
       return null;
     }
 
-    const imdiXml = ImdiGenerator.generateSession(imdiMode, dummySession, project, omitNamespaces);
-    await this.validateImdiOrThrow(imdiXml, dummySession.displayName);
+    const imdiXml = ImdiGenerator.generateSession(
+      imdiMode,
+      dummySession,
+      project,
+      omitNamespaces
+    );
+    await validateImdiOrThrow(imdiXml, dummySession.displayName);
 
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
       directoriesToCreate.push(destinationFolderPath);
-      imdiPath = Path.join(destinationFolderPath, "ConsentDocuments" + extensionWithDot);
+      imdiPath = Path.join(
+        destinationFolderPath,
+        "ConsentDocuments" + extensionWithDot
+      );
     } else {
       const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
       directoriesToCreate.push(imdiOnlyFolderPath);
-      imdiPath = Path.join(imdiOnlyFolderPath, "ConsentDocuments" + extensionWithDot);
+      imdiPath = Path.join(
+        imdiOnlyFolderPath,
+        "ConsentDocuments" + extensionWithDot
+      );
     }
 
     // Clean up temp directory
@@ -445,6 +533,7 @@ export default class ImdiBundler {
     fs.remove(dir);
 
     return {
+      sessionId: "ConsentDocuments",
       displayName: "ConsentDocuments",
       imdiXml,
       imdiPath,
@@ -657,7 +746,7 @@ export default class ImdiBundler {
       omitNamespaces
     );
 
-    await this.validateImdiOrThrow(imdiXml, dummySession.displayName);
+    await validateImdiOrThrow(imdiXml, dummySession.displayName);
     //const imdiFileName = `${dummySession.filePrefix}.imdi`;
 
     ImdiBundler.WritePseudoSession(
@@ -674,28 +763,6 @@ export default class ImdiBundler {
     // we're done with this dummy directory now
     fs.emptyDir(dir);
     fs.remove(dir);
-  }
-
-  private static async validateImdiOrThrow(
-    imdiXml: string,
-    displayNameForThisFile?: string
-  ) {
-    console.log("[ImdiBundler] validateImdiOrThrow called for:", displayNameForThisFile);
-    if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
-      console.log("[ImdiBundler] Skipping validation in test environment");
-      return; // we don't yet have a way to validate in test environment
-    }
-    console.log("[ImdiBundler] Calling mainProcessApi.validateImdiAsync...");
-    const startTime = Date.now();
-    const result = await mainProcessApi.validateImdiAsync(imdiXml);
-    console.log("[ImdiBundler] validateImdiAsync returned after", Date.now() - startTime, "ms, valid:", result.valid);
-    if (!result.valid) {
-      throw new Error(
-        `The IMDI for ${displayNameForThisFile} did not pass validation.\r\n${result.errors
-          .map((e) => e.message)
-          .join("\r\n")}`
-      );
-    }
   }
 
   // We need to have all the consenting people described in the <Actors> portion of the IMDI.

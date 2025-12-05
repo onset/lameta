@@ -17,6 +17,9 @@ export interface FileCopyRequest {
  * Represents a single session/folder's export data
  */
 export interface ExportSessionData {
+  /** Session/folder ID for progress reporting */
+  sessionId: string;
+
   /** Session/folder display name for progress reporting */
   displayName: string;
 

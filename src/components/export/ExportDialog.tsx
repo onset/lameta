@@ -6,6 +6,7 @@ import * as React from "react";
 import Alert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ErrorIcon from "@mui/icons-material/Error";
 import WarningIcon from "@mui/icons-material/Warning";
 import { IconButton, Tooltip } from "@mui/material";
 import { useState, useRef, useCallback, useEffect } from "react";
@@ -18,11 +19,8 @@ import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
 import { ipcRenderer } from "electron";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";
-import ImdiBundler from "../../export/ImdiBundler";
-import moment from "moment";
 import { Folder } from "../../model/Folder/Folder";
-import { NotifyError, NotifyException, NotifyWarning } from "../Notify";
-import { ensureDirSync, pathExistsSync } from "fs-extra";
+import { NotifyException, NotifyWarning } from "../Notify";
 import { makeGenericCsvZipFile as asyncMakeGenericCsvZipFile } from "../../export/CsvExporter";
 import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
 import { ExportChoices } from "./ExportChoices";
@@ -42,54 +40,21 @@ import { IMDIMode } from "../../export/ImdiGenerator";
 import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
-import {
-  startCollectingWarnings,
-  stopCollectingWarnings,
-  getCollectedWarnings,
-  clearCollectedWarnings
-} from "../../export/ExportWarningCollector";
-
-const saymore_orange = "#e69664";
-import { app } from "@electron/remote";
 import { clipboard } from "electron";
 import { Session } from "src/model/Project/Session/Session";
-import ReactMarkdown from "react-markdown";
-import { lameta_dark_green, lameta_green } from "../../containers/theme";
-import { RoCrateValidator } from "../../export/ROCrate/RoCrateValidator";
-const sanitize = require("sanitize-filename");
+import { lameta_green, lameta_dark_green } from "../../containers/theme";
+
+// Export-specific modules
+import { runRoCrateValidation } from "./roCrateExport";
+import { runHybridImdiExport } from "./imdiExport";
+import {
+  getPathForCsvSaving,
+  getPathForParadisecSaving,
+  getPathForIMDISaving
+} from "./exportPaths";
 
 let staticShowExportDialog: () => void = () => {};
 export { staticShowExportDialog as ShowExportDialog };
-
-async function runRoCrateValidation(roCrateData: any) {
-  const validator = new RoCrateValidator();
-  const result = validator.validate(roCrateData);
-
-  if (result.isValid) {
-    return;
-  }
-
-  const displayedErrors = result.errors.slice(0, 10);
-  const extraCount = result.errors.length - displayedErrors.length;
-  const detailLines = displayedErrors.map(
-    (error, index) => `${index + 1}. ${error}`
-  );
-
-  if (extraCount > 0) {
-    detailLines.push(`…and ${extraCount} more.`);
-  }
-  detailLines.push("See console for full list of errors.");
-  console.error("RO-Crate validation errors:", result.errors);
-
-  const message = [
-    `RO-Crate validation failed (${result.errors.length} issue${
-      result.errors.length === 1 ? "" : "s"
-    })`,
-    ...detailLines
-  ].join("\n");
-
-  throw new Error(message);
-}
 
 enum Mode {
   choosing = 0,
@@ -127,7 +92,6 @@ export const ExportDialog: React.FunctionComponent<{
   //   }
   // }, [mode]);
 
-  const [error, setError] = useState<string | undefined>(undefined);
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
 
   const [rulesBasedValidationResult, SetRulesBasedValidationResult] =
@@ -194,6 +158,14 @@ export const ExportDialog: React.FunctionComponent<{
     setExportLog((prev) => [...prev, entry]);
   }, []);
 
+  // Callbacks for hybrid IMDI export
+  const hybridExportCallbacks = {
+    setExportProgress,
+    setExportLog,
+    addLogEntry,
+    cancelRequestedRef
+  };
+
   useInterval(() => {
     if (mode === Mode.copying) {
       if (CopyManager.getActiveCopyJobs().length === 0) {
@@ -231,7 +203,7 @@ export const ExportDialog: React.FunctionComponent<{
                 )
               );
               if (result) {
-                rulesBasedValidationResult += `**${session.displayName}**\n\n${result}\n\n`;
+                rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
               }
             }
             SetRulesBasedValidationResult(rulesBasedValidationResult);
@@ -257,13 +229,20 @@ export const ExportDialog: React.FunctionComponent<{
       let defaultPath;
       switch (exportFormat) {
         case "csv":
-          defaultPath = getPathForCsvSaving();
+          defaultPath = getPathForCsvSaving(
+            props.projectHolder.project!.displayName
+          );
           break;
         case "paradisec":
-          defaultPath = getPathForParadisecSaving();
+          defaultPath = getPathForParadisecSaving(
+            props.projectHolder.project!.displayName
+          );
           break;
         default:
-          defaultPath = getPathForIMDISaving();
+          defaultPath = getPathForIMDISaving(
+            props.projectHolder.project!.displayName,
+            exportFormat
+          );
           break;
       }
       remote.dialog
@@ -305,7 +284,7 @@ export const ExportDialog: React.FunctionComponent<{
                     )
                   );
                   if (result) {
-                    rulesBasedValidationResult += `**${session.displayName}**\n\n${result}\n\n`;
+                    rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
                   }
                 }
                 SetRulesBasedValidationResult(rulesBasedValidationResult);
@@ -327,67 +306,6 @@ export const ExportDialog: React.FunctionComponent<{
       CopyManager.abandonCopying(true); // cancel can be clicked while doing imdi+files.
       closeDialog();
     }
-  };
-  const getPathForCsvSaving = () => {
-    const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
-    ensureDirSync(parent);
-    return Path.join(
-      parent,
-      `${sanitize(
-        props.projectHolder.project!.displayName
-      )} - lameta CSV Export - ${moment(new Date()).format("YYYY-MM-DD")}.zip`
-    );
-
-    // return `${Path.basename(
-    //   props.projectHolder.project!.directory
-    // )}-${exportFormat}.zip`;
-  };
-  const getPathForParadisecSaving = () => {
-    const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
-    ensureDirSync(parent);
-    return Path.join(
-      parent,
-      `${sanitize(
-        props.projectHolder.project!.displayName
-      )} - lameta Paradisec Export - ${moment(new Date()).format(
-        "YYYY-MM-DD"
-      )}.csv`
-    );
-
-    // return `${Path.basename(
-    //   props.projectHolder.project!.directory
-    // )}-${exportFormat}.zip`;
-  };
-
-  const getPathForIMDISaving = () => {
-    const parent = Path.join(
-      app.getPath("documents"),
-      "lameta",
-      "IMDI Packages"
-    );
-    ensureDirSync(parent);
-
-    // throw new Error(
-    //   "Test throw from getPathForIMDISaving " + Date.now().toLocaleString()
-    // );
-
-    let folder = Path.join(
-      parent,
-      `${sanitize(
-        props.projectHolder.project!.displayName
-      )} - lameta ${exportFormat} Export - ${moment(new Date()).format(
-        "YYYY-MM-DD"
-      )}`
-    );
-    // Just that is what we would *like* to have, the problem is that since we are saving
-    // a folder, and not a file, on subsequent saves the File Dialog will show *inside*
-    // this folder, because it already exists. There does not appear to be a way to say
-    // "Show this folder, then use this default name" as separate parameters. Very annoying.
-    // So now we add the exact time if there is a already a folder from today.
-    if (pathExistsSync(folder)) {
-      folder = folder + " " + moment(new Date()).format("HH_mm_ss");
-    }
-    return folder;
   };
 
   const saveFilesAsync = async (path: string) => {
@@ -444,15 +362,22 @@ export const ExportDialog: React.FunctionComponent<{
           case "imdi":
             analyticsEvent("Export", "Export IMDI Xml");
 
-            await runHybridImdiExport(
+            const imdiSuccess = await runHybridImdiExport(
+              props.projectHolder.project!,
               path,
               IMDIMode.RAW_IMDI,
               false,
-              folderFilter
+              folderFilter,
+              hybridExportCallbacks
             );
-            await finishExport();
-            setMode(Mode.finished);
-            setImdiValidated(true);
+            if (imdiSuccess) {
+              await finishExport();
+              setMode(Mode.finished);
+              setImdiValidated(true);
+            } else {
+              // Cancelled
+              setMode(Mode.cancelled);
+            }
             break;
           case "opex-plus-files":
             analyticsEvent("Export", "Export OPEX Plus Files");
@@ -463,10 +388,12 @@ export const ExportDialog: React.FunctionComponent<{
               setMode(Mode.choosing);
             } else {
               const success = await runHybridImdiExport(
+                props.projectHolder.project!,
                 path,
                 IMDIMode.OPEX,
                 true,
-                folderFilter
+                folderFilter,
+                hybridExportCallbacks
               );
               if (success) {
                 await finishExport();
@@ -481,7 +408,8 @@ export const ExportDialog: React.FunctionComponent<{
         }
       }
     } catch (err) {
-      setError(String(err));
+      // Add error to the log with error prefix
+      addLogEntry(`❌ ${String(err)}`);
       setMode(Mode.error);
     }
   };
@@ -522,89 +450,189 @@ export const ExportDialog: React.FunctionComponent<{
             /* margin-left: 20px; */
           `}
         >
-          {rulesBasedValidationResult && mode === Mode.error && (
-            <div
-              css={css`
-                margin-top: 50px; // just looks better
-              `}
-            >
-              <Alert severity="warning">
-                <ReactMarkdown
-                  children={rulesBasedValidationResult!}
-                  renderers={{
-                    paragraph: ({ children }) => <div>{children}</div>
-                  }}
-                />
-              </Alert>
-              <br />
-            </div>
-          )}
-          {mode === Mode.error && (
-            <div>
-              <Alert severity="error">
-                <div css={css``}>{String(error)}</div>
-              </Alert>
-              <br />
-              <Button
-                variant="outlined"
-                onClick={() => clipboard.writeText(String(error!))}
-              >
-                Copy
-              </Button>
-            </div>
-          )}
+          {mode === Mode.error &&
+            (() => {
+              // Format rules-based validation warnings to match export log style
+              const projectDir = props.projectHolder.project?.directory || "";
+
+              // Convert rulesBasedValidationResult to plain warning lines
+              const rulesWarnings: string[] = [];
+              if (rulesBasedValidationResult) {
+                // Parse markdown: **Session Name**\n\nviolation text
+                const sections = rulesBasedValidationResult
+                  .split(/\*\*([^*]+)\*\*/)
+                  .filter((s) => s.trim());
+                for (let i = 0; i < sections.length; i += 2) {
+                  const sessionName = sections[i]?.trim();
+                  const violation = sections[i + 1]?.trim();
+                  if (sessionName && violation) {
+                    rulesWarnings.push(`⚠️ ${sessionName}: ${violation}`);
+                  }
+                }
+              }
+
+              // Strip project path from export log entries
+              const cleanedExportLog = exportLog.map((entry) => {
+                if (projectDir && entry.includes(projectDir)) {
+                  return entry
+                    .replace(projectDir + Path.sep, "")
+                    .replace(projectDir, "");
+                }
+                return entry;
+              });
+
+              const allEntries = [...rulesWarnings, ...cleanedExportLog];
+
+              // Helper to decode HTML entities and strip formatting tags for clipboard
+              const decodeForClipboard = (html: string) =>
+                html
+                  .replace(/<b>/g, "")
+                  .replace(/<\/b>/g, "")
+                  .replace(/&lt;/g, "<")
+                  .replace(/&gt;/g, ">")
+                  .replace(/&amp;/g, "&");
+
+              const copyEntriesToClipboard = () => {
+                clipboard.writeText(
+                  allEntries.map(decodeForClipboard).join("\n")
+                );
+              };
+
+              // Find index of first error for scrolling
+              const firstErrorIndex = allEntries.findIndex((entry) =>
+                entry.startsWith("❌")
+              );
+
+              return (
+                <div
+                  css={css`
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 4px;
+                    min-height: 200px;
+                  `}
+                >
+                  <h3
+                    css={css`
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                      color: #d32f2f;
+                    `}
+                  >
+                    <ErrorIcon color="error" />
+                    <Trans>Export failed</Trans>
+                  </h3>
+
+                  {/* Show log with errors and warnings */}
+                  {allEntries.length > 0 && (
+                    <div
+                      ref={(el) => {
+                        // Auto-scroll to first error
+                        if (el && firstErrorIndex >= 0) {
+                          const errorElement = el.children[firstErrorIndex] as HTMLElement;
+                          if (errorElement) {
+                            errorElement.scrollIntoView({ block: "nearest" });
+                          }
+                        }
+                      }}
+                      css={css`
+                        position: relative;
+                        max-height: 300px;
+                        overflow-y: auto;
+                        background: #f5f5f5;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        padding: 8px;
+                        padding-right: 32px;
+                        font-size: 12px;
+                        font-family: monospace;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                      `}
+                    >
+                      <Tooltip title={t`Copy to clipboard`}>
+                        <IconButton
+                          size="small"
+                          onClick={copyEntriesToClipboard}
+                          css={css`
+                            position: absolute;
+                            top: 4px;
+                            right: 4px;
+                            padding: 4px;
+                          `}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      {allEntries.map((entry, i) => (
+                        <div
+                          key={i}
+                          dangerouslySetInnerHTML={{ __html: entry }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           {mode === Mode.exporting && (
             <div
               css={css`
                 display: flex;
                 flex-direction: column;
-                gap: 16px;
+                gap: 8px;
                 min-height: 200px;
               `}
             >
-              {/* Progress bar */}
-              <div>
-                <LinearProgress
-                  variant="determinate"
-                  value={exportProgress.percentage}
+              {/* Session message and percentage on same line */}
+              <div
+                css={css`
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 13px;
+                  color: #333;
+                  margin-top: 8px;
+                `}
+              >
+                <span>{exportProgress.message}</span>
+                <span
                   css={css`
-                    height: 8px;
-                    border-radius: 4px;
-                  `}
-                />
-                <div
-                  css={css`
-                    display: flex;
-                    justify-content: right;
-                    margin-top: 4px;
-                    font-size: 12px;
                     color: #666;
+                    font-size: 12px;
                   `}
                 >
-                  <span>{exportProgress.percentage}%</span>
-                </div>
+                  {exportProgress.percentage}%
+                </span>
               </div>
 
-              {/* Session and file progress info */}
+              {/* Progress bar */}
+              <LinearProgress
+                variant="determinate"
+                value={exportProgress.percentage}
+                css={css`
+                  height: 8px;
+                  border-radius: 4px;
+                `}
+              />
+
+              {/* File copying status */}
               <div
                 css={css`
                   font-size: 13px;
-                  color: #333;
+                  color: #666;
+                  min-height: 1.4em;
                 `}
               >
-                <div>{exportProgress.message}</div>
                 {exportProgress.currentFile && (
-                  <div
-                    css={css`
-                      color: #666;
-                      margin-top: 4px;
-                    `}
-                  >
+                  <>
                     {t`Copying ${exportProgress.currentFile}`}
                     {exportProgress.totalFilesInSession &&
                       exportProgress.totalFilesInSession > 1 &&
                       ` (${exportProgress.currentFileIndex} of ${exportProgress.totalFilesInSession})`}
-                  </div>
+                  </>
                 )}
               </div>
 
@@ -664,8 +692,19 @@ export const ExportDialog: React.FunctionComponent<{
               const allWarnings = [...rulesWarnings, ...cleanedExportLog];
               const hasWarnings = allWarnings.length > 0;
 
+              // Helper to decode HTML entities and strip formatting tags for clipboard
+              const decodeForClipboard = (html: string) =>
+                html
+                  .replace(/<b>/g, "")
+                  .replace(/<\/b>/g, "")
+                  .replace(/&lt;/g, "<")
+                  .replace(/&gt;/g, ">")
+                  .replace(/&amp;/g, "&");
+
               const copyWarningsToClipboard = () => {
-                clipboard.writeText(allWarnings.join("\n"));
+                clipboard.writeText(
+                  allWarnings.map(decodeForClipboard).join("\n")
+                );
               };
 
               return (
@@ -674,11 +713,11 @@ export const ExportDialog: React.FunctionComponent<{
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    gap: 10px;
+                    gap: 4px;
                     min-height: 200px;
                   `}
                 >
-                  <h2
+                  <h3
                     css={css`
                       display: flex;
                       align-items: center;
@@ -699,52 +738,71 @@ export const ExportDialog: React.FunctionComponent<{
                     ) : (
                       <Trans>Done</Trans>
                     )}
-                  </h2>
+                  </h3>
 
                   {/* Show warnings log if any */}
                   {hasWarnings && (
-                    <div>
-                      <div
-                        css={css`
-                          display: flex;
-                          justify-content: flex-end;
-                          margin-bottom: 4px;
-                        `}
-                      >
-                        <Tooltip title={t`Copy to clipboard`}>
-                          <IconButton
-                            size="small"
-                            onClick={copyWarningsToClipboard}
-                            css={css`
-                              padding: 4px;
-                            `}
-                          >
-                            <ContentCopyIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                      <div
-                        css={css`
-                          max-height: 300px;
-                          overflow-y: auto;
-                          background: #fffbe6;
-                          border: 1px solid #ffe58f;
-                          border-radius: 4px;
-                          padding: 8px;
-                          font-size: 12px;
-                        `}
-                      >
-                        {allWarnings.map((entry, i) => (
-                          <div key={i}>{entry}</div>
-                        ))}
-                      </div>
+                    <div
+                      css={css`
+                        position: relative;
+                        max-height: 300px;
+                        overflow-y: auto;
+                        background: #f5f5f5;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        padding: 8px;
+                        padding-right: 32px;
+                        font-size: 12px;
+                        font-family: monospace;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                      `}
+                    >
+                      <Tooltip title={t`Copy to clipboard`}>
+                        <IconButton
+                          size="small"
+                          onClick={copyWarningsToClipboard}
+                          css={css`
+                            position: absolute;
+                            top: 4px;
+                            right: 4px;
+                            padding: 4px;
+                          `}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      {allWarnings.map((entry, i) => (
+                        <div
+                          key={i}
+                          dangerouslySetInnerHTML={{ __html: entry }}
+                        />
+                      ))}
                     </div>
                   )}
 
                   {imdiValidated && (
-                    <Alert severity="success">
+                    <div
+                      css={css`
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 8px 12px;
+                        //background: ${lameta_green};
+                        //border: 1px solid ${lameta_dark_green};
+                        border-radius: 4px;
+                        color: ${lameta_dark_green};
+                        font-size: 14px;
+                      `}
+                    >
+                      <CheckCircleIcon
+                        css={css`
+                          color: ${lameta_dark_green};
+                          font-size: 20px;
+                        `}
+                      />
                       {t`The IMDI files were validated.`}
-                    </Alert>
+                    </div>
                   )}
                 </div>
               );
@@ -807,7 +865,7 @@ export const ExportDialog: React.FunctionComponent<{
             onClick={() => {
               cancelRequestedRef.current = true;
               // Also cancel any active file copy operations in the main process
-              mainProcessApi.cancelExportCopyOperations();
+              mainProcessApi.cancelImdiExportCopyOperations();
               setExportProgress((prev) => ({
                 ...prev,
                 message: t`Cancelling...`

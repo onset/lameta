@@ -149,6 +149,14 @@ describe("actor imdi export", () => {
     expect("Actor/BirthDate").toMatch("Unspecified");
     expect("Actor/Age").toMatch("Unspecified");
   });
+  it("should strip non-conformant birth years like ~1964 and output Unspecified", () => {
+    // Values like "~1964" (approximate dates) are not valid IMDI Date_Value_Type
+    person.properties.setText("birthYear", "~1964");
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/BirthDate").toMatch("Unspecified");
+  });
 
   // this one is weird..., just testing a report from a user:
   // "Lameta writes contributor role in lowercase in IMDI although it seems like uppercase from the GUI."

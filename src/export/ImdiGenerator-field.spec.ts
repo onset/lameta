@@ -4,6 +4,7 @@ import * as XmlBuilder from "xmlbuilder";
 import { fieldElement } from "./Imdi-static-fns.ts";
 import { Field, FieldType } from "../model/field/Field.ts";
 import { FieldDefinition } from "../model/field/FieldDefinition.ts";
+import { getImdiConformantBirthDate } from "./ImdiGenerator.ts";
 
 describe("imdi monolingual field export", () => {
   it("exports default if element is required", () => {
@@ -143,3 +144,47 @@ function run(fn: (builder: XmlBuilder.XMLElementOrXMLNode) => void) {
   fn(builder);
   setResultXml(builder.end({ pretty: true }));
 }
+
+describe("getImdiConformantBirthDate", () => {
+  it("returns valid 4-digit year as-is", () => {
+    expect(getImdiConformantBirthDate("1964")).toBe("1964");
+    expect(getImdiConformantBirthDate("2023")).toBe("2023");
+  });
+
+  it("returns valid year-month as-is", () => {
+    expect(getImdiConformantBirthDate("1964-06")).toBe("1964-06");
+    expect(getImdiConformantBirthDate("2023-12")).toBe("2023-12");
+  });
+
+  it("returns valid full date as-is", () => {
+    expect(getImdiConformantBirthDate("1964-06-15")).toBe("1964-06-15");
+  });
+
+  it("returns Unspecified and Unknown as-is", () => {
+    expect(getImdiConformantBirthDate("Unspecified")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("Unknown")).toBe("Unknown");
+  });
+
+  it("returns Unspecified for empty or whitespace", () => {
+    expect(getImdiConformantBirthDate("")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("   ")).toBe("Unspecified");
+  });
+
+  it("strips approximate dates with tilde prefix and returns Unspecified", () => {
+    expect(getImdiConformantBirthDate("~1964")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("~1959")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("~1934")).toBe("Unspecified");
+  });
+
+  it("strips other non-conformant values and returns Unspecified", () => {
+    expect(getImdiConformantBirthDate("circa 1964")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("about 1960")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("1960s")).toBe("Unspecified");
+    expect(getImdiConformantBirthDate("mid-1960s")).toBe("Unspecified");
+  });
+
+  it("trims whitespace from valid values", () => {
+    expect(getImdiConformantBirthDate("  1964  ")).toBe("1964");
+    expect(getImdiConformantBirthDate("  Unspecified  ")).toBe("Unspecified");
+  });
+});

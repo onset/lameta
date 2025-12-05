@@ -51,31 +51,35 @@ export class MainProcessApi {
     // Mock implementation
   }
 
-  // Export file I/O methods - mock implementations for testing
-  public async prepareExportDirectory(rootDirectory: string): Promise<void> {
+  // IMDI Export file I/O methods - mock implementations for testing
+  public async prepareImdiExportDirectory(
+    rootDirectory: string
+  ): Promise<void> {
     // Mock - do nothing in tests
   }
 
-  public async cleanupExportDirectory(rootDirectory: string): Promise<void> {
+  public async cleanupImdiExportDirectory(
+    rootDirectory: string
+  ): Promise<void> {
     // Mock - do nothing in tests
   }
 
-  public async writeExportSessionData(
+  public async writeImdiSessionData(
     data: ExportSessionData
   ): Promise<{ filesWritten: number; errors: string[] }> {
     // Mock - pretend all files were written successfully
     return { filesWritten: data.filesToCopy.length, errors: [] };
   }
 
-  public async writeExportCorpusData(data: ExportCorpusData): Promise<void> {
+  public async writeImdiCorpusData(data: ExportCorpusData): Promise<void> {
     // Mock - do nothing in tests
   }
 
-  public cancelExportCopyOperations(): void {
+  public cancelImdiExportCopyOperations(): void {
     // Mock implementation - nothing to cancel in tests
   }
 
-  public hasActiveCopyOperations(): boolean {
+  public hasActiveImdiCopyOperations(): boolean {
     // Mock implementation - no active operations in tests
     return false;
   }

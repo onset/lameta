@@ -57,6 +57,7 @@ export default defineConfig({
         "src/other/spellCheckLanguages.ts",
         "src/mainProcess/MainProcessApi.ts",
         "src/mainProcess/MainProcessCopyManager.ts",
+        "src/mainProcess/MainProcessImdiExport.ts",
         "src/mainProcess/preload/index.ts",
         "src/mainProcess/validateImdi.ts",
         "src/getTestEnvironment.ts"

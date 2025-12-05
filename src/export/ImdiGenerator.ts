@@ -30,6 +30,28 @@ import {
 import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
 
+// IMDI Date_Value_Type pattern from IMDI_3.0.xsd
+// Valid: YYYY, YYYY-MM, YYYY-MM-DD, date ranges with /, "Unknown", "Unspecified", or empty
+const imdiDatePattern =
+  /^([0-9]{4}(-(0[1-9]|1[012])(-([0-2][0-9]|3[01]))?)?)(\/[0-9]{4}(-(0[1-9]|1[012])(-([0-2][0-9]|3[01]))?)?)?$|^Unknown$|^Unspecified$/;
+
+/**
+ * Check if a birth year/date value is valid for IMDI export.
+ * Returns the value if valid, or "Unspecified" if not conformant.
+ */
+export function getImdiConformantBirthDate(value: string): string {
+  if (!value || value.trim() === "") {
+    return "Unspecified";
+  }
+  const trimmed = value.trim();
+  // Check against the IMDI date pattern
+  if (imdiDatePattern.test(trimmed)) {
+    return trimmed;
+  }
+  // Non-conformant (e.g., "~1964") - return Unspecified
+  return "Unspecified";
+}
+
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
   RAW_IMDI
@@ -977,11 +999,15 @@ export default class ImdiGenerator {
         if (!dateToCompareWith) {
           this.tail.comment("Could not compute age");
         }
-        if (age && age.length > 0) {
-          this.element("Age", age);
-        }
+        // IMDI schema requires Age element to always appear before BirthDate (xs:sequence)
+        // so we must always output Age, even if empty/Unspecified
+        this.element("Age", age && age.length > 0 ? age : "Unspecified");
       }
-      this.requiredFieldWithUnspecified("BirthDate", "birthYear", person);
+      // BirthDate must conform to IMDI Date_Value_Type - strip non-conformant values like "~1964"
+      const rawBirthYear = person.properties.getTextStringOrEmpty("birthYear");
+      const conformantBirthDate = getImdiConformantBirthDate(rawBirthYear);
+      this.keysThatHaveBeenOutput.add("Person.birthYear");
+      this.element("BirthDate", conformantBirthDate);
 
       this.addGender(person);
       this.requiredField("Education", "education", person);
