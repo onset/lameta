@@ -1,10 +1,16 @@
 import call from "electron-call";
 import * as fs from "fs-extra";
+import * as Path from "path";
 import { app, dialog, shell } from "electron";
 import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
 import { mainWindow } from "./main";
+import {
+  ExportSessionData,
+  ExportCorpusData,
+  FileCopyRequest
+} from "../export/ExportBundleTypes";
 
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
   throw new Error(
@@ -80,13 +86,93 @@ export class MainProcessApi {
 
     //shell.openPath(path);
   }
+
+  // ============================================================================
+  // Export file I/O methods
+  // These handle all file operations for export, keeping renderer responsive
+  // ============================================================================
+
+  /**
+   * Prepare the export root directory (remove if exists, create fresh)
+   */
+  public async prepareExportDirectory(rootDirectory: string): Promise<void> {
+    if (fs.existsSync(rootDirectory)) {
+      await fs.remove(rootDirectory);
+    }
+    await fs.ensureDir(rootDirectory);
+  }
+
+  /**
+   * Write a session's export data (IMDI XML and copy files)
+   * Returns the number of files successfully copied
+   */
+  public async writeExportSessionData(
+    data: ExportSessionData
+  ): Promise<{ filesWritten: number; errors: string[] }> {
+    const errors: string[] = [];
+    let filesWritten = 0;
+
+    try {
+      // Create required directories
+      for (const dir of data.directoriesToCreate) {
+        await fs.ensureDir(dir);
+      }
+
+      // Write IMDI XML file
+      await fs.writeFile(data.imdiPath, data.imdiXml, "utf8");
+
+      // Copy files
+      for (const copyReq of data.filesToCopy) {
+        try {
+          await this.copyFileForExport(copyReq.source, copyReq.destination);
+          filesWritten++;
+        } catch (err) {
+          const msg = `Failed to copy ${Path.basename(copyReq.source)}: ${err.message}`;
+          errors.push(msg);
+          console.error(msg);
+        }
+      }
+    } catch (err) {
+      errors.push(`Failed to write session data: ${err.message}`);
+    }
+
+    return { filesWritten, errors };
+  }
+
+  /**
+   * Write the corpus IMDI file
+   */
+  public async writeExportCorpusData(data: ExportCorpusData): Promise<void> {
+    const dir = Path.dirname(data.imdiPath);
+    await fs.ensureDir(dir);
+    await fs.writeFile(data.imdiPath, data.imdiXml, "utf8");
+  }
+
+  /**
+   * Copy a single file for export, preserving timestamps
+   * Uses async fs operations for better performance
+   */
+  private async copyFileForExport(
+    source: string,
+    destination: string
+  ): Promise<void> {
+    // Ensure destination directory exists
+    await fs.ensureDir(Path.dirname(destination));
+
+    // Copy the file
+    await fs.copyFile(source, destination);
+
+    // Preserve modification time
+    const stat = await fs.stat(source);
+    await fs.utimes(destination, stat.atime, stat.mtime);
+  }
 }
 
 // Note: call.initialize() was previously completely commented out because it caused
-// E2E tests to fail with "noaccess" errors (LAM-27). However, without it, the IPC
-// bridge for mainProcessApi doesn't work in packaged apps, causing IMDI export to hang.
-// Solution: Only initialize electron-call when NOT running E2E tests.
-// E2E tests don't need mainProcessApi functions (they don't test IMDI export, etc.)
+// Initialize electron-call for IPC bridge between renderer and main process.
+// NOTE: Skipped for E2E tests due to "noaccess" race condition (LAM-27).
+// This causes E2E tests that need mainProcessApi to fail - including hybrid export tests.
+// See https://linear.app/lameta/issue/LAM-27
 if (!process.env.E2E) {
   call.initialize();
 }

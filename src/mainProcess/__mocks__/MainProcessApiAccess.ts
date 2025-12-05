@@ -1,4 +1,8 @@
 import { XMLValidationResult } from "xmllint-wasm";
+import {
+  ExportSessionData,
+  ExportCorpusData
+} from "../../export/ExportBundleTypes";
 
 /**
  * MOCK VERSION of MainProcessApi
@@ -46,5 +50,21 @@ export class MainProcessApi {
     action: "clearSelection" | "keepSelection" | "activateSelection"
   ) {
     // Mock implementation
+  }
+
+  // Export file I/O methods - mock implementations for testing
+  public async prepareExportDirectory(rootDirectory: string): Promise<void> {
+    // Mock - do nothing in tests
+  }
+
+  public async writeExportSessionData(
+    data: ExportSessionData
+  ): Promise<{ filesWritten: number; errors: string[] }> {
+    // Mock - pretend all files were written successfully
+    return { filesWritten: data.filesToCopy.length, errors: [] };
+  }
+
+  public async writeExportCorpusData(data: ExportCorpusData): Promise<void> {
+    // Mock - do nothing in tests
   }
 }

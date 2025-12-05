@@ -5,7 +5,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import Alert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { observer } from "mobx-react";
 import "./ExportDialog.css";
 import { ProjectHolder } from "../../model/Project/Project";
@@ -33,9 +33,11 @@ import {
   DialogCancelButton,
   useSetupLametaDialog
 } from "../LametaDialog";
-import { Button } from "@mui/material";
+import { Button, LinearProgress } from "@mui/material";
 import { IMDIMode } from "../../export/ImdiGenerator";
 import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
+import { ExportProgress } from "../../export/ExportBundleTypes";
+import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 
 const saymore_orange = "#e69664";
 import { app } from "@electron/remote";
@@ -137,6 +139,24 @@ export const ExportDialog: React.FunctionComponent<{
   }, [countOfMarkedSessions]);
 
   const [copyJobsInProgress, setCopyJobsInProgress] = useState<ICopyJob[]>([]);
+
+  // Progress tracking for hybrid export
+  const [exportProgress, setExportProgress] = useState<ExportProgress>({
+    phase: "preparing",
+    currentSession: 0,
+    totalSessions: 0,
+    currentSessionName: "",
+    percentage: 0,
+    message: ""
+  });
+  const [exportLog, setExportLog] = useState<string[]>([]);
+  const cancelRequestedRef = useRef(false);
+
+  // Helper to add a log entry
+  const addLogEntry = useCallback((entry: string) => {
+    setExportLog((prev) => [...prev, entry]);
+  }, []);
+
   useInterval(() => {
     if (mode === Mode.copying) {
       if (CopyManager.getActiveCopyJobs().length === 0) {
@@ -333,6 +353,108 @@ export const ExportDialog: React.FunctionComponent<{
     return folder;
   };
 
+  // New hybrid export function that uses generator and main process for file I/O
+  const runHybridImdiExport = async (
+    path: string,
+    imdiMode: IMDIMode,
+    copyFiles: boolean,
+    folderFilter: (f: Folder) => boolean
+  ) => {
+    const project = props.projectHolder.project!;
+
+    // Reset progress state
+    cancelRequestedRef.current = false;
+    setExportLog([]);
+
+    // Get job info for progress calculation
+    const jobInfo = ImdiBundler.getExportJobInfo(project, path, folderFilter);
+    setExportProgress({
+      phase: "preparing",
+      currentSession: 0,
+      totalSessions: jobInfo.totalSessions,
+      currentSessionName: "",
+      percentage: 0,
+      message: t`Preparing export directory...`
+    });
+
+    // Prepare output directory via main process
+    await mainProcessApi.prepareExportDirectory(path);
+
+    // Create the generator
+    const generator = ImdiBundler.generateExportData(
+      project,
+      path,
+      imdiMode,
+      copyFiles,
+      folderFilter
+    );
+
+    let sessionIndex = 0;
+    let result = await generator.next();
+
+    // Process each yielded session data
+    while (!result.done) {
+      // Check for cancellation
+      if (cancelRequestedRef.current) {
+        setExportProgress((prev) => ({
+          ...prev,
+          phase: "cancelled",
+          message: t`Export cancelled`
+        }));
+        addLogEntry(t`Export cancelled by user`);
+        return false;
+      }
+
+      const sessionData = result.value;
+      sessionIndex++;
+
+      // Update progress
+      const percentage = Math.round((sessionIndex / jobInfo.totalSessions) * 90); // Reserve 10% for corpus file
+      setExportProgress({
+        phase: "sessions",
+        currentSession: sessionIndex,
+        totalSessions: jobInfo.totalSessions,
+        currentSessionName: sessionData.displayName,
+        percentage,
+        message: t`Exporting Session ${sessionIndex} of ${jobInfo.totalSessions}`
+      });
+
+      // Write session data via main process
+      const writeResult = await mainProcessApi.writeExportSessionData(sessionData);
+
+      // Log any errors
+      for (const error of writeResult.errors) {
+        addLogEntry(`⚠️ ${error}`);
+      }
+
+      // Get next session
+      result = await generator.next();
+    }
+
+    // Write corpus file (final return value from generator)
+    setExportProgress((prev) => ({
+      ...prev,
+      phase: "corpus",
+      percentage: 95,
+      message: t`Writing corpus metadata...`
+    }));
+
+    const corpusData = result.value;
+    await mainProcessApi.writeExportCorpusData(corpusData);
+
+    // Done!
+    setExportProgress({
+      phase: "done",
+      currentSession: jobInfo.totalSessions,
+      totalSessions: jobInfo.totalSessions,
+      currentSessionName: "",
+      percentage: 100,
+      message: t`Export complete!`
+    });
+
+    return true;
+  };
+
   const saveFilesAsync = async (path: string) => {
     const startTime = Date.now();
     const MIN_EXPORT_TIME = 1000; // 1 seconds minimum to give user some confirmation that we did do something (ro-crate export is very fast)
@@ -387,15 +509,9 @@ export const ExportDialog: React.FunctionComponent<{
           case "imdi":
             analyticsEvent("Export", "Export IMDI Xml");
 
-            await ImdiBundler.saveImdiBundleToFolder(
-              props.projectHolder.project!,
-              path,
-              IMDIMode.RAW_IMDI,
-              false,
-              folderFilter
-            );
+            await runHybridImdiExport(path, IMDIMode.RAW_IMDI, false, folderFilter);
             await finishExport();
-            setMode(Mode.finished); // don't have to wait for any copying of big files
+            setMode(Mode.finished);
             setImdiValidated(true);
             break;
           case "opex-plus-files":
@@ -406,18 +522,15 @@ export const ExportDialog: React.FunctionComponent<{
               );
               setMode(Mode.choosing);
             } else {
-              await ImdiBundler.saveImdiBundleToFolder(
-                props.projectHolder.project!,
-                path,
-                IMDIMode.OPEX,
-                true,
-                folderFilter
-              ).then(async () => {
+              const success = await runHybridImdiExport(path, IMDIMode.OPEX, true, folderFilter);
+              if (success) {
                 await finishExport();
-                // At this point we're normally still copying files asynchronously, via RobustLargeFileCopy.
-                setMode(Mode.copying); // don't have to wait for any copying of big files
+                setMode(Mode.finished);
                 setImdiValidated(true);
-              });
+              } else {
+                // Cancelled
+                setMode(Mode.choosing);
+              }
             }
             break;
         }
@@ -497,9 +610,59 @@ export const ExportDialog: React.FunctionComponent<{
             </div>
           )}
           {mode === Mode.exporting && (
-            <h2>
-              <Trans>Exporting...</Trans>
-            </h2>
+            <div
+              css={css`
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                min-height: 200px;
+              `}
+            >
+              {/* Progress bar */}
+              <div>
+                <LinearProgress
+                  variant="determinate"
+                  value={exportProgress.percentage}
+                  css={css`
+                    height: 8px;
+                    border-radius: 4px;
+                  `}
+                />
+                <div
+                  css={css`
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 4px;
+                    font-size: 12px;
+                    color: #666;
+                  `}
+                >
+                  <span>{exportProgress.message}</span>
+                  <span>{exportProgress.percentage}%</span>
+                </div>
+              </div>
+
+              {/* Mini log for warnings/errors */}
+              {exportLog.length > 0 && (
+                <div
+                  data-testid="export-log"
+                  css={css`
+                    max-height: 150px;
+                    overflow-y: auto;
+                    background: #f5f5f5;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    padding: 8px;
+                    font-size: 12px;
+                    font-family: monospace;
+                  `}
+                >
+                  {exportLog.map((entry, i) => (
+                    <div key={i}>{entry}</div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           {mode === Mode.finished && (
             <div
@@ -531,6 +694,32 @@ export const ExportDialog: React.FunctionComponent<{
                 />
                 <Trans>Done</Trans>
               </h2>
+
+              {/* Show warnings log if any */}
+              {exportLog.length > 0 && (
+                <div>
+                  <Alert severity="warning">
+                    {t`Export completed with ${exportLog.length} warning(s)`}
+                  </Alert>
+                  <div
+                    css={css`
+                      max-height: 150px;
+                      overflow-y: auto;
+                      background: #f5f5f5;
+                      border: 1px solid #ddd;
+                      border-radius: 4px;
+                      padding: 8px;
+                      margin-top: 8px;
+                      font-size: 12px;
+                      font-family: monospace;
+                    `}
+                  >
+                    {exportLog.map((entry, i) => (
+                      <div key={i}>{entry}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {mode === Mode.copying && (
@@ -560,6 +749,21 @@ export const ExportDialog: React.FunctionComponent<{
             onClick={() => closeDialog()}
           >
             <Trans>Close</Trans>
+          </Button>
+        )}
+        {mode === Mode.exporting && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              cancelRequestedRef.current = true;
+              setExportProgress((prev) => ({
+                ...prev,
+                message: t`Cancelling...`
+              }));
+            }}
+          >
+            <Trans>Cancel</Trans>
           </Button>
         )}
         {mode === Mode.choosing && (
