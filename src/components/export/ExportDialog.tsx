@@ -87,7 +87,8 @@ enum Mode {
   exporting = 1,
   copying = 2,
   finished = 3,
-  error = 4
+  error = 4,
+  cancelled = 5
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
@@ -575,7 +576,7 @@ export const ExportDialog: React.FunctionComponent<{
                 setImdiValidated(true);
               } else {
                 // Cancelled
-                setMode(Mode.choosing);
+                setMode(Mode.cancelled);
               }
             }
             break;
@@ -806,11 +807,33 @@ export const ExportDialog: React.FunctionComponent<{
               })}
             </div>
           )}
+          {mode === Mode.cancelled && (
+            <div
+              css={css`
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                min-height: 200px;
+              `}
+            >
+              <Alert
+                severity="info"
+                css={css`
+                  .MuiAlert-icon {
+                    color: inherit;
+                  }
+                `}
+              >
+                <Trans>Export was cancelled. No files were exported.</Trans>
+              </Alert>
+            </div>
+          )}
         </div>
       </DialogMiddle>
 
       <DialogBottomButtons>
-        {mode === Mode.error && (
+        {(mode === Mode.error || mode === Mode.cancelled) && (
           <Button
             variant="contained"
             color="secondary"

@@ -162,6 +162,32 @@ export class MainProcessApi {
   }
 
   /**
+   * Clean up a partial export directory (e.g., when export is cancelled)
+   */
+  public async cleanupExportDirectory(rootDirectory: string): Promise<void> {
+    if (fs.existsSync(rootDirectory)) {
+      await fs.remove(rootDirectory);
+    }
+  }
+
+  /**
+   * Cancel any active export copy operations
+   * Currently a no-op since we use fs.copyFile which is not cancellable
+   */
+  public cancelExportCopyOperations(): void {
+    // Currently using fs.copyFile which completes atomically
+    // If we need cancellable copies in the future, we could use streams
+  }
+
+  /**
+   * Check if there are any active copy operations
+   */
+  public hasActiveCopyOperations(): boolean {
+    // Currently no tracking of active operations
+    return false;
+  }
+
+  /**
    * Copy a single file for export, preserving timestamps
    * Uses async fs operations for better performance
    */
