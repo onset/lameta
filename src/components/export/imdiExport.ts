@@ -4,7 +4,7 @@ import { Project } from "../../model/Project/Project";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import ImdiBundler from "../../export/ImdiBundler";
-import { IMDIMode } from "../../export/ImdiGenerator";
+import { IMDIMode, resetTildeBirthYearWarning } from "../../export/ImdiGenerator";
 import {
   startCollectingWarnings,
   stopCollectingWarnings,
@@ -55,6 +55,8 @@ export const runHybridImdiExport = async (
 
   // Start collecting warnings so they go to the log instead of toast notifications
   startCollectingWarnings();
+  // Reset the tilde birth year warning flag for this export
+  resetTildeBirthYearWarning();
 
   try {
     // Prepare export directory via main process

@@ -18,7 +18,6 @@ import { titleCase } from "title-case";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { stringify } from "flatted";
 import { NotifyWarning } from "../components/Notify";
 import { collectExportWarning } from "./ExportWarningCollector";
 import { getStatusOfFile } from "../model/file/FileStatus";
@@ -35,21 +34,69 @@ import { fieldElement } from "./Imdi-static-fns";
 const imdiDatePattern =
   /^([0-9]{4}(-(0[1-9]|1[012])(-([0-2][0-9]|3[01]))?)?)(\/[0-9]{4}(-(0[1-9]|1[012])(-([0-2][0-9]|3[01]))?)?)?$|^Unknown$|^Unspecified$/;
 
+// Pattern to match approximate birth years like "~1964"
+const tildeBirthYearPattern = /^~(\d{4})$/;
+
+// Track if we've already emitted the tilde birth year warning
+let hasEmittedTildeBirthYearWarning = false;
+
+/**
+ * Reset the tilde birth year warning flag. Call this at the start of an export.
+ */
+export function resetTildeBirthYearWarning(): void {
+  hasEmittedTildeBirthYearWarning = false;
+}
+
 /**
  * Check if a birth year/date value is valid for IMDI export.
- * Returns the value if valid, or "Unspecified" if not conformant.
+ * - Returns the value if already valid
+ * - Converts "~YYYY" to "YYYY/YYYY+1" range format
+ * - Returns "Unspecified" for other non-conformant values
  */
 export function getImdiConformantBirthDate(value: string): string {
   if (!value || value.trim() === "") {
     return "Unspecified";
   }
   const trimmed = value.trim();
-  // Check against the IMDI date pattern
+
+  // Check if it's already a valid IMDI date
   if (imdiDatePattern.test(trimmed)) {
     return trimmed;
   }
-  // Non-conformant (e.g., "~1964") - return Unspecified
+
+  // Check for approximate birth year with tilde (e.g., "~1964")
+  const tildeMatch = trimmed.match(tildeBirthYearPattern);
+  if (tildeMatch) {
+    const year = parseInt(tildeMatch[1], 10);
+    // Convert to range format: YYYY-1/YYYY+1
+    return `${year - 1}/${year + 1}`;
+  }
+
+  // Non-conformant - return Unspecified
   return "Unspecified";
+}
+
+/**
+ * Check if a birth year has the tilde format (e.g., "~1964")
+ */
+export function isTildeBirthYear(value: string): boolean {
+  return tildeBirthYearPattern.test(value.trim());
+}
+
+/**
+ * Emit a warning for tilde birth years (only once per export)
+ * Returns true if a warning was emitted (first time), false otherwise
+ */
+export function emitTildeBirthYearWarningOnce(): boolean {
+  if (!hasEmittedTildeBirthYearWarning) {
+    hasEmittedTildeBirthYearWarning = true;
+    const warningMsg = `lameta found one or more Persons with Birth Years of the form "~1234". These will be converted to a range, e.g. "1233/1235".`;
+    if (!collectExportWarning(warningMsg)) {
+      NotifyWarning(warningMsg);
+    }
+    return true;
+  }
+  return false;
 }
 
 export enum IMDIMode {
@@ -988,7 +1035,7 @@ export default class ImdiGenerator {
 
       const birthYear = person.properties.getTextStringOrEmpty("birthYear");
       if (birthYear === "?") {
-        this.element("Age", "unknown"); // ELAR request Oct-Dec 2019
+        this.element("Age", "Unknown"); // ELAR request Oct-Dec 2019. IMDI schema requires capital "Unknown"
       } else if (birthYear.trim() === "") {
         this.element("Age", "Unspecified"); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
         this.tail.comment("Could not compute age");
@@ -1003,9 +1050,28 @@ export default class ImdiGenerator {
         // so we must always output Age, even if empty/Unspecified
         this.element("Age", age && age.length > 0 ? age : "Unspecified");
       }
-      // BirthDate must conform to IMDI Date_Value_Type - strip non-conformant values like "~1964"
+      // BirthDate must conform to IMDI Date_Value_Type
       const rawBirthYear = person.properties.getTextStringOrEmpty("birthYear");
       const conformantBirthDate = getImdiConformantBirthDate(rawBirthYear);
+
+      // Emit warnings for non-conformant birth years
+      if (
+        rawBirthYear.trim() !== "" &&
+        rawBirthYear.trim() !== "?" &&
+        conformantBirthDate !== rawBirthYear.trim()
+      ) {
+        if (isTildeBirthYear(rawBirthYear)) {
+          // For tilde birth years, emit a single warning for all of them
+          emitTildeBirthYearWarningOnce();
+        } else {
+          // For other non-conformant values, emit a per-person warning
+          const personName = person.properties.getTextStringOrEmpty("name");
+          const warningMsg = `Person "${personName}": BirthYear "${rawBirthYear}" is not valid for IMDI export. Using "Unspecified" instead.`;
+          if (!collectExportWarning(warningMsg)) {
+            NotifyWarning(warningMsg);
+          }
+        }
+      }
       this.keysThatHaveBeenOutput.add("Person.birthYear");
       this.element("BirthDate", conformantBirthDate);
 
@@ -1110,10 +1176,10 @@ export default class ImdiGenerator {
     //if they specified a folder, use that, otherwise use the current default
     const folder = target ? target : this.folderInFocus;
 
+    // Note: Previously used stringify(folder) here which was extremely slow (~1.5s per session)
+    // because it serialized the entire folder object on every field. Using lightweight info instead.
     sentryBreadCrumb(
-      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} f:{${stringify(
-        folder
-      )}}`
+      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} folder:${folder.type}/${folder.displayName}`
     );
 
     let field = folder.properties.getValue(fieldName) as Field;

@@ -4,7 +4,11 @@ import * as XmlBuilder from "xmlbuilder";
 import { fieldElement } from "./Imdi-static-fns.ts";
 import { Field, FieldType } from "../model/field/Field.ts";
 import { FieldDefinition } from "../model/field/FieldDefinition.ts";
-import { getImdiConformantBirthDate } from "./ImdiGenerator.ts";
+import {
+  getImdiConformantBirthDate,
+  isTildeBirthYear,
+  resetTildeBirthYearWarning
+} from "./ImdiGenerator.ts";
 
 describe("imdi monolingual field export", () => {
   it("exports default if element is required", () => {
@@ -170,10 +174,10 @@ describe("getImdiConformantBirthDate", () => {
     expect(getImdiConformantBirthDate("   ")).toBe("Unspecified");
   });
 
-  it("strips approximate dates with tilde prefix and returns Unspecified", () => {
-    expect(getImdiConformantBirthDate("~1964")).toBe("Unspecified");
-    expect(getImdiConformantBirthDate("~1959")).toBe("Unspecified");
-    expect(getImdiConformantBirthDate("~1934")).toBe("Unspecified");
+  it("converts approximate dates with tilde prefix to range format", () => {
+    expect(getImdiConformantBirthDate("~1964")).toBe("1963/1965");
+    expect(getImdiConformantBirthDate("~1959")).toBe("1958/1960");
+    expect(getImdiConformantBirthDate("~1934")).toBe("1933/1935");
   });
 
   it("strips other non-conformant values and returns Unspecified", () => {
@@ -186,5 +190,28 @@ describe("getImdiConformantBirthDate", () => {
   it("trims whitespace from valid values", () => {
     expect(getImdiConformantBirthDate("  1964  ")).toBe("1964");
     expect(getImdiConformantBirthDate("  Unspecified  ")).toBe("Unspecified");
+  });
+
+  it("handles tilde with whitespace", () => {
+    expect(getImdiConformantBirthDate("  ~1964  ")).toBe("1963/1965");
+  });
+});
+
+describe("isTildeBirthYear", () => {
+  it("returns true for valid tilde birth years", () => {
+    expect(isTildeBirthYear("~1964")).toBe(true);
+    expect(isTildeBirthYear("~1933")).toBe(true);
+    expect(isTildeBirthYear("~2000")).toBe(true);
+    expect(isTildeBirthYear("  ~1964  ")).toBe(true);
+  });
+
+  it("returns false for non-tilde values", () => {
+    expect(isTildeBirthYear("1964")).toBe(false);
+    expect(isTildeBirthYear("")).toBe(false);
+    expect(isTildeBirthYear("?")).toBe(false);
+    expect(isTildeBirthYear("circa 1964")).toBe(false);
+    expect(isTildeBirthYear("~")).toBe(false);
+    expect(isTildeBirthYear("~abc")).toBe(false);
+    expect(isTildeBirthYear("1956x")).toBe(false);
   });
 });

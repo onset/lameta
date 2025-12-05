@@ -56,6 +56,62 @@ import {
 let staticShowExportDialog: () => void = () => {};
 export { staticShowExportDialog as ShowExportDialog };
 
+// Warning category colors - each category gets a distinct left border color
+const warningCategoryColors = [
+  "#e65100", // deep orange
+  "#7b1fa2", // purple
+  "#1565c0", // blue
+  "#2e7d32", // green
+  "#c62828", // red
+  "#00838f", // cyan
+  "#4527a0", // deep purple
+  "#ef6c00", // orange
+  "#283593", // indigo
+  "#00695c" // teal
+];
+
+// Patterns to identify warning categories
+const warningCategoryPatterns: Array<{ pattern: RegExp; label: string }> = [
+  {
+    pattern: /does not comply with the file naming rules/i,
+    label: "file-naming"
+  },
+  { pattern: /BirthYear .* is not valid for IMDI/i, label: "birthyear" },
+  { pattern: /missing/i, label: "missing" },
+  { pattern: /could not/i, label: "could-not" }
+];
+
+// Get the category for a warning message
+const getWarningCategory = (message: string): string => {
+  for (const { pattern, label } of warningCategoryPatterns) {
+    if (pattern.test(message)) {
+      return label;
+    }
+  }
+  return "other";
+};
+
+// Get color for a category (uses consistent mapping)
+const categoryColorMap = new Map<string, string>();
+let nextColorIndex = 0;
+
+const getColorForCategory = (category: string): string => {
+  if (!categoryColorMap.has(category)) {
+    categoryColorMap.set(
+      category,
+      warningCategoryColors[nextColorIndex % warningCategoryColors.length]
+    );
+    nextColorIndex++;
+  }
+  return categoryColorMap.get(category)!;
+};
+
+// Reset color mapping (call when dialog opens)
+const resetCategoryColors = () => {
+  categoryColorMap.clear();
+  nextColorIndex = 0;
+};
+
 enum Mode {
   choosing = 0,
   exporting = 1,
@@ -72,6 +128,7 @@ export const ExportDialog: React.FunctionComponent<{
 
   staticShowExportDialog = () => {
     setMode(Mode.choosing);
+    resetCategoryColors(); // Reset warning color assignments for fresh dialog
     showDialog();
     analyticsLocation("Export Dialog");
   };
@@ -424,15 +481,16 @@ export const ExportDialog: React.FunctionComponent<{
         handleContinue(false);
       }}
       css={css`
-        width: 600px;
-        height: 700px;
+        .MuiDialog-paper {
+          width: 600px;
+        }
       `}
     >
       <DialogTitle title={t`Export Project`} />
       <DialogMiddle
         css={css`
           min-width: 400px;
-          min-height: 340px;
+          height: 420px;
         `}
       >
         {mode === Mode.choosing && (
@@ -566,12 +624,21 @@ export const ExportDialog: React.FunctionComponent<{
                           <ContentCopyIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      {allEntries.map((entry, i) => (
-                        <div
-                          key={i}
-                          dangerouslySetInnerHTML={{ __html: entry }}
-                        />
-                      ))}
+                      {allEntries.map((entry, i) => {
+                        const category = getWarningCategory(entry);
+                        const color = getColorForCategory(category);
+                        return (
+                          <div
+                            key={i}
+                            css={css`
+                              border-left: 3px solid ${color};
+                              padding-left: 8px;
+                              margin-bottom: 4px;
+                            `}
+                            dangerouslySetInnerHTML={{ __html: entry }}
+                          />
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -641,7 +708,7 @@ export const ExportDialog: React.FunctionComponent<{
                 <div
                   data-testid="export-log"
                   css={css`
-                    max-height: 150px;
+                    max-height: 300px;
                     overflow-y: auto;
                     background: #f5f5f5;
                     border: 1px solid #ddd;
@@ -651,9 +718,22 @@ export const ExportDialog: React.FunctionComponent<{
                     font-family: monospace;
                   `}
                 >
-                  {exportLog.map((entry, i) => (
-                    <div key={i}>{entry}</div>
-                  ))}
+                  {exportLog.map((entry, i) => {
+                    const category = getWarningCategory(entry);
+                    const color = getColorForCategory(category);
+                    return (
+                      <div
+                        key={i}
+                        css={css`
+                          border-left: 3px solid ${color};
+                          padding-left: 8px;
+                          margin-bottom: 4px;
+                        `}
+                      >
+                        {entry}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -734,7 +814,7 @@ export const ExportDialog: React.FunctionComponent<{
                       />
                     )}
                     {hasWarnings ? (
-                      <Trans>Done with warnings</Trans>
+                      <Trans>Done, with {allWarnings.length} warnings</Trans>
                     ) : (
                       <Trans>Done</Trans>
                     )}
@@ -772,12 +852,21 @@ export const ExportDialog: React.FunctionComponent<{
                           <ContentCopyIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      {allWarnings.map((entry, i) => (
-                        <div
-                          key={i}
-                          dangerouslySetInnerHTML={{ __html: entry }}
-                        />
-                      ))}
+                      {allWarnings.map((entry, i) => {
+                        const category = getWarningCategory(entry);
+                        const color = getColorForCategory(category);
+                        return (
+                          <div
+                            key={i}
+                            css={css`
+                              border-left: 3px solid ${color};
+                              padding-left: 8px;
+                              margin-bottom: 4px;
+                            `}
+                            dangerouslySetInnerHTML={{ __html: entry }}
+                          />
+                        );
+                      })}
                     </div>
                   )}
 

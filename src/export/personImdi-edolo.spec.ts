@@ -149,13 +149,13 @@ describe("actor imdi export", () => {
     expect("Actor/BirthDate").toMatch("Unspecified");
     expect("Actor/Age").toMatch("Unspecified");
   });
-  it("should strip non-conformant birth years like ~1964 and output Unspecified", () => {
-    // Values like "~1964" (approximate dates) are not valid IMDI Date_Value_Type
+  it("should convert approximate birth years like ~1964 to range format", () => {
+    // Values like "~1964" (approximate dates) are converted to YYYY-1/YYYY+1 range format
     person.properties.setText("birthYear", "~1964");
     const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
     setResultXml(xml);
-    expect("Actor/BirthDate").toMatch("Unspecified");
+    expect("Actor/BirthDate").toMatch("1963/1965");
   });
 
   // this one is weird..., just testing a report from a user:

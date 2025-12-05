@@ -5,6 +5,7 @@
  */
 
 let currentWarnings: string[] = [];
+let seenWarnings: Set<string> = new Set();
 let isCollecting = false;
 
 /**
@@ -12,6 +13,7 @@ let isCollecting = false;
  */
 export const startCollectingWarnings = () => {
   currentWarnings = [];
+  seenWarnings = new Set();
   isCollecting = true;
 };
 
@@ -23,6 +25,7 @@ export const stopCollectingWarnings = (): string[] => {
   isCollecting = false;
   const warnings = [...currentWarnings];
   currentWarnings = [];
+  seenWarnings = new Set();
   return warnings;
 };
 
@@ -35,18 +38,25 @@ export const getCollectedWarnings = (): string[] => {
 
 /**
  * Clear collected warnings without stopping collection.
+ * Note: This only clears the warnings list, not the deduplication set,
+ * so the same warning won't be added again even after clearing.
  */
 export const clearCollectedWarnings = () => {
   currentWarnings = [];
+  // Don't clear seenWarnings - we want to keep deduplicating across the entire export
 };
 
 /**
- * Add a warning. If collecting, adds to the collection.
+ * Add a warning. If collecting, adds to the collection (deduplicated).
  * Returns true if the warning was collected, false if it should be shown via NotifyWarning.
  */
 export const collectExportWarning = (message: string): boolean => {
   if (isCollecting) {
-    currentWarnings.push(message);
+    // Deduplicate: only add if we haven't seen this exact message before
+    if (!seenWarnings.has(message)) {
+      seenWarnings.add(message);
+      currentWarnings.push(message);
+    }
     return true;
   }
   return false;
