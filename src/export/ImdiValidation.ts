@@ -2,8 +2,8 @@ import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import * as temp from "temp";
 import * as fs from "fs";
 
-// Don't auto-cleanup temp files so users can inspect failed IMDI
-temp.track(false);
+// Auto-cleanup temp files on app exit (including failed IMDI files)
+temp.track(true);
 
 export async function validateImdiOrThrow(
   imdiXml: string,
