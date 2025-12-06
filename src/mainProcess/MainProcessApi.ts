@@ -185,3 +185,10 @@ ipcMain.handle(
 ipcMain.handle("MainProcessApi.hasActiveImdiCopyOperations", async (_event) => {
   return mainProcessInstance.hasActiveImdiCopyOperations();
 });
+
+ipcMain.handle(
+  "MainProcessApi.revealInFolder",
+  async (_event, path: string) => {
+    return mainProcessInstance.revealInFolder(path);
+  }
+);

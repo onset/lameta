@@ -18,6 +18,7 @@ type MainProcessApiPublic = Pick<
   | "writeImdiCorpusData"
   | "cancelImdiExportCopyOperations"
   | "hasActiveImdiCopyOperations"
+  | "revealInFolder"
 >;
 
 // =============================================================================
@@ -72,7 +73,9 @@ function createNativeIpcApi(): MainProcessApiPublic {
     cancelImdiExportCopyOperations: () =>
       ipcRenderer.invoke("MainProcessApi.cancelImdiExportCopyOperations"),
     hasActiveImdiCopyOperations: () =>
-      ipcRenderer.invoke("MainProcessApi.hasActiveImdiCopyOperations")
+      ipcRenderer.invoke("MainProcessApi.hasActiveImdiCopyOperations"),
+    revealInFolder: (path: string) =>
+      ipcRenderer.invoke("MainProcessApi.revealInFolder", path)
   };
 }
 

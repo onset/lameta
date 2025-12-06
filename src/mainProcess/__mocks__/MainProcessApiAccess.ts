@@ -83,4 +83,8 @@ export class MainProcessApi {
     // Mock implementation - no active operations in tests
     return false;
   }
+
+  public async revealInFolder(path: string): Promise<void> {
+    // Mock implementation - do nothing in tests
+  }
 }

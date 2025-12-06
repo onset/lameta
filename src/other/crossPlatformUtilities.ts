@@ -5,7 +5,6 @@ import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { globSync } from "glob";
-import * as remote from "@electron/remote";
 
 export function revealInFolder(path: string) {
   console.log("Revealing in folder:", path);
@@ -14,9 +13,8 @@ export function revealInFolder(path: string) {
     path = path.replace(/\//g, "\\");
   }
 
-  // Note: electron.shell.showItemInFolder() did not work in production versions on macos, but remote.shell one does.
-  const { shell } = remote;
-  shell.showItemInFolder(path);
+  // Call main process to show item in folder (avoids macOS issues with renderer process)
+  mainProcessApi.revealInFolder(path);
 }
 
 export async function asyncTrash(path: string) {
