@@ -1,6 +1,6 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { app, dialog, shell, ipcMain } from "electron";
+import { app, shell, ipcMain } from "electron";
 import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
@@ -73,20 +73,7 @@ export class MainProcessApi {
   // On macOS, calling shell.showItemInFolder from a renderer can delay Finder until app quits.
   // So we need to do it in the Main Process
   public async revealInFolder(path: string) {
-    await dialog.showMessageBox({ message: "reveal in folder" });
-
-    const error = await shell.openPath("/Applications");
-
     await shell.showItemInFolder(path);
-    await dialog.showMessageBox({
-      type: error ? "error" : "info",
-      message: `${path} ${
-        error ? "Failed to open folder" : "Folder opened successfully"
-      }`,
-      detail: error || "Finder should now be showing /Applications"
-    });
-
-    //shell.openPath(path);
   }
 
   // ============================================================================
