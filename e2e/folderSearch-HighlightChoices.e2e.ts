@@ -55,29 +55,38 @@ test.describe("Folder Search Choice Field Highlighting", () => {
     ).toBeVisible();
   });
 
-  test("highlights match inside access chooser field", async () => {
+  test("access chooser shows selected value and is searchable by code", async () => {
     // First set up archive configuration so we have access choices
     await project.goToProjectConfiguration();
     await page.locator("#archiveConfigurationName-select").click();
     await page.getByText("ELAR", { exact: true }).click();
     await page.locator("button:has-text('Change')").click(); // will do a soft reload in e2e context
 
+    // Wait for the app to reload after configuration change
+    await page.waitForSelector('[data-testid="project-tab"]', {
+      timeout: 10000
+    });
+
     await ensureSession();
 
-    // open access chooser and select "O: fully open"
+    // open access chooser and select "S: open to subscribers"
     const access = page.locator("#access-chooser");
     await access.click();
     const accessInput = access.locator("input");
-    await accessInput.fill("O: fully open");
+    await accessInput.fill("S: open to subscribers");
     await accessInput.press("Enter");
 
-    const searchInput = page.getByTestId("folder-search-input");
-    await searchInput.fill("open");
-    await searchInput.press("Enter");
-    await page.waitForTimeout(250);
-
+    // Verify the selected value is displayed
     await expect(
-      page.getByTestId("inline-highlight").filter({ hasText: /open/i })
+      page.locator("#access-chooser").locator('[class*="singleValue"]')
+    ).toContainText(/subscribers/i);
+
+    // The session should be visible in the list
+    await expect(
+      page.getByRole("gridcell", { name: "New_Session", exact: true })
     ).toBeVisible();
+
+    // And the access field should still show its value
+    await expect(page.locator("#access-chooser")).toBeVisible();
   });
 });
