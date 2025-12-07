@@ -80,16 +80,33 @@ export function useMultilingualField(
 
   const [newlyAddedTag, setNewlyAddedTag] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isMultilingual) return;
-    setLanguageTags(getInitialLanguageTags(field));
-  }, [isMultilingual, field]);
+  // Track the field key to detect when we switch to a genuinely different field.
+  // This prevents re-initialization from discarding user-added tags when the
+  // field object reference changes but the field identity remains the same.
+  const previousFieldKeyRef = React.useRef<string>(field.key);
 
   useEffect(() => {
     if (!isMultilingual) return;
-    const tagsFromField = field.getAllNonEmptyTextAxes();
-    setLanguageTags((previous) => mergeLanguageTags(previous, tagsFromField));
-  }, [isMultilingual, field.text]);
+
+    const fieldKeyChanged = previousFieldKeyRef.current !== field.key;
+    previousFieldKeyRef.current = field.key;
+
+    if (fieldKeyChanged) {
+      // Switched to a different field - do a full re-initialization
+      setLanguageTags(getInitialLanguageTags(field));
+    } else {
+      // Same field, possibly with updated content - merge to preserve user additions
+      const tagsFromField = field.getAllNonEmptyTextAxes();
+      // Only merge if there are actual non-empty tags to add.
+      // This avoids triggering state updates when text is cleared (e.g., during language removal),
+      // which could otherwise cause a circular update pattern with handleRemoveLanguage.
+      if (tagsFromField.length > 0) {
+        setLanguageTags((previous) =>
+          mergeLanguageTags(previous, tagsFromField)
+        );
+      }
+    }
+  }, [isMultilingual, field, field.text]);
 
   const axes = useMemo<LanguageAxis[]>(() => {
     if (!isMultilingual) return [];
@@ -195,6 +212,7 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
             </div>
             <button
               type="button"
+              data-testid="cancel-add-translation"
               onClick={() => setIsAdding(false)}
               css={css`
                 border: none;
@@ -210,6 +228,7 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
         ) : (
           <button
             type="button"
+            data-testid="add-translation-button"
             onClick={() => setIsAdding(true)}
             css={css`
               background: none;

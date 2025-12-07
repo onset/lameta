@@ -271,6 +271,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     <div
       ref={containerRef}
       key={props.axis?.tag || "monolingual"}
+      data-testid={
+        props.axis
+          ? `translation-axis-${props.axis.tag}`
+          : `field-${props.field.key}-container`
+      }
       css={css`
         display: flex;
         flex-direction: column;
@@ -307,6 +312,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             <button
               type="button"
               className="remove-translation-btn"
+              data-testid={`remove-translation-${props.axis.tag}`}
               aria-label={`Remove ${props.axis.name} translation`}
               onClick={() => props.onRemoveAxis!(props.axis!.tag)}
               css={css`
@@ -343,6 +349,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             </button>
           )}
           <span
+            data-testid={`translation-language-label-${props.axis.tag}`}
             css={css`
               color: #81c21e;
               font-size: 0.85em;
