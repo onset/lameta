@@ -2,24 +2,28 @@
 // import { mainProcessApi } from "../MainProcessApiAccess";
 // mainProcessApi.someFunction(someArg).then()...
 
-// notice, we're importing type info only. The code won't be loaded in the render process, won't be available in browser debugger
-import type { MainProcessApi } from "./MainProcessApi";
+import type {
+  ExportSessionData,
+  ExportCorpusData
+} from "../export/ExportBundleTypes";
 
-// Define the public API interface
-type MainProcessApiPublic = Pick<
-  MainProcessApi,
-  | "trashItem"
-  | "validateImdiAsync"
-  | "findInPage"
-  | "stopFindInPage"
-  | "prepareImdiExportDirectory"
-  | "cleanupImdiExportDirectory"
-  | "writeImdiSessionData"
-  | "writeImdiCorpusData"
-  | "cancelImdiExportCopyOperations"
-  | "hasActiveImdiCopyOperations"
-  | "revealInFolder"
->;
+// Define the public API interface for the renderer process.
+// All methods return Promises because they go through IPC.
+interface MainProcessApiPublic {
+  trashItem: (path: string) => Promise<void>;
+  validateImdiAsync: (imdiContents: string) => Promise<string[]>;
+  findInPage: (pattern: string) => Promise<void>;
+  stopFindInPage: (
+    action: "clearSelection" | "keepSelection" | "activateSelection"
+  ) => Promise<void>;
+  prepareImdiExportDirectory: (rootDirectory: string) => Promise<void>;
+  cleanupImdiExportDirectory: (rootDirectory: string) => Promise<void>;
+  writeImdiSessionData: (data: ExportSessionData) => Promise<void>;
+  writeImdiCorpusData: (data: ExportCorpusData) => Promise<void>;
+  cancelImdiExportCopyOperations: () => Promise<void>;
+  hasActiveImdiCopyOperations: () => Promise<boolean>;
+  revealInFolder: (path: string) => Promise<void>;
+}
 
 // =============================================================================
 // Native Electron IPC Implementation

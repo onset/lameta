@@ -1178,8 +1178,12 @@ export default class ImdiGenerator {
 
     // Note: Previously used stringify(folder) here which was extremely slow (~1.5s per session)
     // because it serialized the entire folder object on every field. Using lightweight info instead.
+    const folderName =
+      folder instanceof Folder
+        ? folder.displayName
+        : folder.getFilenameToShowInList();
     sentryBreadCrumb(
-      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} folder:${folder.type}/${folder.displayName}`
+      `in ImdiGenerator:field, getFieldDefinition():(elementName:${elementName}) fieldName:${fieldName} folder:${folder.type}/${folderName}`
     );
 
     let field = folder.properties.getValue(fieldName) as Field;
