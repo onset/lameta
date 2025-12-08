@@ -38,6 +38,7 @@ import { css } from "@emotion/react";
 import { RoCrateView } from "./RoCrate/RoCrateView";
 import userSettingsSingleton from "../other/UserSettings";
 import { HighlightableTab } from "./HighlightableTab";
+import { TiffViewer } from "./TiffViewer";
 
 export interface IProps {
   folder: Folder;
@@ -291,8 +292,9 @@ const FileTabs: React.FunctionComponent<
   const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
   let t = file.type;
-  const ext = Path.extname(file.getActualFilePath());
+  const ext = Path.extname(file.getActualFilePath()).toLowerCase();
   if ([".txt", ".md"].includes(ext)) t = "Text";
+  if (ext === ".pdf") t = "PDF";
 
   switch (t) {
     case "Session":
@@ -511,6 +513,7 @@ const FileTabs: React.FunctionComponent<
         </Tabs>
       );
     case "Image":
+      const isTiff = [".tif", ".tiff"].includes(ext.toLowerCase());
       return (
         <Tabs key={tabsKey}>
           <TabList>
@@ -520,11 +523,15 @@ const FileTabs: React.FunctionComponent<
             {standardMetaTabs}
           </TabList>
           <TabPanel>
-            <img
-              className="imageViewer"
-              // file:// is required on mac
-              src={`file:///${path.replace(/#/g, "%23")}`}
-            />
+            {isTiff ? (
+              <TiffViewer path={path} className="imageViewer" />
+            ) : (
+              <img
+                className="imageViewer"
+                // file:// is required on mac
+                src={`file:///${path.replace(/#/g, "%23")}`}
+              />
+            )}
           </TabPanel>
           {standardMetaPanels}
         </Tabs>
@@ -541,6 +548,43 @@ const FileTabs: React.FunctionComponent<
           <TabPanel>
             {/* NB: not a url, just a file here path */}
             <TextFileView path={path} />
+          </TabPanel>
+          {standardMetaPanels}
+        </Tabs>
+      );
+    case "PDF":
+      return (
+        <Tabs key={tabsKey}>
+          <TabList>
+            <Tab>PDF</Tab>
+            {standardMetaTabs}
+          </TabList>
+          <TabPanel>
+            <object
+              data={`file:///${path.replace(
+                /#/g,
+                "%23"
+              )}#toolbar=0&navpanes=0&scrollbar=1`}
+              type="application/pdf"
+              css={css`
+                width: 100%;
+                height: 100%;
+                min-height: 400px;
+              `}
+            >
+              <p>
+                Unable to display PDF.{" "}
+                <a
+                  href=""
+                  onClick={(e) => {
+                    e.preventDefault();
+                    electron.shell.openPath(file.getActualFilePath());
+                  }}
+                >
+                  Open externally
+                </a>
+              </p>
+            </object>
           </TabPanel>
           {standardMetaPanels}
         </Tabs>

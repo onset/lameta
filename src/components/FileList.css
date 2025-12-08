@@ -16,6 +16,15 @@
     width: auto;
   }
 
+  /* Prevent rows from expanding to fill available space */
+  .rt-tr-group {
+    flex: 0 0 auto;
+  }
+  .rt-td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
   .fileBar {
     display: flex;
     flex-direction: row;
