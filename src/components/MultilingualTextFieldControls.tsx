@@ -172,11 +172,11 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
     return (
       <div
         css={css`
-          border-top: 1px solid #e8e8e8;
           padding: 4px 2px;
           flex-shrink: 0;
           display: flex;
           justify-content: flex-end;
+          margin-top: auto;
         `}
       >
         {isAdding ? (
@@ -235,12 +235,20 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
               border: none;
               color: #81c21e;
               cursor: pointer;
-              font-size: 0.85em;
-              font-weight: 500;
+              font-size: 1.2em;
+              font-weight: 600;
               padding: 0;
+              transition: all 150ms ease-in-out;
+              &:hover {
+                color: #c73f1d;
+                transform: scale(1.15);
+              }
+              &:active {
+                transform: scale(0.95);
+              }
             `}
           >
-            + Add translation
+            +
           </button>
         )}
       </div>
