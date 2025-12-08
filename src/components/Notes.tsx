@@ -12,6 +12,7 @@ export const Notes: React.FunctionComponent<{
 }> = (props) => {
   return (
     <div
+      className="notesTab"
       css={css`
         flex-grow: 1;
         display: flex;

@@ -12,6 +12,7 @@ import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
   setMediaFolderOrEmptyForThisProjectAndMachine
 } from "../model/Project/MediaFolderAccess";
+import { lameta_dark_green } from "../containers/theme";
 import {
   DialogBottomButtons,
   DialogButton,
@@ -118,16 +119,20 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
             >
               <Trans>Change...</Trans>
             </button>
-            <a
-              onClick={() => {
-                setPath("");
-              }}
-              css={css`
-                margin-left: auto;
-              `}
-            >
-              <Trans>Clear</Trans>
-            </a>
+            {path !== "(not set)" && path !== "" && (
+              <a
+                onClick={() => {
+                  setPath("");
+                }}
+                css={css`
+                  margin-left: auto;
+                  color: ${lameta_dark_green};
+                  cursor: pointer;
+                `}
+              >
+                <Trans>Clear</Trans>
+              </a>
+            )}
           </div>
         </div>
       </DialogMiddle>
@@ -135,6 +140,10 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
       <DialogBottomButtons>
         <DialogButton
           default={true}
+          disabled={
+            path ===
+            (getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)")
+          }
           onClick={() => {
             setMediaFolderOrEmptyForThisProjectAndMachine(path);
             setOpen(false);

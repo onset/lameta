@@ -6,6 +6,7 @@ export default defineConfig({
   testMatch: "**/*.e2e.ts",
   // Prepare env (E2ERoot, assets copy, logging tweaks) before tests
   globalSetup: "./e2e/globalSetup.ts",
+  workers: 4,
   reporter: process.env.CI
     ? [["blob"], ["html"]] // keep artifacts only in CI (for PR reports, etc.)
     : [["line", { printSteps: true }]], // or could use "list"

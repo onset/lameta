@@ -403,30 +403,66 @@ export const ExportDialog: React.FunctionComponent<{
         switch (exportFormat) {
           case "csv":
             analyticsEvent("Export", "Export CSV");
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`Generating CSV export...`,
+              percentage: Math.max(prev.percentage || 0, 20)
+            }));
 
-            asyncMakeGenericCsvZipFile(
+            await asyncMakeGenericCsvZipFile(
               path,
               props.projectHolder.project!,
               folderFilter
-            ).then(async () => {
-              await finishExport();
-              setMode(Mode.finished); // don't have to wait for any copying of big files
-            });
+            );
+
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`CSV export complete`,
+              percentage: 100
+            }));
+            await finishExport();
+            setMode(Mode.finished); // don't have to wait for any copying of big files
             break;
           case "paradisec":
             analyticsEvent("Export", "Export Paradisec CSV");
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`Generating PARADISEC CSV...`,
+              percentage: Math.max(prev.percentage || 0, 25)
+            }));
 
             makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
+
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`PARADISEC CSV export complete`,
+              percentage: 100
+            }));
             await finishExport();
             setMode(Mode.finished); // don't have to wait for any copying of big files
             break;
           case "ro-crate":
             analyticsEvent("Export", "Export RO-Crate");
             // RO-Crate export writes to project directory, path parameter is ignored
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`Generating RO-Crate metadata...`,
+              percentage: Math.max(prev.percentage || 0, 25)
+            }));
             const roCrateData = await writeROCrateFile(
               props.projectHolder.project!
             );
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`Validating RO-Crate export...`,
+              percentage: Math.max(prev.percentage || 0, 90)
+            }));
             await runRoCrateValidation(roCrateData);
+            setExportProgress((prev) => ({
+              ...prev,
+              message: t`RO-Crate export complete`,
+              percentage: 100
+            }));
             await finishExport();
             setMode(Mode.finished);
             break;
@@ -496,15 +532,15 @@ export const ExportDialog: React.FunctionComponent<{
       }}
       css={css`
         .MuiDialog-paper {
-          width: 600px;
+          width: 660px;
+          max-height: 90vh;
         }
       `}
     >
       <DialogTitle title={t`Export Project`} />
       <DialogMiddle
         css={css`
-          min-width: 400px;
-          height: 420px;
+          min-width: 420px;
         `}
       >
         {mode === Mode.choosing && (
@@ -603,7 +639,9 @@ export const ExportDialog: React.FunctionComponent<{
                       ref={(el) => {
                         // Auto-scroll to first error
                         if (el && firstErrorIndex >= 0) {
-                          const errorElement = el.children[firstErrorIndex] as HTMLElement;
+                          const errorElement = el.children[
+                            firstErrorIndex
+                          ] as HTMLElement;
                           if (errorElement) {
                             errorElement.scrollIntoView({ block: "nearest" });
                           }

@@ -34,13 +34,13 @@ test.describe("Multilingual Text Fields", () => {
     await project.addSession();
 
     // Wait for the session form to load - look for the Description label
-    await page.waitForSelector('text=Description', {
+    await page.waitForSelector("text=Description", {
       timeout: 10000
     });
 
     // The Add translation button should be visible
     // Use text selector as fallback since data-testid may not be in built app yet
-    const addTranslationBtn = page.locator('button:has-text("+ Add translation")').first();
+    const addTranslationBtn = page.locator('button:has-text("+")').first();
     await expect(addTranslationBtn).toBeVisible();
   });
 
@@ -109,13 +109,17 @@ test.describe("Multilingual Text Fields", () => {
     await addTranslationBtn.click();
 
     // Type in a language and select it
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300); // wait for debounce
     await languageInput.press("Enter");
 
     // Wait for the new axis to appear (ISO 639-3 code for Spanish is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Now should have two translation axes
     const afterAxes = page.locator('[data-testid^="translation-axis-"]');
@@ -149,14 +153,18 @@ test.describe("Multilingual Text Fields", () => {
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
 
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
     // The new Spanish axis should be focused, type in it
     // Find the description editor within the Spanish axis (ISO 639-3 code is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
     const spanishAxis = page.getByTestId("translation-axis-spa");
     const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
     await spanishEditor.click();
@@ -179,14 +187,18 @@ test.describe("Multilingual Text Fields", () => {
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
 
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("French");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
     // Wait for French axis to appear (ISO 639-3 code is "fra")
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+      timeout: 5000
+    });
 
     // The remove button should exist but be hidden initially (opacity: 0)
     const removeBtn = page.getByTestId("remove-translation-fra");
@@ -214,13 +226,17 @@ test.describe("Multilingual Text Fields", () => {
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
 
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("deu");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
     // Wait for German axis to appear (ISO 639-3 code is "deu")
-    await page.waitForSelector('[data-testid="translation-axis-deu"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-deu"]', {
+      timeout: 5000
+    });
 
     // Verify we have 2 axes
     const axesBefore = page.locator('[data-testid^="translation-axis-"]');
@@ -256,13 +272,17 @@ test.describe("Multilingual Text Fields", () => {
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
 
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("fra");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
     // Wait for French axis to appear (ISO 639-3 code is "fra")
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+      timeout: 5000
+    });
 
     // Add some text to French
     const frenchAxis = page.getByTestId("translation-axis-fra");
@@ -304,7 +324,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Now we have 2 axes (en and spa)
     const afterFirstAdd = page.locator('[data-testid^="translation-axis-"]');
@@ -320,7 +342,9 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(500);
 
     // Should still have 2 axes (duplicate not added)
-    const afterDuplicateAttempt = page.locator('[data-testid^="translation-axis-"]');
+    const afterDuplicateAttempt = page.locator(
+      '[data-testid^="translation-axis-"]'
+    );
     await expect(afterDuplicateAttempt).toHaveCount(2);
   });
 
@@ -342,13 +366,17 @@ test.describe("Multilingual Text Fields", () => {
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
 
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
     // Wait for Spanish axis to appear (ISO 639-3 code is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
     const spanishAxis = page.getByTestId("translation-axis-spa");
     const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
     await spanishEditor.click();
@@ -368,9 +396,11 @@ test.describe("Multilingual Text Fields", () => {
 
     // Verify the translations are still there
     const englishAxisAfter = page.getByTestId("translation-axis-en");
-    const englishEditorAfter = englishAxisAfter.locator('[contenteditable="true"]');
+    const englishEditorAfter = englishAxisAfter.locator(
+      '[contenteditable="true"]'
+    );
     await expect(englishEditorAfter).toHaveText("Persistent English text");
-    
+
     const spanishAxisAfter = page.getByTestId("translation-axis-spa");
     await expect(spanishAxisAfter).toBeVisible();
     const spanishEditorAfter = spanishAxisAfter.locator(
@@ -391,7 +421,9 @@ test.describe("Multilingual Text Fields", () => {
     const englishAxis = page.getByTestId("translation-axis-en");
     const englishEditor = englishAxis.locator('[contenteditable="true"]');
     await englishEditor.click();
-    await englishEditor.fill("Initial English text with special chars: é ñ ü 日本語");
+    await englishEditor.fill(
+      "Initial English text with special chars: é ñ ü 日本語"
+    );
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
@@ -402,7 +434,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Step 3: Add text to Spanish field
     const spanishAxis = page.getByTestId("translation-axis-spa");
@@ -419,7 +453,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("fra");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+      timeout: 5000
+    });
 
     // Step 5: Add text to French field
     const frenchAxis = page.getByTestId("translation-axis-fra");
@@ -436,7 +472,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("deu");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-deu"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-deu"]', {
+      timeout: 5000
+    });
 
     // Step 7: Verify we have 4 translation axes
     let allAxes = page.locator('[data-testid^="translation-axis-"]');
@@ -460,7 +498,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("ara");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-ara"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-ara"]', {
+      timeout: 5000
+    });
 
     // Step 10: Add Arabic text
     const arabicAxis = page.getByTestId("translation-axis-ara");
@@ -471,7 +511,9 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(200);
 
     // Step 11: Modify existing English text (re-fetch the locator)
-    const englishEditorRefresh = page.getByTestId("translation-axis-en").locator('[contenteditable="true"]');
+    const englishEditorRefresh = page
+      .getByTestId("translation-axis-en")
+      .locator('[contenteditable="true"]');
     await englishEditorRefresh.click();
     await englishEditorRefresh.fill("Modified English text: testing updates!");
     await page.keyboard.press("Tab");
@@ -480,15 +522,29 @@ test.describe("Multilingual Text Fields", () => {
     // Step 12: Note: Clearing Spanish text would cause it to be lost on tab switch
     // (this is expected behavior - empty translations are not persisted)
     // Instead, let's verify the Spanish text is still there
-    const spanishEditorCheck = page.getByTestId("translation-axis-spa").locator('[contenteditable="true"]');
-    await expect(spanishEditorCheck).toHaveText("Texto en español con caracteres: ñ á é í ó ú");
+    const spanishEditorCheck = page
+      .getByTestId("translation-axis-spa")
+      .locator('[contenteditable="true"]');
+    await expect(spanishEditorCheck).toHaveText(
+      "Texto en español con caracteres: ñ á é í ó ú"
+    );
 
     // Step 13: Verify current state before tab switch
-    const englishEditorCheck = page.getByTestId("translation-axis-en").locator('[contenteditable="true"]');
-    await expect(englishEditorCheck).toHaveText("Modified English text: testing updates!");
-    const frenchEditorCheck = page.getByTestId("translation-axis-fra").locator('[contenteditable="true"]');
-    await expect(frenchEditorCheck).toHaveText("Texte français avec accents: é è ê ë à â");
-    const arabicEditorCheck = page.getByTestId("translation-axis-ara").locator('[contenteditable="true"]');
+    const englishEditorCheck = page
+      .getByTestId("translation-axis-en")
+      .locator('[contenteditable="true"]');
+    await expect(englishEditorCheck).toHaveText(
+      "Modified English text: testing updates!"
+    );
+    const frenchEditorCheck = page
+      .getByTestId("translation-axis-fra")
+      .locator('[contenteditable="true"]');
+    await expect(frenchEditorCheck).toHaveText(
+      "Texte français avec accents: é è ê ë à â"
+    );
+    const arabicEditorCheck = page
+      .getByTestId("translation-axis-ara")
+      .locator('[contenteditable="true"]');
     await expect(arabicEditorCheck).toHaveText("نص عربي للاختبار");
 
     // Step 14: Switch tabs to force a save
@@ -499,26 +555,40 @@ test.describe("Multilingual Text Fields", () => {
 
     // Step 15: Verify data persisted after tab switch
     // English should still have the modified text
-    const englishEditorAfterTab = page.getByTestId("translation-axis-en").locator('[contenteditable="true"]');
-    await expect(englishEditorAfterTab).toHaveText("Modified English text: testing updates!");
-    
+    const englishEditorAfterTab = page
+      .getByTestId("translation-axis-en")
+      .locator('[contenteditable="true"]');
+    await expect(englishEditorAfterTab).toHaveText(
+      "Modified English text: testing updates!"
+    );
+
     // French should still have its text
     const frenchAxisAfterTab = page.getByTestId("translation-axis-fra");
     await expect(frenchAxisAfterTab).toBeVisible();
-    const frenchEditorAfterTab = frenchAxisAfterTab.locator('[contenteditable="true"]');
-    await expect(frenchEditorAfterTab).toHaveText("Texte français avec accents: é è ê ë à â");
+    const frenchEditorAfterTab = frenchAxisAfterTab.locator(
+      '[contenteditable="true"]'
+    );
+    await expect(frenchEditorAfterTab).toHaveText(
+      "Texte français avec accents: é è ê ë à â"
+    );
 
     // Arabic should still have its text
     const arabicAxisAfterTab = page.getByTestId("translation-axis-ara");
     await expect(arabicAxisAfterTab).toBeVisible();
-    const arabicEditorAfterTab = arabicAxisAfterTab.locator('[contenteditable="true"]');
+    const arabicEditorAfterTab = arabicAxisAfterTab.locator(
+      '[contenteditable="true"]'
+    );
     await expect(arabicEditorAfterTab).toHaveText("نص عربي للاختبار");
 
     // Spanish should still have its text
     const spanishAxisAfterTab = page.getByTestId("translation-axis-spa");
     await expect(spanishAxisAfterTab).toBeVisible();
-    const spanishEditorAfterTab = spanishAxisAfterTab.locator('[contenteditable="true"]');
-    await expect(spanishEditorAfterTab).toHaveText("Texto en español con caracteres: ñ á é í ó ú");
+    const spanishEditorAfterTab = spanishAxisAfterTab.locator(
+      '[contenteditable="true"]'
+    );
+    await expect(spanishEditorAfterTab).toHaveText(
+      "Texto en español con caracteres: ñ á é í ó ú"
+    );
 
     // Step 16: Remove French translation
     const frenchAxisToRemove = page.getByTestId("translation-axis-fra");
@@ -537,7 +607,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("cmn");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-cmn"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-cmn"]', {
+      timeout: 5000
+    });
 
     // Step 19: Add Chinese text
     const chineseAxis = page.getByTestId("translation-axis-cmn");
@@ -593,8 +665,12 @@ test.describe("Multilingual Text Fields", () => {
     await expect(removeEnglishBtn).not.toBeVisible();
 
     // Step 25: Final verification - English text should still be there
-    const finalEnglishEditor = page.getByTestId("translation-axis-en").locator('[contenteditable="true"]');
-    await expect(finalEnglishEditor).toHaveText("Modified English text: testing updates!");
+    const finalEnglishEditor = page
+      .getByTestId("translation-axis-en")
+      .locator('[contenteditable="true"]');
+    await expect(finalEnglishEditor).toHaveText(
+      "Modified English text: testing updates!"
+    );
   });
 
   // Test for very long text (boundary condition)
@@ -623,11 +699,15 @@ test.describe("Multilingual Text Fields", () => {
     // Add another language with long text (use ISO code)
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     const longSpanishText = "Este es un texto largo en español. ".repeat(100);
     const spanishAxis = page.getByTestId("translation-axis-spa");
@@ -651,7 +731,8 @@ test.describe("Multilingual Text Fields", () => {
     });
 
     // Test with various special characters that could cause issues
-    const specialChars = "Text with <html> tags, \"quotes\", 'apostrophes', & ampersands, newlines\nand\ttabs, emoji 🎉🌍, path/slashes/here, backslash\\here";
+    const specialChars =
+      "Text with <html> tags, \"quotes\", 'apostrophes', & ampersands, newlines\nand\ttabs, emoji 🎉🌍, path/slashes/here, backslash\\here";
 
     // Use axis-specific locator for the English field
     const englishAxis = page.getByTestId("translation-axis-en");
@@ -686,11 +767,16 @@ test.describe("Multilingual Text Fields", () => {
     for (let i = 0; i < isoCodes.length; i++) {
       const addTranslationBtn = page.getByTestId("add-translation-button");
       await addTranslationBtn.click();
-      const languageInput = page.locator('.select input[role="combobox"]').first();
+      const languageInput = page
+        .locator('.select input[role="combobox"]')
+        .first();
       await languageInput.fill(isoCodes[i]);
       await page.waitForTimeout(300);
       await languageInput.press("Enter");
-      await page.waitForSelector(`[data-testid="translation-axis-${isoCodes[i]}"]`, { timeout: 5000 });
+      await page.waitForSelector(
+        `[data-testid="translation-axis-${isoCodes[i]}"]`,
+        { timeout: 5000 }
+      );
     }
 
     // Verify all were added (4 languages + English = 5)
@@ -725,7 +811,9 @@ test.describe("Multilingual Text Fields", () => {
     await addTranslationBtn.click();
 
     // Type something but don't press Enter
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
 
@@ -752,11 +840,15 @@ test.describe("Multilingual Text Fields", () => {
     // Add Spanish but don't enter any text
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Verify we have 2 axes now
     let axes = page.locator('[data-testid^="translation-axis-"]');
@@ -787,16 +879,20 @@ test.describe("Multilingual Text Fields", () => {
     // Add Spanish and enter only whitespace
     const addTranslationBtn = page.getByTestId("add-translation-button");
     await addTranslationBtn.click();
-    const languageInput = page.locator('.select input[role="combobox"]').first();
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     const spanishAxis = page.getByTestId("translation-axis-spa");
     const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
     await spanishEditor.click();
-    await spanishEditor.fill("   ");  // Just whitespace
+    await spanishEditor.fill("   "); // Just whitespace
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
@@ -818,7 +914,8 @@ test.describe("Multilingual Text Fields", () => {
     });
 
     // Text with combining diacritics (e with combining acute accent)
-    const textWithCombining = "Testing e\u0301 combining and Ω Greek and 日本 Japanese and العربية Arabic";
+    const textWithCombining =
+      "Testing e\u0301 combining and Ω Greek and 日本 Japanese and العربية Arabic";
 
     const englishAxis = page.getByTestId("translation-axis-en");
     const englishEditor = englishAxis.locator('[contenteditable="true"]');
@@ -851,7 +948,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Add text to Spanish
     let spanishAxis = page.getByTestId("translation-axis-spa");
@@ -876,7 +975,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+      timeout: 5000
+    });
 
     // Spanish axis should be back but empty (previous text was cleared when removed)
     spanishAxis = page.getByTestId("translation-axis-spa");

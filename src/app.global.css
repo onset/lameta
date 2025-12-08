@@ -97,6 +97,11 @@ li {
   overflow: hidden;
 }
 
+.notesTab .multiline {
+  max-height: none;
+  overflow: auto;
+}
+
 body,
 input,
 select,
