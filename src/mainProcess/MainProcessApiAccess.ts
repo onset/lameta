@@ -6,19 +6,22 @@ import type {
   ExportSessionData,
   ExportCorpusData
 } from "../export/ExportBundleTypes";
+import type { XMLValidationResult } from "xmllint-wasm";
 
 // Define the public API interface for the renderer process.
 // All methods return Promises because they go through IPC.
 interface MainProcessApiPublic {
-  trashItem: (path: string) => Promise<void>;
-  validateImdiAsync: (imdiContents: string) => Promise<string[]>;
+  trashItem: (path: string) => Promise<boolean>;
+  validateImdiAsync: (imdiContents: string) => Promise<XMLValidationResult>;
   findInPage: (pattern: string) => Promise<void>;
   stopFindInPage: (
     action: "clearSelection" | "keepSelection" | "activateSelection"
   ) => Promise<void>;
   prepareImdiExportDirectory: (rootDirectory: string) => Promise<void>;
   cleanupImdiExportDirectory: (rootDirectory: string) => Promise<void>;
-  writeImdiSessionData: (data: ExportSessionData) => Promise<void>;
+  writeImdiSessionData: (
+    data: ExportSessionData
+  ) => Promise<{ filesWritten: number; errors: string[] }>;
   writeImdiCorpusData: (data: ExportCorpusData) => Promise<void>;
   cancelImdiExportCopyOperations: () => Promise<void>;
   hasActiveImdiCopyOperations: () => Promise<boolean>;
