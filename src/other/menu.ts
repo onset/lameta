@@ -438,24 +438,44 @@ export default class LametaMenu {
     remote.Menu.setApplicationMenu(menu);
   }
   public setupContentMenu() {
-    if (process.env.NODE_ENV === "development") {
-      // note that where UI elements offer a context menu to the user, they should
-      // do an e.preventDefault() to prevent this code from hiding their menu.
-      //https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-context-menu
-      //https://nodejs.org/api/events.html#events_class_eventemitter
-      //const webContents = remote.getCurrentWebContents();
-      remote.getCurrentWebContents().on("context-menu", (e, props) => {
-        const { x, y } = props;
-        //console.log("Main process go context click");
-        remote.Menu.buildFromTemplate([
-          {
-            label: "Inspect element",
-            click() {
-              remote.getCurrentWebContents().inspectElement(x, y);
-            }
+    // Set up context menu for spell checking and developer tools
+    // This handler runs for all right-clicks in the app
+    remote.getCurrentWebContents().on("context-menu", (e, props) => {
+      const { x, y, misspelledWord } = props;
+
+      const menuItems: Electron.MenuItemConstructorOptions[] = [];
+
+      // If there's a misspelled word, show "Add to Dictionary" option
+      if (misspelledWord) {
+        menuItems.push({
+          label: t`Add to Dictionary`,
+          click: () => {
+            // Add word to Electron's built-in spell checker dictionary
+            remote.session.defaultSession.addWordToSpellCheckerDictionary(
+              misspelledWord
+            );
           }
-        ]).popup({});
-      });
-    }
+        });
+      }
+
+      // Add developer "Inspect element" option in development mode
+      if (process.env.NODE_ENV === "development") {
+        if (menuItems.length > 0) {
+          menuItems.push({ type: "separator" });
+        }
+        menuItems.push({
+          label: "Inspect element",
+          click() {
+            remote.getCurrentWebContents().inspectElement(x, y);
+          }
+        });
+      }
+
+      // Only show the menu if there are items
+      if (menuItems.length > 0) {
+        remote.Menu.buildFromTemplate(menuItems).popup({});
+      }
+    });
   }
 }
+
