@@ -79,8 +79,14 @@ msgstr ""
 msgid "Audio"
 msgstr "Audio"
 
+msgid "CSV export complete"
+msgstr ""
+
 msgid "Cancel"
 msgstr "Batal"
+
+msgid "Cancelling..."
+msgstr ""
 
 msgid "Cannot add files of that type"
 msgstr "Tidak dapat tambah file jenis itu"
@@ -133,8 +139,14 @@ msgstr "Salin"
 msgid "Copy Requested..."
 msgstr "Salin yang Diminta..."
 
+msgid "Copy to clipboard"
+msgstr ""
+
 msgid "Copying in Files..."
 msgstr "Menyalin ke Files..."
+
+msgid "Copying {0}"
+msgstr ""
 
 msgid "Copying..."
 msgstr "Menyalin..."
@@ -205,6 +217,9 @@ msgstr "Jangan tutup"
 msgid "Done"
 msgstr "Selesai"
 
+msgid "Done, with {0} warnings"
+msgstr ""
+
 msgid "Download"
 msgstr "Unduh"
 
@@ -229,8 +244,14 @@ msgstr "Ekspor proyek"
 msgid "Export Project..."
 msgstr "Ekspor proyek..."
 
-msgid "Exporting..."
-msgstr "Mengekspor..."
+msgid "Export failed"
+msgstr ""
+
+msgid "Export was cancelled. No files were exported."
+msgstr ""
+
+msgid "Exporting {0}..."
+msgstr ""
 
 msgid "Field"
 msgstr "Kotak"
@@ -272,6 +293,15 @@ msgid "Full Name"
 msgstr "Nama Lengkap"
 
 msgid "Funding Project"
+msgstr ""
+
+msgid "Generating CSV export..."
+msgstr ""
+
+msgid "Generating PARADISEC CSV..."
+msgstr ""
+
+msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Help"
@@ -342,6 +372,12 @@ msgstr "Pembelajar"
 
 msgid "Linked to {p}"
 msgstr "Terhubung ke {p}"
+
+msgid "Loading Project"
+msgstr ""
+
+msgid "Loading {phaseLabel}..."
+msgstr ""
 
 msgid "Location"
 msgstr ""
@@ -421,6 +457,9 @@ msgstr "Buka dengan program yang terkait dengan jenis file ini"
 msgid "Other Documents"
 msgstr "Dokumen Lainnya"
 
+msgid "PARADISEC CSV export complete"
+msgstr ""
+
 msgid "Paradisec CSV"
 msgstr "CSV PARADISEC"
 
@@ -442,6 +481,9 @@ msgstr "Silakan hapus karakter yang tidak diizinkan oleh Pengaturan Arsip."
 msgid "Please wait until all files are finished copying into this folder"
 msgstr "Tunggu sampai semua file-file selesai disalin ke dalam folder ini"
 
+msgid "Preparing export..."
+msgstr ""
+
 msgid "Project"
 msgstr "Proyek"
 
@@ -455,6 +497,9 @@ msgid "Quit"
 msgstr "Keluar"
 
 msgid "RO-Crate"
+msgstr ""
+
+msgid "RO-Crate export complete"
 msgstr ""
 
 msgid "Redo"
@@ -631,6 +676,9 @@ msgstr "Batalkan"
 msgid "Update available"
 msgstr "Pembaruan/Update tersedia"
 
+msgid "Validating RO-Crate export..."
+msgstr ""
+
 msgid "Value"
 msgstr "Nilai"
 
@@ -651,6 +699,9 @@ msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bis
 
 msgid "What would you like to call this project?"
 msgstr "Koleksi ini akan diberi nama apa?"
+
+msgid "Writing corpus metadata..."
+msgstr ""
 
 msgid "You are running lameta version:"
 msgstr "Anda menjalankan versi lameta:"

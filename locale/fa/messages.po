@@ -81,8 +81,14 @@ msgstr ""
 msgid "Audio"
 msgstr "فایل صوتی"
 
+msgid "CSV export complete"
+msgstr ""
+
 msgid "Cancel"
 msgstr "کنسل/لغو"
+
+msgid "Cancelling..."
+msgstr ""
 
 msgid "Cannot add files of that type"
 msgstr "نمی توان این نوع فایلها را اضافه کرد"
@@ -135,8 +141,14 @@ msgstr "کپی / رونوشت"
 msgid "Copy Requested..."
 msgstr "رونوشت / کپی درخواست شده"
 
+msgid "Copy to clipboard"
+msgstr ""
+
 msgid "Copying in Files..."
 msgstr "در حال رونوشت گرفتن / کپی کردن"
+
+msgid "Copying {0}"
+msgstr ""
 
 msgid "Copying..."
 msgstr "در حال رونوشت گرفتن / کپی کردن فایلها"
@@ -207,6 +219,9 @@ msgstr "خارج نشوید"
 msgid "Done"
 msgstr "تکمیل شد"
 
+msgid "Done, with {0} warnings"
+msgstr ""
+
 msgid "Download"
 msgstr "دانلود"
 
@@ -231,8 +246,14 @@ msgstr "خروجی گرفتن از پروژه"
 msgid "Export Project..."
 msgstr "خروجی گرفتن از پروژه"
 
-msgid "Exporting..."
-msgstr "در حال خروجی گرفتن"
+msgid "Export failed"
+msgstr ""
+
+msgid "Export was cancelled. No files were exported."
+msgstr ""
+
+msgid "Exporting {0}..."
+msgstr ""
 
 msgid "Field"
 msgstr "فیلد"
@@ -274,6 +295,15 @@ msgid "Full Name"
 msgstr "نام کامل"
 
 msgid "Funding Project"
+msgstr ""
+
+msgid "Generating CSV export..."
+msgstr ""
+
+msgid "Generating PARADISEC CSV..."
+msgstr ""
+
+msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Help"
@@ -343,6 +373,12 @@ msgid "Learner"
 msgstr "یادگیرنده"
 
 msgid "Linked to {p}"
+msgstr ""
+
+msgid "Loading Project"
+msgstr ""
+
+msgid "Loading {phaseLabel}..."
 msgstr ""
 
 msgid "Location"
@@ -423,6 +459,9 @@ msgstr "برنامه مرتبط با این نوع پرونده را باز کن
 msgid "Other Documents"
 msgstr "اسناد دیگر"
 
+msgid "PARADISEC CSV export complete"
+msgstr ""
+
 msgid "Paradisec CSV"
 msgstr "Paradisec CSV"
 
@@ -444,6 +483,9 @@ msgstr ""
 msgid "Please wait until all files are finished copying into this folder"
 msgstr "لطفا منتظر بمانید تا همه پرونده ها در این پوشه کپی شوند"
 
+msgid "Preparing export..."
+msgstr ""
+
 msgid "Project"
 msgstr "پروژه"
 
@@ -457,6 +499,9 @@ msgid "Quit"
 msgstr "خارج شدن"
 
 msgid "RO-Crate"
+msgstr ""
+
+msgid "RO-Crate export complete"
 msgstr ""
 
 msgid "Redo"
@@ -633,6 +678,9 @@ msgstr "واگرد/ برگشت"
 msgid "Update available"
 msgstr "بروزرسانی موجود است"
 
+msgid "Validating RO-Crate export..."
+msgstr ""
+
 msgid "Value"
 msgstr "ارزش"
 
@@ -653,6 +701,9 @@ msgstr ""
 
 msgid "What would you like to call this project?"
 msgstr "دوست دارید نام این پروژه چه باشد؟"
+
+msgid "Writing corpus metadata..."
+msgstr ""
 
 msgid "You are running lameta version:"
 msgstr ""

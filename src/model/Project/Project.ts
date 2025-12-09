@@ -264,6 +264,9 @@ export class Project extends Folder {
     return this.properties.getTextStringOrEmpty("archiveConfigurationName");
   }
   public static fromDirectory(directory: string): Project {
+    const startTime = performance.now();
+    let sessionCount = 0;
+    let personCount = 0;
     try {
       const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
@@ -313,6 +316,7 @@ export class Project extends Folder {
             project.customVocabularies
           );
           project.sessions.items.push(session);
+          sessionCount++;
         }
         // else ignore it
       });
@@ -331,13 +335,21 @@ export class Project extends Folder {
             project.languageFinder
           );
           project.persons.items.push(person);
+          personCount++;
         }
         // else ignore it
       });
 
       project.sessions.selectedIndex =
         project.sessions.items.length > 0 ? 0 : -1;
+      project.sessions.selectedIndex =
+        project.sessions.items.length > 0 ? 0 : -1;
       project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+
+      const elapsed = performance.now() - startTime;
+      console.log(
+        `[Project.fromDirectory] Loaded ${sessionCount} sessions + ${personCount} people in ${elapsed.toFixed(0)}ms (sync)`
+      );
 
       //project.files[0].save();
       // tslint:disable-next-line:no-unused-expression
@@ -350,6 +362,192 @@ export class Project extends Folder {
       safeCaptureException(err);
       console.error(err);
       // tslint:disable-next-line: no-object-literal-type-assertion
+      return { loadingError: err.message } as Project;
+    }
+  }
+
+  // Count how many sessions and people folders exist without loading them
+  public static countFoldersInDirectory(directory: string): {
+    sessionCount: number;
+    personCount: number;
+  } {
+    let sessionCount = 0;
+    let personCount = 0;
+
+    const sessionsDir = Path.join(directory, "Sessions");
+    if (fs.existsSync(sessionsDir)) {
+      const sessionEntries = fs.readdirSync(sessionsDir, "utf8");
+      sessionCount = sessionEntries.filter((childName) => {
+        const dir = Path.join(sessionsDir, childName);
+        return fs.existsSync(dir) && fs.lstatSync(dir).isDirectory();
+      }).length;
+    }
+
+    const peopleDir = Path.join(directory, "People");
+    if (fs.existsSync(peopleDir)) {
+      const peopleEntries = fs.readdirSync(peopleDir, "utf8");
+      personCount = peopleEntries.filter((childName) => {
+        const dir = Path.join(peopleDir, childName);
+        return fs.existsSync(dir) && fs.lstatSync(dir).isDirectory();
+      }).length;
+    }
+
+    return { sessionCount, personCount };
+  }
+
+  // Set to true to skip the async yielding and measure pure loading time
+  // Set to false (default) to yield to UI after each item for progress updates
+  // TIMING TEST: Change to true, rebuild, and compare console output
+  private static SKIP_ASYNC_YIELD_FOR_TIMING = false;
+
+  // How many items to process before yielding to the UI
+  // Higher = faster loading but less responsive progress bar
+  // Lower = smoother progress but slower overall
+  private static YIELD_BATCH_SIZE = 5;
+
+  // Async project loading with progress reporting
+  // Uses async generator pattern to allow UI updates between items
+  public static async fromDirectoryAsync(
+    directory: string,
+    onProgress?: (progress: {
+      phase: "sessions" | "people";
+      overallCurrent: number;
+      overallTotal: number;
+    }) => void
+  ): Promise<Project> {
+    const startTime = performance.now();
+    try {
+      const customVocabularies = new EncounteredVocabularyRegistry();
+      const metadataFile = new ProjectMetadataFile(
+        directory,
+        customVocabularies
+      );
+
+      const descriptionFolder = ProjectDocuments.fromDirectory(
+        directory,
+        "DescriptionDocuments",
+        customVocabularies
+      );
+
+      const otherDocsFolder = ProjectDocuments.fromDirectory(
+        directory,
+        "OtherDocuments",
+        customVocabularies
+      );
+
+      const files = this.loadChildFiles(
+        directory,
+        metadataFile,
+        customVocabularies
+      );
+
+      const project = new Project(
+        directory,
+        metadataFile,
+        files,
+        descriptionFolder,
+        otherDocsFolder,
+        customVocabularies
+      );
+      sCurrentProject = project;
+
+      // Load sessions with progress
+      const sessionsDir = Path.join(directory, "Sessions");
+      fs.ensureDirSync(sessionsDir);
+      const sessionEntries = fs.readdirSync(sessionsDir, "utf8");
+      const sessionDirs = sessionEntries.filter((childName) => {
+        const dir = Path.join(sessionsDir, childName);
+        return fs.lstatSync(dir).isDirectory();
+      });
+
+      // Pre-count people directories for overall progress calculation
+      const peopleDir = Path.join(directory, "People");
+      fs.ensureDirSync(peopleDir);
+      const peopleEntries = fs.readdirSync(peopleDir, "utf8");
+      const peopleDirs = peopleEntries.filter((childName) => {
+        const dir = Path.join(peopleDir, childName);
+        return fs.lstatSync(dir).isDirectory();
+      });
+
+      const overallTotal = sessionDirs.length + peopleDirs.length;
+
+      for (let i = 0; i < sessionDirs.length; i++) {
+        const childName = sessionDirs[i];
+        const dir = Path.join(sessionsDir, childName);
+
+        const session = Session.fromDirectory(dir, project.customVocabularies);
+        project.sessions.items.push(session);
+
+        // Yield to event loop every YIELD_BATCH_SIZE items to allow UI updates
+        if (
+          !this.SKIP_ASYNC_YIELD_FOR_TIMING &&
+          (i + 1) % this.YIELD_BATCH_SIZE === 0
+        ) {
+          if (onProgress) {
+            onProgress({
+              phase: "sessions",
+              overallCurrent: i + 1,
+              overallTotal
+            });
+          }
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+      }
+
+      // Final progress update for sessions
+      if (onProgress && sessionDirs.length > 0) {
+        onProgress({
+          phase: "sessions",
+          overallCurrent: sessionDirs.length,
+          overallTotal
+        });
+      }
+
+      // Load people with progress
+      for (let i = 0; i < peopleDirs.length; i++) {
+        const childName = peopleDirs[i];
+        const dir = Path.join(peopleDir, childName);
+
+        const person = Person.fromDirectory(
+          dir,
+          project.customVocabularies,
+          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n),
+          project.languageFinder
+        );
+        project.persons.items.push(person);
+
+        // Yield to event loop every YIELD_BATCH_SIZE items to allow UI updates
+        if (
+          !this.SKIP_ASYNC_YIELD_FOR_TIMING &&
+          (i + 1) % this.YIELD_BATCH_SIZE === 0
+        ) {
+          if (onProgress) {
+            onProgress({
+              phase: "people",
+              overallCurrent: sessionDirs.length + i + 1,
+              overallTotal
+            });
+          }
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+      }
+
+      project.sessions.selectedIndex =
+        project.sessions.items.length > 0 ? 0 : -1;
+      project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+
+      const elapsed = performance.now() - startTime;
+      console.log(
+        `[Project.fromDirectoryAsync] Loaded ${sessionDirs.length} sessions + ${peopleDirs.length} people in ${elapsed.toFixed(0)}ms` +
+          (this.SKIP_ASYNC_YIELD_FOR_TIMING
+            ? " (TIMING MODE - no UI yields)"
+            : ` (with UI yields every ${this.YIELD_BATCH_SIZE} items)`)
+      );
+
+      return project;
+    } catch (err) {
+      safeCaptureException(err);
+      console.error(err);
       return { loadingError: err.message } as Project;
     }
   }
