@@ -53,10 +53,15 @@ describe("LAM-102: DescriptionDocuments Dataset", () => {
     );
 
     // Create mock files for DescriptionDocuments folder
-    const createMockFile = (name: string) => ({
+    const createMockFile = (name: string, accessValue = "") => ({
       getActualFilePath: () => `/project/DescriptionDocuments/${name}`,
       getModifiedDate: () => new Date("2023-06-01T00:00:00Z"),
-      getTextProperty: vi.fn().mockReturnValue("")
+      getTextProperty: vi.fn().mockImplementation((key: string) => {
+        if (key === "access") {
+          return accessValue;
+        }
+        return "";
+      })
     });
 
     mockProject = {
@@ -88,13 +93,19 @@ describe("LAM-102: DescriptionDocuments Dataset", () => {
             label: "public",
             description: "Public access",
             ldacAccessCategory: "ldac:OpenAccess"
+          },
+          {
+            id: "restricted",
+            label: "restricted",
+            description: "Restricted access",
+            ldacAccessCategory: "ldac:AuthorizedAccess"
           }
         ]
       },
       descriptionFolder: {
         files: [
-          createMockFile("README.md"),
-          createMockFile("Protocol.pdf"),
+          createMockFile("README.md", "public"),
+          createMockFile("Protocol.pdf", "restricted"),
           createMockFile("Guidelines.docx")
         ]
       },
@@ -211,6 +222,46 @@ describe("LAM-102: DescriptionDocuments Dataset", () => {
 
     expect(descDocsDataset.license).toBeDefined();
     expect(descDocsDataset.license).toEqual({ "@id": "#collection-license" });
+  });
+
+  it("should assign document access licenses to DescriptionDocuments files", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+    const graph = result["@graph"];
+
+    const readmeFile = graph.find(
+      (item: any) => item["@id"] === "DescriptionDocuments/README.md"
+    );
+    const protocolFile = graph.find(
+      (item: any) => item["@id"] === "DescriptionDocuments/Protocol.pdf"
+    );
+    const guidelinesFile = graph.find(
+      (item: any) => item["@id"] === "DescriptionDocuments/Guidelines.docx"
+    );
+
+    expect(readmeFile.license).toEqual({ "@id": "#license-testarchive-public" });
+    expect(protocolFile.license).toEqual({
+      "@id": "#license-testarchive-restricted"
+    });
+    expect(guidelinesFile.license).toEqual({ "@id": "#collection-license" });
+  });
+
+  it("should emit license entities for document access codes", async () => {
+    const result = (await getRoCrate(mockProject, mockProject)) as any;
+    const graph = result["@graph"];
+
+    const publicLicense = graph.find(
+      (item: any) => item["@id"] === "#license-testarchive-public"
+    );
+    const restrictedLicense = graph.find(
+      (item: any) => item["@id"] === "#license-testarchive-restricted"
+    );
+
+    expect(publicLicense).toBeDefined();
+    expect(restrictedLicense).toBeDefined();
+    expect(publicLicense["ldac:access"]).toEqual({ "@id": "ldac:OpenAccess" });
+    expect(restrictedLicense["ldac:access"]).toEqual({
+      "@id": "ldac:AuthorizedAccess"
+    });
   });
 
   it("should still have the #descriptionDocuments CollectionProtocol for LDAC compliance", async () => {

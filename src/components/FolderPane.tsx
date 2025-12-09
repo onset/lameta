@@ -39,6 +39,8 @@ import { RoCrateView } from "./RoCrate/RoCrateView";
 import userSettingsSingleton from "../other/UserSettings";
 import { HighlightableTab } from "./HighlightableTab";
 import { TiffViewer } from "./TiffViewer";
+import AccessChooser from "./session/AccessChooser";
+import { TextFieldEdit } from "./TextFieldEdit";
 
 export interface IProps {
   folder: Folder;
@@ -85,6 +87,10 @@ export const FolderPane: React.FunctionComponent<
 
   props.folder.runSanityCheck();
 
+  const isProjectDocumentsFolder =
+    props.folder.folderType === "project documents" ||
+    props.folderTypeStyleClass === "project-documents";
+
   return (
     <div className={"folderPane " + props.folderTypeStyleClass}>
       {(props as any).children}
@@ -95,7 +101,11 @@ export const FolderPane: React.FunctionComponent<
         defaultSize={sp}
         onChange={(size: any) => localStorage.setItem(splitterKey, size)}
       >
-        <FileList folder={props.folder} extraButtons={props.fileListButtons} />
+        <FileList
+          folder={props.folder}
+          extraButtons={props.fileListButtons}
+          showAccessColumn={isProjectDocumentsFolder}
+        />
         <div className="folder-bottom-pane">
           {props.folder.selectedFile && (
             <>
@@ -160,7 +170,7 @@ const FileTabs: React.FunctionComponent<
   ) : null;
   const propertiesPanel = (
     <TabPanel>
-      <PropertyPanel file={file} />
+      <PropertyPanel file={file} authorityLists={props.authorityLists} />
     </TabPanel>
   );
   const contributorsPanel = (
@@ -285,6 +295,41 @@ const FileTabs: React.FunctionComponent<
       {imdiPanel}
       {paradisecPanel}
       {roCratePanel}
+    </>
+  ) : null;
+
+  // Check if we're in a project documents folder (Description Documents or Other Documents)
+  const isProjectDocuments =
+    props.folder.folderType === "project documents" ||
+    props.folderTypeStyleClass === "project-documents";
+
+  // For project documents, always show Access tab/panel so metadata stays editable
+  const showDocumentAccess = isProjectDocuments;
+
+  const projectDocsTabs = showDocumentAccess ? (
+    <>
+      <Tab data-testid="access-tab">
+        <Trans>Access</Trans>: {file.getTextProperty("access") || "?"}
+      </Tab>
+    </>
+  ) : null;
+
+  const projectDocsPanels = showDocumentAccess ? (
+    <>
+      <TabPanel>
+        <div className="document-access-panel">
+          <AccessChooser
+            field={file.properties.getTextField("access")}
+            authorityLists={props.authorityLists}
+          />
+          {file.properties.getHasValue("accessDescription") && (
+            <TextFieldEdit
+              className="accessDescription"
+              field={file.properties.getTextField("accessDescription")}
+            />
+          )}
+        </div>
+      </TabPanel>
     </>
   ) : null;
 
@@ -478,6 +523,7 @@ const FileTabs: React.FunctionComponent<
               <Trans>Audio</Trans>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel>
             <audio controls>
@@ -485,6 +531,7 @@ const FileTabs: React.FunctionComponent<
             </audio>
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     case "Video":
@@ -495,6 +542,7 @@ const FileTabs: React.FunctionComponent<
               <Trans>Video</Trans>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel>
             <ReactPlayer
@@ -510,6 +558,7 @@ const FileTabs: React.FunctionComponent<
             />
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     case "Image":
@@ -521,6 +570,7 @@ const FileTabs: React.FunctionComponent<
               <Trans>Image</Trans>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel>
             {isTiff ? (
@@ -534,6 +584,7 @@ const FileTabs: React.FunctionComponent<
             )}
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     case "Text":
@@ -544,12 +595,14 @@ const FileTabs: React.FunctionComponent<
               <Trans>Text</Trans>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel>
             {/* NB: not a url, just a file here path */}
             <TextFileView path={path} />
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     case "PDF":
@@ -558,6 +611,7 @@ const FileTabs: React.FunctionComponent<
           <TabList>
             <Tab>PDF</Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel>
             <object
@@ -587,6 +641,7 @@ const FileTabs: React.FunctionComponent<
             </object>
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     case "ELAN":
@@ -597,6 +652,7 @@ const FileTabs: React.FunctionComponent<
               <>ELAN {/* should not be translated */}</>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel className="unhandledFileType">
             <a
@@ -611,6 +667,7 @@ const FileTabs: React.FunctionComponent<
             </a>
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
     default:
@@ -621,6 +678,7 @@ const FileTabs: React.FunctionComponent<
               <Trans>File</Trans>
             </Tab>
             {standardMetaTabs}
+            {projectDocsTabs}
           </TabList>
           <TabPanel className="unhandledFileType">
             <a
@@ -635,6 +693,7 @@ const FileTabs: React.FunctionComponent<
             </a>
           </TabPanel>
           {standardMetaPanels}
+          {projectDocsPanels}
         </Tabs>
       );
   }

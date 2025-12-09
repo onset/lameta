@@ -32,6 +32,11 @@ export class ProjectDocuments extends Folder {
     const files = new Array<File>();
     const filePaths = getAllFilesSync(directory);
     filePaths.forEach((path) => {
+      const lowerCasePath = path.toLowerCase();
+      if (lowerCasePath.endsWith(".meta") || lowerCasePath.endsWith(".test")) {
+        return;
+      }
+
       const file = new OtherFile(
         path,
         new EncounteredVocabularyRegistry() /* we don't have custom fields on project files yet */

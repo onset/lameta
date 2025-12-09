@@ -100,9 +100,55 @@ function getLdacAccessCategory(
   return expandLdacId("ldac:AuthorizedAccess");
 }
 
+function sanitizeAccessValue(access?: string | null): string | null {
+  if (!access) {
+    return null;
+  }
+  const trimmed = access.trim();
+  if (!trimmed || trimmed === "unspecified") {
+    return null;
+  }
+  return trimmed;
+}
+
 // =============================================================================
 // Exported utility functions
 // =============================================================================
+
+export function createAccessLicense(access: string | undefined, project: Project): any {
+  const sanitizedAccess = sanitizeAccessValue(access);
+  const normalizedAccess = sanitizedAccess || "public";
+  const ldacAccessCategory = sanitizedAccess
+    ? getLdacAccessCategory(sanitizedAccess, project.authorityLists)
+    : expandLdacId("ldac:OpenAccess");
+
+  const archiveConfigurationName =
+    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
+    "current archive";
+
+  const license: any = {
+    "@id": getNormalizedLicenseId(normalizedAccess, project),
+    "@type": expandLdacId("ldac:DataReuseLicense"),
+    name: `${archiveConfigurationName} ${normalizedAccess} License`,
+    "ldac:access": { "@id": ldacAccessCategory }
+  };
+
+  if (sanitizedAccess) {
+    const accessDescription = getDescriptionFromAccessChoice(
+      sanitizedAccess,
+      project.authorityLists
+    );
+    if (accessDescription) {
+      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${sanitizedAccess}' which means '${accessDescription}'`;
+    } else {
+      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${sanitizedAccess}'`;
+    }
+  } else {
+    license.description = `Marked with the ${archiveConfigurationName}-specific term, 'public' which means 'This is an open access license.'`;
+  }
+
+  return license;
+}
 
 /**
  * Creates a normalized license object for RO-Crate based on access type
@@ -114,41 +160,7 @@ function getLdacAccessCategory(
  */
 export function createSessionLicense(session: Session, project: Project): any {
   const access = session.metadataFile?.getTextProperty("access");
-  const normalizedAccess =
-    access && access !== "unspecified" && access !== "" ? access : "public";
-  const ldacAccessCategory =
-    access && access !== "unspecified" && access !== ""
-      ? getLdacAccessCategory(access, project.authorityLists)
-      : expandLdacId("ldac:OpenAccess"); // Default to OpenAccess for unspecified access
-
-  const archiveConfigurationName =
-    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
-    "current archive";
-
-  // LAM-96: License entities must have a human-readable name property per RO-Crate spec line 651
-  // https://linear.app/lameta/issue/LAM-96/ro-crate-license-entities-missing-name-property-hewya-project
-  const license: any = {
-    "@id": getNormalizedLicenseId(normalizedAccess, project),
-    "@type": expandLdacId("ldac:DataReuseLicense"),
-    name: `${archiveConfigurationName} ${normalizedAccess} License`,
-    "ldac:access": { "@id": ldacAccessCategory }
-  };
-
-  if (access && access !== "unspecified" && access !== "") {
-    const accessDescription = getDescriptionFromAccessChoice(
-      access,
-      project.authorityLists
-    );
-    if (accessDescription) {
-      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${access}' which means '${accessDescription}'`;
-    } else {
-      license.description = `Marked with the ${archiveConfigurationName}-specific term, '${access}'`;
-    }
-  } else {
-    license.description = `Marked with the ${archiveConfigurationName}-specific term, 'public' which means 'This is an open access license.'`;
-  }
-
-  return license;
+  return createAccessLicense(access, project);
 }
 
 /**
@@ -177,20 +189,24 @@ export function getSessionLicenseId(
  */
 export function createDistinctLicenses(
   sessions: Session[],
-  project: Project
+  project: Project,
+  additionalAccessValues: string[] = []
 ): any[] {
   const distinctLicenses = new Map<string, any>();
 
-  sessions.forEach((session) => {
-    const license = createSessionLicense(session, project);
+  const addAccess = (access?: string) => {
+    const license = createAccessLicense(access, project);
     const licenseId = license["@id"];
-
-    // Only add if we haven't seen this license ID before
-    // Multiple sessions with the same access type will share the same license
     if (!distinctLicenses.has(licenseId)) {
       distinctLicenses.set(licenseId, license);
     }
+  };
+
+  sessions.forEach((session) => {
+    addAccess(session.metadataFile?.getTextProperty("access"));
   });
+
+  additionalAccessValues.forEach((access) => addAccess(access));
 
   return Array.from(distinctLicenses.values());
 }
@@ -303,6 +319,22 @@ export class RoCrateLicense {
         this.setFileLicense(filePath, sessionLicenseId);
       }
     }
+  }
+
+  ensureDocumentAccessLicense(file: File, project?: Project): string | undefined {
+    if (!project) {
+      return undefined;
+    }
+    const accessValue = sanitizeAccessValue(
+      file.getTextProperty?.("access") || file.properties?.getTextStringOrEmpty?.("access")
+    );
+    if (!accessValue) {
+      return undefined;
+    }
+    const filePath = file.metadataFilePath || file.getActualFilePath();
+    const licenseId = getNormalizedLicenseId(accessValue, project);
+    this.setFileLicense(filePath, licenseId);
+    return licenseId;
   }
 
   /**

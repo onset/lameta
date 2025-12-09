@@ -1281,6 +1281,14 @@ export class OtherFile extends File {
 
     this.encounteredVocabularyRegistry = customVocabularies;
 
+    // Add access fields for document files (Description Documents / Other Documents)
+    // These enable per-document access levels which will be exported to IMDI
+    this.addTextProperty("access", "", true);
+    this.properties.getValueOrThrow("access").definition.englishLabel = "Access";
+    this.addTextProperty("accessDescription", "", true);
+    this.properties.getValueOrThrow("accessDescription").definition.englishLabel =
+      "Access Explanation";
+
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;
       // caller should call  finishLoading() if the file already exists, or after copying completes

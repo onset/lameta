@@ -33,8 +33,8 @@ import { getTestEnvironment } from "../getTestEnvironment";
 const electron = require("electron");
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
-
   extraButtons?: object[];
+  showAccessColumn?: boolean;
 }> = (props) => {
   React.useEffect(() => {
     if (process.env.E2E) {
@@ -57,6 +57,7 @@ export const _FileList: React.FunctionComponent<{
   // when the user does something that causes a rename.
   const mobxDummy = props.folder.files.map((f) => {
     f.getTextProperty("filename");
+    f.getTextProperty("access");
     const unused = f.copyInProgress;
     const progressUnused = f.copyProgress;
   });
@@ -123,6 +124,7 @@ export const _FileList: React.FunctionComponent<{
       id: "linkStatus",
       Header: "",
       width: 30,
+      show: props.folder.files.some((f) => getLinkStatusIconPath(f)),
       accessor: (d: any) => {
         const f: File = d;
         return getLinkStatusIconPath(f);
@@ -173,6 +175,20 @@ export const _FileList: React.FunctionComponent<{
       }
     }
   ];
+
+  // Add Access column for project documents when showAccessColumn is enabled
+  if (props.showAccessColumn) {
+    columns.splice(4, 0, {
+      id: "access",
+      Header: t`Access`,
+      width: 100,
+      accessor: (d: any) => {
+        const f: File = d;
+        return f.getTextProperty("access", "");
+      },
+      Cell: (cell: any) => highlight(cell.value)
+    });
+  }
 
   if (searchTerm) {
     columns = [

@@ -444,9 +444,15 @@ async function getRoCrateInternal(
     }
 
     // Create unique licenses for all sessions
+    const documentAccessValues = collectDocumentAccessValues([
+      project.descriptionFolder,
+      project.otherDocsFolder
+    ]);
+
     const uniqueLicenses = createDistinctLicenses(
       project.sessions.items as Session[],
-      project
+      project,
+      documentAccessValues
     );
 
     // Add a collection-level license definition
@@ -662,8 +668,18 @@ function addFileLicenseProperty(
   rocrateLicense: RoCrateLicense,
   folder?: Folder,
   parentEntry?: any,
-  project?: Project
+  project?: Project,
+  file?: any
 ): void {
+  if (!(folder instanceof Session) && file && project) {
+    const documentLicenseId =
+      rocrateLicense.ensureDocumentAccessLicense(file, project);
+    if (documentLicenseId) {
+      fileEntry.license = { "@id": documentLicenseId };
+      return;
+    }
+  }
+
   // For session files, ensure they inherit the session license first
   // This must happen before checking existing licenses to normalize any raw values
   if (folder instanceof Session) {
@@ -783,7 +799,8 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
     rocrateLicense,
     folder,
     parentEntry,
-    project
+    project,
+    file
   );
 
   return { fileEntry, stats };
@@ -1400,6 +1417,28 @@ function getUniqueEntries(otherEntries: object[]) {
   });
 
   return unique;
+}
+
+function collectDocumentAccessValues(
+  folders: Array<Folder | undefined>
+): string[] {
+  const uniqueValues = new Set<string>();
+  folders.forEach((folder) => {
+    if (!folder || !folder.files) {
+      return;
+    }
+    folder.files.forEach((file: any) => {
+      const rawAccess =
+        file.getTextProperty?.("access") ||
+        file.properties?.getTextStringOrEmpty?.("access") ||
+        "";
+      const trimmed = rawAccess.trim();
+      if (trimmed && trimmed !== "unspecified") {
+        uniqueValues.add(trimmed);
+      }
+    });
+  });
+  return Array.from(uniqueValues);
 }
 
 function createDescriptionCollectionProtocolEntry(

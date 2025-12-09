@@ -832,7 +832,7 @@ export default class ImdiGenerator {
         this.element("End", "Unspecified");
       });
 
-      this.addAccess();
+      this.addAccess(f);
       this.addCustomKeys(f);
     });
   }
@@ -893,16 +893,27 @@ export default class ImdiGenerator {
       this.element("LanguageId", "");
       this.element("Anonymized", "Unspecified");
 
-      this.addAccess();
+      this.addAccess(f);
       this.addCustomKeys(f);
     });
   }
-  // note, lameta doesn't have different access codes for different files,
-  // so we're just outputting the access code for the session.
-  private addAccess() {
-    const accessCode =
-      this.folderInFocus instanceof Session
+  // Note: lameta now supports per-file access codes for document files.
+  // When fileWithAccess is provided, use its access field.
+  // Otherwise fall back to session-level access (for backward compatibility).
+  private addAccess(fileWithAccess?: File) {
+    // Try to get access from the file first, then fall back to session
+    const accessCode = fileWithAccess?.properties.getTextStringOrEmpty("access")
+      ? fileWithAccess.properties.getTextStringOrEmpty("access")
+      : this.folderInFocus instanceof Session
         ? this.folderInFocus.properties.getTextStringOrEmpty("access")
+        : "";
+
+    const accessDescription = fileWithAccess?.properties.getTextStringOrEmpty(
+      "accessDescription"
+    )
+      ? fileWithAccess.properties.getTextStringOrEmpty("accessDescription")
+      : this.folderInFocus instanceof Session
+        ? this.folderInFocus.properties.getTextStringOrEmpty("accessDescription")
         : "";
 
     /* NO: the schema requires a all the access fields, even if they are empty.
@@ -915,7 +926,7 @@ export default class ImdiGenerator {
 
     this.group("Access", () => {
       if (accessCode.length > 0) {
-        this.requiredField("Availability", "access");
+        this.element("Availability", accessCode);
       } else {
         this.element("Availability", "");
       }
@@ -959,7 +970,7 @@ export default class ImdiGenerator {
       }
     */
       if (accessCode.length > 0) {
-        this.requiredField("Description", "accessDescription");
+        this.element("Description", accessDescription);
       } else {
         this.element("Description", "");
       }

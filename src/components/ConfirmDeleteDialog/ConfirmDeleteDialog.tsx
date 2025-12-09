@@ -76,6 +76,7 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
         <div
           css={css`
             display: flex;
+            overflow-wrap: anywhere; // allow long paths without horizontal scroll
           `}
         >
           {/* <DeleteIcon
