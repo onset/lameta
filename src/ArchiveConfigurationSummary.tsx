@@ -111,6 +111,8 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
           </div>
         )}
       */}
+
+      {/* ELAR doesn't want this visible at all 
       {(projectCustomizations.length > 0 ||
         sessionCustomizations.length > 0 ||
         personCustomizations.length > 0 ||
@@ -196,7 +198,7 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
             </>
           )}
         </details>
-      )}
+      )}*/}
     </div>
   );
 };
