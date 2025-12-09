@@ -79,8 +79,14 @@ msgstr ""
 msgid "Audio"
 msgstr "Audio"
 
+msgid "CSV export complete"
+msgstr ""
+
 msgid "Cancel"
 msgstr "Annuler"
+
+msgid "Cancelling..."
+msgstr ""
 
 msgid "Cannot add files of that type"
 msgstr "Impossible d'ajouter des fichiers de ce type"
@@ -133,8 +139,14 @@ msgstr "Copier"
 msgid "Copy Requested..."
 msgstr "Copie Requise..."
 
+msgid "Copy to clipboard"
+msgstr ""
+
 msgid "Copying in Files..."
 msgstr "Copiage dans des Fichiers..."
+
+msgid "Copying {0}"
+msgstr ""
 
 msgid "Copying..."
 msgstr "Copiage..."
@@ -205,6 +217,9 @@ msgstr "Ne quittez pas"
 msgid "Done"
 msgstr "Achevé"
 
+msgid "Done, with {0} warnings"
+msgstr ""
+
 msgid "Download"
 msgstr "Télécharger"
 
@@ -229,8 +244,14 @@ msgstr "Exporter le projet"
 msgid "Export Project..."
 msgstr "Exporter le projet..."
 
-msgid "Exporting..."
-msgstr "Exporter..."
+msgid "Export failed"
+msgstr ""
+
+msgid "Export was cancelled. No files were exported."
+msgstr ""
+
+msgid "Exporting {0}..."
+msgstr ""
 
 msgid "Field"
 msgstr "Champ"
@@ -272,6 +293,15 @@ msgid "Full Name"
 msgstr "Nom complet"
 
 msgid "Funding Project"
+msgstr ""
+
+msgid "Generating CSV export..."
+msgstr ""
+
+msgid "Generating PARADISEC CSV..."
+msgstr ""
+
+msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Help"
@@ -342,6 +372,12 @@ msgstr "Apprenant"
 
 msgid "Linked to {p}"
 msgstr "Relié à {p}"
+
+msgid "Loading Project"
+msgstr ""
+
+msgid "Loading {phaseLabel}..."
+msgstr ""
 
 msgid "Location"
 msgstr ""
@@ -421,6 +457,9 @@ msgstr "Ouvrir dans le logiciel associé à ce type de fichier"
 msgid "Other Documents"
 msgstr "Autres documents"
 
+msgid "PARADISEC CSV export complete"
+msgstr ""
+
 msgid "Paradisec CSV"
 msgstr "CSV Paradisec"
 
@@ -442,6 +481,9 @@ msgstr "Veuillez supprimer les caractères non autorisés par les paramètres d'
 msgid "Please wait until all files are finished copying into this folder"
 msgstr "Veuillez patienter jusqu'à ce que tous les fichiers soient copiés dans ce dossier"
 
+msgid "Preparing export..."
+msgstr ""
+
 msgid "Project"
 msgstr "Projet"
 
@@ -455,6 +497,9 @@ msgid "Quit"
 msgstr "Quitter"
 
 msgid "RO-Crate"
+msgstr ""
+
+msgid "RO-Crate export complete"
 msgstr ""
 
 msgid "Redo"
@@ -631,6 +676,9 @@ msgstr "Annuler l'action"
 msgid "Update available"
 msgstr "Une mise à jour est disponible"
 
+msgid "Validating RO-Crate export..."
+msgstr ""
+
 msgid "Value"
 msgstr "Valeur"
 
@@ -654,6 +702,9 @@ msgstr ""
 
 msgid "What would you like to call this project?"
 msgstr "Que voulez-vous appeler ce projet ?"
+
+msgid "Writing corpus metadata..."
+msgstr ""
 
 msgid "You are running lameta version:"
 msgstr "Vous utilisez la version lameta:"

@@ -41,6 +41,12 @@ import { getTestEnvironment } from "../getTestEnvironment";
 
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  LoadingProjectDialog,
+  LoadingProgress,
+  shouldUseAsyncLoading,
+  loadProject
+} from "../components/LoadingProjectDialog";
 
 // Added this as part of a workaround in typing when upgrading to mobx6.
 // Enhance: would be cleaner to pass the values to the menu constructor.
@@ -55,6 +61,8 @@ interface IProps {}
 interface IState {
   showCreateProjectDialog: boolean;
   useSampleProject: boolean;
+  showLoadingDialog: boolean;
+  loadingProgress: LoadingProgress;
 }
 
 class HomePage extends React.Component<IProps, IState> {
@@ -74,7 +82,13 @@ class HomePage extends React.Component<IProps, IState> {
     this.projectHolder = new ProjectHolder();
     this.state = {
       showCreateProjectDialog: false,
-      useSampleProject: false //enhance: this is a really ugly way to control this behavior
+      useSampleProject: false, //enhance: this is a really ugly way to control this behavior
+      showLoadingDialog: false,
+      loadingProgress: {
+        phase: "sessions",
+        overallCurrent: 0,
+        overallTotal: 0
+      }
     };
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
@@ -103,9 +117,18 @@ class HomePage extends React.Component<IProps, IState> {
     if (process.env.startInStartScreen === "true") {
       expectedProjectDirectory = null;
     }
+
+    // Check if we should use async loading with progress dialog
+    // for projects with more than 10 sessions
     if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
-      const project = Project.fromDirectory(expectedProjectDirectory);
-      this.projectHolder.setProject(project);
+      if (shouldUseAsyncLoading(expectedProjectDirectory)) {
+        // Defer to async loading with progress - will be done in componentDidMount
+        this.pendingProjectDirectory = expectedProjectDirectory;
+      } else {
+        // Small project - load synchronously as before
+        const project = Project.fromDirectory(expectedProjectDirectory);
+        this.projectHolder.setProject(project);
+      }
     } else {
       this.projectHolder.setProject(null);
     }
@@ -116,11 +139,32 @@ class HomePage extends React.Component<IProps, IState> {
     this.updateMenu();
     HomePage.homePageForTests = this;
   }
+
+  // Directory to load asynchronously (set in constructor if project has > 10 sessions)
+  private pendingProjectDirectory: string | null = null;
   public createProject(useSample: boolean) {
     this.setState({
       showCreateProjectDialog: true,
       useSampleProject: useSample
     });
+  }
+
+  // Load a project asynchronously with progress dialog
+  private async loadProjectWithProgress(directory: string) {
+    this.setState({ showLoadingDialog: true });
+
+    const project = await loadProject(directory, (progress) => {
+      this.setState({
+        loadingProgress: {
+          phase: progress.phase,
+          overallCurrent: progress.overallCurrent,
+          overallTotal: progress.overallTotal
+        }
+      });
+    });
+
+    this.setState({ showLoadingDialog: false });
+    this.projectHolder.setProject(project);
   }
 
   // for e2e (but not entirely?)
@@ -151,6 +195,12 @@ class HomePage extends React.Component<IProps, IState> {
 
   private previousFolderNames = "";
   public componentDidMount() {
+    // Handle async loading of large projects with progress dialog
+    if (this.pendingProjectDirectory) {
+      this.loadProjectWithProgress(this.pendingProjectDirectory);
+      this.pendingProjectDirectory = null;
+    }
+
     if (!this.isRunningFromSource()) {
       const version = pkg.version as string;
       const match = version.match(/-(alpha|beta)(?:\.|$)/);
@@ -359,6 +409,10 @@ class HomePage extends React.Component<IProps, IState> {
         <ExportDialog projectHolder={this.projectHolder} />
         <SpreadsheetImportDialog projectHolder={this.projectHolder} />
         <MessageDialog />
+        <LoadingProjectDialog
+          open={this.state.showLoadingDialog}
+          progress={this.state.loadingProgress}
+        />
         <ToastContainer
           position="top-right"
           theme="light"
@@ -397,11 +451,15 @@ class HomePage extends React.Component<IProps, IState> {
         results.filePaths!.length > 0 &&
         results.filePaths![0].length > 0
       ) {
-        const directory = Path.dirname(results.filePaths[0]);
-        this.projectHolder.setProject(
-          Project.fromDirectory(fs.realpathSync(directory))
-        );
+        const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
         userSettings.PreviousProjectDirectory = directory;
+
+        // Use async loading with progress dialog for large projects
+        if (shouldUseAsyncLoading(directory)) {
+          this.loadProjectWithProgress(directory);
+        } else {
+          this.projectHolder.setProject(Project.fromDirectory(directory));
+        }
       }
     });
   }
