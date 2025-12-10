@@ -14,14 +14,24 @@ export function normalizeLanguageTag(tag?: string): string | undefined {
 }
 
 export function getInitialLanguageTags(field: Field): string[] {
-  const axes = field
-    .getAllNonEmptyTextAxes()
+  const allAxes = field.getAllNonEmptyTextAxes();
+  console.log(
+    `[getInitialLanguageTags] field.key="${field.key}" getAllNonEmptyTextAxes returned:`,
+    allAxes
+  );
+  const axes = allAxes
     .map((t) => normalizeLanguageTag(t))
     .filter((t): t is string => !!t);
+  console.log(`[getInitialLanguageTags] after normalization:`, axes);
   if (axes.length === 0) {
+    console.log(`[getInitialLanguageTags] returning default:`, [
+      DEFAULT_LANGUAGE_TAG
+    ]);
     return [DEFAULT_LANGUAGE_TAG];
   }
-  return Array.from(new Set(axes));
+  const result = Array.from(new Set(axes));
+  console.log(`[getInitialLanguageTags] returning:`, result);
+  return result;
 }
 
 export function mergeLanguageTags(
@@ -74,9 +84,18 @@ export function useMultilingualField(
   field: Field,
   isMultilingual: boolean
 ): UseMultilingualFieldResult {
-  const [languageTags, setLanguageTags] = useState<string[]>(() =>
-    isMultilingual ? getInitialLanguageTags(field) : []
+  console.log(
+    `[useMultilingualField] HOOK START for field.key="${field.key}" isMultilingual=${isMultilingual}`
   );
+
+  const [languageTags, setLanguageTags] = useState<string[]>(() => {
+    const initial = isMultilingual ? getInitialLanguageTags(field) : [];
+    console.log(
+      `[useMultilingualField] Initial state for field.key="${field.key}" isMultilingual=${isMultilingual}:`,
+      initial
+    );
+    return initial;
+  });
 
   const [newlyAddedTag, setNewlyAddedTag] = useState<string | null>(null);
 
@@ -84,6 +103,10 @@ export function useMultilingualField(
   // This prevents re-initialization from discarding user-added tags when the
   // field object reference changes but the field identity remains the same.
   const previousFieldKeyRef = React.useRef<string>(field.key);
+
+  console.log(
+    `[useMultilingualField] BEFORE useEffect for field.key="${field.key}"`
+  );
 
   useEffect(() => {
     if (!isMultilingual) return;
@@ -106,12 +129,30 @@ export function useMultilingualField(
         );
       }
     }
-  }, [isMultilingual, field, field.text]);
+  }, [field, field.key, isMultilingual]);
 
   const axes = useMemo<LanguageAxis[]>(() => {
-    if (!isMultilingual) return [];
-    return languageTags.map(createLanguageAxis);
-  }, [isMultilingual, languageTags]);
+    if (!isMultilingual) {
+      console.log(
+        `[useMultilingualField] axes computed for field.key="${field.key}": [] (not multilingual)`
+      );
+      return [];
+    }
+    try {
+      const result = languageTags.map(createLanguageAxis);
+      console.log(
+        `[useMultilingualField] axes computed for field.key="${field.key}":`,
+        result
+      );
+      return result;
+    } catch (error) {
+      console.error(
+        `[useMultilingualField] ERROR computing axes for field.key="${field.key}":`,
+        error
+      );
+      throw error;
+    }
+  }, [isMultilingual, languageTags, field.key]);
 
   const handleAddLanguage = useCallback((tag: string) => {
     const normalized = normalizeLanguageTag(tag);

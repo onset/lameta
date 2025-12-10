@@ -82,8 +82,9 @@ export const TextFieldEdit: React.FunctionComponent<
             ${props.field.definition.multipleLines
               ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
                  ${isMultilingual ? "overflow-y: auto;" : ""}`
-              : // improve: the height part here is a hack
-                "max-height: 24px; overflow: hidden;"}
+              : isMultilingual
+              ? "overflow-y: auto;"
+              : "max-height: 24px; overflow: hidden;"}
           `}
         >
           {isMultilingual ? (

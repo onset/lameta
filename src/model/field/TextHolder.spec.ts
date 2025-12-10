@@ -83,3 +83,270 @@ describe("TextHolder.monoLingualText", () => {
     expect(textHolder.monoLingualText).toBe("");
   });
 });
+
+describe("TextHolder migration: multilingual ↔ monolingual", () => {
+  describe("getAllNonEmptyTextAxes behavior", () => {
+    it("should return ['en'] for plain untagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder._text = "Plain monolingual text";
+
+      const axes = textHolder.getAllNonEmptyTextAxes();
+      expect(axes).toEqual(["en"]);
+    });
+
+    it("should return correct axes for tagged multilingual text", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "English");
+      textHolder.setTextAxis("es", "Español");
+
+      const axes = textHolder.getAllNonEmptyTextAxes();
+      expect(axes.length).toBe(2);
+      expect(axes).toContain("en");
+      expect(axes).toContain("es");
+    });
+
+    it("should return ['en'] for empty text", () => {
+      const textHolder = new TextHolder();
+      textHolder._text = "";
+
+      const axes = textHolder.getAllNonEmptyTextAxes();
+      expect(axes).toEqual([]);
+    });
+  });
+
+  describe("multilingual → monolingual: preserves tagged text verbatim", () => {
+    it("should return raw tagged text when reading as monolingual", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "house");
+      textHolder.setTextAxis("es", "casa");
+      expect(textHolder.getSerialized()).toBe("[[en]]house[[es]]casa");
+
+      // When reading as monolingual, should return the raw tagged string
+      expect(textHolder.monoLingualText).toBe("[[en]]house[[es]]casa");
+    });
+
+    it("should preserve tagged text with multiple languages", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "Hello");
+      textHolder.setTextAxis("es", "Hola");
+      textHolder.setTextAxis("fr", "Bonjour");
+
+      const serialized = textHolder.getSerialized();
+      expect(serialized).toContain("[[en]]Hello");
+      expect(serialized).toContain("[[es]]Hola");
+      expect(serialized).toContain("[[fr]]Bonjour");
+
+      // Monolingual text should show it all
+      expect(textHolder.monoLingualText).toBe(serialized);
+    });
+
+    it("should handle tagged text with special characters", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", 'Text with <html> & "quotes"');
+      textHolder.setTextAxis("es", "Texto con / \\ caracteres");
+
+      const serialized = textHolder.getSerialized();
+      expect(textHolder.monoLingualText).toBe(serialized);
+    });
+
+    it("should preserve tagged text with Unicode and RTL languages", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "English text");
+      textHolder.setTextAxis("ar", "نص عربي للاختبار");
+      textHolder.setTextAxis("zh", "中文测试文本");
+
+      const serialized = textHolder.getSerialized();
+      expect(textHolder.monoLingualText).toBe(serialized);
+    });
+  });
+
+  describe("monolingual → multilingual: treats plain text as English", () => {
+    it("should treat plain text as English when reading as multilingual", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "plain text";
+
+      // When reading as English axis, should return the plain text
+      expect(textHolder.getTextAxis("en")).toBe("plain text");
+    });
+
+    it("should return empty for non-English axes when text is plain", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "plain text";
+
+      expect(textHolder.getTextAxis("en")).toBe("plain text");
+      expect(textHolder.getTextAxis("es")).toBe("");
+      expect(textHolder.getTextAxis("fr")).toBe("");
+    });
+
+    it("should handle plain text with special characters", () => {
+      const textHolder = new TextHolder();
+      const specialText =
+        'Text with <html>, "quotes", & ampersands, slashes/backslashes\\';
+      textHolder.monoLingualText = specialText;
+
+      expect(textHolder.getTextAxis("en")).toBe(specialText);
+    });
+
+    it("should handle plain text with Unicode characters", () => {
+      const textHolder = new TextHolder();
+      const unicodeText = "Text with émojis 🎉 and Chinese 中文 and Arabic نص";
+      textHolder.monoLingualText = unicodeText;
+
+      expect(textHolder.getTextAxis("en")).toBe(unicodeText);
+    });
+  });
+
+  describe("round-trip preservation: mono→multi→mono→multi", () => {
+    it("should preserve data through mono→multi→mono cycle", () => {
+      const textHolder = new TextHolder();
+
+      // Start monolingual
+      textHolder.monoLingualText = "original text";
+      expect(textHolder.monoLingualText).toBe("original text");
+
+      // Add Spanish (now multilingual)
+      textHolder.setTextAxis("es", "texto original");
+      expect(textHolder.getSerialized()).toBe(
+        "[[en]]original text[[es]]texto original"
+      );
+
+      // Read as monolingual (should show tagged format)
+      expect(textHolder.monoLingualText).toBe(
+        "[[en]]original text[[es]]texto original"
+      );
+
+      // Back to multilingual - should still parse correctly
+      expect(textHolder.getTextAxis("en")).toBe("original text");
+      expect(textHolder.getTextAxis("es")).toBe("texto original");
+    });
+
+    it("should preserve multilingual data when written as monolingual", () => {
+      const textHolder = new TextHolder();
+
+      // Start with multilingual data
+      textHolder.setTextAxis("en", "house");
+      textHolder.setTextAxis("es", "casa");
+      textHolder.setTextAxis("fr", "maison");
+
+      const originalSerialized = textHolder.getSerialized();
+
+      // Read as monolingual (gets the tagged format)
+      const monoView = textHolder.monoLingualText;
+      expect(monoView).toBe(originalSerialized);
+
+      // Create new holder and set it monolingual with the tagged format
+      const textHolder2 = new TextHolder();
+      textHolder2.combinedText = monoView;
+
+      // Should parse back to multilingual correctly
+      expect(textHolder2.getTextAxis("en")).toBe("house");
+      expect(textHolder2.getTextAxis("es")).toBe("casa");
+      expect(textHolder2.getTextAxis("fr")).toBe("maison");
+    });
+
+    it("should handle complex round-trip with modifications", () => {
+      const textHolder = new TextHolder();
+
+      // 1. Start monolingual
+      textHolder.monoLingualText = "version 1";
+
+      // 2. Go multilingual, add Spanish
+      textHolder.setTextAxis("es", "versión 1");
+      expect(textHolder.getTextAxis("en")).toBe("version 1");
+      expect(textHolder.getTextAxis("es")).toBe("versión 1");
+
+      // 3. Simulate going back to monolingual view
+      const tagged = textHolder.monoLingualText;
+      expect(tagged).toBe("[[en]]version 1[[es]]versión 1");
+
+      // 4. Go multilingual again, modify English
+      textHolder.setTextAxis("en", "version 2");
+      expect(textHolder.getTextAxis("en")).toBe("version 2");
+      expect(textHolder.getTextAxis("es")).toBe("versión 1");
+
+      // 5. Add French
+      textHolder.setTextAxis("fr", "version française");
+      expect(textHolder.getTextAxis("en")).toBe("version 2");
+      expect(textHolder.getTextAxis("es")).toBe("versión 1");
+      expect(textHolder.getTextAxis("fr")).toBe("version française");
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should handle empty text in both mono and multi modes", () => {
+      const textHolder = new TextHolder();
+      expect(textHolder.monoLingualText).toBe("");
+      expect(textHolder.getTextAxis("en")).toBe("");
+    });
+
+    it("should handle whitespace-only text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "   ";
+
+      // Whitespace-only is stored
+      expect(textHolder.monoLingualText).toBe("   ");
+      expect(textHolder.getTextAxis("en")).toBe("   ");
+    });
+
+    it("should handle literal [[ in content when monolingual", () => {
+      const textHolder = new TextHolder();
+      const textWithBrackets = "This text has [[ literal brackets ]] in it";
+      textHolder.monoLingualText = textWithBrackets;
+
+      // Should preserve the literal brackets
+      expect(textHolder.monoLingualText).toBe(textWithBrackets);
+      // When read as multilingual axis, should also work
+      expect(textHolder.getTextAxis("en")).toBe(textWithBrackets);
+    });
+
+    it("should handle multilingual text without English", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("es", "solo español");
+      textHolder.setTextAxis("fr", "seulement français");
+
+      const serialized = textHolder.getSerialized();
+      expect(serialized).toContain("[[es]]solo español");
+      expect(serialized).toContain("[[fr]]seulement français");
+
+      // English should be empty
+      expect(textHolder.getTextAxis("en")).toBe("");
+
+      // Monolingual view shows tagged format
+      expect(textHolder.monoLingualText).toBe(serialized);
+    });
+
+    it("should handle text with newlines and tabs", () => {
+      const textHolder = new TextHolder();
+      const textWithWhitespace = "Line 1\nLine 2\n\tIndented";
+      textHolder.monoLingualText = textWithWhitespace;
+
+      expect(textHolder.monoLingualText).toBe(textWithWhitespace);
+      expect(textHolder.getTextAxis("en")).toBe(textWithWhitespace);
+    });
+
+    it("should handle very long text", () => {
+      const textHolder = new TextHolder();
+      const longText = "This is a long sentence. ".repeat(100);
+      textHolder.monoLingualText = longText;
+
+      expect(textHolder.monoLingualText).toBe(longText);
+      expect(textHolder.getTextAxis("en")).toBe(longText);
+
+      // Add translation with long text
+      const longSpanish = "Esta es una oración larga. ".repeat(100);
+      textHolder.setTextAxis("es", longSpanish);
+
+      expect(textHolder.getTextAxis("en")).toBe(longText);
+      expect(textHolder.getTextAxis("es")).toBe(longSpanish);
+    });
+
+    it("should handle emoji and complex Unicode", () => {
+      const textHolder = new TextHolder();
+      const emojiText = "Emoji test: 🎉🌍🚀👍 and combining chars: é (e + ´)";
+      textHolder.monoLingualText = emojiText;
+
+      expect(textHolder.monoLingualText).toBe(emojiText);
+      expect(textHolder.getTextAxis("en")).toBe(emojiText);
+    });
+  });
+});

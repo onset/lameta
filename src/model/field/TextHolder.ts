@@ -19,8 +19,8 @@ export class TextHolder {
   }
 
   public get monoLingualText(): string {
-    if (this._text.includes("[[") === true)
-      throw new Error(`This text should not be multilingual: "${this._text}"`);
+    // Return raw text even if it contains language tags
+    // This allows mono→multi→mono transitions without data loss
     return this._text;
   }
   public getSerialized(): string {
@@ -42,8 +42,8 @@ export class TextHolder {
     return "";
   }
   public set monoLingualText(value: string) {
-    if (this._text.includes("[[") === true)
-      throw new Error(`This text should not be multilingual: "${this._text}"`);
+    // Accept any value, even if it contains language tags
+    // This allows preservation of multilingual data when field is temporarily monolingual
     this._text = value;
   }
   public get combinedText(): string {
@@ -79,6 +79,13 @@ export class TextHolder {
     if (!this._text.includes("[[")) {
       return { en: this._text };
     }
+
+    // Check if this looks like multilingual format (starts with [[)
+    // If not, treat as plain text even if it contains [[ somewhere
+    if (!this._text.startsWith("[[")) {
+      return { en: this._text };
+    }
+
     // first divide the text into an array of axis/text pairs
     const axisTextPairsWithExtra = this._text.split("[["); //.map((s) => s.trim());
     //// console.log(axisTextPairsWithExtra);
@@ -107,9 +114,20 @@ export class TextHolder {
     return result;
   }
   public getAllNonEmptyTextAxes(): string[] {
-    return TextHolder.getNonEmptyLanguageAxesStatic(
+    const result = TextHolder.getNonEmptyLanguageAxesStatic(
       this.deserializeMultiAxisText()
     );
+    // Debug logging for migration issue
+    if (this._text && !this._text.startsWith("[[")) {
+      console.log(
+        `[TextHolder] getAllNonEmptyTextAxes() for plain text "${this._text.substring(
+          0,
+          50
+        )}" returning:`,
+        result
+      );
+    }
+    return result;
   }
 
   private static getNonEmptyLanguageAxesStatic(axes: MultiAxisText): string[] {
