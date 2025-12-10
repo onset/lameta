@@ -36,9 +36,14 @@ export class MainProcessApi {
   // We're doing this in the main process because I didn't get xmllint-wasm to work in the render process.
   // It has a browser build, but I couldn't get it loaded in vite. Could try again later.
   public async validateImdiAsync(
-    imdiContents: string
+    imdiContents: string,
+    imdiSchemaName?: string
   ): Promise<XMLValidationResult> {
-    return await validateImdiAsyncInternal(app.getAppPath(), imdiContents);
+    return await validateImdiAsyncInternal(
+      app.getAppPath(),
+      imdiContents,
+      imdiSchemaName
+    );
   }
 
   private isFirstSearch: boolean = true;
@@ -128,8 +133,8 @@ ipcMain.handle("MainProcessApi.trashItem", async (_event, path: string) => {
 
 ipcMain.handle(
   "MainProcessApi.validateImdiAsync",
-  async (_event, imdiContents: string) => {
-    return mainProcessInstance.validateImdiAsync(imdiContents);
+  async (_event, imdiContents: string, imdiSchemaName?: string) => {
+    return mainProcessInstance.validateImdiAsync(imdiContents, imdiSchemaName);
   }
 );
 

@@ -43,6 +43,7 @@ import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import { clipboard } from "electron";
 import { Session } from "src/model/Project/Session/Session";
 import { lameta_green, lameta_dark_green } from "../../containers/theme";
+import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 
 // Export-specific modules
 import { runRoCrateValidation } from "./roCrateExport";
@@ -942,7 +943,8 @@ export const ExportDialog: React.FunctionComponent<{
                           font-size: 20px;
                         `}
                       />
-                      {t`The IMDI files were validated.`}
+                      {t`The IMDI files were validated.`} (
+                      {GetOtherConfigurationSettings().imdiSchema})
                     </div>
                   )}
                 </div>

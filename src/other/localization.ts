@@ -165,6 +165,95 @@ export function translateRole(role: string) {
 export function translateGenre(genre: string) {
   return getMatch(genres, genre, "genres.csv");
 }
+
+/**
+ * Translate a genre to a specific language (for IMDI export).
+ * Returns undefined if no translation is available for that language.
+ */
+export function translateGenreToLanguage(
+  genre: string,
+  targetLanguage: string
+): string | undefined {
+  return getMatchForLanguage(genres, genre, targetLanguage);
+}
+
+/**
+ * Translate a role to a specific language (for IMDI export).
+ * Returns undefined if no translation is available for that language.
+ */
+export function translateRoleToLanguage(
+  role: string,
+  targetLanguage: string
+): string | undefined {
+  // If olacRoles hasn't been initialized (e.g., in unit tests), just use the role as-is
+  const roleChoice: IChoice | undefined = olacRoles?.find((c) => c.id === role);
+  return getMatchForLanguage(roles, roleChoice?.label || role, targetLanguage);
+}
+
+/**
+ * Get a translation for a specific target language.
+ * Tries exact match first (e.g., "pt-BR"), then base language (e.g., "pt"),
+ * then regional variants (e.g., "es" -> "es-ES").
+ * Returns undefined if no translation is found.
+ */
+function getMatchForLanguage(
+  lines: any[],
+  s: string,
+  targetLanguage: string
+): string | undefined {
+  if (!s || s.length === 0) return undefined;
+
+  // Normalize: Subject Language/Languages mismatch
+  if (s.toLowerCase().indexOf("subject language") > -1) {
+    s = "Subject Languages";
+  }
+
+  const match = lines.find((f) => f.en.toLowerCase() === s.toLowerCase());
+  if (!match) return undefined;
+
+  // For English, sentence case it (same as current behavior)
+  if (targetLanguage === "en" || targetLanguage === "eng") {
+    return sentenceCase(match.en);
+  }
+
+  // Normalize 3-letter ISO 639-3 codes to 2-letter ISO 639-1 codes
+  const iso3to2: Record<string, string> = {
+    spa: "es",
+    por: "pt",
+    zho: "zh",
+    fra: "fr",
+    rus: "ru",
+    ind: "id",
+    fas: "fa",
+    eng: "en"
+  };
+  const normalizedLang = iso3to2[targetLanguage] || targetLanguage;
+
+  // Try exact match first (e.g., "pt-BR", "zh-CN")
+  if (match[normalizedLang] && match[normalizedLang].trim().length > 0) {
+    return match[normalizedLang];
+  }
+
+  // Map 2-letter codes to CSV column name variants (e.g., "es" -> "es-ES")
+  const columnMappings: Record<string, string[]> = {
+    es: ["es-ES"],
+    pt: ["pt-BR"],
+    zh: ["zh-CN"]
+  };
+
+  const alternatives = columnMappings[normalizedLang];
+  if (alternatives) {
+    for (const alt of alternatives) {
+      if (match[alt] && match[alt].trim().length > 0) {
+        return match[alt];
+      }
+    }
+  }
+
+  // No translation found
+  return undefined;
+}
+
 function getMatch(
   lines: any[],
   s: string,

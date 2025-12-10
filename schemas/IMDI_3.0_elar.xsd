@@ -208,9 +208,21 @@
 		Key
 	-->
 	<xsd:complexType name="Key_Type">
+		<xsd:annotation>
+			<xsd:documentation>
+				Key element for storing metadata not covered by other elements.
+				For multilingual fields (e.g., Topic, Keyword), the LanguageId and index attributes
+				allow linking translated values of the same concept across languages.
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:simpleContent>
 			<xsd:extension base="imdi:Vocabulary_Type">
 				<xsd:attribute name="Name" type="xsd:string" use="required"/>
+				<xsd:attribute name="index" type="xsd:positiveInteger" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>1-based index to tie together translations of the same concept across languages</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -385,14 +397,14 @@
 	-->
 	<xsd:complexType name="Content_Type">
 		<xsd:sequence>
-			<xsd:element name="Genre" type="imdi:Vocabulary_Type">
+			<xsd:element name="Genre" type="imdi:Vocabulary_Type" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>Major genre classification</xsd:documentation>
+					<xsd:documentation>Major genre classification. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="SubGenre" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
+			<xsd:element name="SubGenre" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>Sub genre classification</xsd:documentation>
+					<xsd:documentation>Sub genre classification. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Task" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
@@ -502,9 +514,9 @@
 			</xsd:appinfo>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element name="Role" type="imdi:Vocabulary_Type">
+			<xsd:element name="Role" type="imdi:Vocabulary_Type" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>Functional role of the actor e.g. consultant, contributor, interviewer, researcher, publisher, collector, translator</xsd:documentation>
+					<xsd:documentation>Functional role of the actor e.g. consultant, contributor, interviewer, researcher, publisher, collector, translator. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Name" type="imdi:String_Type" maxOccurs="unbounded">
@@ -1685,6 +1697,11 @@
 				<xsd:attribute name="Link" type="imdi:Link_Value_Type" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>Link to a vocabulary definition</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="LanguageId" type="imdi:LanguageId_Value_Type" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Language identifier for multilingual vocabulary values (e.g., ISO639-1:en, ISO639-3:etr). Used when the same vocabulary element appears multiple times with translations in different languages.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attributeGroup ref="imdi:ProfileAttributes"/>

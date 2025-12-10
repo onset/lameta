@@ -2,5 +2,6 @@
   configurationFullName: "unknown",
   archiveUsesImdi: false,
   archiveUsesParadisec: false,
-  fileNameRules: "ASCII"
+  fileNameRules: "ASCII",
+  imdiSchema: "IMDI_3.0.xsd"
 }

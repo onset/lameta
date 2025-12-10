@@ -12,7 +12,10 @@ import type { XMLValidationResult } from "xmllint-wasm";
 // All methods return Promises because they go through IPC.
 interface MainProcessApiPublic {
   trashItem: (path: string) => Promise<boolean>;
-  validateImdiAsync: (imdiContents: string) => Promise<XMLValidationResult>;
+  validateImdiAsync: (
+    imdiContents: string,
+    imdiSchemaName?: string
+  ) => Promise<XMLValidationResult>;
   findInPage: (pattern: string) => Promise<void>;
   stopFindInPage: (
     action: "clearSelection" | "keepSelection" | "activateSelection"
@@ -56,8 +59,12 @@ function createNativeIpcApi(): MainProcessApiPublic {
   return {
     trashItem: (path: string) =>
       ipcRenderer.invoke("MainProcessApi.trashItem", path),
-    validateImdiAsync: (imdiContents: string) =>
-      ipcRenderer.invoke("MainProcessApi.validateImdiAsync", imdiContents),
+    validateImdiAsync: (imdiContents: string, imdiSchemaName?: string) =>
+      ipcRenderer.invoke(
+        "MainProcessApi.validateImdiAsync",
+        imdiContents,
+        imdiSchemaName
+      ),
     findInPage: (pattern: string) =>
       ipcRenderer.invoke("MainProcessApi.findInPage", pattern),
     stopFindInPage: (

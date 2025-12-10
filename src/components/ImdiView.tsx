@@ -13,8 +13,9 @@ import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import syntaxStyle from "./ImdiSyntaxStyle";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import { Trans } from "@lingui/macro";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 registerLanguage("xml", xmlLang);
 
 export const ImdiView: React.FunctionComponent<{
@@ -31,14 +32,12 @@ export const ImdiView: React.FunctionComponent<{
 }> = (props) => {
   const [imdi, setImdi] = React.useState<string>("");
 
-  const [
-    rulesBasedValidationResult,
-    SetRulesBasedValidationResult
-  ] = React.useState<string | undefined>();
+  const [rulesBasedValidationResult, SetRulesBasedValidationResult] =
+    React.useState<string | undefined>();
 
-  const [validationResult, SetValidationResult] = React.useState<
-    XMLValidationResult | undefined
-  >();
+  const [validationResult, SetValidationResult] =
+    React.useState<XMLValidationResult | undefined>();
+  const [schemaName, setSchemaName] = React.useState<string>("IMDI_3.0.xsd");
 
   React.useEffect(() => {
     if (props.target instanceof Session) {
@@ -94,10 +93,16 @@ export const ImdiView: React.FunctionComponent<{
 
   // when the imdi changes, run the validator
   React.useEffect(() => {
-    if (imdi)
-      mainProcessApi.validateImdiAsync(wrapForValidation(imdi)).then((r) => {
-        SetValidationResult(r);
-      });
+    if (imdi) {
+      const imdiSchema =
+        GetOtherConfigurationSettings().imdiSchema || "IMDI_3.0.xsd";
+      setSchemaName(imdiSchema);
+      mainProcessApi
+        .validateImdiAsync(wrapForValidation(imdi), imdiSchema)
+        .then((r) => {
+          SetValidationResult(r);
+        });
+    }
   }, [imdi]);
   return (
     <div
@@ -129,11 +134,19 @@ export const ImdiView: React.FunctionComponent<{
       )}
       {validationResult?.valid && (
         <Alert severity="success">
-          <Trans>This XML conforms to the IMDI schema.</Trans>
+          <Trans>This XML conforms to the IMDI schema.</Trans> ({schemaName})
         </Alert>
       )}
       {validationResult && !validationResult.valid && (
         <Alert severity="error">
+          <div
+            css={css`
+              font-weight: bold;
+              margin-bottom: 8px;
+            `}
+          >
+            Validation failed using schema: {schemaName}
+          </div>
           {validationResult?.errors.map((e) => {
             return (
               <div

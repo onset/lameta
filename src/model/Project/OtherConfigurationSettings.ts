@@ -4,6 +4,9 @@ export type OtherConfigurationSettings = {
   archiveUsesParadisec: boolean;
   showRoCrate: boolean;
   fileNameRules: "ASCII" | "unicode";
+  // IMDI schema file name. Defaults to "IMDI_3.0.xsd".
+  // Archives can specify an alternative schema.
+  imdiSchema: string;
 };
 
 let otherConfigurationSettings: OtherConfigurationSettings = {
@@ -11,7 +14,8 @@ let otherConfigurationSettings: OtherConfigurationSettings = {
   archiveUsesImdi: false,
   archiveUsesParadisec: false,
   showRoCrate: false,
-  fileNameRules: "ASCII"
+  fileNameRules: "ASCII",
+  imdiSchema: "IMDI_3.0.xsd"
 };
 
 export function SetOtherConfigurationSettings(
@@ -28,6 +32,7 @@ export function resetOtherConfigurationSettings() {
     archiveUsesParadisec: false,
     showRoCrate: false,
     configurationFullName: "",
-    fileNameRules: "ASCII"
+    fileNameRules: "ASCII",
+    imdiSchema: "IMDI_3.0.xsd"
   };
 }

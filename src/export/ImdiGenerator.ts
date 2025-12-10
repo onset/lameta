@@ -28,6 +28,11 @@ import {
 } from "../other/case";
 import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
+import {
+  translateGenreToLanguage,
+  translateRoleToLanguage
+} from "../other/localization";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 // IMDI Date_Value_Type pattern from IMDI_3.0.xsd
 // Valid: YYYY, YYYY-MM, YYYY-MM-DD, date ranges with /, "Unknown", "Unspecified", or empty
@@ -341,7 +346,14 @@ export default class ImdiGenerator {
       } else {
         this.startGroup("Actor");
         this.tail.comment(`Could not find a person with name "${trimmedName}"`);
-        this.element("Role", this.getRoleOutput(contribution.role));
+        // Role is a multilingual vocabulary field
+        const roleOutput = this.getRoleOutput(contribution.role);
+        this.multilingualVocabularyElement(
+          "Role",
+          roleOutput,
+          "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
+          translateRoleToLanguage
+        );
         this.element("Name", trimmedName);
         this.element("FullName", trimmedName);
         this.element("Code", "");
@@ -364,8 +376,32 @@ export default class ImdiGenerator {
   private addSessionContentElement() {
     const session = this.folderInFocus as Session;
     this.group("Content", () => {
-      this.requiredField("Genre", "genre");
-      this.requiredField("SubGenre", "subgenre");
+      // Genre and SubGenre are multilingual vocabulary fields
+      const genreValue = session.properties.getTextStringOrEmpty("genre");
+      // Get the label for the genre (may be snake_case like "procedural_discourse")
+      const genreLabel = session.properties
+        .getLabelOfValue("genre")
+        .replace(/_/g, " ");
+      this.multilingualVocabularyElement(
+        "Genre",
+        genreLabel || genreValue,
+        "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
+        translateGenreToLanguage
+      );
+      this.keysThatHaveBeenOutput.add("Session.genre");
+
+      const subgenreValue = session.properties.getTextStringOrEmpty("subgenre");
+      const subgenreLabel = session.properties
+        .getLabelOfValue("subgenre")
+        .replace(/_/g, " ");
+      this.multilingualVocabularyElement(
+        "SubGenre",
+        subgenreLabel || subgenreValue,
+        "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
+        translateGenreToLanguage
+      );
+      this.keysThatHaveBeenOutput.add("Session.subgenre");
+
       this.element(
         "Task",
         "",
@@ -1062,9 +1098,15 @@ export default class ImdiGenerator {
     moreKeys?: any[]
   ): string | null {
     return this.group("Actor", () => {
+      // Role is a multilingual vocabulary field
       const roleOutput = this.getRoleOutput(role);
+      this.multilingualVocabularyElement(
+        "Role",
+        roleOutput,
+        "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
+        translateRoleToLanguage
+      );
 
-      this.element("Role", roleOutput);
       this.requiredField("Name", "name", person);
       this.requiredField("FullName", "name", person);
 
@@ -1350,6 +1392,84 @@ export default class ImdiGenerator {
     this.mostRecentElement = newElement;
     this.tail = newElement.up();
   }
+
+  /**
+   * Output a vocabulary element (like Genre or Role) in multiple languages
+   * based on the project's metadataLanguageSlots.
+   *
+   * For ELAR schema (IMDI_3.0_elar.xsd), outputs multiple elements with LanguageId attributes.
+   * For standard IMDI 3.0 schema, outputs a single element without LanguageId.
+   *
+   * @param elementName - The XML element name (e.g., "Genre", "Role")
+   * @param englishValue - The English value to translate
+   * @param vocabularyUrl - The IMDI vocabulary URL
+   * @param translateFn - Function to translate the value to a specific language
+   */
+  private multilingualVocabularyElement(
+    elementName: string,
+    englishValue: string,
+    vocabularyUrl: string,
+    translateFn: (value: string, lang: string) => string | undefined
+  ) {
+    if (!englishValue || englishValue.trim().length === 0) {
+      // Output empty element with attributes if value is empty
+      const newElement = this.tail.element(elementName, "");
+      newElement.attribute("Link", vocabularyUrl);
+      newElement.attribute("Type", "OpenVocabulary");
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+      return;
+    }
+
+    // Check if we're using the ELAR extended schema which supports multilingual vocabulary
+    const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
+    const supportsMultilingualVocab = imdiSchema === "IMDI_3.0_elar.xsd";
+
+    if (!supportsMultilingualVocab) {
+      // Standard IMDI 3.0: output single element without LanguageId
+      const newElement = this.tail.element(
+        elementName,
+        sentenceCase(englishValue)
+      );
+      newElement.attribute("Link", vocabularyUrl);
+      newElement.attribute("Type", "OpenVocabulary");
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+      return;
+    }
+
+    // ELAR schema: output multiple elements with LanguageId attributes
+    const metadataSlots = Project.getMetadataLanguageSlots();
+    let outputCount = 0;
+
+    for (const slot of metadataSlots) {
+      const translation = translateFn(englishValue, slot.tag);
+      if (translation) {
+        const newElement = this.tail.element(elementName, translation);
+        // LanguageId uses ISO639-3 for 3-letter codes, ISO639-1 for 2-letter codes
+        const kind = slot.tag.length === 2 ? "ISO639-1" : "ISO639-3";
+        newElement.attribute("LanguageId", kind + ":" + slot.tag);
+        newElement.attribute("Link", vocabularyUrl);
+        newElement.attribute("Type", "OpenVocabulary");
+        this.mostRecentElement = newElement;
+        this.tail = newElement.up();
+        outputCount++;
+      }
+    }
+
+    // If no translations were output, fall back to English
+    if (outputCount === 0) {
+      const newElement = this.tail.element(
+        elementName,
+        sentenceCase(englishValue)
+      );
+      newElement.attribute("Link", vocabularyUrl);
+      newElement.attribute("Type", "OpenVocabulary");
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+    }
+  }
+
   private startXmlRoot(typeAttribute: string): XmlBuilder.XMLElementOrXMLNode {
     //in OPEX mode, we wrap the whole thing in a <opex:OPEXMetadata><opex:DescriptiveMetadata>
     if (this.mode === IMDIMode.OPEX) {

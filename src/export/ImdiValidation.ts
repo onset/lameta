@@ -1,4 +1,5 @@
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import * as temp from "temp";
 import * as fs from "fs";
 
@@ -17,9 +18,11 @@ export async function validateImdiOrThrow(
     // console.log("[ImdiValidation] Skipping validation in test environment");
     return; // we don't yet have a way to validate in test environment
   }
+  // Get the custom IMDI schema from archive settings (if configured)
+  const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
   // console.log("[ImdiValidation] Calling mainProcessApi.validateImdiAsync...");
   // const startTime = Date.now();
-  const result = await mainProcessApi.validateImdiAsync(imdiXml);
+  const result = await mainProcessApi.validateImdiAsync(imdiXml, imdiSchema);
   // console.log(
   //   "[ImdiValidation] validateImdiAsync returned after",
   //   Date.now() - startTime,
@@ -50,9 +53,7 @@ export async function validateImdiOrThrow(
           const escaped = escapeHtml(line);
           const lineNum = startLine + idx + 1;
           const isErrorLine = lineNum === actualErrorLine;
-          return isErrorLine
-            ? `<b style="color:red">${escaped}</b>`
-            : escaped;
+          return isErrorLine ? `<b style="color:red">${escaped}</b>` : escaped;
         });
         context = `\n\nError at line ${actualErrorLine}:\n${formattedLines.join(
           "\n"
@@ -83,8 +84,9 @@ export async function validateImdiOrThrow(
       ? `\n\nThe failed IMDI has been saved to:\n${savedPath}`
       : "";
 
+    const schemaInfo = imdiSchema || "IMDI_3.0.xsd";
     throw new Error(
-      `The IMDI for ${displayNameForThisFile} did not pass validation.${debugInfo}\n${errorDetails.join(
+      `The IMDI for ${displayNameForThisFile} did not pass validation using schema: ${schemaInfo}.${debugInfo}\n${errorDetails.join(
         "\n\n"
       )}`
     );

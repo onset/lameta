@@ -82,3 +82,86 @@ function expectInvalid(result: XMLValidationResult) {
   }
   expect(result.valid).toBe(false);
 }
+
+describe("validateImdiAsyncInternal with ELAR schema", () => {
+  it("ELAR schema allows multiple Genre elements with LanguageId", async () => {
+    // This would be invalid with standard IMDI schema but valid with ELAR's extended schema
+    const imdiContents = `<?xml version="1.0"?>
+    <METATRANSCRIPT xmlns="http://www.mpi.nl/IMDI/Schema/IMDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd" Type="SESSION" Version="0" Date="2023-11-25" Originator="lameta 2.1.2-alpha" FormatId="IMDI 3.0">
+      <Session>
+        <Name>test</Name>
+        <Title>Test Session</Title>
+        <Date>2023-11-25</Date>
+        <MDGroup>
+          <Location>
+            <Continent>Oceania</Continent>
+            <Country>Papua New Guinea</Country>
+          </Location>
+          <Project>
+            <Name>Test</Name>
+            <Title>Test Project</Title>
+            <Id>TEST001</Id>
+            <Contact><Name/><Address/><Email/><Organisation/></Contact>
+          </Project>
+          <Keys/>
+          <Content>
+            <Genre LanguageId="ISO639-1:en" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
+            <Genre LanguageId="ISO639-1:es" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
+            <Genre LanguageId="ISO639-1:pt" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
+            <CommunicationContext/>
+            <Languages/>
+            <Keys/>
+          </Content>
+          <Actors/>
+        </MDGroup>
+        <Resources/>
+      </Session>
+    </METATRANSCRIPT>`;
+
+    const result = await validateImdiAsyncInternal(
+      appPath,
+      imdiContents,
+      "IMDI_3.0_elar.xsd"
+    );
+    expectValid(result);
+  });
+
+  it("standard schema rejects multiple Genre elements", async () => {
+    // The standard schema only allows one Genre element
+    const imdiContents = `<?xml version="1.0"?>
+    <METATRANSCRIPT xmlns="http://www.mpi.nl/IMDI/Schema/IMDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd" Type="SESSION" Version="0" Date="2023-11-25" Originator="lameta 2.1.2-alpha" FormatId="IMDI 3.0">
+      <Session>
+        <Name>test</Name>
+        <Title>Test Session</Title>
+        <Date>2023-11-25</Date>
+        <MDGroup>
+          <Location>
+            <Continent>Oceania</Continent>
+            <Country>Papua New Guinea</Country>
+          </Location>
+          <Project>
+            <Name>Test</Name>
+            <Title>Test Project</Title>
+            <Id>TEST001</Id>
+            <Contact><Name/><Address/><Email/><Organisation/></Contact>
+          </Project>
+          <Keys/>
+          <Content>
+            <Genre Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
+            <Genre Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
+            <CommunicationContext/>
+            <Languages/>
+            <Keys/>
+          </Content>
+          <Actors/>
+        </MDGroup>
+        <Resources/>
+      </Session>
+    </METATRANSCRIPT>`;
+
+    // Use the standard schema (default)
+    const result = await validateImdiAsyncInternal(appPath, imdiContents);
+    expectInvalid(result);
+    expect(result.errors[0].message).toContain("Genre");
+  });
+});

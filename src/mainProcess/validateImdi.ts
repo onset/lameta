@@ -6,9 +6,11 @@ import path from "path";
 // It has a browser build, but I couldn't get it loaded in vite. Could try again later.
 export async function validateImdiAsyncInternal(
   appPath: string,
-  fileContents: string
+  fileContents: string,
+  imdiSchemaName?: string // Optional schema name, defaults to "IMDI_3.0.xsd"
 ): Promise<XMLValidationResult> {
-  const imdiSchemaPath = path.join(appPath, "schemas/IMDI_3.0.xsd");
+  const schemaFileName = imdiSchemaName || "IMDI_3.0.xsd";
+  const imdiSchemaPath = path.join(appPath, `schemas/${schemaFileName}`);
 
   const imdiSchemaContents = fs.readFileSync(imdiSchemaPath, "utf8");
 

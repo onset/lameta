@@ -2,5 +2,8 @@
   configurationFullName: "ELAR - Endangered Languages Archive",
   description: "Endangered Languages Archive",
   url: "https://www.elararchive.org/",
-  archiveUsesImdi: true
+  archiveUsesImdi: true,
+  // ELAR uses an extended IMDI schema that supports multilingual vocabulary fields
+  // (Genre, SubGenre, Role with LanguageId attribute and unbounded occurrences)
+  imdiSchema: "IMDI_3.0_elar.xsd"
 }
