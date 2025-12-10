@@ -1,11 +1,22 @@
 import { css } from "@emotion/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Field } from "../model/field/Field";
-import { LanguageAxis } from "../model/field/TextHolder";
+import { LanguageSlot } from "../model/field/TextHolder";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "./SingleLanguageChooser";
+import { Project } from "../model/Project/Project";
 
 export const DEFAULT_LANGUAGE_TAG = "en";
+
+// Next color index for dynamically added languages (beyond metadata slots)
+let nextExtraColorIndex = 0;
+const EXTRA_SLOT_COLORS = [
+  "#E91E63", // pink
+  "#3F51B5", // indigo
+  "#009688", // teal
+  "#CDDC39", // lime
+  "#FF5722" // deep orange
+];
 
 export function normalizeLanguageTag(tag?: string): string | undefined {
   if (!tag) return undefined;
@@ -13,39 +24,7 @@ export function normalizeLanguageTag(tag?: string): string | undefined {
   return trimmed.length === 0 ? undefined : trimmed;
 }
 
-export function getInitialLanguageTags(field: Field): string[] {
-  const axes = field
-    .getAllNonEmptyTextAxes()
-    .map((t) => normalizeLanguageTag(t))
-    .filter((t): t is string => !!t);
-  if (axes.length === 0) {
-    return [DEFAULT_LANGUAGE_TAG];
-  }
-  return Array.from(new Set(axes));
-}
-
-export function mergeLanguageTags(
-  existing: string[],
-  incoming: string[]
-): string[] {
-  const merged = new Set(
-    existing
-      .map((tag) => normalizeLanguageTag(tag))
-      .filter((tag): tag is string => !!tag)
-  );
-  incoming.forEach((tag) => {
-    const normalized = normalizeLanguageTag(tag);
-    if (normalized) {
-      merged.add(normalized);
-    }
-  });
-  if (merged.size === 0) {
-    merged.add(DEFAULT_LANGUAGE_TAG);
-  }
-  return Array.from(merged);
-}
-
-export function createLanguageAxis(tag: string): LanguageAxis {
+export function createLanguageSlot(tag: string, color?: string): LanguageSlot {
   const normalized = normalizeLanguageTag(tag) ?? DEFAULT_LANGUAGE_TAG;
   const displayCode =
     staticLanguageFinder?.findCodeFromCodeOrLanguageName(normalized) ??
@@ -57,32 +36,71 @@ export function createLanguageAxis(tag: string): LanguageAxis {
   return {
     tag: normalized,
     label: displayCode,
-    name: languageName
+    name: languageName,
+    color
   };
 }
 
 export interface UseMultilingualFieldResult {
   languageTags: string[];
-  axes: LanguageAxis[];
+  slots: LanguageSlot[];
   newlyAddedTag: string | null;
   handleAddLanguage: (tag: string) => void;
   handleRemoveLanguage: (tag: string) => void;
   clearNewlyAddedTag: () => void;
+  isProtectedSlot: (tag: string) => boolean;
 }
 
+/**
+ * Hook for managing multilingual field language slots.
+ *
+ * Uses the project's metadataLanguageSlots as the base (always shown, even if empty).
+ * Additional languages from existing text are shown after the metadata slots.
+ * Protected slots (from metadataLanguageSlots) cannot be removed, only cleared.
+ */
 export function useMultilingualField(
   field: Field,
   isMultilingual: boolean
 ): UseMultilingualFieldResult {
-  const [languageTags, setLanguageTags] = useState<string[]>(() =>
-    isMultilingual ? getInitialLanguageTags(field) : []
+  // Get metadata language slots from project - these are the required/protected slots
+  const metadataSlots = useMemo(() => {
+    if (!isMultilingual) return [];
+    return Project.getMetadataLanguageSlots();
+  }, [isMultilingual]);
+
+  const protectedTags = useMemo(
+    () => new Set(metadataSlots.map((s) => s.tag)),
+    [metadataSlots]
   );
 
+  // Initialize slots: metadata slots first, then any extra languages from existing text
+  const getInitialSlots = useCallback((): LanguageSlot[] => {
+    if (!isMultilingual) return [];
+
+    // Start with all metadata slots (in order)
+    const slots = [...metadataSlots];
+    const existingTags = new Set(metadataSlots.map((s) => s.tag));
+
+    // Add any extra languages from existing text data (not in metadata slots)
+    const textTags = field.getAllNonEmptyTextAxes();
+    textTags.forEach((tag) => {
+      const normalized = normalizeLanguageTag(tag);
+      if (normalized && !existingTags.has(normalized)) {
+        const color =
+          EXTRA_SLOT_COLORS[nextExtraColorIndex % EXTRA_SLOT_COLORS.length];
+        nextExtraColorIndex++;
+        slots.push(createLanguageSlot(normalized, color));
+        existingTags.add(normalized);
+      }
+    });
+
+    return slots;
+  }, [field, isMultilingual, metadataSlots]);
+
+  const [slots, setSlots] = useState<LanguageSlot[]>(getInitialSlots);
   const [newlyAddedTag, setNewlyAddedTag] = useState<string | null>(null);
 
-  // Track the field key to detect when we switch to a genuinely different field.
-  // This prevents re-initialization from discarding user-added tags when the
-  // field object reference changes but the field identity remains the same.
+  // Track the field key to detect when we switch to a genuinely different field
   const previousFieldKeyRef = React.useRef<string>(field.key);
 
   useEffect(() => {
@@ -93,48 +111,77 @@ export function useMultilingualField(
 
     if (fieldKeyChanged) {
       // Switched to a different field - do a full re-initialization
-      setLanguageTags(getInitialLanguageTags(field));
+      setSlots(getInitialSlots());
     } else {
       // Same field, possibly with updated content - merge to preserve user additions
-      const tagsFromField = field.getAllNonEmptyTextAxes();
-      // Only merge if there are actual non-empty tags to add.
-      // This avoids triggering state updates when text is cleared (e.g., during language removal),
-      // which could otherwise cause a circular update pattern with handleRemoveLanguage.
-      if (tagsFromField.length > 0) {
-        setLanguageTags((previous) =>
-          mergeLanguageTags(previous, tagsFromField)
-        );
+      const textTags = field.getAllNonEmptyTextAxes();
+      if (textTags.length > 0) {
+        setSlots((previous) => {
+          const existingTags = new Set(previous.map((s) => s.tag));
+          let changed = false;
+          const newSlots = [...previous];
+
+          textTags.forEach((tag) => {
+            const normalized = normalizeLanguageTag(tag);
+            if (normalized && !existingTags.has(normalized)) {
+              const color =
+                EXTRA_SLOT_COLORS[
+                  nextExtraColorIndex % EXTRA_SLOT_COLORS.length
+                ];
+              nextExtraColorIndex++;
+              newSlots.push(createLanguageSlot(normalized, color));
+              existingTags.add(normalized);
+              changed = true;
+            }
+          });
+
+          return changed ? newSlots : previous;
+        });
       }
     }
-  }, [isMultilingual, field, field.text]);
+  }, [isMultilingual, field, field.text, getInitialSlots]);
 
-  const axes = useMemo<LanguageAxis[]>(() => {
-    if (!isMultilingual) return [];
-    return languageTags.map(createLanguageAxis);
-  }, [isMultilingual, languageTags]);
+  const languageTags = useMemo(() => slots.map((s) => s.tag), [slots]);
 
   const handleAddLanguage = useCallback((tag: string) => {
     const normalized = normalizeLanguageTag(tag);
-    if (!normalized) {
-      return;
-    }
-    setLanguageTags((previous) =>
-      previous.includes(normalized) ? previous : [...previous, normalized]
-    );
+    if (!normalized) return;
+
+    setSlots((previous) => {
+      if (previous.some((s) => s.tag === normalized)) {
+        return previous; // Already exists
+      }
+      const color =
+        EXTRA_SLOT_COLORS[nextExtraColorIndex % EXTRA_SLOT_COLORS.length];
+      nextExtraColorIndex++;
+      return [...previous, createLanguageSlot(normalized, color)];
+    });
     setNewlyAddedTag(normalized);
   }, []);
+
+  const isProtectedSlot = useCallback(
+    (tag: string): boolean => {
+      const normalized = normalizeLanguageTag(tag);
+      return normalized ? protectedTags.has(normalized) : false;
+    },
+    [protectedTags]
+  );
 
   const handleRemoveLanguage = useCallback(
     (tag: string) => {
       const normalized = normalizeLanguageTag(tag);
       if (!normalized) return;
-      setLanguageTags((previous) => {
-        const filtered = previous.filter((t) => t !== normalized);
-        return filtered.length === 0 ? [DEFAULT_LANGUAGE_TAG] : filtered;
-      });
-      field.setTextAxis(normalized, "");
+
+      if (isProtectedSlot(normalized)) {
+        // Protected slot: only clear the text, don't remove the slot
+        field.setTextAxis(normalized, "");
+      } else {
+        // Non-protected slot: remove the slot entirely
+        setSlots((previous) => previous.filter((s) => s.tag !== normalized));
+        field.setTextAxis(normalized, "");
+      }
     },
-    [field]
+    [field, isProtectedSlot]
   );
 
   const clearNewlyAddedTag = useCallback(() => {
@@ -143,11 +190,12 @@ export function useMultilingualField(
 
   return {
     languageTags,
-    axes,
+    slots,
     newlyAddedTag,
     handleAddLanguage,
     handleRemoveLanguage,
-    clearNewlyAddedTag
+    clearNewlyAddedTag,
+    isProtectedSlot
   };
 }
 

@@ -141,7 +141,12 @@ export class TextHolder {
   }
 }
 
-export type LanguageAxis = { tag: string; label: string; name: string };
+export interface LanguageSlot {
+  tag: string;
+  label: string;
+  name: string;
+  color?: string;
+}
 
 //  a dictionary of language tags to text
 // keep private

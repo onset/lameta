@@ -22,6 +22,7 @@ import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
 import { LanguageFinder } from "../../languageFinder/LanguageFinder";
+import { LanguageSlot } from "../field/TextHolder";
 // FIXED: Import safeCaptureException instead of using Sentry directly
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
 import { safeCaptureException } from "../../other/errorHandling";
@@ -161,6 +162,66 @@ export class Project extends Folder {
       : sCurrentProject.properties.getTextStringOrEmpty(
           "collectionWorkingLanguages"
         );
+  }
+
+  // Color palette for language slots - visually distinct colors
+  public static readonly SLOT_COLORS = [
+    "#2196F3", // blue
+    "#4CAF50", // green
+    "#FF9800", // orange
+    "#9C27B0", // purple
+    "#F44336", // red
+    "#00BCD4", // cyan
+    "#795548", // brown
+    "#607D8B" // blue-grey
+  ];
+
+  /**
+   * Parses a working languages string into LanguageSlot objects.
+   * Exported for testing.
+   * @param workingLanguages Format: "eng:English;spa:Spanish" or "eng;spa"
+   */
+  public static parseWorkingLanguagesToSlots(
+    workingLanguages: string
+  ): LanguageSlot[] {
+    if (!workingLanguages || workingLanguages.trim() === "") {
+      // Fallback to English
+      return [
+        {
+          tag: "eng",
+          label: "en",
+          name: "English",
+          color: Project.SLOT_COLORS[0]
+        }
+      ];
+    }
+
+    // Format is "eng:English;spa:Spanish" or just "eng;spa"
+    const entries = workingLanguages.split(";").filter((e) => e.trim() !== "");
+    return entries.map((entry, index) => {
+      const parts = entry.split(":");
+      const code = parts[0].trim().toLowerCase();
+      const name = parts.length > 1 ? parts[1].trim() : code.toUpperCase();
+      // Use 3-letter code for label, fall back to the code itself
+      const label = code.length === 3 ? code.substring(0, 2) : code;
+      return {
+        tag: code,
+        label: label,
+        name: name,
+        color: Project.SLOT_COLORS[index % Project.SLOT_COLORS.length]
+      };
+    });
+  }
+
+  /**
+   * Returns an array of LanguageSlot objects for the project's working languages.
+   * Each slot includes a tag, label, name, and auto-assigned color.
+   * Falls back to English if no working languages are configured.
+   */
+  public static getMetadataLanguageSlots(): LanguageSlot[] {
+    return Project.parseWorkingLanguagesToSlots(
+      Project.getDefaultWorkingLanguages()
+    );
   }
 
   public importIdMatchesThisFolder(id: string): boolean {
@@ -348,7 +409,9 @@ export class Project extends Folder {
 
       const elapsed = performance.now() - startTime;
       console.log(
-        `[Project.fromDirectory] Loaded ${sessionCount} sessions + ${personCount} people in ${elapsed.toFixed(0)}ms (sync)`
+        `[Project.fromDirectory] Loaded ${sessionCount} sessions + ${personCount} people in ${elapsed.toFixed(
+          0
+        )}ms (sync)`
       );
 
       //project.files[0].save();
@@ -538,7 +601,9 @@ export class Project extends Folder {
 
       const elapsed = performance.now() - startTime;
       console.log(
-        `[Project.fromDirectoryAsync] Loaded ${sessionDirs.length} sessions + ${peopleDirs.length} people in ${elapsed.toFixed(0)}ms` +
+        `[Project.fromDirectoryAsync] Loaded ${sessionDirs.length} sessions + ${
+          peopleDirs.length
+        } people in ${elapsed.toFixed(0)}ms` +
           (this.SKIP_ASYNC_YIELD_FOR_TIMING
             ? " (TIMING MODE - no UI yields)"
             : ` (with UI yields every ${this.YIELD_BATCH_SIZE} items)`)

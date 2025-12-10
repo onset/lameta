@@ -86,12 +86,12 @@ test.describe("Multilingual Text Fields", () => {
     await expect(addTranslationBtn).toBeVisible();
     await expect(cancelBtn).not.toBeVisible();
 
-    // Only one translation axis should exist (default English)
-    const translationAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(translationAxes).toHaveCount(1);
+    // Only one translation slot should exist (default English)
+    const translationSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(translationSlots).toHaveCount(1);
   });
 
-  test("selecting a language adds a new translation axis", async () => {
+  test("selecting a language adds a new translation slot", async () => {
     await project.goToSessions();
     await project.addSession();
 
@@ -99,9 +99,9 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
-    // Initially should have one translation axis (English by default)
-    const initialAxes = page.locator('[data-testid^="translation-axis-"]');
-    const initialCount = await initialAxes.count();
+    // Initially should have one translation slot (English by default)
+    const initialSlots = page.locator('[data-testid^="translation-slot-"]');
+    const initialCount = await initialSlots.count();
     expect(initialCount).toBe(1);
 
     // Click Add translation
@@ -116,26 +116,25 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300); // wait for debounce
     await languageInput.press("Enter");
 
-    // Wait for the new axis to appear (ISO 639-3 code for Spanish is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    // Wait for the new slot to appear (ISO 639-3 code for Spanish is "spa")
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
-    // Now should have two translation axes
-    const afterAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(afterAxes).toHaveCount(2);
+    // Now should have two translation slots
+    const afterSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(afterSlots).toHaveCount(2);
 
-    // Spanish axis should exist (ISO 639-3 code is "spa")
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    await expect(spanishAxis).toBeVisible();
+    // Spanish slot should exist (ISO 639-3 code is "spa")
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlot).toBeVisible();
 
-    // Spanish label should be visible
-    const spanishLabel = page.getByTestId("translation-language-label-spa");
-    await expect(spanishLabel).toBeVisible();
-    await expect(spanishLabel).toHaveText(/Spanish/i);
+    // Spanish color bar should be visible with tooltip showing language name
+    const spanishColorBar = page.getByTestId("slot-color-bar-spa");
+    await expect(spanishColorBar).toBeVisible();
   });
 
-  test("can type in each translation axis independently", async () => {
+  test("can type in each translation slot independently", async () => {
     await project.goToSessions();
     await project.addSession();
 
@@ -143,9 +142,9 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
-    // Get the English axis and its editor
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    // Get the English slot and its editor
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill("This is the English description");
 
@@ -160,13 +159,13 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
-    // The new Spanish axis should be focused, type in it
-    // Find the description editor within the Spanish axis (ISO 639-3 code is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    // The new Spanish slot should be focused, type in it
+    // Find the description editor within the Spanish slot (ISO 639-3 code is "spa")
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("Esta es la descripción en español");
 
@@ -195,18 +194,18 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Wait for French axis to appear (ISO 639-3 code is "fra")
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+    // Wait for French slot to appear (ISO 639-3 code is "fra")
+    await page.waitForSelector('[data-testid="translation-slot-fra"]', {
       timeout: 5000
     });
 
     // The remove button should exist but be hidden initially (opacity: 0)
-    const removeBtn = page.getByTestId("remove-translation-fra");
+    const removeBtn = page.getByTestId("remove-slot-fra");
     await expect(removeBtn).toBeAttached();
 
-    // Hover over the French axis to show the remove button
-    const frenchAxis = page.getByTestId("translation-axis-fra");
-    await frenchAxis.hover();
+    // Hover over the French slot to show the remove button
+    const frenchSlot = page.getByTestId("translation-slot-fra");
+    await frenchSlot.hover();
 
     // Now the button should be visible (opacity: 1)
     // Note: checking visibility may not work if only opacity changes,
@@ -214,7 +213,7 @@ test.describe("Multilingual Text Fields", () => {
     await expect(removeBtn).toBeVisible();
   });
 
-  test("clicking remove translation removes the axis", async () => {
+  test("clicking remove translation removes the slot", async () => {
     await project.goToSessions();
     await project.addSession();
 
@@ -233,34 +232,34 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
-    // Wait for German axis to appear (ISO 639-3 code is "deu")
-    await page.waitForSelector('[data-testid="translation-axis-deu"]', {
+    // Wait for German slot to appear (ISO 639-3 code is "deu")
+    await page.waitForSelector('[data-testid="translation-slot-deu"]', {
       timeout: 5000
     });
 
-    // Verify we have 2 axes
-    const axesBefore = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axesBefore).toHaveCount(2);
+    // Verify we have 2 slots
+    const slotsBefore = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slotsBefore).toHaveCount(2);
 
-    // Hover and click remove on the German axis
-    const germanAxis = page.getByTestId("translation-axis-deu");
-    await germanAxis.hover();
+    // Hover and click remove on the German slot
+    const germanSlot = page.getByTestId("translation-slot-deu");
+    await germanSlot.hover();
 
-    const removeBtn = page.getByTestId("remove-translation-deu");
+    const removeBtn = page.getByTestId("remove-slot-deu");
     await removeBtn.click();
 
     // Wait for removal
     await page.waitForTimeout(300);
 
-    // Should now have only 1 axis
-    const axesAfter = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axesAfter).toHaveCount(1);
+    // Should now have only 1 slot
+    const slotsAfter = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slotsAfter).toHaveCount(1);
 
-    // German axis should be gone
-    await expect(germanAxis).not.toBeVisible();
+    // German slot should be gone
+    await expect(germanSlot).not.toBeVisible();
   });
 
-  test("removing non-English axis leaves default intact", async () => {
+  test("removing non-English slot leaves default intact", async () => {
     await project.goToSessions();
     await project.addSession();
 
@@ -279,34 +278,34 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
-    // Wait for French axis to appear (ISO 639-3 code is "fra")
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+    // Wait for French slot to appear (ISO 639-3 code is "fra")
+    await page.waitForSelector('[data-testid="translation-slot-fra"]', {
       timeout: 5000
     });
 
     // Add some text to French
-    const frenchAxis = page.getByTestId("translation-axis-fra");
-    const frenchEditor = frenchAxis.locator('[contenteditable="true"]');
+    const frenchSlot = page.getByTestId("translation-slot-fra");
+    const frenchEditor = frenchSlot.locator('[contenteditable="true"]');
     await frenchEditor.click();
     await frenchEditor.fill("French text here");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
-    // Verify we have 2 axes
-    let axes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axes).toHaveCount(2);
+    // Verify we have 2 slots
+    let slots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slots).toHaveCount(2);
 
     // Remove French - English should remain
-    await frenchAxis.hover();
-    const removeFrBtn = page.getByTestId("remove-translation-fra");
+    await frenchSlot.hover();
+    const removeFrBtn = page.getByTestId("remove-slot-fra");
     await removeFrBtn.click();
     await page.waitForTimeout(300);
 
     // English should still be there
-    await expect(page.getByTestId("translation-axis-en")).toBeVisible();
-    await expect(page.getByTestId("translation-axis-fra")).not.toBeVisible();
-    axes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axes).toHaveCount(1);
+    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(page.getByTestId("translation-slot-fra")).not.toBeVisible();
+    slots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slots).toHaveCount(1);
   });
 
   test("cannot add duplicate language translation", async () => {
@@ -324,12 +323,12 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
-    // Now we have 2 axes (en and spa)
-    const afterFirstAdd = page.locator('[data-testid^="translation-axis-"]');
+    // Now we have 2 slots (en and spa)
+    const afterFirstAdd = page.locator('[data-testid^="translation-slot-"]');
     await expect(afterFirstAdd).toHaveCount(2);
 
     // Try to add Spanish again - should not add a duplicate
@@ -341,9 +340,9 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Should still have 2 axes (duplicate not added)
+    // Should still have 2 slots (duplicate not added)
     const afterDuplicateAttempt = page.locator(
-      '[data-testid^="translation-axis-"]'
+      '[data-testid^="translation-slot-"]'
     );
     await expect(afterDuplicateAttempt).toHaveCount(2);
   });
@@ -356,9 +355,9 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
-    // Enter text in the English description (use the axis-specific selector)
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    // Enter text in the English description (use the slot-specific selector)
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill("Persistent English text");
 
@@ -373,12 +372,12 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
 
-    // Wait for Spanish axis to appear (ISO 639-3 code is "spa")
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    // Wait for Spanish slot to appear (ISO 639-3 code is "spa")
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("Texto persistente en español");
 
@@ -395,15 +394,15 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
 
     // Verify the translations are still there
-    const englishAxisAfter = page.getByTestId("translation-axis-en");
-    const englishEditorAfter = englishAxisAfter.locator(
+    const englishSlotAfter = page.getByTestId("translation-slot-en");
+    const englishEditorAfter = englishSlotAfter.locator(
       '[contenteditable="true"]'
     );
     await expect(englishEditorAfter).toHaveText("Persistent English text");
 
-    const spanishAxisAfter = page.getByTestId("translation-axis-spa");
-    await expect(spanishAxisAfter).toBeVisible();
-    const spanishEditorAfter = spanishAxisAfter.locator(
+    const spanishSlotAfter = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlotAfter).toBeVisible();
+    const spanishEditorAfter = spanishSlotAfter.locator(
       '[contenteditable="true"]'
     );
     await expect(spanishEditorAfter).toHaveText("Texto persistente en español");
@@ -417,9 +416,9 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
-    // Step 1: Add text to the default English field (use axis-specific locator)
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    // Step 1: Add text to the default English field (use slot-specific locator)
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill(
       "Initial English text with special chars: é ñ ü 日本語"
@@ -434,13 +433,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
     // Step 3: Add text to Spanish field
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("Texto en español con caracteres: ñ á é í ó ú");
     await page.keyboard.press("Tab");
@@ -453,13 +452,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("fra");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-fra"]', {
+    await page.waitForSelector('[data-testid="translation-slot-fra"]', {
       timeout: 5000
     });
 
     // Step 5: Add text to French field
-    const frenchAxis = page.getByTestId("translation-axis-fra");
-    const frenchEditor = frenchAxis.locator('[contenteditable="true"]');
+    const frenchSlot = page.getByTestId("translation-slot-fra");
+    const frenchEditor = frenchSlot.locator('[contenteditable="true"]');
     await frenchEditor.click();
     await frenchEditor.fill("Texte français avec accents: é è ê ë à â");
     await page.keyboard.press("Tab");
@@ -472,24 +471,24 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("deu");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-deu"]', {
+    await page.waitForSelector('[data-testid="translation-slot-deu"]', {
       timeout: 5000
     });
 
-    // Step 7: Verify we have 4 translation axes
-    let allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(4);
+    // Step 7: Verify we have 4 translation slots
+    let allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(4);
 
     // Step 8: Remove the empty German translation
-    const germanAxis = page.getByTestId("translation-axis-deu");
-    await germanAxis.hover();
-    const removeGermanBtn = page.getByTestId("remove-translation-deu");
+    const germanSlot = page.getByTestId("translation-slot-deu");
+    await germanSlot.hover();
+    const removeGermanBtn = page.getByTestId("remove-slot-deu");
     await removeGermanBtn.click();
     await page.waitForTimeout(300);
 
-    // Verify we now have 3 axes
-    allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(3);
+    // Verify we now have 3 slots
+    allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(3);
 
     // Step 9: Add Arabic translation (RTL language - edge case, use ISO code)
     addTranslationBtn = page.getByTestId("add-translation-button");
@@ -498,13 +497,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("ara");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-ara"]', {
+    await page.waitForSelector('[data-testid="translation-slot-ara"]', {
       timeout: 5000
     });
 
     // Step 10: Add Arabic text
-    const arabicAxis = page.getByTestId("translation-axis-ara");
-    const arabicEditor = arabicAxis.locator('[contenteditable="true"]');
+    const arabicSlot = page.getByTestId("translation-slot-ara");
+    const arabicEditor = arabicSlot.locator('[contenteditable="true"]');
     await arabicEditor.click();
     await arabicEditor.fill("نص عربي للاختبار");
     await page.keyboard.press("Tab");
@@ -512,7 +511,7 @@ test.describe("Multilingual Text Fields", () => {
 
     // Step 11: Modify existing English text (re-fetch the locator)
     const englishEditorRefresh = page
-      .getByTestId("translation-axis-en")
+      .getByTestId("translation-slot-en")
       .locator('[contenteditable="true"]');
     await englishEditorRefresh.click();
     await englishEditorRefresh.fill("Modified English text: testing updates!");
@@ -523,7 +522,7 @@ test.describe("Multilingual Text Fields", () => {
     // (this is expected behavior - empty translations are not persisted)
     // Instead, let's verify the Spanish text is still there
     const spanishEditorCheck = page
-      .getByTestId("translation-axis-spa")
+      .getByTestId("translation-slot-spa")
       .locator('[contenteditable="true"]');
     await expect(spanishEditorCheck).toHaveText(
       "Texto en español con caracteres: ñ á é í ó ú"
@@ -531,19 +530,19 @@ test.describe("Multilingual Text Fields", () => {
 
     // Step 13: Verify current state before tab switch
     const englishEditorCheck = page
-      .getByTestId("translation-axis-en")
+      .getByTestId("translation-slot-en")
       .locator('[contenteditable="true"]');
     await expect(englishEditorCheck).toHaveText(
       "Modified English text: testing updates!"
     );
     const frenchEditorCheck = page
-      .getByTestId("translation-axis-fra")
+      .getByTestId("translation-slot-fra")
       .locator('[contenteditable="true"]');
     await expect(frenchEditorCheck).toHaveText(
       "Texte français avec accents: é è ê ë à â"
     );
     const arabicEditorCheck = page
-      .getByTestId("translation-axis-ara")
+      .getByTestId("translation-slot-ara")
       .locator('[contenteditable="true"]');
     await expect(arabicEditorCheck).toHaveText("نص عربي للاختبار");
 
@@ -556,16 +555,16 @@ test.describe("Multilingual Text Fields", () => {
     // Step 15: Verify data persisted after tab switch
     // English should still have the modified text
     const englishEditorAfterTab = page
-      .getByTestId("translation-axis-en")
+      .getByTestId("translation-slot-en")
       .locator('[contenteditable="true"]');
     await expect(englishEditorAfterTab).toHaveText(
       "Modified English text: testing updates!"
     );
 
     // French should still have its text
-    const frenchAxisAfterTab = page.getByTestId("translation-axis-fra");
-    await expect(frenchAxisAfterTab).toBeVisible();
-    const frenchEditorAfterTab = frenchAxisAfterTab.locator(
+    const frenchSlotAfterTab = page.getByTestId("translation-slot-fra");
+    await expect(frenchSlotAfterTab).toBeVisible();
+    const frenchEditorAfterTab = frenchSlotAfterTab.locator(
       '[contenteditable="true"]'
     );
     await expect(frenchEditorAfterTab).toHaveText(
@@ -573,17 +572,17 @@ test.describe("Multilingual Text Fields", () => {
     );
 
     // Arabic should still have its text
-    const arabicAxisAfterTab = page.getByTestId("translation-axis-ara");
-    await expect(arabicAxisAfterTab).toBeVisible();
-    const arabicEditorAfterTab = arabicAxisAfterTab.locator(
+    const arabicSlotAfterTab = page.getByTestId("translation-slot-ara");
+    await expect(arabicSlotAfterTab).toBeVisible();
+    const arabicEditorAfterTab = arabicSlotAfterTab.locator(
       '[contenteditable="true"]'
     );
     await expect(arabicEditorAfterTab).toHaveText("نص عربي للاختبار");
 
     // Spanish should still have its text
-    const spanishAxisAfterTab = page.getByTestId("translation-axis-spa");
-    await expect(spanishAxisAfterTab).toBeVisible();
-    const spanishEditorAfterTab = spanishAxisAfterTab.locator(
+    const spanishSlotAfterTab = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlotAfterTab).toBeVisible();
+    const spanishEditorAfterTab = spanishSlotAfterTab.locator(
       '[contenteditable="true"]'
     );
     await expect(spanishEditorAfterTab).toHaveText(
@@ -591,14 +590,14 @@ test.describe("Multilingual Text Fields", () => {
     );
 
     // Step 16: Remove French translation
-    const frenchAxisToRemove = page.getByTestId("translation-axis-fra");
-    await frenchAxisToRemove.hover();
-    const removeFrenchBtn = page.getByTestId("remove-translation-fra");
+    const frenchSlotToRemove = page.getByTestId("translation-slot-fra");
+    await frenchSlotToRemove.hover();
+    const removeFrenchBtn = page.getByTestId("remove-slot-fra");
     await removeFrenchBtn.click();
     await page.waitForTimeout(300);
 
     // Step 17: Verify French is gone
-    await expect(page.getByTestId("translation-axis-fra")).not.toBeVisible();
+    await expect(page.getByTestId("translation-slot-fra")).not.toBeVisible();
 
     // Step 18: Add Mandarin Chinese (CJK characters - edge case, use ISO code)
     addTranslationBtn = page.getByTestId("add-translation-button");
@@ -607,13 +606,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("cmn");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-cmn"]', {
+    await page.waitForSelector('[data-testid="translation-slot-cmn"]', {
       timeout: 5000
     });
 
     // Step 19: Add Chinese text
-    const chineseAxis = page.getByTestId("translation-axis-cmn");
-    const chineseEditor = chineseAxis.locator('[contenteditable="true"]');
+    const chineseSlot = page.getByTestId("translation-slot-cmn");
+    const chineseEditor = chineseSlot.locator('[contenteditable="true"]');
     await chineseEditor.click();
     await chineseEditor.fill("中文测试文本，包含特殊字符：！@#￥%");
     await page.keyboard.press("Tab");
@@ -628,45 +627,45 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Step 21: Count axes - should still be 4 (en, spa, ara, cmn) not 5
-    allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(4);
+    // Step 21: Count slots - should still be 4 (en, spa, ara, cmn) not 5
+    allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(4);
 
     // Step 22: Remove all non-English translations one by one
     // Remove Spanish
-    const spanishAxisToRemove = page.getByTestId("translation-axis-spa");
-    await spanishAxisToRemove.hover();
-    await page.getByTestId("remove-translation-spa").click();
+    const spanishSlotToRemove = page.getByTestId("translation-slot-spa");
+    await spanishSlotToRemove.hover();
+    await page.getByTestId("remove-slot-spa").click();
     await page.waitForTimeout(300);
 
     // Remove Arabic
-    const arabicAxisToRemove = page.getByTestId("translation-axis-ara");
-    await arabicAxisToRemove.hover();
-    await page.getByTestId("remove-translation-ara").click();
+    const arabicSlotToRemove = page.getByTestId("translation-slot-ara");
+    await arabicSlotToRemove.hover();
+    await page.getByTestId("remove-slot-ara").click();
     await page.waitForTimeout(300);
 
     // Remove Chinese
-    const chineseAxisToRemove = page.getByTestId("translation-axis-cmn");
-    await chineseAxisToRemove.hover();
-    await page.getByTestId("remove-translation-cmn").click();
+    const chineseSlotToRemove = page.getByTestId("translation-slot-cmn");
+    await chineseSlotToRemove.hover();
+    await page.getByTestId("remove-slot-cmn").click();
     await page.waitForTimeout(300);
 
     // Step 23: Should now have only English
-    allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(1);
-    await expect(page.getByTestId("translation-axis-en")).toBeVisible();
+    allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(1);
+    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
 
-    // Step 24: With only one axis, the remove button should not be visible
+    // Step 24: With only one slot, the remove button should not be visible
     // This is a boundary condition - can't remove the last translation
-    const englishAxisFinal = page.getByTestId("translation-axis-en");
-    await englishAxisFinal.hover();
-    const removeEnglishBtn = page.getByTestId("remove-translation-en");
-    // Check that the button is not visible (because canRemoveAxis is false when only 1 axis)
+    const englishSlotFinal = page.getByTestId("translation-slot-en");
+    await englishSlotFinal.hover();
+    const removeEnglishBtn = page.getByTestId("remove-slot-en");
+    // Check that the button is not visible (because canRemoveSlot is false when only 1 slot)
     await expect(removeEnglishBtn).not.toBeVisible();
 
     // Step 25: Final verification - English text should still be there
     const finalEnglishEditor = page
-      .getByTestId("translation-axis-en")
+      .getByTestId("translation-slot-en")
       .locator('[contenteditable="true"]');
     await expect(finalEnglishEditor).toHaveText(
       "Modified English text: testing updates!"
@@ -685,9 +684,9 @@ test.describe("Multilingual Text Fields", () => {
     // Generate a long string
     const longText = "This is a long text. ".repeat(100);
 
-    // Use axis-specific locator for the English field
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    // Use slot-specific locator for the English field
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill(longText);
     await page.keyboard.press("Tab");
@@ -705,13 +704,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
     const longSpanishText = "Este es un texto largo en español. ".repeat(100);
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill(longSpanishText);
     await page.keyboard.press("Tab");
@@ -734,9 +733,9 @@ test.describe("Multilingual Text Fields", () => {
     const specialChars =
       "Text with <html> tags, \"quotes\", 'apostrophes', & ampersands, newlines\nand\ttabs, emoji 🎉🌍, path/slashes/here, backslash\\here";
 
-    // Use axis-specific locator for the English field
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    // Use slot-specific locator for the English field
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill(specialChars);
     await page.keyboard.press("Tab");
@@ -774,27 +773,27 @@ test.describe("Multilingual Text Fields", () => {
       await page.waitForTimeout(300);
       await languageInput.press("Enter");
       await page.waitForSelector(
-        `[data-testid="translation-axis-${isoCodes[i]}"]`,
+        `[data-testid="translation-slot-${isoCodes[i]}"]`,
         { timeout: 5000 }
       );
     }
 
     // Verify all were added (4 languages + English = 5)
-    let allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(5);
+    let allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(5);
 
     // Rapidly remove all added languages
     for (let i = isoCodes.length - 1; i >= 0; i--) {
-      const axis = page.getByTestId(`translation-axis-${isoCodes[i]}`);
-      await axis.hover();
-      const removeBtn = page.getByTestId(`remove-translation-${isoCodes[i]}`);
+      const slot = page.getByTestId(`translation-slot-${isoCodes[i]}`);
+      await slot.hover();
+      const removeBtn = page.getByTestId(`remove-slot-${isoCodes[i]}`);
       await removeBtn.click();
       await page.waitForTimeout(200);
     }
 
     // Should be back to just English
-    allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(1);
+    allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(1);
   });
 
   // Test adding translation via Cancel button
@@ -823,13 +822,13 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(200);
 
     // Should still have only English
-    const allAxes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(allAxes).toHaveCount(1);
-    await expect(page.getByTestId("translation-axis-en")).toBeVisible();
+    const allSlots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(allSlots).toHaveCount(1);
+    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
   });
 
   // Test that empty translations are lost on tab switch (expected behavior)
-  test("empty translation axis is lost on tab switch", async () => {
+  test("empty translation slot is lost on tab switch", async () => {
     await project.goToSessions();
     await project.addSession();
 
@@ -846,13 +845,13 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
-    // Verify we have 2 axes now
-    let axes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axes).toHaveCount(2);
+    // Verify we have 2 slots now
+    let slots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slots).toHaveCount(2);
 
     // Switch tabs without entering text in Spanish
     await project.goToNotesOfThisSession();
@@ -860,11 +859,11 @@ test.describe("Multilingual Text Fields", () => {
     await page.getByRole("tab", { name: "Session", exact: true }).click();
     await page.waitForTimeout(300);
 
-    // Spanish axis should be gone (empty translation not persisted)
-    await expect(page.getByTestId("translation-axis-spa")).not.toBeVisible();
-    axes = page.locator('[data-testid^="translation-axis-"]');
-    await expect(axes).toHaveCount(1);
-    await expect(page.getByTestId("translation-axis-en")).toBeVisible();
+    // Spanish slot should be gone (empty translation not persisted)
+    await expect(page.getByTestId("translation-slot-spa")).not.toBeVisible();
+    slots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(slots).toHaveCount(1);
+    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
   });
 
   // Test with whitespace-only text (should be treated as empty)
@@ -885,12 +884,12 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
-    const spanishAxis = page.getByTestId("translation-axis-spa");
-    const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("   "); // Just whitespace
     await page.keyboard.press("Tab");
@@ -917,8 +916,8 @@ test.describe("Multilingual Text Fields", () => {
     const textWithCombining =
       "Testing e\u0301 combining and Ω Greek and 日本 Japanese and العربية Arabic";
 
-    const englishAxis = page.getByTestId("translation-axis-en");
-    const englishEditor = englishAxis.locator('[contenteditable="true"]');
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill(textWithCombining);
     await page.keyboard.press("Tab");
@@ -948,25 +947,25 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
     // Add text to Spanish
-    let spanishAxis = page.getByTestId("translation-axis-spa");
-    let spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    let spanishSlot = page.getByTestId("translation-slot-spa");
+    let spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("First Spanish text");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
     // Remove Spanish
-    await spanishAxis.hover();
-    await page.getByTestId("remove-translation-spa").click();
+    await spanishSlot.hover();
+    await page.getByTestId("remove-slot-spa").click();
     await page.waitForTimeout(300);
 
     // Verify Spanish is gone
-    await expect(page.getByTestId("translation-axis-spa")).not.toBeVisible();
+    await expect(page.getByTestId("translation-slot-spa")).not.toBeVisible();
 
     // Re-add Spanish
     addTranslationBtn = page.getByTestId("add-translation-button");
@@ -975,14 +974,14 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("spa");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-axis-spa"]', {
+    await page.waitForSelector('[data-testid="translation-slot-spa"]', {
       timeout: 5000
     });
 
-    // Spanish axis should be back but empty (previous text was cleared when removed)
-    spanishAxis = page.getByTestId("translation-axis-spa");
-    await expect(spanishAxis).toBeVisible();
-    spanishEditor = spanishAxis.locator('[contenteditable="true"]');
+    // Spanish slot should be back but empty (previous text was cleared when removed)
+    spanishSlot = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlot).toBeVisible();
+    spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     const spanishText = await spanishEditor.textContent();
     expect(spanishText).toBe("");
 
@@ -994,5 +993,248 @@ test.describe("Multilingual Text Fields", () => {
 
     // Verify new text is there
     await expect(spanishEditor).toHaveText("Second Spanish text");
+  });
+});
+
+// Tests for metadata language slots feature
+test.describe("Metadata Language Slots", () => {
+  test.beforeAll(async () => {
+    lameta = new LametaE2ERunner();
+    page = await lameta.launch();
+    await lameta.cancelRegistration();
+    project = await createNewProject(
+      lameta,
+      `MetadataLanguageSlotsTest_${Date.now()}`
+    );
+
+    // Switch to ELAR configuration to get the multilingual description field
+    await project.goToProjectConfiguration();
+    await page.locator("#archiveConfigurationName-select").click();
+    await page.getByText("ELAR", { exact: true }).click();
+    await page.locator("button:has-text('Change')").click();
+
+    // Wait for the app to reload after configuration change
+    await page.waitForSelector('[data-testid="project-tab"]', {
+      timeout: 10000
+    });
+  });
+
+  test.afterAll(async () => {
+    await lameta.quit();
+  });
+
+  test("setting project working languages shows those slots by default in multilingual fields", async () => {
+    // Go to Project Collection tab to set working languages
+    await project.goToProjectCollection();
+
+    // Find the Working Languages field and add Spanish
+    const workingContainer = page
+      .locator('div.field:has(label:has-text("Working Languages"))')
+      .first();
+    const workingInput = workingContainer
+      .locator('.select input[role="combobox"]')
+      .first();
+    await workingInput.click();
+    await workingInput.fill("spa");
+    await page.waitForTimeout(300);
+    await workingInput.press("Enter");
+    await page.waitForTimeout(500);
+
+    // Now go to Sessions and create a new session
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="field-description-edit"]', {
+      timeout: 10000
+    });
+
+    // The multilingual Description field should show both English (default) and Spanish slots
+    // because we set Spanish as a project working language
+    const englishSlot = page.getByTestId("translation-slot-en");
+    await expect(englishSlot).toBeVisible();
+
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlot).toBeVisible();
+
+    // Both slots should have color bars
+    const englishColorBar = page.getByTestId("slot-color-bar-en");
+    await expect(englishColorBar).toBeVisible();
+
+    const spanishColorBar = page.getByTestId("slot-color-bar-spa");
+    await expect(spanishColorBar).toBeVisible();
+  });
+
+  test("empty protected slots show placeholder text", async () => {
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="field-description-edit"]', {
+      timeout: 10000
+    });
+
+    // Look for empty contenteditable divs that should have placeholder styling
+    // The placeholder should be visible via CSS :empty::before
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
+
+    // Editor should be visible even if empty
+    await expect(englishEditor).toBeVisible();
+
+    // The editor should be empty initially
+    const text = await englishEditor.textContent();
+    expect(text).toBe("");
+  });
+
+  test("protected slots (from project working languages) cannot be deleted", async () => {
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="field-description-edit"]', {
+      timeout: 10000
+    });
+
+    // Both English and Spanish should be visible as protected slots
+    const englishSlot = page.getByTestId("translation-slot-en");
+    await expect(englishSlot).toBeVisible();
+
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    await expect(spanishSlot).toBeVisible();
+
+    // Hover over English slot - remove button should NOT be visible (protected)
+    await englishSlot.hover();
+    const removeEnglishBtn = page.getByTestId("remove-slot-en");
+    // Protected slots should not have visible remove button
+    await expect(removeEnglishBtn).not.toBeVisible();
+
+    // Hover over Spanish slot - remove button should NOT be visible (protected)
+    await spanishSlot.hover();
+    const removeSpanishBtn = page.getByTestId("remove-slot-spa");
+    // Protected slots should not have visible remove button
+    await expect(removeSpanishBtn).not.toBeVisible();
+  });
+
+  test("non-protected slots (extras) can be deleted", async () => {
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="add-translation-button"]', {
+      timeout: 10000
+    });
+
+    // Add French (not in project working languages, so not protected)
+    const addTranslationBtn = page.getByTestId("add-translation-button");
+    await addTranslationBtn.click();
+
+    const languageInput = page
+      .locator('.select input[role="combobox"]')
+      .first();
+    await languageInput.fill("fra");
+    await page.waitForTimeout(300);
+    await languageInput.press("Enter");
+
+    await page.waitForSelector('[data-testid="translation-slot-fra"]', {
+      timeout: 5000
+    });
+
+    // French slot should be visible
+    const frenchSlot = page.getByTestId("translation-slot-fra");
+    await expect(frenchSlot).toBeVisible();
+
+    // Hover over French slot - remove button SHOULD be visible (not protected)
+    await frenchSlot.hover();
+    const removeFrenchBtn = page.getByTestId("remove-slot-fra");
+    await expect(removeFrenchBtn).toBeVisible();
+
+    // Click remove
+    await removeFrenchBtn.click();
+    await page.waitForTimeout(300);
+
+    // French should be gone
+    await expect(frenchSlot).not.toBeVisible();
+
+    // But protected slots should still be there
+    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(page.getByTestId("translation-slot-spa")).toBeVisible();
+  });
+
+  test("color bars are visible and differ between languages", async () => {
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="field-description-edit"]', {
+      timeout: 10000
+    });
+
+    // Get the color bars for English and Spanish
+    const englishColorBar = page.getByTestId("slot-color-bar-en");
+    const spanishColorBar = page.getByTestId("slot-color-bar-spa");
+
+    await expect(englishColorBar).toBeVisible();
+    await expect(spanishColorBar).toBeVisible();
+
+    // Get their background colors
+    const englishColor = await englishColorBar.evaluate(
+      (el) => window.getComputedStyle(el).backgroundColor
+    );
+    const spanishColor = await spanishColorBar.evaluate(
+      (el) => window.getComputedStyle(el).backgroundColor
+    );
+
+    // Colors should be different
+    expect(englishColor).not.toBe(spanishColor);
+
+    // Colors should not be transparent or empty
+    expect(englishColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(englishColor).not.toBe("");
+    expect(spanishColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(spanishColor).not.toBe("");
+  });
+
+  test("typing in protected slot works and data persists", async () => {
+    await project.goToSessions();
+    await project.addSession();
+
+    await page.waitForSelector('[data-testid="field-description-edit"]', {
+      timeout: 10000
+    });
+
+    // Type in English slot
+    const englishSlot = page.getByTestId("translation-slot-en");
+    const englishEditor = englishSlot.locator('[contenteditable="true"]');
+    await englishEditor.click();
+    await englishEditor.fill("English text in protected slot");
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(200);
+
+    // Type in Spanish slot
+    const spanishSlot = page.getByTestId("translation-slot-spa");
+    const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
+    await spanishEditor.click();
+    await spanishEditor.fill("Texto español en slot protegido");
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(200);
+
+    // Switch tabs and come back
+    await project.goToNotesOfThisSession();
+    await page.waitForTimeout(300);
+    await page.getByRole("tab", { name: "Session", exact: true }).click();
+    await page.waitForTimeout(300);
+
+    // Verify data persisted
+    const englishSlotAfter = page.getByTestId("translation-slot-en");
+    const englishEditorAfter = englishSlotAfter.locator(
+      '[contenteditable="true"]'
+    );
+    await expect(englishEditorAfter).toHaveText(
+      "English text in protected slot"
+    );
+
+    const spanishSlotAfter = page.getByTestId("translation-slot-spa");
+    const spanishEditorAfter = spanishSlotAfter.locator(
+      '[contenteditable="true"]'
+    );
+    await expect(spanishEditorAfter).toHaveText(
+      "Texto español en slot protegido"
+    );
   });
 });
