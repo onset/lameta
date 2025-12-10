@@ -41,6 +41,7 @@ import { HighlightableTab } from "./HighlightableTab";
 import { TiffViewer } from "./TiffViewer";
 import AccessChooser from "./session/AccessChooser";
 import { TextFieldEdit } from "./TextFieldEdit";
+import { getSessionFormClass } from "./session/SessionFormVariant";
 
 export interface IProps {
   folder: Folder;
@@ -407,7 +408,7 @@ const FileTabs: React.FunctionComponent<
               <AutoForm
                 folder={directoryObject}
                 form="primary"
-                formClass="sessionForm"
+                formClass={getSessionFormClass()}
                 authorityLists={props.authorityLists}
                 languageFinder={props.project.languageFinder}
                 //customFieldNames={props.customFieldNames}

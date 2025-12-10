@@ -1,7 +1,7 @@
 /* VARIANT 2: Auto rows with max-height - Single grid, rows grow as needed */
 @import "../../colors.css";
 
-.sessionForm {
+.sessionForm-v2 {
   display: grid;
   height: 1px;
   grid-template-columns: repeat(4, 1fr);
@@ -106,13 +106,4 @@
       background-color: white;
     }
   }
-}
-
-.select-contributorRole {
-  color: grey;
-  text-align: center;
-  font-size: 85%;
-}
-.highlight {
-  color: var(--project-color);
 }

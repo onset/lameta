@@ -208,9 +208,26 @@
 		Key
 	-->
 	<xsd:complexType name="Key_Type">
+		<xsd:annotation>
+			<xsd:documentation>
+				Key element for storing metadata not covered by other elements.
+				For multilingual fields (e.g., Topic, Keyword), the LanguageId and index attributes
+				allow linking translated values of the same concept across languages.
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:simpleContent>
 			<xsd:extension base="imdi:Vocabulary_Type">
 				<xsd:attribute name="Name" type="xsd:string" use="required"/>
+				<xsd:attribute name="LanguageId" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Language identifier for multilingual values (e.g., ISO639-1:en, ISO639-3:etr)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="index" type="xsd:positiveInteger" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>1-based index to tie together translations of the same concept across languages</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>

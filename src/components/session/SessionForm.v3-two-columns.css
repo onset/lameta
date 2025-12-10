@@ -1,43 +1,14 @@
-/* VARIANT 3: Two independent columns - Left and right flow independently */
+/* VARIANT 3: Two-column layout with tighter spacing */
 @import "../../colors.css";
 
-.sessionForm {
-  display: flex;
-  height: 1px;
-  gap: 20px;
-
-  /* Multilingual fields: show 2 language slots comfortably, then scroll */
-  .field:has(.field-value-border) {
-    .field-value-border {
-      max-height: 6em; /* ~2 language slots for single-line fields */
-    }
-  }
-  /* Multiline multilingual fields (like description) get more space */
-  .field.multiline:has(.field-value-border) {
-    .field-value-border {
-      max-height: 10em; /* more room for description-type fields */
-    }
-  }
-}
-
-/* Left column - contains first half of fields */
-.sessionForm::before {
-  display: none; /* placeholder for structure, actual columns are children */
-}
-
-/* We need wrapper divs for this approach - using subgrid alternative */
-/* Since we can't add wrapper elements easily, use CSS subgrid with explicit rows */
-
-.sessionForm {
+.sessionForm-v3 {
   display: grid;
   height: 1px;
-  /* Two main columns, each subdivided */
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto; /* Let rows size to content */
-  grid-auto-rows: minmax(40px, auto);
-  grid-auto-flow: dense; /* Pack items tightly */
-  gap: 10px 20px;
-  align-items: start; /* Align items to top, don't stretch */
+  grid-auto-rows: min-content; /* Rows only as tall as their content */
+  grid-auto-flow: dense;
+  gap: 5px 15px; /* Tighter gaps */
+  align-items: start;
 
   /* Multilingual fields: show 2 language slots comfortably, then scroll */
   .field:has(.field-value-border) {
@@ -54,72 +25,59 @@
   /* === LEFT SIDE (columns 1-2) === */
   .id {
     grid-column: 1;
-    grid-row: 1;
   }
   .date {
     grid-column: 2;
-    grid-row: 1;
     input {
       width: inherit;
     }
   }
   .title {
     grid-column: 1 / 3;
-    grid-row: 2;
   }
   .genre {
     grid-column: 1;
-    grid-row: 3;
   }
   .subgenre {
     grid-column: 2;
-    grid-row: 3;
   }
   .access-chooser {
     grid-column: 1;
-    grid-row: 4;
   }
   .accessDescription {
     grid-column: 2;
-    grid-row: 4;
   }
   .languages {
     grid-column: 1 / 3;
-    grid-row: 5;
   }
   .workingLanguages {
     grid-column: 1 / 3;
-    grid-row: 6;
   }
   .customFieldsBlock {
     grid-column: 1 / 3;
-    grid-row: 7;
     .customFieldsTable {
       background-color: white;
     }
   }
 
-  /* === RIGHT SIDE (columns 3-4) - independent row numbering via dense packing === */
+  /* === RIGHT SIDE (columns 3-4) === */
   .description {
     grid-column: 3 / 5;
-    grid-row: 1 / 3; /* Span first two right-side rows */
+    grid-row: 1 / 3;
     align-self: stretch;
   }
   .topic {
     grid-column: 3;
-    grid-row: 3;
   }
   .keyword {
     grid-column: 4;
-    grid-row: 3;
   }
   .location {
     grid-column: 3 / 5;
-    grid-row: 4;
   }
   .moreFieldsBlock {
     grid-column: 3 / 5;
-    grid-row: 5 / 10; /* Span multiple rows */
+    grid-row: span 5;
     .moreFieldsTable {
       background-color: white;
     }
@@ -135,13 +93,4 @@
     font-size: 13px;
     line-height: 20px;
   }
-}
-
-.select-contributorRole {
-  color: grey;
-  text-align: center;
-  font-size: 85%;
-}
-.highlight {
-  color: var(--project-color);
 }

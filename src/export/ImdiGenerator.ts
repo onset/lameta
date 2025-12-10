@@ -626,26 +626,46 @@ export default class ImdiGenerator {
           ) {
             return;
           }
+          const field = target.properties.getTextFieldOrUndefined(key);
           const fieldContents = target.properties.getTextStringOrEmpty(key);
           if (fieldContents && fieldContents.length > 0) {
             //https://trello.com/c/Xkq8cdoR/73-already-done-allow-for-more-than-one-topic
             const shouldSplitByCommas = ["topic", "keyword"].indexOf(key) > -1;
-            const valueElements = shouldSplitByCommas
-              ? fieldContents.split(",").map((x) => x.trim())
-              : [fieldContents.trim()];
-            valueElements.forEach((v) => {
-              //https://trello.com/c/GdRJamgi/83-export-of-topic-field
-              // Hanna asks that we not do this to topic and keyword
-              if (["status" /*, "keyword", "topic",*/].indexOf(key) > -1) {
-                // capitalize the first letter of each word
-                v = sentenceCaseUnlessAcronym(v);
-              }
 
-              this.tail = this.tail.element("Key", v);
-              this.mostRecentElement = this.tail;
-              this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
-              this.tail = this.tail.up();
-            });
+            // Check if this field has multiple languages (multilingual)
+            const languageAxes = field ? field.getAllNonEmptyTextAxes() : [];
+            const isMultilingual =
+              languageAxes.length > 1 &&
+              shouldSplitByCommas &&
+              definition?.multilingual === true;
+
+            if (isMultilingual) {
+              // Multilingual export: output each language's values with index and LanguageId
+              this.outputMultilingualKeyElements(
+                key,
+                field!,
+                languageAxes,
+                shouldSplitByCommas
+              );
+            } else {
+              // Monolingual export (original behavior)
+              const valueElements = shouldSplitByCommas
+                ? fieldContents.split(",").map((x) => x.trim())
+                : [fieldContents.trim()];
+              valueElements.forEach((v) => {
+                //https://trello.com/c/GdRJamgi/83-export-of-topic-field
+                // Hanna asks that we not do this to topic and keyword
+                if (["status" /*, "keyword", "topic",*/].indexOf(key) > -1) {
+                  // capitalize the first letter of each word
+                  v = sentenceCaseUnlessAcronym(v);
+                }
+
+                this.tail = this.tail.element("Key", v);
+                this.mostRecentElement = this.tail;
+                this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+                this.tail = this.tail.up();
+              });
+            }
           }
         }
       });
@@ -658,6 +678,51 @@ export default class ImdiGenerator {
         });
       }
     });
+  }
+
+  // Helper for outputting multilingual Key elements with index attributes
+  // This enables archives to tie together different language renderings of the same concept
+  private outputMultilingualKeyElements(
+    key: string,
+    field: Field,
+    languageAxes: string[],
+    shouldSplitByCommas: boolean
+  ) {
+    // Build a structure: for each language, get the values split by comma
+    const valuesByLanguage: Map<string, string[]> = new Map();
+    let maxValueCount = 0;
+
+    languageAxes.forEach((lang) => {
+      const langContent = field.getTextAxis(lang);
+      const values = shouldSplitByCommas
+        ? langContent.split(",").map((x) => x.trim())
+        : [langContent.trim()];
+      valuesByLanguage.set(lang, values);
+      maxValueCount = Math.max(maxValueCount, values.length);
+    });
+
+    // Output elements grouped by index (1-based), then by language
+    // This ensures related translations appear together and have matching indexes
+    for (let i = 0; i < maxValueCount; i++) {
+      languageAxes.forEach((lang) => {
+        const values = valuesByLanguage.get(lang)!;
+        if (i < values.length && values[i].length > 0) {
+          const v = values[i];
+          this.tail = this.tail.element("Key", v);
+          this.mostRecentElement = this.tail;
+          this.attributeLiteral("Name", capitalCase(key));
+
+          // Add LanguageId: 2 letter is ISO639-1, 3 letter is ISO639-3
+          const kind = lang.length === 2 ? "ISO639-1" : "ISO639-3";
+          this.attributeLiteral("LanguageId", kind + ":" + lang);
+
+          // Add index (1-based) to tie together translations of the same concept
+          this.attributeLiteral("index", String(i + 1));
+
+          this.tail = this.tail.up();
+        }
+      });
+    }
   }
   private sessionLocation() {
     this.startGroup("Location");
@@ -905,16 +970,16 @@ export default class ImdiGenerator {
     const accessCode = fileWithAccess?.properties.getTextStringOrEmpty("access")
       ? fileWithAccess.properties.getTextStringOrEmpty("access")
       : this.folderInFocus instanceof Session
-        ? this.folderInFocus.properties.getTextStringOrEmpty("access")
-        : "";
+      ? this.folderInFocus.properties.getTextStringOrEmpty("access")
+      : "";
 
     const accessDescription = fileWithAccess?.properties.getTextStringOrEmpty(
       "accessDescription"
     )
       ? fileWithAccess.properties.getTextStringOrEmpty("accessDescription")
       : this.folderInFocus instanceof Session
-        ? this.folderInFocus.properties.getTextStringOrEmpty("accessDescription")
-        : "";
+      ? this.folderInFocus.properties.getTextStringOrEmpty("accessDescription")
+      : "";
 
     /* NO: the schema requires a all the access fields, even if they are empty.
     if (accessCode.length === 0) {

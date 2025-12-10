@@ -1,7 +1,7 @@
 /* VARIANT 1: Original - Fixed 50px rows, Description spans 3 rows */
 @import "../../colors.css";
 
-.sessionForm {
+.sessionForm-v1 {
   display: grid;
   height: 1px;
   grid-template-columns: repeat(4, 1fr);
@@ -98,13 +98,4 @@
       background-color: white;
     }
   }
-}
-
-.select-contributorRole {
-  color: grey;
-  text-align: center;
-  font-size: 85%;
-}
-.highlight {
-  color: var(--project-color);
 }
