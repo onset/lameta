@@ -14,6 +14,10 @@ import {
   useMultilingualField
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -38,6 +42,9 @@ export const TextFieldEdit: React.FunctionComponent<
   );
 
   const isMultilingual = props.field.definition.multilingual;
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocusWithin, setIsFocusWithin] = useState(false);
+  const [triggerAddLanguage, setTriggerAddLanguage] = useState(false);
   const {
     languageTags,
     slots,
@@ -76,9 +83,19 @@ export const TextFieldEdit: React.FunctionComponent<
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
         <div
           className="field-value-border"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onFocus={() => setIsFocusWithin(true)}
+          onBlur={(e) => {
+            // Only set false if focus is leaving the container entirely
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+              setIsFocusWithin(false);
+            }
+          }}
           css={css`
             background-color: white;
             border: ${props.borderless ? "none !important" : ""};
+            position: relative;
             ${props.field.definition.multipleLines
               ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
                  ${isMultilingual ? "overflow-y: auto;" : ""}`
@@ -97,6 +114,7 @@ export const TextFieldEdit: React.FunctionComponent<
                   isProtected={isProtectedSlot(slot.tag)}
                   canRemoveSlot={slots.length > 1}
                   onRemoveSlot={handleRemoveLanguage}
+                  onAddLanguage={() => setTriggerAddLanguage(true)}
                   shouldFocusOnMount={slot.tag === newlyAddedTag}
                   onFocused={clearNewlyAddedTag}
                 />
@@ -104,6 +122,9 @@ export const TextFieldEdit: React.FunctionComponent<
               <AddTranslationControl
                 existingTags={languageTags}
                 onAddLanguage={handleAddLanguage}
+                showButton={isHovered || isFocusWithin || triggerAddLanguage}
+                triggerAdd={triggerAddLanguage}
+                onTriggerAddHandled={() => setTriggerAddLanguage(false)}
               />
             </>
           ) : (
@@ -128,6 +149,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       canRemoveSlot?: boolean;
       onRemoveSlot?: (tag: string) => void;
       onChangeLanguage?: (oldTag: string, newTag: string) => void;
+      onAddLanguage?: () => void;
       shouldFocusOnMount?: boolean;
       onFocused?: () => void;
     }
@@ -289,27 +311,35 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         min-height: ${props.languageSlot ? "auto" : "1.2em"};
         flex-shrink: 0; /* prevent individual fields from shrinking */
         padding-top: ${props.languageSlot ? "2px" : "2px"};
-        padding-right: 2px;
+        padding-right: ${props.languageSlot
+          ? "20px"
+          : "2px"}; /* extra space for + button */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};
+        padding-left: ${props.languageSlot ? "5px" : "0"};
         ${props.showAffordancesAfter &&
         props.field.definition.separatorWithCommaInstructions
           ? "padding-right: 2px;" // leave a little space after the icon
           : ""};
+        position: relative;
+        /* Show kebab menu on hover */
+        .kebab-menu-icon {
+          opacity: 0;
+          transition: opacity 150ms ease-in-out;
+        }
+        &:hover .kebab-menu-icon,
+        .kebab-menu-icon.menu-open {
+          opacity: 1;
+        }
       `}
     >
-      {/* Color bar for language slot */}
+      {/* Color bar for language slot - clickable with menu */}
       {props.languageSlot && (
-        <div
-          title={props.languageSlot.name}
-          data-testid={`slot-color-bar-${props.languageSlot.tag}`}
-          css={css`
-            width: 4px;
-            min-height: 1.5em;
-            background-color: ${props.languageSlot.color || "#888"};
-            margin-right: 6px;
-            flex-shrink: 0;
-            cursor: help;
-          `}
+        <ColorBarWithMenu
+          slot={props.languageSlot}
+          isProtected={props.isProtected ?? false}
+          canRemove={props.canRemoveSlot ?? false}
+          onRemove={() => props.onRemoveSlot?.(props.languageSlot!.tag)}
+          onAddLanguage={props.onAddLanguage}
         />
       )}
 
@@ -400,51 +430,252 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         </Tooltip>
       </div>
 
-      {/* Remove button - only show for non-protected slots */}
-      {props.languageSlot && props.canRemoveSlot && !props.isProtected && (
-        <button
-          type="button"
-          className="remove-translation-btn"
-          data-testid={`remove-slot-${props.languageSlot.tag}`}
-          aria-label={`Remove ${props.languageSlot.name} translation`}
-          onClick={() => props.onRemoveSlot!(props.languageSlot!.tag)}
-          css={css`
-            border: none;
-            background: transparent;
-            color: #6b6b6b;
-            cursor: pointer;
-            padding: 0 4px;
-            line-height: 1;
-            font-size: 0.75em;
-            opacity: 0;
-            transition: opacity 200ms ease-in-out;
-            display: flex;
-            align-items: center;
-            align-self: center;
-            &:hover {
-              color: #c73f1d;
-            }
-            *:hover > & {
-              opacity: 1;
-            }
-          `}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-        </button>
+      {/* Kebab menu icon on right side - visible on hover */}
+      {props.languageSlot && (
+        <KebabMenuIcon
+          slot={props.languageSlot}
+          isProtected={props.isProtected ?? false}
+          canRemove={props.canRemoveSlot ?? false}
+          onRemove={() => props.onRemoveSlot?.(props.languageSlot!.tag)}
+          onAddLanguage={props.onAddLanguage}
+        />
       )}
     </div>
   );
 });
+
+/**
+ * Color bar component with click-to-show menu containing language name and delete option.
+ */
+const ColorBarWithMenu: React.FC<{
+  slot: LanguageSlot;
+  isProtected: boolean;
+  canRemove: boolean;
+  onRemove: () => void;
+  onAddLanguage?: () => void;
+}> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage }) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAddLanguage = () => {
+    handleClose();
+    onAddLanguage?.();
+  };
+
+  const handleDelete = () => {
+    handleClose();
+    onRemove();
+  };
+
+  return (
+    <>
+      <div
+        title={`${slot.name}. Click for menu`}
+        data-testid={`slot-color-bar-${slot.tag}`}
+        onClick={handleClick}
+        css={css`
+          width: 4px;
+          min-height: 1.5em;
+          background-color: ${slot.color || "#888"};
+          margin-right: 6px;
+          flex-shrink: 0;
+          cursor: pointer;
+        `}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left"
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: "auto",
+              py: 0.5
+            }
+          }
+        }}
+      >
+        <MenuItem
+          disabled
+          sx={{
+            fontSize: "0.875rem",
+            color: "text.secondary",
+            py: 0.5,
+            minHeight: "auto",
+            "&.Mui-disabled": {
+              opacity: 0.7
+            }
+          }}
+        >
+          {slot.name} ({slot.tag})
+        </MenuItem>
+        <MenuItem
+          onClick={handleAddLanguage}
+          data-testid={`add-language-slot-menu-${slot.tag}`}
+          sx={{
+            fontSize: "0.875rem",
+            py: 0.5,
+            minHeight: "auto"
+          }}
+        >
+          Add language slot
+        </MenuItem>
+        <MenuItem
+          onClick={handleDelete}
+          disabled={isProtected || !canRemove}
+          data-testid={`delete-slot-menu-${slot.tag}`}
+          sx={{
+            fontSize: "0.875rem",
+            py: 0.5,
+            minHeight: "auto",
+            gap: 1,
+            color: isProtected || !canRemove ? undefined : "#c73f1d"
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+          Delete
+        </MenuItem>
+      </Menu>
+    </>
+  );
+};
+
+/**
+ * Kebab (vertical dots) menu icon that appears on hover.
+ * Same menu content as ColorBarWithMenu.
+ */
+const KebabMenuIcon: React.FC<{
+  slot: LanguageSlot;
+  isProtected: boolean;
+  canRemove: boolean;
+  onRemove: () => void;
+  onAddLanguage?: () => void;
+}> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage }) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAddLanguage = () => {
+    handleClose();
+    onAddLanguage?.();
+  };
+
+  const handleDelete = () => {
+    handleClose();
+    onRemove();
+  };
+
+  return (
+    <>
+      <div
+        title={`${slot.name}. Click for menu`}
+        data-testid={`slot-kebab-menu-${slot.tag}`}
+        className={`kebab-menu-icon${open ? " menu-open" : ""}`}
+        onClick={handleClick}
+        css={css`
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #81c21e;
+          flex-shrink: 0;
+          padding: 0 2px;
+          &:hover {
+            color: #c73f1d;
+            transform: scale(1.15);
+          }
+          &:active {
+            transform: scale(0.95);
+          }
+        `}
+      >
+        <MoreVertIcon fontSize="small" />
+      </div>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: "auto",
+              py: 0.5
+            }
+          }
+        }}
+      >
+        <MenuItem
+          disabled
+          sx={{
+            fontSize: "0.875rem",
+            color: "text.secondary",
+            py: 0.5,
+            minHeight: "auto",
+            "&.Mui-disabled": {
+              opacity: 0.7
+            }
+          }}
+        >
+          {slot.name} ({slot.tag})
+        </MenuItem>
+        <MenuItem
+          onClick={handleAddLanguage}
+          data-testid={`add-language-slot-kebab-menu-${slot.tag}`}
+          sx={{
+            fontSize: "0.875rem",
+            py: 0.5,
+            minHeight: "auto"
+          }}
+        >
+          Add language slot
+        </MenuItem>
+        <MenuItem
+          onClick={handleDelete}
+          disabled={isProtected || !canRemove}
+          data-testid={`delete-slot-kebab-menu-${slot.tag}`}
+          sx={{
+            fontSize: "0.875rem",
+            py: 0.5,
+            minHeight: "auto",
+            gap: 1,
+            color: isProtected || !canRemove ? undefined : "#c73f1d"
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+          Delete
+        </MenuItem>
+      </Menu>
+    </>
+  );
+};

@@ -5,23 +5,24 @@ import { LanguageSlot } from "../model/field/TextHolder";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "./SingleLanguageChooser";
 import { Project } from "../model/Project/Project";
+import { languageSlotColors } from "../containers/theme";
 
 export const DEFAULT_LANGUAGE_TAG = "en";
 
-// Next color index for dynamically added languages (beyond metadata slots)
-let nextExtraColorIndex = 0;
-const EXTRA_SLOT_COLORS = [
-  "#E91E63", // pink
-  "#3F51B5", // indigo
-  "#009688", // teal
-  "#CDDC39", // lime
-  "#FF5722" // deep orange
-];
-
+/**
+ * Normalize a language tag to BCP47 preferred format.
+ * Uses the language finder if available to convert 3-letter to 2-letter codes.
+ */
 export function normalizeLanguageTag(tag?: string): string | undefined {
   if (!tag) return undefined;
   const trimmed = tag.trim().toLowerCase();
-  return trimmed.length === 0 ? undefined : trimmed;
+  if (trimmed.length === 0) return undefined;
+
+  // Use language finder to normalize to BCP47 (prefers 2-letter codes)
+  if (staticLanguageFinder) {
+    return staticLanguageFinder.normalizeToBcp47(trimmed);
+  }
+  return trimmed;
 }
 
 export function createLanguageSlot(tag: string, color?: string): LanguageSlot {
@@ -81,18 +82,30 @@ export function useMultilingualField(
     const slots = [...metadataSlots];
     const existingTags = new Set(metadataSlots.map((s) => s.tag));
 
+    console.log(
+      "[getInitialSlots] metadataSlots:",
+      metadataSlots.map((s) => ({ tag: s.tag, color: s.color }))
+    );
+
     // Add any extra languages from existing text data (not in metadata slots)
+    // Extra languages get colors starting after the metadata slots' colors
+    let extraColorIndex = metadataSlots.length;
     const textTags = field.getAllNonEmptyTextAxes();
     textTags.forEach((tag) => {
       const normalized = normalizeLanguageTag(tag);
       if (normalized && !existingTags.has(normalized)) {
         const color =
-          EXTRA_SLOT_COLORS[nextExtraColorIndex % EXTRA_SLOT_COLORS.length];
-        nextExtraColorIndex++;
+          languageSlotColors[extraColorIndex % languageSlotColors.length];
+        extraColorIndex++;
         slots.push(createLanguageSlot(normalized, color));
         existingTags.add(normalized);
       }
     });
+
+    console.log(
+      "[getInitialSlots] final slots:",
+      slots.map((s) => ({ tag: s.tag, color: s.color }))
+    );
 
     return slots;
   }, [field, isMultilingual, metadataSlots]);
@@ -124,11 +137,9 @@ export function useMultilingualField(
           textTags.forEach((tag) => {
             const normalized = normalizeLanguageTag(tag);
             if (normalized && !existingTags.has(normalized)) {
+              // Use current slots length to determine next color
               const color =
-                EXTRA_SLOT_COLORS[
-                  nextExtraColorIndex % EXTRA_SLOT_COLORS.length
-                ];
-              nextExtraColorIndex++;
+                languageSlotColors[newSlots.length % languageSlotColors.length];
               newSlots.push(createLanguageSlot(normalized, color));
               existingTags.add(normalized);
               changed = true;
@@ -151,9 +162,9 @@ export function useMultilingualField(
       if (previous.some((s) => s.tag === normalized)) {
         return previous; // Already exists
       }
+      // Use current slots length to determine next color
       const color =
-        EXTRA_SLOT_COLORS[nextExtraColorIndex % EXTRA_SLOT_COLORS.length];
-      nextExtraColorIndex++;
+        languageSlotColors[previous.length % languageSlotColors.length];
       return [...previous, createLanguageSlot(normalized, color)];
     });
     setNewlyAddedTag(normalized);
@@ -202,11 +213,29 @@ export function useMultilingualField(
 type AddTranslationProps = {
   existingTags: string[];
   onAddLanguage: (tag: string) => void;
+  showButton?: boolean;
+  triggerAdd?: boolean;
+  onTriggerAddHandled?: () => void;
 };
 
 export const AddTranslationControl: React.FunctionComponent<AddTranslationProps> =
-  ({ existingTags, onAddLanguage }) => {
+  ({
+    existingTags,
+    onAddLanguage,
+    showButton = true,
+    triggerAdd,
+    onTriggerAddHandled
+  }) => {
     const [isAdding, setIsAdding] = useState(false);
+
+    // Handle external trigger to start adding
+    useEffect(() => {
+      if (triggerAdd && !isAdding) {
+        setIsAdding(true);
+        onTriggerAddHandled?.();
+      }
+    }, [triggerAdd]);
+
     const excluded = useMemo(
       () =>
         new Set(
@@ -218,18 +247,12 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
     );
 
     return (
-      <div
-        css={css`
-          padding: 4px 2px;
-          flex-shrink: 0;
-          display: flex;
-          justify-content: flex-end;
-          margin-top: auto;
-        `}
-      >
+      <>
         {isAdding ? (
           <div
             css={css`
+              padding: 4px 2px;
+              flex-shrink: 0;
               display: flex;
               gap: 6px;
               align-items: center;
@@ -273,12 +296,16 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
               Cancel
             </button>
           </div>
-        ) : (
+        ) : showButton ? (
           <button
             type="button"
+            title="Add language slot"
             data-testid="add-translation-button"
             onClick={() => setIsAdding(true)}
             css={css`
+              position: absolute;
+              bottom: 5px;
+              right: 4px;
               background: none;
               border: none;
               color: #81c21e;
@@ -286,6 +313,7 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
               font-size: 1.2em;
               font-weight: 600;
               padding: 0;
+              line-height: 1;
               transition: all 150ms ease-in-out;
               &:hover {
                 color: #c73f1d;
@@ -298,7 +326,7 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
           >
             +
           </button>
-        )}
-      </div>
+        ) : null}
+      </>
     );
   };

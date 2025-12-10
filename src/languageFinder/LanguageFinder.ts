@@ -326,7 +326,8 @@ export class LanguageFinder {
     const match = twoToThree.find((t) => t[0] === codeOrLanguageName);
     if (match) return match[1];
 
-    const c = this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
+    const c =
+      this.findOneLanguageNameFromCode_Or_ReturnCode(codeOrLanguageName);
     // if we got something other than the code back, that means we did recognize it as a known code.
     if (c.length > 0 && c.toLowerCase() !== codeOrLanguageName.toLowerCase())
       return codeOrLanguageName;
@@ -373,5 +374,38 @@ export class LanguageFinder {
       code = possibleCode;
     }
     return code;
+  }
+
+  /**
+   * Normalize a language code to BCP47 preferred format.
+   * BCP47 prefers 2-letter (ISO 639-1) codes where available.
+   * E.g., "eng" -> "en", "spa" -> "es", "fra" -> "fr"
+   */
+  public normalizeToBcp47(code: string): string {
+    const trimmed = code.trim().toLowerCase();
+    if (trimmed.length === 0) return trimmed;
+
+    // Already a 2-letter code? Return as-is
+    if (trimmed.length === 2) return trimmed;
+
+    // Look up in index to find if there's a 2-letter equivalent
+    const matches = this.lookupInIndexAndCustomLanguages(trimmed);
+    const exactMatch = matches.find(
+      (m) => m.iso639_3 === trimmed && m.iso639_1
+    );
+    if (exactMatch?.iso639_1) {
+      return exactMatch.iso639_1;
+    }
+
+    // No 2-letter code found, return original
+    return trimmed;
+  }
+
+  /**
+   * Get the localized language name for display.
+   * Currently returns the English name, but could be extended for localization.
+   */
+  public getLanguageName(code: string): string {
+    return this.findOneLanguageNameFromCode_Or_ReturnCode(code);
   }
 }

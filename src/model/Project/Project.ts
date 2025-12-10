@@ -16,12 +16,16 @@ import {
   asyncTrashWithContext
 } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { languageSlotColors } from "../../containers/theme";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
-import { LanguageFinder } from "../../languageFinder/LanguageFinder";
+import {
+  LanguageFinder,
+  staticLanguageFinder
+} from "../../languageFinder/LanguageFinder";
 import { LanguageSlot } from "../field/TextHolder";
 // FIXED: Import safeCaptureException instead of using Sentry directly
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
@@ -164,20 +168,12 @@ export class Project extends Folder {
         );
   }
 
-  // Color palette for language slots - visually distinct colors
-  public static readonly SLOT_COLORS = [
-    "#2196F3", // blue
-    "#4CAF50", // green
-    "#FF9800", // orange
-    "#9C27B0", // purple
-    "#F44336", // red
-    "#00BCD4", // cyan
-    "#795548", // brown
-    "#607D8B" // blue-grey
-  ];
+  // Color palette for language slots - imported from theme
+  public static readonly SLOT_COLORS = languageSlotColors;
 
   /**
    * Parses a working languages string into LanguageSlot objects.
+   * Normalizes codes to BCP47 preferred format (2-letter when available).
    * Exported for testing.
    * @param workingLanguages Format: "eng:English;spa:Spanish" or "eng;spa"
    */
@@ -185,10 +181,10 @@ export class Project extends Folder {
     workingLanguages: string
   ): LanguageSlot[] {
     if (!workingLanguages || workingLanguages.trim() === "") {
-      // Fallback to English
+      // Fallback to English - use "en" per BCP47
       return [
         {
-          tag: "eng",
+          tag: "en",
           label: "en",
           name: "English",
           color: Project.SLOT_COLORS[0]
@@ -198,19 +194,42 @@ export class Project extends Folder {
 
     // Format is "eng:English;spa:Spanish" or just "eng;spa"
     const entries = workingLanguages.split(";").filter((e) => e.trim() !== "");
-    return entries.map((entry, index) => {
+    const seenTags = new Set<string>();
+    const slots: LanguageSlot[] = [];
+
+    entries.forEach((entry, index) => {
       const parts = entry.split(":");
-      const code = parts[0].trim().toLowerCase();
-      const name = parts.length > 1 ? parts[1].trim() : code.toUpperCase();
-      // Use 3-letter code for label, fall back to the code itself
-      const label = code.length === 3 ? code.substring(0, 2) : code;
-      return {
+      const rawCode = parts[0].trim().toLowerCase();
+      // Normalize to BCP47 preferred format (2-letter when available)
+      const code = staticLanguageFinder
+        ? staticLanguageFinder.normalizeToBcp47(rawCode)
+        : rawCode;
+      // Use provided name, or look up the localized name from the language finder
+      let name: string;
+      if (parts.length > 1 && parts[1].trim()) {
+        name = parts[1].trim();
+      } else if (staticLanguageFinder) {
+        name =
+          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code);
+      } else {
+        name = code.toUpperCase();
+      }
+
+      // Skip duplicates (e.g., if both "en" and "eng" are in the list)
+      if (seenTags.has(code)) return;
+      seenTags.add(code);
+
+      // Use first 2 chars for label
+      const label = code.length >= 2 ? code.substring(0, 2) : code;
+      slots.push({
         tag: code,
         label: label,
         name: name,
-        color: Project.SLOT_COLORS[index % Project.SLOT_COLORS.length]
-      };
+        color: Project.SLOT_COLORS[slots.length % Project.SLOT_COLORS.length]
+      });
     });
+
+    return slots;
   }
 
   /**
@@ -219,9 +238,17 @@ export class Project extends Folder {
    * Falls back to English if no working languages are configured.
    */
   public static getMetadataLanguageSlots(): LanguageSlot[] {
-    return Project.parseWorkingLanguagesToSlots(
-      Project.getDefaultWorkingLanguages()
+    const workingLangs = Project.getDefaultWorkingLanguages();
+    const slots = Project.parseWorkingLanguagesToSlots(workingLangs);
+    console.log(
+      "[getMetadataLanguageSlots] workingLanguages:",
+      workingLangs,
+      "SLOT_COLORS:",
+      Project.SLOT_COLORS,
+      "slots:",
+      slots.map((s) => ({ tag: s.tag, color: s.color }))
     );
+    return slots;
   }
 
   public importIdMatchesThisFolder(id: string): boolean {
