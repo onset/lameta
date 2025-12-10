@@ -14,8 +14,8 @@
 # no-db: false
 
 # Disable daemon for RPC communication (forces direct database access)
-# no-daemon: false
-
+# On Windows, daemon mode can cause multiple console windows during git operations
+no-daemon: true
 # Disable auto-flush of database to JSONL after mutations
 # no-auto-flush: false
 

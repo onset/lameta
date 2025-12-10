@@ -37,6 +37,10 @@
     {
       key: "keyword",
       multilingual: true
+    },
+    {
+      key: "accessDescription",
+      multilingual: true
     }
   ],
   people: [

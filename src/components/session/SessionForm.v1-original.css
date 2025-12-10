@@ -1,0 +1,110 @@
+/* VARIANT 1: Original - Fixed 50px rows, Description spans 3 rows */
+@import "../../colors.css";
+
+.sessionForm {
+  display: grid;
+  height: 1px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 50px;
+  grid-auto-flow: row dense;
+  grid-gap: 10px 20px;
+
+  .id {
+    grid-column: 1;
+    order: 1;
+  }
+  .date {
+    order: 1;
+    grid-column: 2;
+    input {
+      width: inherit; /* otherwise is too short */
+    }
+  }
+  .title {
+    grid-column: 1 / 3;
+    order: 2;
+  }
+  .topic {
+    order: 4;
+    grid-column: 3 / 4;
+  }
+  .keyword {
+    order: 5;
+    grid-column: 4 / 5;
+  }
+  .description {
+    /* gets more from .multiline */
+    order: 1;
+    grid-column: 3 / 5;
+    grid-row: span 3;
+    align-self: start;
+    height: -webkit-fill-available;
+    /* this is a hack to make the bottom align with the other fields.
+      I haven't been able to figure out where their *apparent* padding comes from */
+    padding-bottom: 4px;
+  }
+  .genre {
+    order: 6;
+    grid-column: 1 / 2;
+  }
+  .subgenre {
+    order: 7;
+    grid-column: 2 / 3;
+  }
+  .access-chooser {
+    order: 8;
+    grid-column: 1 / 2;
+  }
+  .accessDescription {
+    order: 9;
+    grid-column: 2 / 3;
+  }
+  .languages {
+    order: 10;
+    grid-column: 1 / 3;
+  }
+  .location {
+    order: 11;
+    grid-column: 3 / 5;
+  }
+  .workingLanguages {
+    order: 12;
+    grid-column: 1 / 3;
+  }
+
+  /* Normalize font size/height for language pickers to fit 40px rows */
+  .languages,
+  .workingLanguages {
+    font-size: 13px;
+  }
+  .languages .select,
+  .workingLanguages .select {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .moreFieldsBlock {
+    order: 13;
+    grid-column: span 2;
+    grid-row: span 5;
+    .moreFieldsTable {
+      background-color: white;
+    }
+  }
+  .customFieldsBlock {
+    order: 14;
+    grid-column: span 2;
+    .customFieldsTable {
+      background-color: white;
+    }
+  }
+}
+
+.select-contributorRole {
+  color: grey;
+  text-align: center;
+  font-size: 85%;
+}
+.highlight {
+  color: var(--project-color);
+}

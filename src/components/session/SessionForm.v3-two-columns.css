@@ -1,14 +1,43 @@
-/* VARIANT 3: Explicit rows with align-items: start to reduce gaps */
+/* VARIANT 3: Two independent columns - Left and right flow independently */
 @import "../../colors.css";
+
+.sessionForm {
+  display: flex;
+  height: 1px;
+  gap: 20px;
+
+  /* Multilingual fields: show 2 language slots comfortably, then scroll */
+  .field:has(.field-value-border) {
+    .field-value-border {
+      max-height: 6em; /* ~2 language slots for single-line fields */
+    }
+  }
+  /* Multiline multilingual fields (like description) get more space */
+  .field.multiline:has(.field-value-border) {
+    .field-value-border {
+      max-height: 10em; /* more room for description-type fields */
+    }
+  }
+}
+
+/* Left column - contains first half of fields */
+.sessionForm::before {
+  display: none; /* placeholder for structure, actual columns are children */
+}
+
+/* We need wrapper divs for this approach - using subgrid alternative */
+/* Since we can't add wrapper elements easily, use CSS subgrid with explicit rows */
 
 .sessionForm {
   display: grid;
   height: 1px;
+  /* Two main columns, each subdivided */
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto; /* Let rows size to content */
   grid-auto-rows: minmax(40px, auto);
-  grid-auto-flow: dense;
+  grid-auto-flow: dense; /* Pack items tightly */
   gap: 10px 20px;
-  align-items: start; /* Don't stretch items - reduces empty space */
+  align-items: start; /* Align items to top, don't stretch */
 
   /* Multilingual fields: show 2 language slots comfortably, then scroll */
   .field:has(.field-value-border) {
@@ -70,10 +99,10 @@
     }
   }
 
-  /* === RIGHT SIDE (columns 3-4) === */
+  /* === RIGHT SIDE (columns 3-4) - independent row numbering via dense packing === */
   .description {
     grid-column: 3 / 5;
-    grid-row: 1 / 3;
+    grid-row: 1 / 3; /* Span first two right-side rows */
     align-self: stretch;
   }
   .topic {
@@ -90,7 +119,7 @@
   }
   .moreFieldsBlock {
     grid-column: 3 / 5;
-    grid-row: 5 / 10;
+    grid-row: 5 / 10; /* Span multiple rows */
     .moreFieldsTable {
       background-color: white;
     }
