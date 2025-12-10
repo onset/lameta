@@ -13,10 +13,36 @@
     }
   ],
   session: [
+    /*- 
+- Access descriptions
+- Actor descriptions
+- Actor roles (that one might be a more difficult to implement, I think)*/
+
+    {
+      key: "description",
+      multilingual: true
+    },
+    {
+      key: "title",
+      multilingual: true
+    },
+    {
+      key: "genre",
+      multilingual: true
+    },
+    {
+      key: "topic",
+      multilingual: true
+    },
+    {
+      key: "keyword",
+      multilingual: true
+    }
+  ],
+  people: [
     {
       key: "description",
       multilingual: true
     }
-  ],
-  people: []
+  ]
 }

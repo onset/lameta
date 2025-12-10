@@ -52,6 +52,9 @@ msgstr ""
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr ""
 
+msgid "Add to Dictionary"
+msgstr ""
+
 msgid "All Sessions"
 msgstr ""
 
@@ -251,9 +254,6 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-msgid "Field Changes"
-msgstr ""
-
 msgid "File"
 msgstr ""
 
@@ -366,9 +366,6 @@ msgid "Learner"
 msgstr ""
 
 msgid "Linked to {p}"
-msgstr ""
-
-msgid "Loading Project"
 msgstr ""
 
 msgid "Loading {phaseLabel}..."

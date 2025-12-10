@@ -57,6 +57,9 @@ msgstr "Ajouter ici des documents qui décrivent le projet et le corpus."
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr "Ajouter ici des documents qui ne s'accordent pas ailleurs, par exemple information sur le financement du projet."
 
+msgid "Add to Dictionary"
+msgstr ""
+
 msgid "All Sessions"
 msgstr "Toutes les sessions"
 
@@ -256,9 +259,6 @@ msgstr ""
 msgid "Field"
 msgstr "Champ"
 
-msgid "Field Changes"
-msgstr ""
-
 msgid "File"
 msgstr "Fichier"
 
@@ -372,9 +372,6 @@ msgstr "Apprenant"
 
 msgid "Linked to {p}"
 msgstr "Relié à {p}"
-
-msgid "Loading Project"
-msgstr ""
 
 msgid "Loading {phaseLabel}..."
 msgstr ""

@@ -57,6 +57,9 @@ msgstr "Tambahkan dokumen di sini yang menjelaskan proyek dan korpus."
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr "Tambahkan dokumen-dokumen di sini yang tampaknya tidak cocok di tempat lain. Contohnya bisa berupa dokumen yang menjelaskan bagaimana proyek ini didanai."
 
+msgid "Add to Dictionary"
+msgstr ""
+
 msgid "All Sessions"
 msgstr "Semua Sesi"
 
@@ -256,9 +259,6 @@ msgstr ""
 msgid "Field"
 msgstr "Kotak"
 
-msgid "Field Changes"
-msgstr ""
-
 msgid "File"
 msgstr "File"
 
@@ -372,9 +372,6 @@ msgstr "Pembelajar"
 
 msgid "Linked to {p}"
 msgstr "Terhubung ke {p}"
-
-msgid "Loading Project"
-msgstr ""
 
 msgid "Loading {phaseLabel}..."
 msgstr ""
