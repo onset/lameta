@@ -59,6 +59,9 @@ msgstr "در اینجا مدارکی را بیافزایید که پروژه و 
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr "فایلهایی را اینجا اضافه کنید که به نظر نمی رسد برای جای دیگری مناسب باشد. به عنوان مثال فایلهایی که توضیح می دهند چگونه بودجه پروژه تأمین می شود."
 
+msgid "Add to Dictionary"
+msgstr ""
+
 msgid "All Sessions"
 msgstr "همه جلسات"
 
@@ -258,9 +261,6 @@ msgstr ""
 msgid "Field"
 msgstr "فیلد"
 
-msgid "Field Changes"
-msgstr ""
-
 msgid "File"
 msgstr "فایل"
 
@@ -373,9 +373,6 @@ msgid "Learner"
 msgstr "یادگیرنده"
 
 msgid "Linked to {p}"
-msgstr ""
-
-msgid "Loading Project"
 msgstr ""
 
 msgid "Loading {phaseLabel}..."
