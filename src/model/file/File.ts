@@ -35,6 +35,7 @@ import xmlbuilder from "xmlbuilder";
 import { PatientFS } from "../../other/patientFile";
 import { t } from "@lingui/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
+import userSettings from "../../other/UserSettings";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
@@ -858,6 +859,12 @@ export /*babel doesn't like this: abstract*/ class File {
   public save(beforeRename: boolean = false, forceSave: boolean = false) {
     //console.log(`Might save ${this.metadataFilePath}`);
 
+    // DEBUG: Allow disabling saves for testing migration without affecting files
+    if (userSettings.DisableSavingProjectData) {
+      console.log(`[SAVE DISABLED] Would save ${this.metadataFilePath}`);
+      return;
+    }
+
     // console.log(
     //   `dirty of ${this.metadataFilePath} is ${
     //     this.dirty === undefined ? "undefined" : this.dirty
@@ -1284,10 +1291,12 @@ export class OtherFile extends File {
     // Add access fields for document files (Description Documents / Other Documents)
     // These enable per-document access levels which will be exported to IMDI
     this.addTextProperty("access", "", true);
-    this.properties.getValueOrThrow("access").definition.englishLabel = "Access";
+    this.properties.getValueOrThrow("access").definition.englishLabel =
+      "Access";
     this.addTextProperty("accessDescription", "", true);
-    this.properties.getValueOrThrow("accessDescription").definition.englishLabel =
-      "Access Explanation";
+    this.properties.getValueOrThrow(
+      "accessDescription"
+    ).definition.englishLabel = "Access Explanation";
 
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;

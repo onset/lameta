@@ -300,6 +300,15 @@ export default class LametaMenu {
       label: "&Developer",
       submenu: [
         {
+          label: "🚫 Disable Saving Project Data (for testing)",
+          type: "checkbox",
+          checked: userSettings.DisableSavingProjectData,
+          click() {
+            userSettings.DisableSavingProjectData =
+              !userSettings.DisableSavingProjectData;
+          }
+        },
+        {
           label: "Do not enforce any file naming",
           type: "checkbox",
           checked: userSettings.IgnoreFileNamingRules,
@@ -478,4 +487,3 @@ export default class LametaMenu {
     });
   }
 }
-

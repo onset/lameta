@@ -31,6 +31,7 @@ export class UserSettings {
   public uiFontZoom: number;
   private sendErrors: boolean;
   private ignoreFileNamingRules: boolean; // for testing only
+  private disableSavingProjectData: boolean; // DEBUG: flag to prevent saving project data during testing
 
   private clientId: string;
 
@@ -42,6 +43,7 @@ export class UserSettings {
       | "howUsing"
       | "sendErrors"
       | "ignoreFileNamingRules"
+      | "disableSavingProjectData"
     >(this, {
       showIMDI: observable,
       paradisecMode: observable,
@@ -49,6 +51,7 @@ export class UserSettings {
       uiFontZoom: observable,
       sendErrors: observable,
       ignoreFileNamingRules: observable,
+      disableSavingProjectData: observable,
       HowUsing: computed
     });
 
@@ -107,6 +110,10 @@ export class UserSettings {
     // no: sentry is not initialized yet, so let it call this itself when it is initialized
     //      setUserInfoForErrorReporting(this.Email, this.HowUsing);
     this.uiFontZoom = this.store.get("uiFontZoom", "1.0");
+    this.disableSavingProjectData = this.store.get(
+      "disableSavingProjectData",
+      false
+    );
   }
 
   public get SendErrors() {
@@ -170,6 +177,14 @@ export class UserSettings {
   }
   public set IgnoreFileNamingRules(ignore: boolean) {
     this.ignoreFileNamingRules = ignore;
+  }
+  // DEBUG: Flag to prevent saving project data during testing/debugging
+  public get DisableSavingProjectData() {
+    return this.disableSavingProjectData;
+  }
+  public set DisableSavingProjectData(disable: boolean) {
+    this.disableSavingProjectData = disable;
+    this.store.set("disableSavingProjectData", disable);
   }
   public get Email() {
     return this.store.get("email", "");
