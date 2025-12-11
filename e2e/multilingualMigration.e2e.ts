@@ -27,10 +27,11 @@ test.describe("Multilingual Field Migration", () => {
     await project.goToSessions();
     await project.addSession();
 
-    // In default mode, title is just a regular text input
-    const titleInput = page.locator('[data-testid="field-title-edit"] input');
-    await titleInput.waitFor({ timeout: 10000 });
-    await titleInput.fill("Under the House");
+    // In default mode, title is a text field with contentEditable div
+    const titleEditor = page.locator('[data-testid="field-title-edit"]');
+    await titleEditor.waitFor({ timeout: 10000 });
+    await titleEditor.click();
+    await page.keyboard.type("Under the House");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(500);
 
@@ -61,28 +62,23 @@ test.describe("Multilingual Field Migration", () => {
     // The Title field should now be multilingual with the plain text in English axis
     const titleField = page.locator('[data-testid="field-title-edit"]');
 
-    // Check if we can see any translation axes at all
-    const allAxes = titleField.locator('[data-testid^="translation-axis-"]');
-    const axesCount = await allAxes.count();
-    console.log(`Number of translation axes found: ${axesCount}`);
+    // Check if we can see any translation slots at all
+    const allSlots = titleField.locator('[data-testid^="translation-slot-"]');
+    const slotsCount = await allSlots.count();
 
-    if (axesCount === 0) {
-      // No axes found - this is the bug!
-      // Let's check what we do see
-      const fieldHTML = await titleField.innerHTML();
-      console.log("Field HTML:", fieldHTML);
-      throw new Error("No translation axes found - migration failed!");
+    if (slotsCount === 0) {
+      throw new Error("No translation slots found - migration failed!");
     }
 
-    const titleAxisEn = titleField.locator(
-      '[data-testid="translation-axis-en"]'
+    const titleSlotEn = titleField.locator(
+      '[data-testid="translation-slot-en"]'
     );
-    await expect(titleAxisEn).toBeVisible({ timeout: 5000 });
+    await expect(titleSlotEn).toBeVisible({ timeout: 5000 });
 
-    const titleEditor = titleAxisEn.locator('[contenteditable="true"]');
+    const titleEditorEn = titleSlotEn.locator('[contenteditable="true"]');
 
     // This should show "Under the House" - the migration should have worked
-    await expect(titleEditor).toHaveText("Under the House");
+    await expect(titleEditorEn).toHaveText("Under the House");
 
     // We should be able to add a translation
     const addTranslationBtn = titleField
@@ -118,7 +114,7 @@ test.describe("Multilingual Field Migration", () => {
     // Add English title
     const titleField = page.locator('[data-testid="field-title-edit"]');
     const englishAxis = titleField.locator(
-      '[data-testid="translation-axis-en"]'
+      '[data-testid="translation-slot-en"]'
     );
     const englishEditor = englishAxis.locator('[contenteditable="true"]');
     await englishEditor.click();
@@ -140,14 +136,14 @@ test.describe("Multilingual Field Migration", () => {
     await languageInput.press("Enter");
 
     await page.waitForSelector(
-      '[data-testid="field-title-edit"] [data-testid="translation-axis-spa"]',
+      '[data-testid="field-title-edit"] [data-testid="translation-slot-spa"]',
       {
         timeout: 5000
       }
     );
 
     const spanishAxis = titleField.locator(
-      '[data-testid="translation-axis-spa"]'
+      '[data-testid="translation-slot-spa"]'
     );
     const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
     await spanishEditor.click();
@@ -178,10 +174,10 @@ test.describe("Multilingual Field Migration", () => {
       timeout: 10000
     });
 
-    const titleInput = page.locator('[data-testid="field-title-edit"] input');
+    const titleEditor = page.locator('[data-testid="field-title-edit"]');
 
     // Should show the tagged format preserving all data
-    const titleValue = await titleInput.inputValue();
+    const titleValue = await titleEditor.textContent();
     expect(titleValue).toContain("[[en]]English Title");
     expect(titleValue).toContain("[[spa]]Título Español");
 
@@ -209,7 +205,7 @@ test.describe("Multilingual Field Migration", () => {
 
     const titleFieldAfter = page.locator('[data-testid="field-title-edit"]');
     const englishAxisAfter = titleFieldAfter.locator(
-      '[data-testid="translation-axis-en"]'
+      '[data-testid="translation-slot-en"]'
     );
     const englishEditorAfter = englishAxisAfter.locator(
       '[contenteditable="true"]'
@@ -217,7 +213,7 @@ test.describe("Multilingual Field Migration", () => {
     await expect(englishEditorAfter).toHaveText("English Title");
 
     const spanishAxisAfter = titleFieldAfter.locator(
-      '[data-testid="translation-axis-spa"]'
+      '[data-testid="translation-slot-spa"]'
     );
     await expect(spanishAxisAfter).toBeVisible();
     const spanishEditorAfter = spanishAxisAfter.locator(

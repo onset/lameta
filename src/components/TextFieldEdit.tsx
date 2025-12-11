@@ -444,43 +444,86 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   );
 });
 
-/**
- * Color bar component with click-to-show menu containing language name and delete option.
- */
-const ColorBarWithMenu: React.FC<{
+/** Common props for language slot menus. */
+interface LanguageSlotMenuProps {
   slot: LanguageSlot;
   isProtected: boolean;
   canRemove: boolean;
   onRemove: () => void;
   onAddLanguage?: () => void;
-}> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const open = Boolean(anchorEl);
+}
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+/** Shared menu items for language slot menus (color bar and kebab). */
+const LanguageSlotMenuItems: React.FC<
+  LanguageSlotMenuProps & {
+    testIdPrefix: string;
+    onClose: () => void;
+  }
+> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage, testIdPrefix, onClose }) => {
   const handleAddLanguage = () => {
-    handleClose();
+    onClose();
     onAddLanguage?.();
   };
 
   const handleDelete = () => {
-    handleClose();
+    onClose();
     onRemove();
   };
+
+  return (
+    <>
+      <MenuItem
+        disabled
+        sx={{
+          fontSize: "0.875rem",
+          color: "text.secondary",
+          py: 0.5,
+          minHeight: "auto",
+          "&.Mui-disabled": { opacity: 0.7 }
+        }}
+      >
+        {slot.name} ({slot.tag})
+      </MenuItem>
+      <MenuItem
+        onClick={handleAddLanguage}
+        data-testid={`add-language-slot-${testIdPrefix}-${slot.tag}`}
+        sx={{ fontSize: "0.875rem", py: 0.5, minHeight: "auto" }}
+      >
+        Add language slot
+      </MenuItem>
+      <MenuItem
+        onClick={handleDelete}
+        disabled={isProtected || !canRemove}
+        data-testid={`delete-slot-${testIdPrefix}-${slot.tag}`}
+        sx={{
+          fontSize: "0.875rem",
+          py: 0.5,
+          minHeight: "auto",
+          gap: 1,
+          color: isProtected || !canRemove ? undefined : "#c73f1d"
+        }}
+      >
+        <DeleteIcon fontSize="small" />
+        Delete
+      </MenuItem>
+    </>
+  );
+};
+
+/**
+ * Color bar component with click-to-show menu containing language name and delete option.
+ */
+const ColorBarWithMenu: React.FC<LanguageSlotMenuProps> = (props) => {
+  const { slot } = props;
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
 
   return (
     <>
       <div
         title={`${slot.name}. Click for menu`}
         data-testid={`slot-color-bar-${slot.tag}`}
-        onClick={handleClick}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
         css={css`
           width: 4px;
           min-height: 1.5em;
@@ -493,64 +536,16 @@ const ColorBarWithMenu: React.FC<{
       <Menu
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left"
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              minWidth: "auto",
-              py: 0.5
-            }
-          }
-        }}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{ paper: { sx: { minWidth: "auto", py: 0.5 } } }}
       >
-        <MenuItem
-          disabled
-          sx={{
-            fontSize: "0.875rem",
-            color: "text.secondary",
-            py: 0.5,
-            minHeight: "auto",
-            "&.Mui-disabled": {
-              opacity: 0.7
-            }
-          }}
-        >
-          {slot.name} ({slot.tag})
-        </MenuItem>
-        <MenuItem
-          onClick={handleAddLanguage}
-          data-testid={`add-language-slot-menu-${slot.tag}`}
-          sx={{
-            fontSize: "0.875rem",
-            py: 0.5,
-            minHeight: "auto"
-          }}
-        >
-          Add language slot
-        </MenuItem>
-        <MenuItem
-          onClick={handleDelete}
-          disabled={isProtected || !canRemove}
-          data-testid={`delete-slot-menu-${slot.tag}`}
-          sx={{
-            fontSize: "0.875rem",
-            py: 0.5,
-            minHeight: "auto",
-            gap: 1,
-            color: isProtected || !canRemove ? undefined : "#c73f1d"
-          }}
-        >
-          <DeleteIcon fontSize="small" />
-          Delete
-        </MenuItem>
+        <LanguageSlotMenuItems
+          {...props}
+          testIdPrefix="menu"
+          onClose={() => setAnchorEl(null)}
+        />
       </Menu>
     </>
   );
@@ -558,35 +553,11 @@ const ColorBarWithMenu: React.FC<{
 
 /**
  * Kebab (vertical dots) menu icon that appears on hover.
- * Same menu content as ColorBarWithMenu.
  */
-const KebabMenuIcon: React.FC<{
-  slot: LanguageSlot;
-  isProtected: boolean;
-  canRemove: boolean;
-  onRemove: () => void;
-  onAddLanguage?: () => void;
-}> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage }) => {
+const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
+  const { slot } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleAddLanguage = () => {
-    handleClose();
-    onAddLanguage?.();
-  };
-
-  const handleDelete = () => {
-    handleClose();
-    onRemove();
-  };
 
   return (
     <>
@@ -594,7 +565,7 @@ const KebabMenuIcon: React.FC<{
         title={`${slot.name}. Click for menu`}
         data-testid={`slot-kebab-menu-${slot.tag}`}
         className={`kebab-menu-icon${open ? " menu-open" : ""}`}
-        onClick={handleClick}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
         css={css`
           display: flex;
           align-items: center;
@@ -617,64 +588,16 @@ const KebabMenuIcon: React.FC<{
       <Menu
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              minWidth: "auto",
-              py: 0.5
-            }
-          }
-        }}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { minWidth: "auto", py: 0.5 } } }}
       >
-        <MenuItem
-          disabled
-          sx={{
-            fontSize: "0.875rem",
-            color: "text.secondary",
-            py: 0.5,
-            minHeight: "auto",
-            "&.Mui-disabled": {
-              opacity: 0.7
-            }
-          }}
-        >
-          {slot.name} ({slot.tag})
-        </MenuItem>
-        <MenuItem
-          onClick={handleAddLanguage}
-          data-testid={`add-language-slot-kebab-menu-${slot.tag}`}
-          sx={{
-            fontSize: "0.875rem",
-            py: 0.5,
-            minHeight: "auto"
-          }}
-        >
-          Add language slot
-        </MenuItem>
-        <MenuItem
-          onClick={handleDelete}
-          disabled={isProtected || !canRemove}
-          data-testid={`delete-slot-kebab-menu-${slot.tag}`}
-          sx={{
-            fontSize: "0.875rem",
-            py: 0.5,
-            minHeight: "auto",
-            gap: 1,
-            color: isProtected || !canRemove ? undefined : "#c73f1d"
-          }}
-        >
-          <DeleteIcon fontSize="small" />
-          Delete
-        </MenuItem>
+        <LanguageSlotMenuItems
+          {...props}
+          testIdPrefix="kebab-menu"
+          onClose={() => setAnchorEl(null)}
+        />
       </Menu>
     </>
   );

@@ -82,11 +82,6 @@ export function useMultilingualField(
     const slots = [...metadataSlots];
     const existingTags = new Set(metadataSlots.map((s) => s.tag));
 
-    console.log(
-      "[getInitialSlots] metadataSlots:",
-      metadataSlots.map((s) => ({ tag: s.tag, color: s.color }))
-    );
-
     // Add any extra languages from existing text data (not in metadata slots)
     // Extra languages get colors starting after the metadata slots' colors
     let extraColorIndex = metadataSlots.length;
@@ -101,11 +96,6 @@ export function useMultilingualField(
         existingTags.add(normalized);
       }
     });
-
-    console.log(
-      "[getInitialSlots] final slots:",
-      slots.map((s) => ({ tag: s.tag, color: s.color }))
-    );
 
     return slots;
   }, [field, isMultilingual, metadataSlots]);

@@ -1,13 +1,16 @@
-import { makeObservable, observable, runInAction } from "mobx"; // TODO is this observable enough? The old version had an observable map
+import { makeObservable, observable, runInAction } from "mobx";
 
-/* This class holds text that is both monolingual (normally means language doesn't matter, is just English)
- and text that has the same thing nominally translated into one or more languages (like a title, or a description).
- 
- When there is more than one language, the strings are stored in a single field in this format:
-  [[en]]This is the Enlish text[[es]]Este es el texto en español[[fr]]C'est le texte en français
-
-  This is currently done in an inefficient way, but it is easy to understand and the implementation
-  is hidden so we can change it later if we want. E.g., a lot could be done with a regex instead of split/join all the time.
+/**
+ * Holds text that can be either monolingual or multilingual.
+ *
+ * Monolingual: plain text, typically English or language-agnostic.
+ * Multilingual: same content translated into one or more languages.
+ *
+ * When there is more than one language, the strings are stored in tagged format:
+ *   [[en]]This is the English text[[es]]Este es el texto en español[[fr]]C'est le texte en français
+ *
+ * The implementation uses a simple split/join approach for clarity. Performance could be improved
+ * with regex if needed, but the current approach keeps the serialization format transparent.
  */
 
 export class TextHolder {
@@ -26,11 +29,6 @@ export class TextHolder {
   public getSerialized(): string {
     return this._text;
   }
-  // public static parseSerialized(text: string): TextHolder {
-  //   const t = new TextHolder();
-  //   t._text = text;
-  //   return t;
-  // }
   public getFirstNonEmptyText(tags: string[]): string {
     const axes = this.deserializeMultiAxisText();
     for (const tag of tags) {
@@ -56,19 +54,12 @@ export class TextHolder {
     if (tag === "") throw new Error("Cannot set text for empty language tag");
     const axisTextDictionary = this.deserializeMultiAxisText();
     axisTextDictionary[tag] = textForAxis;
-    // console.log(JSON.stringify(axisTextDictionary));
-
     this._text = TextHolder.serializedMultAxisText(axisTextDictionary);
-    // console.log(`this._text: "${this._text}"`);
   }
   public getTextAxis(tag: string): string {
     const axisTextDictionary = this.deserializeMultiAxisText();
     return axisTextDictionary[tag] || "";
   }
-  // public getAllNonEmptyTextAxes(): MultiAxisText {
-  //   // review this is feeling verbose / janky
-  //   return this.deserializeMultiAxisText();
-  // }
 
   private deserializeMultiAxisText(): MultiAxisText {
     // we store multiple languages in a single field in this format:
@@ -87,8 +78,7 @@ export class TextHolder {
     }
 
     // first divide the text into an array of axis/text pairs
-    const axisTextPairsWithExtra = this._text.split("[["); //.map((s) => s.trim());
-    //// console.log(axisTextPairsWithExtra);
+    const axisTextPairsWithExtra = this._text.split("[[");
 
     if (axisTextPairsWithExtra[0] !== "")
       throw new Error(
@@ -114,24 +104,12 @@ export class TextHolder {
     return result;
   }
   public getAllNonEmptyTextAxes(): string[] {
-    const result = TextHolder.getNonEmptyLanguageAxesStatic(
+    return TextHolder.getNonEmptyLanguageAxesStatic(
       this.deserializeMultiAxisText()
     );
-    // Debug logging for migration issue
-    if (this._text && !this._text.startsWith("[[")) {
-      console.log(
-        `[TextHolder] getAllNonEmptyTextAxes() for plain text "${this._text.substring(
-          0,
-          50
-        )}" returning:`,
-        result
-      );
-    }
-    return result;
   }
 
   private static getNonEmptyLanguageAxesStatic(axes: MultiAxisText): string[] {
-    // console.log(`object keys: "${Object.keys(axes)}"`);
     return Object.keys(axes).filter(
       (language) => axes[language] !== undefined && axes[language].trim() !== ""
     );
@@ -139,10 +117,8 @@ export class TextHolder {
 
   private static serializedMultAxisText(axes: MultiAxisText): string {
     const nonEmptyAxes = this.getNonEmptyLanguageAxesStatic(axes);
-    //console.log(`nonEmptyAxes: ${nonEmptyAxes} from "${JSON.stringify(axes)}"`);
 
     if (nonEmptyAxes.length === 0) {
-      // console.log("no languages");
       return ""; // No languages
     }
 

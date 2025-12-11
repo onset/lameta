@@ -1427,10 +1427,13 @@ export default class ImdiGenerator {
 
     if (!supportsMultilingualVocab) {
       // Standard IMDI 3.0: output single element without LanguageId
-      const newElement = this.tail.element(
-        elementName,
-        sentenceCase(englishValue)
-      );
+      // Apply sentenceCase only if the value starts with a lowercase letter
+      // (e.g., user typed "myth" should become "Myth", but "MixedCase" should stay as-is)
+      const outputValue =
+        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
+          ? sentenceCase(englishValue)
+          : englishValue;
+      const newElement = this.tail.element(elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1458,11 +1461,13 @@ export default class ImdiGenerator {
     }
 
     // If no translations were output, fall back to English
+    // Apply sentenceCase only if the value starts with a lowercase letter
     if (outputCount === 0) {
-      const newElement = this.tail.element(
-        elementName,
-        sentenceCase(englishValue)
-      );
+      const outputValue =
+        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
+          ? sentenceCase(englishValue)
+          : englishValue;
+      const newElement = this.tail.element(elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;

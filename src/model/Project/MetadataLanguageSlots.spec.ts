@@ -48,24 +48,26 @@ describe("parseWorkingLanguagesToSlots", () => {
   });
 
   it("should cycle colors when more languages than palette size", () => {
-    // Create a string with more languages than SLOT_COLORS (5 colors)
+    // Create a string with more languages than SLOT_COLORS (4 colors)
     // Using codes that may or may not have 2-letter equivalents
     const languages = [
       "eng:English", // 1st - color[0]
       "spa:Spanish", // 2nd - color[1]
       "fra:French", // 3rd - color[2]
       "deu:German", // 4th - color[3]
-      "ita:Italian", // 5th - color[4]
-      "por:Portuguese", // 6th - should cycle to color[0]
-      "rus:Russian" // 7th - should cycle to color[1]
+      "ita:Italian", // 5th - color[0] (cycling back)
+      "por:Portuguese", // 6th - color[1]
+      "rus:Russian" // 7th - color[2]
     ].join(";");
 
     const slots = Project.parseWorkingLanguagesToSlots(languages);
     expect(slots).toHaveLength(7);
-    // 6th language should have first color (cycling)
-    expect(slots[5].color).toBe(Project.SLOT_COLORS[0]);
-    // 7th language should have second color
-    expect(slots[6].color).toBe(Project.SLOT_COLORS[1]);
+    // With 4 colors, the 5th language (index 4) should cycle back to color[0]
+    expect(slots[4].color).toBe(Project.SLOT_COLORS[0]);
+    // 6th language (index 5) should be color[1]
+    expect(slots[5].color).toBe(Project.SLOT_COLORS[1]);
+    // 7th language (index 6) should be color[2]
+    expect(slots[6].color).toBe(Project.SLOT_COLORS[2]);
   });
 
   it("should use language finder to get proper name for known codes", () => {

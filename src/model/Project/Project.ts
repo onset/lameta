@@ -239,16 +239,7 @@ export class Project extends Folder {
    */
   public static getMetadataLanguageSlots(): LanguageSlot[] {
     const workingLangs = Project.getDefaultWorkingLanguages();
-    const slots = Project.parseWorkingLanguagesToSlots(workingLangs);
-    console.log(
-      "[getMetadataLanguageSlots] workingLanguages:",
-      workingLangs,
-      "SLOT_COLORS:",
-      Project.SLOT_COLORS,
-      "slots:",
-      slots.map((s) => ({ tag: s.tag, color: s.color }))
-    );
-    return slots;
+    return Project.parseWorkingLanguagesToSlots(workingLangs);
   }
 
   public importIdMatchesThisFolder(id: string): boolean {
