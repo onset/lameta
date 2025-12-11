@@ -377,28 +377,100 @@ export class LanguageFinder {
   }
 
   /**
-   * Normalize a language code to BCP47 preferred format.
-   * BCP47 prefers 2-letter (ISO 639-1) codes where available.
-   * E.g., "eng" -> "en", "spa" -> "es", "fra" -> "fr"
+   * Normalize a language code or full BCP47 tag to preferred format.
+   * - Primary language subtag: prefers 2-letter (ISO 639-1) codes where available
+   *   E.g., "eng" -> "en", "spa" -> "es", "fra" -> "fr"
+   * - Script subtags (4 letters): TitleCase, e.g., "hans" -> "Hans"
+   * - Region subtags (2 letters or 3 digits after language/script): UPPERCASE, e.g., "us" -> "US"
+   * - Other subtags (variants, extensions): unchanged
+   *
+   * Examples:
+   *   "eng-US" -> "en-US"
+   *   "zh-hans-cn" -> "zh-Hans-CN"
+   *   "en-us" -> "en-US"
    */
-  public normalizeToBcp47(code: string): string {
-    const trimmed = code.trim().toLowerCase();
+  public normalizeToBcp47(tag: string): string {
+    const trimmed = tag.trim();
     if (trimmed.length === 0) return trimmed;
 
+    const parts = trimmed.split("-");
+    if (parts.length === 0) return trimmed;
+
+    const result: string[] = [];
+
+    // First part is always the primary language subtag
+    const primaryLang = parts[0].toLowerCase();
+    result.push(this.normalizeLanguageSubtag(primaryLang));
+
+    // Process remaining subtags
+    // BCP47 structure: language[-script][-region][-variant]*[-extension]*[-privateuse]
+    let sawScript = false;
+    let sawRegion = false;
+    for (let i = 1; i < parts.length; i++) {
+      const subtag = parts[i];
+
+      // Script subtag: exactly 4 letters (e.g., "Hans", "Latn")
+      // Script can only appear once and before region
+      if (
+        !sawScript &&
+        !sawRegion &&
+        subtag.length === 4 &&
+        /^[a-zA-Z]+$/.test(subtag)
+      ) {
+        // TitleCase: first letter uppercase, rest lowercase
+        result.push(
+          subtag.charAt(0).toUpperCase() + subtag.slice(1).toLowerCase()
+        );
+        sawScript = true;
+      }
+      // Region subtag: exactly 2 letters (e.g., "US", "CN")
+      // Region can only appear once, after language or script
+      else if (
+        !sawRegion &&
+        subtag.length === 2 &&
+        /^[a-zA-Z]+$/.test(subtag)
+      ) {
+        result.push(subtag.toUpperCase());
+        sawRegion = true;
+      }
+      // Region subtag: 3 digits (UN M.49 code, e.g., "419" for Latin America)
+      else if (!sawRegion && subtag.length === 3 && /^\d{3}$/.test(subtag)) {
+        result.push(subtag);
+        sawRegion = true;
+      }
+      // Everything else (variants, extensions, private use): preserve as-is but lowercase
+      // per BCP47, variants and extensions are lowercase
+      else {
+        result.push(subtag.toLowerCase());
+      }
+    }
+
+    return result.join("-");
+  }
+
+  /**
+   * Normalize a single language subtag (the primary language part of a BCP47 tag).
+   * Converts 3-letter ISO 639-3 codes to 2-letter ISO 639-1 codes where available.
+   * E.g., "eng" -> "en", "spa" -> "es"
+   */
+  private normalizeLanguageSubtag(code: string): string {
+    const lowered = code.toLowerCase();
+    if (lowered.length === 0) return lowered;
+
     // Already a 2-letter code? Return as-is
-    if (trimmed.length === 2) return trimmed;
+    if (lowered.length === 2) return lowered;
 
     // Look up in index to find if there's a 2-letter equivalent
-    const matches = this.lookupInIndexAndCustomLanguages(trimmed);
+    const matches = this.lookupInIndexAndCustomLanguages(lowered);
     const exactMatch = matches.find(
-      (m) => m.iso639_3 === trimmed && m.iso639_1
+      (m) => m.iso639_3 === lowered && m.iso639_1
     );
     if (exactMatch?.iso639_1) {
       return exactMatch.iso639_1;
     }
 
-    // No 2-letter code found, return original
-    return trimmed;
+    // No 2-letter code found, return original (lowercase)
+    return lowered;
   }
 
   /**

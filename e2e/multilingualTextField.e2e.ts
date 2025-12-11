@@ -454,7 +454,7 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 5000
     });
 
-    // Now we have 2 slots (en and spa)
+    // Now we have 2 slots (en and es)
     const afterFirstAdd = page.locator('[data-testid^="translation-slot-"]');
     await expect(afterFirstAdd).toHaveCount(2);
 
@@ -757,7 +757,7 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Step 21: Count slots - should still be 4 (en, spa, ara, cmn) not 5
+    // Step 21: Count slots - should still be 4 (en, es, ara, cmn) not 5
     allSlots = page.locator('[data-testid^="translation-slot-"]');
     await expect(allSlots).toHaveCount(4);
 

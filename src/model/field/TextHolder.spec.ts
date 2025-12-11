@@ -105,9 +105,9 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
       expect(axes).toContain("es");
     });
 
-    it("should return ['en'] for empty text", () => {
+    it("should return [] for empty text", () => {
       const textHolder = new TextHolder();
-      textHolder._text = "";
+      // A freshly constructed TextHolder has empty text by default
 
       const axes = textHolder.getAllNonEmptyTextAxes();
       expect(axes).toEqual([]);

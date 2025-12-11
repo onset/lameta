@@ -77,7 +77,7 @@ describe("parseWorkingLanguagesToSlots", () => {
     expect(slots[0].label).toBe("ab");
   });
 
-  it("should fallback to uppercase code for unknown codes", () => {
+  it("should use code as-is for unknown codes", () => {
     // "xyz" is not a known ISO 639-3 code
     const slots = Project.parseWorkingLanguagesToSlots("xyz");
     expect(slots).toHaveLength(1);

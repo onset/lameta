@@ -97,4 +97,87 @@ describe("LanguageFinder", () => {
         .iso639_3
     ).toBe("eng");
   });
+
+  describe("normalizeToBcp47", () => {
+    it("should convert 3-letter language codes to 2-letter", () => {
+      expect(languageFinder.normalizeToBcp47("eng")).toBe("en");
+      expect(languageFinder.normalizeToBcp47("spa")).toBe("es");
+      expect(languageFinder.normalizeToBcp47("fra")).toBe("fr");
+      expect(languageFinder.normalizeToBcp47("srp")).toBe("sr");
+    });
+
+    it("should preserve 2-letter codes", () => {
+      expect(languageFinder.normalizeToBcp47("en")).toBe("en");
+      expect(languageFinder.normalizeToBcp47("es")).toBe("es");
+    });
+
+    it("should handle full BCP47 tags with 3-letter language and region", () => {
+      expect(languageFinder.normalizeToBcp47("eng-US")).toBe("en-US");
+      expect(languageFinder.normalizeToBcp47("eng-us")).toBe("en-US");
+      expect(languageFinder.normalizeToBcp47("spa-MX")).toBe("es-MX");
+    });
+
+    it("should normalize region subtags to UPPERCASE", () => {
+      expect(languageFinder.normalizeToBcp47("en-us")).toBe("en-US");
+      expect(languageFinder.normalizeToBcp47("en-gb")).toBe("en-GB");
+      expect(languageFinder.normalizeToBcp47("pt-br")).toBe("pt-BR");
+    });
+
+    it("should normalize script subtags to TitleCase", () => {
+      expect(languageFinder.normalizeToBcp47("zh-hans")).toBe("zh-Hans");
+      expect(languageFinder.normalizeToBcp47("zh-HANT")).toBe("zh-Hant");
+      expect(languageFinder.normalizeToBcp47("sr-latn")).toBe("sr-Latn");
+      expect(languageFinder.normalizeToBcp47("sr-CYRL")).toBe("sr-Cyrl");
+    });
+
+    it("should handle script + region combinations", () => {
+      expect(languageFinder.normalizeToBcp47("zh-hans-cn")).toBe("zh-Hans-CN");
+      expect(languageFinder.normalizeToBcp47("zh-HANS-CN")).toBe("zh-Hans-CN");
+      expect(languageFinder.normalizeToBcp47("zh-hant-tw")).toBe("zh-Hant-TW");
+      expect(languageFinder.normalizeToBcp47("sr-latn-rs")).toBe("sr-Latn-RS");
+    });
+
+    it("should handle 3-letter language + script + region", () => {
+      // srp -> sr (Serbian has a 2-letter equivalent)
+      expect(languageFinder.normalizeToBcp47("srp-latn-rs")).toBe("sr-Latn-RS");
+      expect(languageFinder.normalizeToBcp47("srp-cyrl-rs")).toBe("sr-Cyrl-RS");
+    });
+
+    it("should preserve 3-letter codes without 2-letter equivalents in full tags", () => {
+      // tpi (Tok Pisin) has no 2-letter code
+      expect(languageFinder.normalizeToBcp47("tpi-latn-pg")).toBe(
+        "tpi-Latn-PG"
+      );
+    });
+
+    it("should preserve UN M.49 numeric region codes", () => {
+      expect(languageFinder.normalizeToBcp47("es-419")).toBe("es-419");
+      expect(languageFinder.normalizeToBcp47("spa-419")).toBe("es-419");
+    });
+
+    it("should preserve variants and extensions in lowercase", () => {
+      expect(languageFinder.normalizeToBcp47("en-US-valencia")).toBe(
+        "en-US-valencia"
+      );
+      expect(languageFinder.normalizeToBcp47("ca-ES-valencia")).toBe(
+        "ca-ES-valencia"
+      );
+    });
+
+    it("should handle empty and whitespace-only input", () => {
+      expect(languageFinder.normalizeToBcp47("")).toBe("");
+      expect(languageFinder.normalizeToBcp47("  ")).toBe("");
+    });
+
+    it("should trim whitespace", () => {
+      expect(languageFinder.normalizeToBcp47(" eng ")).toBe("en");
+      expect(languageFinder.normalizeToBcp47(" en-US ")).toBe("en-US");
+    });
+
+    it("should handle codes without 2-letter equivalents", () => {
+      // Tok Pisin (tpi) has no 2-letter code
+      expect(languageFinder.normalizeToBcp47("tpi")).toBe("tpi");
+      expect(languageFinder.normalizeToBcp47("tpi-PG")).toBe("tpi-PG");
+    });
+  });
 });

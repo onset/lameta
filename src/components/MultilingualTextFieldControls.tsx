@@ -228,7 +228,11 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
   }) => {
     const [isAdding, setIsAdding] = useState(false);
 
-    // Handle external trigger to start adding
+    // Handle external trigger to start adding.
+    // Intentionally only depends on triggerAdd: we want this to fire when triggerAdd
+    // changes to true, reading the current isAdding as a guard. Adding isAdding would
+    // cause unwanted re-runs when isAdding resets to false. onTriggerAddHandled is
+    // excluded because it's a callback prop that may not be stable.
     useEffect(() => {
       if (triggerAdd && !isAdding) {
         setIsAdding(true);

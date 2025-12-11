@@ -409,10 +409,9 @@
 			</xsd:element>
 			<xsd:element name="Task" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 				<xsd:annotation>
-					<xsd:documentation>List of he major tasks carried out in the session</xsd:documentation>
+					<xsd:documentation>List of the major tasks carried out in the session</xsd:documentation>
 				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Modalities" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
+			</xsd:element>			<xsd:element name="Modalities" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 				<xsd:annotation>
 					<xsd:documentation>List of modalities used in the session</xsd:documentation>
 				</xsd:annotation>
@@ -1156,12 +1155,11 @@
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element name="preferredParent" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
+						<xsd:element name="preferredParent" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 							<xsd:annotation>
-								<xsd:documentation>Descibes the preferred parent of the lexiconComponent in the schema tree</xsd:documentation>
+								<xsd:documentation>Describes the preferred parent of the lexiconComponent in the schema tree</xsd:documentation>
 							</xsd:annotation>
-						</xsd:element>
-						<xsd:element name="childNodes" minOccurs="0" maxOccurs="1">
-							<xsd:complexType>
+						</xsd:element>							<xsd:complexType>
 								<xsd:sequence>
 									<xsd:element name="childComponents" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 										<xsd:annotation>
@@ -1428,13 +1426,12 @@
 			<xsd:documentation>An element from a set of languages used in the session</xsd:documentation>
 			<xsd:appinfo>
 				<sch:pattern id="checkActorLanguages">
-					<sch:title>Actors should only contain MotherTongue and/or PrimaryLangyage</sch:title>
+				<sch:pattern id="checkActorLanguages">
+					<sch:title>Actors should only contain MotherTongue and/or PrimaryLanguage</sch:title>
 					<sch:rule context="imdi:Actor/imdi:Languages/imdi:Language">
 						<sch:assert test="empty(imdi:Dominant|imdi:SourceLanguage|imdi:TargetLanguage)">The Actor contains unwanted language-related elements!</sch:assert>
 					</sch:rule>
-				</sch:pattern>
-				<sch:pattern id="checkContentLanguages">
-					<sch:title>Content should only contain Dominant, SourceLanguage and/or TargetLanguage</sch:title>
+				</sch:pattern>					<sch:title>Content should only contain Dominant, SourceLanguage and/or TargetLanguage</sch:title>
 					<sch:rule context="imdi:Content/imdi:Languages/imdi:Language">
 						<sch:assert test="empty(imdi:MotherTongue|imdi:PrimaryLanguage)">The Content contains unwanted language-related elements!</sch:assert>
 					</sch:rule>
@@ -1798,15 +1795,14 @@
 		Comma Separated String Value
 	-->
 	<xsd:simpleType name="CommaSeparatedString_Value_Type">
+	<xsd:simpleType name="CommaSeparatedString_Value_Type">
 		<xsd:annotation>
-			<xsd:documentation>Comma seperated string</xsd:documentation>
+			<xsd:documentation>Comma separated string</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[^,]*(,[^,]+)*"/>
 		</xsd:restriction>
-	</xsd:simpleType>
-	<!-- 
-		Boolean Value
+	</xsd:simpleType>		Boolean Value
 	-->
 	<xsd:simpleType name="Boolean_Value_Type">
 		<xsd:annotation>
