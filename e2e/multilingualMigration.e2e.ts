@@ -8,6 +8,72 @@ let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
 
+/**
+ * Tests for automatic navigation to Languages tab when multilingualConversionPending is true.
+ * When a project opens with multilingualConversionPending set to true (either just set or
+ * previously set), the app should navigate to Project > Languages tab to show the migration panel.
+ */
+test.describe("Multilingual Conversion Pending - Languages Tab Navigation", () => {
+  test.beforeAll(async () => {
+    lameta = new LametaE2ERunner();
+    page = await lameta.launch();
+    await lameta.cancelRegistration();
+  });
+
+  test.afterAll(async () => {
+    await lameta.quit();
+  });
+
+  test("should open to Languages tab when project has slash-syntax content in ELAR mode", async () => {
+    // Create a new project
+    project = await createNewProject(lameta, `SlashSyntaxTest_${Date.now()}`);
+
+    // Create a session with slash-syntax content (like "English / Spanish")
+    await project.goToSessions();
+    await project.addSession();
+
+    // Wait for the session form to load
+    const titleEditor = page.locator('[data-testid="field-title-edit"]');
+    await titleEditor.waitFor({ timeout: 10000 });
+    await titleEditor.click();
+
+    // Enter slash-syntax content that simulates old multilingual format
+    await page.keyboard.type("Under the House / Bajo la Casa / Sous la Maison");
+    await page.keyboard.press("Tab");
+    await page.waitForTimeout(500);
+
+    // Now switch to ELAR configuration (which has multilingual fields)
+    // This should trigger multilingualConversionPending detection
+    await project.goToProjectConfiguration();
+    await page.locator("#archiveConfigurationName-select").click();
+    await page.getByText("ELAR", { exact: true }).click();
+    await page.locator("button:has-text('Change')").click();
+
+    // After configuration change, the app reloads
+    // With multilingualConversionPending true, it should navigate to Languages tab
+    await page.waitForSelector('[data-testid="project-tab"]', {
+      timeout: 10000
+    });
+
+    // The Languages tab should be visible and selected (or at least the migration panel visible)
+    // Wait for Languages tab content to be visible
+    const languagesTab = page.getByTestId("project-collection-languages-tab");
+    await languagesTab.waitFor({ state: "visible", timeout: 10000 });
+
+    // The Languages tab should be selected (has aria-selected="true" or similar indicator)
+    // We can verify by checking if the migration panel is visible
+    const migrationPanel = page.getByTestId("multilingual-migration-panel");
+    await migrationPanel.waitFor({ state: "visible", timeout: 10000 });
+
+    // The migration panel should be visible, indicating we're on the Languages tab
+    await expect(migrationPanel).toBeVisible();
+
+    // The Migrate button should be visible (but disabled until working languages are configured)
+    const migrateButton = page.getByTestId("convert-multilingual-button");
+    await expect(migrateButton).toBeVisible();
+  });
+});
+
 // TODO: These tests need to be updated once the migration feature is complete.
 // Currently, multilingual UI only shows when there are multiple metadata slots configured.
 // See: https://github.com/onset/lameta/issues/XXX

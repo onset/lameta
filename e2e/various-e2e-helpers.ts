@@ -73,6 +73,10 @@ export class E2eProject {
     await this.goToProject();
     await this.page.getByTestId("project-configuration-tab").click();
   }
+  public async goToProjectLanguages() {
+    await this.goToProject();
+    await this.page.getByTestId("project-collection-languages-tab").click();
+  }
   public async goToProjectCollection() {
     await this.goToProject();
     await this.page.getByTestId("project-collection-tab").click();

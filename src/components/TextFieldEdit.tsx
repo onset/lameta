@@ -751,6 +751,7 @@ const ColorBarWithMenu: React.FC<LanguageSlotMenuProps> = (props) => {
         css={css`
           width: 4px;
           min-height: 1.5em;
+          border-radius: 2px;
           background-color: ${slot.color || "#888"};
           margin-right: 6px;
           flex-shrink: 0;

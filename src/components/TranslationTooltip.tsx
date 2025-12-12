@@ -40,11 +40,8 @@ export const buildTranslationTooltip = (
 
   const hasMissing = translations.some((t) => t.missing);
 
-  // If all are missing, don't show tooltip content
-  if (translations.every((t) => t.missing)) {
-    return { content: null, hasMissing: true };
-  }
-
+  // Always show tooltip content when we have multiple language slots
+  // This helps users understand which languages have translations and which don't
   const content = (
     <div>
       {translations.map((t, i) => (

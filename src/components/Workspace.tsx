@@ -35,7 +35,16 @@ export interface IProps {
 }
 
 class Home extends React.Component<IProps> {
-  private kFirstTabToOpen = userSettings.DeveloperMode ? 0 : 0;
+  // If multilingualConversionPending is true, open to Project tab (0) to show Languages sub-tab
+  // Otherwise, default to Project tab (index 0 regardless of DeveloperMode now)
+  private get kFirstTabToOpen() {
+    // Always open to Project tab (0) when multilingualConversionPending is true
+    // This allows ProjectTab to then navigate to the Languages sub-tab
+    if (this.props.project.multilingualConversionPending) {
+      return 0; // Project tab
+    }
+    return userSettings.DeveloperMode ? 0 : 0;
+  }
 
   public constructor(props: IProps) {
     super(props);

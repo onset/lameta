@@ -332,9 +332,11 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
             >
               <Trans>
                 This project appears to use "/" to store multiple languages
-                within a single field. After you have selected the appropriate
-                working languages above and arranged them in the correct order,
-                all multilingual fields in Project, Sessions, and People should
+                within a single field. In this version of lameta, we have a
+                better approach in which lameta knows which languages are used
+                in a field. After you have selected the appropriate working
+                languages above and arranged them in the correct order, all
+                multilingual fields in Project, Sessions, and People should
                 display with the correct language tags. Once you have confirmed
                 that everything appears as expected, click the button below to
                 apply these changes permanently.

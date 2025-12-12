@@ -355,7 +355,6 @@ test.describe("Multilingual Text Fields", () => {
 
     const deleteMenuItem = page.getByTestId("delete-slot-menu-de");
     await deleteMenuItem.click();
-    await page.keyboard.press("Escape");
 
     // Wait for removal
     await page.waitForTimeout(300);
@@ -701,6 +700,7 @@ test.describe("Multilingual Text Fields", () => {
     await expect(allSlots).toHaveCount(3);
 
     // Step 9: Add Arabic translation (RTL language - edge case, use ISO code)
+    // Note: 'ara' normalizes to 'ar' since Arabic has a 2-letter BCP47 code
     addTranslationBtn = getDescriptionAddButton(page);
     await addTranslationBtn.click();
     languageInput = getDescriptionField(page)
@@ -709,12 +709,12 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.fill("ara");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await getDescriptionSlot(page, "ara").waitFor({
+    await getDescriptionSlot(page, "ar").waitFor({
       timeout: 5000
     });
 
     // Step 10: Add Arabic text
-    const arabicSlot = getDescriptionSlot(page, "ara");
+    const arabicSlot = getDescriptionSlot(page, "ar");
     const arabicEditor = arabicSlot.locator('[contenteditable="true"]');
     await arabicEditor.click();
     await arabicEditor.fill("نص عربي للاختبار");
@@ -753,7 +753,7 @@ test.describe("Multilingual Text Fields", () => {
     await expect(frenchEditorCheck).toHaveText(
       "Texte français avec accents: é è ê ë à â"
     );
-    const arabicEditorCheck = getDescriptionSlot(page, "ara").locator(
+    const arabicEditorCheck = getDescriptionSlot(page, "ar").locator(
       '[contenteditable="true"]'
     );
     await expect(arabicEditorCheck).toHaveText("نص عربي للاختبار");
@@ -784,7 +784,7 @@ test.describe("Multilingual Text Fields", () => {
     );
 
     // Arabic should still have its text
-    const arabicSlotAfterTab = getDescriptionSlot(page, "ara");
+    const arabicSlotAfterTab = getDescriptionSlot(page, "ar");
     await expect(arabicSlotAfterTab).toBeVisible();
     const arabicEditorAfterTab = arabicSlotAfterTab.locator(
       '[contenteditable="true"]'
@@ -833,6 +833,7 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(200);
 
     // Step 20: Attempt to add duplicate language (should not add)
+    // Note: We try to add 'ara' again, which normalizes to 'ar' - should be detected as duplicate
     addTranslationBtn = getDescriptionAddButton(page);
     await addTranslationBtn.click();
     languageInput = getDescriptionField(page)
@@ -843,7 +844,7 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Step 21: Count slots - should still be 4 (en, es, ara, cmn) not 5
+    // Step 21: Count slots - should still be 4 (en, es, ar, cmn) not 5
     allSlots = getDescriptionSlots(page);
     await expect(allSlots).toHaveCount(4);
 
@@ -854,8 +855,8 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(300);
 
     // Remove Arabic
-    await getDescriptionColorBar(page, "ara").click();
-    await page.getByTestId("delete-slot-menu-ara").click();
+    await getDescriptionColorBar(page, "ar").click();
+    await page.getByTestId("delete-slot-menu-ar").click();
     await page.waitForTimeout(300);
 
     // Remove Chinese
@@ -1242,46 +1243,34 @@ test.describe("Multilingual Text Fields", () => {
     // Verify new text is there
     await expect(spanishEditor).toHaveText("Second Spanish text");
   });
-});
 
-// Tests for metadata language slots feature
-test.describe("Metadata Language Slots", () => {
-  test.beforeAll(async () => {
-    lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(
-      lameta,
-      `MetadataLanguageSlotsTest_${Date.now()}`
-    );
-
-    // Switch to ELAR configuration to get the multilingual description field
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-
-    // Wait for the app to reload after configuration change
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-  });
-
-  test.afterAll(async () => {
-    await lameta.quit();
-  });
+  // ============================================================
+  // Metadata Language Slots tests (reusing same Electron instance)
+  // ============================================================
 
   test("setting project working languages shows those slots by default in multilingual fields", async () => {
-    // Go to Project Collection tab to set working languages
-    await project.goToProjectCollection();
+    // Go to Project Languages tab to set working languages
+    await project.goToProjectLanguages();
 
-    // Find the Working Languages field and add Spanish
+    // Find the Working Languages field - need to add BOTH English AND Spanish
+    // (multilingual UI only shows when there are 2+ metadata slots)
     const workingContainer = page
-      .locator('div.field:has(label:has-text("Working Languages"))')
+      .locator('.field:has(label:has-text("Working Languages"))')
       .first();
+    await workingContainer.waitFor({ state: "visible", timeout: 10000 });
+
     const workingInput = workingContainer
       .locator('.select input[role="combobox"]')
       .first();
+
+    // Add English first
+    await workingInput.click();
+    await workingInput.fill("eng");
+    await page.waitForTimeout(300);
+    await workingInput.press("Enter");
+    await page.waitForTimeout(300);
+
+    // Add Spanish second
     await workingInput.click();
     await workingInput.fill("spa");
     await page.waitForTimeout(300);

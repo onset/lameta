@@ -9,7 +9,12 @@ import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
 import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
 import { Button, Collapse } from "@mui/material";
-import { lameta_green, lameta_dark_green } from "../../containers/theme";
+import {
+  lameta_green,
+  lameta_dark_green,
+  lameta_blue,
+  lameta_dark_blue
+} from "../../containers/theme";
 
 import { TextFieldEdit } from "../TextFieldEdit";
 
@@ -107,15 +112,14 @@ const ArchiveConfigurationForm: React.FunctionComponent<
               ? "hidden"
               : "visible"};
             && {
-              background-color: ${lameta_green};
-              color: #1a2b00;
-            }
-            &&:hover {
-              background-color: ${lameta_dark_green};
+              background-color: ${lameta_dark_blue};
               color: white;
             }
+            &&:hover {
+              cursor: pointer;
+            }
             &&:focus-visible {
-              outline: 2px solid ${lameta_dark_green};
+              outline: 2px solid ${lameta_dark_blue};
               outline-offset: 2px;
             }
           `}

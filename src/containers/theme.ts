@@ -2,6 +2,7 @@ import { createTheme, Theme } from "@mui/material";
 
 export const lameta_orange = "#e69664";
 export const lameta_blue = "#becde4";
+export const lameta_dark_blue = "#3D5E90";
 export const lameta_green = "#cff09f";
 export const lameta_dark_green = "#86cb20";
 export const error_color = "#DC322F";

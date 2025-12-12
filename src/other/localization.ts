@@ -88,7 +88,8 @@ function loadOneCatalog(code: string, set: string) {
 // and it lives as a second file on Crowdin.com that has to be translated.
 // These days linguijs can be given a custom scanner, so we will eventually be able to simplify things.
 import roles from "../../locale/roles.csv";
-import genres from "../../locale/genres.csv";
+import genresCSV from "../../locale/genres.csv";
+import genresJSON from "../model/Project/Session/genres.json";
 // note: accessProtocols.csv is pretty confusing because it's not the list of choices, but rather a mix
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
@@ -163,7 +164,7 @@ export function translateRole(role: string) {
 }
 
 export function translateGenre(genre: string) {
-  return getMatch(genres, genre, "genres.csv");
+  return getMatch(genresCSV, genre, "genres.csv");
 }
 
 /**
@@ -174,7 +175,10 @@ export function translateGenreToLanguage(
   genre: string,
   targetLanguage: string
 ): string | undefined {
-  return getMatchForLanguage(genres, genre, targetLanguage);
+  // Look up the genre by ID to get its English label (genres.json labels are in English)
+  const genreChoice = genresJSON.find((g: any) => g.id === genre);
+  const englishLabel = genreChoice?.label || genre;
+  return getMatchForLanguage(genresCSV, englishLabel, targetLanguage);
 }
 
 /**

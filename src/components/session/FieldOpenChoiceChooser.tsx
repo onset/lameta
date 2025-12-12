@@ -151,8 +151,9 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
                     >
                       <WarningIcon
                         css={css`
-                          font-size: 14px;
+                          font-size: 16px;
                           color: #f5a623;
+                          display: flex;
                         `}
                       />
                     </Tooltip>
