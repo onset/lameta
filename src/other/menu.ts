@@ -17,6 +17,7 @@ import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import { Project } from "../model/Project/Project";
 
 export default class LametaMenu {
   private homePage: IHomePageMenuConnections;
@@ -291,6 +292,17 @@ export default class LametaMenu {
           checked: userSettings.ParadisecMode,
           click: () =>
             (userSettings.ParadisecMode = !userSettings.ParadisecMode)
+        },
+        {
+          label: t`Show Language Tags`,
+          visible: Project.getMetadataLanguageSlots().length > 1,
+          // tooltip only works in macos
+          tooltip:
+            "Show language tags on multilingual fields (unknown languages always show ????)",
+          type: "checkbox",
+          checked: userSettings.ShowLanguageTags,
+          click: () =>
+            (userSettings.ShowLanguageTags = !userSettings.ShowLanguageTags)
         }
       ]
     };

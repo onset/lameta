@@ -8,6 +8,9 @@ export const error_color = "#DC322F";
 export const tooltipBackground = "#3D5E90";
 export const searchHighlight = "#ffba8a";
 export const languageSlotColors = ["#74A24E", "#3D5E90", "#8D6BC1", "#B84000"];
+export const unknownLanguageColor = "#DC143C"; // Crimson red for unknown languages
+export const unknownLanguageBackground = "rgba(220, 20, 60, 0.15)"; // Semi-transparent red background for unknown language slots
+export const nonMetadataLanguageColor = lameta_orange; // Orange for known languages not in metadata slots
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
 export function createLametaTheme(): Theme {

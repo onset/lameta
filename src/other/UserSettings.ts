@@ -27,6 +27,7 @@ export class UserSettings {
 
   private showIMDI: boolean; // don't confuse this with the IMDI-related behavior that comes with ELAR. This should only be used for viewing, not behavior.
   private paradisecMode: boolean;
+  private showLanguageTags: boolean; // Show language tags on multilingual fields
   private howUsing: string;
   public uiFontZoom: number;
   private sendErrors: boolean;
@@ -40,6 +41,7 @@ export class UserSettings {
       UserSettings,
       | "showIMDI"
       | "paradisecMode"
+      | "showLanguageTags"
       | "howUsing"
       | "sendErrors"
       | "ignoreFileNamingRules"
@@ -47,6 +49,7 @@ export class UserSettings {
     >(this, {
       showIMDI: observable,
       paradisecMode: observable,
+      showLanguageTags: observable,
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
@@ -103,6 +106,7 @@ export class UserSettings {
     // the "imdiMode" here is legacy, so we don't want to break it by changing to "showIMDI"
     this.showIMDI = this.store.get("imdiMode", false);
     this.paradisecMode = this.store.get("paradisecMode") || false;
+    this.showLanguageTags = this.store.get("showLanguageTags") || false;
     this.howUsing = this.store.get("howUsing", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
@@ -136,6 +140,13 @@ export class UserSettings {
   public set ParadisecMode(show: boolean) {
     this.paradisecMode = show;
     this.store.set("paradisecMode", this.ParadisecMode);
+  }
+  public get ShowLanguageTags() {
+    return this.showLanguageTags;
+  }
+  public set ShowLanguageTags(show: boolean) {
+    this.showLanguageTags = show;
+    this.store.set("showLanguageTags", this.showLanguageTags);
   }
   // clientId  identifies the machine (or account, I suppose), not the actual person
   // i.e., if this same person uses a different machine, we won't know it's the same person

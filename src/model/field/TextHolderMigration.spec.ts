@@ -1,0 +1,294 @@
+import { describe, it, expect } from "vitest";
+import {
+  parseSlashSyntax,
+  assignLanguagesToSegments,
+  slashSyntaxToTaggedText
+} from "./TextHolderMigration";
+
+describe("parseSlashSyntax", () => {
+  describe("basic cases", () => {
+    it("should return empty segments for empty string", () => {
+      const result = parseSlashSyntax("");
+      expect(result.segments).toEqual([]);
+      expect(result.hasSlashes).toBe(false);
+    });
+
+    it("should return single segment for text without slashes", () => {
+      const result = parseSlashSyntax("hello world");
+      expect(result.segments).toEqual(["hello world"]);
+      expect(result.hasSlashes).toBe(false);
+    });
+
+    it("should split on slashes", () => {
+      const result = parseSlashSyntax("casa/house");
+      expect(result.segments).toEqual(["casa", "house"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle three languages", () => {
+      const result = parseSlashSyntax("casa/house/maison");
+      expect(result.segments).toEqual(["casa", "house", "maison"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+  });
+
+  describe("edge cases with empty segments", () => {
+    it("should preserve trailing empty segment (casa/)", () => {
+      const result = parseSlashSyntax("casa/");
+      expect(result.segments).toEqual(["casa", ""]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should preserve leading empty segment (/casa)", () => {
+      const result = parseSlashSyntax("/casa");
+      expect(result.segments).toEqual(["", "casa"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should preserve empty segment between slashes (casa//maison)", () => {
+      const result = parseSlashSyntax("casa//maison");
+      expect(result.segments).toEqual(["casa", "", "maison"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle multiple consecutive slashes", () => {
+      const result = parseSlashSyntax("a///b");
+      expect(result.segments).toEqual(["a", "", "", "b"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle just a slash", () => {
+      const result = parseSlashSyntax("/");
+      expect(result.segments).toEqual(["", ""]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle multiple slashes only", () => {
+      const result = parseSlashSyntax("///");
+      expect(result.segments).toEqual(["", "", "", ""]);
+      expect(result.hasSlashes).toBe(true);
+    });
+  });
+
+  describe("whitespace handling", () => {
+    it("should preserve whitespace around segments", () => {
+      const result = parseSlashSyntax(" casa / house ");
+      expect(result.segments).toEqual([" casa ", " house "]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should preserve internal whitespace", () => {
+      const result = parseSlashSyntax("the house/la casa");
+      expect(result.segments).toEqual(["the house", "la casa"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle mixed whitespace patterns", () => {
+      const result = parseSlashSyntax("/casa / house");
+      expect(result.segments).toEqual(["", "casa ", " house"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+  });
+
+  describe("special characters", () => {
+    it("should handle text with special characters", () => {
+      const result = parseSlashSyntax("héllo/wörld/日本語");
+      expect(result.segments).toEqual(["héllo", "wörld", "日本語"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle text with brackets (but not our tag format)", () => {
+      const result = parseSlashSyntax("[test]/[other]");
+      expect(result.segments).toEqual(["[test]", "[other]"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should handle text with newlines", () => {
+      const result = parseSlashSyntax("line1\nline2/other");
+      expect(result.segments).toEqual(["line1\nline2", "other"]);
+      expect(result.hasSlashes).toBe(true);
+    });
+  });
+});
+
+describe("assignLanguagesToSegments", () => {
+  describe("balanced cases", () => {
+    it("should assign languages to segments in order", () => {
+      const result = assignLanguagesToSegments(["casa", "house"], ["es", "en"]);
+      expect(result.assignments.get("es")).toBe("casa");
+      expect(result.assignments.get("en")).toBe("house");
+      expect(result.orderedTags).toEqual(["es", "en"]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("should handle three languages", () => {
+      const result = assignLanguagesToSegments(
+        ["casa", "house", "maison"],
+        ["es", "en", "fr"]
+      );
+      expect(result.assignments.get("es")).toBe("casa");
+      expect(result.assignments.get("en")).toBe("house");
+      expect(result.assignments.get("fr")).toBe("maison");
+      expect(result.orderedTags).toEqual(["es", "en", "fr"]);
+      expect(result.warnings).toEqual([]);
+    });
+  });
+
+  describe("no slots (empty language tags)", () => {
+    it("should assign all segments to unknown tags when no language tags provided", () => {
+      const result = assignLanguagesToSegments(["casa", "house"], []);
+      expect(result.assignments.get("unknown1")).toBe("casa");
+      expect(result.assignments.get("unknown2")).toBe("house");
+      expect(result.orderedTags).toEqual(["unknown1", "unknown2"]);
+      expect(result.warnings).toHaveLength(2);
+      expect(result.warnings[0]).toContain("unknown1");
+      expect(result.warnings[1]).toContain("unknown2");
+    });
+
+    it("should handle single segment with no tags", () => {
+      const result = assignLanguagesToSegments(["hello"], []);
+      expect(result.assignments.get("unknown1")).toBe("hello");
+      expect(result.orderedTags).toEqual(["unknown1"]);
+      expect(result.warnings).toHaveLength(1);
+    });
+  });
+
+  describe("more slots than strings", () => {
+    it("should assign empty strings to extra tags", () => {
+      const result = assignLanguagesToSegments(["casa"], ["es", "en", "fr"]);
+      expect(result.assignments.get("es")).toBe("casa");
+      expect(result.assignments.get("en")).toBe("");
+      expect(result.assignments.get("fr")).toBe("");
+      expect(result.orderedTags).toEqual(["es", "en", "fr"]);
+      expect(result.warnings).toHaveLength(2);
+      expect(result.warnings[0]).toContain("en");
+      expect(result.warnings[1]).toContain("fr");
+    });
+
+    it("should handle empty segments array with tags", () => {
+      const result = assignLanguagesToSegments([], ["es", "en"]);
+      expect(result.assignments.get("es")).toBe("");
+      expect(result.assignments.get("en")).toBe("");
+      expect(result.orderedTags).toEqual(["es", "en"]);
+      expect(result.warnings).toEqual([]);
+    });
+  });
+
+  describe("less slots than strings", () => {
+    it("should assign extra segments to unknown tags", () => {
+      const result = assignLanguagesToSegments(
+        ["casa", "house", "maison", "hus"],
+        ["es", "en"]
+      );
+      expect(result.assignments.get("es")).toBe("casa");
+      expect(result.assignments.get("en")).toBe("house");
+      expect(result.assignments.get("unknown1")).toBe("maison");
+      expect(result.assignments.get("unknown2")).toBe("hus");
+      expect(result.orderedTags).toEqual(["es", "en", "unknown1", "unknown2"]);
+      expect(result.warnings).toHaveLength(2);
+    });
+
+    it("should handle single tag with multiple segments", () => {
+      const result = assignLanguagesToSegments(["one", "two", "three"], ["en"]);
+      expect(result.assignments.get("en")).toBe("one");
+      expect(result.assignments.get("unknown1")).toBe("two");
+      expect(result.assignments.get("unknown2")).toBe("three");
+      expect(result.orderedTags).toEqual(["en", "unknown1", "unknown2"]);
+    });
+  });
+
+  describe("empty segment handling", () => {
+    it("should preserve empty segments in assignments", () => {
+      const result = assignLanguagesToSegments(
+        ["casa", "", "maison"],
+        ["es", "en", "fr"]
+      );
+      expect(result.assignments.get("es")).toBe("casa");
+      expect(result.assignments.get("en")).toBe("");
+      expect(result.assignments.get("fr")).toBe("maison");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("should handle leading empty segment", () => {
+      const result = assignLanguagesToSegments(["", "house"], ["es", "en"]);
+      expect(result.assignments.get("es")).toBe("");
+      expect(result.assignments.get("en")).toBe("house");
+      expect(result.warnings).toEqual([]);
+    });
+  });
+
+  describe("whitespace preservation", () => {
+    it("should preserve whitespace in segments", () => {
+      const result = assignLanguagesToSegments(
+        [" casa ", " house "],
+        ["es", "en"]
+      );
+      expect(result.assignments.get("es")).toBe(" casa ");
+      expect(result.assignments.get("en")).toBe(" house ");
+    });
+  });
+});
+
+describe("slashSyntaxToTaggedText", () => {
+  describe("basic conversion", () => {
+    it("should convert simple two-language text", () => {
+      const result = slashSyntaxToTaggedText("casa/house", ["es", "en"]);
+      expect(result).toBe("[[es]]casa[[en]]house");
+    });
+
+    it("should convert three-language text", () => {
+      const result = slashSyntaxToTaggedText("casa/house/maison", [
+        "es",
+        "en",
+        "fr"
+      ]);
+      expect(result).toBe("[[es]]casa[[en]]house[[fr]]maison");
+    });
+  });
+
+  describe("no conversion needed", () => {
+    it("should return original text when no slashes", () => {
+      const result = slashSyntaxToTaggedText("hello world", ["en"]);
+      expect(result).toBe("hello world");
+    });
+
+    it("should return empty string as-is", () => {
+      const result = slashSyntaxToTaggedText("", ["en"]);
+      expect(result).toBe("");
+    });
+  });
+
+  describe("mismatched counts", () => {
+    it("should handle more segments than tags", () => {
+      const result = slashSyntaxToTaggedText("a/b/c", ["en"]);
+      expect(result).toBe("[[en]]a[[unknown1]]b[[unknown2]]c");
+    });
+
+    it("should handle more tags than segments", () => {
+      const result = slashSyntaxToTaggedText("casa", ["es", "en", "fr"]);
+      // No slashes, so returns as-is
+      expect(result).toBe("casa");
+    });
+
+    it("should handle empty tags array with slashes", () => {
+      const result = slashSyntaxToTaggedText("a/b", []);
+      expect(result).toBe("[[unknown1]]a[[unknown2]]b");
+    });
+  });
+
+  describe("empty segment preservation", () => {
+    it("should preserve empty segments in tagged output", () => {
+      const result = slashSyntaxToTaggedText("casa//maison", [
+        "es",
+        "en",
+        "fr"
+      ]);
+      expect(result).toBe("[[es]]casa[[en]][[fr]]maison");
+    });
+
+    it("should handle trailing slash", () => {
+      const result = slashSyntaxToTaggedText("casa/", ["es", "en"]);
+      expect(result).toBe("[[es]]casa[[en]]");
+    });
+  });
+});

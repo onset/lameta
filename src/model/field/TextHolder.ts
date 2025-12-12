@@ -1,4 +1,8 @@
 import { makeObservable, observable, runInAction } from "mobx";
+import {
+  parseSlashSyntax,
+  assignLanguagesToSegments
+} from "./TextHolderMigration";
 
 /**
  * Holds text that can be either monolingual or multilingual.
@@ -11,6 +15,12 @@ import { makeObservable, observable, runInAction } from "mobx";
  *
  * The implementation uses a simple split/join approach for clarity. Performance could be improved
  * with regex if needed, but the current approach keeps the serialization format transparent.
+ *
+ * Slash syntax migration:
+ *   Text like "casa/house/maison" can be virtually interpreted as multilingual
+ *   without modifying the stored text. Use `looksLikeSlashSyntax()` to detect,
+ *   `getTextAxisVirtual()` to read virtually, and `commitSlashSyntaxConversion()`
+ *   to permanently convert when the user confirms.
  */
 
 export class TextHolder {
@@ -59,6 +69,144 @@ export class TextHolder {
   public getTextAxis(tag: string): string {
     const axisTextDictionary = this.deserializeMultiAxisText();
     return axisTextDictionary[tag] || "";
+  }
+
+  /**
+   * Check if the stored text looks like slash syntax that could be
+   * virtually interpreted as multilingual.
+   *
+   * Returns true if:
+   * - Text contains "/" (potential delimiter)
+   * - Text does NOT start with "[[" (not already tagged format)
+   * - Text is not empty
+   */
+  public looksLikeSlashSyntax(): boolean {
+    if (this._text === "" || this._text.startsWith("[[")) {
+      return false;
+    }
+    const result = this._text.includes("/");
+    if (result) {
+      console.log(
+        `[TextHolder] looksLikeSlashSyntax: true for "${this._text.substring(
+          0,
+          50
+        )}${this._text.length > 50 ? "..." : ""}"`
+      );
+    }
+    return result;
+  }
+
+  /**
+   * Get a virtual interpretation of the text as a multilingual axis,
+   * WITHOUT modifying the stored text.
+   *
+   * If the text looks like slash syntax, parses it and returns the
+   * segment corresponding to the tag's position in languageTags.
+   * Otherwise, falls back to the normal getTextAxis behavior.
+   *
+   * @param tag The language tag to get text for
+   * @param languageTags The ordered list of language tags for slash interpretation
+   * @returns The text for the given tag (virtual or actual)
+   */
+  public getTextAxisVirtual(tag: string, languageTags: string[]): string {
+    if (!this.looksLikeSlashSyntax()) {
+      // Not slash syntax - use normal behavior
+      return this.getTextAxis(tag);
+    }
+
+    // Parse slash syntax virtually
+    const { segments } = parseSlashSyntax(this._text);
+    const { assignments, orderedTags, warnings } = assignLanguagesToSegments(
+      segments,
+      languageTags
+    );
+    console.log(
+      `[TextHolder] getTextAxisVirtual: text="${
+        this._text
+      }", tag="${tag}", languageTags=[${languageTags.join(", ")}]`,
+      {
+        segments,
+        orderedTags,
+        assignments: Object.fromEntries(assignments),
+        warnings
+      }
+    );
+    return assignments.get(tag) ?? "";
+  }
+
+  /**
+   * Get a virtual view of all language axes from slash syntax,
+   * WITHOUT modifying the stored text.
+   *
+   * @param languageTags The ordered list of language tags for interpretation
+   * @returns Map of language tag to text content, or null if not slash syntax
+   */
+  public getVirtualMultiAxisView(
+    languageTags: string[]
+  ): Map<string, string> | null {
+    if (!this.looksLikeSlashSyntax()) {
+      return null; // Not slash syntax
+    }
+
+    const { segments } = parseSlashSyntax(this._text);
+    const { assignments } = assignLanguagesToSegments(segments, languageTags);
+    return assignments;
+  }
+
+  /**
+   * Get all effective slot tags for the text, including any "unknown" tags
+   * that would be created for extra segments in slash syntax.
+   *
+   * For tagged text: returns the actual language tags from the stored data.
+   * For slash syntax: returns the ordered tags including any unknown1, unknown2, etc.
+   *
+   * @param metadataSlotTags The metadata slot tags (for slash syntax interpretation)
+   * @returns Array of all effective slot tags
+   */
+  public getEffectiveSlotTags(metadataSlotTags: string[]): string[] {
+    if (this.looksLikeSlashSyntax()) {
+      const { segments } = parseSlashSyntax(this._text);
+      const { orderedTags } = assignLanguagesToSegments(
+        segments,
+        metadataSlotTags
+      );
+      return orderedTags;
+    }
+    // For tagged text, return the actual axes
+    return this.getAllNonEmptyTextAxes();
+  }
+
+  /**
+   * Permanently convert slash syntax to tagged multilingual format.
+   * Call this when the user confirms the virtual interpretation is correct.
+   *
+   * @param languageTags The ordered list of language tags for conversion
+   * @returns true if conversion happened, false if text wasn't slash syntax
+   */
+  public commitSlashSyntaxConversion(languageTags: string[]): boolean {
+    if (!this.looksLikeSlashSyntax()) {
+      return false;
+    }
+
+    const { segments } = parseSlashSyntax(this._text);
+    const { assignments, orderedTags } = assignLanguagesToSegments(
+      segments,
+      languageTags
+    );
+
+    // Build tagged format
+    const parts: string[] = [];
+    for (const tag of orderedTags) {
+      const text = assignments.get(tag) ?? "";
+      if (text.length > 0) {
+        parts.push(`[[${tag}]]${text}`);
+      }
+    }
+
+    runInAction(() => {
+      this._text = parts.join("");
+    });
+    return true;
   }
 
   private deserializeMultiAxisText(): MultiAxisText {
@@ -139,6 +287,7 @@ export interface LanguageSlot {
   tag: string;
   label: string;
   name: string;
+  autonym?: string; // The language name in its own script/language (e.g., "Español" for Spanish)
   color?: string;
 }
 

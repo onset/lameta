@@ -7,17 +7,27 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
-import { tooltipBackground } from "../containers/theme";
+import {
+  tooltipBackground,
+  unknownLanguageBackground
+} from "../containers/theme";
 import {
   AddTranslationControl,
   normalizeLanguageTag,
-  useMultilingualField
+  useMultilingualField,
+  createLanguageSlot,
+  isUnknownLanguage
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
+import userSettings from "../other/UserSettings";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EditIcon from "@mui/icons-material/Edit";
+import { SingleLanguageChooser } from "./SingleLanguageChooser";
+import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
+import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -51,9 +61,16 @@ export const TextFieldEdit: React.FunctionComponent<
     newlyAddedTag,
     handleAddLanguage,
     handleRemoveLanguage,
+    handleChangeLanguage,
     clearNewlyAddedTag,
-    isProtectedSlot
+    isProtectedSlot,
+    hasMultipleMetadataSlots
   } = useMultilingualField(props.field, isMultilingual);
+
+  // Only show multilingual UI if the field is marked multilingual AND
+  // there are multiple metadata language slots configured.
+  // With only 1 slot, there's no meaningful multilingual interpretation.
+  const showMultilingualUI = isMultilingual && hasMultipleMetadataSlots;
 
   return (
     <div
@@ -98,15 +115,15 @@ export const TextFieldEdit: React.FunctionComponent<
             position: relative;
             ${props.field.definition.multipleLines
               ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
-                 ${isMultilingual ? "overflow-y: auto;" : ""}`
-              : isMultilingual
+                 ${showMultilingualUI ? "overflow-y: auto;" : ""}`
+              : showMultilingualUI
               ? "overflow-y: auto;"
               : "max-height: 24px; overflow: hidden;"}
           `}
         >
-          {isMultilingual ? (
+          {showMultilingualUI ? (
             <>
-              {slots.map((slot) => (
+              {slots.map((slot, index) => (
                 <SingleLanguageTextFieldEdit
                   key={slot.tag}
                   {...props}
@@ -114,15 +131,22 @@ export const TextFieldEdit: React.FunctionComponent<
                   isProtected={isProtectedSlot(slot.tag)}
                   canRemoveSlot={slots.length > 1}
                   onRemoveSlot={handleRemoveLanguage}
-                  onAddLanguage={() => setTriggerAddLanguage(true)}
+                  onChangeLanguage={handleChangeLanguage}
+                  onAddLanguage={handleAddLanguage}
                   shouldFocusOnMount={slot.tag === newlyAddedTag}
                   onFocused={clearNewlyAddedTag}
+                  allLanguageTags={languageTags}
+                  existingLanguageTags={languageTags}
+                  isLastSlot={index === slots.length - 1}
+                  showAddButton={isHovered || isFocusWithin}
+                  onTriggerAddLanguage={() => setTriggerAddLanguage(true)}
                 />
               ))}
+              {/* Language chooser on its own row when adding */}
               <AddTranslationControl
                 existingTags={languageTags}
                 onAddLanguage={handleAddLanguage}
-                showButton={isHovered || isFocusWithin || triggerAddLanguage}
+                showButton={false}
                 triggerAdd={triggerAddLanguage}
                 onTriggerAddHandled={() => setTriggerAddLanguage(false)}
               />
@@ -148,10 +172,20 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       isProtected?: boolean;
       canRemoveSlot?: boolean;
       onRemoveSlot?: (tag: string) => void;
-      onChangeLanguage?: (oldTag: string, newTag: string) => void;
-      onAddLanguage?: () => void;
+      onChangeLanguage?: (oldTag: string, newTag: string) => string | undefined;
+      onAddLanguage?: (tag: string) => void;
       shouldFocusOnMount?: boolean;
       onFocused?: () => void;
+      /** All language tags in order, for virtual slash syntax interpretation */
+      allLanguageTags?: string[];
+      /** All existing language tags for duplicate checking */
+      existingLanguageTags?: string[];
+      /** Whether this is the last slot in the list (controls + button visibility) */
+      isLastSlot?: boolean;
+      /** Whether the add button should be shown (on hover) */
+      showAddButton?: boolean;
+      /** Callback to trigger the add language UI (from menu items on any row) */
+      onTriggerAddLanguage?: () => void;
     }
 > = mobx.observer((props) => {
   const [validationMessage, setValidationMessage] = useState<string>();
@@ -289,8 +323,17 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       return "Null Text";
     }
     if (props.languageSlot === undefined) return field.text;
-    // review should this be "monolingual" os some such?
-    else return field.getTextAxis(props.languageSlot.tag);
+
+    // If we have all language tags and the field looks like slash syntax,
+    // use virtual interpretation to show the correct segment for this slot
+    if (props.allLanguageTags && props.allLanguageTags.length > 0) {
+      return field.getTextAxisVirtual(
+        props.languageSlot.tag,
+        props.allLanguageTags
+      );
+    }
+    // Fallback to regular axis retrieval
+    return field.getTextAxis(props.languageSlot.tag);
   }
 
   const currentValue = getValue(props.field);
@@ -311,9 +354,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         min-height: ${props.languageSlot ? "auto" : "1.2em"};
         flex-shrink: 0; /* prevent individual fields from shrinking */
         padding-top: ${props.languageSlot ? "2px" : "2px"};
-        padding-right: ${props.languageSlot
-          ? "20px"
-          : "2px"}; /* extra space for + button */
+        padding-right: 2px; /* buttons are now inline flex items */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};
         padding-left: ${props.languageSlot ? "5px" : "0"};
         ${props.showAffordancesAfter &&
@@ -339,7 +380,9 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           isProtected={props.isProtected ?? false}
           canRemove={props.canRemoveSlot ?? false}
           onRemove={() => props.onRemoveSlot?.(props.languageSlot!.tag)}
-          onAddLanguage={props.onAddLanguage}
+          onAddLanguage={props.onTriggerAddLanguage}
+          onChangeLanguage={props.onChangeLanguage}
+          existingTags={props.existingLanguageTags ?? []}
         />
       )}
 
@@ -375,7 +418,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             data-testid={`field-${props.field.key}-edit`}
             data-placeholder={
               props.languageSlot && isEmpty
-                ? props.languageSlot.name
+                ? props.languageSlot.autonym || props.languageSlot.name
                 : undefined
             }
             className={validationMessage ? "invalid" : ""}
@@ -411,7 +454,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
               width: 100%;
               padding: 2px;
               box-sizing: border-box;
-              background: white;
+              background: ${props.languageSlot &&
+              isUnknownLanguage(props.languageSlot.tag)
+                ? unknownLanguageBackground
+                : "white"};
               border: none;
               display: block;
               cursor: text;
@@ -430,6 +476,15 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         </Tooltip>
       </div>
 
+      {/* Language tag display on right side */}
+      {props.languageSlot && (
+        <LanguageTagDisplay
+          slot={props.languageSlot}
+          existingTags={props.existingLanguageTags ?? []}
+          onChangeLanguage={props.onChangeLanguage}
+        />
+      )}
+
       {/* Kebab menu icon on right side - visible on hover */}
       {props.languageSlot && (
         <KebabMenuIcon
@@ -437,8 +492,41 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           isProtected={props.isProtected ?? false}
           canRemove={props.canRemoveSlot ?? false}
           onRemove={() => props.onRemoveSlot?.(props.languageSlot!.tag)}
-          onAddLanguage={props.onAddLanguage}
+          onAddLanguage={props.onTriggerAddLanguage}
+          onChangeLanguage={props.onChangeLanguage}
+          existingTags={props.existingLanguageTags ?? []}
         />
+      )}
+
+      {/* Add translation button - only visible on last slot on hover */}
+      {props.languageSlot && props.isLastSlot && props.showAddButton && (
+        <button
+          type="button"
+          title="Add language slot"
+          data-testid="add-translation-button"
+          onClick={props.onTriggerAddLanguage}
+          css={css`
+            background: none;
+            border: none;
+            color: #81c21e;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 0 4px;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: all 150ms ease-in-out;
+            &:hover {
+              color: #c73f1d;
+              transform: scale(1.15);
+            }
+            &:active {
+              transform: scale(0.95);
+            }
+          `}
+        >
+          +
+        </button>
       )}
     </div>
   );
@@ -451,6 +539,8 @@ interface LanguageSlotMenuProps {
   canRemove: boolean;
   onRemove: () => void;
   onAddLanguage?: () => void;
+  onChangeLanguage?: (oldTag: string, newTag: string) => string | undefined;
+  existingTags: string[];
 }
 
 /** Shared menu items for language slot menus (color bar and kebab). */
@@ -459,7 +549,19 @@ const LanguageSlotMenuItems: React.FC<
     testIdPrefix: string;
     onClose: () => void;
   }
-> = ({ slot, isProtected, canRemove, onRemove, onAddLanguage, testIdPrefix, onClose }) => {
+> = ({
+  slot,
+  isProtected,
+  canRemove,
+  onRemove,
+  onAddLanguage,
+  onChangeLanguage,
+  existingTags,
+  testIdPrefix,
+  onClose
+}) => {
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+
   const handleAddLanguage = () => {
     onClose();
     onAddLanguage?.();
@@ -469,6 +571,67 @@ const LanguageSlotMenuItems: React.FC<
     onClose();
     onRemove();
   };
+
+  const handleStartChangeLanguage = () => {
+    setIsChangingLanguage(true);
+  };
+
+  const handleLanguageSelected = (newTag: string) => {
+    const normalized = normalizeLanguageTag(newTag);
+    if (normalized && onChangeLanguage) {
+      const error = onChangeLanguage(slot.tag, normalized);
+      if (error) {
+        ShowMessageDialog({ title: "Cannot Change Language", text: error });
+      }
+    }
+    setIsChangingLanguage(false);
+    onClose();
+  };
+
+  if (isChangingLanguage) {
+    return (
+      <div
+        css={css`
+          padding: 8px 12px;
+          min-width: 200px;
+        `}
+      >
+        <div
+          css={css`
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 8px;
+          `}
+        >
+          Change language for this slot:
+        </div>
+        <SingleLanguageChooser
+          labelInUILanguage=""
+          languageTag={slot.tag}
+          languageFinder={staticLanguageFinder}
+          autoFocus
+          onChange={(newTag) => handleLanguageSelected(newTag)}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            setIsChangingLanguage(false);
+            onClose();
+          }}
+          css={css`
+            margin-top: 8px;
+            border: none;
+            background: transparent;
+            color: #555;
+            cursor: pointer;
+            font-size: 0.85em;
+          `}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -483,6 +646,14 @@ const LanguageSlotMenuItems: React.FC<
         }}
       >
         {slot.name} ({slot.tag})
+      </MenuItem>
+      <MenuItem
+        onClick={handleStartChangeLanguage}
+        data-testid={`change-language-${testIdPrefix}-${slot.tag}`}
+        sx={{ fontSize: "0.875rem", py: 0.5, minHeight: "auto", gap: 1 }}
+      >
+        <EditIcon fontSize="small" />
+        Change Language
       </MenuItem>
       <MenuItem
         onClick={handleAddLanguage}
@@ -553,6 +724,7 @@ const ColorBarWithMenu: React.FC<LanguageSlotMenuProps> = (props) => {
 
 /**
  * Kebab (vertical dots) menu icon that appears on hover.
+ * Positioned at the right edge of the row, leaving room for the "+" button.
  */
 const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
   const { slot } = props;
@@ -572,11 +744,10 @@ const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
           justify-content: center;
           cursor: pointer;
           color: #81c21e;
-          flex-shrink: 0;
           padding: 0 2px;
+          flex-shrink: 0;
           &:hover {
             color: #c73f1d;
-            transform: scale(1.15);
           }
           &:active {
             transform: scale(0.95);
@@ -602,3 +773,75 @@ const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
     </>
   );
 };
+
+/**
+ * Displays the language tag on the right side of the field.
+ * Shows "????" in red for unknown languages.
+ * Only visible when userSettings.ShowLanguageTags is true OR if it's an unknown language.
+ * Unknown languages are clickable to show the language chooser.
+ */
+interface LanguageTagDisplayProps {
+  slot: LanguageSlot;
+  existingTags: string[];
+  onChangeLanguage?: (oldTag: string, newTag: string) => string | undefined;
+}
+
+const LanguageTagDisplay: React.FC<LanguageTagDisplayProps> = mobx.observer(
+  ({ slot, existingTags, onChangeLanguage }) => {
+    const isUnknown = slot.tag.startsWith("unknown");
+    const showTags = userSettings.ShowLanguageTags;
+
+    // Always show unknown languages, otherwise only show when setting is enabled
+    if (!isUnknown && !showTags) {
+      return null;
+    }
+
+    const displayText = isUnknown ? "????" : slot.label;
+    const color = isUnknown ? "#c73f1d" : "#888";
+    const tooltipText = isUnknown
+      ? `Unknown language. Click for more information.`
+      : slot.name;
+
+    const handleClick = () => {
+      if (isUnknown) {
+        // Extract the slot number from the tag (e.g., "unknown1" -> 2, "unknown2" -> 3)
+        // The number in the tag is 0-based for extra slots, so add 1 for display
+        const match = slot.tag.match(/unknown(\d+)?/);
+        const slotNumber = match && match[1] ? parseInt(match[1], 10) + 1 : 1;
+
+        ShowMessageDialog({
+          title: "Unknown Language",
+          text: `lameta does not know what language this is. You can use the menu on this field to set the language, or go to Project > Languages and set the correct language for slot ${slotNumber}.`
+        });
+      }
+    };
+
+    return (
+      <span
+        data-testid={`language-tag-${slot.tag}`}
+        onClick={handleClick}
+        css={css`
+          font-size: 0.75em;
+          color: ${color};
+          flex-shrink: 0;
+          padding: 0;
+          padding-left: 4px;
+          margin-left: auto;
+          align-self: center;
+          font-weight: ${isUnknown ? "bold" : "normal"};
+          cursor: ${isUnknown ? "pointer" : "default"};
+          ${isUnknown
+            ? `
+            &:hover {
+              text-decoration: underline;
+            }
+          `
+            : ""}
+        `}
+        title={tooltipText}
+      >
+        {displayText}
+      </span>
+    );
+  }
+);

@@ -5,9 +5,43 @@ import { LanguageSlot } from "../model/field/TextHolder";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "./SingleLanguageChooser";
 import { Project } from "../model/Project/Project";
-import { languageSlotColors } from "../containers/theme";
+import {
+  languageSlotColors,
+  unknownLanguageColor,
+  nonMetadataLanguageColor
+} from "../containers/theme";
 
 export const DEFAULT_LANGUAGE_TAG = "en";
+
+/**
+ * Check if a language tag represents an unknown language (from slash syntax migration).
+ */
+export function isUnknownLanguage(tag: string): boolean {
+  return tag.startsWith("unknown");
+}
+
+/**
+ * Determines the color for a language slot based on:
+ * 1. Unknown languages (unknown2, etc.) → bright red
+ * 2. Known languages not in metadata slots → LaMeta Orange
+ * 3. Known languages in metadata slots → use the cycling palette colors
+ */
+function getSlotColor(
+  tag: string,
+  slotIndex: number,
+  metadataSlotTags: Set<string>
+): string {
+  // Unknown languages get bright red
+  if (isUnknownLanguage(tag)) {
+    return unknownLanguageColor;
+  }
+  // Known languages not in metadata slots get LaMeta Orange
+  if (!metadataSlotTags.has(tag)) {
+    return nonMetadataLanguageColor;
+  }
+  // Metadata slot languages use the cycling palette
+  return languageSlotColors[slotIndex % languageSlotColors.length];
+}
 
 /**
  * Normalize a language tag to BCP47 preferred format.
@@ -25,6 +59,10 @@ export function normalizeLanguageTag(tag?: string): string | undefined {
   return trimmed;
 }
 
+/**
+ * Create a basic LanguageSlot from a tag and optional color.
+ * Use createSlotWithColor for slots that need proper color assignment.
+ */
 export function createLanguageSlot(tag: string, color?: string): LanguageSlot {
   const normalized = normalizeLanguageTag(tag) ?? DEFAULT_LANGUAGE_TAG;
   const displayCode =
@@ -42,14 +80,53 @@ export function createLanguageSlot(tag: string, color?: string): LanguageSlot {
   };
 }
 
+/**
+ * Creates a LanguageSlot with the appropriate color based on:
+ * - Unknown languages → bright red
+ * - Non-metadata languages → LaMeta Orange
+ * - Metadata languages → cycling palette colors
+ *
+ * This is the single source of truth for slot creation with colors.
+ */
+function createSlotWithColor(
+  tag: string,
+  slotIndex: number,
+  metadataSlotTags: Set<string>
+): LanguageSlot {
+  const color = getSlotColor(tag, slotIndex, metadataSlotTags);
+
+  if (isUnknownLanguage(tag)) {
+    const num = tag.replace("unknown", "");
+    return {
+      tag,
+      label: `?${num}`,
+      name: `Unknown language ${num}`,
+      color
+    };
+  }
+
+  return createLanguageSlot(tag, color);
+}
+
 export interface UseMultilingualFieldResult {
   languageTags: string[];
   slots: LanguageSlot[];
   newlyAddedTag: string | null;
   handleAddLanguage: (tag: string) => void;
   handleRemoveLanguage: (tag: string) => void;
+  /**
+   * Change the language tag for a slot.
+   * Returns an error message if the new tag is already in use, otherwise returns undefined.
+   */
+  handleChangeLanguage: (oldTag: string, newTag: string) => string | undefined;
   clearNewlyAddedTag: () => void;
   isProtectedSlot: (tag: string) => boolean;
+  /**
+   * True if there are multiple metadata language slots configured.
+   * When false, multilingual fields should fall back to monolingual display
+   * since there's no meaningful way to interpret slash syntax with only 1 language.
+   */
+  hasMultipleMetadataSlots: boolean;
 }
 
 /**
@@ -66,11 +143,25 @@ export function useMultilingualField(
   // Get metadata language slots from project - these are the required/protected slots
   const metadataSlots = useMemo(() => {
     if (!isMultilingual) return [];
-    return Project.getMetadataLanguageSlots();
-  }, [isMultilingual]);
+    const slots = Project.getMetadataLanguageSlots();
+    console.log(
+      `[useMultilingualField] field="${
+        field.key
+      }", isMultilingual=${isMultilingual}, metadataSlots=[${slots
+        .map((s) => s.tag)
+        .join(", ")}]`
+    );
+    return slots;
+  }, [isMultilingual, field.key]);
 
   const protectedTags = useMemo(
     () => new Set(metadataSlots.map((s) => s.tag)),
+    [metadataSlots]
+  );
+
+  // Get metadata slot tags for use in getEffectiveSlotTags
+  const metadataSlotTags = useMemo(
+    () => metadataSlots.map((s) => s.tag),
     [metadataSlots]
   );
 
@@ -82,23 +173,17 @@ export function useMultilingualField(
     const slots = [...metadataSlots];
     const existingTags = new Set(metadataSlots.map((s) => s.tag));
 
-    // Add any extra languages from existing text data (not in metadata slots)
-    // Extra languages get colors starting after the metadata slots' colors
-    let extraColorIndex = metadataSlots.length;
-    const textTags = field.getAllNonEmptyTextAxes();
-    textTags.forEach((tag) => {
-      const normalized = normalizeLanguageTag(tag);
-      if (normalized && !existingTags.has(normalized)) {
-        const color =
-          languageSlotColors[extraColorIndex % languageSlotColors.length];
-        extraColorIndex++;
-        slots.push(createLanguageSlot(normalized, color));
-        existingTags.add(normalized);
+    // Get all effective tags (handles both tagged text and slash syntax)
+    const effectiveTags = field.getEffectiveSlotTags(metadataSlotTags);
+    effectiveTags.forEach((tag) => {
+      if (!existingTags.has(tag)) {
+        slots.push(createSlotWithColor(tag, slots.length, existingTags));
+        existingTags.add(tag);
       }
     });
 
     return slots;
-  }, [field, isMultilingual, metadataSlots]);
+  }, [field, field.text, isMultilingual, metadataSlots, metadataSlotTags]);
 
   const [slots, setSlots] = useState<LanguageSlot[]>(getInitialSlots);
   const [newlyAddedTag, setNewlyAddedTag] = useState<string | null>(null);
@@ -117,48 +202,52 @@ export function useMultilingualField(
       setSlots(getInitialSlots());
     } else {
       // Same field, possibly with updated content - merge to preserve user additions
-      const textTags = field.getAllNonEmptyTextAxes();
-      if (textTags.length > 0) {
-        setSlots((previous) => {
-          const existingTags = new Set(previous.map((s) => s.tag));
-          let changed = false;
-          const newSlots = [...previous];
+      setSlots((previous) => {
+        const existingTags = new Set(previous.map((s) => s.tag));
+        let changed = false;
+        const newSlots = [...previous];
 
-          textTags.forEach((tag) => {
-            const normalized = normalizeLanguageTag(tag);
-            if (normalized && !existingTags.has(normalized)) {
-              // Use current slots length to determine next color
-              const color =
-                languageSlotColors[newSlots.length % languageSlotColors.length];
-              newSlots.push(createLanguageSlot(normalized, color));
-              existingTags.add(normalized);
-              changed = true;
-            }
-          });
-
-          return changed ? newSlots : previous;
+        // Get all effective tags (handles both tagged text and slash syntax)
+        const effectiveTags = field.getEffectiveSlotTags(metadataSlotTags);
+        const metadataTagsSet = new Set(metadataSlotTags);
+        effectiveTags.forEach((tag) => {
+          if (!existingTags.has(tag)) {
+            newSlots.push(
+              createSlotWithColor(tag, newSlots.length, metadataTagsSet)
+            );
+            existingTags.add(tag);
+            changed = true;
+          }
         });
-      }
+
+        return changed ? newSlots : previous;
+      });
     }
-  }, [isMultilingual, field, field.text, getInitialSlots]);
+  }, [isMultilingual, field, field.text, getInitialSlots, metadataSlotTags]);
 
   const languageTags = useMemo(() => slots.map((s) => s.tag), [slots]);
 
-  const handleAddLanguage = useCallback((tag: string) => {
-    const normalized = normalizeLanguageTag(tag);
-    if (!normalized) return;
+  const handleAddLanguage = useCallback(
+    (tag: string) => {
+      const normalized = normalizeLanguageTag(tag);
+      if (!normalized) return;
 
-    setSlots((previous) => {
-      if (previous.some((s) => s.tag === normalized)) {
-        return previous; // Already exists
-      }
-      // Use current slots length to determine next color
-      const color =
-        languageSlotColors[previous.length % languageSlotColors.length];
-      return [...previous, createLanguageSlot(normalized, color)];
-    });
-    setNewlyAddedTag(normalized);
-  }, []);
+      setSlots((previous) => {
+        if (previous.some((s) => s.tag === normalized)) {
+          return previous; // Already exists
+        }
+        // Manually added languages are not in metadata slots, so they get orange
+        // (createSlotWithColor will assign nonMetadataLanguageColor for non-metadata tags)
+        const metadataTagsSet = new Set(metadataSlotTags);
+        return [
+          ...previous,
+          createSlotWithColor(normalized, previous.length, metadataTagsSet)
+        ];
+      });
+      setNewlyAddedTag(normalized);
+    },
+    [metadataSlotTags]
+  );
 
   const isProtectedSlot = useCallback(
     (tag: string): boolean => {
@@ -189,14 +278,55 @@ export function useMultilingualField(
     setNewlyAddedTag(null);
   }, []);
 
+  /**
+   * Change the language tag for a slot.
+   * Returns an error message if the new tag is already in use, otherwise returns undefined.
+   */
+  const handleChangeLanguage = useCallback(
+    (oldTag: string, newTag: string): string | undefined => {
+      const normalizedOld = normalizeLanguageTag(oldTag);
+      const normalizedNew = normalizeLanguageTag(newTag);
+      if (!normalizedOld || !normalizedNew) return "Invalid language tag";
+      if (normalizedOld === normalizedNew) return undefined; // No change
+
+      // Check if the new tag is already in use
+      const existingSlot = slots.find((s) => s.tag === normalizedNew);
+      if (existingSlot) {
+        return `Cannot change to ${existingSlot.name} (${normalizedNew}) because that language is already used in this field.`;
+      }
+
+      // Move the text from old tag to new tag
+      const oldText = field.getTextAxis(normalizedOld);
+      field.setTextAxis(normalizedNew, oldText);
+      field.setTextAxis(normalizedOld, "");
+
+      // Update the slots array
+      setSlots((previous) =>
+        previous.map((s) => {
+          if (s.tag === normalizedOld) {
+            return createLanguageSlot(normalizedNew, s.color);
+          }
+          return s;
+        })
+      );
+
+      return undefined;
+    },
+    [field, slots]
+  );
+
+  const hasMultipleMetadataSlots = metadataSlots.length > 1;
+
   return {
     languageTags,
     slots,
     newlyAddedTag,
     handleAddLanguage,
     handleRemoveLanguage,
+    handleChangeLanguage,
     clearNewlyAddedTag,
-    isProtectedSlot
+    isProtectedSlot,
+    hasMultipleMetadataSlots
   };
 }
 
@@ -297,17 +427,15 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
             data-testid="add-translation-button"
             onClick={() => setIsAdding(true)}
             css={css`
-              position: absolute;
-              bottom: 5px;
-              right: 4px;
               background: none;
               border: none;
               color: #81c21e;
               cursor: pointer;
               font-size: 1.2em;
               font-weight: 600;
-              padding: 0;
+              padding: 0 4px;
               line-height: 1;
+              flex-shrink: 0;
               transition: all 150ms ease-in-out;
               &:hover {
                 color: #c73f1d;

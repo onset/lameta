@@ -10,6 +10,14 @@
       key: "depositor",
       visibility: "always",
       description: "This is usually the same person as the Collection Steward."
+    },
+    {
+      key: "collectionDescription",
+      multilingual: true
+    },
+    {
+      key: "title",
+      multilingual: true
     }
   ],
   session: [

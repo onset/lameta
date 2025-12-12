@@ -193,8 +193,30 @@ export class Field {
   public getTextAxis(tag: string): string {
     return this.textHolder.getTextAxis(tag);
   }
+  /**
+   * Get virtual interpretation of text for a language slot.
+   * If the text looks like slash syntax, parses it virtually using the
+   * provided language tags order. Otherwise falls back to normal getTextAxis.
+   */
+  public getTextAxisVirtual(tag: string, languageTags: string[]): string {
+    return this.textHolder.getTextAxisVirtual(tag, languageTags);
+  }
+  /**
+   * Check if the stored text looks like slash syntax that could be
+   * virtually interpreted as multilingual.
+   */
+  public looksLikeSlashSyntax(): boolean {
+    return this.textHolder.looksLikeSlashSyntax();
+  }
   public getAllNonEmptyTextAxes(): string[] {
     return this.textHolder.getAllNonEmptyTextAxes();
+  }
+  /**
+   * Get all effective slot tags, including any "unknown" tags for extra
+   * segments in slash syntax.
+   */
+  public getEffectiveSlotTags(metadataSlotTags: string[]): string[] {
+    return this.textHolder.getEffectiveSlotTags(metadataSlotTags);
   }
   public getTextForSimpleDisplay(): string {
     return this.textHolder.getFirstNonEmptyText([

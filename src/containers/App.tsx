@@ -12,6 +12,34 @@ import { observer } from "mobx-react";
 import { ReleasesDialog } from "../components/ReleasesDialog";
 import { createLametaTheme } from "./theme";
 import { ThemeProvider } from "@mui/material";
+import { css } from "@emotion/react";
+
+/** DEBUG: Prominent banner when saving project data is disabled */
+const SavingDisabledBanner: React.FC = observer(() => {
+  if (!userSettingsSingleton.DisableSavingProjectData) return null;
+  return (
+    <div
+      css={css`
+        background: #ff4444;
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+        position: sticky;
+        top: 0;
+        z-index: 9999;
+        cursor: pointer;
+        &:hover {
+          background: #cc0000;
+        }
+      `}
+      title="Click to re-enable saving"
+    >
+      🚫 SAVING DISABLED - Project data will NOT be saved to disk!
+    </div>
+  );
+});
 
 // being an "observer" make us refresh when mobx things change (namely, the uiFontZoom)
 export const App: React.FunctionComponent = observer(() => {
@@ -38,6 +66,7 @@ export const App: React.FunctionComponent = observer(() => {
         }
       }}
     >
+      <SavingDisabledBanner />
       <I18nProvider i18n={i18n}>
         <ThemeProvider theme={theme}>
           <HomePage />

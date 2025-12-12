@@ -350,3 +350,183 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
     });
   });
 });
+
+describe("TextHolder slash syntax virtual conversion", () => {
+  describe("looksLikeSlashSyntax", () => {
+    it("should return false for empty string", () => {
+      const t = new TextHolder();
+      expect(t.looksLikeSlashSyntax()).toBe(false);
+    });
+
+    it("should return false for plain text without slashes", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "hello world";
+      expect(t.looksLikeSlashSyntax()).toBe(false);
+    });
+
+    it("should return true for text with slashes", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house";
+      expect(t.looksLikeSlashSyntax()).toBe(true);
+    });
+
+    it("should return false for already-tagged text", () => {
+      const t = new TextHolder();
+      t.setTextAxis("en", "house");
+      t.setTextAxis("es", "casa");
+      expect(t.looksLikeSlashSyntax()).toBe(false);
+    });
+
+    it("should return false for tagged text even if it contains slashes in content", () => {
+      const t = new TextHolder();
+      // Need two languages to force tagged format storage
+      t.setTextAxis("en", "path/to/file");
+      t.setTextAxis("es", "ruta");
+      // Now it starts with [[ so should not look like slash syntax
+      expect(t.looksLikeSlashSyntax()).toBe(false);
+    });
+
+    it("should return true for English-only text with slashes (ambiguous case)", () => {
+      // This is a known limitation: single-language text with slashes
+      // is stored as plain text, making it look like slash syntax.
+      // Callers should be aware of this edge case.
+      const t = new TextHolder();
+      t.setTextAxis("en", "path/to/file");
+      // Stored as plain "path/to/file" not "[[en]]path/to/file"
+      expect(t.looksLikeSlashSyntax()).toBe(true);
+    });
+
+    it("should return true for text with multiple slashes", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house/maison";
+      expect(t.looksLikeSlashSyntax()).toBe(true);
+    });
+  });
+
+  describe("getTextAxisVirtual", () => {
+    it("should return virtual interpretation for slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house";
+      expect(t.getTextAxisVirtual("es", ["es", "en"])).toBe("casa");
+      expect(t.getTextAxisVirtual("en", ["es", "en"])).toBe("house");
+    });
+
+    it("should fall back to normal getTextAxis when not slash syntax", () => {
+      const t = new TextHolder();
+      t.setTextAxis("en", "house");
+      t.setTextAxis("es", "casa");
+      expect(t.getTextAxisVirtual("en", ["es", "en"])).toBe("house");
+      expect(t.getTextAxisVirtual("es", ["es", "en"])).toBe("casa");
+    });
+
+    it("should handle more segments than tags", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "one/two/three/four";
+      expect(t.getTextAxisVirtual("en", ["en", "es"])).toBe("one");
+      expect(t.getTextAxisVirtual("es", ["en", "es"])).toBe("two");
+      expect(t.getTextAxisVirtual("unknown1", ["en", "es"])).toBe("three");
+      expect(t.getTextAxisVirtual("unknown2", ["en", "es"])).toBe("four");
+    });
+
+    it("should preserve whitespace in virtual segments", () => {
+      const t = new TextHolder();
+      t.monoLingualText = " casa / house ";
+      expect(t.getTextAxisVirtual("es", ["es", "en"])).toBe(" casa ");
+      expect(t.getTextAxisVirtual("en", ["es", "en"])).toBe(" house ");
+    });
+
+    it("should not modify stored text", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house";
+      t.getTextAxisVirtual("es", ["es", "en"]);
+      t.getTextAxisVirtual("en", ["es", "en"]);
+      expect(t.monoLingualText).toBe("casa/house");
+    });
+  });
+
+  describe("getVirtualMultiAxisView", () => {
+    it("should return null when not slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "plain text";
+      expect(t.getVirtualMultiAxisView(["en"])).toBeNull();
+    });
+
+    it("should return map of all virtual axes", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house/maison";
+      const view = t.getVirtualMultiAxisView(["es", "en", "fr"]);
+      expect(view).not.toBeNull();
+      expect(view!.get("es")).toBe("casa");
+      expect(view!.get("en")).toBe("house");
+      expect(view!.get("fr")).toBe("maison");
+    });
+
+    it("should include unknown tags for extra segments", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "a/b/c";
+      const view = t.getVirtualMultiAxisView(["en"]);
+      expect(view).not.toBeNull();
+      expect(view!.get("en")).toBe("a");
+      expect(view!.get("unknown1")).toBe("b");
+      expect(view!.get("unknown2")).toBe("c");
+    });
+  });
+
+  describe("commitSlashSyntaxConversion", () => {
+    it("should convert slash syntax to tagged format", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house";
+      const result = t.commitSlashSyntaxConversion(["es", "en"]);
+      expect(result).toBe(true);
+      expect(t.monoLingualText).toBe("[[es]]casa[[en]]house");
+      expect(t.getTextAxis("es")).toBe("casa");
+      expect(t.getTextAxis("en")).toBe("house");
+    });
+
+    it("should return false when not slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "plain text";
+      const result = t.commitSlashSyntaxConversion(["en"]);
+      expect(result).toBe(false);
+      expect(t.monoLingualText).toBe("plain text");
+    });
+
+    it("should handle three languages", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house/maison";
+      t.commitSlashSyntaxConversion(["es", "en", "fr"]);
+      expect(t.getTextAxis("es")).toBe("casa");
+      expect(t.getTextAxis("en")).toBe("house");
+      expect(t.getTextAxis("fr")).toBe("maison");
+    });
+
+    it("should add unknown tags for extra segments", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "a/b/c/d";
+      t.commitSlashSyntaxConversion(["en", "es"]);
+      expect(t.getTextAxis("en")).toBe("a");
+      expect(t.getTextAxis("es")).toBe("b");
+      expect(t.getTextAxis("unknown1")).toBe("c");
+      expect(t.getTextAxis("unknown2")).toBe("d");
+    });
+
+    it("should skip empty segments in output", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa//maison";
+      t.commitSlashSyntaxConversion(["es", "en", "fr"]);
+      // Empty segment for "en" should not appear in output
+      expect(t.monoLingualText).toBe("[[es]]casa[[fr]]maison");
+      expect(t.getTextAxis("es")).toBe("casa");
+      expect(t.getTextAxis("en")).toBe("");
+      expect(t.getTextAxis("fr")).toBe("maison");
+    });
+
+    it("should no longer look like slash syntax after commit", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "casa/house";
+      expect(t.looksLikeSlashSyntax()).toBe(true);
+      t.commitSlashSyntaxConversion(["es", "en"]);
+      expect(t.looksLikeSlashSyntax()).toBe(false);
+    });
+  });
+});

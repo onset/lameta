@@ -215,6 +215,11 @@ export class Project extends Folder {
         name = code.toUpperCase();
       }
 
+      // Get the autonym (language name in its own script)
+      const autonym = staticLanguageFinder
+        ? staticLanguageFinder.getAutonym(code)
+        : undefined;
+
       // Skip duplicates (e.g., if both "en" and "eng" are in the list)
       if (seenTags.has(code)) return;
       seenTags.add(code);
@@ -225,6 +230,7 @@ export class Project extends Folder {
         tag: code,
         label: label,
         name: name,
+        autonym: autonym,
         color: Project.SLOT_COLORS[slots.length % Project.SLOT_COLORS.length]
       });
     });

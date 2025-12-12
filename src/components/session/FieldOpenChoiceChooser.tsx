@@ -2,14 +2,48 @@ import * as React from "react";
 import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
-import { lameta_orange } from "../../containers/theme";
+import { lameta_orange, tooltipBackground } from "../../containers/theme";
 import { capitalCase } from "../../other/case";
 import { OptionWithTooltip } from "../OptionWithTooltip";
 import { SearchContext } from "../SearchContext";
 import HighlightSearchTerm from "../HighlightSearchTerm";
 import { components } from "react-select";
+import { Project } from "../../model/Project/Project";
+import { translateGenreToLanguage } from "../../other/localization";
+import Tooltip from "react-tooltip-lite";
 
 //const Choices = new Dictionary<string, Array<string>>();
+
+// Build tooltip content showing translations in project's metadata language slots
+const buildTranslationTooltip = (
+  value: string,
+  translateToLanguage: (value: string, lang: string) => string | undefined
+): React.ReactNode => {
+  const slots = Project.getMetadataLanguageSlots();
+  if (slots.length <= 1 || !value) return null;
+
+  const translations: { name: string; text: string }[] = [];
+  for (const slot of slots) {
+    const translated = translateToLanguage(value, slot.tag);
+    if (translated) {
+      // Use autonym if available, otherwise fall back to name
+      const displayName = slot.autonym || slot.name || slot.label;
+      translations.push({ name: displayName, text: translated });
+    }
+  }
+
+  if (translations.length === 0) return null;
+
+  return (
+    <div>
+      {translations.map((t, i) => (
+        <div key={i}>
+          <strong>{t.name}:</strong> {t.text}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // For fields where there are choices but the user can enter new ones.
 const FieldOpenChoiceChooser: React.FunctionComponent<{
@@ -114,11 +148,35 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         }}
         components={{
           Option: (p: any) => <OptionWithTooltip {...p} />,
-          SingleValue: (p: any) => (
-            <components.SingleValue {...p}>
-              <HighlightSearchTerm text={p.data.label} />
-            </components.SingleValue>
-          )
+          SingleValue: (p: any) => {
+            const isMultilingual = props.field.definition.multilingual;
+            const slots = Project.getMetadataLanguageSlots();
+            const showTranslationTooltip =
+              isMultilingual && slots.length > 1 && p.data.value;
+            const tooltipContent = showTranslationTooltip
+              ? buildTranslationTooltip(p.data.value, translateGenreToLanguage)
+              : null;
+
+            const innerContent = <HighlightSearchTerm text={p.data.label} />;
+
+            return (
+              <components.SingleValue {...p}>
+                {tooltipContent ? (
+                  <Tooltip
+                    direction="down"
+                    content={tooltipContent}
+                    background={tooltipBackground}
+                    color="white"
+                    hoverDelay={300}
+                  >
+                    <span>{innerContent}</span>
+                  </Tooltip>
+                ) : (
+                  innerContent
+                )}
+              </components.SingleValue>
+            );
+          }
         }}
         options={options}
       />

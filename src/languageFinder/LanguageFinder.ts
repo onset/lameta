@@ -480,4 +480,90 @@ export class LanguageFinder {
   public getLanguageName(code: string): string {
     return this.findOneLanguageNameFromCode_Or_ReturnCode(code);
   }
+
+  /**
+   * Get the autonym (language name in its own script) for a language code.
+   * Falls back to a well-known list of autonyms for major languages.
+   * Returns undefined if no autonym is known (meaning the English name should be used).
+   */
+  public getAutonym(code: string): string | undefined {
+    const normalized = code.toLowerCase().trim();
+
+    // For English, the autonym IS "English" - no special handling needed
+    // Return undefined so the caller uses the English name
+    if (normalized === "en" || normalized === "eng") {
+      return undefined;
+    }
+
+    // Well-known autonyms for major languages
+    // These are the most commonly encountered languages where the autonym
+    // differs significantly from the English name
+    const knownAutonyms: Record<string, string> = {
+      // Major world languages
+      es: "Español",
+      spa: "Español",
+      pt: "Português",
+      por: "Português",
+      fr: "Français",
+      fra: "Français",
+      de: "Deutsch",
+      deu: "Deutsch",
+      it: "Italiano",
+      ita: "Italiano",
+      nl: "Nederlands",
+      nld: "Nederlands",
+      ru: "Русский",
+      rus: "Русский",
+      zh: "中文",
+      zho: "中文",
+      cmn: "中文", // Mandarin Chinese
+      ja: "日本語",
+      jpn: "日本語",
+      ko: "한국어",
+      kor: "한국어",
+      ar: "العربية",
+      ara: "العربية",
+      fa: "فارسی",
+      fas: "فارسی",
+      hi: "हिन्दी",
+      hin: "हिन्दी",
+      bn: "বাংলা",
+      ben: "বাংলা",
+      id: "Bahasa Indonesia",
+      ind: "Bahasa Indonesia",
+      ms: "Bahasa Melayu",
+      msa: "Bahasa Melayu",
+      th: "ไทย",
+      tha: "ไทย",
+      vi: "Tiếng Việt",
+      vie: "Tiếng Việt",
+      tr: "Türkçe",
+      tur: "Türkçe",
+      pl: "Polski",
+      pol: "Polski",
+      uk: "Українська",
+      ukr: "Українська",
+      el: "Ελληνικά",
+      ell: "Ελληνικά",
+      he: "עברית",
+      heb: "עברית",
+      sw: "Kiswahili",
+      swa: "Kiswahili",
+      // Pashto (user has this in their project)
+      ps: "پښتو",
+      pus: "پښتو",
+      // Slovenian
+      sl: "Slovenščina",
+      slv: "Slovenščina"
+    };
+
+    if (knownAutonyms[normalized]) {
+      return knownAutonyms[normalized];
+    }
+
+    // Don't use the altNames heuristic - it picks up translations into other
+    // languages (e.g., "Angleščina" is Slovenian for "English", not an autonym)
+    // Only return known autonyms from the curated list above
+    return undefined;
+  }
 }

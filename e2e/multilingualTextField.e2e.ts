@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page, Locator } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./various-e2e-helpers";
 
@@ -6,11 +6,14 @@ let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
 
+// Helper to get the Description field locator - use this to scope selectors
+function getDescriptionField(page: Page): Locator {
+  return page.locator('.field:has(label:text("Description"))');
+}
+
 // Helper to make the + button visible by hovering over the Description multilingual field
 async function hoverToShowAddButton(page: Page) {
-  const descriptionField = page.locator(
-    '.field:has(label:text("Description"))'
-  );
+  const descriptionField = getDescriptionField(page);
   const fieldBorder = descriptionField.locator(".field-value-border").first();
   await fieldBorder.hover();
 }
@@ -146,21 +149,28 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
+    // Scope to the Description field
+    const descriptionField = getDescriptionField(page);
+
     // Hover to show the + button
     await hoverToShowAddButton(page);
 
-    // Initially should have one translation slot (English by default)
-    const initialSlots = page.locator('[data-testid^="translation-slot-"]');
+    // Initially should have one translation slot (English by default) in Description
+    const initialSlots = descriptionField.locator(
+      '[data-testid^="translation-slot-"]'
+    );
     const initialCount = await initialSlots.count();
     expect(initialCount).toBe(1);
 
-    // Click Add translation
-    const addTranslationBtn = page.getByTestId("add-translation-button");
+    // Click Add translation in Description field
+    const addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await expect(addTranslationBtn).toBeVisible();
     await addTranslationBtn.click();
 
     // Type in a language and select it
-    const languageInput = page
+    const languageInput = descriptionField
       .locator('.select input[role="combobox"]')
       .first();
     await languageInput.fill("Spanish");
@@ -168,20 +178,22 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
 
     // Wait for the new slot to appear (BCP47 code for Spanish is "es")
-    await page.waitForSelector('[data-testid="translation-slot-es"]', {
-      timeout: 5000
-    });
+    await descriptionField
+      .locator('[data-testid="translation-slot-es"]')
+      .waitFor({ timeout: 5000 });
 
-    // Now should have two translation slots
-    const afterSlots = page.locator('[data-testid^="translation-slot-"]');
+    // Now should have two translation slots in Description field
+    const afterSlots = descriptionField.locator(
+      '[data-testid^="translation-slot-"]'
+    );
     await expect(afterSlots).toHaveCount(2);
 
     // Spanish slot should exist (BCP47 code is "es")
-    const spanishSlot = page.getByTestId("translation-slot-es");
+    const spanishSlot = descriptionField.getByTestId("translation-slot-es");
     await expect(spanishSlot).toBeVisible();
 
     // Spanish color bar should be visible with tooltip showing language name
-    const spanishColorBar = page.getByTestId("slot-color-bar-es");
+    const spanishColorBar = descriptionField.getByTestId("slot-color-bar-es");
     await expect(spanishColorBar).toBeVisible();
   });
 
@@ -193,17 +205,22 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
-    // Get the English slot and its editor
-    const englishSlot = page.getByTestId("translation-slot-en");
+    // Scope to Description field
+    const descriptionField = getDescriptionField(page);
+
+    // Get the English slot and its editor in Description field
+    const englishSlot = descriptionField.getByTestId("translation-slot-en");
     const englishEditor = englishSlot.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill("This is the English description");
 
     // Add a Spanish translation
-    const addTranslationBtn = page.getByTestId("add-translation-button");
+    const addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await addTranslationBtn.click();
 
-    const languageInput = page
+    const languageInput = descriptionField
       .locator('.select input[role="combobox"]')
       .first();
     await languageInput.fill("Spanish");
@@ -212,10 +229,10 @@ test.describe("Multilingual Text Fields", () => {
 
     // The new Spanish slot should be focused, type in it
     // Find the description editor within the Spanish slot (BCP47 code is "es")
-    await page.waitForSelector('[data-testid="translation-slot-es"]', {
-      timeout: 5000
-    });
-    const spanishSlot = page.getByTestId("translation-slot-es");
+    await descriptionField
+      .locator('[data-testid="translation-slot-es"]')
+      .waitFor({ timeout: 5000 });
+    const spanishSlot = descriptionField.getByTestId("translation-slot-es");
     const spanishEditor = spanishSlot.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("Esta es la descripción en español");
@@ -234,15 +251,20 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
+    // Scope to Description field
+    const descriptionField = getDescriptionField(page);
+
     // Hover to show the + button
     await hoverToShowAddButton(page);
 
     // Add a second translation so delete can work
-    const addTranslationBtn = page.getByTestId("add-translation-button");
+    const addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await expect(addTranslationBtn).toBeVisible();
     await addTranslationBtn.click();
 
-    const languageInput = page
+    const languageInput = descriptionField
       .locator('.select input[role="combobox"]')
       .first();
     await languageInput.fill("French");
@@ -251,12 +273,12 @@ test.describe("Multilingual Text Fields", () => {
     await page.waitForTimeout(500);
 
     // Wait for French slot to appear (BCP47 code is "fr")
-    await page.waitForSelector('[data-testid="translation-slot-fr"]', {
-      timeout: 5000
-    });
+    await descriptionField
+      .locator('[data-testid="translation-slot-fr"]')
+      .waitFor({ timeout: 5000 });
 
     // Click the color bar to open menu
-    const frenchColorBar = page.getByTestId("slot-color-bar-fr");
+    const frenchColorBar = descriptionField.getByTestId("slot-color-bar-fr");
     await expect(frenchColorBar).toBeVisible();
     await frenchColorBar.click();
 
@@ -276,15 +298,20 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
+    // Scope to Description field
+    const descriptionField = getDescriptionField(page);
+
     // Hover to show the + button
     await hoverToShowAddButton(page);
 
     // Add a second translation (use "deu" code directly for unambiguous match)
-    const addTranslationBtn = page.getByTestId("add-translation-button");
+    const addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await expect(addTranslationBtn).toBeVisible();
     await addTranslationBtn.click();
 
-    const languageInput = page
+    const languageInput = descriptionField
       .locator('.select input[role="combobox"]')
       .first();
     await languageInput.fill("deu");
@@ -292,16 +319,18 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
 
     // Wait for German slot to appear (BCP47 code is "de")
-    await page.waitForSelector('[data-testid="translation-slot-de"]', {
-      timeout: 5000
-    });
+    await descriptionField
+      .locator('[data-testid="translation-slot-de"]')
+      .waitFor({ timeout: 5000 });
 
-    // Verify we have 2 slots
-    const slotsBefore = page.locator('[data-testid^="translation-slot-"]');
+    // Verify we have 2 slots in Description
+    const slotsBefore = descriptionField.locator(
+      '[data-testid^="translation-slot-"]'
+    );
     await expect(slotsBefore).toHaveCount(2);
 
     // Click color bar to open menu and delete the German slot
-    const germanColorBar = page.getByTestId("slot-color-bar-de");
+    const germanColorBar = descriptionField.getByTestId("slot-color-bar-de");
     await germanColorBar.click();
 
     const deleteMenuItem = page.getByTestId("delete-slot-menu-de");
@@ -310,12 +339,14 @@ test.describe("Multilingual Text Fields", () => {
     // Wait for removal
     await page.waitForTimeout(300);
 
-    // Should now have only 1 slot
-    const slotsAfter = page.locator('[data-testid^="translation-slot-"]');
+    // Should now have only 1 slot in Description
+    const slotsAfter = descriptionField.locator(
+      '[data-testid^="translation-slot-"]'
+    );
     await expect(slotsAfter).toHaveCount(1);
 
     // German slot should be gone
-    const germanSlot = page.getByTestId("translation-slot-de");
+    const germanSlot = descriptionField.getByTestId("translation-slot-de");
     await expect(germanSlot).not.toBeVisible();
   });
 
@@ -388,11 +419,16 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
+    // Scope to Description field
+    const descriptionField = getDescriptionField(page);
+
     // Add a French translation first (use ISO code)
-    const addTranslationBtn = page.getByTestId("add-translation-button");
+    const addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await addTranslationBtn.click();
 
-    const languageInput = page
+    const languageInput = descriptionField
       .locator('.select input[role="combobox"]')
       .first();
     await languageInput.fill("fra");
@@ -400,33 +436,37 @@ test.describe("Multilingual Text Fields", () => {
     await languageInput.press("Enter");
 
     // Wait for French slot to appear (BCP47 code is "fr")
-    await page.waitForSelector('[data-testid="translation-slot-fr"]', {
-      timeout: 5000
-    });
+    await descriptionField
+      .locator('[data-testid="translation-slot-fr"]')
+      .waitFor({ timeout: 5000 });
 
     // Add some text to French
-    const frenchSlot = page.getByTestId("translation-slot-fr");
+    const frenchSlot = descriptionField.getByTestId("translation-slot-fr");
     const frenchEditor = frenchSlot.locator('[contenteditable="true"]');
     await frenchEditor.click();
     await frenchEditor.fill("French text here");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
-    // Verify we have 2 slots
-    let slots = page.locator('[data-testid^="translation-slot-"]');
+    // Verify we have 2 slots in Description
+    let slots = descriptionField.locator('[data-testid^="translation-slot-"]');
     await expect(slots).toHaveCount(2);
 
     // Remove French via color bar menu - English should remain
-    const frenchColorBar = page.getByTestId("slot-color-bar-fr");
+    const frenchColorBar = descriptionField.getByTestId("slot-color-bar-fr");
     await frenchColorBar.click();
     const deleteFrBtn = page.getByTestId("delete-slot-menu-fr");
     await deleteFrBtn.click();
     await page.waitForTimeout(300);
 
     // English should still be there
-    await expect(page.getByTestId("translation-slot-en")).toBeVisible();
-    await expect(page.getByTestId("translation-slot-fr")).not.toBeVisible();
-    slots = page.locator('[data-testid^="translation-slot-"]');
+    await expect(
+      descriptionField.getByTestId("translation-slot-en")
+    ).toBeVisible();
+    await expect(
+      descriptionField.getByTestId("translation-slot-fr")
+    ).not.toBeVisible();
+    slots = descriptionField.locator('[data-testid^="translation-slot-"]');
     await expect(slots).toHaveCount(1);
   });
 
@@ -439,39 +479,50 @@ test.describe("Multilingual Text Fields", () => {
       timeout: 10000
     });
 
+    // Scope to Description field
+    const descriptionField = getDescriptionField(page);
+
     // Hover to show the + button
     await hoverToShowAddButton(page);
 
     // First, add Spanish so we have 2 axes
-    let addTranslationBtn = page.getByTestId("add-translation-button");
+    let addTranslationBtn = descriptionField.getByTestId(
+      "add-translation-button"
+    );
     await expect(addTranslationBtn).toBeVisible();
     await addTranslationBtn.click();
-    let languageInput = page.locator('.select input[role="combobox"]').first();
+    let languageInput = descriptionField
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
-    await page.waitForSelector('[data-testid="translation-slot-es"]', {
-      timeout: 5000
-    });
+    await descriptionField
+      .locator('[data-testid="translation-slot-es"]')
+      .waitFor({ timeout: 5000 });
 
-    // Now we have 2 slots (en and es)
-    const afterFirstAdd = page.locator('[data-testid^="translation-slot-"]');
+    // Now we have 2 slots (en and es) in Description
+    const afterFirstAdd = descriptionField.locator(
+      '[data-testid^="translation-slot-"]'
+    );
     await expect(afterFirstAdd).toHaveCount(2);
 
     // Try to add Spanish again - should not add a duplicate
     // Need to hover again to show the + button
     await hoverToShowAddButton(page);
-    addTranslationBtn = page.getByTestId("add-translation-button");
+    addTranslationBtn = descriptionField.getByTestId("add-translation-button");
     await expect(addTranslationBtn).toBeVisible();
     await addTranslationBtn.click();
-    languageInput = page.locator('.select input[role="combobox"]').first();
+    languageInput = descriptionField
+      .locator('.select input[role="combobox"]')
+      .first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
     await page.waitForTimeout(500);
 
-    // Should still have 2 slots (duplicate not added)
-    const afterDuplicateAttempt = page.locator(
+    // Should still have 2 slots (duplicate not added) in Description
+    const afterDuplicateAttempt = descriptionField.locator(
       '[data-testid^="translation-slot-"]'
     );
     await expect(afterDuplicateAttempt).toHaveCount(2);
