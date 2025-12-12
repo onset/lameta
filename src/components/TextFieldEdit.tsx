@@ -17,7 +17,6 @@ import {
   AddTranslationControl,
   normalizeLanguageTag,
   useMultilingualField,
-  createLanguageSlot,
   isUnknownLanguage
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
@@ -29,7 +28,6 @@ import ListItemText from "@mui/material/ListItemText";
 import MuiTooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import { SingleLanguageChooser } from "./SingleLanguageChooser";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
@@ -497,18 +495,9 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         </Tooltip>
       </div>
 
-      {/* Language tag display on right side */}
+      {/* Combined language tag and kebab menu - tag shows by default, kebab on hover */}
       {props.languageSlot && (
-        <LanguageTagDisplay
-          slot={props.languageSlot}
-          existingTags={props.existingLanguageTags ?? []}
-          onChangeLanguage={props.onChangeLanguage}
-        />
-      )}
-
-      {/* Kebab menu icon on right side - visible on hover */}
-      {props.languageSlot && (
-        <KebabMenuIcon
+        <LanguageTagWithKebab
           slot={props.languageSlot}
           isProtected={props.isProtected ?? false}
           canRemove={props.canRemoveSlot ?? false}
@@ -518,37 +507,6 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
           existingTags={props.existingLanguageTags ?? []}
         />
       )}
-
-      {/* Add translation button - only visible on last slot on hover
-      {props.languageSlot && props.isLastSlot && props.showAddButton && (
-        <button
-          type="button"
-          title="Add language slot"
-          data-testid="add-translation-button"
-          onClick={props.onTriggerAddLanguage}
-          css={css`
-            background: none;
-            border: none;
-            color: #81c21e;
-            cursor: pointer;
-            font-size: 1.2em;
-            font-weight: 600;
-            padding: 0 4px;
-            line-height: 1;
-            flex-shrink: 0;
-            transition: all 150ms ease-in-out;
-            &:hover {
-              color: #c73f1d;
-              transform: scale(1.15);
-            }
-            &:active {
-              transform: scale(0.95);
-            }
-          `}
-        >
-          +
-        </button>
-      )} */}
     </div>
   );
 });
@@ -659,22 +617,14 @@ const LanguageSlotMenuItems: React.FC<
       <MenuItem
         disabled
         sx={{
+          fontSize: "0.87rem",
+          color: lameta_green,
           py: 0.5,
           minHeight: "auto",
           "&.Mui-disabled": { opacity: 1 }
         }}
       >
-        <ListItemText
-          sx={{ textAlign: "left" }}
-          primaryTypographyProps={{
-            sx: {
-              fontSize: "0.75rem",
-              fontWeight: "bold",
-              color: "text.secondary",
-              opacity: 0.5
-            }
-          }}
-        >
+        <ListItemText sx={{ textAlign: "right" }}>
           Slot: {slot.name} ({slot.tag})
         </ListItemText>
       </MenuItem>
@@ -702,8 +652,7 @@ const LanguageSlotMenuItems: React.FC<
             sx={{
               fontSize: "0.875rem",
               py: 0.5,
-              minHeight: "auto",
-              color: isProtected || !canRemove ? undefined : "#c73f1d"
+              minHeight: "auto"
             }}
           >
             <ListItemIcon sx={{ minWidth: 32, color: "inherit" }}>
@@ -777,92 +726,35 @@ const ColorBarWithMenu: React.FC<LanguageSlotMenuProps> = (props) => {
 };
 
 /**
- * Kebab (vertical dots) menu icon that appears on hover.
- * Positioned at the right edge of the row, leaving room for the "+" button.
+ * Combined language tag and kebab menu component.
+ * Shows the language tag by default; on hover, switches to show the kebab menu icon.
+ * The kebab menu is only visible when the parent container is hovered.
+ * Language tags are visible based on user settings or unknown language status.
  */
-const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
-  const { slot } = props;
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const open = Boolean(anchorEl);
+const LanguageTagWithKebab: React.FC<LanguageSlotMenuProps> = mobx.observer(
+  (props) => {
+    const { slot } = props;
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const open = Boolean(anchorEl);
 
-  return (
-    <>
-      <div
-        title={`${slot.name}. Click for menu`}
-        data-testid={`slot-kebab-menu-${slot.tag}`}
-        className={`kebab-menu-icon${open ? " menu-open" : ""}`}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
-        css={css`
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          color: ${lameta_green};
-          padding: 0 2px;
-          flex-shrink: 0;
-          &:hover {
-            color: ${lameta_dark_green};
-          }
-          &:active {
-            transform: scale(0.95);
-          }
-        `}
-      >
-        <MoreVertIcon fontSize="small" />
-      </div>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        slotProps={{ paper: { sx: { minWidth: "auto", py: 0.5 } } }}
-      >
-        <LanguageSlotMenuItems
-          {...props}
-          testIdPrefix="kebab-menu"
-          onClose={() => setAnchorEl(null)}
-        />
-      </Menu>
-    </>
-  );
-};
-
-/**
- * Displays the language tag on the right side of the field.
- * Shows "????" in red for unknown languages.
- * Only visible when userSettings.ShowLanguageTags is true OR if it's an unknown language.
- * Unknown languages are clickable to show the language chooser.
- */
-interface LanguageTagDisplayProps {
-  slot: LanguageSlot;
-  existingTags: string[];
-  onChangeLanguage?: (oldTag: string, newTag: string) => string | undefined;
-}
-
-const LanguageTagDisplay: React.FC<LanguageTagDisplayProps> = mobx.observer(
-  ({ slot, existingTags, onChangeLanguage }) => {
     const isUnknown = slot.tag.startsWith("unknown");
     // Show tags if user setting is enabled, or if multilingual migration is pending
     const showTags =
       userSettings.ShowLanguageTags ||
       Project.getMultilingualConversionPending();
 
-    // Always show unknown languages, otherwise only show when setting is enabled
-    if (!isUnknown && !showTags) {
-      return null;
-    }
+    // Determine if language tag should be visible
+    const showLanguageTag = isUnknown || showTags;
 
     const displayText = isUnknown ? "????" : slot.label;
-    const color = isUnknown ? "#c73f1d" : "#888";
+    const tagColor = isUnknown ? "#c73f1d" : "#888";
     const tooltipText = isUnknown
       ? `Unknown language. Click for more information.`
-      : slot.name;
+      : `${slot.name}. Hover for menu`;
 
-    const handleClick = () => {
+    const handleUnknownClick = () => {
       if (isUnknown) {
-        // Extract the slot number from the tag (e.g., "unknown1" -> 2, "unknown2" -> 3)
-        // The number in the tag is 0-based for extra slots, so add 1 for display
         const match = slot.tag.match(/unknown(\d+)?/);
         const slotNumber = match && match[1] ? parseInt(match[1], 10) + 1 : 1;
 
@@ -873,32 +765,128 @@ const LanguageTagDisplay: React.FC<LanguageTagDisplayProps> = mobx.observer(
       }
     };
 
+    // When hovering over this element or menu is open, show kebab
+    // Otherwise show language tag if it should be visible
+    const showKebab = isHovered || open;
+
+    // If neither language tag nor kebab should show, render just the invisible kebab
+    // which becomes visible on parent hover via the kebab-menu-icon class
+    if (!showLanguageTag && !showKebab) {
+      return (
+        <>
+          <div
+            data-testid={`language-tag-kebab-${slot.tag}`}
+            className={`kebab-menu-icon${open ? " menu-open" : ""}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+            css={css`
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              padding: 0 2px;
+              min-width: 20px;
+              cursor: pointer;
+              color: ${lameta_green};
+              &:hover {
+                color: ${lameta_dark_green};
+              }
+              &:active {
+                transform: scale(0.95);
+              }
+            `}
+            title={`${slot.name}. Click for menu`}
+          >
+            <MoreVertIcon
+              fontSize="small"
+              data-testid={`slot-kebab-menu-${slot.tag}`}
+            />
+          </div>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={() => setAnchorEl(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            slotProps={{ paper: { sx: { minWidth: "auto", py: 0.5 } } }}
+          >
+            <LanguageSlotMenuItems
+              {...props}
+              testIdPrefix="kebab-menu"
+              onClose={() => setAnchorEl(null)}
+            />
+          </Menu>
+        </>
+      );
+    }
+
+    // When language tag should be visible: show tag normally, switch to kebab on hover
     return (
-      <span
-        data-testid={`language-tag-${slot.tag}`}
-        onClick={handleClick}
-        css={css`
-          font-size: 0.75em;
-          color: ${color};
-          flex-shrink: 0;
-          padding: 0;
-          padding-left: 4px;
-          margin-left: auto;
-          align-self: center;
-          font-weight: ${isUnknown ? "bold" : "normal"};
-          cursor: ${isUnknown ? "pointer" : "default"};
-          ${isUnknown
-            ? `
-            &:hover {
-              text-decoration: underline;
+      <>
+        <div
+          data-testid={`language-tag-kebab-${slot.tag}`}
+          // No kebab-menu-icon class here - this should always be visible when showLanguageTag is true
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={(e) => {
+            if (showKebab) {
+              setAnchorEl(e.currentTarget);
+            } else if (isUnknown) {
+              handleUnknownClick();
             }
-          `
-            : ""}
-        `}
-        title={tooltipText}
-      >
-        {displayText}
-      </span>
+          }}
+          css={css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            padding: 0 2px;
+            min-width: 20px;
+            cursor: pointer;
+            ${showKebab
+              ? `
+              color: ${lameta_green};
+              &:hover {
+                color: ${lameta_dark_green};
+              }
+              &:active {
+                transform: scale(0.95);
+              }
+            `
+              : `
+              font-size: 0.75em;
+              color: ${tagColor};
+              font-weight: ${isUnknown ? "bold" : "normal"};
+              ${isUnknown ? "&:hover { text-decoration: underline; }" : ""}
+            `}
+          `}
+          title={showKebab ? `${slot.name}. Click for menu` : tooltipText}
+        >
+          {showKebab ? (
+            <MoreVertIcon
+              fontSize="small"
+              data-testid={`slot-kebab-menu-${slot.tag}`}
+            />
+          ) : (
+            <span data-testid={`language-tag-${slot.tag}`}>{displayText}</span>
+          )}
+        </div>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={() => setAnchorEl(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          slotProps={{ paper: { sx: { minWidth: "auto", py: 0.5 } } }}
+        >
+          <LanguageSlotMenuItems
+            {...props}
+            testIdPrefix="kebab-menu"
+            onClose={() => setAnchorEl(null)}
+          />
+        </Menu>
+      </>
     );
   }
 );
