@@ -187,8 +187,28 @@ export class Field {
   public set text(value: string) {
     this.textHolder.combinedText = value;
   }
-  public setTextAxis(tag: string, textForAxis: string): void {
+  /**
+   * Set text for a specific language axis.
+   * If the field contains slash syntax and this is a multilingual field,
+   * automatically converts to tagged format before setting the value.
+   */
+  public setTextAxis(
+    tag: string,
+    textForAxis: string,
+    allLanguageTags?: string[]
+  ): void {
+    // If this field looks like slash syntax and we have language tags,
+    // convert it to tagged format first (implicit confirmation by editing)
+    if (this.looksLikeSlashSyntax() && allLanguageTags && allLanguageTags.length > 0) {
+      this.commitSlashSyntaxConversion(allLanguageTags);
+    }
     this.textHolder.setTextAxis(tag, textForAxis);
+  }
+  /**
+   * Permanently convert slash syntax to tagged format.
+   */
+  public commitSlashSyntaxConversion(languageTags: string[]): boolean {
+    return this.textHolder.commitSlashSyntaxConversion(languageTags);
   }
   public getTextAxis(tag: string): string {
     return this.textHolder.getTextAxis(tag);

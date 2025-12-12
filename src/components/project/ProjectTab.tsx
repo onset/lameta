@@ -13,12 +13,16 @@ import { ImdiView } from "../ImdiView";
 import "./ProjectTab.css";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createProjectTheme } from "../../containers/theme";
 import { ParadisecView } from "../ParadisecView";
 import { LametaXmlView } from "../lametaXmlView";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 import { RoCrateView } from "../RoCrate/RoCrateView";
+import { MultilingualTextMigrationPanel } from "./MultilingualTextMigrationPanel";
+
+// Remember the last selected tab within the Project tab (not persisted between runs)
+let lastProjectTabIndex = 0;
 
 interface IProps {
   project: Project;
@@ -27,8 +31,9 @@ interface IProps {
 }
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
-
-  const kFirstTabToOpen = userSettings.DeveloperMode ? 0 : 0;
+  
+  // Track if we've already navigated to Languages tab for this project load
+  const hasNavigatedToLanguages = useRef(false);
 
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
@@ -41,12 +46,39 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
     );
   });
 
+  // Calculate the Languages tab index (depends on whether Collection tab is shown)
+  const languagesTabIndex = showCollectionTab ? 3 : 2;
+
+  // Determine initial tab: if multilingualConversionPending, go to Languages tab
+  const getInitialTabIndex = () => {
+    if (props.project.multilingualConversionPending && !hasNavigatedToLanguages.current) {
+      hasNavigatedToLanguages.current = true;
+      return languagesTabIndex;
+    }
+    return lastProjectTabIndex;
+  };
+
+  const [tabIndex, setTabIndex] = useState(getInitialTabIndex);
+
+  // Also navigate to Languages tab if multilingualConversionPending becomes true after mount
+  useEffect(() => {
+    if (props.project.multilingualConversionPending && !hasNavigatedToLanguages.current) {
+      hasNavigatedToLanguages.current = true;
+      setTabIndex(languagesTabIndex);
+      lastProjectTabIndex = languagesTabIndex;
+    }
+  }, [props.project.multilingualConversionPending, languagesTabIndex]);
+
   return (
     <ThemeProvider theme={theme}>
       <Tabs
         className={"project"}
-        defaultIndex={kFirstTabToOpen}
-        onSelect={() => props.project.saveFolderMetaData()}
+        selectedIndex={tabIndex}
+        onSelect={(index) => {
+          setTabIndex(index);
+          lastProjectTabIndex = index;
+          props.project.saveFolderMetaData();
+        }}
         css={css`
           // selection doesn't work if we these on the tabs themselves
           .tab-project-funding-project,
@@ -183,6 +215,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             authorityLists={props.authorityLists}
             languageFinder={props.project.languageFinder}
             rowStyle={true}
+            insertAfterField={{
+              fieldKey: "collectionWorkingLanguages",
+              content: (
+                <MultilingualTextMigrationPanel project={props.project} />
+              )
+            }}
           />
         </TabPanel>{" "}
         <TabPanel>

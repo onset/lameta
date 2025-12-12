@@ -51,6 +51,15 @@
       xmlTag: "CustomAccessProtocol",
       englishLabel: "Custom Session Access Choices"
     },
+    {
+      key: "multilingualConversionPending",
+      xmlTag: "MultilingualConversionPending",
+      englishLabel: "Multilingual Conversion Pending",
+      visibility: "never",
+      omitFromImdi: true,
+      omitExport: true,
+      description: "Internal flag: true if slash-syntax fields need conversion to tagged format"
+    },
 
     /* ------ Funding Project --------- */
     {
@@ -276,6 +285,9 @@
       englishLabel: "Working Languages",
       form: "languages",
       type: "languageChoices",
+      controlProps: {
+        ordered: true
+      },
       // LAM-41: Map collection working languages to schema.org inLanguage so the
       // root dataset satisfies the LDAC "MUST" requirement without inventing
       // local placeholders. https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und

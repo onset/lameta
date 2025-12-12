@@ -32,6 +32,8 @@ export interface IProps {
   onShowContributorsTab?: (contributions: Contribution) => void;
   languageFinder: LanguageFinder;
   rowStyle?: boolean; // like used in the Properties tab
+  /** Render custom content after a specific field key */
+  insertAfterField?: { fieldKey: string; content: React.ReactNode };
 }
 
 class AutoForm extends React.Component<IProps> {
@@ -189,15 +191,21 @@ class AutoForm extends React.Component<IProps> {
       })
       .map((f) => f.key);
 
+    const fieldsToRender = this.sortedKeys
+      .map((k) => this.props.folder.properties.getValueOrThrow(k))
+      .filter((field) => field.form === this.props.form);
+
     return (
       <form
         className={"autoForm " + this.props.form + " " + this.props.formClass}
       >
-        {this.sortedKeys
-          .map((k) => this.props.folder.properties.getValueOrThrow(k))
-
-          .filter((field) => field.form === this.props.form)
-          .map((field) => this.makeEdit(field, this.props))}
+        {fieldsToRender.map((field) => (
+          <React.Fragment key={field.key}>
+            {this.makeEdit(field, this.props)}
+            {this.props.insertAfterField?.fieldKey === field.key &&
+              this.props.insertAfterField.content}
+          </React.Fragment>
+        ))}
         {this.props.folder.hasMoreFieldsTable ? (
           <AdditionalFieldsTable folder={this.props.folder} />
         ) : (

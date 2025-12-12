@@ -20,7 +20,7 @@ import { t, Trans } from "@lingui/macro";
 import { ipcRenderer } from "electron";
 import { analyticsLocation, analyticsEvent } from "../../other/analytics";
 import { Folder } from "../../model/Folder/Folder";
-import { NotifyException, NotifyWarning } from "../Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../Notify";
 import { makeGenericCsvZipFile as asyncMakeGenericCsvZipFile } from "../../export/CsvExporter";
 import { makeParadisecCsv } from "../../export/ParadisecCsvExporter";
 import { ExportChoices } from "./ExportChoices";
@@ -250,6 +250,18 @@ export const ExportDialog: React.FunctionComponent<{
 
   const handleContinue = (doSave: boolean) => {
     if (doSave) {
+      // Check if IMDI/OPEX export is blocked due to pending multilingual conversion
+      if (
+        (exportFormat === "imdi" || exportFormat === "opex-plus-files") &&
+        props.projectHolder.project?.multilingualConversionPending
+      ) {
+        NotifyError(
+          t`Cannot export to IMDI while multilingual text migration is pending.`,
+          t`Please complete the migration in the Project tab under Languages before exporting.`
+        );
+        return;
+      }
+
       userSettingsSingleton.ExportFormat = exportFormat;
 
       // Handle RO-Crate export differently - no file dialog

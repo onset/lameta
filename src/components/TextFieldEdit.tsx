@@ -8,6 +8,8 @@ import { LanguageSlot } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
 import {
+  lameta_dark_green,
+  lameta_green,
   tooltipBackground,
   unknownLanguageBackground
 } from "../containers/theme";
@@ -22,12 +24,17 @@ import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
 import userSettings from "../other/UserSettings";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MuiTooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
 import { SingleLanguageChooser } from "./SingleLanguageChooser";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
+import { Project } from "../model/Project/Project";
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -270,7 +277,8 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     // type a space.
     const value = event.currentTarget.innerText || "";
     if (props.languageSlot === undefined) field.setValueFromString(value);
-    else field.setTextAxis(props.languageSlot.tag, value);
+    else
+      field.setTextAxis(props.languageSlot.tag, value, props.allLanguageTags);
     validateValue(value);
   }
 
@@ -286,7 +294,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       }
     } else {
       if (newValue !== props.field.getTextAxis(props.languageSlot.tag)) {
-        props.field.setTextAxis(props.languageSlot.tag, newValue);
+        props.field.setTextAxis(
+          props.languageSlot.tag,
+          newValue,
+          props.allLanguageTags
+        );
       }
     }
 
@@ -298,7 +310,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       if (props.languageSlot === undefined) {
         props.field.setValueFromString(previous);
       } else {
-        props.field.setTextAxis(props.languageSlot.tag, previous);
+        props.field.setTextAxis(
+          props.languageSlot.tag,
+          previous,
+          props.allLanguageTags
+        );
       }
       el.textContent = previous;
     } else {
@@ -309,7 +325,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       if (props.languageSlot === undefined) {
         props.field.setValueFromString(previous);
       } else {
-        props.field.setTextAxis(props.languageSlot.tag, previous);
+        props.field.setTextAxis(
+          props.languageSlot.tag,
+          previous,
+          props.allLanguageTags
+        );
       }
       el.textContent = previous;
     }
@@ -357,6 +377,10 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         padding-right: 2px; /* buttons are now inline flex items */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};
         padding-left: ${props.languageSlot ? "5px" : "0"};
+        background: ${props.languageSlot &&
+        isUnknownLanguage(props.languageSlot.tag)
+          ? unknownLanguageBackground
+          : "transparent"};
         ${props.showAffordancesAfter &&
         props.field.definition.separatorWithCommaInstructions
           ? "padding-right: 2px;" // leave a little space after the icon
@@ -454,10 +478,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
               width: 100%;
               padding: 2px;
               box-sizing: border-box;
-              background: ${props.languageSlot &&
-              isUnknownLanguage(props.languageSlot.tag)
-                ? unknownLanguageBackground
-                : "white"};
+              background: transparent;
               border: none;
               display: block;
               cursor: text;
@@ -498,7 +519,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         />
       )}
 
-      {/* Add translation button - only visible on last slot on hover */}
+      {/* Add translation button - only visible on last slot on hover
       {props.languageSlot && props.isLastSlot && props.showAddButton && (
         <button
           type="button"
@@ -527,7 +548,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         >
           +
         </button>
-      )}
+      )} */}
     </div>
   );
 });
@@ -638,44 +659,76 @@ const LanguageSlotMenuItems: React.FC<
       <MenuItem
         disabled
         sx={{
-          fontSize: "0.875rem",
-          color: "text.secondary",
           py: 0.5,
           minHeight: "auto",
-          "&.Mui-disabled": { opacity: 0.7 }
+          "&.Mui-disabled": { opacity: 1 }
         }}
       >
-        {slot.name} ({slot.tag})
+        <ListItemText
+          sx={{ textAlign: "left" }}
+          primaryTypographyProps={{
+            sx: {
+              fontSize: "0.75rem",
+              fontWeight: "bold",
+              color: "text.secondary",
+              opacity: 0.5
+            }
+          }}
+        >
+          Slot: {slot.name} ({slot.tag})
+        </ListItemText>
       </MenuItem>
       <MenuItem
         onClick={handleStartChangeLanguage}
         data-testid={`change-language-${testIdPrefix}-${slot.tag}`}
-        sx={{ fontSize: "0.875rem", py: 0.5, minHeight: "auto", gap: 1 }}
+        sx={{ fontSize: "0.875rem", py: 0.5, minHeight: "auto" }}
       >
-        <EditIcon fontSize="small" />
-        Change Language
+        <ListItemIcon sx={{ minWidth: 32 }} />
+        <ListItemText>Change Language...</ListItemText>
       </MenuItem>
+      <MuiTooltip
+        title={
+          isProtected
+            ? "You cannot remove slots that are part of the project's working languages"
+            : ""
+        }
+        placement="right"
+      >
+        <span>
+          <MenuItem
+            onClick={handleDelete}
+            disabled={isProtected || !canRemove}
+            data-testid={`delete-slot-${testIdPrefix}-${slot.tag}`}
+            sx={{
+              fontSize: "0.875rem",
+              py: 0.5,
+              minHeight: "auto",
+              color: isProtected || !canRemove ? undefined : "#c73f1d"
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 32, color: "inherit" }}>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Delete Slot</ListItemText>
+          </MenuItem>
+        </span>
+      </MuiTooltip>
+      <hr
+        css={css`
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 4px 0;
+        `}
+      />
       <MenuItem
         onClick={handleAddLanguage}
         data-testid={`add-language-slot-${testIdPrefix}-${slot.tag}`}
         sx={{ fontSize: "0.875rem", py: 0.5, minHeight: "auto" }}
       >
-        Add language slot
-      </MenuItem>
-      <MenuItem
-        onClick={handleDelete}
-        disabled={isProtected || !canRemove}
-        data-testid={`delete-slot-${testIdPrefix}-${slot.tag}`}
-        sx={{
-          fontSize: "0.875rem",
-          py: 0.5,
-          minHeight: "auto",
-          gap: 1,
-          color: isProtected || !canRemove ? undefined : "#c73f1d"
-        }}
-      >
-        <DeleteIcon fontSize="small" />
-        Delete
+        <ListItemIcon sx={{ minWidth: 32 }}>
+          <AddIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Add Language Slot...</ListItemText>
       </MenuItem>
     </>
   );
@@ -743,11 +796,11 @@ const KebabMenuIcon: React.FC<LanguageSlotMenuProps> = (props) => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          color: #81c21e;
+          color: ${lameta_green};
           padding: 0 2px;
           flex-shrink: 0;
           &:hover {
-            color: #c73f1d;
+            color: ${lameta_dark_green};
           }
           &:active {
             transform: scale(0.95);
@@ -789,7 +842,10 @@ interface LanguageTagDisplayProps {
 const LanguageTagDisplay: React.FC<LanguageTagDisplayProps> = mobx.observer(
   ({ slot, existingTags, onChangeLanguage }) => {
     const isUnknown = slot.tag.startsWith("unknown");
-    const showTags = userSettings.ShowLanguageTags;
+    // Show tags if user setting is enabled, or if multilingual migration is pending
+    const showTags =
+      userSettings.ShowLanguageTags ||
+      Project.getMultilingualConversionPending();
 
     // Always show unknown languages, otherwise only show when setting is enabled
     if (!isUnknown && !showTags) {

@@ -2,8 +2,7 @@ import * as React from "react";
 import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
-import { lameta_orange, tooltipBackground } from "../../containers/theme";
-import { capitalCase } from "../../other/case";
+import { tooltipBackground } from "../../containers/theme";
 import { OptionWithTooltip } from "../OptionWithTooltip";
 import { SearchContext } from "../SearchContext";
 import HighlightSearchTerm from "../HighlightSearchTerm";
@@ -11,39 +10,9 @@ import { components } from "react-select";
 import { Project } from "../../model/Project/Project";
 import { translateGenreToLanguage } from "../../other/localization";
 import Tooltip from "react-tooltip-lite";
-
-//const Choices = new Dictionary<string, Array<string>>();
-
-// Build tooltip content showing translations in project's metadata language slots
-const buildTranslationTooltip = (
-  value: string,
-  translateToLanguage: (value: string, lang: string) => string | undefined
-): React.ReactNode => {
-  const slots = Project.getMetadataLanguageSlots();
-  if (slots.length <= 1 || !value) return null;
-
-  const translations: { name: string; text: string }[] = [];
-  for (const slot of slots) {
-    const translated = translateToLanguage(value, slot.tag);
-    if (translated) {
-      // Use autonym if available, otherwise fall back to name
-      const displayName = slot.autonym || slot.name || slot.label;
-      translations.push({ name: displayName, text: translated });
-    }
-  }
-
-  if (translations.length === 0) return null;
-
-  return (
-    <div>
-      {translations.map((t, i) => (
-        <div key={i}>
-          <strong>{t.name}:</strong> {t.text}
-        </div>
-      ))}
-    </div>
-  );
-};
+import { buildTranslationTooltip } from "../TranslationTooltip";
+import WarningIcon from "@mui/icons-material/Warning";
+import { css } from "@emotion/react";
 
 // For fields where there are choices but the user can enter new ones.
 const FieldOpenChoiceChooser: React.FunctionComponent<{
@@ -153,27 +122,55 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
             const slots = Project.getMetadataLanguageSlots();
             const showTranslationTooltip =
               isMultilingual && slots.length > 1 && p.data.value;
-            const tooltipContent = showTranslationTooltip
-              ? buildTranslationTooltip(p.data.value, translateGenreToLanguage)
-              : null;
+            const { content: tooltipContent, hasMissing } =
+              showTranslationTooltip
+                ? buildTranslationTooltip(
+                    p.data.value,
+                    translateGenreToLanguage
+                  )
+                : { content: null, hasMissing: false };
 
             const innerContent = <HighlightSearchTerm text={p.data.label} />;
 
             return (
               <components.SingleValue {...p}>
-                {tooltipContent ? (
-                  <Tooltip
-                    direction="down"
-                    content={tooltipContent}
-                    background={tooltipBackground}
-                    color="white"
-                    hoverDelay={300}
-                  >
-                    <span>{innerContent}</span>
-                  </Tooltip>
-                ) : (
-                  innerContent
-                )}
+                <span
+                  css={css`
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  `}
+                >
+                  {hasMissing && tooltipContent && (
+                    <Tooltip
+                      direction="down"
+                      content={tooltipContent}
+                      background={tooltipBackground}
+                      color="white"
+                      hoverDelay={300}
+                    >
+                      <WarningIcon
+                        css={css`
+                          font-size: 14px;
+                          color: #f5a623;
+                        `}
+                      />
+                    </Tooltip>
+                  )}
+                  {tooltipContent ? (
+                    <Tooltip
+                      direction="down"
+                      content={tooltipContent}
+                      background={tooltipBackground}
+                      color="white"
+                      hoverDelay={300}
+                    >
+                      <span>{innerContent}</span>
+                    </Tooltip>
+                  ) : (
+                    innerContent
+                  )}
+                </span>
               </components.SingleValue>
             );
           }

@@ -100,6 +100,30 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
 
+  /**
+   * Returns true if the project has slash-syntax multilingual fields
+   * that need to be converted to tagged format.
+   * This is persisted in the project file.
+   */
+  public get multilingualConversionPending(): boolean {
+    const value = this.properties.getTextStringOrEmpty(
+      "multilingualConversionPending"
+    );
+    return value === "true";
+  }
+
+  /**
+   * Set whether the project has pending multilingual conversion.
+   * Saves the project metadata after setting.
+   */
+  public setMultilingualConversionPending(pending: boolean): void {
+    this.properties.setText(
+      "multilingualConversionPending",
+      pending ? "true" : "false"
+    );
+    this.saveFolderMetaData();
+  }
+
   public get folderType(): IFolderType {
     return "project";
   }
@@ -144,6 +168,86 @@ export class Project extends Folder {
   }
   public migrateFromPreviousVersions(): void {
     // nothing here but see migrate() on ProjectMetadataFile
+  }
+
+  /**
+   * Check if the current archive configuration has any multilingual fields.
+   */
+  public static configurationHasMultilingualFields(): boolean {
+    const areas = ["project", "session", "person"] as const;
+    for (const area of areas) {
+      const definitions = fieldDefinitionsOfCurrentConfig[area] || [];
+      for (const def of definitions) {
+        if (def.multilingual === true) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Detect if sessions have slash-syntax content in multilingual fields.
+   * Checks up to the first 4 sessions; returns true if ANY has slash-syntax.
+   */
+  public detectSlashSyntaxInSessions(): boolean {
+    const sessionsToCheck = this.sessions.items.slice(0, 4);
+    if (sessionsToCheck.length === 0) {
+      return false;
+    }
+
+    for (const session of sessionsToCheck) {
+      const fields = session.properties.values();
+      for (const field of fields) {
+        if (field.definition?.multilingual && field.looksLikeSlashSyntax?.()) {
+          return true; // Found at least one session with slash-syntax
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check and set multilingualConversionPending based on archive config and session content.
+   * Called during project load and when archive configuration changes.
+   * 
+   * If pending is already "true", we don't change it.
+   * If pending is "false" or unset, we check for slash-syntax content and set to true if found.
+   * This allows re-detection if new slash-syntax content is added after a previous migration.
+   */
+  public checkAndSetMultilingualConversionPending(): void {
+    const existingValue = this.properties.getTextStringOrEmpty(
+      "multilingualConversionPending"
+    );
+    const allProps = this.properties
+      .values()
+      .map((f) => `${f.key}=${f.text}`)
+      .join(", ");
+    console.log(
+      `[Project] checkAndSetMultilingualConversionPending: existingValue="${existingValue}", metadataFile=${this.metadataFile?.metadataFilePath}`
+    );
+    console.log(`[Project] All properties: ${allProps}`);
+    
+    // If already true, don't change it - the user hasn't completed migration yet
+    if (existingValue === "true") {
+      console.log(
+        `[Project] Already set to "true", not changing`
+      );
+      return;
+    }
+
+    // Check if configuration has multilingual fields and sessions have slash syntax
+    // This runs even if existingValue is "false" to catch new slash-syntax content
+    const hasMultilingualFields = Project.configurationHasMultilingualFields();
+    const hasSlashSyntax = this.detectSlashSyntaxInSessions();
+    console.log(
+      `[Project] hasMultilingualFields=${hasMultilingualFields}, hasSlashSyntax=${hasSlashSyntax}`
+    );
+    if (hasMultilingualFields && hasSlashSyntax) {
+      console.log(`[Project] Setting multilingualConversionPending to true`);
+      this.setMultilingualConversionPending(true);
+    }
   }
 
   public findFolderById(
@@ -246,6 +350,14 @@ export class Project extends Folder {
   public static getMetadataLanguageSlots(): LanguageSlot[] {
     const workingLangs = Project.getDefaultWorkingLanguages();
     return Project.parseWorkingLanguagesToSlots(workingLangs);
+  }
+
+  /**
+   * Returns true if the current project has slash-syntax multilingual fields
+   * that need to be converted to tagged format.
+   */
+  public static getMultilingualConversionPending(): boolean {
+    return sCurrentProject?.multilingualConversionPending ?? false;
   }
 
   public importIdMatchesThisFolder(id: string): boolean {
@@ -430,6 +542,9 @@ export class Project extends Folder {
       project.sessions.selectedIndex =
         project.sessions.items.length > 0 ? 0 : -1;
       project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+
+      // Check for slash-syntax multilingual fields that need conversion
+      project.checkAndSetMultilingualConversionPending();
 
       const elapsed = performance.now() - startTime;
       console.log(
@@ -622,6 +737,9 @@ export class Project extends Folder {
       project.sessions.selectedIndex =
         project.sessions.items.length > 0 ? 0 : -1;
       project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+
+      // Check for slash-syntax multilingual fields that need conversion
+      project.checkAndSetMultilingualConversionPending();
 
       const elapsed = performance.now() - startTime;
       console.log(

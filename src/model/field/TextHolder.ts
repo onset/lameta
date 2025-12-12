@@ -84,16 +84,7 @@ export class TextHolder {
     if (this._text === "" || this._text.startsWith("[[")) {
       return false;
     }
-    const result = this._text.includes("/");
-    if (result) {
-      console.log(
-        `[TextHolder] looksLikeSlashSyntax: true for "${this._text.substring(
-          0,
-          50
-        )}${this._text.length > 50 ? "..." : ""}"`
-      );
-    }
-    return result;
+    return this._text.includes("/");
   }
 
   /**
@@ -116,20 +107,9 @@ export class TextHolder {
 
     // Parse slash syntax virtually
     const { segments } = parseSlashSyntax(this._text);
-    const { assignments, orderedTags, warnings } = assignLanguagesToSegments(
+    const { assignments } = assignLanguagesToSegments(
       segments,
       languageTags
-    );
-    console.log(
-      `[TextHolder] getTextAxisVirtual: text="${
-        this._text
-      }", tag="${tag}", languageTags=[${languageTags.join(", ")}]`,
-      {
-        segments,
-        orderedTags,
-        assignments: Object.fromEntries(assignments),
-        warnings
-      }
     );
     return assignments.get(tag) ?? "";
   }
@@ -174,6 +154,46 @@ export class TextHolder {
     }
     // For tagged text, return the actual axes
     return this.getAllNonEmptyTextAxes();
+  }
+
+  /**
+   * Result of previewing a slash syntax conversion.
+   */
+  public static readonly PreviewResult = class {
+    constructor(
+      public readonly wouldConvert: boolean,
+      public readonly unknownCount: number,
+      public readonly unknownTags: string[]
+    ) {}
+  };
+
+  /**
+   * Preview what would happen if we converted this field's slash syntax.
+   * Does NOT modify the stored text.
+   *
+   * @param languageTags The ordered list of language tags for conversion
+   * @returns Preview result with info about unknowns
+   */
+  public previewSlashSyntaxConversion(languageTags: string[]): {
+    wouldConvert: boolean;
+    unknownCount: number;
+    unknownTags: string[];
+  } {
+    if (!this.looksLikeSlashSyntax()) {
+      return { wouldConvert: false, unknownCount: 0, unknownTags: [] };
+    }
+
+    const { segments } = parseSlashSyntax(this._text);
+    const { orderedTags } = assignLanguagesToSegments(segments, languageTags);
+
+    // Find unknown tags
+    const unknownTags = orderedTags.filter((tag) => tag.startsWith("unknown"));
+
+    return {
+      wouldConvert: true,
+      unknownCount: unknownTags.length,
+      unknownTags
+    };
   }
 
   /**

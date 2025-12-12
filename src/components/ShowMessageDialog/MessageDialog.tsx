@@ -48,15 +48,15 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
         <div
           css={css`
             display: flex;
+            align-items: center;
+            gap: 10px;
           `}
         >
           {config.iconPath !== null && (
             <img
               css={css`
-                height: 32px;
-                margin-top: auto;
-                margin-bottom: auto;
-                margin-right: 10px;
+                height: 24px;
+                width: 24px;
               `}
               src={config.iconPath || "assets/warning.png"}
             />
@@ -68,6 +68,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
         className="dialogContent"
         css={css`
           width: ${config.width || "400px"};
+          margin-top: 10px;
         `}
       >
         {config.text && <div>{config.text}</div>}

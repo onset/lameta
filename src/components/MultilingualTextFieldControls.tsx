@@ -116,7 +116,8 @@ export interface UseMultilingualFieldResult {
   handleRemoveLanguage: (tag: string) => void;
   /**
    * Change the language tag for a slot.
-   * Returns an error message if the new tag is already in use, otherwise returns undefined.
+   * Returns an error message if the new tag is already in use (and non-empty), otherwise returns undefined.
+   * Allows changing to a language that has an empty slot (the empty slot is removed).
    */
   handleChangeLanguage: (oldTag: string, newTag: string) => string | undefined;
   clearNewlyAddedTag: () => void;
@@ -144,13 +145,13 @@ export function useMultilingualField(
   const metadataSlots = useMemo(() => {
     if (!isMultilingual) return [];
     const slots = Project.getMetadataLanguageSlots();
-    console.log(
-      `[useMultilingualField] field="${
-        field.key
-      }", isMultilingual=${isMultilingual}, metadataSlots=[${slots
-        .map((s) => s.tag)
-        .join(", ")}]`
-    );
+    // console.log(
+    //   `[useMultilingualField] field="${
+    //     field.key
+    //   }", isMultilingual=${isMultilingual}, metadataSlots=[${slots
+    //     .map((s) => s.tag)
+    //     .join(", ")}]`
+    // );
     return slots;
   }, [isMultilingual, field.key]);
 
@@ -280,7 +281,7 @@ export function useMultilingualField(
 
   /**
    * Change the language tag for a slot.
-   * Returns an error message if the new tag is already in use, otherwise returns undefined.
+   * Returns an error message if the new tag is already in use (and non-empty), otherwise returns undefined.
    */
   const handleChangeLanguage = useCallback(
     (oldTag: string, newTag: string): string | undefined => {
@@ -289,10 +290,14 @@ export function useMultilingualField(
       if (!normalizedOld || !normalizedNew) return "Invalid language tag";
       if (normalizedOld === normalizedNew) return undefined; // No change
 
-      // Check if the new tag is already in use
-      const existingSlot = slots.find((s) => s.tag === normalizedNew);
-      if (existingSlot) {
-        return `Cannot change to ${existingSlot.name} (${normalizedNew}) because that language is already used in this field.`;
+      // Check if the new tag is already in use and has content
+      const existingText = field.getTextAxis(normalizedNew);
+      if (existingText && existingText.trim() !== "") {
+        const langName =
+          staticLanguageFinder?.findOneLanguageNameFromCode_Or_ReturnCode(
+            normalizedNew
+          ) ?? normalizedNew;
+        return `Lameta cannot change to ${langName} (${normalizedNew}) because that language is already used in this field.`;
       }
 
       // Move the text from old tag to new tag
@@ -300,19 +305,12 @@ export function useMultilingualField(
       field.setTextAxis(normalizedNew, oldText);
       field.setTextAxis(normalizedOld, "");
 
-      // Update the slots array
-      setSlots((previous) =>
-        previous.map((s) => {
-          if (s.tag === normalizedOld) {
-            return createLanguageSlot(normalizedNew, s.color);
-          }
-          return s;
-        })
-      );
+      // Re-compute slots from scratch - this ensures correct order and colors
+      setSlots(getInitialSlots());
 
       return undefined;
     },
-    [field, slots]
+    [field, getInitialSlots]
   );
 
   const hasMultipleMetadataSlots = metadataSlots.length > 1;
@@ -420,34 +418,6 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
               Cancel
             </button>
           </div>
-        ) : showButton ? (
-          <button
-            type="button"
-            title="Add language slot"
-            data-testid="add-translation-button"
-            onClick={() => setIsAdding(true)}
-            css={css`
-              background: none;
-              border: none;
-              color: #81c21e;
-              cursor: pointer;
-              font-size: 1.2em;
-              font-weight: 600;
-              padding: 0 4px;
-              line-height: 1;
-              flex-shrink: 0;
-              transition: all 150ms ease-in-out;
-              &:hover {
-                color: #c73f1d;
-                transform: scale(1.15);
-              }
-              &:active {
-                transform: scale(0.95);
-              }
-            `}
-          >
-            +
-          </button>
         ) : null}
       </>
     );

@@ -2,7 +2,7 @@ import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import CreatableAsyncSelect from "react-select/async-creatable";
-import { default as React, useState, useEffect } from "react";
+import { default as React, useState, useEffect, useCallback } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
@@ -10,13 +10,104 @@ import { LanguagePill, LanguageOption } from "./LanguagePill";
 import { SearchContext } from "./SearchContext";
 import { observer } from "mobx-react";
 import { he } from "date-fns/locale";
+import { css } from "@emotion/react";
+import {
+  SortableContainer,
+  SortableElement,
+  SortableHandle
+} from "react-sortable-hoc";
+import arrayMove from "array-move";
+import { components } from "react-select";
+// @ts-ignore
+import dragIcon from "@assets/drag-affordance.svg";
 
 const saymore_orange = "#e69664";
+
+// Drag handle for reordering language pills
+const DragHandle = SortableHandle(() => (
+  <img
+    src={dragIcon}
+    css={css`
+      height: 10px;
+      margin-right: 2px;
+      cursor: grab;
+      opacity: 0.4;
+      user-select: none;
+      &:hover {
+        opacity: 1;
+      }
+    `}
+  />
+));
+
+// Sortable wrapper for individual multi-value items
+const SortableMultiValue = SortableElement((props: any) => {
+  // We need to render the original MultiValue from react-select
+  // but wrap it with our sortable element
+  const { innerProps, ordered, displayIndex, ...otherProps } = props;
+
+  // Prevent react-select from handling mouse events on the drag handle area
+  const onMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  return (
+    <div
+      css={css`
+        display: flex;
+        align-items: center;
+        &:hover img {
+          opacity: 1;
+        }
+      `}
+    >
+      {ordered && (
+        <>
+          <div onMouseDown={onMouseDown}>
+            <DragHandle />
+          </div>
+          <span
+            css={css`
+              font-size: 11px;
+              color: #666;
+              margin-right: 2px;
+              font-weight: 500;
+            `}
+          >
+            {displayIndex}.
+          </span>
+        </>
+      )}
+      <components.MultiValue {...props} innerProps={innerProps} />
+    </div>
+  );
+});
+
+// Container for all sortable multi-value items
+const SortableMultiValueContainer = SortableContainer(
+  ({ children }: { children: React.ReactNode }) => {
+    return (
+      <div
+        css={css`
+          display: inline-flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 2px;
+        `}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
 export interface IProps {
   field: Field;
   languageFinder: LanguageFinder;
   canCreateNew?: boolean; // comes in via definition.controlProps
+  ordered?: boolean; // when true, show drag handles and numbers for reordering
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
@@ -75,6 +166,16 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         backgroundColor: saymore_orange,
         color: "white"
       }
+    }),
+    placeholder: (styles) => ({
+      ...styles,
+      color: "#999",
+      fontSize: 13,
+      marginLeft: 2
+    }),
+    input: (styles) => ({
+      ...styles,
+      fontSize: 13
     })
   };
 
@@ -112,10 +213,133 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       )
     );
   };
+
+  // Handle drag-and-drop reordering
+  const onSortEnd = useCallback(
+    ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
+      if (oldIndex === newIndex) return;
+      const reordered = arrayMove(currentValueArray, oldIndex, newIndex);
+      const s = reordered.map((o) => o.value).join(";");
+      props.field.setValueFromString(s);
+    },
+    [currentValueArray, props.field]
+  );
+
+  // Custom MultiValue component that wraps each value in a SortableElement with drag handle
+  const SortableMultiValueWrapper = useCallback(
+    (multiValueProps: any) => {
+      // Find the index of this value in the current array
+      const index = currentValueArray.findIndex(
+        (v) => v.value === multiValueProps.data.value
+      );
+      return (
+        <SortableMultiValue
+          index={index}
+          ordered={props.ordered}
+          displayIndex={index + 1}
+          {...multiValueProps}
+        />
+      );
+    },
+    [currentValueArray, props.ordered]
+  );
+
+  // Custom ValueContainer that wraps multi-values in a sortable container
+  const SortableValueContainer = useCallback(
+    (containerProps: any) => {
+      const { children, selectProps, ...restProps } = containerProps;
+      // Separate multi-value items from input
+      const childArray = React.Children.toArray(children);
+      // The last two children are typically the Input and sometimes a Placeholder
+      // Multi-values are elements with data prop
+      const multiValues: React.ReactNode[] = [];
+      const inputChild: React.ReactNode[] = [];
+      const otherChildren: React.ReactNode[] = [];
+
+      childArray.forEach((child: any) => {
+        if (child?.props?.data && child?.props?.data?.value) {
+          multiValues.push(child);
+        } else if (
+          child?.type?.name === "Input" ||
+          child?.type?.name === "DummyInput"
+        ) {
+          inputChild.push(child);
+        } else {
+          otherChildren.push(child);
+        }
+      });
+
+      // Check if input has value (user is typing)
+      const inputValue = selectProps?.inputValue || "";
+      const isFocused = selectProps?.menuIsOpen;
+      // Show "+ Add Language" prompt when not typing
+      const showAddPrompt = !inputValue && !isFocused;
+
+      return (
+        <div
+          css={css`
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            flex: 1;
+            align-items: center;
+            padding: 2px 8px;
+            gap: 2px;
+            overflow: hidden;
+          `}
+        >
+          <SortableMultiValueContainer
+            axis="x"
+            onSortEnd={onSortEnd}
+            useDragHandle
+            helperClass="sortable-helper"
+          >
+            {multiValues}
+          </SortableMultiValueContainer>
+          {/* Wrapper for input with "Add Language" prompt overlay */}
+          <div
+            css={css`
+              position: relative;
+              display: inline-flex;
+              align-items: center;
+              min-width: 0;
+              flex-shrink: 1;
+              overflow: hidden;
+            `}
+          >
+            {showAddPrompt && (
+              <span
+                css={css`
+                  color: #999;
+                  font-size: 13px;
+                  font-style: italic;
+                  pointer-events: none;
+                  position: absolute;
+                  left: 0;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 100%;
+                `}
+              >
+                + Add Language
+              </span>
+            )}
+            {inputChild}
+          </div>
+          {otherChildren}
+        </div>
+      );
+    },
+    [onSortEnd]
+  );
+
   const selectProps = {
     tabIndex: props.tabIndex ? props.tabIndex : undefined,
     name: props.field.labelInUILanguage,
     components: {
+      MultiValue: SortableMultiValueWrapper,
+      ValueContainer: SortableValueContainer,
       MultiValueLabel: LanguagePill,
       Option: LanguageOption,
       // we aren't going to list 7 thousand languages, so don't pretend. The are just going to have to type.
@@ -123,6 +347,8 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     },
     className: "select flex-grow field-value-border",
     placeholder: "",
+    noOptionsMessage: ({ inputValue }) =>
+      inputValue ? "No matches" : "Type language name or code",
     isClearable: false, // don't need the extra "x"
     loadOptions: _.debounce(loadMatchingOptions, 100),
     value: currentValueArray,

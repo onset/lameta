@@ -45,18 +45,11 @@ export class E2eProject {
       projectName
     );
     await ok.click();
-    //await this.page.getByTitle(projectName, { exact: false }).waitFor();
     const w = await this.lameta.electronApp.firstWindow();
-    // wait until the window title contains the project name
-    // await w.waitForFunction(
-    //   async (params) => {
-    //     const title = await params.w.title();
-    //     return title.includes(params.projectName);
-    //   },
-    //   { projectName, w }
-    // );
-    // I couldn't get the above to work, so I'm just waiting a fixed amount of time
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for the workspace UI to be ready - the project tab is always visible after project load
+    await this.page
+      .getByTestId("project-tab")
+      .waitFor({ state: "visible", timeout: 10000 });
 
     return w;
   }

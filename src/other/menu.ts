@@ -294,13 +294,21 @@ export default class LametaMenu {
             (userSettings.ParadisecMode = !userSettings.ParadisecMode)
         },
         {
-          label: t`Show Language Tags`,
+          label: Project.getMultilingualConversionPending()
+            ? t`Show Language Tags (locked during migration)`
+            : t`Show Language Tags`,
           visible: Project.getMetadataLanguageSlots().length > 1,
           // tooltip only works in macos
-          tooltip:
-            "Show language tags on multilingual fields (unknown languages always show ????)",
+          tooltip: Project.getMultilingualConversionPending()
+            ? "Language tags must remain visible until the multilingual migration is complete"
+            : "Show language tags on multilingual fields (unknown languages always show ????)",
           type: "checkbox",
-          checked: userSettings.ShowLanguageTags,
+          // Force checked when migration is pending so users can verify language assignments
+          checked:
+            Project.getMultilingualConversionPending() ||
+            userSettings.ShowLanguageTags,
+          // Disable while migration is pending - tags must be visible during migration
+          enabled: !Project.getMultilingualConversionPending(),
           click: () =>
             (userSettings.ShowLanguageTags = !userSettings.ShowLanguageTags)
         }
@@ -462,12 +470,32 @@ export default class LametaMenu {
     // Set up context menu for spell checking and developer tools
     // This handler runs for all right-clicks in the app
     remote.getCurrentWebContents().on("context-menu", (e, props) => {
-      const { x, y, misspelledWord } = props;
+      const { x, y, misspelledWord, dictionarySuggestions } = props;
+
+      console.log("context-menu event:", {
+        misspelledWord,
+        dictionarySuggestions,
+        propsKeys: Object.keys(props)
+      });
 
       const menuItems: Electron.MenuItemConstructorOptions[] = [];
 
-      // If there's a misspelled word, show "Add to Dictionary" option
+      // If there's a misspelled word, show spelling suggestions and "Add to Dictionary" option
       if (misspelledWord) {
+        // Add spelling suggestions first
+        if (dictionarySuggestions && dictionarySuggestions.length > 0) {
+          for (const suggestion of dictionarySuggestions) {
+            menuItems.push({
+              label: suggestion,
+              click: () => {
+                // Replace the misspelled word with the selected suggestion
+                remote.getCurrentWebContents().replaceMisspelling(suggestion);
+              }
+            });
+          }
+          menuItems.push({ type: "separator" });
+        }
+
         menuItems.push({
           label: t`Add to Dictionary`,
           click: () => {
