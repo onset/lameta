@@ -1,15 +1,20 @@
 import { test, expect, Page } from "@playwright/test";
 import {
   getDescriptionField,
-  addLanguageToDescription,
-  waitForSlotInDescription,
+  addLanguageViaMenu,
+  getDescriptionSlot,
   getDescriptionEditor,
+  deleteLanguageFromDescription,
   countSlotsInDescription,
   setupMultilingualTestContext,
   teardownMultilingualTestContext,
   waitForSessionForm,
   MultilingualTestContext
 } from "./multilingualTextField-e2e-helpers";
+
+// Working languages configured for this test file.
+// Tests use kWorkingLanguages.length for expected slot counts.
+const kWorkingLanguages = ["eng", "spa"];
 
 /**
  * Edge case tests for multilingual text fields:
@@ -25,7 +30,10 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Edge Cases", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContext("MultilingualEdgeCases");
+    context = await setupMultilingualTestContext(
+      "MultilingualEdgeCases",
+      kWorkingLanguages
+    );
     page = context.page;
   });
 
@@ -144,28 +152,26 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
 
     const descriptionField = getDescriptionField(page);
 
-    // Add Spanish quickly
-    await addLanguageToDescription(page, "spa");
-    await waitForSlotInDescription(page, "es");
+    // Working languages (en, es) are already present - add French quickly via menu
+    await addLanguageViaMenu(page, "en", "french", "fr");
 
     // Immediately remove it
-    const colorBar = descriptionField.getByTestId("slot-color-bar-es");
-    await colorBar.click();
-    await page.getByTestId("delete-slot-menu-es").click();
-    await page.waitForTimeout(200);
+    await deleteLanguageFromDescription(page, "fr");
 
-    // Add it again quickly
-    await addLanguageToDescription(page, "spa");
-    await waitForSlotInDescription(page, "es");
+    // Add it again quickly via menu
+    await addLanguageViaMenu(page, "en", "fra", "fr");
 
-    // Verify we have English and Spanish
+    // Verify we have working languages + French
     const allSlots = countSlotsInDescription(page);
-    await expect(allSlots).toHaveCount(2);
+    await expect(allSlots).toHaveCount(kWorkingLanguages.length + 1);
     await expect(
       descriptionField.getByTestId("translation-slot-en")
     ).toBeVisible();
     await expect(
       descriptionField.getByTestId("translation-slot-es")
+    ).toBeVisible();
+    await expect(
+      descriptionField.getByTestId("translation-slot-fr")
     ).toBeVisible();
   });
 
@@ -197,19 +203,14 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
 
     const descriptionField = getDescriptionField(page);
 
-    // Add several languages using ISO codes for reliability
-    await addLanguageToDescription(page, "spa");
-    await waitForSlotInDescription(page, "es");
+    // Working languages (en, es) are already present - add more languages
+    await addLanguageViaMenu(page, "en", "fra", "fr");
 
-    await addLanguageToDescription(page, "fra");
-    await waitForSlotInDescription(page, "fr");
+    await addLanguageViaMenu(page, "en", "deu", "de");
 
-    await addLanguageToDescription(page, "deu");
-    await waitForSlotInDescription(page, "de");
-
-    // Verify all slots exist
+    // Verify all slots exist (working langs + fr + de)
     const allSlots = countSlotsInDescription(page);
-    await expect(allSlots).toHaveCount(4);
+    await expect(allSlots).toHaveCount(kWorkingLanguages.length + 2);
 
     await expect(
       descriptionField.getByTestId("translation-slot-en")
@@ -224,44 +225,14 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
       descriptionField.getByTestId("translation-slot-de")
     ).toBeVisible();
   });
-
-  test("languages can be added via color bar menu", async () => {
-    await context.project.goToSessions();
-    await context.project.addSession();
-
-    await page.waitForSelector("text=Description", { timeout: 10000 });
-
-    const descriptionField = getDescriptionField(page);
-
-    // Click the color bar for English slot to open menu
-    const colorBar = descriptionField.getByTestId("slot-color-bar-en");
-    await colorBar.click();
-
-    // Click the add button from the menu
-    const addButton = page.getByTestId("add-language-slot-menu-en");
-    await expect(addButton).toBeVisible();
-    await addButton.click();
-
-    // Now we should see the language selector
-    const languageInput = descriptionField
-      .locator('.select input[role="combobox"]')
-      .first();
-    await languageInput.fill("French");
-    await page.waitForTimeout(200);
-    await page.keyboard.press("Enter");
-    await page.waitForTimeout(300);
-
-    // Verify French was added
-    await waitForSlotInDescription(page, "fr");
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).toBeVisible();
-  });
 });
 
 test.describe("Multilingual Text Fields - Stress Test", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContext("MultilingualStress");
+    context = await setupMultilingualTestContext(
+      "MultilingualStress",
+      kWorkingLanguages
+    );
     page = context.page;
   });
 
@@ -271,6 +242,7 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
 
   test("stress test: multiple languages with text", async () => {
     // This test simulates a complex real-world workflow
+    // Working languages (en, es) are already present from setup
     await context.project.goToSessions();
     await context.project.addSession();
 
@@ -278,17 +250,14 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
 
     const descriptionField = getDescriptionField(page);
 
-    // Step 1: Type in English
+    // Step 1: Type in English (already exists as working language)
     const englishEditor = getDescriptionEditor(page, "en");
     await englishEditor.click();
     await englishEditor.fill("English description of the recording session");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
-    // Step 2: Add Spanish and type
-    await addLanguageToDescription(page, "spa");
-    await waitForSlotInDescription(page, "es");
-
+    // Step 2: Type in Spanish (already exists as working language)
     const spanishEditor = getDescriptionEditor(page, "es");
     await spanishEditor.click();
     await spanishEditor.fill(
@@ -297,9 +266,8 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
-    // Step 3: Add French and type
-    await addLanguageToDescription(page, "French");
-    await waitForSlotInDescription(page, "fr");
+    // Step 3: Add French via menu and type
+    await addLanguageViaMenu(page, "en", "fra", "fr");
 
     const frenchEditor = getDescriptionEditor(page, "fr");
     await frenchEditor.click();
@@ -330,10 +298,7 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     await expect(frenchAfter).toContainText("Description française");
 
     // Step 7: Remove French
-    const frenchColorBar = descriptionField.getByTestId("slot-color-bar-fr");
-    await frenchColorBar.click();
-    await page.getByTestId("delete-slot-menu-fr").click();
-    await page.waitForTimeout(300);
+    await deleteLanguageFromDescription(page, "fr");
 
     // Step 8: Verify French is gone but others remain
     await expect(
@@ -342,9 +307,8 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     await expect(englishAfter).toContainText("English description");
     await expect(spanishAfter).toContainText("Descripción en español");
 
-    // Step 9: Add German (use ISO code "deu" for reliability)
-    await addLanguageToDescription(page, "deu");
-    await waitForSlotInDescription(page, "de");
+    // Step 9: Add German via menu
+    await addLanguageViaMenu(page, "en", "deu", "de");
 
     const germanEditor = getDescriptionEditor(page, "de");
     await germanEditor.click();
@@ -352,9 +316,9 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
-    // Step 10: Final verification
+    // Step 10: Final verification (working langs + de added)
     const allSlots = countSlotsInDescription(page);
-    await expect(allSlots).toHaveCount(3); // en, es, de
+    await expect(allSlots).toHaveCount(kWorkingLanguages.length + 1); // working langs + de
 
     await expect(englishAfter).toContainText("English description");
     await expect(spanishAfter).toContainText("Descripción en español");

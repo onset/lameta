@@ -1491,18 +1491,24 @@ export default class ImdiGenerator {
     if (!this.omitNamespaces) {
       this.tail.a("xmlns", "http://www.mpi.nl/IMDI/Schema/IMDI");
       this.tail.a("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      const schemaFile = GetOtherConfigurationSettings().imdiSchema;
       this.tail.a(
         "xsi:schemaLocation",
-        "http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd"
+        `http://www.mpi.nl/IMDI/Schema/${schemaFile}`
       );
       this.tail.a("Type", typeAttribute);
       this.tail.a("Version", "0");
     }
+    // Convert schema filename to display format (e.g., "IMDI_3.0_elar.xsd" -> "IMDI 3.0 elar")
+    const schemaFile = GetOtherConfigurationSettings().imdiSchema;
+    const formatId = schemaFile
+      .replace(/\.xsd$/, "")  // Remove .xsd extension
+      .replace(/_/g, " ");     // Replace underscores with spaces
     this.tail
       //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())
       .a("Originator", "lameta " + pkg.version)
-      .a("FormatId", "IMDI 3.0");
+      .a("FormatId", formatId);
 
     this.mostRecentElement = this.tail;
     return this.tail;

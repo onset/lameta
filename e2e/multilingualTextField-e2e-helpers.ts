@@ -50,41 +50,58 @@ export async function hoverOverDescriptionField(page: Page) {
  * Add a language to the Description field via color bar menu.
  * Uses the menu since the standalone add button has been removed.
  * @param fromSlotCode The language code of the slot whose color bar to click (e.g., "en")
- * @param isoCode The ISO 639-3 code to type (e.g., "spa", "fra", "deu")
+ * @param typeThis The ISO 639-3 code to type (e.g., "spa", "fra", "deu")
  * @param expectedBcp47 The expected BCP47 code in the new slot's data-testid (e.g., "es", "fr", "de")
  */
 export async function addLanguageViaMenu(
   page: Page,
   fromSlotCode: string,
-  isoCode: string,
+  typeThis: string,
   expectedBcp47: string
 ) {
   const descriptionField = getDescriptionField(page);
 
   // Click color bar to open menu
-  const colorBar = descriptionField.getByTestId(`slot-color-bar-${fromSlotCode}`);
+  const colorBar = descriptionField.getByTestId(
+    `slot-color-bar-${fromSlotCode}`
+  );
   await colorBar.click();
 
   // Click "Add language slot" menu item
-  const addMenuItem = page.getByTestId(`add-language-slot-menu-${fromSlotCode}`);
+  const addMenuItem = page.getByTestId(
+    `add-language-slot-menu-${fromSlotCode}`
+  );
   await addMenuItem.click();
 
-  // Wait for menu to close and language chooser to appear
-  await page.locator(".MuiMenu-root").waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
+  // Wait for menu to close and the cancel button to appear (indicates language chooser is ready)
+  await page
+    .locator(".MuiMenu-root")
+    .waitFor({ state: "hidden", timeout: 3000 })
+    .catch(() => {});
 
-  // Type in the language input
+  const cancelBtn = page.getByTestId("cancel-add-translation");
+  await cancelBtn.waitFor({ state: "visible", timeout: 3000 });
+
+  // Find the language input that's in the description field
   const languageInput = descriptionField
     .locator('.select input[role="combobox"]')
     .first();
-  await languageInput.fill(isoCode);
 
-  // Wait for dropdown options to appear (DOM-based wait)
-  try {
-    await page.locator(".select__menu").waitFor({ state: "visible", timeout: 2000 });
-  } catch {
-    // Dropdown may not appear - continue anyway
+  // Wait for input to be ready (it gets created when isAdding becomes true)
+  await languageInput.waitFor({ state: "visible", timeout: 3000 });
+
+  // Check if input has focus (autoFocus should focus it)
+  const focused = await languageInput.evaluate(
+    (el) => document.activeElement === el
+  );
+
+  // Click to focus if not already
+  if (!focused) {
+    await languageInput.click();
   }
 
+  // Use keyboard to type (pressSequentially types keys one by one, triggering the async search)
+  await languageInput.pressSequentially(typeThis, { delay: 100 });
   await languageInput.press("Enter");
 
   // Wait for the new slot to appear (DOM-based wait)
@@ -155,7 +172,9 @@ export async function fillLanguageChooserAndSelect(
   // Wait for dropdown to appear (DOM-based wait instead of hardcoded 300ms timeout)
   // Use a try-catch with timeout since different contexts may show dropdown differently
   try {
-    await page.locator(".select__menu").waitFor({ state: "visible", timeout: 2000 });
+    await page
+      .locator(".select__menu")
+      .waitFor({ state: "visible", timeout: 2000 });
   } catch {
     // Dropdown may not appear if no matches or different component - continue anyway
   }
@@ -172,8 +191,17 @@ export interface MultilingualTestContext {
   project: E2eProject;
 }
 
+/**
+ * Setup context for multilingual tests.
+ * Creates a new project and switches to ELAR configuration.
+ * @param testName - Name for the test project
+ * @param workingLanguages - Array of ISO 639-3 codes (e.g., ["eng", "spa"]) to set as working languages.
+ *                           Pass 2+ languages to enable multilingual slots in the UI.
+ *                           Pass empty array to skip working language setup.
+ */
 export async function setupMultilingualTestContext(
-  testName: string
+  testName: string,
+  workingLanguages: string[]
 ): Promise<MultilingualTestContext> {
   const lameta = new LametaE2ERunner();
   const page = await lameta.launch();
@@ -190,6 +218,23 @@ export async function setupMultilingualTestContext(
   await page.waitForSelector('[data-testid="project-tab"]', {
     timeout: 10000
   });
+
+  // Set up Working Languages if any were specified
+  if (workingLanguages.length > 0) {
+    await project.goToProjectLanguages();
+    const workingContainer = page
+      .locator('.field:has(label:has-text("Working Languages"))')
+      .first();
+    await workingContainer.waitFor({ state: "visible", timeout: 10000 });
+    const workingInput = workingContainer
+      .locator('.select input[role="combobox"]')
+      .first();
+
+    for (const langCode of workingLanguages) {
+      await workingInput.click();
+      await fillLanguageChooserAndSelect(page, workingInput, langCode);
+    }
+  }
 
   return { lameta, page, project };
 }
