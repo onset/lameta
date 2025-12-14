@@ -230,8 +230,11 @@ export function csvEncode(value: string): string {
   // enough, even though windows also has \n.
   needsQuotes = needsQuotes || value.indexOf("\r") > -1;
 
-  // the rfc spec seems astonishingly inconsistent on the question of
-  // whether quotes should be escaped if the entire field is not surrounded in quotes
+  // LAM-115: https://linear.app/lameta/issue/LAM-115
+  // If the value contains quotes, we must wrap the entire value in quotes.
+  // Previously this check was missing, so values like `She said "hello"` would
+  // get doubled quotes but no enclosing quotes, resulting in malformed CSV.
+  needsQuotes = needsQuotes || value.indexOf('"') > -1;
 
   value = value.replace(/"/g, '""');
 

@@ -74,6 +74,20 @@ describe("csv encoding", () => {
       '"please, call me ""John"""'
     );
   });
+  // LAM-115: https://linear.app/lameta/issue/LAM-115
+  // When a value contains quotes but no commas or newlines, the function
+  // was returning a value with doubled quotes but no enclosing quotes
+  // (e.g., `She said ""hello""`), which is malformed CSV.
+  it("should add quotes if value contains quotes but no commas or newlines", () => {
+    expect(csvEncode('She said "hello"')).toBe('"She said ""hello"""');
+  });
+  it("should produce valid CSV parsable by standard parsers when value contains only quotes", () => {
+    const input = 'She said "hello"';
+    const encoded = csvEncode(input);
+    const csvLine = `name,message\nAlice,${encoded}`;
+    const parsed = parseSync(csvLine);
+    expect(parsed[1][1]).toBe(input);
+  });
 });
 
 describe("people csv export", () => {
