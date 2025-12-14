@@ -467,12 +467,21 @@ export default class LametaMenu {
     remote.Menu.setApplicationMenu(menu);
   }
   public setupContentMenu() {
-    // Set up context menu for spell checking and developer tools
+    // Set up context menu for spell checking, editing, and developer tools
     // This handler runs for all right-clicks in the app
     remote.getCurrentWebContents().on("context-menu", (e, props) => {
-      const { x, y, misspelledWord, dictionarySuggestions } = props;
+      const {
+        x,
+        y,
+        misspelledWord,
+        dictionarySuggestions,
+        isEditable,
+        selectionText,
+        editFlags
+      } = props;
 
       const menuItems: Electron.MenuItemConstructorOptions[] = [];
+      const webContents = remote.getCurrentWebContents();
 
       // If there's a misspelled word, show spelling suggestions and "Add to Dictionary" option
       if (misspelledWord) {
@@ -483,7 +492,7 @@ export default class LametaMenu {
               label: suggestion,
               click: () => {
                 // Replace the misspelled word with the selected suggestion
-                remote.getCurrentWebContents().replaceMisspelling(suggestion);
+                webContents.replaceMisspelling(suggestion);
               }
             });
           }
@@ -501,6 +510,55 @@ export default class LametaMenu {
         });
       }
 
+      // Add Cut/Copy/Paste options for editable fields or when there's a selection
+      const hasSelection = selectionText && selectionText.length > 0;
+      if (isEditable || hasSelection) {
+        if (menuItems.length > 0) {
+          menuItems.push({ type: "separator" });
+        }
+
+        // Cut - only for editable fields with selection
+        if (isEditable && hasSelection) {
+          menuItems.push({
+            label: t`Cut`,
+            enabled: editFlags.canCut,
+            accelerator: "CmdOrCtrl+X",
+            click: () => webContents.cut()
+          });
+        }
+
+        // Copy - whenever there's a selection
+        if (hasSelection) {
+          menuItems.push({
+            label: t`Copy`,
+            enabled: editFlags.canCopy,
+            accelerator: "CmdOrCtrl+C",
+            click: () => webContents.copy()
+          });
+        }
+
+        // Paste - only for editable fields
+        if (isEditable) {
+          menuItems.push({
+            label: t`Paste`,
+            enabled: editFlags.canPaste,
+            accelerator: "CmdOrCtrl+V",
+            click: () => webContents.paste()
+          });
+        }
+
+        // Select All - for editable fields
+        if (isEditable) {
+          menuItems.push({ type: "separator" });
+          menuItems.push({
+            label: t`Select All`,
+            enabled: editFlags.canSelectAll,
+            accelerator: "CmdOrCtrl+A",
+            click: () => webContents.selectAll()
+          });
+        }
+      }
+
       // Add developer "Inspect element" option in development mode
       if (process.env.NODE_ENV === "development") {
         if (menuItems.length > 0) {
@@ -509,7 +567,7 @@ export default class LametaMenu {
         menuItems.push({
           label: "Inspect element",
           click() {
-            remote.getCurrentWebContents().inspectElement(x, y);
+            webContents.inspectElement(x, y);
           }
         });
       }
