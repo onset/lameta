@@ -66,6 +66,42 @@ describe("validateImdiAsyncInternal", () => {
     // assert that the error has the string "foo"
     expect(result.errors[0].message).toContain("IDontBelong");
   });
+
+  // Test for LAM-118: OPEX validation never triggered due to checking imdiContents instead of fileContents
+  // https://linear.app/lameta/issue/LAM-118
+  // The bug was that the code checked `imdiContents.indexOf("OPEXMetadata")` but imdiContents
+  // only contains the extracted <METATRANSCRIPT> element, which never contains "OPEXMetadata".
+  // The check should be on `fileContents` to detect when OPEX wrapper is present.
+  it("detects invalid OPEX structure even when IMDI inside is valid", async () => {
+    // This OPEX has Properties before Transfer, which violates the OPEX schema
+    // (Transfer should come before Properties according to OPEX-Metadata.xsd)
+    const invalidOpexValidImdi = `<?xml version="1.0"?>
+<opex:OPEXMetadata xmlns:opex="http://www.openpreservationexchange.org/opex/v1.2">
+  <opex:Properties>
+    <opex:Title>Wrong order</opex:Title>
+  </opex:Properties>
+  <opex:Transfer>
+    <opex:SourceID>123</opex:SourceID>
+  </opex:Transfer>
+  <opex:DescriptiveMetadata>
+    <METATRANSCRIPT xmlns="http://www.mpi.nl/IMDI/Schema/IMDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd" Type="CORPUS" Version="0" Date="2023-12-18" Originator="lameta" FormatId="IMDI 3.0">
+      <Corpus>
+        <Name>TestCorpus</Name>
+        <Title/>
+        <Description>Test</Description>
+      </Corpus>
+    </METATRANSCRIPT>
+  </opex:DescriptiveMetadata>
+</opex:OPEXMetadata>`;
+
+    const result = await validateImdiAsyncInternal(
+      appPath,
+      invalidOpexValidImdi
+    );
+
+    // Should fail because OPEX structure is invalid (Properties before Transfer)
+    expectInvalid(result);
+  });
 });
 
 function expectValid(result: XMLValidationResult) {

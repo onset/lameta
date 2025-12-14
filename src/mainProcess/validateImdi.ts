@@ -23,7 +23,11 @@ export async function validateImdiAsyncInternal(
 
   let result = await validateAgainstOneSchema(imdiContents, imdiSchemaContents);
 
-  if (imdiContents.indexOf("OPEXMetadata") > -1) {
+  // LAM-118: Check fileContents (not imdiContents) for OPEX wrapper presence.
+  // imdiContents only contains the extracted <METATRANSCRIPT> element and would never
+  // contain "OPEXMetadata", so previously OPEX validation was never triggered.
+  // https://linear.app/lameta/issue/LAM-118
+  if (fileContents.indexOf("OPEXMetadata") > -1) {
     const opexSchemaPath = path.join(appPath, "schemas/OPEX-Metadata.xsd");
     const opexSchemaContents = fs.readFileSync(opexSchemaPath, "utf8");
     const opexResult = await validateAgainstOneSchema(
