@@ -48,10 +48,14 @@ export function addImportMatrixToProject(
         createFolderInMemory(project, row, folderType)
       );
     }
-    // for each folder that was created, finish importing it
+    // for each folder that was created successfully, finish importing it
+    // LAM-111: https://linear.app/lameta/issue/LAM-111/incorrect-filter-imports-failed-folders-in-addimportmatrixtoproject
+    // Bug fix: Previously used `.some((r) => r.succeeded)` which checked if ANY result
+    // succeeded, causing all folders (including failed ones) to be imported. Fixed to
+    // check if THIS result succeeded with `r.succeeded`.
     mobx.runInAction(() => {
       inMemoryCreationResults
-        .filter((r) => inMemoryCreationResults.some((r) => r.succeeded))
+        .filter((r) => r.succeeded)
         .forEach((r) => {
           addImportedFolderToProject(project, r.createdFolder, r.id);
         });

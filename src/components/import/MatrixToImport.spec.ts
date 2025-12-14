@@ -3,6 +3,7 @@ import * as temp from "temp";
 import { Session } from "../../model/Project/Session/Session";
 import {
   addImportedFolderToProject,
+  addImportMatrixToProject,
   createFolderInMemory,
   makeCustomField
 } from "./MatrixImporter";
@@ -287,6 +288,77 @@ it("Can import 5 contributions", async () => {
   );
   expect(session.metadataFile!.contributions[4].personReference).toBe("John");
   expect(session.metadataFile!.contributions[4].role).toBe("Compiler");
+});
+
+// LAM-111: https://linear.app/lameta/issue/LAM-111/incorrect-filter-imports-failed-folders-in-addimportmatrixtoproject
+// Bug: The filter condition incorrectly used .some() to check if ANY result succeeded,
+// instead of checking if the CURRENT result succeeded. This caused failed folders
+// (those missing required IDs) to be imported to the project when at least one other
+// folder succeeded.
+describe("addImportMatrixToProject filters out failed folders", () => {
+  beforeEach(() => {
+    project.sessions.items.splice(0, 1000);
+    project.persons.items.splice(0, 1000);
+  });
+
+  it("only imports rows that succeeded, not rows that failed due to missing ID", async () => {
+    // Create a matrix with 4 rows: 2 with valid IDs (succeed), 2 without IDs (fail)
+    const matrix = new MappedMatrix();
+    matrix.rows = [
+      makeRow({ id: "session001", title: "Valid Session 1" }),
+      makeRow({ title: "Missing ID Session 1" }), // no id = should fail
+      makeRow({ id: "session003", title: "Valid Session 3" }),
+      makeRow({ title: "Missing ID Session 2" }) // no id = should fail
+    ];
+    // Mark all rows for import
+    matrix.rows.forEach((row) => {
+      row.importStatus = RowImportStatus.Yes;
+    });
+
+    // Import the matrix
+    addImportMatrixToProject(project, matrix, "session");
+
+    // Only 2 sessions should be imported (the ones with valid IDs)
+    expect(project.sessions.items.length).toBe(2);
+
+    // Verify the correct sessions were imported
+    const ids = project.sessions.items.map((s) => s.id);
+    expect(ids).toContain("session001");
+    expect(ids).toContain("session003");
+    expect(ids).not.toContain("unknown");
+  });
+
+  it("imports nothing when all rows fail", async () => {
+    const matrix = new MappedMatrix();
+    matrix.rows = [
+      makeRow({ title: "No ID 1" }),
+      makeRow({ title: "No ID 2" })
+    ];
+    matrix.rows.forEach((row) => {
+      row.importStatus = RowImportStatus.Yes;
+    });
+
+    addImportMatrixToProject(project, matrix, "session");
+
+    // No sessions should be imported
+    expect(project.sessions.items.length).toBe(0);
+  });
+
+  it("imports all when all rows succeed", async () => {
+    const matrix = new MappedMatrix();
+    matrix.rows = [
+      makeRow({ id: "session001", title: "Session 1" }),
+      makeRow({ id: "session002", title: "Session 2" }),
+      makeRow({ id: "session003", title: "Session 3" })
+    ];
+    matrix.rows.forEach((row) => {
+      row.importStatus = RowImportStatus.Yes;
+    });
+
+    addImportMatrixToProject(project, matrix, "session");
+
+    expect(project.sessions.items.length).toBe(3);
+  });
 });
 
 /*
