@@ -2,14 +2,12 @@ import { Field } from "../model/field/Field";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import CreatableAsyncSelect from "react-select/async-creatable";
-import { default as React, useState, useEffect, useCallback } from "react";
+import { default as React, useCallback } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
-import { SearchContext } from "./SearchContext";
 import { observer } from "mobx-react";
-import { he } from "date-fns/locale";
 import { css } from "@emotion/react";
 import {
   SortableContainer,
@@ -20,8 +18,7 @@ import arrayMove from "array-move";
 import { components } from "react-select";
 // @ts-ignore
 import dragIcon from "@assets/drag-affordance.svg";
-
-const saymore_orange = "#e69664";
+import { lameta_orange } from "../containers/theme";
 
 // Drag handle for reordering language pills
 const DragHandle = SortableHandle(() => (
@@ -79,7 +76,7 @@ const SortableMultiValue = SortableElement((props: any) => {
           </span>
         </>
       )}
-      <components.MultiValue {...props} innerProps={innerProps} />
+      <components.MultiValue {...otherProps} innerProps={innerProps} />
     </div>
   );
 });
@@ -163,7 +160,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       // counteract the paddingLeft:0 above
       paddingLeft: "4px !important",
       ":hover": {
-        backgroundColor: saymore_orange,
+        backgroundColor: lameta_orange,
         color: "white"
       }
     }),
@@ -260,8 +257,11 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         if (child?.props?.data && child?.props?.data?.value) {
           multiValues.push(child);
         } else if (
-          child?.type?.name === "Input" ||
-          child?.type?.name === "DummyInput"
+          // Check if this is an Input component using key (more robust than function name)
+          // The Input component has a key that includes "input"
+          child?.key &&
+          typeof child.key === "string" &&
+          child.key.includes("input")
         ) {
           inputChild.push(child);
         } else {

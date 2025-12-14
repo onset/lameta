@@ -29,12 +29,7 @@ const SavingDisabledBanner: React.FC = observer(() => {
         position: sticky;
         top: 0;
         z-index: 9999;
-        cursor: pointer;
-        &:hover {
-          background: #cc0000;
-        }
       `}
-      title="Click to re-enable saving"
     >
       🚫 SAVING DISABLED - Project data will NOT be saved to disk!
     </div>

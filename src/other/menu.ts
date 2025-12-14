@@ -472,12 +472,6 @@ export default class LametaMenu {
     remote.getCurrentWebContents().on("context-menu", (e, props) => {
       const { x, y, misspelledWord, dictionarySuggestions } = props;
 
-      console.log("context-menu event:", {
-        misspelledWord,
-        dictionarySuggestions,
-        propsKeys: Object.keys(props)
-      });
-
       const menuItems: Electron.MenuItemConstructorOptions[] = [];
 
       // If there's a misspelled word, show spelling suggestions and "Add to Dictionary" option

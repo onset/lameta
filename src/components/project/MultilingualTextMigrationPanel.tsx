@@ -287,11 +287,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
 
     // Don't show if not pending (but keep showing if we just finished conversion)
     const isPending = project.multilingualConversionPending;
-    console.log(
-      `[MigrationPanel] multilingualConversionPending=${isPending}, raw value="${project.properties.getTextStringOrEmpty(
-        "multilingualConversionPending"
-      )}"`
-    );
+
     if (!isPending && progress.phase !== "done") {
       return null;
     }
