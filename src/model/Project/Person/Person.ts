@@ -165,10 +165,15 @@ export class Person extends Folder {
   }
 
   // override
+  // LAM-119: Fixed case-sensitive comparison bug. Previously, the name field was
+  // compared case-sensitively while the code field was compared case-insensitively.
+  // This allowed users to create duplicate persons like "Alice" and "alice".
+  // Now both fields are properly lowercased before comparison.
+  // https://linear.app/lameta/issue/LAM-119
   public wouldCollideWithIdFields(value: string): boolean {
     const normalized = value.trim().toLowerCase();
     return (
-      normalized === this.textValueThatControlsFolderName() ||
+      normalized === this.textValueThatControlsFolderName().toLowerCase() ||
       normalized === this.properties.getTextStringOrEmpty("code").toLowerCase()
     );
   }
