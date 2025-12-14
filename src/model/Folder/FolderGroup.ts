@@ -96,7 +96,14 @@ export class FolderGroup {
       return;
     }
     if (this.selectedIndex < 0) {
-      this.selectedIndex = 0;
+      // LAM-116: https://linear.app/lameta/issue/LAM-116
+      // When starting with no selection, set selectedIndex to the index
+      // of the first *filtered* item in items[], not blindly to 0.
+      // This ensures the model selection points to a folder that's actually
+      // visible in the filtered results.
+      const first = this.filteredItems[0];
+      const newIndexInAll = this.items.indexOf(first);
+      this.selectedIndex = newIndexInAll;
       return;
     }
     const currentlySelected = this.items[this.selectedIndex];

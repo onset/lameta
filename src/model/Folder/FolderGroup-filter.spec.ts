@@ -100,4 +100,31 @@ describe("FolderGroup.filter", () => {
       "F1"
     );
   });
+
+  // LAM-116: https://linear.app/lameta/issue/LAM-116
+  // When filtering with no prior selection (selectedIndex=-1), the selection should
+  // be set to the first *filtered* item's index in items[], not blindly to 0.
+  it("sets selectedIndex to first filtered item when starting with no selection", () => {
+    const g = new FolderGroup();
+    // Create folders: Apple (index 0), Banana (index 1), Cherry (index 2)
+    g.items.push(new FakeFolder({ id: "S1", title: "Apple" }));
+    g.items.push(new FakeFolder({ id: "S2", title: "Banana" }));
+    g.items.push(new FakeFolder({ id: "S3", title: "Cherry" }));
+
+    // Start with no selection
+    expect(g.selectedIndex).toBe(-1);
+
+    // Filter for "Banana" - only item at index 1 matches
+    g.filter("Banana");
+
+    expect(g.filteredItems).toBeDefined();
+    expect(g.filteredItems!.length).toBe(1);
+    expect(g.filteredItems![0].properties.getTextStringOrEmpty("title")).toBe(
+      "Banana"
+    );
+
+    // The selection should point to Banana's index in items[], which is 1.
+    // Bug: Prior code set selectedIndex to 0 (Apple), which isn't in the filtered results.
+    expect(g.selectedIndex).toBe(1);
+  });
 });
