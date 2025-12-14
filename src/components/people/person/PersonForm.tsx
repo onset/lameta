@@ -38,10 +38,16 @@ class PersonForm extends React.Component<IProps> {
               // todo: show a dialog that says we're working
               setTimeout(() => {
                 this.props.person.nameMightHaveChanged();
-                // ID is s function of the name and the code
-                this.props.person.IdMightHaveChanged();
               }, 100);
             }
+            // LAM-112: Call IdMightHaveChanged unconditionally on name blur.
+            // The ID (used for references) is derived from the raw name, while the folder
+            // name uses the sanitized name. When only special characters change (e.g.,
+            // "John" -> "John!"), the folder doesn't need renaming but the ID does change.
+            // Previously, IdMightHaveChanged was only called inside the if block above,
+            // causing external references to become stale when the folder name stayed the same.
+            // https://linear.app/lameta/issue/LAM-112
+            this.props.person.IdMightHaveChanged();
           }}
           className="full-name left-side"
         />
