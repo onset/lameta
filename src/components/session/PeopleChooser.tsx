@@ -120,9 +120,25 @@ export const PeopleChooser: React.FunctionComponent<
           // NB: haven't worked out how to use mobx with functional components yet, so we
           // set the value
           //props.field.setValueFromString(s);
+
+          // LAM-114: Preserve contributions without personReference before clearing.
+          // The PeopleChooser only displays contributions that have a personReference,
+          // but the contributions array may contain entries without one (e.g., placeholder
+          // contributions with just a role or comments). These must be preserved.
+          // See https://linear.app/lameta/issue/LAM-114
+          const contributionsWithoutPersonRef =
+            props.folder.metadataFile!.contributions.filter(
+              (c) => !c.personReference
+            );
+
           props.folder.metadataFile!.contributions = [];
           newChoices.forEach((c) => {
             props.folder.metadataFile!.contributions.push(c.contribution);
+          });
+
+          // LAM-114: Restore contributions without personReference
+          contributionsWithoutPersonRef.forEach((c) => {
+            props.folder.metadataFile!.contributions.push(c);
           });
 
           // and explicitly change the state so that we redraw
