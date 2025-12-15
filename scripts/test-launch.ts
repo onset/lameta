@@ -1,7 +1,6 @@
 /*
-  Launch an the app repeated in order to check for a race condition that could cause the app to fail with
-  a "no-access", of the style in https://linear.app/lameta/issue/LAM-27. During development, we've
-  seen this happen just twice when running with `yarn dev`.
+  Launch the app repeatedly to check for race conditions that could cause the app to fail with
+  a "no-access" error. During development, we've seen this happen rarely when running with `yarn dev`.
   So far I've been unable to make it break while using this.
 
   To run, do `yarn test:build-then-launch` or `yarn test:launch-previous-build` or `yarn test:launch-after-package`.

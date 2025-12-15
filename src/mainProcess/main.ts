@@ -94,9 +94,9 @@ async function createWindow() {
     title: "Main window",
     //icon: join(process.env.PUBLIC, "favicon.svg"),
     webPreferences: {
-      // LAM-27: The preload script causes issues with E2E tests. Keep disabled for E2E
-      // while we investigate further. The lazy initialization in MainProcessApiAccess.ts
-      // fixes the race condition for normal runs.
+      // Preload must be disabled for E2E tests - Playwright's Electron integration
+      // doesn't properly support nodeIntegration:true + contextIsolation:false,
+      // causing "no access" errors in Node.js module resolution (fs.realpathSync)
       preload: getTestEnvironment().E2E ? undefined : preload,
       nodeIntegration: true,
       contextIsolation: false,

@@ -5,9 +5,9 @@ if (process?.env?.SMOKE_THROW_IN_PRELOAD === "1") {
   throw new Error("SMOKE: forced preload throw");
 }
 
-// something about preload causes our playwright runs to hit a "noaccess" error.
-// see test-launch.ts && https://linear.app/lameta/issue/LAM-27
-// So currently, main.ts only uses preload if we're not in e2e test mode.
+// Preload with nodeIntegration:true + contextIsolation:false is incompatible with
+// Playwright's Electron automation (causes "no access" errors in fs.realpathSync).
+// So main.ts only uses preload if we're not in E2E test mode.
 try {
   // need for drag n' drop of files.
   (window as any).electronAPI = {

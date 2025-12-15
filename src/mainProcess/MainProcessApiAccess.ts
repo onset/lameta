@@ -34,8 +34,6 @@ interface MainProcessApiPublic {
 // =============================================================================
 // Native Electron IPC Implementation
 // =============================================================================
-// Previously used electron-call, but it caused race conditions (LAM-27) due to
-// dynamic preload injection that conflicted with Playwright E2E tests.
 // Native ipcRenderer.invoke() is simpler, more reliable, and always works.
 // =============================================================================
 
