@@ -8,6 +8,7 @@ if (process?.env?.SMOKE_THROW_IN_PRELOAD === "1") {
 // Preload with nodeIntegration:true + contextIsolation:false is incompatible with
 // Playwright's Electron automation (causes "no access" errors in fs.realpathSync).
 // So main.ts only uses preload if we're not in E2E test mode.
+// For E2E tests, lametaE2ERunner.ts injects an equivalent electronAPI via page.evaluate().
 try {
   // need for drag n' drop of files.
   (window as any).electronAPI = {

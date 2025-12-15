@@ -24,11 +24,21 @@ export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
     children,
     clickOpensChooser: clickOpensChooser = true
   }) => {
+    // Sanity check: ensure preload script has run and provided the necessary API.
+    // Note: Preload is disabled for E2E tests due to Playwright/Electron incompatibility.
+    if (
+      !getTestEnvironment().E2E &&
+      (!(window as any).electronAPI ||
+        typeof (window as any).electronAPI.getPathForFile !== "function")
+    ) {
+      const msg = t`ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work.`;
+      console.error(msg);
+      NotifyWarning(msg);
+      // We could throw here, but it's more user-friendly to just let the user try to click to add files.
+    }
+
     // Helper: normalize file:// URIs and OS paths
     const normalizeOsPath = (p: string): string => {
-      if (getTestEnvironment().E2E)
-        throw "DropZone can't be used from E2E tests";
-
       if (!p) return p;
       if (p.startsWith("file://")) {
         try {
@@ -48,12 +58,6 @@ export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
     };
 
     const toAbsolutePath = (file: File): string => {
-      if (getTestEnvironment().E2E) {
-        throw new Error(
-          "ElectronDropZone should not be used in E2E tests. See https://linear.app/lameta/issue/LAM-27/using-preload-breaks-e2e-tests"
-        );
-        // probably could mock something here if needed for e2e tests
-      }
       const raw = (window as any).electronAPI.getPathForFile(file);
       const normalized = normalizeOsPath(raw);
       if (!nodePath.isAbsolute(normalized)) {

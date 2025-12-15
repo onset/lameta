@@ -40,6 +40,16 @@ export class LametaE2ERunner {
     this.electronApp = await electron.launch(launchOptions);
     this.page = await this.electronApp.firstWindow();
 
+    // Inject electronAPI for drag-and-drop support in E2E tests.
+    // Since preload is disabled for E2E (due to Playwright/CDP incompatibility with
+    // nodeIntegration:true + contextIsolation:false), we inject the equivalent API here.
+    // When nodeIntegration is true, Electron adds a `path` property to File objects.
+    await this.page.evaluate(() => {
+      (window as any).electronAPI = {
+        getPathForFile: (file: File) => (file as any).path || ""
+      };
+    });
+
     // Auto-dismiss prerelease warning dialog in packaged builds so tests aren't blocked
     try {
       // Look specifically for prerelease warning dialog by test ID - works across all localizations
