@@ -7,6 +7,16 @@
 	Max-Planck Institute for Psycholinguistics
 -->
 <!--
+DRAFT, 2025-12-15, John Hatton
+	ELAR extensions to support multilingual metadata:
+	- Added LanguageId attribute to String_Type (e.g., for Session.Title)
+	- Added LanguageId attribute to Vocabulary_Type (e.g., for Genre, Role)
+	- Changed Session.Title maxOccurs from 1 to unbounded (for multiple language translations)
+	- Changed Genre maxOccurs from 1 to unbounded (for multiple language translations)
+	- Changed Role maxOccurs from 1 to unbounded (for multiple language translations)
+	- Added index attribute to Key element (to link translations of same concept across languages)
+	- Added documentation annotations for multilingual usage
+
 3.0.22, 2015-08-26, Menzo Windhouwer
 	added Schematron rules for the context of language-related elements
 	finetuned Schematron rules for the year in Date fields
@@ -402,9 +412,9 @@
 					<xsd:documentation>Major genre classification. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="SubGenre" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="SubGenre" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 				<xsd:annotation>
-					<xsd:documentation>Sub genre classification. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
+					<xsd:documentation>Sub genre classification</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Task" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
@@ -781,7 +791,7 @@
 	<xsd:complexType name="Session_Type">
 		<xsd:sequence>
 			<xsd:element name="Name" type="imdi:String_Type"/>
-			<xsd:element name="Title" type="imdi:String_Type"/>
+			<xsd:element name="Title" type="imdi:String_Type" maxOccurs="unbounded"/>
 			<xsd:element name="Date" type="imdi:DateRange_Type"/>
 			<xsd:element name="ExternalResourceReference" type="imdi:ExternalResourceReference_Type" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="Description" type="imdi:Description_Type" minOccurs="0" maxOccurs="unbounded"/>
@@ -1577,10 +1587,15 @@
 	-->
 	<xsd:complexType name="String_Type">
 		<xsd:annotation>
-			<xsd:documentation>String type for single spaced, single line strings</xsd:documentation>
+			<xsd:documentation>String type for single spaced, single line strings. ELAR extension: supports LanguageId attribute for multilingual content.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:token">
+				<xsd:attribute name="LanguageId" type="imdi:LanguageId_Value_Type" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Language identifier for multilingual string values (e.g., ISO639-1:en, ISO639-3:etr). ELAR extension to standard IMDI 3.0.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 				<xsd:attributeGroup ref="imdi:ProfileAttributes"/>
 			</xsd:extension>
 		</xsd:simpleContent>

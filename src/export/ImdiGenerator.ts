@@ -600,7 +600,8 @@ export default class ImdiGenerator {
 
     this.startGroup("Session");
     this.requiredField("Name", "id");
-    this.requiredField("Title", "title");
+    // Session.Title is String_Type in IMDI schema which doesn't support LanguageId attribute
+    this.requiredMonolingualField("Title", "title");
     this.dateField("Date", "date");
     this.requiredField("Description", "description"); //https://trello.com/c/6VXkbU3a/110-imdi-empty-cells-need-to-become-xml-tags-eg-session-description
     this.keysThatHaveBeenOutput.add("Session.description");
@@ -1242,6 +1243,30 @@ export default class ImdiGenerator {
     this.field(elementName, fieldName, true, "Unspecified", target);
   }
 
+  // For IMDI String_Type elements (e.g., Session.Title)
+  // Standard IMDI 3.0 doesn't support LanguageId on String_Type, so uses only first language.
+  // ELAR extended schema supports LanguageId on String_Type, so outputs all languages.
+  private requiredMonolingualField(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File,
+    projectFallbackFieldName?: string
+  ) {
+    // Check if we're using ELAR schema which supports LanguageId on String_Type
+    const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
+    const isElarSchema = imdiSchema === "IMDI_3.0_elar.xsd";
+
+    this.field(
+      elementName,
+      fieldName,
+      true,
+      "",
+      target,
+      projectFallbackFieldName,
+      isElarSchema // ELAR schema supports multilingual String_Type
+    );
+  }
+
   private requiredField(
     elementName: string,
     fieldName: string,
@@ -1289,7 +1314,8 @@ export default class ImdiGenerator {
     xmlElementIsRequired: boolean,
     defaultValue: string,
     target?: Folder | File,
-    projectFallbackFieldName?: string
+    projectFallbackFieldName?: string,
+    imdiSupportsMultipleElements: boolean = true
   ) {
     //if they specified a folder, use that, otherwise use the current default
     const folder = target ? target : this.folderInFocus;
@@ -1342,7 +1368,8 @@ export default class ImdiGenerator {
       this.tail,
       this.mostRecentElement,
       xmlElementIsRequired,
-      defaultValue
+      defaultValue,
+      imdiSupportsMultipleElements
     );
     this.tail = result.tail;
     if (result.mostRecentElement)
@@ -1430,7 +1457,8 @@ export default class ImdiGenerator {
       // Apply sentenceCase only if the value starts with a lowercase letter
       // (e.g., user typed "myth" should become "Myth", but "MixedCase" should stay as-is)
       const outputValue =
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
+        englishValue.length > 0 &&
+        englishValue[0] === englishValue[0].toLowerCase()
           ? sentenceCase(englishValue)
           : englishValue;
       const newElement = this.tail.element(elementName, outputValue);
@@ -1464,7 +1492,8 @@ export default class ImdiGenerator {
     // Apply sentenceCase only if the value starts with a lowercase letter
     if (outputCount === 0) {
       const outputValue =
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
+        englishValue.length > 0 &&
+        englishValue[0] === englishValue[0].toLowerCase()
           ? sentenceCase(englishValue)
           : englishValue;
       const newElement = this.tail.element(elementName, outputValue);
@@ -1502,8 +1531,8 @@ export default class ImdiGenerator {
     // Convert schema filename to display format (e.g., "IMDI_3.0_elar.xsd" -> "IMDI 3.0 elar")
     const schemaFile = GetOtherConfigurationSettings().imdiSchema;
     const formatId = schemaFile
-      .replace(/\.xsd$/, "")  // Remove .xsd extension
-      .replace(/_/g, " ");     // Replace underscores with spaces
+      .replace(/\.xsd$/, "") // Remove .xsd extension
+      .replace(/_/g, " "); // Replace underscores with spaces
     this.tail
       //.a("ArchiveHandle", "") // somehow this helps ELAR's process, to have this here, empty.)
       .a("Date", this.nowDate())

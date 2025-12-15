@@ -141,6 +141,55 @@ describe("imdi monolingual field export", () => {
     expect("//title").toHaveText("a house");
     expect("//title[@LanguageId]").toNotExist();
   });
+
+  // Session.Title in standard IMDI 3.0 schema is String_Type which doesn't support LanguageId attribute.
+  // When using standard IMDI 3.0 (imdiSupportsMultipleElements=false), output only first language.
+  // NOTE: ELAR extended schema (IMDI_3.0_elar.xsd) DOES support LanguageId on String_Type.
+  it("uses only first language when imdiSupportsMultipleElements is false (standard IMDI 3.0)", () => {
+    const field = new Field("title", FieldType.Text, "idea for tomorrow");
+    field.setTextAxis("es", "idea para mañana");
+    field.setTextAxis("fr", "idée pour demain");
+    run((builder) => {
+      // imdiSupportsMultipleElements = false (standard IMDI 3.0 String_Type)
+      fieldElement("title", field, builder, builder, true, "", false);
+    });
+    // Should only have one Title element without LanguageId attribute
+    expect("//title").toHaveCount(1);
+    expect("//title[@LanguageId]").toNotExist();
+    // First axis (en in this case) should be used
+    expect("//title").toHaveText("idea for tomorrow");
+  });
+
+  // ELAR schema extends String_Type to support LanguageId attribute.
+  // When using ELAR schema (imdiSupportsMultipleElements=true), output all languages.
+  it("creates multiple Title elements with LanguageId when imdiSupportsMultipleElements is true (ELAR schema)", () => {
+    const field = new Field("title", FieldType.Text, "idea for tomorrow");
+    field.setTextAxis("es", "idea para mañana");
+    field.setTextAxis("fr", "idée pour demain");
+    run((builder) => {
+      // imdiSupportsMultipleElements = true (ELAR extended schema supports LanguageId on String_Type)
+      fieldElement("title", field, builder, builder, true, "", true);
+    });
+    // Should have multiple Title elements with LanguageId attributes
+    expect("//title[@LanguageId]").toHaveCount(3);
+    expect("//title[@LanguageId='ISO639-1:en']").toHaveText(
+      "idea for tomorrow"
+    );
+    expect("//title[@LanguageId='ISO639-1:es']").toHaveText("idea para mañana");
+    expect("//title[@LanguageId='ISO639-1:fr']").toHaveText("idée pour demain");
+  });
+
+  it("creates multiple elements with LanguageId when imdiSupportsMultipleElements is true", () => {
+    const field = new Field("description", FieldType.Text, "a house");
+    field.setTextAxis("en", "a house");
+    field.setTextAxis("es", "una casa");
+    run((builder) => {
+      // imdiSupportsMultipleElements = true (default), like Description
+      fieldElement("description", field, builder, builder, true, "", true);
+    });
+    // Should have multiple Description elements with LanguageId attributes
+    expect("//description[@LanguageId]").toHaveCount(2);
+  });
 });
 
 function run(fn: (builder: XmlBuilder.XMLElementOrXMLNode) => void) {

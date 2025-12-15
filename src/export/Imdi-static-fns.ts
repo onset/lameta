@@ -2,13 +2,16 @@ import * as XmlBuilder from "xmlbuilder";
 import { Field } from "../model/field/Field";
 
 // public for testing
+// imdiSupportsMultipleElements: when true, creates separate elements with LanguageId attributes for each language.
+// When false (e.g., for IMDI String_Type elements like Session.Title), uses only the first/default language value.
 export function fieldElement(
   elementName: string,
   fieldOrString: string | Field | undefined,
   tail: XmlBuilder.XMLElementOrXMLNode,
   mostRecentElement?: XmlBuilder.XMLElementOrXMLNode,
   xmlElementIsRequired?: boolean,
-  defaultValue?: string
+  defaultValue?: string,
+  imdiSupportsMultipleElements: boolean = true
 ): {
   tail: XmlBuilder.XMLElementOrXMLNode;
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
@@ -28,7 +31,12 @@ export function fieldElement(
       tail
     );
   } else if (field && !field.isEmpty()) {
-    lastElementWeAdded = addElementsFromFieldContent(elementName, field, tail);
+    lastElementWeAdded = addElementsFromFieldContent(
+      elementName,
+      field,
+      tail,
+      imdiSupportsMultipleElements
+    );
   }
   //lastElementWeAdded = tail.element("hello", "world");
   tail = lastElementWeAdded === tail ? tail : lastElementWeAdded.up();
@@ -48,7 +56,8 @@ function addElementWithMonolingualStringContentIfNotEmpty(
 function addElementsFromFieldContent(
   elementName: string,
   field: Field,
-  tail: XmlBuilder.XMLElementOrXMLNode
+  tail: XmlBuilder.XMLElementOrXMLNode,
+  imdiSupportsMultipleElements: boolean
 ) {
   let element;
   if (field.definition?.imdiRange) {
@@ -61,18 +70,21 @@ function addElementsFromFieldContent(
     element.attribute("Type", type);
   } else {
     const axes = field.getAllNonEmptyTextAxes();
-    axes.forEach((language) => {
-      element = tail.element(elementName, field.getTextAxis(language));
 
-      // this logic might not be what we end up with, but for now we're just
-      // assuming that 1) the UI only allows multiple languages if the the schema is going to support it, and
-      //2) if there is only one language, we don't need to specify the language even if it can be multilingual.
-      if (axes.length > 1) {
+    // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
+    // just use the first language's value
+    if (!imdiSupportsMultipleElements || axes.length === 1) {
+      const firstLanguage = axes[0];
+      element = tail.element(elementName, field.getTextAxis(firstLanguage));
+    } else {
+      // Multiple languages and IMDI supports LanguageId attributes
+      axes.forEach((language) => {
+        element = tail.element(elementName, field.getTextAxis(language));
         // 2 letter is ISO639-1, 3 letter is taken to be the ISO639-3 (ethonogue code)
         const kind = language.length === 2 ? "ISO639-1" : "ISO639-3";
         element.attribute("LanguageId", kind + ":" + language);
-      }
-    });
+      });
+    }
   }
   return element;
 }
