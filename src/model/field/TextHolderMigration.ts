@@ -1,8 +1,11 @@
 /**
  * Migration utilities for converting between text formats.
  *
- * Supports converting "slash syntax" (e.g., "casa/house/maison") to
+ * Supports converting "slash syntax" (e.g., "casa / house / maison") to
  * tagged multilingual format (e.g., "[[es]]casa[[en]]house[[fr]]maison").
+ *
+ * IMPORTANT: Slash syntax requires " / " (space-slash-space) as the delimiter.
+ * This avoids false positives on dates (01/01/2029) and file paths (a/b/c).
  */
 
 /**
@@ -17,16 +20,16 @@ export interface SlashSyntaxParseResult {
 }
 
 /**
- * Parse slash-separated text into segments.
- * Does NOT assign languages - just splits on "/".
+ * Parse space-slash-space separated text into segments.
+ * Does NOT assign languages - just splits on " / ".
  *
  * Rules:
  * - Empty string returns empty segments array
- * - No slashes returns single segment with original text
- * - Empty segments between slashes are preserved (e.g., "a//b" → ["a", "", "b"])
- * - Whitespace is preserved exactly as provided
+ * - No " / " returns single segment with original text (dates, paths preserved)
+ * - Empty segments are preserved (e.g., "a /  / b" → ["a", "", "b"])
+ * - Whitespace around segments is trimmed
  *
- * @param input The slash-separated text to parse
+ * @param input The space-slash-space separated text to parse
  * @returns Parse result with segments and metadata
  */
 export function parseSlashSyntax(input: string): SlashSyntaxParseResult {
@@ -34,12 +37,12 @@ export function parseSlashSyntax(input: string): SlashSyntaxParseResult {
     return { segments: [], hasSlashes: false };
   }
 
-  const hasSlashes = input.includes("/");
+  const hasSlashes = input.includes(" / ");
   if (!hasSlashes) {
     return { segments: [input], hasSlashes: false };
   }
 
-  const segments = input.split("/");
+  const segments = input.split(" / ").map((s) => s.trim());
   return { segments, hasSlashes: true };
 }
 
@@ -120,10 +123,10 @@ export function assignLanguagesToSegments(
 }
 
 /**
- * Convert slash syntax text to tagged multilingual format.
+ * Convert space-slash-space syntax text to tagged multilingual format.
  * Convenience function combining parse and assign.
  *
- * @param input The slash-separated text (e.g., "casa/house")
+ * @param input The space-slash-space separated text (e.g., "casa / house")
  * @param languageTags The language tags in order (e.g., ["es", "en"])
  * @returns Tagged format string (e.g., "[[es]]casa[[en]]house")
  */

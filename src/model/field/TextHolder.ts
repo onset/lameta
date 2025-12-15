@@ -77,15 +77,17 @@ export class TextHolder {
    * virtually interpreted as multilingual.
    *
    * Returns true if:
-   * - Text contains "/" (potential delimiter)
+   * - Text contains " / " (space-slash-space delimiter)
    * - Text does NOT start with "[[" (not already tagged format)
    * - Text is not empty
+   *
+   * Note: This avoids false positives on dates (01/01/2029) and paths (a/b/c)
    */
   public looksLikeSlashSyntax(): boolean {
     if (this._text === "" || this._text.startsWith("[[")) {
       return false;
     }
-    return this._text.includes("/");
+    return this._text.includes(" / ");
   }
 
   /**

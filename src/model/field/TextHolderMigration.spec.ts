@@ -21,92 +21,105 @@ describe("parseSlashSyntax", () => {
       expect(result.hasSlashes).toBe(false);
     });
 
-    it("should split on slashes", () => {
+    it("should NOT split on tight slashes (no spaces) to avoid date mis-parsing", () => {
       const result = parseSlashSyntax("casa/house");
+      expect(result.segments).toEqual(["casa/house"]);
+      expect(result.hasSlashes).toBe(false);
+    });
+
+    it("should split on space-slash-space pattern", () => {
+      const result = parseSlashSyntax("casa / house");
       expect(result.segments).toEqual(["casa", "house"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should handle three languages", () => {
-      const result = parseSlashSyntax("casa/house/maison");
+    it("should handle three languages with space-slash-space", () => {
+      const result = parseSlashSyntax("casa / house / maison");
       expect(result.segments).toEqual(["casa", "house", "maison"]);
       expect(result.hasSlashes).toBe(true);
+    });
+
+    it("should NOT split dates", () => {
+      const result = parseSlashSyntax("01/01/2029");
+      expect(result.segments).toEqual(["01/01/2029"]);
+      expect(result.hasSlashes).toBe(false);
+    });
+
+    it("should NOT split file paths", () => {
+      const result = parseSlashSyntax("path/to/file");
+      expect(result.segments).toEqual(["path/to/file"]);
+      expect(result.hasSlashes).toBe(false);
     });
   });
 
   describe("edge cases with empty segments", () => {
-    it("should preserve trailing empty segment (casa/)", () => {
-      const result = parseSlashSyntax("casa/");
+    it("should preserve trailing empty segment (casa /)", () => {
+      const result = parseSlashSyntax("casa / ");
       expect(result.segments).toEqual(["casa", ""]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should preserve leading empty segment (/casa)", () => {
-      const result = parseSlashSyntax("/casa");
+    it("should preserve leading empty segment ( / casa)", () => {
+      const result = parseSlashSyntax(" / casa");
       expect(result.segments).toEqual(["", "casa"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should preserve empty segment between slashes (casa//maison)", () => {
-      const result = parseSlashSyntax("casa//maison");
+    it("should preserve empty segment between slashes (casa /  / maison)", () => {
+      const result = parseSlashSyntax("casa /  / maison");
       expect(result.segments).toEqual(["casa", "", "maison"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should handle multiple consecutive slashes", () => {
-      const result = parseSlashSyntax("a///b");
+    it("should handle multiple consecutive space-slash-space patterns", () => {
+      const result = parseSlashSyntax("a /  /  / b");
       expect(result.segments).toEqual(["a", "", "", "b"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should handle just a slash", () => {
-      const result = parseSlashSyntax("/");
+    it("should handle just space-slash-space", () => {
+      const result = parseSlashSyntax(" / ");
       expect(result.segments).toEqual(["", ""]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should handle multiple slashes only", () => {
-      const result = parseSlashSyntax("///");
-      expect(result.segments).toEqual(["", "", "", ""]);
-      expect(result.hasSlashes).toBe(true);
-    });
   });
 
   describe("whitespace handling", () => {
-    it("should preserve whitespace around segments", () => {
+    it("should trim whitespace from segments", () => {
       const result = parseSlashSyntax(" casa / house ");
-      expect(result.segments).toEqual([" casa ", " house "]);
+      expect(result.segments).toEqual(["casa", "house"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should preserve internal whitespace", () => {
-      const result = parseSlashSyntax("the house/la casa");
+    it("should preserve internal whitespace in multi-word segments", () => {
+      const result = parseSlashSyntax("the house / la casa");
       expect(result.segments).toEqual(["the house", "la casa"]);
       expect(result.hasSlashes).toBe(true);
     });
 
-    it("should handle mixed whitespace patterns", () => {
-      const result = parseSlashSyntax("/casa / house");
-      expect(result.segments).toEqual(["", "casa ", " house"]);
+    it("should handle leading empty with space-slash-space", () => {
+      const result = parseSlashSyntax(" / casa / house");
+      expect(result.segments).toEqual(["", "casa", "house"]);
       expect(result.hasSlashes).toBe(true);
     });
   });
 
   describe("special characters", () => {
     it("should handle text with special characters", () => {
-      const result = parseSlashSyntax("héllo/wörld/日本語");
+      const result = parseSlashSyntax("héllo / wörld / 日本語");
       expect(result.segments).toEqual(["héllo", "wörld", "日本語"]);
       expect(result.hasSlashes).toBe(true);
     });
 
     it("should handle text with brackets (but not our tag format)", () => {
-      const result = parseSlashSyntax("[test]/[other]");
+      const result = parseSlashSyntax("[test] / [other]");
       expect(result.segments).toEqual(["[test]", "[other]"]);
       expect(result.hasSlashes).toBe(true);
     });
 
     it("should handle text with newlines", () => {
-      const result = parseSlashSyntax("line1\nline2/other");
+      const result = parseSlashSyntax("line1\nline2 / other");
       expect(result.segments).toEqual(["line1\nline2", "other"]);
       expect(result.hasSlashes).toBe(true);
     });
@@ -234,17 +247,22 @@ describe("assignLanguagesToSegments", () => {
 describe("slashSyntaxToTaggedText", () => {
   describe("basic conversion", () => {
     it("should convert simple two-language text", () => {
-      const result = slashSyntaxToTaggedText("casa/house", ["es", "en"]);
+      const result = slashSyntaxToTaggedText("casa / house", ["es", "en"]);
       expect(result).toBe("[[es]]casa[[en]]house");
     });
 
     it("should convert three-language text", () => {
-      const result = slashSyntaxToTaggedText("casa/house/maison", [
+      const result = slashSyntaxToTaggedText("casa / house / maison", [
         "es",
         "en",
         "fr"
       ]);
       expect(result).toBe("[[es]]casa[[en]]house[[fr]]maison");
+    });
+
+    it("should NOT convert tight slashes (dates, paths)", () => {
+      const result = slashSyntaxToTaggedText("01/01/2029", ["es", "en"]);
+      expect(result).toBe("01/01/2029");
     });
   });
 
@@ -262,7 +280,7 @@ describe("slashSyntaxToTaggedText", () => {
 
   describe("mismatched counts", () => {
     it("should handle more segments than tags", () => {
-      const result = slashSyntaxToTaggedText("a/b/c", ["en"]);
+      const result = slashSyntaxToTaggedText("a / b / c", ["en"]);
       expect(result).toBe("[[en]]a[[unknown1]]b[[unknown2]]c");
     });
 
@@ -273,14 +291,14 @@ describe("slashSyntaxToTaggedText", () => {
     });
 
     it("should handle empty tags array with slashes", () => {
-      const result = slashSyntaxToTaggedText("a/b", []);
+      const result = slashSyntaxToTaggedText("a / b", []);
       expect(result).toBe("[[unknown1]]a[[unknown2]]b");
     });
   });
 
   describe("empty segment preservation", () => {
     it("should preserve empty segments in tagged output", () => {
-      const result = slashSyntaxToTaggedText("casa//maison", [
+      const result = slashSyntaxToTaggedText("casa /  / maison", [
         "es",
         "en",
         "fr"
@@ -288,8 +306,8 @@ describe("slashSyntaxToTaggedText", () => {
       expect(result).toBe("[[es]]casa[[en]][[fr]]maison");
     });
 
-    it("should handle trailing slash", () => {
-      const result = slashSyntaxToTaggedText("casa/", ["es", "en"]);
+    it("should handle trailing space-slash", () => {
+      const result = slashSyntaxToTaggedText("casa / ", ["es", "en"]);
       expect(result).toBe("[[es]]casa[[en]]");
     });
   });
@@ -300,34 +318,30 @@ describe("parseSlashSyntax with comma-separated multilingual values", () => {
   // Real user data example: "History / Historia,Customs / Costumbres"
   // Each comma-separated item has its own slash-delimited translations
 
-  it("documents current parseSlashSyntax behavior (splits on ALL slashes)", () => {
+  it("parseSlashSyntax splits on space-slash-space, treating commas as part of text", () => {
     // User's actual data format from incoming data
     const userInput = "History / Historia,Customs / Costumbres";
 
-    // Current behavior: splits on ALL slashes, treating commas as part of text
+    // splits on space-slash-space, treating commas as part of text
     const result = parseSlashSyntax(userInput);
 
     // This is what parseSlashSyntax does (not the comma-aware version)
-    expect(result.segments).toEqual([
-      "History ",
-      " Historia,Customs ",
-      " Costumbres"
-    ]);
+    expect(result.segments).toEqual(["History", "Historia,Customs", "Costumbres"]);
   });
 
-  it("documents current behavior with keywords example", () => {
+  it("parseSlashSyntax with keywords example", () => {
     // Another real example from user data
     const userInput =
       "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
 
     const result = parseSlashSyntax(userInput);
 
-    // Current behavior - splits on ALL slashes:
+    // splits on space-slash-space:
     expect(result.segments).toEqual([
-      "Mberyo ",
-      " Mberyo,Everyday Activities ",
-      " Actividades Cotidianas,Traditional Materials ",
-      " Materiales"
+      "Mberyo",
+      "Mberyo,Everyday Activities",
+      "Actividades Cotidianas,Traditional Materials",
+      "Materiales"
     ]);
   });
 });
