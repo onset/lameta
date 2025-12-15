@@ -529,4 +529,63 @@ describe("TextHolder slash syntax virtual conversion", () => {
       expect(t.looksLikeSlashSyntax()).toBe(false);
     });
   });
+
+  describe("comma-separated slash syntax conversion", () => {
+    // Tests for fields with separatorWithCommaInstructions (like topic, keyword)
+    // Format: "item1-lang1 / item1-lang2, item2-lang1 / item2-lang2"
+
+    it("should convert comma-separated items with per-item slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "History / Historia, Customs / Costumbres";
+      const result = t.commitSlashSyntaxConversion(["en", "es"], true);
+      expect(result).toBe(true);
+      expect(t.getTextAxis("en")).toBe("History, Customs");
+      expect(t.getTextAxis("es")).toBe("Historia, Costumbres");
+    });
+
+    it("should handle keywords example from real user data", () => {
+      const t = new TextHolder();
+      t.monoLingualText =
+        "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
+      t.commitSlashSyntaxConversion(["en", "es"], true);
+      expect(t.getTextAxis("en")).toBe(
+        "Mberyo, Everyday Activities, Traditional Materials"
+      );
+      expect(t.getTextAxis("es")).toBe(
+        "Mberyo, Actividades Cotidianas, Materiales"
+      );
+    });
+
+    it("getTextAxisVirtual should parse comma-separated slash syntax correctly", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "History / Historia, Customs / Costumbres";
+      expect(t.getTextAxisVirtual("en", ["en", "es"], true)).toBe(
+        "History, Customs"
+      );
+      expect(t.getTextAxisVirtual("es", ["en", "es"], true)).toBe(
+        "Historia, Costumbres"
+      );
+      // Should not modify original text
+      expect(t.monoLingualText).toBe(
+        "History / Historia, Customs / Costumbres"
+      );
+    });
+
+    it("getVirtualMultiAxisView should return all axes for comma-separated", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "A / B, C / D";
+      const view = t.getVirtualMultiAxisView(["en", "es"], true);
+      expect(view).not.toBeNull();
+      expect(view!.get("en")).toBe("A, C");
+      expect(view!.get("es")).toBe("B, D");
+    });
+
+    it("should handle mixed items (some with slash, some without)", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "History / Historia, Plain Topic, Culture / Cultura";
+      t.commitSlashSyntaxConversion(["en", "es"], true);
+      expect(t.getTextAxis("en")).toBe("History, Plain Topic, Culture");
+      expect(t.getTextAxis("es")).toBe("Historia, Cultura");
+    });
+  });
 });

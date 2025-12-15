@@ -1,7 +1,8 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import {
   parseSlashSyntax,
-  assignLanguagesToSegments
+  assignLanguagesToSegments,
+  parseCommaSeparatedSlashSyntax
 } from "./TextHolderMigration";
 
 /**
@@ -97,20 +98,31 @@ export class TextHolder {
    *
    * @param tag The language tag to get text for
    * @param languageTags The ordered list of language tags for slash interpretation
+   * @param isCommaSeparated If true, treat as comma-separated items where each item has slash syntax
    * @returns The text for the given tag (virtual or actual)
    */
-  public getTextAxisVirtual(tag: string, languageTags: string[]): string {
+  public getTextAxisVirtual(
+    tag: string,
+    languageTags: string[],
+    isCommaSeparated: boolean = false
+  ): string {
     if (!this.looksLikeSlashSyntax()) {
       // Not slash syntax - use normal behavior
       return this.getTextAxis(tag);
     }
 
-    // Parse slash syntax virtually
+    if (isCommaSeparated) {
+      // Comma-separated items with per-item slash syntax
+      const { assignments } = parseCommaSeparatedSlashSyntax(
+        this._text,
+        languageTags
+      );
+      return assignments.get(tag) ?? "";
+    }
+
+    // Parse slash syntax virtually (whole field as one multilingual value)
     const { segments } = parseSlashSyntax(this._text);
-    const { assignments } = assignLanguagesToSegments(
-      segments,
-      languageTags
-    );
+    const { assignments } = assignLanguagesToSegments(segments, languageTags);
     return assignments.get(tag) ?? "";
   }
 
@@ -119,13 +131,23 @@ export class TextHolder {
    * WITHOUT modifying the stored text.
    *
    * @param languageTags The ordered list of language tags for interpretation
+   * @param isCommaSeparated If true, treat as comma-separated items where each item has slash syntax
    * @returns Map of language tag to text content, or null if not slash syntax
    */
   public getVirtualMultiAxisView(
-    languageTags: string[]
+    languageTags: string[],
+    isCommaSeparated: boolean = false
   ): Map<string, string> | null {
     if (!this.looksLikeSlashSyntax()) {
       return null; // Not slash syntax
+    }
+
+    if (isCommaSeparated) {
+      const { assignments } = parseCommaSeparatedSlashSyntax(
+        this._text,
+        languageTags
+      );
+      return assignments;
     }
 
     const { segments } = parseSlashSyntax(this._text);
@@ -141,10 +163,21 @@ export class TextHolder {
    * For slash syntax: returns the ordered tags including any unknown1, unknown2, etc.
    *
    * @param metadataSlotTags The metadata slot tags (for slash syntax interpretation)
+   * @param isCommaSeparated If true, treat as comma-separated items where each item has slash syntax
    * @returns Array of all effective slot tags
    */
-  public getEffectiveSlotTags(metadataSlotTags: string[]): string[] {
+  public getEffectiveSlotTags(
+    metadataSlotTags: string[],
+    isCommaSeparated: boolean = false
+  ): string[] {
     if (this.looksLikeSlashSyntax()) {
+      if (isCommaSeparated) {
+        const { orderedTags } = parseCommaSeparatedSlashSyntax(
+          this._text,
+          metadataSlotTags
+        );
+        return orderedTags;
+      }
       const { segments } = parseSlashSyntax(this._text);
       const { orderedTags } = assignLanguagesToSegments(
         segments,
@@ -172,9 +205,13 @@ export class TextHolder {
    * Does NOT modify the stored text.
    *
    * @param languageTags The ordered list of language tags for conversion
+   * @param isCommaSeparated If true, treat as comma-separated items where each item has slash syntax
    * @returns Preview result with info about unknowns
    */
-  public previewSlashSyntaxConversion(languageTags: string[]): {
+  public previewSlashSyntaxConversion(
+    languageTags: string[],
+    isCommaSeparated: boolean = false
+  ): {
     wouldConvert: boolean;
     unknownCount: number;
     unknownTags: string[];
@@ -183,8 +220,15 @@ export class TextHolder {
       return { wouldConvert: false, unknownCount: 0, unknownTags: [] };
     }
 
-    const { segments } = parseSlashSyntax(this._text);
-    const { orderedTags } = assignLanguagesToSegments(segments, languageTags);
+    let orderedTags: string[];
+    if (isCommaSeparated) {
+      const result = parseCommaSeparatedSlashSyntax(this._text, languageTags);
+      orderedTags = result.orderedTags;
+    } else {
+      const { segments } = parseSlashSyntax(this._text);
+      const result = assignLanguagesToSegments(segments, languageTags);
+      orderedTags = result.orderedTags;
+    }
 
     // Find unknown tags
     const unknownTags = orderedTags.filter((tag) => tag.startsWith("unknown"));
@@ -201,18 +245,30 @@ export class TextHolder {
    * Call this when the user confirms the virtual interpretation is correct.
    *
    * @param languageTags The ordered list of language tags for conversion
+   * @param isCommaSeparated If true, treat as comma-separated items where each item has slash syntax
    * @returns true if conversion happened, false if text wasn't slash syntax
    */
-  public commitSlashSyntaxConversion(languageTags: string[]): boolean {
+  public commitSlashSyntaxConversion(
+    languageTags: string[],
+    isCommaSeparated: boolean = false
+  ): boolean {
     if (!this.looksLikeSlashSyntax()) {
       return false;
     }
 
-    const { segments } = parseSlashSyntax(this._text);
-    const { assignments, orderedTags } = assignLanguagesToSegments(
-      segments,
-      languageTags
-    );
+    let assignments: Map<string, string>;
+    let orderedTags: string[];
+
+    if (isCommaSeparated) {
+      const result = parseCommaSeparatedSlashSyntax(this._text, languageTags);
+      assignments = result.assignments;
+      orderedTags = result.orderedTags;
+    } else {
+      const { segments } = parseSlashSyntax(this._text);
+      const result = assignLanguagesToSegments(segments, languageTags);
+      assignments = result.assignments;
+      orderedTags = result.orderedTags;
+    }
 
     // Build tagged format
     const parts: string[] = [];

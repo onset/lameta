@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   parseSlashSyntax,
   assignLanguagesToSegments,
-  slashSyntaxToTaggedText
+  slashSyntaxToTaggedText,
+  parseCommaSeparatedSlashSyntax,
+  commaSeparatedSlashSyntaxToTaggedText
 } from "./TextHolderMigration";
 
 describe("parseSlashSyntax", () => {
@@ -290,5 +292,174 @@ describe("slashSyntaxToTaggedText", () => {
       const result = slashSyntaxToTaggedText("casa/", ["es", "en"]);
       expect(result).toBe("[[es]]casa[[en]]");
     });
+  });
+});
+
+describe("parseSlashSyntax with comma-separated multilingual values", () => {
+  // This tests the format: "item1-lang1 / item1-lang2, item2-lang1 / item2-lang2"
+  // Real user data example: "History / Historia,Customs / Costumbres"
+  // Each comma-separated item has its own slash-delimited translations
+
+  it("documents current parseSlashSyntax behavior (splits on ALL slashes)", () => {
+    // User's actual data format from incoming data
+    const userInput = "History / Historia,Customs / Costumbres";
+
+    // Current behavior: splits on ALL slashes, treating commas as part of text
+    const result = parseSlashSyntax(userInput);
+
+    // This is what parseSlashSyntax does (not the comma-aware version)
+    expect(result.segments).toEqual([
+      "History ",
+      " Historia,Customs ",
+      " Costumbres"
+    ]);
+  });
+
+  it("documents current behavior with keywords example", () => {
+    // Another real example from user data
+    const userInput =
+      "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
+
+    const result = parseSlashSyntax(userInput);
+
+    // Current behavior - splits on ALL slashes:
+    expect(result.segments).toEqual([
+      "Mberyo ",
+      " Mberyo,Everyday Activities ",
+      " Actividades Cotidianas,Traditional Materials ",
+      " Materiales"
+    ]);
+  });
+});
+
+describe("parseCommaSeparatedSlashSyntax", () => {
+  // These tests verify the comma-aware slash syntax parser
+
+  it("should correctly parse comma-separated items with slash translations", () => {
+    const userInput = "History / Historia,Customs / Costumbres";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(true);
+    expect(result.assignments.get("en")).toBe("History, Customs");
+    expect(result.assignments.get("es")).toBe("Historia, Costumbres");
+    expect(result.orderedTags).toEqual(["en", "es"]);
+  });
+
+  it("should handle keywords example from real user data", () => {
+    const userInput =
+      "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(true);
+    expect(result.assignments.get("en")).toBe(
+      "Mberyo, Everyday Activities, Traditional Materials"
+    );
+    expect(result.assignments.get("es")).toBe(
+      "Mberyo, Actividades Cotidianas, Materiales"
+    );
+  });
+
+  it("should handle items without slashes (monolingual items)", () => {
+    const userInput = "Topic One, Topic Two";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(false);
+    // When no slashes, each item is assigned to the first language only
+    expect(result.assignments.get("en")).toBe("Topic One, Topic Two");
+    expect(result.assignments.get("es")).toBe("");
+  });
+
+  it("should handle mixed items (some with slashes, some without)", () => {
+    const userInput = "History / Historia, Plain Topic, Culture / Cultura";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(true);
+    expect(result.assignments.get("en")).toBe("History, Plain Topic, Culture");
+    expect(result.assignments.get("es")).toBe("Historia, Cultura");
+  });
+
+  it("should handle three languages", () => {
+    const userInput =
+      "History / Historia / Histoire, Culture / Cultura / Culture";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es", "fr"]);
+
+    expect(result.hasSlashes).toBe(true);
+    expect(result.assignments.get("en")).toBe("History, Culture");
+    expect(result.assignments.get("es")).toBe("Historia, Cultura");
+    expect(result.assignments.get("fr")).toBe("Histoire, Culture");
+  });
+
+  it("should handle empty input", () => {
+    const result = parseCommaSeparatedSlashSyntax("", ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(false);
+    expect(result.assignments.get("en")).toBe("");
+    expect(result.assignments.get("es")).toBe("");
+  });
+
+  it("should handle extra segments with unknown tags", () => {
+    const userInput = "A / B / C / D, E / F / G / H";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.hasSlashes).toBe(true);
+    expect(result.assignments.get("en")).toBe("A, E");
+    expect(result.assignments.get("es")).toBe("B, F");
+    expect(result.assignments.get("unknown1")).toBe("C, G");
+    expect(result.assignments.get("unknown2")).toBe("D, H");
+    expect(result.orderedTags).toContain("unknown1");
+    expect(result.orderedTags).toContain("unknown2");
+  });
+
+  it("should trim whitespace from segments", () => {
+    const userInput = "  History  /  Historia  ,  Customs  /  Costumbres  ";
+
+    const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
+
+    expect(result.assignments.get("en")).toBe("History, Customs");
+    expect(result.assignments.get("es")).toBe("Historia, Costumbres");
+  });
+});
+
+describe("commaSeparatedSlashSyntaxToTaggedText", () => {
+  it("should convert comma-separated slash syntax to tagged format", () => {
+    const userInput = "History / Historia,Customs / Costumbres";
+
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
+      "en",
+      "es"
+    ]);
+
+    expect(result).toBe("[[en]]History, Customs[[es]]Historia, Costumbres");
+  });
+
+  it("should return original text when no slashes present", () => {
+    const userInput = "History, Customs";
+
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
+      "en",
+      "es"
+    ]);
+
+    expect(result).toBe("History, Customs");
+  });
+
+  it("should handle real keywords example", () => {
+    const userInput =
+      "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
+
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
+      "en",
+      "es"
+    ]);
+
+    expect(result).toBe(
+      "[[en]]Mberyo, Everyday Activities, Traditional Materials[[es]]Mberyo, Actividades Cotidianas, Materiales"
+    );
   });
 });

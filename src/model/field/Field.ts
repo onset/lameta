@@ -171,6 +171,14 @@ export class Field {
     return translateFieldLabel(this.definition);
   }
 
+  /**
+   * Returns true if this field uses comma-separated values (like topic, keyword).
+   * Used to determine how to parse slash syntax for multilingual conversion.
+   */
+  public get isCommaSeparated(): boolean {
+    return !!this.definition?.separatorWithCommaInstructions;
+  }
+
   public get labelOfValue(): string {
     const complexChoice = this.definition.complexChoices?.find(
       (c) => c.id.toLowerCase() === this.text.toLowerCase()
@@ -208,7 +216,10 @@ export class Field {
    * Permanently convert slash syntax to tagged format.
    */
   public commitSlashSyntaxConversion(languageTags: string[]): boolean {
-    return this.textHolder.commitSlashSyntaxConversion(languageTags);
+    return this.textHolder.commitSlashSyntaxConversion(
+      languageTags,
+      this.isCommaSeparated
+    );
   }
   public getTextAxis(tag: string): string {
     return this.textHolder.getTextAxis(tag);
@@ -219,7 +230,11 @@ export class Field {
    * provided language tags order. Otherwise falls back to normal getTextAxis.
    */
   public getTextAxisVirtual(tag: string, languageTags: string[]): string {
-    return this.textHolder.getTextAxisVirtual(tag, languageTags);
+    return this.textHolder.getTextAxisVirtual(
+      tag,
+      languageTags,
+      this.isCommaSeparated
+    );
   }
   /**
    * Check if the stored text looks like slash syntax that could be
@@ -236,7 +251,10 @@ export class Field {
    * segments in slash syntax.
    */
   public getEffectiveSlotTags(metadataSlotTags: string[]): string[] {
-    return this.textHolder.getEffectiveSlotTags(metadataSlotTags);
+    return this.textHolder.getEffectiveSlotTags(
+      metadataSlotTags,
+      this.isCommaSeparated
+    );
   }
   public getTextForSimpleDisplay(): string {
     return this.textHolder.getFirstNonEmptyText([

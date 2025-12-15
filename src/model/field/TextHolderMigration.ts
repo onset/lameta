@@ -153,3 +153,146 @@ export function slashSyntaxToTaggedText(
 
   return parts.join("");
 }
+
+/**
+ * Result of parsing comma-separated multilingual values.
+ */
+export interface CommaSeparatedSlashResult {
+  /** Map of language tag to comma-separated values for that language */
+  assignments: Map<string, string>;
+  /** Language tags in order of assignment */
+  orderedTags: string[];
+  /** Whether any item contained slashes */
+  hasSlashes: boolean;
+  /** Any warnings about the parsing */
+  warnings: string[];
+}
+
+/**
+ * Parse comma-separated text where each item may have slash-delimited translations.
+ *
+ * This handles the format: "item1-lang1 / item1-lang2, item2-lang1 / item2-lang2"
+ * For example: "History / Historia, Customs / Costumbres"
+ *
+ * Result:
+ * - lang1 (e.g., en): "History, Customs"
+ * - lang2 (e.g., es): "Historia, Costumbres"
+ *
+ * Rules:
+ * - First splits by comma to get individual items
+ * - Each item is then parsed for slash syntax
+ * - Items without slashes are treated as monolingual (assigned to first language tag)
+ * - Whitespace around commas and slashes is trimmed from the final values
+ * - If items have inconsistent slash counts, extra segments go to "unknown" tags
+ *
+ * @param input The comma-and-slash-separated text
+ * @param languageTags The language tags in order (e.g., ["en", "es"])
+ * @returns Parsing result with per-language comma-separated values
+ */
+export function parseCommaSeparatedSlashSyntax(
+  input: string,
+  languageTags: string[]
+): CommaSeparatedSlashResult {
+  const assignments = new Map<string, string>();
+  const warnings: string[] = [];
+  let hasSlashes = false;
+  let allOrderedTags: string[] = [...languageTags];
+
+  if (input === "" || languageTags.length === 0) {
+    for (const tag of languageTags) {
+      assignments.set(tag, "");
+    }
+    return { assignments, orderedTags: allOrderedTags, hasSlashes, warnings };
+  }
+
+  // Split by comma first to get individual items
+  const items = input.split(",");
+
+  // For each language, collect the values from each item
+  const valuesByLanguage = new Map<string, string[]>();
+  for (const tag of languageTags) {
+    valuesByLanguage.set(tag, []);
+  }
+
+  // Track any unknown tags we discover
+  const unknownTagsSet = new Set<string>();
+
+  for (const item of items) {
+    const trimmedItem = item.trim();
+    if (trimmedItem === "") {
+      // Preserve empty items in each language
+      for (const tag of languageTags) {
+        valuesByLanguage.get(tag)!.push("");
+      }
+      continue;
+    }
+
+    const parsed = parseSlashSyntax(trimmedItem);
+    if (parsed.hasSlashes) {
+      hasSlashes = true;
+    }
+
+    const { assignments: itemAssignments, orderedTags: itemTags } =
+      assignLanguagesToSegments(parsed.segments, languageTags);
+
+    // Collect values for each language
+    for (const tag of itemTags) {
+      const value = (itemAssignments.get(tag) ?? "").trim();
+
+      if (!valuesByLanguage.has(tag)) {
+        // This is an "unknown" tag from extra segments
+        valuesByLanguage.set(tag, []);
+        unknownTagsSet.add(tag);
+      }
+
+      valuesByLanguage.get(tag)!.push(value);
+    }
+  }
+
+  // Build the final comma-separated string for each language
+  for (const [tag, values] of valuesByLanguage) {
+    // Filter out empty values and join with comma
+    const nonEmptyValues = values.filter((v) => v !== "");
+    assignments.set(tag, nonEmptyValues.join(", "));
+  }
+
+  // Add unknown tags to ordered list
+  const sortedUnknownTags = Array.from(unknownTagsSet).sort();
+  allOrderedTags = [...languageTags, ...sortedUnknownTags];
+
+  return { assignments, orderedTags: allOrderedTags, hasSlashes, warnings };
+}
+
+/**
+ * Convert comma-separated slash syntax to tagged multilingual format.
+ *
+ * For example: "History / Historia, Customs / Costumbres" with tags ["en", "es"]
+ * becomes: "[[en]]History, Customs[[es]]Historia, Costumbres"
+ *
+ * @param input The comma-and-slash-separated text
+ * @param languageTags The language tags in order
+ * @returns Tagged format string, or original if no slashes found
+ */
+export function commaSeparatedSlashSyntaxToTaggedText(
+  input: string,
+  languageTags: string[]
+): string {
+  const { assignments, orderedTags, hasSlashes } =
+    parseCommaSeparatedSlashSyntax(input, languageTags);
+
+  // If no slashes in any item, don't convert - return as-is
+  if (!hasSlashes) {
+    return input;
+  }
+
+  // Build tagged format
+  const parts: string[] = [];
+  for (const tag of orderedTags) {
+    const text = assignments.get(tag) ?? "";
+    if (text.length > 0) {
+      parts.push(`[[${tag}]]${text}`);
+    }
+  }
+
+  return parts.join("");
+}
