@@ -207,7 +207,11 @@ export class Field {
   ): void {
     // If this field looks like slash syntax and we have language tags,
     // convert it to tagged format first (implicit confirmation by editing)
-    if (this.looksLikeSlashSyntax() && allLanguageTags && allLanguageTags.length > 0) {
+    if (
+      this.looksLikeSlashSyntax() &&
+      allLanguageTags &&
+      allLanguageTags.length > 0
+    ) {
       this.commitSlashSyntaxConversion(allLanguageTags);
     }
     this.textHolder.setTextAxis(tag, textForAxis);
