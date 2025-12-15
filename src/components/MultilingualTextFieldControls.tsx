@@ -26,6 +26,9 @@ import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 
 export const DEFAULT_LANGUAGE_TAG = "en";
 
+/** Color for muted/secondary text elements like labels, cancel buttons, and disabled items */
+const mutedTextColor = "#666";
+
 /**
  * Check if a language tag represents an unknown language (from slash syntax migration).
  */
@@ -423,7 +426,7 @@ export const AddTranslationControl: React.FunctionComponent<AddTranslationProps>
               css={css`
                 border: none;
                 background: transparent;
-                color: #555;
+                color: ${mutedTextColor};
                 cursor: pointer;
                 font-size: 0.85em;
               `}
@@ -503,7 +506,7 @@ const LanguageSlotMenuItems: React.FC<
         <div
           css={css`
             font-size: 0.875rem;
-            color: #666;
+            color: ${mutedTextColor};
             margin-bottom: 8px;
           `}
         >
@@ -526,7 +529,7 @@ const LanguageSlotMenuItems: React.FC<
             margin-top: 8px;
             border: none;
             background: transparent;
-            color: #555;
+            color: ${mutedTextColor};
             cursor: pointer;
             font-size: 0.85em;
           `}
@@ -548,12 +551,12 @@ const LanguageSlotMenuItems: React.FC<
         }}
       >
         <ListItemText
-          sx={{ textAlign: "left" }}
+          sx={{ textAlign: "right", marginLeft: "auto" }}
           primaryTypographyProps={{
             sx: {
               fontSize: "0.75rem",
               fontWeight: "bold",
-              color: "text.secondary",
+              color: mutedTextColor,
               opacity: 0.5
             }
           }}
@@ -634,7 +637,7 @@ export const ColorBarWithMenu: React.FC<LanguageSlotMenuProps> = (props) => {
           width: 4px;
           min-height: 1.5em;
           border-radius: 2px;
-          background-color: ${slot.color || "#888"};
+          background-color: ${slot.color || mutedTextColor};
           margin-right: 6px;
           flex-shrink: 0;
           cursor: pointer;
@@ -681,7 +684,7 @@ export const LanguageTagWithKebab: React.FC<LanguageSlotMenuProps> =
     const showLanguageTag = isUnknown || showTags;
 
     const displayText = isUnknown ? "????" : slot.label;
-    const tagColor = isUnknown ? "#c73f1d" : "#888";
+    const tagColor = isUnknown ? "#c73f1d" : mutedTextColor;
     const tooltipText = isUnknown
       ? `Unknown language. Click for more information.`
       : `${slot.name}. Hover for menu`;
