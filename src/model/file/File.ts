@@ -616,7 +616,8 @@ export /*babel doesn't like this: abstract*/ class File {
         value.$.type &&
         typesWeStoreAsStrings.includes(value.$.type)
       ) {
-        value = value._;
+        // Handle empty XML elements like <code type="string"/> where value._ is undefined
+        value = value._ ?? "";
       }
       // if we decide we do need to roundtrip nested unknown elements
       //else {

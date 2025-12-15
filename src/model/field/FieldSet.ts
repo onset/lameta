@@ -66,7 +66,8 @@ export class FieldSet extends Dictionary<string, Field> {
   public getTextStringOrEmpty(key: string): string {
     const s = super.getValue(key) as Field;
     if (s === undefined) return "";
-    else return s.text;
+    // Ensure we always return a string, even if s.text is somehow undefined
+    return s.text ?? "";
   }
   public getLabelOfValue(key: string): string {
     const f = this.getValueOrThrow(key) as Field;
