@@ -332,5 +332,14 @@ input {
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  cursor: grabbing;
+  cursor: grabbing !important;
+}
+.sortable-helper * {
+  cursor: grabbing !important;
+}
+
+/* Force grabbing cursor on body during drag */
+body.sorting-in-progress,
+body.sorting-in-progress * {
+  cursor: grabbing !important;
 }

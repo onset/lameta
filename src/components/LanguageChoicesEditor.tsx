@@ -22,19 +22,24 @@ import { lameta_orange } from "../containers/theme";
 
 // Drag handle for reordering language pills
 const DragHandle = SortableHandle(() => (
-  <img
-    src={dragIcon}
+  <div
     css={css`
-      height: 10px;
-      margin-right: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 2px;
       cursor: grab;
-      opacity: 0.4;
       user-select: none;
-      &:hover {
-        opacity: 1;
-      }
     `}
-  />
+  >
+    <img
+      src={dragIcon}
+      css={css`
+        height: 10px;
+        opacity: 0.4;
+      `}
+    />
+  </div>
 ));
 
 // Sortable wrapper for individual multi-value items
@@ -42,12 +47,6 @@ const SortableMultiValue = SortableElement((props: any) => {
   // We need to render the original MultiValue from react-select
   // but wrap it with our sortable element
   const { innerProps, ordered, displayIndex, ...otherProps } = props;
-
-  // Prevent react-select from handling mouse events on the drag handle area
-  const onMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
 
   return (
     <div
@@ -61,9 +60,7 @@ const SortableMultiValue = SortableElement((props: any) => {
     >
       {ordered && (
         <>
-          <div onMouseDown={onMouseDown}>
-            <DragHandle />
-          </div>
+          <DragHandle />
           <span
             css={css`
               font-size: 11px;
@@ -181,9 +178,17 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     .filter((c) => c.length > 0)
     .map((c) => c.trim())
     .map((code) => {
+      // Handle "eng:English" format (code:name)
+      if (code.indexOf(":") > 0) {
+        const parts = code.split(":");
+        return {
+          value: parts[0],
+          label: parts[1] || getName(props.languageFinder, parts[0])
+        };
+      }
+      // Handle legacy "eng|English" format
       if (code.indexOf("|") > 0) {
         const parts = code.split("|");
-        console.log("parts: " + JSON.stringify(parts));
         return {
           value: parts[0],
           label: parts[1]
@@ -290,7 +295,13 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         >
           <SortableMultiValueContainer
             axis="x"
-            onSortEnd={onSortEnd}
+            onSortStart={() => {
+              document.body.classList.add("sorting-in-progress");
+            }}
+            onSortEnd={(args) => {
+              document.body.classList.remove("sorting-in-progress");
+              onSortEnd(args);
+            }}
             useDragHandle
             helperClass="sortable-helper"
           >
@@ -302,9 +313,9 @@ export const LanguageChoicesEditor: React.FunctionComponent<
               position: relative;
               display: inline-flex;
               align-items: center;
-              min-width: 0;
+              min-width: ${showAddPrompt ? "110px" : "2px"};
               flex-shrink: 1;
-              overflow: hidden;
+              flex-grow: 1;
             `}
           >
             {showAddPrompt && (
