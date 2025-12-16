@@ -126,14 +126,20 @@ export class VocabularyTranslations {
    * Check if a genre value exists in the translations.
    */
   public hasGenre(value: string): boolean {
-    return !!this.data.fields.genre?.[value];
+    const genres = this.data.fields.genre;
+    if (!genres) return false;
+    const valueLower = value.toLowerCase();
+    return Object.keys(genres).some((key) => key.toLowerCase() === valueLower);
   }
 
   /**
    * Check if a role value exists in the translations.
    */
   public hasRole(value: string): boolean {
-    return !!this.data.fields.role?.[value];
+    const roles = this.data.fields.role;
+    if (!roles) return false;
+    const valueLower = value.toLowerCase();
+    return Object.keys(roles).some((key) => key.toLowerCase() === valueLower);
   }
 
   /**

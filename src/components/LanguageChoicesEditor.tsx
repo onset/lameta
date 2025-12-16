@@ -299,7 +299,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
           >
             {multiValues}
           </SortableMultiValueContainer>
-          {/* "+ Add Language" prompt overlays the input position */}
+          {/* "+ Add Language" prompt renders inline before the input within the flex layout */}
           {showAddPrompt && (
             <span
               css={css`
@@ -313,7 +313,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
               + Add Language
             </span>
           )}
-          {/* Input and placeholder rendered here, in same position as prompt */}
+          {/* Input and placeholder render sequentially after the prompt within the same flex flow */}
           {otherChildren}
         </div>
       );

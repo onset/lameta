@@ -29,6 +29,7 @@ import {
   getFieldDefinition,
   getCommonFieldDefinition
 } from "../../model/field/ConfiguredFieldDefinitions";
+import { NotifyError } from "../Notify";
 
 interface VocabularyTranslationsTabProps {
   project: Project;
@@ -360,6 +361,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
     const [isScanning, setIsScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(0);
     const [scanMessage, setScanMessage] = useState("");
+    const [scanError, setScanError] = useState<string | null>(null);
     const [hasScanned, setHasScanned] = useState(false);
     const [lastScanResult, setLastScanResult] =
       useState<ScanResult | null>(null);
@@ -393,10 +395,12 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
     const performScan = useCallback(async () => {
       if (isScanning || languageCodes.length === 0) return;
 
+      setScanError(null);
       setIsScanning(true);
       setScanProgress(0);
       setScanMessage(t`Starting scan...`);
 
+      let hadError = false;
       try {
         const result = await scanProjectForVocabulary(
           project,
@@ -413,11 +417,22 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         setLastScanResult(result);
         setHasScanned(true);
       } catch (error) {
+        hadError = true;
         console.error("Error scanning project:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t`Unknown error while scanning vocabulary`;
+        setScanError(errorMessage);
+        setScanProgress(0);
+        setScanMessage(t`Scan failed`);
+        NotifyError(t`Vocabulary scan failed`, errorMessage);
       } finally {
         setIsScanning(false);
-        setScanProgress(100);
-        setScanMessage(t`Scan complete`);
+        if (!hadError) {
+          setScanProgress(100);
+          setScanMessage(t`Scan complete`);
+        }
       }
     }, [project, languageCodes, translations, isScanning]);
 
@@ -572,6 +587,26 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
               `}
             >
               <Trans>Ready to scan...</Trans>
+            </span>
+          )}
+          {scanMessage && (
+            <span
+              css={css`
+                color: #333;
+              `}
+            >
+              {scanMessage}
+            </span>
+          )}
+          {scanError && (
+            <span
+              css={css`
+                color: #b00020;
+                font-weight: 600;
+                overflow-wrap: anywhere;
+              `}
+            >
+              {scanError}
             </span>
           )}
         </div>

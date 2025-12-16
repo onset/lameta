@@ -34,7 +34,7 @@ describe("VocabularyTranslations", () => {
   });
 
   describe("load and save", () => {
-    it("should save and reload data correctly", async () => {
+    it("should save and reload data correctly", () => {
       // Add some data using the correct API
       vocabTranslations.setGenre("folk_tale", "project", { es: "cuento popular", fr: "conte populaire" });
       vocabTranslations.setRole("speaker", "project", { es: "hablante" });
@@ -54,12 +54,12 @@ describe("VocabularyTranslations", () => {
       expect(loaded.getRoleTranslation("speaker", "es")).toBe("hablante");
     });
 
-    it("should handle missing file gracefully", async () => {
+    it("should handle missing file gracefully", () => {
       vocabTranslations.load();
       expect(vocabTranslations.genres).toEqual({});
     });
 
-    it("should handle corrupted JSON gracefully", async () => {
+    it("should handle corrupted JSON gracefully", () => {
       // Write invalid JSON
       fs.writeFileSync(vocabTranslations.filePath, "{ invalid json }");
 
@@ -180,7 +180,7 @@ describe("VocabularyTranslations", () => {
       expect(vocabTranslations.getGenreTranslation("narrative", "he")).toBe("נרטיב");
     });
 
-    it("should preserve Unicode through save/load cycle", async () => {
+    it("should preserve Unicode through save/load cycle", () => {
       vocabTranslations.setGenre("story", "project", { ja: "物語" });
       vocabTranslations.setRole("narrator", "project", { ko: "이야기꾼" });
       
