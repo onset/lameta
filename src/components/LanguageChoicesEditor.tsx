@@ -255,21 +255,13 @@ export const LanguageChoicesEditor: React.FunctionComponent<
       // The last two children are typically the Input and sometimes a Placeholder
       // Multi-values are elements with data prop
       const multiValues: React.ReactNode[] = [];
-      const inputChild: React.ReactNode[] = [];
       const otherChildren: React.ReactNode[] = [];
 
       childArray.forEach((child: any) => {
         if (child?.props?.data && child?.props?.data?.value) {
           multiValues.push(child);
-        } else if (
-          // Check if this is an Input component using key (more robust than function name)
-          // The Input component has a key that includes "input"
-          child?.key &&
-          typeof child.key === "string" &&
-          child.key.includes("input")
-        ) {
-          inputChild.push(child);
         } else {
+          // Input and placeholder go here
           otherChildren.push(child);
         }
       });
@@ -307,37 +299,21 @@ export const LanguageChoicesEditor: React.FunctionComponent<
           >
             {multiValues}
           </SortableMultiValueContainer>
-          {/* Wrapper for input with "Add Language" prompt overlay */}
-          <div
-            css={css`
-              position: relative;
-              display: inline-flex;
-              align-items: center;
-              min-width: ${showAddPrompt ? "110px" : "2px"};
-              flex-shrink: 1;
-              flex-grow: 1;
-            `}
-          >
-            {showAddPrompt && (
-              <span
-                css={css`
-                  color: #999;
-                  font-size: 13px;
-                  font-style: italic;
-                  pointer-events: none;
-                  position: absolute;
-                  left: 0;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  max-width: 100%;
-                `}
-              >
-                + Add Language
-              </span>
-            )}
-            {inputChild}
-          </div>
+          {/* "+ Add Language" prompt overlays the input position */}
+          {showAddPrompt && (
+            <span
+              css={css`
+                color: #999;
+                font-size: 13px;
+                font-style: italic;
+                pointer-events: none;
+                white-space: nowrap;
+              `}
+            >
+              + Add Language
+            </span>
+          )}
+          {/* Input and placeholder rendered here, in same position as prompt */}
           {otherChildren}
         </div>
       );
