@@ -1,4 +1,10 @@
 {
+  common: [
+    {
+      key: "role",
+      multilingual: true
+    }
+  ],
   project: [
     {
       key: "collectionSteward",

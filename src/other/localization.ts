@@ -170,28 +170,73 @@ export function translateGenre(genre: string) {
 /**
  * Translate a genre to a specific language (for IMDI export).
  * Returns undefined if no translation is available for that language.
+ * First checks built-in translations (genres.csv), then project-level translations.
+ * 
+ * @param genre The genre value to translate
+ * @param targetLanguage The target language code
+ * @param projectTranslationFn Optional function to get project-level translation
  */
 export function translateGenreToLanguage(
   genre: string,
-  targetLanguage: string
+  targetLanguage: string,
+  projectTranslationFn?: (value: string, lang: string) => string | undefined
 ): string | undefined {
   // Look up the genre by ID to get its English label (genres.json labels are in English)
   const genreChoice = genresJSON.find((g: any) => g.id === genre);
   const englishLabel = genreChoice?.label || genre;
-  return getMatchForLanguage(genresCSV, englishLabel, targetLanguage);
+  
+  // Try built-in translations first
+  const builtInTranslation = getMatchForLanguage(genresCSV, englishLabel, targetLanguage);
+  if (builtInTranslation) return builtInTranslation;
+  
+  // For English, the value typed by the user IS the English translation
+  // (custom values are entered in English in the current UI)
+  if (targetLanguage === "en" || targetLanguage === "eng") {
+    return englishLabel;
+  }
+  
+  // Fall back to project-level translations
+  if (projectTranslationFn) {
+    return projectTranslationFn(genre, targetLanguage);
+  }
+  
+  return undefined;
 }
 
 /**
  * Translate a role to a specific language (for IMDI export).
  * Returns undefined if no translation is available for that language.
+ * First checks built-in translations (roles.csv), then project-level translations.
+ * 
+ * @param role The role value to translate
+ * @param targetLanguage The target language code
+ * @param projectTranslationFn Optional function to get project-level translation
  */
 export function translateRoleToLanguage(
   role: string,
-  targetLanguage: string
+  targetLanguage: string,
+  projectTranslationFn?: (value: string, lang: string) => string | undefined
 ): string | undefined {
   // If olacRoles hasn't been initialized (e.g., in unit tests), just use the role as-is
   const roleChoice: IChoice | undefined = olacRoles?.find((c) => c.id === role);
-  return getMatchForLanguage(roles, roleChoice?.label || role, targetLanguage);
+  const englishLabel = roleChoice?.label || role;
+  
+  // Try built-in translations first
+  const builtInTranslation = getMatchForLanguage(roles, englishLabel, targetLanguage);
+  if (builtInTranslation) return builtInTranslation;
+  
+  // For English, the value typed by the user IS the English translation
+  // (custom values are entered in English in the current UI)
+  if (targetLanguage === "en" || targetLanguage === "eng") {
+    return englishLabel;
+  }
+  
+  // Fall back to project-level translations
+  if (projectTranslationFn) {
+    return projectTranslationFn(role, targetLanguage);
+  }
+  
+  return undefined;
 }
 
 /**
@@ -312,4 +357,56 @@ function getMatch(
 
 export function i18nUnitTestPrep() {
   i18n.loadLocaleData(i18n.locale, { plurals: (x) => "other" }); // silence i18n error  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
+}
+
+/**
+ * Check if a genre value has translations available for all the given languages.
+ * Checks both built-in (genres.csv) and project-level translations.
+ * 
+ * @param genre The genre value to check
+ * @param languageCodes The language codes to check
+ * @param projectTranslationFn Optional function to get project-level translation
+ * @returns true if any language is missing a translation
+ */
+export function isGenreMissingTranslations(
+  genre: string,
+  languageCodes: string[],
+  projectTranslationFn?: (value: string, lang: string) => string | undefined
+): boolean {
+  // Skip English since it's always available (the value itself is the English)
+  const nonEnglishCodes = languageCodes.filter(
+    (code) => code !== "en" && code !== "eng"
+  );
+  if (nonEnglishCodes.length === 0) return false;
+  
+  return nonEnglishCodes.some((code) => {
+    const translation = translateGenreToLanguage(genre, code, projectTranslationFn);
+    return !translation || translation.trim().length === 0;
+  });
+}
+
+/**
+ * Check if a role value has translations available for all the given languages.
+ * Checks both built-in (roles.csv) and project-level translations.
+ * 
+ * @param role The role value to check
+ * @param languageCodes The language codes to check
+ * @param projectTranslationFn Optional function to get project-level translation
+ * @returns true if any language is missing a translation
+ */
+export function isRoleMissingTranslations(
+  role: string,
+  languageCodes: string[],
+  projectTranslationFn?: (value: string, lang: string) => string | undefined
+): boolean {
+  // Skip English since it's always available (the value itself is the English)
+  const nonEnglishCodes = languageCodes.filter(
+    (code) => code !== "en" && code !== "eng"
+  );
+  if (nonEnglishCodes.length === 0) return false;
+  
+  return nonEnglishCodes.some((code) => {
+    const translation = translateRoleToLanguage(role, code, projectTranslationFn);
+    return !translation || translation.trim().length === 0;
+  });
 }

@@ -28,11 +28,8 @@ import {
 } from "../other/case";
 import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
-import {
-  translateGenreToLanguage,
-  translateRoleToLanguage
-} from "../other/localization";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
 
 // IMDI Date_Value_Type pattern from IMDI_3.0.xsd
 // Valid: YYYY, YYYY-MM, YYYY-MM-DD, date ranges with /, "Unknown", "Unspecified", or empty
@@ -124,6 +121,7 @@ export default class ImdiGenerator {
 
   private keysThatHaveBeenOutput = new Set<string>();
   private mode: IMDIMode;
+  private vocabularyTranslator: ImdiVocabularyTranslator;
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
   public constructor(mode: IMDIMode, folder?: Folder, project?: Project) {
@@ -131,6 +129,7 @@ export default class ImdiGenerator {
     // folder and project can be omitted in some tests that are ust calling a function that doesn't need them
     if (folder) this.folderInFocus = folder;
     if (project) this.project = project;
+    this.vocabularyTranslator = new ImdiVocabularyTranslator(project);
   }
 
   public static generateCorpus(
@@ -352,7 +351,7 @@ export default class ImdiGenerator {
           "Role",
           roleOutput,
           "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-          translateRoleToLanguage
+          this.vocabularyTranslator.getRoleTranslator()
         );
         this.element("Name", trimmedName);
         this.element("FullName", trimmedName);
@@ -375,6 +374,10 @@ export default class ImdiGenerator {
   }
   private addSessionContentElement() {
     const session = this.folderInFocus as Session;
+    
+    // Collect warnings for missing vocabulary translations
+    this.vocabularyTranslator.collectTranslationWarnings(session);
+    
     this.group("Content", () => {
       // Genre and SubGenre are multilingual vocabulary fields
       const genreValue = session.properties.getTextStringOrEmpty("genre");
@@ -386,7 +389,7 @@ export default class ImdiGenerator {
         "Genre",
         genreLabel || genreValue,
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-        translateGenreToLanguage
+        this.vocabularyTranslator.getGenreTranslator()
       );
       this.keysThatHaveBeenOutput.add("Session.genre");
 
@@ -398,7 +401,7 @@ export default class ImdiGenerator {
         "SubGenre",
         subgenreLabel || subgenreValue,
         "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-        translateGenreToLanguage
+        this.vocabularyTranslator.getGenreTranslator()
       );
       this.keysThatHaveBeenOutput.add("Session.subgenre");
 
@@ -609,7 +612,7 @@ export default class ImdiGenerator {
     this.startGroup("MDGroup");
     /**/ this.sessionLocation();
     /**/ this.addProjectInfo();
-    this.element("Keys", ""); // required for validation. there is also a Keys under Content, which is where stuff is going at the moment.
+    this.addMetadataLanguageKeys(); // Output metadata languages as Keys
     /**/ this.addSessionContentElement();
     /**/ this.addActorsOfSession();
     this.exitGroup(); // MDGroup
@@ -620,6 +623,30 @@ export default class ImdiGenerator {
 
     this.exitGroup(); //Session
     return this.makeString();
+  }
+
+  /**
+   * Output metadata languages as Key elements in the session's MDGroup/Keys.
+   * Format: <Key Name="MetadataLanguage">ISO639-3:eng: English</Key>
+   */
+  private addMetadataLanguageKeys() {
+    const metadataSlots = Project.getMetadataLanguageSlots();
+    
+    // If only one language (the default English), don't output Keys element
+    // to maintain backwards compatibility with existing exports
+    if (metadataSlots.length <= 1) {
+      this.element("Keys", ""); // required for validation
+      return;
+    }
+    
+    this.group("Keys", () => {
+      for (const slot of metadataSlots) {
+        // Use ISO639-3 for 3-letter codes, ISO639-1 for 2-letter codes
+        const kind = slot.tag.length === 2 ? "ISO639-1" : "ISO639-3";
+        const value = `${kind}:${slot.tag}: ${slot.name}`;
+        this.keyElement("MetadataLanguage", value);
+      }
+    });
   }
 
   // custom fields (and any other fields that IMDI doesn't support) go in a <Keys> element
@@ -1105,7 +1132,7 @@ export default class ImdiGenerator {
         "Role",
         roleOutput,
         "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-        translateRoleToLanguage
+        this.vocabularyTranslator.getRoleTranslator()
       );
 
       this.requiredField("Name", "name", person);
@@ -1476,7 +1503,10 @@ export default class ImdiGenerator {
     for (const slot of metadataSlots) {
       const translation = translateFn(englishValue, slot.tag);
       if (translation) {
-        const newElement = this.tail.element(elementName, translation);
+        // Normalize to sentence case for consistent IMDI output
+        // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
+        const normalizedTranslation = sentenceCase(translation);
+        const newElement = this.tail.element(elementName, normalizedTranslation);
         // LanguageId uses ISO639-3 for 3-letter codes, ISO639-1 for 2-letter codes
         const kind = slot.tag.length === 2 ? "ISO639-1" : "ISO639-3";
         newElement.attribute("LanguageId", kind + ":" + slot.tag);

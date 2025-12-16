@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "@lingui/macro";
+import { t, Trans } from "@lingui/macro";
 import { Project } from "../model/Project/Project";
 
 export interface TranslationTooltipResult {
@@ -8,6 +8,29 @@ export interface TranslationTooltipResult {
   /** True if at least one language slot is missing a translation */
   hasMissing: boolean;
 }
+
+/**
+ * Navigate to the Vocabulary Translations tab in the Project section.
+ * This clicks the Project main tab, then the Vocabulary Translations sub-tab.
+ */
+const navigateToVocabularyTranslations = () => {
+  // Click the main Project tab
+  const projectTab = document.querySelector(
+    '[data-testid="project-tab"]'
+  ) as HTMLElement;
+  if (projectTab) {
+    projectTab.click();
+    // After a brief delay to allow tab switch, click the Vocabulary Translations sub-tab
+    setTimeout(() => {
+      const vocabTab = document.querySelector(
+        '[data-testid="project-vocabulary-translations-tab"]'
+      ) as HTMLElement;
+      if (vocabTab) {
+        vocabTab.click();
+      }
+    }, 50);
+  }
+};
 
 /**
  * Builds tooltip content showing translations in the project's metadata language slots.
@@ -50,6 +73,26 @@ export const buildTranslationTooltip = (
           {t.missing ? <em style={{ opacity: 0.7 }}>{t.text}</em> : t.text}
         </div>
       ))}
+      {hasMissing && (
+        <div style={{ marginTop: "8px", fontSize: "0.9em" }}>
+          <Trans>Fix in Project:</Trans>{" "}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigateToVocabularyTranslations();
+            }}
+            style={{
+              color: "white",
+              textDecoration: "underline",
+              cursor: "pointer"
+            }}
+          >
+            <Trans>Vocabulary Translations</Trans>
+          </a>
+        </div>
+      )}
     </div>
   );
 

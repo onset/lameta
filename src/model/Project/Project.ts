@@ -55,6 +55,7 @@ import {
 } from "./OtherConfigurationSettings";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
+import { VocabularyTranslations } from "./VocabularyTranslations";
 
 let sCurrentProject: Project | null = null;
 
@@ -99,6 +100,7 @@ export class Project extends Folder {
   public otherDocsFolder: Folder;
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
+  public vocabularyTranslations: VocabularyTranslations;
 
   /**
    * Returns true if the project has slash-syntax multilingual fields
@@ -381,6 +383,13 @@ export class Project extends Folder {
     return sCurrentProject?.multilingualConversionPending ?? false;
   }
 
+  /**
+   * Get the current project's vocabulary translations, if available.
+   */
+  public static getVocabularyTranslations(): VocabularyTranslations | undefined {
+    return sCurrentProject?.vocabularyTranslations;
+  }
+
   public importIdMatchesThisFolder(id: string): boolean {
     throw new Error("Did not expect matchesId on Project");
   }
@@ -467,6 +476,10 @@ export class Project extends Folder {
       () => this.getFirstSubjectLanguageCodeAndName() // REVIEW now that we have multiple languages
     );
     this.loadSettingsFromConfiguration();
+
+    // Initialize vocabulary translations for this project
+    this.vocabularyTranslations = new VocabularyTranslations(directory);
+    this.vocabularyTranslations.load();
 
     // Note: Role-based People search is now handled inside FolderSearchTermsIndex
     // via getCurrentProject() to avoid cross-layer hooks.

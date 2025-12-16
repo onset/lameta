@@ -20,8 +20,26 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
   className?: string;
   tabIndex?: number;
   translateChoice: (english: string) => string;
-}> = (props) => {
+}> = observer((props) => {
   const label = props.field.labelInUILanguage;
+  
+  // Access vocabulary translations here in the observer so MobX tracks changes
+  const vocabularyTranslations = Project.getVocabularyTranslations();
+  
+  // Read revision to subscribe to changes - when translations are updated,
+  // revision changes and MobX will re-render this component
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _revision = vocabularyTranslations?.revision ?? 0;
+  
+  // Helper function to translate genres including project-level translations
+  // Defined inside the observer so it captures the current translations
+  // Note: Not using useCallback because we want this to always use fresh data from vocabularyTranslations
+  const translateGenreWithProjectTranslations = (genre: string, lang: string): string | undefined => {
+    return translateGenreToLanguage(genre, lang, (value, langCode) =>
+      vocabularyTranslations?.getGenreTranslation(value, langCode)
+    );
+  };
+  
   // enhance: "complex" here means there is more than just a phrase associated with
   // this. Genres have definitions and examples too. It seems that this code is
   // conflating "open" with "complex"; we could certainly have a field where you
@@ -126,7 +144,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
               showTranslationTooltip
                 ? buildTranslationTooltip(
                     p.data.value,
-                    translateGenreToLanguage
+                    translateGenreWithProjectTranslations
                   )
                 : { content: null, hasMissing: false };
 
@@ -180,6 +198,6 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
       />
     </div>
   );
-};
+});
 
-export default observer(FieldOpenChoiceChooser);
+export default FieldOpenChoiceChooser;

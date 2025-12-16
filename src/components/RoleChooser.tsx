@@ -13,6 +13,7 @@ import { tooltipBackground } from "../containers/theme";
 import { buildTranslationTooltip } from "./TranslationTooltip";
 import WarningIcon from "@mui/icons-material/Warning";
 import { css } from "@emotion/react";
+import { Project } from "../model/Project/Project";
 
 export interface IProps {
   contribution: Contribution;
@@ -26,6 +27,25 @@ class RoleChooser extends React.Component<IProps> {
   }
 
   public render() {
+    // Access vocabulary translations here in render so MobX tracks changes
+    const vocabularyTranslations = Project.getVocabularyTranslations();
+    
+    // Read revision to subscribe to changes - when translations are updated,
+    // revision changes and MobX will re-render this component
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _revision = vocabularyTranslations?.revision ?? 0;
+    
+    // Helper function to translate roles including project-level translations
+    // Defined inside render so it uses current translations
+    const translateRoleWithProjectTranslations = (
+      role: string,
+      lang: string
+    ): string | undefined => {
+      return translateRoleToLanguage(role, lang, (value, langCode) => 
+        vocabularyTranslations?.getRoleTranslation(value, langCode)
+      );
+    };
+    
     const choices = this.props.choices ? this.props.choices : [];
 
     const options = choices.map((c) => {
@@ -46,7 +66,7 @@ class RoleChooser extends React.Component<IProps> {
     const roleId = this.props.contribution.role;
     const { content: tooltipContent, hasMissing } = buildTranslationTooltip(
       roleId,
-      translateRoleToLanguage
+      translateRoleWithProjectTranslations
     );
     return (
       <ReactSelectClass

@@ -434,6 +434,66 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
       "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:en']"
     ).toHaveText("Narrative");
   });
+
+  it("should output MetadataLanguage keys in session MDGroup/Keys", () => {
+    const session = elarProject.addSession();
+    const imdi = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      elarProject,
+      true
+    );
+    setResultXml(imdi);
+
+    // Should have MetadataLanguage keys for each metadata language
+    const metadataLangCount = count(
+      "//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']"
+    );
+    expect(metadataLangCount).toBe(3);
+
+    // Check the format: "ISO639-1:en: English" or "ISO639-3:xxx: Name"
+    const keys = select("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']");
+    const values = keys.map((node) => (node as Element).textContent);
+
+    // English - 2-letter code gets ISO639-1
+    expect(values).toContain("ISO639-1:en: English");
+    // Spanish - 2-letter code gets ISO639-1
+    expect(values).toContain("ISO639-1:es: Spanish");
+    // Portuguese - 2-letter code gets ISO639-1
+    expect(values).toContain("ISO639-1:pt: Portuguese");
+  });
+
+  it("should not output MetadataLanguage keys when only default language is set", () => {
+    // Create a project with just the default language (empty metadataLanguages = English only)
+    const singleLangProject = Project.fromDirectory(
+      temp.mkdirSync("lameta single lang test")
+    );
+    // Don't set metadataLanguages, so it defaults to English only
+
+    // Must set ELAR schema after creating project
+    SetOtherConfigurationSettings({
+      ...GetOtherConfigurationSettings(),
+      imdiSchema: "IMDI_3.0_elar.xsd"
+    });
+
+    const session = singleLangProject.addSession();
+    const imdi = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      singleLangProject,
+      true
+    );
+    setResultXml(imdi);
+
+    // Should NOT have MetadataLanguage keys (backwards compatibility)
+    const metadataLangCount = count(
+      "//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']"
+    );
+    expect(metadataLangCount).toBe(0);
+
+    // Keys element should still exist but be empty
+    expect(count("//Session/MDGroup/Keys")).toBe(1);
+  });
 });
 
 function randomFileName() {

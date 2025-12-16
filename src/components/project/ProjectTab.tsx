@@ -20,6 +20,7 @@ import { LametaXmlView } from "../lametaXmlView";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 import { RoCrateView } from "../RoCrate/RoCrateView";
 import { MultilingualTextMigrationPanel } from "./MultilingualTextMigrationPanel";
+import { VocabularyTranslationsTab } from "./VocabularyTranslationsTab";
 
 // Remember the last selected tab within the Project tab (not persisted between runs)
 let lastProjectTabIndex = 0;
@@ -89,6 +90,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           // selection doesn't work if we these on the tabs themselves
           .tab-project-funding-project,
           .tab-project-collection-languages,
+          .tab-project-vocabulary-translations,
           .tab-project-collection-location {
             margin-left: 15px;
           }
@@ -124,6 +126,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Languages</Trans>
           </Tab>{" "}
+          <Tab
+            className={"tab-project-vocabulary-translations"}
+            data-testid="project-vocabulary-translations-tab"
+          >
+            <Trans>Vocabulary Translations</Trans>
+          </Tab>
           <Tab
             className={"tab-project-collection-location"}
             data-testid="project-collection-location-tab"
@@ -228,6 +236,9 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
               )
             }}
           />
+        </TabPanel>
+        <TabPanel>
+          <VocabularyTranslationsTab project={props.project} />
         </TabPanel>{" "}
         <TabPanel>
           <AutoForm

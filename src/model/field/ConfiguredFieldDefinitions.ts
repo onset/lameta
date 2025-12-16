@@ -31,6 +31,11 @@ export function getFieldDefinition(
     (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
   );
 }
+export function getCommonFieldDefinition(key: string): FieldDefinition {
+  return fieldDefinitionsOfCurrentConfig.common.find(
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
+  );
+}
 export function isKnownFieldKey(key: string): boolean {
   return Object.keys(fieldDefinitionsOfCurrentConfig).some(
     (

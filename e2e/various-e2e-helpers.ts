@@ -77,6 +77,14 @@ export class E2eProject {
     await this.goToProject();
     await this.page.getByTestId("project-collection-languages-tab").click();
   }
+  public async goToProjectVocabularyTranslations() {
+    await this.goToProject();
+    await this.page.getByTestId("project-vocabulary-translations-tab").click();
+    // Wait for the vocabulary translations tab to load
+    await this.page
+      .getByTestId("vocabulary-translations-panel")
+      .waitFor({ state: "visible", timeout: 10000 });
+  }
   public async goToProjectCollection() {
     await this.goToProject();
     await this.page.getByTestId("project-collection-tab").click();

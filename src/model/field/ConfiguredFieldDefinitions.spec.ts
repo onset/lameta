@@ -78,3 +78,19 @@ describe("prepareFieldDefinitionCatalog", () => {
     ).toBe(false);
   });
 });
+
+describe("ELAR archive configuration", () => {
+  it("marks genre as multilingual in session fields", () => {
+    const catalog = makeFieldDefinitionCatalog("ELAR");
+    const genreField = catalog.session.find((f) => f.key === "genre");
+    expect(genreField).toBeDefined();
+    expect(genreField!.multilingual).toBe(true);
+  });
+
+  it("marks role as multilingual in common fields", () => {
+    const catalog = makeFieldDefinitionCatalog("ELAR");
+    const roleField = catalog.common.find((f) => f.key === "role");
+    expect(roleField).toBeDefined();
+    expect(roleField!.multilingual).toBe(true);
+  });
+});
