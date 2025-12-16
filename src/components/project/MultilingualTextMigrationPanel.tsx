@@ -330,7 +330,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                 This project appears to use "/" to store multiple languages
                 within a single field. In this version of lameta, we have a
                 better approach in which lameta knows which languages are used
-                in a field. After you have selected the appropriate working
+                in a field. After you have selected the appropriate metadata
                 languages above and arranged them in the correct order, all
                 multilingual fields in Project, Sessions, and People should
                 display with the correct language tags. Once you have confirmed
@@ -353,7 +353,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                 `}
               >
                 <Trans>
-                  Please add the working languages you've been using with these
+                  Please add the metadata languages you've been using with these
                   "/" fields (at least two) before migrating.
                 </Trans>
               </Alert>
@@ -502,7 +502,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           <DialogContent>
             <p>
               <Trans>
-                Some fields have more language segments than there are Working
+                Some fields have more language segments than there are Metadata
                 Languages defined ({previewResult?.fieldsWithUnknowns} of{" "}
                 {previewResult?.totalFieldsToConvert} fields). If you proceed,
                 these extra segments will be labeled as "unknown" languages.
@@ -545,7 +545,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
               `}
             >
               <Trans>
-                You can either add more Working Languages above to match all
+                You can either add more Metadata Languages above to match all
                 segments, or proceed with the migration and manually fix the
                 unknown language fields later.
               </Trans>

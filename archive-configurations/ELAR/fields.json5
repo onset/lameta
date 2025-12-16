@@ -18,6 +18,10 @@
     {
       key: "title",
       multilingual: true
+    },
+    {
+      key: "metadataLanguages",
+      visibility: "always"
     }
   ],
   session: [

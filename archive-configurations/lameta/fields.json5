@@ -285,9 +285,7 @@
       englishLabel: "Working Languages",
       form: "languages",
       type: "languageChoices",
-      controlProps: {
-        ordered: true
-      },
+      controlProps: {},
       // LAM-41: Map collection working languages to schema.org inLanguage so the
       // root dataset satisfies the LDAC "MUST" requirement without inventing
       // local placeholders. https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
@@ -297,6 +295,19 @@
         array: true
       },
       tabIndex: 2
+    },
+    {
+      key: "metadataLanguages",
+      xmlTag: "MetadataLanguages",
+      englishLabel: "Metadata Languages",
+      description: "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields.",
+      form: "languages",
+      type: "languageChoices",
+      controlProps: {
+        ordered: true
+      },
+      tabIndex: 3,
+      visibility: "never"
     }
   ],
   session: [

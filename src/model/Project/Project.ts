@@ -211,7 +211,7 @@ export class Project extends Folder {
   /**
    * Check and set multilingualConversionPending based on archive config and session content.
    * Called during project load and when archive configuration changes.
-   * 
+   *
    * If pending is already "true", we don't change it.
    * If pending is "false" or unset, we check for slash-syntax content and set to true if found.
    * This allows re-detection if new slash-syntax content is added after a previous migration.
@@ -228,12 +228,10 @@ export class Project extends Folder {
       `[Project] checkAndSetMultilingualConversionPending: existingValue="${existingValue}", metadataFile=${this.metadataFile?.metadataFilePath}`
     );
     console.log(`[Project] All properties: ${allProps}`);
-    
+
     // If already true, don't change it - the user hasn't completed migration yet
     if (existingValue === "true") {
-      console.log(
-        `[Project] Already set to "true", not changing`
-      );
+      console.log(`[Project] Already set to "true", not changing`);
       return;
     }
 
@@ -270,6 +268,18 @@ export class Project extends Folder {
       : sCurrentProject.properties.getTextStringOrEmpty(
           "collectionWorkingLanguages"
         );
+  }
+
+  /**
+   * Returns the raw metadata languages string from the project.
+   * Used for multilingual text field language slots (UI, export, etc.)
+   * This is separate from working languages which describe what languages
+   * are used in the recordings/documentation work.
+   */
+  public static getDefaultMetadataLanguages(): string {
+    return sCurrentProject === null
+      ? ""
+      : sCurrentProject.properties.getTextStringOrEmpty("metadataLanguages");
   }
 
   // Color palette for language slots - imported from theme
@@ -343,13 +353,24 @@ export class Project extends Folder {
   }
 
   /**
-   * Returns an array of LanguageSlot objects for the project's working languages.
+   * Returns an array of LanguageSlot objects for the project's metadata languages.
    * Each slot includes a tag, label, name, and auto-assigned color.
-   * Falls back to English if no working languages are configured.
+   * Falls back to English if no metadata languages are configured.
+   * Used for multilingual text fields throughout the UI and export.
    */
   public static getMetadataLanguageSlots(): LanguageSlot[] {
-    const workingLangs = Project.getDefaultWorkingLanguages();
-    return Project.parseWorkingLanguagesToSlots(workingLangs);
+    const metadataLangs = Project.getDefaultMetadataLanguages();
+    return Project.parseLanguagesToSlots(metadataLangs);
+  }
+
+  /**
+   * Parses a languages string into LanguageSlot objects.
+   * Normalizes codes to BCP47 preferred format (2-letter when available).
+   * Exported for testing.
+   * @param languages Format: "eng:English;spa:Spanish" or "eng;spa"
+   */
+  public static parseLanguagesToSlots(languages: string): LanguageSlot[] {
+    return Project.parseWorkingLanguagesToSlots(languages);
   }
 
   /**

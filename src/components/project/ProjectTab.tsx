@@ -31,7 +31,7 @@ interface IProps {
 }
 export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const [theme] = useState(createProjectTheme());
-  
+
   // Track if we've already navigated to Languages tab for this project load
   const hasNavigatedToLanguages = useRef(false);
 
@@ -51,7 +51,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
 
   // Determine initial tab: if multilingualConversionPending, go to Languages tab
   const getInitialTabIndex = () => {
-    if (props.project.multilingualConversionPending && !hasNavigatedToLanguages.current) {
+    if (
+      props.project.multilingualConversionPending &&
+      !hasNavigatedToLanguages.current
+    ) {
       hasNavigatedToLanguages.current = true;
       return languagesTabIndex;
     }
@@ -62,7 +65,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
 
   // Also navigate to Languages tab if multilingualConversionPending becomes true after mount
   useEffect(() => {
-    if (props.project.multilingualConversionPending && !hasNavigatedToLanguages.current) {
+    if (
+      props.project.multilingualConversionPending &&
+      !hasNavigatedToLanguages.current
+    ) {
       hasNavigatedToLanguages.current = true;
       setTabIndex(languagesTabIndex);
       lastProjectTabIndex = languagesTabIndex;
@@ -216,7 +222,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             languageFinder={props.project.languageFinder}
             rowStyle={true}
             insertAfterField={{
-              fieldKey: "collectionWorkingLanguages",
+              fieldKey: "metadataLanguages",
               content: (
                 <MultilingualTextMigrationPanel project={props.project} />
               )

@@ -51,9 +51,9 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
   beforeAll(async () => {
     temp.track();
     multiLangProject = Project.fromDirectory(multiLangProjectDir);
-    // Set up project with English, Spanish, and Portuguese as working languages
+    // Set up project with English, Spanish, and Portuguese as metadata languages
     multiLangProject.properties.setText(
-      "collectionWorkingLanguages",
+      "metadataLanguages",
       "en:English;es:Spanish;pt:Portuguese"
     );
     await multiLangProject.descriptionFolder.addFileForTestAsync(
@@ -203,7 +203,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
       temp.mkdirSync("lameta no trans test")
     );
     noTransProject.properties.setText(
-      "collectionWorkingLanguages",
+      "metadataLanguages",
       "en:English;tpi:Tok Pisin"
     );
 
@@ -243,9 +243,9 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
   beforeAll(async () => {
     temp.track();
     standardProject = Project.fromDirectory(standardProjectDir);
-    // Set up project with multiple working languages
+    // Set up project with multiple metadata languages
     standardProject.properties.setText(
-      "collectionWorkingLanguages",
+      "metadataLanguages",
       "en:English;es:Spanish;pt:Portuguese"
     );
     await standardProject.descriptionFolder.addFileForTestAsync(
@@ -385,9 +385,9 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
   beforeAll(async () => {
     temp.track();
     elarProject = Project.fromDirectory(elarProjectDir);
-    // Set up project with multiple working languages
+    // Set up project with multiple metadata languages
     elarProject.properties.setText(
-      "collectionWorkingLanguages",
+      "metadataLanguages",
       "en:English;es:Spanish;pt:Portuguese"
     );
     await elarProject.descriptionFolder.addFileForTestAsync(randomFileName());
