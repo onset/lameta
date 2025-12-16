@@ -601,4 +601,78 @@ describe("TextHolder slash syntax virtual conversion", () => {
       expect(t.getTextAxis("es")).toBe("Historia, Cultura");
     });
   });
+
+  describe("previewSlashSyntaxConversion", () => {
+    it("should correctly preview simple slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "house / casa";
+      const preview = t.previewSlashSyntaxConversion(["en", "es"]);
+      expect(preview.wouldConvert).toBe(true);
+      expect(preview.unknownCount).toBe(0);
+      expect(preview.unknownTags).toEqual([]);
+    });
+
+    it("should detect unknowns when more segments than languages", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "house / casa / maison";
+      const preview = t.previewSlashSyntaxConversion(["en", "es"]);
+      expect(preview.wouldConvert).toBe(true);
+      expect(preview.unknownCount).toBe(1);
+      expect(preview.unknownTags).toEqual(["unknown1"]);
+    });
+
+    it("should NOT detect unknowns for comma-separated keywords when isCommaSeparated=true", () => {
+      // This is the bug case: Keywords field has commas AND slashes
+      // "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales Tradicionales"
+      // With isCommaSeparated=false (wrong), this would be parsed as:
+      //   ["Mberyo", "Mberyo,Everyday Activities", "Actividades Cotidianas,Traditional Materials", "Materiales Tradicionales"]
+      //   which would show 2 unknowns (4 segments - 2 languages)
+      // With isCommaSeparated=true (correct), it parses each comma-delimited item separately:
+      //   Item 1: "Mberyo / Mberyo" -> 2 segments
+      //   Item 2: "Everyday Activities / Actividades Cotidianas" -> 2 segments
+      //   Item 3: "Traditional Materials / Materiales Tradicionales" -> 2 segments
+      //   No unknowns!
+      const t = new TextHolder();
+      t.monoLingualText =
+        "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales Tradicionales";
+
+      // Without isCommaSeparated (wrong parsing)
+      const wrongPreview = t.previewSlashSyntaxConversion(["en", "es"], false);
+      expect(wrongPreview.unknownCount).toBe(2); // This is the bug
+
+      // With isCommaSeparated (correct parsing)
+      const correctPreview = t.previewSlashSyntaxConversion(["en", "es"], true);
+      expect(correctPreview.wouldConvert).toBe(true);
+      expect(correctPreview.unknownCount).toBe(0); // No unknowns when parsed correctly
+      expect(correctPreview.unknownTags).toEqual([]);
+    });
+
+    it("should detect unknowns in comma-separated fields when items have extra segments", () => {
+      // Each item has 3 language segments but we only have 2 languages defined
+      const t = new TextHolder();
+      t.monoLingualText = "A / B / C, D / E / F";
+      const preview = t.previewSlashSyntaxConversion(["en", "es"], true);
+      expect(preview.wouldConvert).toBe(true);
+      expect(preview.unknownCount).toBe(1); // unknown1 for the third segment
+      expect(preview.unknownTags).toEqual(["unknown1"]);
+    });
+
+    it("should return wouldConvert=false for non-slash syntax", () => {
+      const t = new TextHolder();
+      t.monoLingualText = "just some plain text";
+      const preview = t.previewSlashSyntaxConversion(["en", "es"]);
+      expect(preview.wouldConvert).toBe(false);
+      expect(preview.unknownCount).toBe(0);
+    });
+
+    it("should handle real keywords example from user data", () => {
+      // Actual user data format
+      const t = new TextHolder();
+      t.monoLingualText =
+        "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
+      const preview = t.previewSlashSyntaxConversion(["en", "es"], true);
+      expect(preview.wouldConvert).toBe(true);
+      expect(preview.unknownCount).toBe(0);
+    });
+  });
 });

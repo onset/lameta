@@ -73,14 +73,20 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
       for (const field of fields) {
         if (field.definition?.multilingual && field.looksLikeSlashSyntax?.()) {
           totalFieldsToConvert++;
-          const preview =
-            field.textHolder?.previewSlashSyntaxConversion?.(metadataSlotTags);
+          // Pass isCommaSeparated so fields like Keywords (which use comma+slash syntax)
+          // are parsed correctly for the unknown count
+          const isCommaSeparated = field.isCommaSeparated ?? false;
+          const preview = field.textHolder?.previewSlashSyntaxConversion?.(
+            metadataSlotTags,
+            isCommaSeparated
+          );
           if (preview?.unknownCount > 0) {
             fieldsWithUnknowns++;
             // Capture the first example we find
+            // Use " / " (space-slash-space) as the delimiter, matching the actual parsing
             if (captureExample && !example && field.textHolder?._text) {
               const segments = field.textHolder._text
-                .split("/")
+                .split(" / ")
                 .map((s: string) => s.trim());
               example = {
                 segments,
