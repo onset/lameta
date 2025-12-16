@@ -55,20 +55,22 @@ export class LametaE2ERunner {
       // Look specifically for prerelease warning dialog by test ID - works across all localizations
       const dialogSelector = '[data-testid="prerelease-warning-dialog"]';
       await this.page.waitForSelector(dialogSelector, { timeout: 3000 });
-      
+
       // Wait for the dialog to be fully loaded and visible
-      const prereleaseDialog = this.page.getByTestId("prerelease-warning-dialog");
-      await prereleaseDialog.waitFor({ state: 'visible' });
-      
+      const prereleaseDialog = this.page.getByTestId(
+        "prerelease-warning-dialog"
+      );
+      await prereleaseDialog.waitFor({ state: "visible" });
+
       // Try multiple button selectors to be more robust
       const buttonSelectors = [
-        'button.defaultButton',
-        'button[variant="contained"]', 
+        "button.defaultButton",
+        'button[variant="contained"]',
         'button:has-text("I understand")',
         'button:has-text("Saya mengerti")', // Indonesian translation
-        'button' // fallback to any button in the dialog
+        "button" // fallback to any button in the dialog
       ];
-      
+
       let buttonClicked = false;
       for (const selector of buttonSelectors) {
         try {
@@ -82,10 +84,10 @@ export class LametaE2ERunner {
           // Try next selector
         }
       }
-      
+
       if (buttonClicked) {
         // Wait for the dialog to disappear before continuing
-        await prereleaseDialog.waitFor({ state: 'hidden', timeout: 2000 });
+        await prereleaseDialog.waitFor({ state: "hidden", timeout: 2000 });
       }
     } catch {
       // no dialog; proceed
@@ -239,9 +241,29 @@ export class LametaE2ERunner {
   public async cancelRegistration() {
     // First, try to dismiss any prerelease warning dialog that might be blocking
     await this.dismissPrereleaseDialogIfPresent();
-    
-    const cancel = await this.page.getByTestId("cancel"); //.getByRole("button", { name: "Cancel" });
-    await cancel.click();
+
+    const cancelButton = this.page.getByTestId("cancel");
+    const registrationReminder = this.page.locator("#registrationReminder");
+
+    const ensureDialogVisible = async () => {
+      try {
+        await cancelButton.waitFor({ state: "visible", timeout: 1000 });
+        return true;
+      } catch {}
+
+      try {
+        await registrationReminder.waitFor({ state: "visible", timeout: 2000 });
+        await registrationReminder.click();
+        await cancelButton.waitFor({ state: "visible", timeout: 3000 });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    if (await ensureDialogVisible()) {
+      await cancelButton.click();
+    }
   }
 
   private async dismissPrereleaseDialogIfPresent() {
@@ -249,18 +271,20 @@ export class LametaE2ERunner {
       const dialogSelector = '[data-testid="prerelease-warning-dialog"]';
       // Short timeout since this is just a defensive check
       await this.page.waitForSelector(dialogSelector, { timeout: 1000 });
-      
-      const prereleaseDialog = this.page.getByTestId("prerelease-warning-dialog");
+
+      const prereleaseDialog = this.page.getByTestId(
+        "prerelease-warning-dialog"
+      );
       if (await prereleaseDialog.isVisible()) {
         // Try multiple button selectors to be more robust
         const buttonSelectors = [
-          'button.defaultButton',
-          'button[variant="contained"]', 
+          "button.defaultButton",
+          'button[variant="contained"]',
           'button:has-text("I understand")',
           'button:has-text("Saya mengerti")', // Indonesian translation
-          'button' // fallback to any button in the dialog
+          "button" // fallback to any button in the dialog
         ];
-        
+
         let buttonClicked = false;
         for (const selector of buttonSelectors) {
           try {
@@ -274,9 +298,9 @@ export class LametaE2ERunner {
             // Try next selector
           }
         }
-        
+
         if (buttonClicked) {
-          await prereleaseDialog.waitFor({ state: 'hidden', timeout: 2000 });
+          await prereleaseDialog.waitFor({ state: "hidden", timeout: 2000 });
         }
       }
     } catch {

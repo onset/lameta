@@ -88,6 +88,15 @@ async function createWindow() {
   }
   process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
+  // For E2E tests in headless mode, position windows off-screen to avoid focus stealing
+  const testEnv = getTestEnvironment();
+  const e2eHeadless = testEnv.E2E && process.env.E2E_HEADED !== "1";
+  if (e2eHeadless) {
+    // Move window far off-screen to the right and down (Windows-compatible)
+    x = 10000;
+    y = 10000;
+  }
+
   win = new BrowserWindow({
     x: x,
     y: y,
