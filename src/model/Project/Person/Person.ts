@@ -30,8 +30,19 @@ export class Person extends Folder {
   }
 
   // checks either the name or the code
+  // This allows matching by full name even when the person has a code,
+  // which handles the common case where a contributor was added by name
+  // before the person record was given a code.
   public referenceIdMatches(id: string): boolean {
-    return id.toLowerCase() === this.getIdToUseForReferences().toLowerCase();
+    const idLower = id.toLowerCase();
+    const name = this.properties.getTextStringOrEmpty("name").toLowerCase();
+    const code = this.properties.getTextStringOrEmpty("code").toLowerCase();
+
+    return (
+      idLower === this.getIdToUseForReferences().toLowerCase() ||
+      idLower === name ||
+      (code.length > 0 && idLower === code)
+    );
   }
 
   public get /*override*/ metadataFileExtensionWithDot(): string {

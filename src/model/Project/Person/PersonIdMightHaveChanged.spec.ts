@@ -200,3 +200,77 @@ describe("LAM-112: Person ID changes when folder name does not", () => {
     expect(idChangeHandler).toHaveBeenCalledWith("John", "John!");
   });
 });
+
+describe("referenceIdMatches should match by name even when person has a code", () => {
+  let personDirectory: string;
+
+  beforeEach(async () => {
+    personDirectory = temp.mkdirSync("testPersonRefMatch");
+  });
+
+  afterEach(async () => {
+    temp.cleanupSync();
+  });
+
+  function createPersonWithNameAndCode(
+    name: string,
+    code: string
+  ): Person {
+    const personId = Path.basename(personDirectory);
+    fs.writeFileSync(
+      Path.join(personDirectory, personId + ".person"),
+      `<?xml version="1.0" encoding="utf-8"?>
+<Person>
+  <name>${name}</name>
+  <code>${code}</code>
+</Person>`
+    );
+    return Person.fromDirectory(
+      personDirectory,
+      new EncounteredVocabularyRegistry(),
+      () => {},
+      languageFinder
+    );
+  }
+
+  it("should match by code when person has a code", () => {
+    const person = createPersonWithNameAndCode("Erma Ramos", "ER");
+    expect(person.referenceIdMatches("ER")).toBe(true);
+    expect(person.referenceIdMatches("er")).toBe(true); // case insensitive
+  });
+
+  it("should match by full name even when person has a code", () => {
+    // This is the key fix: contributor was added as "Erma Ramos" before
+    // the person record was given the code "ER"
+    const person = createPersonWithNameAndCode("Erma Ramos", "ER");
+    expect(person.referenceIdMatches("Erma Ramos")).toBe(true);
+    expect(person.referenceIdMatches("erma ramos")).toBe(true); // case insensitive
+  });
+
+  it("should match by name when person has no code", () => {
+    const dir = temp.mkdirSync("testPersonNoCode");
+    const personId = Path.basename(dir);
+    fs.writeFileSync(
+      Path.join(dir, personId + ".person"),
+      `<?xml version="1.0" encoding="utf-8"?>
+<Person>
+  <name>John Smith</name>
+</Person>`
+    );
+    const person = Person.fromDirectory(
+      dir,
+      new EncounteredVocabularyRegistry(),
+      () => {},
+      languageFinder
+    );
+    expect(person.referenceIdMatches("John Smith")).toBe(true);
+    expect(person.referenceIdMatches("john smith")).toBe(true);
+  });
+
+  it("should not match unrelated names or codes", () => {
+    const person = createPersonWithNameAndCode("Erma Ramos", "ER");
+    expect(person.referenceIdMatches("John Smith")).toBe(false);
+    expect(person.referenceIdMatches("JS")).toBe(false);
+    expect(person.referenceIdMatches("Erma")).toBe(false); // partial match should fail
+  });
+});

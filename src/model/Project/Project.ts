@@ -444,8 +444,11 @@ export class Project extends Folder {
         )
         .filter(
           (c) =>
-            !peopleWithPersonRecords.some(
-              (p) => p.label.toLowerCase() === c.label.toLowerCase()
+            // Check if this contributor matches any person by name OR code
+            // This handles the case where a contributor was added by full name
+            // but the person record has a code (which becomes their displayName)
+            !this.persons.items.some((person: Person) =>
+              person.referenceIdMatches(c.label)
             )
         );
       return peopleWithPersonRecords.concat(peopleWithJustAName);
