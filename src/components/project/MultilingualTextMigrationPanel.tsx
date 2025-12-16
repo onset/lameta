@@ -306,6 +306,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           border-radius: 8px;
           padding: 16px;
           margin: 16px 0;
+          margin-left: 15px;
         `}
       >
         <h3
