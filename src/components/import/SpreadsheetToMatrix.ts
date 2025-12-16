@@ -203,9 +203,10 @@ function addMappingAndValidatationInfoToColumns(
         column.mappingStatus = "Skip";
         column.explanation = `This access protocol doesn't match the project's access protocol.`;
       } else {
-        column.choices = project.authorityLists.accessChoicesOfCurrentProtocol.map(
-          (c) => c.label
-        );
+        column.choices =
+          project.authorityLists.accessChoicesOfCurrentProtocol.map(
+            (c) => c.label
+          );
         column.closedList = true; // review what if it's the "Custom" list?
       }
     } else if (def) {
@@ -246,7 +247,7 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
           default:
             const def = getFieldDefinition(folderType, primary);
             if (!def) console.log("no def for ", primary);
-            if (def.importType === "languageCodeOrName") {
+            if (def && def.importType === "languageCodeOrName") {
               const problems = getProblemsFromLanguageListText(cell.value);
               if (problems.length > 0) {
                 cell.importStatus = CellImportStatus.NotInClosedVocabulary;

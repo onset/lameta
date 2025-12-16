@@ -26,12 +26,14 @@ for (const area of ["common", "project", "session", "person"]) {
 export function getFieldDefinition(
   folderType: IFolderType,
   key: string
-): FieldDefinition {
+): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig[folderType].find(
     (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
   );
 }
-export function getCommonFieldDefinition(key: string): FieldDefinition {
+export function getCommonFieldDefinition(
+  key: string
+): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig.common.find(
     (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
   );

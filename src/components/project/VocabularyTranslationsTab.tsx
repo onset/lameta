@@ -172,7 +172,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
           >
             <TranslationInput
               initialValue={displayValue}
-              //placeholder={isFromBuiltIn ? "" : t`Enter translation...`}
+              placeholder={""}
               disabled={isFromBuiltIn}
               onChange={(newValue) => onTranslationChange(code, newValue)}
             />
