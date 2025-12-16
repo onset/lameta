@@ -589,26 +589,6 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
               <Trans>Ready to scan...</Trans>
             </span>
           )}
-          {scanMessage && (
-            <span
-              css={css`
-                color: #333;
-              `}
-            >
-              {scanMessage}
-            </span>
-          )}
-          {scanError && (
-            <span
-              css={css`
-                color: #b00020;
-                font-weight: 600;
-                overflow-wrap: anywhere;
-              `}
-            >
-              {scanError}
-            </span>
-          )}
         </div>
 
         <p
