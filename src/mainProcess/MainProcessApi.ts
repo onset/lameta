@@ -46,35 +46,6 @@ export class MainProcessApi {
     );
   }
 
-  private isFirstSearch: boolean = true;
-  private currentSearchText: string = "";
-
-  public findInPage(pattern: string) {
-    if (pattern.trim() === "") {
-      this.currentSearchText = "";
-      mainWindow!.webContents.stopFindInPage("clearSelection");
-      return;
-    }
-    if (this.currentSearchText !== pattern) {
-      // New search term, start from the beginning
-      this.isFirstSearch = true;
-      this.currentSearchText = pattern;
-    }
-
-    mainWindow!.webContents.findInPage(pattern, {
-      forward: true,
-      findNext: !this.isFirstSearch
-    });
-
-    this.isFirstSearch = false;
-  }
-
-  public stopFindInPage(
-    action: "clearSelection" | "keepSelection" | "activateSelection"
-  ) {
-    mainWindow!.webContents.stopFindInPage(action);
-  }
-
   // On macOS, calling shell.showItemInFolder from a renderer can delay Finder until app quits.
   // So we need to do it in the Main Process
   public async revealInFolder(path: string) {
@@ -135,20 +106,6 @@ ipcMain.handle(
   "MainProcessApi.validateImdiAsync",
   async (_event, imdiContents: string, imdiSchemaName?: string) => {
     return mainProcessInstance.validateImdiAsync(imdiContents, imdiSchemaName);
-  }
-);
-
-ipcMain.handle("MainProcessApi.findInPage", async (_event, pattern: string) => {
-  return mainProcessInstance.findInPage(pattern);
-});
-
-ipcMain.handle(
-  "MainProcessApi.stopFindInPage",
-  async (
-    _event,
-    action: "clearSelection" | "keepSelection" | "activateSelection"
-  ) => {
-    return mainProcessInstance.stopFindInPage(action);
   }
 );
 

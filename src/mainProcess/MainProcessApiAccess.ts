@@ -16,10 +16,6 @@ interface MainProcessApiPublic {
     imdiContents: string,
     imdiSchemaName?: string
   ) => Promise<XMLValidationResult>;
-  findInPage: (pattern: string) => Promise<void>;
-  stopFindInPage: (
-    action: "clearSelection" | "keepSelection" | "activateSelection"
-  ) => Promise<void>;
   prepareImdiExportDirectory: (rootDirectory: string) => Promise<void>;
   cleanupImdiExportDirectory: (rootDirectory: string) => Promise<void>;
   writeImdiSessionData: (
@@ -63,11 +59,6 @@ function createNativeIpcApi(): MainProcessApiPublic {
         imdiContents,
         imdiSchemaName
       ),
-    findInPage: (pattern: string) =>
-      ipcRenderer.invoke("MainProcessApi.findInPage", pattern),
-    stopFindInPage: (
-      action: "clearSelection" | "keepSelection" | "activateSelection"
-    ) => ipcRenderer.invoke("MainProcessApi.stopFindInPage", action),
     prepareImdiExportDirectory: (rootDirectory: string) =>
       ipcRenderer.invoke(
         "MainProcessApi.prepareImdiExportDirectory",

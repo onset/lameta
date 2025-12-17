@@ -42,16 +42,6 @@ export class MainProcessApi {
     return r;
   }
 
-  public findInPage(pattern: string) {
-    // Mock implementation - simplified without tracking state
-  }
-
-  public stopFindInPage(
-    action: "clearSelection" | "keepSelection" | "activateSelection"
-  ) {
-    // Mock implementation
-  }
-
   // IMDI Export file I/O methods - mock implementations for testing
   public async prepareImdiExportDirectory(
     rootDirectory: string
