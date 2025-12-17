@@ -22,6 +22,12 @@ describe("LanguageFinder", () => {
     );
     expect(languageFinder.findOne639_3CodeFromName("tok pisin")).toBe("tpi");
   });
+
+  it("findOneLanguageNameFromCode_Or_ReturnCode should return Portuguese for 'por'", () => {
+    expect(languageFinder.findOneLanguageNameFromCode_Or_ReturnCode("por")).toBe(
+      "Portuguese"
+    );
+  });
   it("should handle no match", () => {
     expect(languageFinder.findOne639_3CodeFromName("", "sorry")).toBe("sorry");
     expect(languageFinder.findOne639_3CodeFromName("")).toBe("und");

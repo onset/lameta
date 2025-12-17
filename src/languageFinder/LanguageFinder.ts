@@ -198,12 +198,32 @@ export class LanguageFinder {
         // The index may have a different name for this important language,
         // in particular qaa is "Unlisted Language" in the index but we want to show the
         // name the user has given it in the project settings.
-        const workingLang = langs.find(
+        const indexLang = langs.find(
           (l) => l.iso639_3 === projectContentLanguage.iso639_3
         );
-        if (workingLang) {
-          // example: if index thinks qaa is "Unlisted Language", fix that.
-          workingLang.englishName = projectContentLanguage.englishName;
+        if (indexLang) {
+          // Only override the index name for private-use codes (qaa-qtz).
+          // These are custom languages where the user has given a meaningful name
+          // (e.g., "qaa" -> "My Indigenous Language" instead of "Unlisted Language").
+          // For standard ISO codes like "por", we should NEVER override - the index
+          // has the correct name ("Portuguese").
+          const code = projectContentLanguage.iso639_3.toLowerCase();
+          const isPrivateUseCode = code >= "qaa" && code <= "qtz";
+          if (
+            isPrivateUseCode &&
+            projectContentLanguage.englishName &&
+            projectContentLanguage.englishName !== projectContentLanguage.iso639_3
+          ) {
+            // Create a copy with the project's custom name, don't mutate the original
+            const langCopy = { ...indexLang };
+            langCopy.englishName = projectContentLanguage.englishName;
+            // Replace the original with the copy in the results array
+            const idx = langs.indexOf(indexLang);
+            if (idx >= 0) {
+              langs[idx] = langCopy;
+            }
+          }
+          // For non-private-use codes, keep the index's name (e.g., "Portuguese")
         } else {
           langs.unshift(projectContentLanguage); //sticks at front
         }
