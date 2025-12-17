@@ -42,3 +42,8 @@ export const useHasSearchMatch = (value: unknown): boolean => {
   const { searchTerm } = useContext(SearchContext);
   return hasSearchMatch(value, searchTerm);
 };
+
+// Hook to access the search context directly
+export const useSearchContext = (): ISearchContext => {
+  return useContext(SearchContext);
+};

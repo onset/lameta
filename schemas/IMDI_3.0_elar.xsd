@@ -12,6 +12,7 @@ DRAFT, 2025-12-15, John Hatton
 	- Added LanguageId attribute to String_Type (e.g., for Session.Title)
 	- Added LanguageId attribute to Vocabulary_Type (e.g., for Genre, Role)
 	- Changed Session.Title maxOccurs from 1 to unbounded (for multiple language translations)
+	- Changed Corpus.Title maxOccurs from 1 to unbounded (for multiple language translations)
 	- Changed Genre maxOccurs from 1 to unbounded (for multiple language translations)
 	- Changed Role maxOccurs from 1 to unbounded (for multiple language translations)
 	- Added index attribute to Key element (to link translations of same concept across languages)
@@ -616,14 +617,14 @@ DRAFT, 2025-12-15, John Hatton
 					<xsd:documentation>Name of the (sub-)corpus</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="Title" type="imdi:String_Type">
+			<xsd:element name="Title" type="imdi:String_Type" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>Title for the (sub-)corpus</xsd:documentation>
+					<xsd:documentation>Title for the (sub-)corpus. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Description" type="imdi:Description_Type" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>Description of the (sub-)corpus</xsd:documentation>
+					<xsd:documentation>Description of the (sub-)corpus. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="MDGroup" type="imdi:MDGroupType" minOccurs="0"/>

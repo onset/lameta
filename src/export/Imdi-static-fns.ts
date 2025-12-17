@@ -5,6 +5,7 @@ import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 // public for testing
 // imdiSupportsMultipleElements: when true, creates separate elements with LanguageId attributes for each language.
 // When false (e.g., for IMDI String_Type elements like Session.Title), uses only the first/default language value.
+// extraAttributes: optional attributes to add to each element (e.g., { Name: "short_description" })
 export function fieldElement(
   elementName: string,
   fieldOrString: string | Field | undefined,
@@ -12,7 +13,8 @@ export function fieldElement(
   mostRecentElement?: XmlBuilder.XMLElementOrXMLNode,
   xmlElementIsRequired?: boolean,
   defaultValue?: string,
-  imdiSupportsMultipleElements: boolean = true
+  imdiSupportsMultipleElements: boolean = true,
+  extraAttributes?: Record<string, string>
 ): {
   tail: XmlBuilder.XMLElementOrXMLNode;
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
@@ -25,18 +27,21 @@ export function fieldElement(
 
   if (needToUseDefaultValue) {
     lastElementWeAdded = tail.element(elementName, defaultValue);
+    addExtraAttributes(lastElementWeAdded, extraAttributes);
   } else if (text) {
     lastElementWeAdded = addElementWithMonolingualStringContentIfNotEmpty(
       elementName,
       text,
-      tail
+      tail,
+      extraAttributes
     );
   } else if (field && !field.isEmpty()) {
     lastElementWeAdded = addElementsFromFieldContent(
       elementName,
       field,
       tail,
-      imdiSupportsMultipleElements
+      imdiSupportsMultipleElements,
+      extraAttributes
     );
   }
   //lastElementWeAdded = tail.element("hello", "world");
@@ -45,20 +50,36 @@ export function fieldElement(
   return { tail, mostRecentElement: tail }; // review is lastElementWeAdded what mostRecentElement should be?
 }
 
+function addExtraAttributes(
+  element: XmlBuilder.XMLElementOrXMLNode,
+  extraAttributes?: Record<string, string>
+) {
+  if (extraAttributes) {
+    Object.entries(extraAttributes).forEach(([attrName, attrValue]) => {
+      element.attribute(attrName, attrValue);
+    });
+  }
+}
+
 function addElementWithMonolingualStringContentIfNotEmpty(
   elementName: string,
   text: string | undefined,
-  tail: XmlBuilder.XMLElementOrXMLNode
+  tail: XmlBuilder.XMLElementOrXMLNode,
+  extraAttributes?: Record<string, string>
 ) {
-  if (text && text.length > 0) return tail.element(elementName, text);
-  else return tail;
+  if (text && text.length > 0) {
+    const element = tail.element(elementName, text);
+    addExtraAttributes(element, extraAttributes);
+    return element;
+  } else return tail;
 }
 
 function addElementsFromFieldContent(
   elementName: string,
   field: Field,
   tail: XmlBuilder.XMLElementOrXMLNode,
-  imdiSupportsMultipleElements: boolean
+  imdiSupportsMultipleElements: boolean,
+  extraAttributes?: Record<string, string>
 ) {
   let element;
   if (field.definition?.imdiRange) {
@@ -69,6 +90,7 @@ function addElementsFromFieldContent(
       ? "ClosedVocabulary"
       : "OpenVocabulary";
     element.attribute("Type", type);
+    addExtraAttributes(element, extraAttributes);
   } else {
     const axes = field.getAllNonEmptyTextAxes();
 
@@ -77,6 +99,7 @@ function addElementsFromFieldContent(
     if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];
       element = tail.element(elementName, field.getTextAxis(firstLanguage));
+      addExtraAttributes(element, extraAttributes);
     } else {
       // Multiple languages and IMDI supports LanguageId attributes
       axes.forEach((language) => {
@@ -87,6 +110,7 @@ function addElementsFromFieldContent(
           ? staticLanguageFinder.getIso639_3Code(language)
           : language;
         element.attribute("LanguageId", "ISO639-3:" + iso639_3);
+        addExtraAttributes(element, extraAttributes);
       });
     }
   }

@@ -199,25 +199,23 @@ export default class ImdiGenerator {
     this.startXmlRoot("CORPUS");
 
     this.startGroup("Corpus");
-    // we don't have a separate title vs. name field
-    this.element("Name", project.displayName);
 
-    this.element(
-      "Title",
-      project.properties.getTextStringOrEmpty("title") // Hanna 2024: Collection Title --> Corpus/Title
-      // REVIEW previously, this was "fundingProjectTitle" per Vera at ELAR 23/8/2019
-    );
+    // Corpus/Name should use first language only (it's an identifier)
+    const titleField = project.properties.getTextField("title");
+    const firstLanguage = titleField.getAllNonEmptyTextAxes()[0] || "en";
+    const nameValue = titleField.getTextAxis(firstLanguage) || project.displayName;
+    this.element("Name", nameValue);
 
-    // this.element(
-    //   "Title",
-    //   project.properties.getTextStringOrEmpty("fundingProjectTitle")
-    // );
-    //this.requiredField("Description", "projectDescription");
-    this.element(
+    // Corpus/Title - use multilingual export if ELAR schema (reuse requiredMonolingualField)
+    this.requiredMonolingualField("Title", "title", project);
+
+    // Corpus/Description - use multilingual export with Name attribute
+    this.requiredMonolingualFieldWithAttributes(
       "Description",
-      project.properties.getTextStringOrEmpty("collectionDescription")
+      "collectionDescription",
+      project,
+      { Name: "short_description" }
     );
-    this.attributeLiteral("Name", "short_description"); // Review: this is from ELAR email, I'm not clear why it is needed
 
     this.startGroup("MDGroup");
 
@@ -1352,6 +1350,28 @@ export default class ImdiGenerator {
     );
   }
 
+  // Like requiredMonolingualField but with extra attributes on each element
+  private requiredMonolingualFieldWithAttributes(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File,
+    extraAttributes?: Record<string, string>
+  ) {
+    const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
+    const isElarSchema = imdiSchema === "IMDI_3.0_elar.xsd";
+
+    this.field(
+      elementName,
+      fieldName,
+      true,
+      "",
+      target,
+      undefined, // no fallback field
+      isElarSchema,
+      extraAttributes
+    );
+  }
+
   private requiredField(
     elementName: string,
     fieldName: string,
@@ -1400,7 +1420,8 @@ export default class ImdiGenerator {
     defaultValue: string,
     target?: Folder | File,
     projectFallbackFieldName?: string,
-    imdiSupportsMultipleElements: boolean = true
+    imdiSupportsMultipleElements: boolean = true,
+    extraAttributes?: Record<string, string>
   ) {
     //if they specified a folder, use that, otherwise use the current default
     const folder = target ? target : this.folderInFocus;
@@ -1454,7 +1475,8 @@ export default class ImdiGenerator {
       this.mostRecentElement,
       xmlElementIsRequired,
       defaultValue,
-      imdiSupportsMultipleElements
+      imdiSupportsMultipleElements,
+      extraAttributes
     );
     this.tail = result.tail;
     if (result.mostRecentElement)

@@ -94,4 +94,4 @@ When working with Linear issues:
 - ✅ Store AI planning docs in `history/` directory
 - ❌ Do NOT use npm commands
 - ❌ Do NOT remove existing comments
-- ❌ Do NOT clutter repo root with planning documents
+- ❌ Do NOT clutter repo root with planning documents or "playwright-screenshot\*.png" files
