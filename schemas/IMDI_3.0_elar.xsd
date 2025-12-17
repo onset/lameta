@@ -344,9 +344,9 @@ DRAFT, 2025-12-15, John Hatton
 					<xsd:documentation>A short name or abbreviation for the project</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="Title" type="imdi:String_Type">
+			<xsd:element name="Title" type="imdi:String_Type" maxOccurs="unbounded">
 				<xsd:annotation>
-					<xsd:documentation>The full title of the project</xsd:documentation>
+					<xsd:documentation>The full title of the project. May appear multiple times with different LanguageId attributes for multilingual metadata.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Id" type="imdi:String_Type">
