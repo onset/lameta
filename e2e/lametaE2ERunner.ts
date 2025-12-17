@@ -3,11 +3,30 @@ import { Page } from "playwright-core";
 import fs from "fs";
 import * as Path from "path";
 import * as os from "os";
+
+/**
+ * Options for launching the E2E runner with fast project creation
+ */
+export interface LaunchOptions {
+  /**
+   * If provided, automatically creates a project with this name,
+   * bypassing the registration dialog and start screen UI.
+   */
+  projectName?: string;
+  /**
+   * If provided along with projectName, sets the archive configuration
+   * (e.g., "ELAR", "PARADISEC", "AILLA") for the auto-created project.
+   */
+  archiveConfig?: string;
+}
+
 export class LametaE2ERunner {
   public electronApp: ElectronApplication;
   public page: Page;
+  public e2eRoot: string = "";
+  public projectDirectory: string = "";
 
-  public async launch() {
+  public async launch(options?: LaunchOptions) {
     const allTimeRoot = Path.join(os.tmpdir(), "lametae2e");
     //fs.rmdirSync(allTimeRoot, { recursive: true });
     const rootDir = Path.join(
@@ -20,19 +39,37 @@ export class LametaE2ERunner {
     fs.mkdirSync(rootDir, { recursive: true });
 
     const e2eRoot = process.env.E2ERoot || rootDir; // allow caller override, else use unique temp dir
+    this.e2eRoot = e2eRoot;
     const exePath = process.env.E2E_LAMETA_EXECUTABLE; // optional path to installed app
+
+    // Build environment with optional fast project creation
+    const env: Record<string, string> = {
+      ...process.env as any,
+      NODE_ENV: "test",
+      VITE_NODE_ENV: "test",
+      E2E: "true",
+      E2E_USER_SETTINGS_STORE_NAME: "none",
+      E2ERoot: e2eRoot
+    };
+
+    // Add fast project creation environment variables if specified
+    if (options?.projectName) {
+      env.E2E_PROJECT_NAME = options.projectName;
+      // Calculate and store the project directory for test access
+      const sanitize = require("sanitize-filename");
+      const parts = options.projectName.split("/");
+      const sanitizedParts = parts.map((p: string) => sanitize(p));
+      this.projectDirectory = Path.join(e2eRoot, "lameta", ...sanitizedParts);
+      
+      if (options?.archiveConfig) {
+        env.E2E_ARCHIVE_CONFIG = options.archiveConfig;
+      }
+    }
 
     const launchOptions: any = {
       args: exePath ? undefined : ["."],
       executablePath: exePath,
-      env: {
-        ...process.env,
-        NODE_ENV: "test",
-        VITE_NODE_ENV: "test",
-        E2E: "true",
-        E2E_USER_SETTINGS_STORE_NAME: "none",
-        E2ERoot: e2eRoot
-      }
+      env
     };
 
     // Do not add --remote-debugging-port; Playwright manages debugging flags itself.
