@@ -122,6 +122,26 @@ const ArchiveConfigurationForm: React.FunctionComponent<
               outline: 2px solid ${lameta_dark_blue};
               outline-offset: 2px;
             }
+            @keyframes wiggle {
+              0%,
+              10% {
+                transform: rotate(-3deg);
+              }
+              20% {
+                transform: rotate(3deg);
+              }
+              30% {
+                transform: rotate(-3deg);
+              }
+              40% {
+                transform: rotate(3deg);
+              }
+              50%,
+              100% {
+                transform: rotate(0deg);
+              }
+            }
+            animation: wiggle 2s ease-in-out infinite;
           `}
           onClick={() =>
             runInAction(() => {
