@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import * as fs from "fs-extra";
 import * as path from "path";
 
@@ -11,9 +11,8 @@ let project: E2eProject;
 test.describe("Add to Dictionary", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, `DictionaryTest_${Date.now()}`);
+    project = await launchWithProject(lameta, `DictionaryTest_${Date.now()}`);
+    page = lameta.page;
   });
 
   test.afterAll(async () => {
@@ -57,9 +56,7 @@ test.describe("Add to Dictionary", () => {
     const addToDictMenuItem = page.getByText("Add to Dictionary");
 
     // Check if the menu item exists - if spell check is working
-    const menuVisible = await addToDictMenuItem
-      .isVisible()
-      .catch(() => false);
+    const menuVisible = await addToDictMenuItem.isVisible().catch(() => false);
 
     if (menuVisible) {
       // Click "Add to Dictionary"

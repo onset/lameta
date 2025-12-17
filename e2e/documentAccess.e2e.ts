@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import * as fs from "fs";
 import * as Path from "path";
 import * as os from "os";
@@ -11,18 +11,12 @@ test.describe("Document Access", () => {
 
   test.beforeAll(async () => {
     lametaE2E = new LametaE2ERunner();
-    await lametaE2E.launch();
-    await lametaE2E.cancelRegistration();
-    project = await createNewProject(lametaE2E, "DocumentAccessProject");
-
-    const page = lametaE2E.page!;
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
+    // Launch with ELAR configuration since documentAccess tests require ELAR
+    project = await launchWithProject(
+      lametaE2E,
+      "DocumentAccessProject",
+      "ELAR"
+    );
   });
 
   test.afterAll(async () => {
@@ -80,41 +74,43 @@ test.describe("Document Access", () => {
     // Navigate to Project tab and Description Documents
     await project.goToProject();
     await page.click('text="Description Documents"');
-    
+
     // Create a dummy file to add
     const tempDir = os.tmpdir();
     const dummyFile = Path.join(tempDir, "test_access_update.txt");
     fs.writeFileSync(dummyFile, "dummy content");
-    
+
     // Mock the open dialog and add the file
     await lametaE2E.mockShowOpenDialog([dummyFile]);
     await page.click(".cmd-add-files");
-    
+
     // Wait for file to appear
     await page.waitForSelector('text="test_access_update.txt"');
-    
+
     // Select the file via its row
     const fileRow = page
-      .locator('.fileList .rt-tr', { hasText: 'test_access_update.txt' })
+      .locator(".fileList .rt-tr", { hasText: "test_access_update.txt" })
       .first();
     await fileRow.dblclick();
-    
+
     // access tab should be visible and interactive
     const accessTab = page.locator('[data-testid="access-tab"]');
     await expect(accessTab).toBeVisible({ timeout: 10000 });
     const initialAccessText = await accessTab.textContent();
     await accessTab.click();
-    
+
     // Change access to something else, e.g. "confidential" (user)
     // AccessChooser is a react-select or similar?
     // Let's assume we can type into it or click it.
     // Based on AccessChooser.tsx, it uses React-Select.
     // We can interact with it via keyboard or clicks.
-    
+
     // Click directly on the chooser input and pick the "U" option
-    await page.click('[data-testid="access-chooser-field"] .field-value-border');
+    await page.click(
+      '[data-testid="access-chooser-field"] .field-value-border'
+    );
     await page.getByRole("option").first().click();
-    
+
     // Check that tab label updated to reflect the new code
     if (initialAccessText) {
       await expect(accessTab).not.toHaveText(initialAccessText);
@@ -123,23 +119,23 @@ test.describe("Document Access", () => {
     const updatedAccessCode = updatedAccessText.split(":").at(1)?.trim() || "";
     expect(updatedAccessCode.length).toBeGreaterThan(0);
 
-    // Now check the list column. 
+    // Now check the list column.
     // The columns are: Icon, Name, LinkStatus, Type, Access...
     // We can check if "U" appears in the row.
     // The "LinkStatus" empty column complication: Access is after Type.
-    
+
     // We expect "U" (for User) to appear in the Access column.
     // We can search for the text "U" in the file list row.
-    // Be careful "U" is short. "User" might be the label? 
-    // The column displays the code? 
+    // Be careful "U" is short. "User" might be the label?
+    // The column displays the code?
     // My implementation: `f.getTextProperty("access", "")` -> the code.
     // AccessChooser stores "U", "S", etc.
-    
+
     // So we look for "U" in the list.
     // Ideally we scoped to the row.
     const row = page.locator(".rt-tr", { hasText: "test_access_update.txt" });
-    
-    // Check if it contains "U". 
+
+    // Check if it contains "U".
     // Note: react-table rows are divs.
     await expect(row).toContainText(updatedAccessCode);
   });

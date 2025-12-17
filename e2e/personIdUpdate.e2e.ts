@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { E2eFileList } from "./FileList-e2e-helpers";
 
 let lameta: LametaE2ERunner;
@@ -25,9 +25,8 @@ test.describe(
   () => {
     test.beforeAll(async () => {
       lameta = new LametaE2ERunner();
-      page = await lameta.launch();
-      await lameta.cancelRegistration();
-      project = await createNewProject(lameta, "LAM112Test");
+      project = await launchWithProject(lameta, "LAM112Test");
+      page = lameta.page;
       fileList = new E2eFileList(lameta, page, project.projectDirectory);
     });
 

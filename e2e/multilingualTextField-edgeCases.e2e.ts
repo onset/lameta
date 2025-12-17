@@ -6,7 +6,7 @@ import {
   getDescriptionEditor,
   deleteLanguageFromDescription,
   countSlotsInDescription,
-  setupMultilingualTestContext,
+  setupMultilingualTestContextFast,
   teardownMultilingualTestContext,
   waitForSessionForm,
   MultilingualTestContext
@@ -30,7 +30,7 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Edge Cases", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContext(
+    context = await setupMultilingualTestContextFast(
       "MultilingualEdgeCases",
       kWorkingLanguages
     );
@@ -229,7 +229,7 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
 
 test.describe("Multilingual Text Fields - Stress Test", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContext(
+    context = await setupMultilingualTestContextFast(
       "MultilingualStress",
       kWorkingLanguages
     );

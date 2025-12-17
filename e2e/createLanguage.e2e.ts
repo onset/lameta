@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -9,9 +9,8 @@ let project: E2eProject;
 test.describe("Create Custom Language", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "CreateLanguageTest");
+    project = await launchWithProject(lameta, "CreateLanguageTest");
+    page = lameta.page;
   });
 
   test.afterAll(async () => {
@@ -90,7 +89,9 @@ test.describe("Create Custom Language", () => {
 
     // Look for the "Create" option in the dropdown
     const createOption = page.getByRole("option", {
-      name: new RegExp(`Create.*${customLanguageName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
+      name: new RegExp(
+        `Create.*${customLanguageName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+      )
     });
     await createOption.waitFor({ state: "visible", timeout: 5000 });
     await createOption.click();
@@ -99,7 +100,9 @@ test.describe("Create Custom Language", () => {
 
     // Verify the language was added - look for the Remove button for the language pill
     const removePillButton = subjectContainer.getByRole("button", {
-      name: new RegExp(`Remove.*${customLanguageName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
+      name: new RegExp(
+        `Remove.*${customLanguageName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+      )
     });
     await expect(removePillButton).toBeVisible({ timeout: 5000 });
   });

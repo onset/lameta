@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -14,9 +14,8 @@ let project: E2eProject;
 test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, `ContextMenuTest_${Date.now()}`);
+    project = await launchWithProject(lameta, `ContextMenuTest_${Date.now()}`);
+    page = lameta.page;
   });
 
   test.afterAll(async () => {

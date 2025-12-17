@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { E2eFileList } from "./FileList-e2e-helpers";
 import * as fs from "fs";
 import * as Path from "path";
@@ -13,9 +13,8 @@ let fileList: E2eFileList;
 test.describe("TIFF Image Viewer", () => {
   test.beforeAll(async ({}) => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "TiffViewerTest");
+    project = await launchWithProject(lameta, "TiffViewerTest");
+    page = lameta.page;
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
 

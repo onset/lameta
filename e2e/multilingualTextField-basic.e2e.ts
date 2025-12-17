@@ -6,7 +6,7 @@ import {
   getDescriptionEditor,
   deleteLanguageFromDescription,
   countSlotsInDescription,
-  setupMultilingualTestContext,
+  setupMultilingualTestContextFast,
   teardownMultilingualTestContext,
   waitForSessionForm,
   MultilingualTestContext,
@@ -29,7 +29,7 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Basic Operations", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContext(
+    context = await setupMultilingualTestContextFast(
       "MultilingualBasic",
       kWorkingLanguages
     );

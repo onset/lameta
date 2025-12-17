@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -18,9 +18,8 @@ let project: E2eProject;
 test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "LanguageChoicesEditorTest");
+    project = await launchWithProject(lameta, "LanguageChoicesEditorTest");
+    page = lameta.page;
   });
 
   test.afterAll(async () => {
@@ -83,7 +82,10 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
   /**
    * Helper to delete a language from the container
    */
-  async function deleteLanguage(container, languageNamePattern: string | RegExp) {
+  async function deleteLanguage(
+    container,
+    languageNamePattern: string | RegExp
+  ) {
     const removeButton = container.getByRole("button", {
       name: new RegExp(`Remove.*${languageNamePattern}`, "i")
     });
@@ -109,7 +111,10 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     await expect(removeButton).toBeVisible({ timeout: 5000 });
 
     // Also verify the pill text includes "Portuguese"
-    const pillText = await container.locator('[class*="multiValue"]').first().textContent();
+    const pillText = await container
+      .locator('[class*="multiValue"]')
+      .first()
+      .textContent();
     expect(pillText).toContain("Portuguese");
     // Should NOT be just "porpor" (which would indicate the bug)
     expect(pillText).not.toBe("porpor");
@@ -124,7 +129,7 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
 
     // Add French
     await addLanguageByTyping(container, "French");
-    
+
     // Verify it was added
     const frenchRemoveButton = container.getByRole("button", {
       name: /Remove.*French/i
@@ -178,7 +183,10 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     await addLanguageByTyping(container, "deu");
 
     // The pill should show "German" (or "Standard German"), not just "deu"
-    const pillText = await container.locator('[class*="multiValue"]').first().textContent();
+    const pillText = await container
+      .locator('[class*="multiValue"]')
+      .first()
+      .textContent();
     expect(pillText).toContain("German");
     expect(pillText).not.toBe("deudeu"); // Should not be just the code repeated
   });
@@ -194,8 +202,12 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     await addLanguageByTyping(container, "Dutch");
 
     // Verify both are present
-    await expect(container.getByRole("button", { name: /Remove.*Italian/i })).toBeVisible();
-    await expect(container.getByRole("button", { name: /Remove.*Dutch/i })).toBeVisible();
+    await expect(
+      container.getByRole("button", { name: /Remove.*Italian/i })
+    ).toBeVisible();
+    await expect(
+      container.getByRole("button", { name: /Remove.*Dutch/i })
+    ).toBeVisible();
   });
 
   test("languages with commas should display correctly", async () => {
@@ -220,7 +232,7 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
 
     // Check the pill text doesn't contain a comma (parts should be swapped)
     const pillText = await germanPill.textContent();
-    
+
     // Should be "Standard German" not "German, Standard"
     expect(pillText).not.toContain(",");
     expect(pillText).toContain("German");
