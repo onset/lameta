@@ -72,7 +72,8 @@ describe("Imdi generation Funding Project", () => {
       // We don't have a way to test that yet.
 
       { key: "grantId", xpath: "Corpus/MDGroup/Project/Id" },
-      { key: "fundingProjectTitle", xpath: "Corpus/MDGroup/Project/Title" },
+      // Project/Title now mirrors the collection title (not fundingProjectTitle)
+      { key: "title", xpath: "Corpus/MDGroup/Project/Title" },
       {
         key: "fundingProjectFunder",
         xpath: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']"
@@ -248,5 +249,52 @@ describe("IMDI corpus multilingual field export", () => {
     // The raw format should NOT appear anywhere in the XML
     expect(xml.indexOf("[[en]]") === -1).toBe(true);
     expect(xml.indexOf("[[es]]") === -1).toBe(true);
+  });
+
+  it("should export single Project/Name without LanguageId even when title has multiple languages (ELAR schema)", () => {
+    // Configure for ELAR schema
+    SetOtherConfigurationSettings({
+      configurationFullName: "ELAR",
+      archiveUsesImdi: true,
+      archiveUsesParadisec: false,
+      showRoCrate: false,
+      fileNameRules: "ASCII",
+      imdiSchema: "IMDI_3.0_elar.xsd"
+    });
+
+    // Set multilingual title - but Project/Name should only use first language
+    // because IMDI schema only allows a single Project/Name element
+    const titleField = project.properties.getTextField("title");
+    titleField.setTextAxis("en", "English Collection Name");
+    titleField.setTextAxis("es", "Nombre de Colección en Español");
+
+    const xml = ImdiGenerator.generateCorpus(
+      IMDIMode.RAW_IMDI,
+      project,
+      [],
+      true
+    );
+    setResultXml(xml);
+    // printResultXml();
+
+    // Project/Name should have exactly one element (schema doesn't allow multiples)
+    expect("METATRANSCRIPT/Corpus/MDGroup/Project/Name").toHaveCount(1);
+    // No LanguageId attribute on Project/Name
+    expect(
+      "METATRANSCRIPT/Corpus/MDGroup/Project/Name[@LanguageId]"
+    ).toHaveCount(0);
+    // Should use the first/English value
+    expect("METATRANSCRIPT/Corpus/MDGroup/Project/Name").toMatch(
+      "English Collection Name"
+    );
+
+    // Project/Title should have multilingual values (ELAR schema supports this)
+    expect("METATRANSCRIPT/Corpus/MDGroup/Project/Title").toHaveCount(2);
+    expect(
+      "METATRANSCRIPT/Corpus/MDGroup/Project/Title[@LanguageId='ISO639-3:eng']"
+    ).toMatch("English Collection Name");
+    expect(
+      "METATRANSCRIPT/Corpus/MDGroup/Project/Title[@LanguageId='ISO639-3:spa']"
+    ).toMatch("Nombre de Colección en Español");
   });
 });

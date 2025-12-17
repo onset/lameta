@@ -382,9 +382,15 @@ export class VocabularyTranslations {
         this.data.fields.genre = {};
       }
 
-      const existing = this.data.fields.genre[value];
-      if (existing) {
-        // Add any missing language placeholders
+      // Case-insensitive lookup to avoid duplicates (e.g., "consent" vs "Consent")
+      const valueLower = value.toLowerCase();
+      const existingKey = Object.keys(this.data.fields.genre).find(
+        (key) => key.toLowerCase() === valueLower
+      );
+      
+      if (existingKey) {
+        // Add any missing language placeholders to the existing entry
+        const existing = this.data.fields.genre[existingKey];
         for (const code of nonEnglishCodes) {
           if (existing.translations[code] === undefined) {
             existing.translations[code] = "";
@@ -423,9 +429,15 @@ export class VocabularyTranslations {
         this.data.fields.role = {};
       }
 
-      const existing = this.data.fields.role[value];
-      if (existing) {
-        // Add any missing language placeholders
+      // Case-insensitive lookup to avoid duplicates (e.g., "researcher" vs "Researcher")
+      const valueLower = value.toLowerCase();
+      const existingKey = Object.keys(this.data.fields.role).find(
+        (key) => key.toLowerCase() === valueLower
+      );
+
+      if (existingKey) {
+        // Add any missing language placeholders to the existing entry
+        const existing = this.data.fields.role[existingKey];
         for (const code of nonEnglishCodes) {
           if (existing.translations[code] === undefined) {
             existing.translations[code] = "";

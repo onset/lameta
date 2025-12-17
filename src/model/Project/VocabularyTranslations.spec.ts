@@ -116,6 +116,23 @@ describe("VocabularyTranslations", () => {
       expect(vocabTranslations.getGenreTranslation("genre1", "fr")).toBeUndefined();
     });
 
+    it("should not create duplicate entries when ensuring entry with different case", () => {
+      // First add "consent" (lowercase, as might come from a session's genre id)
+      vocabTranslations.ensureGenreEntry("consent", "project", ["es", "pt"]);
+      vocabTranslations.updateGenreTranslation("consent", "pt", "consentimento");
+      
+      // Now ensure "Consent" (title case, as comes from HARDCODED_EXPORT_GENRES)
+      vocabTranslations.ensureGenreEntry("Consent", "builtin", ["es", "pt"]);
+      
+      // Should NOT create a duplicate - should use existing entry
+      const genres = vocabTranslations.genres;
+      expect(Object.keys(genres)).toHaveLength(1);
+      // The original entry should still have its translation
+      expect(vocabTranslations.getGenreTranslation("consent", "pt")).toBe("consentimento");
+      // Should also work with the other case
+      expect(vocabTranslations.getGenreTranslation("Consent", "pt")).toBe("consentimento");
+    });
+
     it("should detect missing translations", () => {
       vocabTranslations.setGenre("genre1", "project", { es: "género" });
       // Has es, but missing fr
@@ -152,6 +169,23 @@ describe("VocabularyTranslations", () => {
       expect(roles["custom_role"].translations).not.toHaveProperty("en");
       expect(roles["custom_role"].translations).toHaveProperty("es");
       expect(roles["custom_role"].translations).toHaveProperty("fr");
+    });
+
+    it("should not create duplicate role entries when ensuring entry with different case", () => {
+      // First add "researcher" (lowercase)
+      vocabTranslations.ensureRoleEntry("researcher", "project", ["es", "pt"]);
+      vocabTranslations.updateRoleTranslation("researcher", "pt", "pesquisador");
+      
+      // Now ensure "Researcher" (title case)
+      vocabTranslations.ensureRoleEntry("Researcher", "builtin", ["es", "pt"]);
+      
+      // Should NOT create a duplicate - should use existing entry
+      const roles = vocabTranslations.roles;
+      expect(Object.keys(roles)).toHaveLength(1);
+      // The original entry should still have its translation
+      expect(vocabTranslations.getRoleTranslation("researcher", "pt")).toBe("pesquisador");
+      // Should also work with the other case
+      expect(vocabTranslations.getRoleTranslation("Researcher", "pt")).toBe("pesquisador");
     });
 
     it("should detect missing role translations", () => {

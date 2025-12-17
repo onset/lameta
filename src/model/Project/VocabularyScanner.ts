@@ -25,6 +25,14 @@ const builtInGenreLabels = new Set(
 );
 
 /**
+ * Genres that are hardcoded in export code (e.g., ImdiBundler).
+ * These need to always be included in vocabulary scanning so users
+ * can provide translations for them, even if they don't manually
+ * create sessions with these genres.
+ */
+export const HARDCODED_EXPORT_GENRES = ["Consent", "Collection description"];
+
+/**
  * Check if a genre value is built-in (exists in genres.json).
  * Checks both ID and label since users may enter either.
  */
@@ -175,6 +183,13 @@ export async function scanProjectForVocabulary(
 
     // Yield to UI
     await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  // Always include hardcoded export genres (e.g., "Consent" for consent bundles)
+  // so users can provide translations for them even if they haven't manually
+  // created sessions with these genres
+  for (const genre of HARDCODED_EXPORT_GENRES) {
+    processGenreValue(genre, languageCodes, result);
   }
 
   if (progressCallback) {

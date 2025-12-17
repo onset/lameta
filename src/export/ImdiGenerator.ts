@@ -325,14 +325,15 @@ export default class ImdiGenerator {
 
   private addProjectInfo() {
     this.group("Project", () => {
-      // Projects have names, titles, and ids too! Sigh.
+      // Project/Name: A short name/identifier - use first language value only (schema allows only one)
+      // Project/Title: The full title - can be multilingual in ELAR schema
 
-      this.requiredField("Name", "title", this.project);
-      this.requiredField("Title", "fundingProjectTitle", this.project);
+      this.requiredSingleValueField("Name", "title", this.project);
+      this.requiredMonolingualField("Title", "title", this.project);
       // ELAR would like to put some of fundingProjectFunder, fundingProjectAffiliation, fundingProjectLead, and fundingProjectContact under MDGroup/Project/Funder but that will need a new schema
       // for now, they have specified places for them *all over* (see fields.json5 & ImdiGenerator-courpus-metadata.spec.ts)
 
-      this.requiredField("Id", "grantId", this.project);
+      this.requiredSingleValueField("Id", "grantId", this.project);
 
       this.group("Contact", () => {
         this.optionalField("Name", "contactPerson", this.project);
@@ -1388,6 +1389,25 @@ export default class ImdiGenerator {
     );
   }
 
+  // For elements that should always have exactly one value (no multilingual support).
+  // Uses only the first/primary language value, no LanguageId attribute.
+  // Use for elements where IMDI schema doesn't allow maxOccurs="unbounded" (e.g., Project/Name).
+  private requiredSingleValueField(
+    elementName: string,
+    fieldName: string,
+    target?: Folder | File
+  ) {
+    this.field(
+      elementName,
+      fieldName,
+      true, // required
+      "", // default value
+      target,
+      undefined, // no fallback
+      false // imdiSupportsMultipleElements = false - forces single element, no LanguageId
+    );
+  }
+
   private optionalField(
     elementName: string,
     fieldName: string,
@@ -1663,7 +1683,11 @@ export default class ImdiGenerator {
 
   // IMDI doesn't have a place for project-level documents, so we have to create IMDI
   // Sessions even though they are not related to actual sessions
-  public makePseudoSessionImdiForOtherFolder(name: string, folder: Folder) {
+  public makePseudoSessionImdiForOtherFolder(
+    name: string,
+    folder: Folder,
+    genre: string = "Collection description"
+  ) {
     this.startXmlRoot("SESSION");
     this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -1683,7 +1707,7 @@ export default class ImdiGenerator {
     this.tail.element("Keys").raw("");
     this.tail.element("Content").raw(
       `<Content>
-      <Genre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" />
+      <Genre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml">${genre}</Genre>
       <SubGenre Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml" />
       <Task Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Task.xml" />
       <Modalities Type="OpenVocabulary" Link="http://www.mpi.nl/IMDI/Schema/Content-Modalities.xml" />

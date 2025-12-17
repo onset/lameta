@@ -813,7 +813,8 @@ export class Project extends Folder {
   }
 
   public get displayName(): string {
-    return this.properties.getTextStringOrEmpty("title");
+    const titleField = this.properties.getTextField("title");
+    return titleField.getTextForSimpleDisplay();
   }
 
   private getUniqueFolder(directory: string, baseName: string): string {

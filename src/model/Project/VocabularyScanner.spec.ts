@@ -3,7 +3,8 @@ import {
   isBuiltInGenre,
   isBuiltInRole,
   scanProjectForVocabulary,
-  updateTranslationsFromScan
+  updateTranslationsFromScan,
+  HARDCODED_EXPORT_GENRES
 } from "./VocabularyScanner";
 import { VocabularyTranslations } from "./VocabularyTranslations";
 import * as fs from "fs-extra";
@@ -17,6 +18,19 @@ beforeAll(() => {
 });
 
 describe("VocabularyScanner", () => {
+  describe("HARDCODED_EXPORT_GENRES", () => {
+    it("should include 'Consent' for consent bundle exports", () => {
+      expect(HARDCODED_EXPORT_GENRES).toContain("Consent");
+    });
+
+    it("should only contain genres that are built-in", () => {
+      // All hardcoded export genres should exist in genres.json
+      for (const genre of HARDCODED_EXPORT_GENRES) {
+        expect(isBuiltInGenre(genre)).toBe(true);
+      }
+    });
+  });
+
   describe("isBuiltInGenre", () => {
     it("should return true for built-in genre IDs", () => {
       expect(isBuiltInGenre("drama")).toBe(true);
