@@ -363,15 +363,39 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     isMulti: true
   };
 
+  // Handle creating a new custom language (user-defined)
+  const handleCreateOption = useCallback(
+    (inputValue: string) => {
+      // Create a private-use code following BCP-47 for user-defined languages
+      const newCode = `qaa-x-${inputValue}`;
+
+      // Add the new language to the current values
+      const newValues = [...currentValueArray, { value: newCode, label: inputValue }];
+
+      // Serialize and save - use "code:name" format for custom languages so we can display the name
+      const s = newValues
+        .map((o) => {
+          // For custom languages (qaa-x-*), save as code:name so display name is preserved
+          if (o.value.startsWith("qaa-x-")) {
+            return `${o.value}:${o.label}`;
+          }
+          return o.value;
+        })
+        .join(";");
+      props.field.setValueFromString(s);
+
+      window.alert("You created " + inputValue);
+    },
+    [currentValueArray, props.field]
+  );
+
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <label>{props.field.labelInUILanguage}</label>
       {props.canCreateNew ? (
         <CreatableAsyncSelect
           {...selectProps}
-          onCreateOption={(newOption) => {
-            window.alert("You created " + newOption);
-          }}
+          onCreateOption={handleCreateOption}
         ></CreatableAsyncSelect>
       ) : (
         <AsyncSelect {...selectProps} />
