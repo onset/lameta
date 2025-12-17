@@ -1,7 +1,7 @@
 @import "../colors.css";
 
 .startScreen {
-  color: black;
+  color: var(--color-text-primary);
   background-color: white;
   height: 100%;
   .core {
@@ -41,7 +41,7 @@
     a {
       display: inline-block;
       text-decoration: none !important;
-      color: black;
+      color: var(--color-text-primary);
       margin-top: 1em;
       border: solid 1px transparent;
       &:focus,

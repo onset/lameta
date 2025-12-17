@@ -2,7 +2,7 @@
 
 .componentTab {
   height: 100%;
-  color: black;
+  color: var(--color-text-primary);
   display: flex;
   flex: 1 1 auto;
   min-height: 0; /* allow inner panes to scroll instead of overflowing */

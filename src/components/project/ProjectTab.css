@@ -6,7 +6,7 @@ form.project {
 
 .project {
   height: 100%;
-  color: black;
+  color: var(--color-text-primary);
   display: flex;
   & > ul {
     width: 200px;

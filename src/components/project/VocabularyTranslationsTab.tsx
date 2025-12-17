@@ -19,6 +19,7 @@ import {
 import {
   lameta_orange,
   lameta_dark_blue,
+  textPrimary,
   lameta_light_orange_background
 } from "../../containers/theme";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -275,7 +276,7 @@ const FieldSection: React.FC<FieldSectionProps> = ({
         </h3>
         <p
           css={css`
-            color: #888;
+            color: ${textPrimary};
             font-style: italic;
           `}
         >
@@ -532,7 +533,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             <>
               <span
                 css={css`
-                  color: #000;
+                  color: ${textPrimary};
                 `}
               >
                 <Trans>Scanning...</Trans>

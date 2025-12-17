@@ -13,7 +13,8 @@ import {
   lameta_green,
   lameta_dark_green,
   lameta_blue,
-  lameta_dark_blue
+  lameta_dark_blue,
+  textPrimary
 } from "../../containers/theme";
 
 import { TextFieldEdit } from "../TextFieldEdit";
@@ -64,13 +65,13 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           severity="info"
           variant="outlined"
           css={css`
-            color: black !important;
+            color: ${textPrimary} !important;
             border-color: transparent !important;
             background-color: #f6dbcb !important;
             margin-bottom: 10px;
 
             .MuiAlert-icon {
-              color: black !important;
+              color: ${textPrimary} !important;
             }
           `}
         >
