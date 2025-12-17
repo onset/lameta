@@ -20,7 +20,10 @@ import { LametaXmlView } from "../lametaXmlView";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 import { RoCrateView } from "../RoCrate/RoCrateView";
 import { MultilingualTextMigrationPanel } from "./MultilingualTextMigrationPanel";
-import { VocabularyTranslationsTab } from "./VocabularyTranslationsTab";
+import {
+  VocabularyTranslationsTab,
+  hasMultilingualVocabularyFields
+} from "./VocabularyTranslationsTab";
 
 // Remember the last selected tab within the Project tab (not persisted between runs)
 let lastProjectTabIndex = 0;
@@ -46,6 +49,9 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
       p.definition.visibility === "always"
     );
   });
+
+  // Only show Vocabulary Translations tab if there are multilingual vocab fields
+  const showVocabularyTranslationsTab = hasMultilingualVocabularyFields();
 
   // Calculate the Languages tab index (depends on whether Collection tab is shown)
   const languagesTabIndex = showCollectionTab ? 3 : 2;
@@ -126,12 +132,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Languages</Trans>
           </Tab>{" "}
-          <Tab
-            className={"tab-project-vocabulary-translations"}
-            data-testid="project-vocabulary-translations-tab"
-          >
-            <Trans>Vocabulary Translations</Trans>
-          </Tab>
+          {showVocabularyTranslationsTab && (
+            <Tab
+              className={"tab-project-vocabulary-translations"}
+              data-testid="project-vocabulary-translations-tab"
+            >
+              <Trans>Vocabulary Translations</Trans>
+            </Tab>
+          )}
           <Tab
             className={"tab-project-collection-location"}
             data-testid="project-collection-location-tab"
@@ -237,9 +245,11 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        <TabPanel>
-          <VocabularyTranslationsTab project={props.project} />
-        </TabPanel>{" "}
+        {showVocabularyTranslationsTab && (
+          <TabPanel>
+            <VocabularyTranslationsTab project={props.project} />
+          </TabPanel>
+        )}{" "}
         <TabPanel>
           <AutoForm
             form="collectionLocation"

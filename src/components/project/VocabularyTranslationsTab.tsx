@@ -31,6 +31,18 @@ import {
 } from "../../model/field/ConfiguredFieldDefinitions";
 import { NotifyError } from "../Notify";
 
+/**
+ * Helper function to check if any vocabulary fields are multilingual in current config.
+ * This is used by ProjectTab to decide whether to show the Vocabulary Translations tab.
+ */
+export function hasMultilingualVocabularyFields(): boolean {
+  const genreFieldDef = getFieldDefinition("session", "genre");
+  const roleFieldDef = getCommonFieldDefinition("role");
+  const isGenreMultilingual = genreFieldDef?.multilingual ?? false;
+  const isRoleMultilingual = roleFieldDef?.multilingual ?? false;
+  return isGenreMultilingual || isRoleMultilingual;
+}
+
 interface VocabularyTranslationsTabProps {
   project: Project;
 }
@@ -377,7 +389,6 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
     const roleFieldDef = getCommonFieldDefinition("role");
     const isGenreMultilingual = genreFieldDef?.multilingual ?? false;
     const isRoleMultilingual = roleFieldDef?.multilingual ?? false;
-    const hasAnyMultilingualVocab = isGenreMultilingual || isRoleMultilingual;
 
     // Get metadata language codes from project
     const metadataLanguages = Project.getMetadataLanguageSlots();
@@ -463,33 +474,6 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         )
       : 0;
     const totalMissing = genreMissingCount + roleMissingCount;
-
-    // If no vocabulary fields are multilingual, show a message
-    if (!hasAnyMultilingualVocab) {
-      return (
-        <div
-          data-testid="vocabulary-translations-panel"
-          css={css`
-            padding: 20px;
-          `}
-        >
-          <h2>
-            <Trans>Vocabulary Translations</Trans>
-          </h2>
-          <p
-            css={css`
-              color: #888;
-              margin-top: 16px;
-            `}
-          >
-            <Trans>
-              This archive configuration does not have any multilingual
-              vocabulary fields.
-            </Trans>
-          </p>
-        </div>
-      );
-    }
 
     if (languageCodes.length < 2) {
       return (

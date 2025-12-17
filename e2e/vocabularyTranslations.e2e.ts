@@ -63,14 +63,15 @@ test.describe("Vocabulary Translations Tab", () => {
     }
   });
 
-  test("shows message when no multilingual vocab fields in default config", async () => {
+  test("vocabulary translations tab is not shown in default config (no multilingual vocab fields)", async () => {
     // By default (lameta config), genre is not multilingual
-    await project.goToProjectVocabularyTranslations();
+    // Navigate to project tab to check available tabs
+    await page.locator('[data-testid="project-tab"]').click();
 
-    // Should see the message about no multilingual vocab fields
+    // The vocabulary translations tab should not be visible at all
     await expect(
-      page.getByText(/does not have any multilingual vocabulary fields/i)
-    ).toBeVisible();
+      page.locator('[data-testid="project-vocabulary-translations-tab"]')
+    ).not.toBeVisible();
   });
 
   test("shows vocabulary tab after switching to ELAR and adding metadata languages", async () => {
