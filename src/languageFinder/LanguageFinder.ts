@@ -474,6 +474,32 @@ export class LanguageFinder {
   }
 
   /**
+   * Convert a language code to its ISO 639-3 (3-letter) form.
+   * If already 3 letters, returns as-is. If 2-letter ISO 639-1 code,
+   * looks up the corresponding 3-letter code.
+   * E.g., "en" -> "eng", "es" -> "spa", "etr" -> "etr"
+   */
+  public getIso639_3Code(code: string): string {
+    const lowered = code.toLowerCase().trim();
+    if (lowered.length === 0) return lowered;
+
+    // Already a 3-letter code? Return as-is
+    if (lowered.length === 3) return lowered;
+
+    // If 2-letter code, look up the 3-letter equivalent
+    if (lowered.length === 2) {
+      const matches = this.lookupInIndexAndCustomLanguages(lowered);
+      const exactMatch = matches.find((m) => m.iso639_1 === lowered);
+      if (exactMatch?.iso639_3) {
+        return exactMatch.iso639_3;
+      }
+    }
+
+    // Fall back to original code if lookup fails
+    return lowered;
+  }
+
+  /**
    * Get the localized language name for display.
    * Currently returns the English name, but could be extended for localization.
    */

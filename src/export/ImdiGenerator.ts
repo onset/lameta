@@ -30,6 +30,7 @@ import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
+import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 
 // IMDI Date_Value_Type pattern from IMDI_3.0.xsd
 // Valid: YYYY, YYYY-MM, YYYY-MM-DD, date ranges with /, "Unknown", "Unspecified", or empty
@@ -641,9 +642,11 @@ export default class ImdiGenerator {
     
     this.group("Keys", () => {
       for (const slot of metadataSlots) {
-        // Use ISO639-3 for 3-letter codes, ISO639-1 for 2-letter codes
-        const kind = slot.tag.length === 2 ? "ISO639-1" : "ISO639-3";
-        const value = `${kind}:${slot.tag}: ${slot.name}`;
+        // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
+        const iso639_3 = staticLanguageFinder
+          ? staticLanguageFinder.getIso639_3Code(slot.tag)
+          : slot.tag;
+        const value = `ISO639-3:${iso639_3}: ${slot.name}`;
         this.keyElement("MetadataLanguage", value);
       }
     });
@@ -1507,9 +1510,11 @@ export default class ImdiGenerator {
         // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
         const normalizedTranslation = sentenceCase(translation);
         const newElement = this.tail.element(elementName, normalizedTranslation);
-        // LanguageId uses ISO639-3 for 3-letter codes, ISO639-1 for 2-letter codes
-        const kind = slot.tag.length === 2 ? "ISO639-1" : "ISO639-3";
-        newElement.attribute("LanguageId", kind + ":" + slot.tag);
+        // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
+        const iso639_3 = staticLanguageFinder
+          ? staticLanguageFinder.getIso639_3Code(slot.tag)
+          : slot.tag;
+        newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
         newElement.attribute("Link", vocabularyUrl);
         newElement.attribute("Type", "OpenVocabulary");
         this.mostRecentElement = newElement;

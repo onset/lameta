@@ -1,5 +1,6 @@
 import * as XmlBuilder from "xmlbuilder";
 import { Field } from "../model/field/Field";
+import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 
 // public for testing
 // imdiSupportsMultipleElements: when true, creates separate elements with LanguageId attributes for each language.
@@ -80,9 +81,12 @@ function addElementsFromFieldContent(
       // Multiple languages and IMDI supports LanguageId attributes
       axes.forEach((language) => {
         element = tail.element(elementName, field.getTextAxis(language));
-        // 2 letter is ISO639-1, 3 letter is taken to be the ISO639-3 (ethonogue code)
-        const kind = language.length === 2 ? "ISO639-1" : "ISO639-3";
-        element.attribute("LanguageId", kind + ":" + language);
+        // Always use ISO639-3 (3-letter) codes for IMDI export
+        // Archives require 3-letter codes, they can't handle 2-letter ISO639-1 codes
+        const iso639_3 = staticLanguageFinder
+          ? staticLanguageFinder.getIso639_3Code(language)
+          : language;
+        element.attribute("LanguageId", "ISO639-3:" + iso639_3);
       });
     }
   }

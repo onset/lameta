@@ -9,6 +9,10 @@ import {
   isTildeBirthYear,
   resetTildeBirthYearWarning
 } from "./ImdiGenerator.ts";
+import { setupLanguageFinderForTests } from "../languageFinder/LanguageFinder";
+
+// Set up staticLanguageFinder for ISO639-3 code lookups
+setupLanguageFinderForTests();
 
 describe("imdi monolingual field export", () => {
   it("exports default if element is required", () => {
@@ -118,7 +122,7 @@ describe("imdi multilingual field export", () => {
     });
     expect("//description[@LanguageId]").toHaveCount(2);
     //printResultXml();
-    expect("//description[@LanguageId='ISO639-1:en']").toHaveText("a house");
+    expect("//description[@LanguageId='ISO639-3:eng']").toHaveText("a house");
     expect("//description[@LanguageId='ISO639-3:etr']").toHaveText(
       "house in edolo"
     );
@@ -172,11 +176,11 @@ describe("imdi monolingual field export", () => {
     });
     // Should have multiple Title elements with LanguageId attributes
     expect("//title[@LanguageId]").toHaveCount(3);
-    expect("//title[@LanguageId='ISO639-1:en']").toHaveText(
+    expect("//title[@LanguageId='ISO639-3:eng']").toHaveText(
       "idea for tomorrow"
     );
-    expect("//title[@LanguageId='ISO639-1:es']").toHaveText("idea para mañana");
-    expect("//title[@LanguageId='ISO639-1:fr']").toHaveText("idée pour demain");
+    expect("//title[@LanguageId='ISO639-3:spa']").toHaveText("idea para mañana");
+    expect("//title[@LanguageId='ISO639-3:fra']").toHaveText("idée pour demain");
   });
 
   it("creates multiple elements with LanguageId when imdiSupportsMultipleElements is true", () => {

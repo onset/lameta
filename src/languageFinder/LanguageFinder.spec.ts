@@ -180,4 +180,39 @@ describe("LanguageFinder", () => {
       expect(languageFinder.normalizeToBcp47("tpi-PG")).toBe("tpi-PG");
     });
   });
+
+  describe("getIso639_3Code", () => {
+    it("should preserve 3-letter codes", () => {
+      expect(languageFinder.getIso639_3Code("eng")).toBe("eng");
+      expect(languageFinder.getIso639_3Code("spa")).toBe("spa");
+      expect(languageFinder.getIso639_3Code("fra")).toBe("fra");
+      expect(languageFinder.getIso639_3Code("etr")).toBe("etr");
+      expect(languageFinder.getIso639_3Code("tpi")).toBe("tpi");
+    });
+
+    it("should convert 2-letter codes to 3-letter", () => {
+      expect(languageFinder.getIso639_3Code("en")).toBe("eng");
+      expect(languageFinder.getIso639_3Code("es")).toBe("spa");
+      expect(languageFinder.getIso639_3Code("fr")).toBe("fra");
+      expect(languageFinder.getIso639_3Code("pt")).toBe("por");
+      expect(languageFinder.getIso639_3Code("de")).toBe("deu");
+      expect(languageFinder.getIso639_3Code("id")).toBe("ind");
+    });
+
+    it("should handle case-insensitively", () => {
+      expect(languageFinder.getIso639_3Code("EN")).toBe("eng");
+      expect(languageFinder.getIso639_3Code("En")).toBe("eng");
+      expect(languageFinder.getIso639_3Code("ENG")).toBe("eng");
+    });
+
+    it("should trim whitespace", () => {
+      expect(languageFinder.getIso639_3Code(" en ")).toBe("eng");
+      expect(languageFinder.getIso639_3Code(" eng ")).toBe("eng");
+    });
+
+    it("should handle empty input", () => {
+      expect(languageFinder.getIso639_3Code("")).toBe("");
+      expect(languageFinder.getIso639_3Code("  ")).toBe("");
+    });
+  });
 });

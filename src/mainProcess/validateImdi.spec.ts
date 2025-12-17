@@ -141,9 +141,9 @@ describe("validateImdiAsyncInternal with ELAR schema", () => {
           </Project>
           <Keys/>
           <Content>
-            <Genre LanguageId="ISO639-1:en" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
-            <Genre LanguageId="ISO639-1:es" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
-            <Genre LanguageId="ISO639-1:pt" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
+            <Genre LanguageId="ISO639-3:eng" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrative</Genre>
+            <Genre LanguageId="ISO639-3:spa" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
+            <Genre LanguageId="ISO639-3:por" Link="http://www.mpi.nl/IMDI/Schema/Content-Genre.xml" Type="OpenVocabulary">Narrativa</Genre>
             <CommunicationContext/>
             <Languages/>
             <Keys/>

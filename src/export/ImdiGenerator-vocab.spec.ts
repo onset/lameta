@@ -94,17 +94,17 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
 
     // English should be present
     xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:en']"
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
     ).toHaveText("Narrative");
 
     // Spanish should be present (from genres.csv)
     xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:es']"
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:spa']"
     ).toHaveText("Narrativa");
 
     // Portuguese should be present (from genres.csv - pt-BR column)
     xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:pt']"
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:por']"
     ).toHaveText("Narrativa");
 
     // All should have the correct vocabulary link and type
@@ -135,7 +135,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
 
     // Check English - should be sentence case
     xexpect(
-      "//Session/MDGroup/Content/SubGenre[@LanguageId='ISO639-1:en']"
+      "//Session/MDGroup/Content/SubGenre[@LanguageId='ISO639-3:eng']"
     ).toHaveText("Myth");
   });
 
@@ -162,12 +162,12 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
 
     // English should have "Speaker" (sentence case)
     xexpect(
-      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-1:en']"
+      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']"
     ).toHaveText("Speaker");
 
     // Spanish should have the translation
     xexpect(
-      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-1:es']"
+      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']"
     ).toHaveText("Hablante");
 
     // All Role elements should have vocabulary attributes
@@ -223,9 +223,9 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     );
     setResultXml(imdi);
 
-    // Should have English (2-letter code uses ISO639-1)
+    // Should have English (using ISO639-3 code)
     xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:en']"
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
     ).toHaveText("Narrative");
 
     // Should NOT have Tok Pisin since there's no translation
@@ -431,7 +431,7 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
 
     // English should be present
     xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-1:en']"
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
     ).toHaveText("Narrative");
   });
 
@@ -451,16 +451,16 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
     );
     expect(metadataLangCount).toBe(3);
 
-    // Check the format: "ISO639-1:en: English" or "ISO639-3:xxx: Name"
+    // Check the format: "ISO639-3:eng: English"
     const keys = select("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']");
     const values = keys.map((node) => (node as Element).textContent);
 
-    // English - 2-letter code gets ISO639-1
-    expect(values).toContain("ISO639-1:en: English");
-    // Spanish - 2-letter code gets ISO639-1
-    expect(values).toContain("ISO639-1:es: Spanish");
-    // Portuguese - 2-letter code gets ISO639-1
-    expect(values).toContain("ISO639-1:pt: Portuguese");
+    // English - always use ISO639-3
+    expect(values).toContain("ISO639-3:eng: English");
+    // Spanish - always use ISO639-3
+    expect(values).toContain("ISO639-3:spa: Spanish");
+    // Portuguese - always use ISO639-3
+    expect(values).toContain("ISO639-3:por: Portuguese");
   });
 
   it("should not output MetadataLanguage keys when only default language is set", () => {
