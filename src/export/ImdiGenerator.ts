@@ -102,6 +102,32 @@ export function emitTildeBirthYearWarningOnce(): boolean {
   return false;
 }
 
+/**
+ * Parse a language string that may be in various formats:
+ * - "code : Name" (legacy format, e.g., "pta : Guarani")
+ * - "code:Name" (no spaces, e.g., "qaa-x-MyLang:My Language")
+ * - "code" (plain code, e.g., "fra")
+ *
+ * Returns { code, name } where name is undefined if not present in the string.
+ */
+export function parseLanguageCodeAndName(
+  languageString: string
+): { code: string; name: string | undefined } {
+  const trimmed = languageString.trim();
+
+  // Check for "code : Name" or "code:Name" format
+  // Use first colon to split, in case the name contains colons
+  const colonIndex = trimmed.indexOf(":");
+  if (colonIndex > 0) {
+    const code = trimmed.substring(0, colonIndex).trim();
+    const name = trimmed.substring(colonIndex + 1).trim();
+    return { code, name: name.length > 0 ? name : undefined };
+  }
+
+  // Plain code format
+  return { code: trimmed, name: undefined };
+}
+
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
   RAW_IMDI
@@ -465,8 +491,12 @@ export default class ImdiGenerator {
       this.group("Languages", () => {
         const languages = session.getSubjectLanguageCodes();
         if (languages.length > 0) {
-          languages.forEach((code) => {
+          languages.forEach((langString) => {
+            // Parse "code : Name" or "code:Name" format, or plain code
+            const { code, name } = parseLanguageCodeAndName(langString);
+            // If name was provided in the string, use it; otherwise look it up
             const langName =
+              name ||
               this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
                 code
               );
@@ -481,8 +511,12 @@ export default class ImdiGenerator {
         this.keysThatHaveBeenOutput.add("Session.languages");
         const workingLanguages = session.getWorkingLanguageCodes();
         if (workingLanguages.length > 0) {
-          workingLanguages.forEach((code) => {
+          workingLanguages.forEach((langString) => {
+            // Parse "code : Name" or "code:Name" format, or plain code
+            const { code, name } = parseLanguageCodeAndName(langString);
+            // If name was provided in the string, use it; otherwise look it up
             const langName =
+              name ||
               this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
                 code
               );
@@ -512,13 +546,21 @@ export default class ImdiGenerator {
   private addMissingSessionLanguage(key: string, description: string) {
     // Note, SayMore Sessions don't currently have their own language...
     // so we have to get these languages from the project
-    const parts = this.project.properties
-      .getTextStringOrEmpty(key)
-      .split(":")
-      .map((s) => s.trim());
-    if (parts.length === 2) {
-      this.addSessionLanguage(parts[0], parts[1], description);
-    }
+    const rawValue = this.project.properties.getTextStringOrEmpty(key);
+    if (rawValue.trim().length === 0) return;
+
+    // Handle multiple languages separated by semicolons
+    const languages = rawValue.split(";").map((s) => s.trim()).filter((s) => s.length > 0);
+    languages.forEach((langString) => {
+      const { code, name } = parseLanguageCodeAndName(langString);
+      // If name was provided in the string, use it; otherwise look it up
+      const langName =
+        name ||
+        this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+          code
+        );
+      this.addSessionLanguage(code, langName, description);
+    });
   }
   private addSessionLanguage(code: string, name: string, description: string) {
     this.group("Language", () => {
@@ -1040,13 +1082,14 @@ export default class ImdiGenerator {
       ? this.folderInFocus.properties.getTextStringOrEmpty("access")
       : "";
 
-    const accessDescription = fileWithAccess?.properties.getTextStringOrEmpty(
+    // Get the accessDescription Field object (not just string) for proper multilingual handling
+    const accessDescriptionField = fileWithAccess?.properties.getTextStringOrEmpty(
       "accessDescription"
     )
-      ? fileWithAccess.properties.getTextStringOrEmpty("accessDescription")
+      ? (fileWithAccess.properties.getValue("accessDescription") as Field)
       : this.folderInFocus instanceof Session
-      ? this.folderInFocus.properties.getTextStringOrEmpty("accessDescription")
-      : "";
+      ? (this.folderInFocus.properties.getValue("accessDescription") as Field)
+      : undefined;
 
     /* NO: the schema requires a all the access fields, even if they are empty.
     if (accessCode.length === 0) {
@@ -1101,8 +1144,20 @@ export default class ImdiGenerator {
         this.element("Description", "");
       }
     */
-      if (accessCode.length > 0) {
-        this.element("Description", accessDescription);
+      if (accessCode.length > 0 && accessDescriptionField && !accessDescriptionField.isEmpty()) {
+        // Use fieldElement to properly handle multilingual content with LanguageId attributes
+        const result = fieldElement(
+          "Description",
+          accessDescriptionField,
+          this.tail,
+          this.mostRecentElement,
+          false, // not required
+          "",
+          true // IMDI Description supports multiple elements with LanguageId
+        );
+        this.tail = result.tail;
+        if (result.mostRecentElement)
+          this.mostRecentElement = result.mostRecentElement;
       } else {
         this.element("Description", "");
       }
