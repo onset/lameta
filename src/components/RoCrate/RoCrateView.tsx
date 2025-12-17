@@ -3,11 +3,8 @@ import { css } from "@emotion/react";
 import { Folder } from "../../model/Folder/Folder";
 import { Project } from "../../model/Project/Project";
 import { getRoCrate } from "../../export/ROCrate/RoCrateExporter";
-import FindInPage from "../FindInPage";
-import { JsonView } from "./JsonView";
-import { ValidationResultsList } from "./RoCrateValidationResults";
-import { Box, Grid } from "@mui/material";
 import { validateRoCrate, ValidationResult } from "./validation";
+import { SearchableCodeViewer } from "../SearchableCodeViewer";
 
 export const RoCrateView: React.FunctionComponent<{
   // note, folder will equal project if we're generating at the project level
@@ -65,79 +62,36 @@ export const RoCrateView: React.FunctionComponent<{
     loadAndValidate();
   }, [props.project, props.folder, props.doValidate]);
 
+  const jsonString = React.useMemo(() => JSON.stringify(json, null, 2), [json]);
+
   return (
     <div
       css={css`
         height: 500px;
         width: 100%;
-
         display: flex;
         flex-direction: column;
-        flex-grow: 1; // <--  grow to fit available space and then...
-        overflow: hidden; // <-- ... show scroll if too big, instead of just going off the screen.
-        code,
-        code * {
-          font-family: sans-serif;
-          white-space: pre-wrap;
-        }
-        pre {
-          flex: 1; // fill space
-        }
+        flex-grow: 1;
+        overflow: hidden;
       `}
     >
-      <FindInPage autoFocus={true} />
-      <Box
-        sx={{
-          height: "100vh",
-          display: "flex",
-          maxHeight: "100%",
-          overflow: "hidden" // Prevents overflow from the container
-        }}
-      >
-        <Grid
-          container
-          spacing={0}
-          sx={{
-            flexGrow: 1,
-            //maxHeight: "100%",
-            overflowY: "hidden"
-          }}
-        >
-          {/* First column */}
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              flexGrow: 1,
-              maxHeight: "100%",
-              overflowY: "auto" // Makes the column scrollable if content overflows
-            }}
-          >
-            <JsonView value={json} />
-          </Grid>
-
-          {/* Second column */}
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              paddingLeft: 2,
-              flexGrow: 1,
-              maxHeight: "100%",
-              overflowY: "auto" // Makes the column scrollable if content overflows
-            }}
-          >
-            {validationResults && (
-              <div>
-                <div>{`Validation Results  ⛔${validationResults?.errors?.length} / ⚠️${validationResults?.warnings?.length} / ℹ️ ${validationResults?.info?.length}`}</div>
-                <ValidationResultsList list={validationResults} />
-              </div>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
+      <SearchableCodeViewer
+        content={jsonString}
+        language="json"
+        autoFocusSearch={true}
+        headerContent={
+          validationResults && (
+            <span
+              css={css`
+                font-size: 0.8rem;
+                white-space: nowrap;
+              `}
+            >
+              {`Validation Results  ⛔${validationResults.errors.length} / ⚠️${validationResults.warnings.length} / ℹ️ ${validationResults.info.length}`}
+            </span>
+          )
+        }
+      />
     </div>
   );
 };

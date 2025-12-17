@@ -6,17 +6,12 @@ import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
 import { File } from "../model/file/File";
-import SyntaxHighlighter, {
-  registerLanguage
-} from "react-syntax-highlighter/light";
-import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
-import syntaxStyle from "./ImdiSyntaxStyle";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
 import Alert from "@mui/material/Alert";
 import { Trans } from "@lingui/macro";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
-registerLanguage("xml", xmlLang);
+import { SearchableCodeViewer } from "./SearchableCodeViewer";
 
 export const ImdiView: React.FunctionComponent<{
   // including the function prevented the react hot loader from giving us new xml
@@ -107,23 +102,12 @@ export const ImdiView: React.FunctionComponent<{
   return (
     <div
       css={css`
-        // Enhance: the size and scrolling of this got all messed up with the switch to electron 6
-        // (though it could have been anything). It's currently a hack.
         height: 500px;
         width: 100%;
-
         display: flex;
         flex-direction: column;
-        flex-grow: 1; // <--  grow to fit available space and then...
-        overflow: hidden; // <-- ... show scroll if too big, instead of just going off the screen.
-        code,
-        code * {
-          font-family: sans-serif;
-          white-space: pre-wrap;
-        }
-        pre {
-          flex: 1; // fill space
-        }
+        flex-grow: 1;
+        overflow: hidden;
       `}
     >
       {rulesBasedValidationResult && (
@@ -147,13 +131,13 @@ export const ImdiView: React.FunctionComponent<{
           >
             Validation failed using schema: {schemaName}
           </div>
-          {validationResult?.errors.map((e) => {
+          {validationResult?.errors.map((e, i) => {
             return (
               <div
+                key={i}
                 css={css`
                   margin: 0;
                   font-weight: 500;
-
                   white-space: pre-wrap;
                 `}
               >
@@ -163,12 +147,11 @@ export const ImdiView: React.FunctionComponent<{
           })}
         </Alert>
       )}
-      <SyntaxHighlighter
+      <SearchableCodeViewer
+        content={imdi}
         language="xml"
-        style={{ ...syntaxStyle, marginTop: 0, paddingTop: 0 }}
-      >
-        {imdi}
-      </SyntaxHighlighter>
+        autoFocusSearch={true}
+      />
     </div>
   );
 };
