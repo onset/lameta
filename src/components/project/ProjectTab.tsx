@@ -50,8 +50,8 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
     );
   });
 
-  // Only show Vocabulary Translations tab if there are multilingual vocab fields
-  const showVocabularyTranslationsTab = hasMultilingualVocabularyFields();
+  // Only show  Translations tab if there are multilingual vocab fields
+  const showTranslationsTab = hasMultilingualVocabularyFields();
 
   // Calculate the Languages tab index (depends on whether Collection tab is shown)
   const languagesTabIndex = showCollectionTab ? 3 : 2;
@@ -132,12 +132,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Languages</Trans>
           </Tab>{" "}
-          {showVocabularyTranslationsTab && (
+          {showTranslationsTab && (
             <Tab
               className={"tab-project-vocabulary-translations"}
               data-testid="project-vocabulary-translations-tab"
             >
-              <Trans>Vocabulary Translations</Trans>
+              <Trans>Translations</Trans>
             </Tab>
           )}
           <Tab
@@ -245,7 +245,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        {showVocabularyTranslationsTab && (
+        {showTranslationsTab && (
           <TabPanel>
             <VocabularyTranslationsTab project={props.project} />
           </TabPanel>

@@ -95,6 +95,8 @@ export const ProjectImdiView: React.FunctionComponent<IProps> = (props) => {
             project={props.project}
             folder={props.project.descriptionFolder}
             name="DescriptionDocuments"
+            title="Description Documents"
+            description="This bundle contains descriptive documents about the documentation project."
           />
         </TabPanel>
 
@@ -103,6 +105,8 @@ export const ProjectImdiView: React.FunctionComponent<IProps> = (props) => {
             project={props.project}
             folder={props.project.otherDocsFolder}
             name="OtherDocuments"
+            title="Other Documents"
+            description="This bundle contains other project documents."
           />
         </TabPanel>
 

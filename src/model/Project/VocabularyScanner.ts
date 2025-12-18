@@ -47,6 +47,13 @@ export const HARDCODED_EXPORT_GENRES = ["Consent", "Collection description"];
 export const HARDCODED_EXPORT_ROLES = ["Researcher"];
 
 /**
+ * Fixed strings used in IMDI export that need translation.
+ * Imported and re-exported from ExportStringDefinitions for backward compatibility.
+ */
+import { HARDCODED_EXPORT_STRINGS } from "../../export/ExportStringDefinitions";
+export { HARDCODED_EXPORT_STRINGS };
+
+/**
  * Check if a genre value is built-in (exists in genres.json).
  * Checks both ID and label since users may enter either.
  */
@@ -118,6 +125,8 @@ export interface ScanResult {
   customRoles: Set<string>;
   /** Built-in role values that are missing translations */
   builtInRolesMissingTranslations: Set<string>;
+  /** Fixed export strings that need translations */
+  exportStrings: Set<string>;
   /** Total sessions scanned */
   sessionsScanned: number;
   /** Total people scanned */
@@ -146,6 +155,7 @@ export async function scanProjectForVocabulary(
     builtInGenresMissingTranslations: new Set(),
     customRoles: new Set(),
     builtInRolesMissingTranslations: new Set(),
+    exportStrings: new Set(),
     sessionsScanned: 0,
     peopleScanned: 0
   };
@@ -215,6 +225,12 @@ export async function scanProjectForVocabulary(
   for (const role of HARDCODED_EXPORT_ROLES) {
     // Always add hardcoded roles, bypassing the "missing translations" check
     result.builtInRolesMissingTranslations.add(role);
+  }
+
+  // Always include hardcoded export strings (titles and descriptions for
+  // pseudo-session bundles like DescriptionDocuments, OtherDocuments, ConsentDocuments)
+  for (const exportString of HARDCODED_EXPORT_STRINGS) {
+    result.exportStrings.add(exportString);
   }
 
   if (progressCallback) {
@@ -309,6 +325,11 @@ export function updateTranslationsFromScan(
         : "factory-value-used-in-sessions",
       languageCodes
     );
+  }
+
+  // Add export strings (fixed phrases used in IMDI export)
+  for (const exportString of scanResult.exportStrings) {
+    translations.ensureExportStringEntry(exportString, languageCodes);
   }
 
   // Save changes

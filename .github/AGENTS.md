@@ -47,12 +47,12 @@
 - Use `yarn e2e` to run UI tests
 - Run specific file: `yarn e2e <file-name>`
 - To see all renderer console messages and failed network requests: `E2E_VERBOSE=1 yarn e2e <file-name>`
-- Normally `yarn e2ebuildwatch` should be running in a different terminal
+- run `yarn e2ebuildwatch` as a background task in order to keep the render code up to date. It takes about 20 seconds to complete.
 - After changing core app code, sleep 20 seconds before launching e2e tests so e2ebuildwatch can finish
 - If changes don't appear in e2e, try a console.log as sanity check
-- `yarn e2ebuildwatch` is NOT reliable for changes to main, preload, etc. Only render process. Do `yarn build` after touching these.
 - Factor out helper functions to `*-e2e-helpers.ts` files (check existing helpers before creating new ones)
 - Avoid time-based waiting; use DOM-based checks when possible
+- it's rare that a change requires work on the main process, but if it does, then we need to build the main process with `yarn build`. But if I say "run all playwright tests", You should just do a full build with this to be sure.
 
 ## Fast Launch (recommended for new tests)
 

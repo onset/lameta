@@ -18,7 +18,47 @@ import {
   ExportJobInfo,
   FileCopyRequest
 } from "./ExportBundleTypes";
+import { ExportStrings } from "./ExportStringDefinitions";
 temp.track(true);
+
+/**
+ * Build a multilingual text string from an English value using export string translations.
+ * Returns text in the format [[en]]English[[es]]Spanish[[fr]]French if translations exist,
+ * or just the plain English text if no translations are available.
+ */
+function buildMultilingualExportString(
+  englishValue: string,
+  project: Project
+): string {
+  const metadataSlots = Project.getMetadataLanguageSlots();
+  if (metadataSlots.length <= 1) {
+    // Only one language slot, return plain text
+    return englishValue;
+  }
+
+  const parts: string[] = [];
+  for (const slot of metadataSlots) {
+    let translation: string | undefined;
+    if (slot.tag === "en" || slot.tag === "eng") {
+      translation = englishValue;
+    } else {
+      translation = project.vocabularyTranslations?.getExportStringTranslation(
+        englishValue,
+        slot.tag
+      );
+    }
+    if (translation) {
+      parts.push(`[[${slot.tag}]]${translation}`);
+    }
+  }
+
+  // If we only got English or no translations, just return plain English
+  if (parts.length <= 1) {
+    return englishValue;
+  }
+
+  return parts.join("");
+}
 
 // This class handles making/copying all the files for an IMDI archive.
 export default class ImdiBundler {
@@ -147,7 +187,9 @@ export default class ImdiBundler {
       secondLevel,
       project.otherDocsFolder,
       imdiMode,
-      copyInProjectFiles
+      copyInProjectFiles,
+      ExportStrings.OtherDocuments.title,
+      ExportStrings.OtherDocuments.description
     );
     if (otherDocsData) {
       childrenSubpaths.push(
@@ -164,7 +206,9 @@ export default class ImdiBundler {
       secondLevel,
       project.descriptionFolder,
       imdiMode,
-      copyInProjectFiles
+      copyInProjectFiles,
+      ExportStrings.DescriptionDocuments.title,
+      ExportStrings.DescriptionDocuments.description
     );
     if (descDocsData) {
       childrenSubpaths.push(
@@ -340,14 +384,23 @@ export default class ImdiBundler {
     secondLevel: string,
     folder: Folder,
     imdiMode: IMDIMode,
-    copyInProjectFiles: boolean
+    copyInProjectFiles: boolean,
+    title: string,
+    description: string
   ): ExportSessionData | null {
     if (folder.files.length === 0) {
       return null;
     }
 
     const generator = new ImdiGenerator(imdiMode, folder, project);
-    const imdiXml = generator.makePseudoSessionImdiForOtherFolder(name, folder);
+    const imdiXml = generator.makePseudoSessionImdiForOtherFolder(
+      name,
+      folder,
+      "Collection description", // genre
+      false, // omitNamespaces
+      title,
+      description
+    );
 
     const folderName = Path.basename(
       imdiFileName,
@@ -432,15 +485,20 @@ export default class ImdiBundler {
       moment(new Date()).format("YYYY-MM-DD")
     );
     dummySession.properties.setText("id", "ConsentDocuments");
+    // Use multilingual export strings for title and description
     dummySession.properties.setText(
       "title",
-      `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty(
-        "title"
-      )}`
+      buildMultilingualExportString(
+        ExportStrings.ConsentDocuments.title,
+        project
+      )
     );
     dummySession.properties.setText(
       "description",
-      `This bundle contains media demonstrating informed consent for sessions in this collection.`
+      buildMultilingualExportString(
+        ExportStrings.ConsentDocuments.description,
+        project
+      )
     );
     dummySession.properties.setText("genre", "Consent");
 

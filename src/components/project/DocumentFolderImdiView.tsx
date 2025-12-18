@@ -14,6 +14,8 @@ interface IProps {
   project: Project;
   folder: Folder;
   name: string;
+  title: string;
+  description: string;
 }
 
 /**
@@ -44,10 +46,14 @@ export const DocumentFolderImdiView: React.FunctionComponent<IProps> = (
     );
     const xml = generator.makePseudoSessionImdiForOtherFolder(
       props.name,
-      props.folder
+      props.folder,
+      "Collection description", // genre
+      false, // omitNamespaces
+      props.title,
+      props.description
     );
     setImdi(xml);
-  }, [props.project, props.folder, props.name, props.folder.files.length]);
+  }, [props.project, props.folder, props.name, props.title, props.description, props.folder.files.length]);
 
   // Validate the IMDI when it changes
   React.useEffect(() => {

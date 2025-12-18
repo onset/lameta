@@ -191,4 +191,95 @@ test.describe("Document Access", () => {
     await expect(metaFileCell).toHaveCount(0);
     await expect(originalFileCell).toBeVisible();
   });
+
+  test("access and access explanation persist after reload", async () => {
+    const page = lametaE2E.page!;
+
+    await project.goToProject();
+    await page.click('text="Description Documents"');
+
+    // Create a unique file for this test
+    const tempDir = os.tmpdir();
+    const docName = `access-persist-test-${Date.now()}.txt`;
+    const dummyFile = Path.join(tempDir, docName);
+    fs.writeFileSync(dummyFile, "testing access persistence");
+
+    // Add the file to Description Documents
+    await lametaE2E.mockShowOpenDialog([dummyFile]);
+    await page.click(".cmd-add-files");
+
+    // Wait for file to appear and select it
+    const fileCell = page.getByRole("gridcell", { name: docName, exact: true });
+    await fileCell.waitFor({ state: "visible", timeout: 10000 });
+
+    const fileRow = page
+      .locator(".fileList .rt-tr", { hasText: docName })
+      .first();
+    await fileRow.dblclick();
+
+    // Navigate to the Access tab
+    const accessTab = page.locator('[data-testid="access-tab"]');
+    await expect(accessTab).toBeVisible({ timeout: 10000 });
+    await accessTab.click();
+
+    // Set the access value using the chooser
+    const accessChooser = page.locator(
+      '[data-testid="access-chooser-field"] .field-value-border'
+    );
+    await accessChooser.waitFor({ state: "visible", timeout: 10000 });
+    await accessChooser.click();
+
+    // Select the first option (which should give us a non-empty access code)
+    await page.getByRole("option").first().click();
+
+    // Get the access code that was selected (from the tab text)
+    const accessTabText = (await accessTab.textContent()) || "";
+    const selectedAccessCode = accessTabText.split(":").at(1)?.trim() || "";
+    expect(selectedAccessCode.length).toBeGreaterThan(0);
+    expect(selectedAccessCode).not.toBe("?"); // Ensure we got a real value
+
+    // Now set the access explanation (accessDescription field)
+    // The accessDescription field is a TextFieldEdit component
+    const accessExplanationText = "Restricted due to cultural sensitivity";
+    const explanationField = page.locator(
+      '[data-testid="field-accessDescription-edit"]'
+    );
+    await explanationField.waitFor({ state: "visible", timeout: 10000 });
+    await explanationField.click();
+    await explanationField.fill(accessExplanationText);
+    // Blur to trigger save
+    await explanationField.blur();
+
+    // Wait for the data to be persisted
+    await page.waitForTimeout(500);
+
+    // Reload the project
+    await lametaE2E.softReload();
+
+    // Navigate back to Description Documents
+    await project.goToProject();
+    await page.click('text="Description Documents"');
+
+    // Find and select the same file
+    await fileCell.waitFor({ state: "visible", timeout: 10000 });
+    const reloadedFileRow = page
+      .locator(".fileList .rt-tr", { hasText: docName })
+      .first();
+    await reloadedFileRow.dblclick();
+
+    // Navigate to the Access tab again
+    const reloadedAccessTab = page.locator('[data-testid="access-tab"]');
+    await expect(reloadedAccessTab).toBeVisible({ timeout: 10000 });
+
+    // Verify the access code is still displayed in the tab
+    await expect(reloadedAccessTab).toContainText(selectedAccessCode);
+    await reloadedAccessTab.click();
+
+    // Verify the access explanation field still has the value we set
+    const reloadedExplanationField = page.locator(
+      '[data-testid="field-accessDescription-edit"]'
+    );
+    await reloadedExplanationField.waitFor({ state: "visible", timeout: 10000 });
+    await expect(reloadedExplanationField).toHaveText(accessExplanationText);
+  });
 });

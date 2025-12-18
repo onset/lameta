@@ -1676,6 +1676,67 @@ export default class ImdiGenerator {
     }
   }
 
+  /**
+   * Outputs a multilingual text element for String_Type elements.
+   * For ELAR schema, outputs multiple elements with LanguageId attributes.
+   * For standard IMDI 3.0, outputs a single element with just the English value.
+   *
+   * @param elementName - The XML element name (e.g., "Title", "Description")
+   * @param englishValue - The English value
+   * @param translateFn - Function to translate the value to a specific language
+   */
+  private multilingualTextElement(
+    elementName: string,
+    englishValue: string,
+    translateFn: (value: string, lang: string) => string | undefined
+  ) {
+    if (!englishValue || englishValue.trim().length === 0) {
+      // Output empty element if value is empty
+      const newElement = this.tail.element(elementName, "");
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+      return;
+    }
+
+    // Check if we're using the ELAR extended schema which supports multilingual text
+    const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
+    const supportsMultilingual = imdiSchema === "IMDI_3.0_elar.xsd";
+
+    if (!supportsMultilingual) {
+      // Standard IMDI 3.0: output single element without LanguageId
+      const newElement = this.tail.element(elementName, englishValue);
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+      return;
+    }
+
+    // ELAR schema: output multiple elements with LanguageId attributes
+    const metadataSlots = Project.getMetadataLanguageSlots();
+    let outputCount = 0;
+
+    for (const slot of metadataSlots) {
+      const translation = translateFn(englishValue, slot.tag);
+      if (translation) {
+        const newElement = this.tail.element(elementName, translation);
+        // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
+        const iso639_3 = staticLanguageFinder
+          ? staticLanguageFinder.getIso639_3Code(slot.tag)
+          : slot.tag;
+        newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
+        this.mostRecentElement = newElement;
+        this.tail = newElement.up();
+        outputCount++;
+      }
+    }
+
+    // If no translations were output, fall back to English
+    if (outputCount === 0) {
+      const newElement = this.tail.element(elementName, englishValue);
+      this.mostRecentElement = newElement;
+      this.tail = newElement.up();
+    }
+  }
+
   private startXmlRoot(typeAttribute: string): XmlBuilder.XMLElementOrXMLNode {
     //in OPEX mode, we wrap the whole thing in a <opex:OPEXMetadata><opex:DescriptiveMetadata>
     if (this.mode === IMDIMode.OPEX) {
@@ -1727,7 +1788,9 @@ export default class ImdiGenerator {
     name: string,
     folder: Folder,
     genre: string = "Collection description",
-    omitNamespaces?: boolean
+    omitNamespaces?: boolean,
+    title?: string,
+    description?: string
   ) {
     if (omitNamespaces) {
       this.omitNamespaces = omitNamespaces;
@@ -1737,7 +1800,24 @@ export default class ImdiGenerator {
 
     this.startGroup("Session");
     this.element("Name", name);
-    this.element("Title", name);
+    // Title - use multilingual version if provided, otherwise use name
+    if (title) {
+      this.multilingualTextElement(
+        "Title",
+        title,
+        this.vocabularyTranslator.getExportStringTranslator()
+      );
+    } else {
+      this.element("Title", name);
+    }
+    // Description - use multilingual version if provided
+    if (description) {
+      this.multilingualTextElement(
+        "Description",
+        description,
+        this.vocabularyTranslator.getExportStringTranslator()
+      );
+    }
     this.element("Date", this.nowDate());
     this.startGroup("MDGroup");
     this.addProjectInfo();
