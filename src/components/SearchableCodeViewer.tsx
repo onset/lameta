@@ -235,7 +235,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
   // Custom style for syntax highlighter - lameta theme
   // lameta_orange (#e69664) for XML elements/tags
   // lameta_green (#cff09f) for attributes
-  // lameta_blue (#becde4) for links
+  // lameta_blue (#becde4) for attribute values and links
   // white for text content
   const syntaxStyle: { [key: string]: React.CSSProperties } = {
     hljs: {
@@ -248,7 +248,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
     "hljs-tag": { color: "#e69664" }, // lameta_orange
     "hljs-name": { color: "#e69664" }, // lameta_orange
     "hljs-attr": { color: "#cff09f" }, // lameta_green
-    "hljs-string": { color: "white" },
+    "hljs-string": { color: "#becde4" }, // lameta_blue - attribute values
     "hljs-number": { color: "#becde4" }, // lameta_blue
     "hljs-literal": { color: "#becde4" }, // lameta_blue
     "hljs-keyword": { color: "#e69664" }, // lameta_orange

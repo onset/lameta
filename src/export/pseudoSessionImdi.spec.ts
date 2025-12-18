@@ -78,6 +78,67 @@ describe("Pseudo-session IMDI for project documents", () => {
 
       expect("//Session/MDGroup/Content/Genre").toMatch("Custom Genre");
     });
+
+    it("should output multilingual genre with LanguageId when using ELAR schema", () => {
+      // Set up ELAR schema which supports multilingual vocabulary
+      SetOtherConfigurationSettings({
+        ...GetOtherConfigurationSettings(),
+        imdiSchema: "IMDI_3.0_elar.xsd"
+      });
+      // Set up multiple metadata languages
+      project.properties.setText("metadataLanguages", "en:English;es:Spanish");
+
+      const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
+        project.descriptionFolder,
+        project
+      );
+      const xml = generator.makePseudoSessionImdiForOtherFolder(
+        "DescriptionDocuments",
+        project.descriptionFolder,
+        "Collection description",
+        true // omitNamespaces for testing
+      );
+      setResultXml(xml);
+
+      // Should have Genre elements with LanguageId attributes for each metadata language
+      expect(count("//Session/MDGroup/Content/Genre")).toBeGreaterThanOrEqual(
+        1
+      );
+      // At minimum, English should be present
+      expect(
+        "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
+      ).toMatch("Collection description");
+    });
+
+    it("should output only one Genre element without LanguageId for standard IMDI 3.0 schema", () => {
+      // Use standard IMDI schema (not ELAR)
+      SetOtherConfigurationSettings({
+        ...GetOtherConfigurationSettings(),
+        imdiSchema: "IMDI_3.0.xsd"
+      });
+
+      const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
+        project.descriptionFolder,
+        project
+      );
+      const xml = generator.makePseudoSessionImdiForOtherFolder(
+        "DescriptionDocuments",
+        project.descriptionFolder,
+        "Collection description",
+        true // omitNamespaces for testing
+      );
+      setResultXml(xml);
+
+      // Should have exactly one Genre element
+      expect(count("//Session/MDGroup/Content/Genre")).toBe(1);
+      expect("//Session/MDGroup/Content/Genre").toMatch(
+        "Collection description"
+      );
+      // Should NOT have LanguageId attribute
+      expect(count("//Session/MDGroup/Content/Genre[@LanguageId]")).toBe(0);
+    });
   });
 
   describe("Project details", () => {

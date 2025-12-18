@@ -5,8 +5,6 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
-import { log } from "util";
-import { sentryBreadCrumb } from "../other/errorHandling";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
@@ -409,18 +407,19 @@ export default class ImdiBundler {
   }
 
   /**
-   * Generate export data for consent bundle
+   * Creates and populates a dummy session for the consent bundle.
+   * This is the shared logic used by both export and preview.
+   * Returns the session, temp directory, and the original consent files.
    */
-  private static async generateConsentBundleData(
+  public static createConsentBundleSession(
     project: Project,
-    rootDirectory: string,
-    secondLevel: string,
-    imdiMode: IMDIMode,
-    copyInProjectFiles: boolean,
-    sessionFilter: (f: Folder) => boolean,
-    omitNamespaces?: boolean
-  ): Promise<ExportSessionData | null> {
-    const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
+    sessionFilter: (f: Folder) => boolean = () => true
+  ): {
+    session: Session;
+    tempDir: string;
+    originalConsentFiles: File[];
+    hasConsentFiles: boolean;
+  } {
     const dir = temp.mkdirSync("imdiConsentBundle");
 
     const dummySession = Session.fromDirectory(
@@ -441,7 +440,7 @@ export default class ImdiBundler {
     );
     dummySession.properties.setText(
       "description",
-      `This bundle contains media demonstrating informed consent for sessions in this bundle.`
+      `This bundle contains media demonstrating informed consent for sessions in this collection.`
     );
     dummySession.properties.setText("genre", "Consent");
 
@@ -453,20 +452,61 @@ export default class ImdiBundler {
       dummySession.properties.setText("accessDescription", "Consent documents");
     }
 
-    // Collect consent files and contributions
-    const filesToCopy: FileCopyRequest[] = [];
-    const destinationFolderPath = Path.join(
-      rootDirectory,
-      secondLevel,
-      "ConsentDocuments"
-    );
-
-    // addDummyFileForConsentActors returns the original consent files (for use in file copying)
     const originalConsentFiles = ImdiBundler.addDummyFileForConsentActors(
       project,
       sessionFilter,
       dummySession,
       dir
+    );
+
+    const hasConsentFiles = dummySession.files.some(
+      (f) => !f.pathInFolderToLinkFileOrLocalCopy.endsWith(".skip")
+    );
+
+    return {
+      session: dummySession,
+      tempDir: dir,
+      originalConsentFiles,
+      hasConsentFiles
+    };
+  }
+
+  /**
+   * Cleans up a temp directory created by createConsentBundleSession.
+   */
+  public static cleanupConsentBundleTempDir(dir: string): void {
+    fs.emptyDir(dir);
+    fs.remove(dir);
+  }
+
+  /**
+   * Generate export data for consent bundle
+   */
+  private static async generateConsentBundleData(
+    project: Project,
+    rootDirectory: string,
+    secondLevel: string,
+    imdiMode: IMDIMode,
+    copyInProjectFiles: boolean,
+    sessionFilter: (f: Folder) => boolean,
+    omitNamespaces?: boolean
+  ): Promise<ExportSessionData | null> {
+    const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
+
+    // Use the shared helper to create the consent session
+    const {
+      session: dummySession,
+      tempDir: dir,
+      originalConsentFiles,
+      hasConsentFiles
+    } = ImdiBundler.createConsentBundleSession(project, sessionFilter);
+
+    // Collect file copy requests
+    const filesToCopy: FileCopyRequest[] = [];
+    const destinationFolderPath = Path.join(
+      rootDirectory,
+      secondLevel,
+      "ConsentDocuments"
     );
 
     // Build filesToCopy from the ORIGINAL consent files (not the temp copies)
@@ -490,15 +530,9 @@ export default class ImdiBundler {
       });
     }
 
-    // Check if we have any actual consent content
-    const hasConsentContent = dummySession.files.some(
-      (f) => !f.pathInFolderToLinkFileOrLocalCopy.endsWith(".skip")
-    );
-
-    if (!hasConsentContent && filesToCopy.length === 0) {
+    if (!hasConsentFiles && filesToCopy.length === 0) {
       // Clean up and return null if no consent files
-      fs.emptyDir(dir);
-      fs.remove(dir);
+      ImdiBundler.cleanupConsentBundleTempDir(dir);
       return null;
     }
 
@@ -529,8 +563,7 @@ export default class ImdiBundler {
     }
 
     // Clean up temp directory
-    fs.emptyDir(dir);
-    fs.remove(dir);
+    ImdiBundler.cleanupConsentBundleTempDir(dir);
 
     return {
       sessionId: "ConsentDocuments",
@@ -542,129 +575,10 @@ export default class ImdiBundler {
     };
   }
 
-  private static copyFolderOfFiles(files: File[], targetDirectory: string) {
-    fs.ensureDirSync(Path.join(targetDirectory));
-    let errors = "";
-    let count = 0;
-    let failed = 0;
-    files.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-        count++;
-        try {
-          CopyManager.safeAsyncCopyFileWithErrorNotification(
-            f.getActualFilePath(),
-            Path.join(
-              targetDirectory,
-              // TODO: should use the local file name minus the ".link" part, so
-              // that renames that change the link name are used.
-              sanitizeForArchive(
-                f.getNameToUseWhenExportingUsingTheActualFile(),
-                "ASCII"
-              )
-            ),
-            (progressMessage) => {}
-          );
-        } catch (error) {
-          errors =
-            errors +
-            `Problem copying ${f.getNameToUseWhenExportingUsingTheActualFile()}+\r\n`;
-          log(error);
-          failed++;
-        }
-      }
-    });
-
-    if (errors.length > 0) {
-      alert(`Failed to copy ${failed} of ${count} files\r\n${errors}`);
-    }
-  }
-
-  // IMDI doesn't have a place for project-level documents, so we have to create this
-  // dummy Session to contain them.
-  private static outputDocumentFolder(
-    project: Project,
-    name: string,
-    imdiFileName: string,
-    rootDirectory: string,
-    secondLevel: string,
-    folder: Folder,
-    subpaths: string[],
-    mode: IMDIMode,
-    copyInProjectFiles: boolean
-  ): void {
-    if (folder.files.length > 0) {
-      const generator = new ImdiGenerator(mode, folder, project);
-      const projectDocumentsImdi =
-        generator.makePseudoSessionImdiForOtherFolder(name, folder);
-
-      ImdiBundler.WritePseudoSession(
-        mode,
-        rootDirectory,
-        secondLevel,
-        imdiFileName,
-        projectDocumentsImdi,
-        subpaths,
-
-        copyInProjectFiles,
-        folder
-      );
-    }
-  }
-
-  // This is called 3 times, to create folders and imdi files: one for project description documents,
-  // other project documents, and a collection of all the consent files we find
-  private static WritePseudoSession(
-    imdiMode: IMDIMode,
-    rootDirectory: string,
-    secondLevel: string,
-    imdiFileName: string,
-    imdiXml: string,
-    subpaths: string[],
-
-    copyInProjectFiles: boolean,
-    folder: Folder
-  ) {
-    const destinationFolderPath = Path.join(
-      rootDirectory,
-      secondLevel,
-      Path.basename(
-        imdiFileName,
-        imdiMode === IMDIMode.OPEX
-          ? ".opex"
-          : ".imdi" /* tells basename to strip this off*/
-      )
-    );
-    const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
-    if (imdiMode === IMDIMode.OPEX) {
-      // only in OPEX mode do we create the folder itself
-      fs.ensureDirSync(destinationFolderPath);
-    } else {
-      // in IMDI mode, we create the folder for the imdi file only
-      fs.ensureDirSync(imdiOnlyFolderPath);
-    }
-
-    //else fs.ensureDirSync(Path.basename(destinationFolderPath));
-    const directoryForMetadataXmlFile =
-      imdiMode === IMDIMode.OPEX
-        ? destinationFolderPath // in there with the files it describes
-        : imdiOnlyFolderPath; // one level above the files it describes
-
-    fs.writeFileSync(
-      Path.join(
-        directoryForMetadataXmlFile,
-        sanitizeForArchive(imdiFileName, "ASCII")
-      ),
-      imdiXml
-    );
-    subpaths.push(secondLevel + "/" + imdiFileName);
-
-    if (copyInProjectFiles) {
-      this.copyFolderOfFiles(folder.files, destinationFolderPath);
-    }
-  }
-
   // IMDI doesn't have a place for consent files, so we have to create this
   // dummy Session to contain them.
+  // Note: This is a legacy method kept for backward compatibility with tests.
+  // It delegates to generateConsentBundleData() and then writes the files.
   public static async addConsentBundle(
     project: Project,
     rootDirectory: string,
@@ -677,92 +591,53 @@ export default class ImdiBundler {
     sessionFilter: (f: Folder) => boolean,
     omitNamespaces?: boolean
   ) {
-    const dir = temp.mkdirSync("imdiConsentBundle");
-
-    // complex: for each session, find each involved person, copy in their
-    //   consent. (note, we do go through all these people below, in
-    //   addDummyFileForConsentActors)
-
-    // simpler: for each person, for each document, if it is marked as consent,
-    //   copy it in for now, we're simply finding all files with the right
-    //   pattern and copying them in, whereever they are.
-
-    // TODO: this doesn't take the folderFilter into consideration. Can we do it in addDummyFileForConsentActors() where
-    // we are already doing that filtering?
-    // const filePaths = glob.sync(Path.join(project.directory, "**/*_Consent.*"));
-
-    // filePaths.forEach((path) => {
-    //   const dest = Path.join(dir, Path.basename(path));
-    //   // this should be rare, but someone might place a consent file with the name in more than one place in the project
-    //   // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
-    //   if (!fs.existsSync(dest)) {
-    //     fs.copyFileSync(path, dest);
-    //   }
-    // });
-
-    const dummySession = Session.fromDirectory(
-      dir,
-      new EncounteredVocabularyRegistry()
-    );
-
-    dummySession.properties.setText(
-      "date",
-      moment(new Date()).format("YYYY-MM-DD") // date is the date exported, i.e., today
-    );
-    dummySession.properties.setText("id", "ConsentDocuments");
-    dummySession.properties.setText(
-      "title",
-      `Documentation of consent for the contributors to the ${project.properties.getTextStringOrEmpty(
-        "title"
-      )}`
-    );
-    dummySession.properties.setText(
-      "description",
-      `This bundle contains media demonstrating informed consent for sessions in this bundle.`
-    );
-    dummySession.properties.setText("genre", "Consent"); // per Notion #241
-
-    // We could eventually gain knowledge of what other archives
-    // would want, but for now we just know tha ELAR wants this on consent bundles.
-    if (
-      project.properties.getTextStringOrEmpty("archiveConfigurationName") ===
-      "ELAR"
-    ) {
-      dummySession.properties.setText("access", "S");
-      dummySession.properties.setText("accessDescription", "Consent documents"); // per Notion #241
-    }
-
-    ImdiBundler.addDummyFileForConsentActors(
+    const consentData = await this.generateConsentBundleData(
       project,
-      sessionFilter,
-      dummySession,
-      dir
-    );
-
-    const imdiXml = ImdiGenerator.generateSession(
+      rootDirectory,
+      secondLevel,
       imdiMode,
-      dummySession,
-      project,
+      copyInProjectFiles,
+      sessionFilter,
       omitNamespaces
     );
 
-    await validateImdiOrThrow(imdiXml, dummySession.displayName);
-    //const imdiFileName = `${dummySession.filePrefix}.imdi`;
+    if (!consentData) {
+      // No consent files to export
+      return;
+    }
 
-    ImdiBundler.WritePseudoSession(
-      imdiMode,
-      rootDirectory,
-      secondLevel,
-      "ConsentDocuments" + (imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi"),
-      imdiXml,
-      subpaths,
-
-      copyInProjectFiles,
-      dummySession
+    // Update subpaths for the caller
+    const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
+    subpaths.push(
+      (secondLevel ? secondLevel + "/" : "") +
+        "ConsentDocuments" +
+        extensionWithDot
     );
-    // we're done with this dummy directory now
-    fs.emptyDir(dir);
-    fs.remove(dir);
+
+    // Create directories
+    for (const dir of consentData.directoriesToCreate) {
+      fs.ensureDirSync(dir);
+    }
+
+    // Write IMDI XML
+    fs.writeFileSync(consentData.imdiPath, consentData.imdiXml);
+
+    // Copy files if requested
+    if (copyInProjectFiles && consentData.filesToCopy.length > 0) {
+      for (const copyReq of consentData.filesToCopy) {
+        try {
+          CopyManager.safeAsyncCopyFileWithErrorNotification(
+            copyReq.source,
+            copyReq.destination,
+            () => {}
+          );
+        } catch (error) {
+          console.error(
+            `Problem copying ${Path.basename(copyReq.source)}: ${error}`
+          );
+        }
+      }
+    }
   }
 
   // We need to have all the consenting people described in the <Actors> portion of the IMDI.

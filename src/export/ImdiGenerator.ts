@@ -1762,19 +1762,18 @@ export default class ImdiGenerator {
     this.addMetadataLanguageKeys();
 
     this.group("Content", () => {
-      this.element(
+      // Genre is a multilingual vocabulary field for ELAR schema
+      this.multilingualVocabularyElement(
         "Genre",
         genre,
-        false,
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-        VocabularyType.OpenVocabulary
+        this.vocabularyTranslator.getGenreTranslator()
       );
-      this.element(
+      this.multilingualVocabularyElement(
         "SubGenre",
         "",
-        false,
         "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-        VocabularyType.OpenVocabulary
+        this.vocabularyTranslator.getGenreTranslator()
       );
       this.element(
         "Task",

@@ -9,7 +9,7 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
-import { ImdiView } from "../ImdiView";
+import { ProjectImdiView } from "./ProjectImdiView";
 import "./ProjectTab.css";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
@@ -297,11 +297,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         </TabPanel>
         {GetOtherConfigurationSettings().archiveUsesImdi ? (
           <TabPanel>
-            <ImdiView
-              target={props.project}
-              project={props.project}
-              folder={props.project}
-            />
+            <ProjectImdiView project={props.project} />
           </TabPanel>
         ) : (
           <></>

@@ -116,11 +116,6 @@ export const ImdiView: React.FunctionComponent<{
           <br />
         </>
       )}
-      {validationResult?.valid && (
-        <Alert severity="success">
-          <Trans>This XML conforms to the IMDI schema.</Trans> ({schemaName})
-        </Alert>
-      )}
       {validationResult && !validationResult.valid && (
         <Alert severity="error">
           <div
@@ -151,6 +146,28 @@ export const ImdiView: React.FunctionComponent<{
         content={imdi}
         language="xml"
         autoFocusSearch={true}
+        headerContent={
+          validationResult?.valid && (
+            <Alert
+              severity="success"
+              css={css`
+                padding: 0 8px;
+                background-color: transparent;
+                color: inherit;
+                .MuiAlert-icon {
+                  padding: 0;
+                  margin-right: 6px;
+                }
+                .MuiAlert-message {
+                  padding: 0;
+                }
+              `}
+            >
+              <Trans>This XML conforms to the IMDI schema.</Trans> ({schemaName}
+              )
+            </Alert>
+          )
+        }
       />
     </div>
   );
