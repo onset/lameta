@@ -86,6 +86,8 @@ export const TextFieldEdit: React.FunctionComponent<
           flex-grow: 1;
           // we have one or more children that will scroll as needed
           overflow-y: hidden;
+          display: flex;
+          flex-direction: column;
         `}
       >
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
@@ -105,7 +107,7 @@ export const TextFieldEdit: React.FunctionComponent<
             border: ${props.borderless ? "none !important" : ""};
             position: relative;
             ${props.field.definition.multipleLines
-              ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
+              ? `min-height: 4em; display: flex; flex-direction: column; flex-grow: 1;
                  ${showMultilingualUI ? "overflow-y: auto;" : ""}`
               : showMultilingualUI
               ? "overflow-y: auto;"
@@ -357,6 +359,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         flex-direction: row;
         min-height: ${props.languageSlot ? "auto" : "1.2em"};
         flex-shrink: 0; /* prevent individual fields from shrinking */
+        flex-grow: ${props.field.definition.multipleLines && !props.languageSlot ? 1 : 0}; /* for multiline monolingual fields like notes, fill available space */
         padding-top: ${props.languageSlot ? "2px" : "2px"};
         padding-right: 2px; /* buttons are now inline flex items */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};
