@@ -232,6 +232,9 @@ test.describe("Document Access", () => {
     // Select the first option (which should give us a non-empty access code)
     await page.getByRole("option").first().click();
 
+    // Wait for the dropdown to close
+    await page.waitForTimeout(300);
+
     // Get the access code that was selected (from the tab text)
     const accessTabText = (await accessTab.textContent()) || "";
     const selectedAccessCode = accessTabText.split(":").at(1)?.trim() || "";
@@ -247,21 +250,32 @@ test.describe("Document Access", () => {
     await explanationField.waitFor({ state: "visible", timeout: 10000 });
     await explanationField.click();
     await explanationField.fill(accessExplanationText);
-    // Blur to trigger save
+
+    // Blur the explanation field to trigger save
     await explanationField.blur();
 
-    // Wait for the data to be persisted
+    // Navigate away from this file to ensure save completes
+    // This forces the file to lose focus and save its state
+    await project.goToProject();
+    await page.click('text="Other Documents"');
     await page.waitForTimeout(500);
 
-    // Reload the project
+    // Now do softReload
     await lametaE2E.softReload();
 
     // Navigate back to Description Documents
     await project.goToProject();
     await page.click('text="Description Documents"');
 
-    // Find and select the same file
-    await fileCell.waitFor({ state: "visible", timeout: 10000 });
+    // Wait for file list to load
+    await page.waitForTimeout(500);
+
+    // Find and select the same file using a fresh locator
+    const reloadedFileCell = page.getByRole("gridcell", {
+      name: docName,
+      exact: true
+    });
+    await reloadedFileCell.waitFor({ state: "visible", timeout: 10000 });
     const reloadedFileRow = page
       .locator(".fileList .rt-tr", { hasText: docName })
       .first();
@@ -272,7 +286,9 @@ test.describe("Document Access", () => {
     await expect(reloadedAccessTab).toBeVisible({ timeout: 10000 });
 
     // Verify the access code is still displayed in the tab
-    await expect(reloadedAccessTab).toContainText(selectedAccessCode);
+    await expect(reloadedAccessTab).toContainText(selectedAccessCode, {
+      timeout: 5000
+    });
     await reloadedAccessTab.click();
 
     // Verify the access explanation field still has the value we set

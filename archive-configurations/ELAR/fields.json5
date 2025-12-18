@@ -69,6 +69,11 @@
   ],
   projectDocuments: [
     {
+      key: "access",
+      englishLabel: "Access",
+      type: "Text"
+    },
+    {
       key: "accessDescription",
       multilingual: true
     },

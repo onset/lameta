@@ -255,8 +255,9 @@ test.describe("Hybrid Export Progress UI", () => {
     await lameta.clickMenu("File", "Export Project...");
     await expect(page.locator("text=Export Project")).toBeVisible();
 
-    // 2. Select IMDI format using radio button
+    // 2. Select IMDI format using radio button - wait for dialog to be fully loaded
     const imdiRadio = page.locator('input[type="radio"][value="imdi"]');
+    await imdiRadio.waitFor({ state: "visible", timeout: 10000 });
     await imdiRadio.check();
 
     // 3. Set up export directory mock (uses showSaveDialog)

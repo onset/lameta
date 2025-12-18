@@ -1105,6 +1105,13 @@ export class Project extends Folder {
     for (const f of this.persons.items) {
       if (!f.beingDeleted) f.saveAllFilesInFolder(false);
     }
+    // Save project documents (Description Documents and Other Documents)
+    if (this.descriptionFolder) {
+      this.descriptionFolder.saveAllFilesInFolder(false);
+    }
+    if (this.otherDocsFolder) {
+      this.otherDocsFolder.saveAllFilesInFolder(false);
+    }
   }
 
   public haveSelectedSession(): boolean {

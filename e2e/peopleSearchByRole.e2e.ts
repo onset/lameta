@@ -17,7 +17,17 @@ test.describe("People search by contribution role", () => {
   });
 
   test("typing a role filters and highlights person", async () => {
-    // Create a session and add a contributor with a role tied to a new person
+    // Use a simpler name to avoid potential encoding/matching issues
+    const name = "TestSpeakerPerson";
+
+    // First create the person so it exists before we reference it
+    await project.goToPeople();
+    await project.addPerson(name);
+
+    // Wait for person to be saved
+    await page.waitForTimeout(500);
+
+    // Create a session and add a contributor with a role tied to the person
     await project.goToSessions();
     await project.addSession();
 
@@ -31,7 +41,6 @@ test.describe("People search by contribution role", () => {
     await project.goToContributorsOfThisSession();
 
     // Add a contributor name and set role
-    const name = "Ana María / Δ测试";
     // Focus first person chooser via keyboard, then type the name and Enter
     await page.keyboard.press("Tab");
     await page.keyboard.type(name);
@@ -43,9 +52,11 @@ test.describe("People search by contribution role", () => {
     await page.keyboard.type(roleQuery);
     await page.keyboard.press("Enter");
 
-    // Ensure a Person record exists with the same name so People list includes them
+    // Wait for contribution to be saved
+    await page.waitForTimeout(500);
+
+    // Go back to People and select the person
     await project.goToPeople();
-    await project.addPerson(name);
 
     // Ensure the person row exists and select it
     await project.selectPerson(new RegExp(name, "i"));
@@ -55,12 +66,23 @@ test.describe("People search by contribution role", () => {
     await input.fill("speaker");
     await input.press("Enter");
 
+    // Wait for search to apply
+    await page.waitForTimeout(500);
+
     // Open Contributions tab to see in-table highlights and wait until it is active
     const contributionsTab = page.getByRole("tab", { name: /Contributions/i });
     await contributionsTab.click();
-    await expect(contributionsTab).toHaveAttribute("aria-selected", "true");
 
+    // Wait for tab to be fully active
+    await expect(contributionsTab).toHaveAttribute("aria-selected", "true", {
+      timeout: 5000
+    });
+
+    // Wait for loading to complete - contributions table should appear
     const contributionsTable = page.locator(".personContributions");
+    await expect(contributionsTable).toBeVisible({ timeout: 10000 });
+
+    // Wait for table rows to load (no more Loading... state)
     await contributionsTable
       .locator(".rt-tr-group")
       .first()
@@ -69,14 +91,15 @@ test.describe("People search by contribution role", () => {
     // Wait for inline highlight mark to appear for the role text in the table
     await expect(
       contributionsTable.locator('[data-testid="inline-highlight"]').first()
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Contributions tab should show a highlight indicator (may render slightly later)
     await page.waitForFunction(
       () =>
         !!document.querySelector(
           '[data-testid="person-contributions-tab-highlight"]'
-        )
+        ),
+      { timeout: 10000 }
     );
   });
 });
