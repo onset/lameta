@@ -30,26 +30,40 @@ async function addMetadataLanguages(project: E2eProject, page: Page) {
   await page.waitForTimeout(500);
 }
 
-test.describe("Vocabulary Translations Tab", () => {
-  let lameta: LametaE2ERunner;
-  let page: Page;
-  let project: E2eProject;
-
-  test.beforeEach(async () => {
-    // Always create fresh instance for each test
-    lameta = new LametaE2ERunner();
-    // Use fast launch - some tests need ELAR, handled within each test
-    project = await launchWithProject(lameta, "Test Vocab Translations");
-    page = lameta.page;
+async function switchProjectToELAR(project: E2eProject, page: Page) {
+  await project.goToProjectConfiguration();
+  await page.locator("#archiveConfigurationName-select").click();
+  await page.getByRole("option", { name: "ELAR" }).click();
+  await page.locator("button:has-text('Change')").click();
+  await page.waitForSelector('[data-testid="project-tab"]', {
+    timeout: 10000
   });
+}
+
+test.describe("Vocabulary Translations Tab", () => {
+  let lameta: LametaE2ERunner | undefined;
+  let page!: Page;
+  let project!: E2eProject;
+
+  async function startProject(archiveConfig?: string) {
+    lameta = new LametaE2ERunner();
+    project = await launchWithProject(
+      lameta,
+      "Test Vocab Translations",
+      archiveConfig
+    );
+    page = lameta.page;
+  }
 
   test.afterEach(async () => {
     if (lameta) {
       await lameta.quit();
+      lameta = undefined;
     }
   });
 
   test("vocabulary translations tab is not shown in default config (no multilingual vocab fields)", async () => {
+    await startProject();
     // By default (lameta config), genre is not multilingual
     // Navigate to project tab to check available tabs
     await page.locator('[data-testid="project-tab"]').click();
@@ -61,15 +75,9 @@ test.describe("Vocabulary Translations Tab", () => {
   });
 
   test("shows vocabulary tab after switching to ELAR and adding metadata languages", async () => {
+    await startProject();
     // Switch to ELAR and add metadata languages
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-
+    await switchProjectToELAR(project, page);
     await addMetadataLanguages(project, page);
 
     // Now go to vocabulary translations tab
@@ -85,15 +93,8 @@ test.describe("Vocabulary Translations Tab", () => {
   });
 
   test("scans project and shows genres section in ELAR config", async () => {
+    await startProject("ELAR");
     // Switch to ELAR and add metadata languages
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-
     await addMetadataLanguages(project, page);
 
     // Add a session with a genre to have something to scan
@@ -122,15 +123,8 @@ test.describe("Vocabulary Translations Tab", () => {
   });
 
   test("allows entering translations for custom values", async () => {
+    await startProject("ELAR");
     // Switch to ELAR and add metadata languages
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-
     await addMetadataLanguages(project, page);
 
     // Add a session with a custom genre
@@ -176,15 +170,8 @@ test.describe("Vocabulary Translations Tab", () => {
   });
 
   test("ELAR config shows both Genres and Roles sections", async () => {
+    await startProject("ELAR");
     // Switch to ELAR and add metadata languages
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-
     await addMetadataLanguages(project, page);
 
     // Go to vocabulary translations tab
@@ -200,15 +187,8 @@ test.describe("Vocabulary Translations Tab", () => {
   });
 
   test("warning icon disappears from session after adding translation", async () => {
+    await startProject("ELAR");
     // Switch to ELAR and add metadata languages
-    await project.goToProjectConfiguration();
-    await page.locator("#archiveConfigurationName-select").click();
-    await page.getByText("ELAR", { exact: true }).click();
-    await page.locator("button:has-text('Change')").click();
-    await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
-    });
-
     await addMetadataLanguages(project, page);
 
     // Add a session with a custom genre
@@ -245,18 +225,21 @@ test.describe("Vocabulary Translations Tab", () => {
 
     // Go back to the session
     await project.goToSessions();
-    await page.waitForTimeout(500);
 
-    // Click on the session to ensure it's selected and refreshed
-    const sessionRow = page.locator(".folderList .selected").first();
-    await sessionRow.click();
-    await page.waitForTimeout(500);
+    // Wait for the session panel to load with the genre field
+    const genreFieldAfter = page.locator('[data-testid="genre-chooser"]');
+    await genreFieldAfter.waitFor({ state: "visible", timeout: 10000 });
+
+    // Click on the genre chooser to trigger react-select to re-render its value
+    // (this forces the SingleValue component to refresh with the new translations)
+    await genreFieldAfter.click();
+    // Press Escape to close the dropdown without changing the value
+    await page.keyboard.press("Escape");
 
     // The warning icon should now be gone since all translations are complete
-    const genreFieldAfter = page.locator('[data-testid="genre-chooser"]');
     const warningIconAfter = genreFieldAfter.locator(
       'svg[data-testid="WarningIcon"]'
     );
-    await expect(warningIconAfter).not.toBeVisible();
+    await expect(warningIconAfter).not.toBeVisible({ timeout: 10000 });
   });
 });

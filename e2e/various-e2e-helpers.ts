@@ -223,8 +223,11 @@ import { LaunchOptions } from "./lametaE2ERunner";
  * Launch lameta with fast project creation, bypassing registration and start screen UI.
  * This significantly speeds up E2E tests by creating the project directly.
  *
+ * Note: A unique timestamp suffix is automatically added to the project name to prevent
+ * collisions when tests run sequentially or in parallel within the same E2ERoot.
+ *
  * @param lameta - The LametaE2ERunner instance
- * @param projectName - Name for the auto-created project
+ * @param projectName - Base name for the auto-created project (will have unique suffix added)
  * @param archiveConfig - Optional archive configuration (e.g., "ELAR", "PARADISEC")
  * @returns An E2eProject instance ready for testing
  *
@@ -242,7 +245,9 @@ export async function launchWithProject(
   projectName: string,
   archiveConfig?: string
 ): Promise<E2eProject> {
-  await lameta.launch({ projectName, archiveConfig });
+  // Add unique suffix to prevent project collisions between tests
+  const uniqueProjectName = `${projectName} ${Date.now()}`;
+  await lameta.launch({ projectName: uniqueProjectName, archiveConfig });
 
   // Wait for the workspace UI to be ready
   await lameta.page

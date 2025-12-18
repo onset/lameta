@@ -55,11 +55,21 @@ test.describe("People search by contribution role", () => {
     await input.fill("speaker");
     await input.press("Enter");
 
-    // Open Contributions tab to see in-table highlights
-    await page.getByRole("tab", { name: /Contributions/i }).click();
+    // Open Contributions tab to see in-table highlights and wait until it is active
+    const contributionsTab = page.getByRole("tab", { name: /Contributions/i });
+    await contributionsTab.click();
+    await expect(contributionsTab).toHaveAttribute("aria-selected", "true");
+
+    const contributionsTable = page.locator(".personContributions");
+    await contributionsTable
+      .locator(".rt-tr-group")
+      .first()
+      .waitFor({ state: "visible", timeout: 10000 });
 
     // Wait for inline highlight mark to appear for the role text in the table
-    await expect(page.getByTestId("inline-highlight").first()).toBeVisible();
+    await expect(
+      contributionsTable.locator('[data-testid="inline-highlight"]').first()
+    ).toBeVisible();
 
     // Contributions tab should show a highlight indicator (may render slightly later)
     await page.waitForFunction(
