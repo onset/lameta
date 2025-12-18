@@ -4,7 +4,8 @@ import {
   isBuiltInRole,
   scanProjectForVocabulary,
   updateTranslationsFromScan,
-  HARDCODED_EXPORT_GENRES
+  HARDCODED_EXPORT_GENRES,
+  HARDCODED_EXPORT_ROLES
 } from "./VocabularyScanner";
 import { VocabularyTranslations } from "./VocabularyTranslations";
 import * as fs from "fs-extra";
@@ -27,6 +28,19 @@ describe("VocabularyScanner", () => {
       // All hardcoded export genres should exist in genres.json
       for (const genre of HARDCODED_EXPORT_GENRES) {
         expect(isBuiltInGenre(genre)).toBe(true);
+      }
+    });
+  });
+
+  describe("HARDCODED_EXPORT_ROLES", () => {
+    it("should include 'Researcher' for project document bundle exports", () => {
+      expect(HARDCODED_EXPORT_ROLES).toContain("Researcher");
+    });
+
+    it("should only contain roles that are built-in", () => {
+      // All hardcoded export roles should exist in OLAC roles
+      for (const role of HARDCODED_EXPORT_ROLES) {
+        expect(isBuiltInRole(role)).toBe(true);
       }
     });
   });

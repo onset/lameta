@@ -762,7 +762,8 @@
       englishLabel: "Access Explanation",
       description: "If the access is not open/free, use this to explain why.",
       type: "Text"
-    }
+    },
+    { key: "genre", multingual: false }
   ]
   // an idea, I don't know if it's worth it:
   // migrations:[

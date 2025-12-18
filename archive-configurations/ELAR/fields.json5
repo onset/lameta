@@ -71,6 +71,7 @@
     {
       key: "accessDescription",
       multilingual: true
-    }
+    },
+    { key: "genre", multilingual: true }
   ]
 }

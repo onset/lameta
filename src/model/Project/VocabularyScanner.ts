@@ -16,7 +16,10 @@ import { Session } from "./Session/Session";
 import { VocabularyTranslations } from "./VocabularyTranslations";
 import genresJSON from "./Session/genres.json";
 import { loadOLACRoles } from "./AuthorityLists/AuthorityLists";
-import { translateGenreToLanguage, translateRoleToLanguage } from "../../other/localization";
+import {
+  translateGenreToLanguage,
+  translateRoleToLanguage
+} from "../../other/localization";
 
 // Built-in genre IDs from genres.json
 const builtInGenreIds = new Set(genresJSON.map((g: any) => g.id.toLowerCase()));
@@ -31,6 +34,17 @@ const builtInGenreLabels = new Set(
  * create sessions with these genres.
  */
 export const HARDCODED_EXPORT_GENRES = ["Consent", "Collection description"];
+
+/**
+ * Roles that are hardcoded in export code (e.g., ImdiBundler).
+ * These need to always be included in vocabulary scanning so users
+ * can provide translations for them, even if they don't manually
+ * assign these roles to contributors.
+ *
+ * "Researcher" is used for the collection steward in project document bundles
+ * (OtherDocuments, DescriptionDocuments).
+ */
+export const HARDCODED_EXPORT_ROLES = ["Researcher"];
 
 /**
  * Check if a genre value is built-in (exists in genres.json).
@@ -187,9 +201,20 @@ export async function scanProjectForVocabulary(
 
   // Always include hardcoded export genres (e.g., "Consent" for consent bundles)
   // so users can provide translations for them even if they haven't manually
-  // created sessions with these genres
+  // created sessions with these genres. These are always added to ensure users
+  // can customize translations for their project's metadata languages.
   for (const genre of HARDCODED_EXPORT_GENRES) {
-    processGenreValue(genre, languageCodes, result);
+    // Always add hardcoded genres, bypassing the "missing translations" check
+    result.builtInGenresMissingTranslations.add(genre);
+  }
+
+  // Always include hardcoded export roles (e.g., "Researcher" for project document bundles)
+  // so users can provide translations for them even if they haven't manually
+  // assigned these roles to contributors. These are always added to ensure users
+  // can customize translations for their project's metadata languages.
+  for (const role of HARDCODED_EXPORT_ROLES) {
+    // Always add hardcoded roles, bypassing the "missing translations" check
+    result.builtInRolesMissingTranslations.add(role);
   }
 
   if (progressCallback) {
@@ -248,22 +273,42 @@ export function updateTranslationsFromScan(
 ): void {
   // Add custom genres
   for (const genre of scanResult.customGenres) {
-    translations.ensureGenreEntry(genre, "project", languageCodes);
+    translations.ensureGenreEntry(genre, "custom", languageCodes);
   }
 
   // Add built-in genres with missing translations
   for (const genre of scanResult.builtInGenresMissingTranslations) {
-    translations.ensureGenreEntry(genre, "builtin", languageCodes);
+    // Determine the correct source: factory-value-used-by-export or factory-value-used-in-sessions
+    const isHardcodedExport = HARDCODED_EXPORT_GENRES.some(
+      (g) => g.toLowerCase() === genre.toLowerCase()
+    );
+    translations.ensureGenreEntry(
+      genre,
+      isHardcodedExport
+        ? "factory-value-used-by-export"
+        : "factory-value-used-in-sessions",
+      languageCodes
+    );
   }
 
   // Add custom roles
   for (const role of scanResult.customRoles) {
-    translations.ensureRoleEntry(role, "project", languageCodes);
+    translations.ensureRoleEntry(role, "custom", languageCodes);
   }
 
   // Add built-in roles with missing translations
   for (const role of scanResult.builtInRolesMissingTranslations) {
-    translations.ensureRoleEntry(role, "builtin", languageCodes);
+    // Determine the correct source: factory-value-used-by-export or factory-value-used-in-sessions
+    const isHardcodedExport = HARDCODED_EXPORT_ROLES.some(
+      (r) => r.toLowerCase() === role.toLowerCase()
+    );
+    translations.ensureRoleEntry(
+      role,
+      isHardcodedExport
+        ? "factory-value-used-by-export"
+        : "factory-value-used-in-sessions",
+      languageCodes
+    );
   }
 
   // Save changes

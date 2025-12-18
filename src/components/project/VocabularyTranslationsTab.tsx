@@ -25,6 +25,7 @@ import {
 import LinearProgress from "@mui/material/LinearProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IcecreamIcon from "@mui/icons-material/Icecream";
+import BlenderIcon from "@mui/icons-material/Blender";
 import Tooltip from "@mui/material/Tooltip";
 import {
   getFieldDefinition,
@@ -50,7 +51,10 @@ interface VocabularyTranslationsTabProps {
 
 interface TranslationRowProps {
   value: string;
-  source: "project" | "builtin";
+  source:
+    | "custom"
+    | "factory-value-used-in-sessions"
+    | "factory-value-used-by-export";
   translations: Record<string, string>;
   languageCodes: string[];
   englishLabel: string;
@@ -123,8 +127,10 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   onTranslationChange,
   getBuiltInTranslation
 }) => {
-  // Custom values (source === "project") get an ice cream icon
-  const isCustomValue = source === "project";
+  // Custom values (source === "custom") get an ice cream icon
+  const isCustomValue = source === "custom";
+  // Hardcoded export values (source === "factory-value-used-by-export") get a blender icon
+  const isHardcodedExport = source === "factory-value-used-by-export";
 
   // Filter out English from the language codes for the translation columns
   // since English is already shown in the first column
@@ -161,6 +167,17 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
               <IcecreamIcon
                 css={css`
                   color: ${lameta_orange};
+                  font-size: 16px;
+                  cursor: help;
+                `}
+              />
+            </Tooltip>
+          )}
+          {isHardcodedExport && (
+            <Tooltip title={t`Used during IMDI export`} arrow>
+              <BlenderIcon
+                css={css`
+                  color: lightgray;
                   font-size: 16px;
                   cursor: help;
                 `}
