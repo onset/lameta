@@ -11,12 +11,13 @@ type FieldDefinitionCatalog = {
   project: FieldDefinition[];
   session: FieldDefinition[];
   person: FieldDefinition[];
+  projectDocuments: FieldDefinition[];
 };
 const catalogOfAllAvailableKnownFields: FieldDefinitionCatalog = JSON5.parse(
   jsonOfDefaultFieldConfig
 );
 // for each field definition, if does not explicity set multilingual, set it to false
-for (const area of ["common", "project", "session", "person"]) {
+for (const area of ["common", "project", "session", "person", "projectDocuments"]) {
   for (const field of catalogOfAllAvailableKnownFields[area]) {
     if (field.multilingual === undefined) {
       field.multilingual = false;
@@ -35,6 +36,13 @@ export function getCommonFieldDefinition(
   key: string
 ): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig.common.find(
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
+  );
+}
+export function getProjectDocumentFieldDefinition(
+  key: string
+): FieldDefinition | undefined {
+  return fieldDefinitionsOfCurrentConfig.projectDocuments.find(
     (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
   );
 }
@@ -339,9 +347,10 @@ export function computeMergedCatalog(
     common: [],
     project: [],
     session: [],
-    person: []
+    person: [],
+    projectDocuments: []
   };
-  for (const area of ["common", "project", "session", "person"]) {
+  for (const area of ["common", "project", "session", "person", "projectDocuments"]) {
     // check for any keys that aren't in the official catalog, and throw an error
     if (catalogOfConfiguration[area]) {
       for (const customization of catalogOfConfiguration[area]) {
@@ -416,7 +425,8 @@ const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {
   common: [],
   project: [],
   session: [],
-  person: []
+  person: [],
+  projectDocuments: []
 };
 export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
   const x = makeFieldDefinitionCatalog(configurationName);

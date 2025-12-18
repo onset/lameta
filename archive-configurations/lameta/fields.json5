@@ -750,11 +750,24 @@
       description: "A table of labels and values for a person.",
       tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
     }
+  ],
+  projectDocuments: [
+    {
+      key: "access",
+      englishLabel: "Access",
+      type: "Text"
+    },
+    {
+      key: "accessDescription",
+      englishLabel: "Access Explanation",
+      description: "If the access is not open/free, use this to explain why.",
+      type: "Text"
+    }
   ]
   // an idea, I don't know if it's worth it:
   // migrations:[
   //   {
   //     oldXmlTag: "grantId",
   //     toField: "fundingProjectId",
-  //   },
+  //   }
 }
