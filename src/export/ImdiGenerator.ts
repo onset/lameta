@@ -1810,6 +1810,8 @@ export default class ImdiGenerator {
     } else {
       this.element("Title", name);
     }
+    // IMDI schema requires Date to come before Description
+    this.element("Date", this.nowDate());
     // Description - use multilingual version if provided
     if (description) {
       this.multilingualTextElement(
@@ -1818,10 +1820,8 @@ export default class ImdiGenerator {
         this.vocabularyTranslator.getExportStringTranslator()
       );
     }
-    this.element("Date", this.nowDate());
     this.startGroup("MDGroup");
-    this.addProjectInfo();
-
+    // IMDI schema requires Location before Project in MDGroup
     this.group("Location", () => {
       this.element(
         "Continent",
@@ -1837,6 +1837,7 @@ export default class ImdiGenerator {
         VocabularyType.OpenVocabulary
       );
     });
+    this.addProjectInfo();
 
     // Add metadata language keys for pseudo-sessions (DescriptionDocuments, OtherDocuments)
     this.addMetadataLanguageKeys();
