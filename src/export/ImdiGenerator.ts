@@ -1317,16 +1317,24 @@ export default class ImdiGenerator {
   private addGender(person: Person) {
     this.keysThatHaveBeenOutput.add("Person.gender");
     const gender = person.properties.getTextStringOrEmpty("gender");
-    if (gender === "Other") {
+
+    // The official Actor-Sex closed vocabulary does not include "Other".
+    // IMDI itself allows free text (OpenVocabulary), so export "Other" as-is
+    // and mark the element as OpenVocabulary to avoid claiming conformance to
+    // the closed list.
+    const actorSexVocabularyUrl = "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml";
+    const shouldUseClosedVocabulary = gender !== "Other";
+    if (!shouldUseClosedVocabulary) {
       this.tail.comment(
-        "Gender was actually 'Other'. The IMDI Schema does not have an 'other' option, so we are using 'Unspecified'."
+        "Gender was 'Other'. The Actor-Sex closed vocabulary does not include this value, so we are exporting it as OpenVocabulary."
       );
     }
+
     this.element(
       "Sex",
-      gender === "Other" ? "Unspecified" : gender,
-      true,
-      "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml"
+      gender,
+      shouldUseClosedVocabulary,
+      actorSexVocabularyUrl
     );
   }
 

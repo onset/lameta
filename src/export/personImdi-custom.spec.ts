@@ -64,6 +64,13 @@ describe("actor imdi export", () => {
     generate();
     expect("//Actor/Age").toMatch("Unspecified");
   });
+
+  it("should export Gender=Other as Sex=Other (not Unspecified)", () => {
+    person.properties.setText("gender", "Other");
+    generate();
+    expect("//Actor/Sex").toMatch("Other");
+    expect("//Actor/Sex").toBeOpen();
+  });
 });
 // function makeCustomField(key: string, value: string) {
 //   const definition: FieldDefinition = {

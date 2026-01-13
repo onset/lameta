@@ -711,7 +711,8 @@
       key: "gender",
       xmlTag: "Gender",
       englishLabel: "Gender",
-      // Note, Actor-sex does not offer "other", so that will have to be mapped to either unspecified or NAP
+      // Note, Actor-Sex closed vocabulary does not offer "Other".
+      // Lameta exports "Other" as OpenVocabulary (rather than coercing it to Unspecified).
       choices: ["Unknown", "Male", "Female", "Other"],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
       imdiIsClosedVocabulary: true
