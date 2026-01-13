@@ -106,5 +106,7 @@ describe("Session Write", () => {
     expect(getImdiResourceTypeForExtension("tif")).toBe("Image");
     expect(getImdiResourceTypeForExtension("tiff")).toBe("Image");
     expect(getImdiResourceTypeForExtension("flextext")).toBe("FLEx");
+    expect(getImdiResourceTypeForExtension("srt")).toBe("Subtitles");
+    expect(getImdiResourceTypeForExtension("SRT")).toBe("Subtitles");
   });
 });
