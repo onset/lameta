@@ -299,9 +299,31 @@ export default class ImdiGenerator {
       });
     }
   }
-  public addSimpleActor(role: string, name: string) {
+  public addSimpleActor(role: string, name: string, translateRole = false) {
+    this.addSimpleActorInternal(role, name, translateRole);
+  }
+
+  private addSimpleActorInternal(
+    role: string,
+    name: string,
+    translateRole: boolean,
+    comment?: string
+  ) {
     this.startGroup("Actor");
-    this.element("Role", role);
+    if (comment) {
+      this.tail.comment(comment);
+    }
+    if (translateRole) {
+      const roleOutput = this.getRoleOutput(role);
+      this.multilingualVocabularyElement(
+        "Role",
+        roleOutput,
+        "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
+        this.vocabularyTranslator.getRoleTranslator()
+      );
+    } else {
+      this.element("Role", role);
+    }
     this.element("Name", name);
     this.element("FullName", name);
     this.element("Code", "");
@@ -378,31 +400,12 @@ export default class ImdiGenerator {
           [{ name: "contribution-comments", text: contribution.comments }]
         );
       } else {
-        this.startGroup("Actor");
-        this.tail.comment(`Could not find a person with name "${trimmedName}"`);
-        // Role is a multilingual vocabulary field
-        const roleOutput = this.getRoleOutput(contribution.role);
-        this.multilingualVocabularyElement(
-          "Role",
-          roleOutput,
-          "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-          this.vocabularyTranslator.getRoleTranslator()
+        this.addSimpleActorInternal(
+          contribution.role,
+          trimmedName,
+          true,
+          `Could not find a person with name "${trimmedName}"`
         );
-        this.element("Name", trimmedName);
-        this.element("FullName", trimmedName);
-        this.element("Code", "");
-        this.element("FamilySocialRole", "");
-        this.element("Languages", "");
-        this.element("EthnicGroup", "");
-        this.element("Age", "Unspecified");
-        this.element("BirthDate", "Unspecified");
-        this.element("Sex", "");
-        this.element("Education", "");
-        this.element("Anonymized", "false");
-        this.element("Contact", "");
-        this.element("Keys", "");
-        this.element("Description", "");
-        this.exitGroup(); //</Actor>
       }
     });
     this.exitGroup(); //</Actors>
@@ -1943,7 +1946,7 @@ export default class ImdiGenerator {
       const collectionSteward =
         this.project.properties.getTextStringOrEmpty("collectionSteward");
       if (collectionSteward) {
-        this.addSimpleActor("Researcher", collectionSteward);
+        this.addSimpleActor("Researcher", collectionSteward, true);
       }
     });
 

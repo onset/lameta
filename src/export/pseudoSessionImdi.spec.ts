@@ -382,6 +382,39 @@ describe("Pseudo-session IMDI for project documents", () => {
       );
     });
 
+    it("should output multilingual Researcher role when using ELAR schema", () => {
+      // Set up ELAR schema which supports multilingual vocabulary
+      SetOtherConfigurationSettings({
+        ...GetOtherConfigurationSettings(),
+        imdiSchema: "IMDI_3.0_elar.xsd"
+      });
+      // Set up multiple metadata languages
+      project.properties.setText("metadataLanguages", "en:English;es:Spanish");
+      project.properties.setText("collectionSteward", "Dr. Jane Smith");
+
+      const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
+        project.descriptionFolder,
+        project
+      );
+      const xml = generator.makePseudoSessionImdiForOtherFolder(
+        "DescriptionDocuments",
+        project.descriptionFolder,
+        "Collection description",
+        true // omitNamespaces for testing
+      );
+      setResultXml(xml);
+
+      // Should have Role elements with LanguageId attributes for each metadata language
+      expect(
+        "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']"
+      ).toMatch("Researcher");
+      // Spanish translation should come from built-in roles.csv
+      expect(
+        "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']"
+      ).toMatch("Investigador");
+    });
+
     it("should not include actor if collection steward is empty", () => {
       project.properties.setText("collectionSteward", "");
 
