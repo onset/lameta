@@ -66,6 +66,9 @@ describe("Consent in OPEX+Files export", () => {
   it("If ELAR, it should have an Access of 'S'", () => {
     expect("//MediaFile/Access/Availability").toMatch("S");
     expect("//MediaFile/Access/Description").toMatch("Consent documents");
+    expect(
+      "//MediaFile/Access/Description[@LanguageId='ISO639-3:spa']"
+    ).toMatch("Documentos de consentimiento");
   });
 
   // per Notion #241
@@ -117,6 +120,20 @@ async function doExport(
   fs.mkdirSync(targetDir);
 
   const project = Project.fromDirectory(projectDir);
+
+  // Set up multiple metadata languages so multilingual fields are emitted
+  project.properties.setText("metadataLanguages", "en:English;es:Spanish");
+
+  // Provide a project translation for the access description used by the consent bundle
+  project.vocabularyTranslations?.ensureExportStringEntry(
+    "Consent documents",
+    ["en", "es"]
+  );
+  project.vocabularyTranslations?.updateExportStringTranslation(
+    "Consent documents",
+    "es",
+    "Documentos de consentimiento"
+  );
 
   // NB: this is to test the access protocol used for consent bundles,
   // which has a hard-coded knowledge of the access protocol used for

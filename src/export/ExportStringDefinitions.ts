@@ -13,7 +13,7 @@ export interface ExportStringDefinition {
   /** Context to help translators understand what this string is for */
   context: string;
   /** Category for grouping in the UI */
-  category: "bundle-title" | "bundle-description";
+  category: "bundle-title" | "bundle-description" | "bundle-access-description";
 }
 
 /**
@@ -54,6 +54,11 @@ export const EXPORT_STRING_DEFINITIONS: ExportStringDefinition[] = [
       "This bundle contains media demonstrating informed consent for sessions in this collection.",
     context: "Description for the Consent Documents bundle.",
     category: "bundle-description"
+  },
+  {
+    english: "Consent documents",
+    context: "Access description used on each consent file in the Consent Documents bundle.",
+    category: "bundle-access-description"
   }
 ];
 
@@ -88,6 +93,7 @@ export const ExportStrings = {
   ConsentDocuments: {
     title: "Documentation of consent for the contributors to this collection",
     description:
-      "This bundle contains media demonstrating informed consent for sessions in this collection."
+      "This bundle contains media demonstrating informed consent for sessions in this collection.",
+    accessDescription: "Consent documents"
   }
 } as const;

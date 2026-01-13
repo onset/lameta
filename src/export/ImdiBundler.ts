@@ -507,7 +507,13 @@ export default class ImdiBundler {
       "ELAR"
     ) {
       dummySession.properties.setText("access", "S");
-      dummySession.properties.setText("accessDescription", "Consent documents");
+      dummySession.properties.setText(
+        "accessDescription",
+        buildMultilingualExportString(
+          ExportStrings.ConsentDocuments.accessDescription,
+          project
+        )
+      );
     }
 
     const originalConsentFiles = ImdiBundler.addDummyFileForConsentActors(
