@@ -19,47 +19,61 @@ export interface ExportStringDefinition {
 /**
  * All export string definitions with their English text and translator context.
  */
-export const EXPORT_STRING_DEFINITIONS: ExportStringDefinition[] = [
-  // DescriptionDocuments bundle
-  {
-    english: "Description Documents",
-    context: "Title for Description Documents bundle",
-    category: "bundle-title"
+const ExportStringCatalog = {
+  DescriptionDocuments: {
+    title: {
+      english: "Description Documents",
+      context: "Title for Description Documents bundle",
+      category: "bundle-title"
+    },
+    description: {
+      english:
+        "This bundle contains descriptive documents about the documentation project.",
+      context: "Description for the Description Documents bundle.",
+      category: "bundle-description"
+    }
   },
-  {
-    english:
-      "This bundle contains descriptive documents about the documentation project.",
-    context: "Description for the Description Documents bundle.",
-    category: "bundle-description"
+  OtherDocuments: {
+    title: {
+      english: "Other Documents",
+      context: "Title for the Other Documents bundle.",
+      category: "bundle-title"
+    },
+    description: {
+      english: "This bundle contains other project documents.",
+      context: "Description of the Other Documents bundle.",
+      category: "bundle-description"
+    }
   },
-  // OtherDocuments bundle
-  {
-    english: "Other Documents",
-    context: "Title for the Other Documents bundle.",
-    category: "bundle-title"
-  },
-  {
-    english: "This bundle contains other project documents.",
-    context: "Description of the Other Documents bundle.",
-    category: "bundle-description"
-  },
-  // ConsentDocuments bundle
-  {
-    english: "Documentation of consent for the contributors to this collection",
-    context: "Title for the Consent Documents bundle.",
-    category: "bundle-title"
-  },
-  {
-    english:
-      "This bundle contains media demonstrating informed consent for sessions in this collection.",
-    context: "Description for the Consent Documents bundle.",
-    category: "bundle-description"
-  },
-  {
-    english: "Consent documents",
-    context: "Access description used on each consent file in the Consent Documents bundle.",
-    category: "bundle-access-description"
+  ConsentDocuments: {
+    title: {
+      english: "Documentation of consent for the contributors to this collection",
+      context: "Title for the Consent Documents bundle.",
+      category: "bundle-title"
+    },
+    description: {
+      english:
+        "This bundle contains media demonstrating informed consent for sessions in this collection.",
+      context: "Description for the Consent Documents bundle.",
+      category: "bundle-description"
+    },
+    accessDescription: {
+      english: "Consent documents",
+      context:
+        "Access description used on each consent file in the Consent Documents bundle.",
+      category: "bundle-access-description"
+    }
   }
+} as const;
+
+export const EXPORT_STRING_DEFINITIONS: ExportStringDefinition[] = [
+  ExportStringCatalog.DescriptionDocuments.title,
+  ExportStringCatalog.DescriptionDocuments.description,
+  ExportStringCatalog.OtherDocuments.title,
+  ExportStringCatalog.OtherDocuments.description,
+  ExportStringCatalog.ConsentDocuments.title,
+  ExportStringCatalog.ConsentDocuments.description,
+  ExportStringCatalog.ConsentDocuments.accessDescription
 ];
 
 /**
@@ -82,18 +96,16 @@ export function getExportStringContext(english: string): string | undefined {
  */
 export const ExportStrings = {
   DescriptionDocuments: {
-    title: "Description Documents",
-    description:
-      "This bundle contains descriptive documents about the documentation project."
+    title: ExportStringCatalog.DescriptionDocuments.title.english,
+    description: ExportStringCatalog.DescriptionDocuments.description.english
   },
   OtherDocuments: {
-    title: "Other Documents",
-    description: "This bundle contains other project documents."
+    title: ExportStringCatalog.OtherDocuments.title.english,
+    description: ExportStringCatalog.OtherDocuments.description.english
   },
   ConsentDocuments: {
-    title: "Documentation of consent for the contributors to this collection",
-    description:
-      "This bundle contains media demonstrating informed consent for sessions in this collection.",
-    accessDescription: "Consent documents"
+    title: ExportStringCatalog.ConsentDocuments.title.english,
+    description: ExportStringCatalog.ConsentDocuments.description.english,
+    accessDescription: ExportStringCatalog.ConsentDocuments.accessDescription.english
   }
 } as const;

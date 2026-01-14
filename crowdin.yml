@@ -13,6 +13,10 @@ files: [
       "translation": /%two_letters_code%/vocabularies.po,
     },
     {
+      "source": /en/exportStrings.po,
+      "translation": /%two_letters_code%/exportStrings.po,
+    },
+    {
       "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
