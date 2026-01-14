@@ -1,7 +1,6 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import { NotifyWarning } from "./Notify";
-import { t } from "@lingui/macro";
 import * as nodePath from "path";
 import { getTestEnvironment } from "../getTestEnvironment";
 
@@ -31,7 +30,8 @@ export const ElectronDropZone: React.FunctionComponent<ElectronDropZoneProps> =
       (!(window as any).electronAPI ||
         typeof (window as any).electronAPI.getPathForFile !== "function")
     ) {
-      const msg = t`ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work.`;
+      const msg =
+        "ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work.";
       console.error(msg);
       NotifyWarning(msg);
       // We could throw here, but it's more user-friendly to just let the user try to click to add files.

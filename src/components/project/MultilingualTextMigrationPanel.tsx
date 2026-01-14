@@ -333,17 +333,16 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                 line-height: 1.5;
               `}
             >
-              <Trans>
-                This project appears to use "/" to store multiple languages
-                within a single field. In this version of lameta, we have a
-                better approach in which lameta knows which languages are used
-                in a field. After you have selected the appropriate metadata
-                languages above and arranged them in the correct order, all
-                multilingual fields in Project, Sessions, and People should
-                display with the correct language tags. Once you have confirmed
-                that everything appears as expected, click the button below to
-                apply these changes permanently.
-              </Trans>
+              {/* Intentionally not localized: this describes legacy "/" slash-syntax migration details and is easy to mistranslate. */}
+              This project appears to use "/" to store multiple languages
+              within a single field. In this version of lameta, we have a
+              better approach in which lameta knows which languages are used in
+              a field. After you have selected the appropriate metadata
+              languages above and arranged them in the correct order, all
+              multilingual fields in Project, Sessions, and People should
+              display with the correct language tags. Once you have confirmed
+              that everything appears as expected, click the button below to
+              apply these changes permanently.
             </p>
             {Project.getMetadataLanguageSlots().length < 2 && (
               <Alert
@@ -432,7 +431,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
               `}
             >
               <span>
-                <Trans>Migrating: {progress.currentItem}</Trans>
+                Migrating: {progress.currentItem}
               </span>
               <span
                 css={css`
@@ -457,9 +456,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                 color: #666;
               `}
             >
-              <Trans>
-                {progress.current} of {progress.total} items processed
-              </Trans>
+              {progress.current} of {progress.total} items processed
             </div>
           </div>
         )}

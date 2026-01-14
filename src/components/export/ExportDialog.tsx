@@ -256,7 +256,7 @@ export const ExportDialog: React.FunctionComponent<{
         props.projectHolder.project?.multilingualConversionPending
       ) {
         NotifyError(
-          t`Cannot export to IMDI while multilingual text migration is pending.`,
+          "Cannot export to IMDI while multilingual text migration is pending.",
           t`Please complete the migration in the Project tab under Languages before exporting.`
         );
         return;

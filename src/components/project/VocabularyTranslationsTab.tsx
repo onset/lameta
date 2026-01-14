@@ -487,7 +487,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         setIsScanning(false);
         if (!hadError) {
           setScanProgress(100);
-          setScanMessage(t`Scan complete`);
+          setScanMessage("Scan complete");
         }
       }
     }, [project, languageCodes, translations, isScanning]);
@@ -609,7 +609,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             >
               {totalMissing > 0 ? (
                 <span>
-                  <Trans>{totalMissing} items need translation</Trans>
+                  {totalMissing} items need translation
                 </span>
               ) : (
                 <>
