@@ -10,6 +10,7 @@ import { titleCase } from "title-case";
 import { runInAction } from "mobx";
 import { i18n } from "../../../other/localization";
 import { t } from "@lingui/macro";
+import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -77,6 +78,7 @@ export class Session extends Folder {
   public migrateFromPreviousVersions() {
     this.migrateOneField("situation", "description");
     this.migrateOneField("setting", "description");
+    this.migrateContinentChoices();
   }
   private migrateOneField(migrationSource, migrationTarget) {
     const valueToMove = this.properties
@@ -92,6 +94,19 @@ export class Session extends Folder {
       //console.log(`After migration '${migrationTarget}' = '${newTargetValue}'`);
       this.properties.setText(migrationTarget, newTargetValue);
       this.properties.remove(migrationSource);
+    }
+  }
+
+  private migrateContinentChoices() {
+    const currentValue =
+      this.properties.getTextStringOrEmpty("locationContinent");
+    const normalizedValue = normalizeContinentValueForAmericasOnly(
+      fieldDefinitionsOfCurrentConfig.session,
+      "locationContinent",
+      currentValue
+    );
+    if (normalizedValue !== currentValue) {
+      this.properties.setText("locationContinent", normalizedValue);
     }
   }
   public static fromDirectory(

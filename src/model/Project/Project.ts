@@ -56,6 +56,7 @@ import {
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
 import { VocabularyTranslations } from "./VocabularyTranslations";
+import { normalizeContinentValueForAmericasOnly } from "./ContinentMigration";
 
 let sCurrentProject: Project | null = null;
 
@@ -1510,6 +1511,8 @@ export class ProjectMetadataFile extends FolderMetadataFile {
       "AnalysisISO3CodeAndName", // note, uppercase because it is unknown to our field definitions, so it keeps the same case as the xml tag
       "collectionWorkingLanguages"
     );
+
+    this.migrateContinentChoices();
   }
 
   private migrateLanguageField(legacySingle: string, modernMultiple: string) {
@@ -1532,6 +1535,18 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     //     .split(";");
     //   this.properties.setText(legacySingle, parts[0] || "");
     // }
+  }
+
+  private migrateContinentChoices() {
+    const currentValue = this.properties.getTextStringOrEmpty("continent");
+    const normalizedValue = normalizeContinentValueForAmericasOnly(
+      fieldDefinitionsOfCurrentConfig.project,
+      "continent",
+      currentValue
+    );
+    if (normalizedValue !== currentValue) {
+      this.properties.setText("continent", normalizedValue);
+    }
   }
 
   // peek into the xml to get the configuration we're supposed to be using

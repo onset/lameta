@@ -111,7 +111,7 @@ describe("imdi multilingual field export", () => {
     run((builder) => {
       fieldElement("description", field, builder);
     });
-    expect("//description").toHaveAttributeValue("LanguageId", "ISO639-1:en");
+    expect("//description").toHaveAttributeValue("LanguageId", "ISO639-3:eng");
   });
   */
   it("exports both English and language with 3 letter code", () => {

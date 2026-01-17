@@ -120,18 +120,18 @@ describe("multilingual topic and keyword export", () => {
 
     // English keywords with index
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="1"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`
     ).toHaveText("Fat");
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="2"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`
     ).toHaveText("Heron");
 
-    // Spanish keywords with matching index (es is 2-letter so ISO639-1)
+    // Spanish keywords with matching index (converted to ISO639-3)
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:es"][@index="1"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="1"]`
     ).toHaveText("Grasa");
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:es"][@index="2"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="2"]`
     ).toHaveText("Garza");
   });
 
@@ -168,13 +168,13 @@ describe("multilingual topic and keyword export", () => {
 
     // All should have index="1" since there's only one topic
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="1"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`
     ).toHaveText("The moon and the sun adventures");
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="1"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`
     ).toHaveText("Las aventuras de la luna y el sol");
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:pt"][@index="1"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:por"][@index="1"]`
     ).toHaveText("As aventuras da lua e do sol");
   });
 
@@ -210,18 +210,18 @@ describe("multilingual topic and keyword export", () => {
 
     // English topics with indexes
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="1"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`
     ).toHaveText("Moon adventures");
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="2"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="2"]`
     ).toHaveText("Sun stories");
 
-    // Spanish topics with matching indexes (es is 2-letter so ISO639-1)
+    // Spanish topics with matching indexes (converted to ISO639-3)
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="1"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`
     ).toHaveText("Aventuras de luna");
     expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="2"]`
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="2"]`
     ).toHaveText("Historias del sol");
   });
 
@@ -253,10 +253,10 @@ describe("multilingual topic and keyword export", () => {
     // Should have 4 keyword Keys, values should be trimmed
     expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(4);
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="1"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`
     ).toHaveText("Fat");
     expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="2"]`
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`
     ).toHaveText("Heron");
   });
 

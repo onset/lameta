@@ -20,5 +20,13 @@
   "cSpell.diagnosticLevel": "Hint",
   "wallaby.alwaysOpenLocalWallabyAppUrl": true,
   "wallaby.codeLensFeature.runTest": true,
-  "testing.automaticallyOpenPeekView": "never"
+  "testing.automaticallyOpenPeekView": "never",
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#e69664",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#df7838",
+    "statusBarItem.remoteBackground": "#e69664",
+    "statusBarItem.remoteForeground": "#15202b"
+  },
+  "peacock.color": "#e69664"
 }

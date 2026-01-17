@@ -698,7 +698,7 @@ export default class ImdiGenerator {
 
     this.group("Keys", () => {
       for (const slot of metadataSlots) {
-        // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
+        // Always use ISO639-3 (3-letter) codes - ELAR, at least, can't handle 2-letter ISO639-1 codes
         const iso639_3 = staticLanguageFinder
           ? staticLanguageFinder.getIso639_3Code(slot.tag)
           : slot.tag;
@@ -835,9 +835,13 @@ export default class ImdiGenerator {
           this.mostRecentElement = this.tail;
           this.attributeLiteral("Name", capitalCase(key));
 
-          // Add LanguageId: 2 letter is ISO639-1, 3 letter is ISO639-3
-          const kind = lang.length === 2 ? "ISO639-1" : "ISO639-3";
-          this.attributeLiteral("LanguageId", kind + ":" + lang);
+          // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
+          const languageFinder =
+            staticLanguageFinder || this.project.languageFinder;
+          const iso639_3 = languageFinder
+            ? languageFinder.getIso639_3Code(lang)
+            : lang;
+          this.attributeLiteral("LanguageId", "ISO639-3:" + iso639_3);
 
           // Add index (1-based) to tie together translations of the same concept
           this.attributeLiteral("index", String(i + 1));

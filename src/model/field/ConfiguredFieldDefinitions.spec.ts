@@ -93,4 +93,34 @@ describe("ELAR archive configuration", () => {
     expect(roleField).toBeDefined();
     expect(roleField!.multilingual).toBe(true);
   });
+
+  it("uses Americas-only continent choices", () => {
+    const catalog = makeFieldDefinitionCatalog("ELAR");
+    const projectContinent = catalog.project.find((f) => f.key === "continent");
+    const sessionContinent = catalog.session.find(
+      (f) => f.key === "locationContinent"
+    );
+    const expectedChoices = [
+      "unspecified",
+      "Africa",
+      "Americas",
+      "Asia",
+      "Australia",
+      "Europe",
+      "Oceania"
+    ];
+
+    expect(projectContinent).toBeDefined();
+    expect(projectContinent!.choices).toEqual([
+      "unspecified",
+      "Africa",
+      "Asia",
+      "Australia",
+      "Europe",
+      "Americas",
+      "Oceania"
+    ]);
+    expect(sessionContinent).toBeDefined();
+    expect(sessionContinent!.choices).toEqual(expectedChoices);
+  });
 });

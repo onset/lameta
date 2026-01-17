@@ -28,6 +28,18 @@
     {
       key: "metadataLanguages",
       visibility: "always"
+    },
+    {
+      key: "continent",
+      choices: [
+        "unspecified",
+        "Africa",
+        "Asia",
+        "Australia",
+        "Europe",
+        "Americas",
+        "Oceania"
+      ]
     }
   ],
   session: [
@@ -59,6 +71,18 @@
     {
       key: "accessDescription",
       multilingual: true
+    },
+    {
+      key: "locationContinent",
+      choices: [
+        "unspecified",
+        "Africa",
+        "Americas",
+        "Asia",
+        "Australia",
+        "Europe",
+        "Oceania"
+      ]
     }
   ],
   people: [
