@@ -30,10 +30,22 @@
     "protocol": "AILLA",
     "documentation": "ailla.html",
     "choices": [
-      { "label": "Level 1", "description": "Public Access" },
-      { "label": "Level 2", "description": "Password" },
-      { "label": "Level 3", "description": "Time limit" },
-      { "label": "Level 4", "description": "Depositor control" }
+      {
+        "label": "Public",
+        "description": "Visible to all visitors (no login required)"
+      },
+      {
+        "label": "Login Required",
+        "description": "Visible only to verified, logged in AILLA users"
+      },
+      {
+        "label": "Embargoed",
+        "description": "Owners, Editors, and Viewers only until embargo date; then verified AILLA users can access"
+      },
+      {
+        "label": "Restricted",
+        "description": "Only assigned Owners, Editors, and Viewers can access"
+      }
     ]
   },
   {
