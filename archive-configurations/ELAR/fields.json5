@@ -49,28 +49,49 @@
 - Actor roles (that one might be a more difficult to implement, I think)*/
 
     {
+      key: "id",
+      description: "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only."
+    },
+    {
       key: "description",
       multilingual: true
     },
     {
       key: "title",
-      multilingual: true
+      multilingual: true,
+      description: "Title should be a short, meaningful sentence"
     },
     {
       key: "genre",
-      multilingual: true
+      multilingual: true,
+      description: "Select from the drop-down menu."
+    },
+    {
+      key: "subgenre",
+      description: "Subgenre is optional"
     },
     {
       key: "topic",
-      multilingual: true
+      multilingual: true,
+      description: "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma."
     },
     {
       key: "keyword",
-      multilingual: true
+      multilingual: true,
+      description: "Add at least one Keyword. Multiple values must be separated with commas. Individual keywords cannot contain a comma."
+    },
+    {
+      key: "access",
+      description: "Select from the drop down menu. If you select the access level S you must complete the adjacent Access Explanation field."
     },
     {
       key: "accessDescription",
-      multilingual: true
+      multilingual: true,
+      description: "Complete for sessions marked S, optional otherwise. Should be a short explanation about why access is restricted, and for how long."
+    },
+    {
+      key: "customFields",
+      description: "Optional"
     },
     {
       key: "locationContinent",
@@ -85,10 +106,48 @@
       ]
     }
   ],
-  people: [
+  person: [
+    {
+      key: "name",
+      description: "Person will be listed by this name on the ELAR catalogue."
+    },
+    {
+      key: "nickname",
+      description: "Optional, can be left blank."
+    },
+    {
+      key: "code",
+      description: "Optional, can be left blank."
+    },
+    {
+      key: "languages",
+      description: "Star indicates primary language. Icons indicate whether mother and father speak the language - this is optional."
+    },
+    {
+      key: "birthYear",
+      tipOnUsingThisField: 'Enter an approximation or "?" if unsure, and describe in the Description field below.'
+    },
+    {
+      key: "education",
+      description: "Optional"
+    },
+    {
+      key: "howToContact",
+      description: "Leave blank",
+      visibility: "never"
+    },
+    {
+      key: "ethnicGroup",
+      description: "Optional"
+    },
+    {
+      key: "primaryOccupation",
+      description: "Optional"
+    },
     {
       key: "description",
-      multilingual: true
+      multilingual: true,
+      description: "Should contain basic information about the person's background, role in the community and/or project, and a basic language profile."
     }
   ],
   projectDocuments: [

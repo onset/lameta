@@ -561,7 +561,7 @@
       // added at ELAR request Dec 2019
       key: "topic",
       xmlTag: "Topic",
-      englishLabel: "Topic",
+      englishLabel: "Topics",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
       tabIndex: 11

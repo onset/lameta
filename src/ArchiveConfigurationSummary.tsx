@@ -70,7 +70,7 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
             margin-block-end: 1em;
           `}
         >
-          Session Access Choices
+          Available Access Levels
         </h3>
         <ul
           css={css`

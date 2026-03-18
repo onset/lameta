@@ -94,6 +94,21 @@ describe("ELAR archive configuration", () => {
     expect(roleField!.multilingual).toBe(true);
   });
 
+  it("applies person help text overrides", () => {
+    const catalog = makeFieldDefinitionCatalog("ELAR");
+    const nameField = catalog.person.find((f) => f.key === "name");
+    const birthYearField = catalog.person.find((f) => f.key === "birthYear");
+
+    expect(nameField).toBeDefined();
+    expect(nameField!.description).toBe(
+      "Person will be listed by this name on the ELAR catalogue."
+    );
+    expect(birthYearField).toBeDefined();
+    expect(birthYearField!.tipOnUsingThisField).toBe(
+      'Enter an approximation or "?" if unsure, and describe in the Description field below.'
+    );
+  });
+
   it("uses Americas-only continent choices", () => {
     const catalog = makeFieldDefinitionCatalog("ELAR");
     const projectContinent = catalog.project.find((f) => f.key === "continent");

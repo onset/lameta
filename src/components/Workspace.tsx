@@ -117,23 +117,7 @@ class Home extends React.Component<IProps> {
             }
           }
         },
-        {
-          label: t`Delete Session`,
-          accelerator: "Ctrl+Alt+K",
-          enabled:
-            enableMenu &&
-            this.props.project.haveSelectedSession() &&
-            userSettings.DeveloperMode,
-          click: () => {
-            if (this.props.project) {
-              this.props.project.deleteFolder(
-                this.props.project.sessions.items[
-                  this.props.project.sessions.selectedIndex
-                ]
-              );
-            }
-          }
-        },
+
         this.getDeleteMarkedMenuItem(
           "session",
           t`Delete All Marked Sessions...`,

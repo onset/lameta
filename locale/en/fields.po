@@ -435,7 +435,7 @@ msgid "Title"
 msgstr ""
 
 msgctxt "lameta/session/topic"
-msgid "Topic"
+msgid "Topics"
 msgstr ""
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
