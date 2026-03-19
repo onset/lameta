@@ -8,7 +8,7 @@ import { Project } from "../Project";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
 import { runInAction } from "mobx";
-import { i18n } from "../../../other/localization";
+import { i18n as appI18n } from "../../../other/localization";
 import { t } from "@lingui/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
 
@@ -324,7 +324,7 @@ export class Session extends Folder {
     });
     if (violations.length === 0) return "";
     else {
-      const s = i18n._(
+      const s = appI18n._(
         t`lameta could not find a matching Person for the following contributors: `
       );
       return "\n\n" + s + violations.join(", ");
@@ -363,10 +363,10 @@ export class SessionMetadataFile extends FolderMetadataFile {
 export function getIdValidationMessageOrUndefined(id: string) {
   const trimmedId = id.trim();
   if (trimmedId.length === 0) {
-    return i18n._("ID cannot be empty");
+    return appI18n._("ID cannot be empty");
   }
   if (trimmedId.includes(" ")) {
-    return i18n._("ID cannot contain spaces"); // ELAR, at least
+    return appI18n._("ID cannot contain spaces"); // ELAR, at least
   }
   return undefined;
 }

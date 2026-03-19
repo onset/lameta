@@ -6,7 +6,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.css";
-import { i18n } from "../../other/localization";
+import { i18n as appI18n } from "../../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext, useHasSearchMatch, useSearchContext } from "../SearchContext";
 import { highlightMatches } from "../highlighting";
@@ -166,7 +166,7 @@ class ContributorsTable extends React.Component<IProps> {
       },
       /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
-        Header: i18n._(t`Date`),
+        Header: appI18n._(t`Date`),
         accessor: "date",
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
       },*/
@@ -176,7 +176,7 @@ class ContributorsTable extends React.Component<IProps> {
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
       },
       {
-        //Header: i18n._(t`Comments`),
+        //Header: appI18n._(t`Comments`),
         maxWidth: 40,
         accessor: "delete",
         Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)

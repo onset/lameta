@@ -5,7 +5,6 @@ import { Project } from "../../model/Project/Project";
 import { File } from "../../model/file/File";
 import "./PeopleTab.css";
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../../other/localization";
 import ComponentTab from "../componentTab/ComponentTab";
 interface IProps {
   project: Project;

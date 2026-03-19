@@ -8,7 +8,7 @@ import * as remote from "@electron/remote";
 import "./FileList.css";
 import { revealInFolder } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
-import { i18n, translateFileType } from "../other/localization";
+import { translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import { isNullOrUndefined } from "util";

@@ -4,7 +4,6 @@ import { File } from "../model/file/File";
 import { MediaStats } from "./MediaStats";
 import "./PropertyPanel.css";
 import CustomFieldsTable from "./CustomFieldsTable";
-import { i18n } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import AccessChooser from "./session/AccessChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";

@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { t } from "@lingui/macro";
-import { i18n } from "../other/localization";
+import { i18n as appI18n } from "../other/localization";
 import { FolderGroup } from "src/model/Folder/FolderGroup";
 import { observer } from "mobx-react";
 import { lameta_orange } from "../containers/theme";
@@ -81,7 +81,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
       >
         <TextField
           size="small"
-          placeholder={i18n._(t`Find`)}
+          placeholder={appI18n._(t`Find`)}
           value={rawValue}
           variant="outlined"
           inputProps={{ "data-testid": "folder-search-input" }}
@@ -98,7 +98,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                   size="small"
                   onClick={handleImmediateCommit}
                   data-testid="folder-search-button"
-                  aria-label={i18n._(t`Search`)}
+                  aria-label={appI18n._(t`Search`)}
                   css={css`
                     background: ${lameta_orange};
                     color: white; /* icon color */
@@ -127,7 +127,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                 <IconButton
                   size="small"
                   onClick={clear}
-                  aria-label={i18n._(t`Clear`)}
+                  aria-label={appI18n._(t`Clear`)}
                   data-testid="folder-search-clear"
                 >
                   <CloseIcon fontSize="small" />

@@ -9,7 +9,6 @@ import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
 import { t } from "@lingui/macro";
-import { i18n } from "../other/localization";
 import { FieldLabel } from "./FieldLabel";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 

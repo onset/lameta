@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import * as React from "react";
 import { t, Trans } from "@lingui/macro";
-import { i18n } from "../../other/localization";
+import { i18n as appI18n } from "../../other/localization";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Markdown } from "../Markdown";
 import _ from "lodash";
@@ -111,7 +111,7 @@ export const ExportChoices: React.FunctionComponent<{
         </label>
         <div>
           <Markdown>
-            {i18n._(
+            {appI18n._(
               "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
             )}
           </Markdown>

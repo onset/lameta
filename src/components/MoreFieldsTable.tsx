@@ -8,7 +8,6 @@ import "./Form.css";
 import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { i18n } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import { useEffect, useState } from "react";
 

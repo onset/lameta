@@ -12,7 +12,7 @@ import { SearchContext, normalizeSearchTerm } from "../SearchContext";
 import { css } from "@emotion/react";
 import { highlightMatches } from "../highlighting";
 import { t } from "@lingui/macro";
-import { i18n } from "../../other/localization";
+import { i18n as appI18n } from "../../other/localization";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -125,12 +125,12 @@ function getCountLabel(folders: FolderGroup): string {
   if (first) {
     switch (first.folderType) {
       case "session":
-        return `${folders.items.length} ${i18n._(t`Sessions`)}`;
+        return `${folders.items.length} ${appI18n._(t`Sessions`)}`;
       case "person":
-        return `${folders.items.length} ${i18n._(t`People`)}`;
+        return `${folders.items.length} ${appI18n._(t`People`)}`;
     }
   }
-  return `${folders.items.length} ${i18n._(t`Items`)}`;
+  return `${folders.items.length} ${appI18n._(t`Items`)}`;
 }
 
 // highlight helper removed in favor of shared highlightReact
