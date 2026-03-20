@@ -42,10 +42,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
   // institutional preferences that will need it.
-  const showCollectionTab = props.project.properties.values().some((p) => {
+  const showProjectTab = props.project.properties.values().some((p) => {
     return (
       p.definition &&
-      p.definition.form === "collection" &&
+      p.definition.form === "project" &&
       p.definition.visibility === "always"
     );
   });
@@ -53,8 +53,8 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   // Only show  Translations tab if there are multilingual vocab fields
   const showTranslationsTab = hasMultilingualVocabularyFields();
 
-  // Calculate the Languages tab index (depends on whether Collection tab is shown)
-  const languagesTabIndex = showCollectionTab ? 3 : 2;
+  // Calculate the Languages tab index (depends on whether Project tab is shown)
+  const languagesTabIndex = showProjectTab ? 3 : 2;
 
   // Determine initial tab: if multilingualConversionPending, go to Languages tab
   const getInitialTabIndex = () => {
@@ -112,19 +112,19 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Archive</Trans>
           </Tab>
-          {showCollectionTab && (
+          {showProjectTab && (
             <Tab
               className={"tab-project-collection"}
               data-testid="project-collection-tab"
             >
-              <Trans>Collection</Trans>
+              <Trans>Project</Trans>
             </Tab>
           )}
           <Tab
             className={"tab-project-funding-project"}
             data-testid="project-funding-project-tab"
           >
-            <Trans>Funding Project</Trans>
+            <Trans>Grant</Trans>
           </Tab>
           <Tab
             className={"tab-project-collection-languages"}
@@ -207,10 +207,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        {showCollectionTab && (
+        {showProjectTab && (
           <TabPanel>
             <AutoForm
-              form="collection"
+              form="project"
               formClass="project"
               folder={props.project}
               authorityLists={props.authorityLists}
@@ -252,7 +252,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         )}{" "}
         <TabPanel>
           <AutoForm
-            form="collectionLocation"
+            form="projectLocation"
             formClass="project"
             folder={props.project}
             authorityLists={props.authorityLists}

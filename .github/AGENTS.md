@@ -67,8 +67,8 @@ Tests that are not explicitly testing registration or creating projects can use 
 ## General Guidelines
 
 - When debugging with temporary one-off code files in terminal, don't leave them laying around
-- Mark problems that need human attention with "⚠️"
-- Mark questions with "❓"
+- Don't be proactive. For example I do not want you to create fallbacks without asking me.
+- Always use the askQuestions tool to clarify anything in my request that isn't crystal clear.
 
 ## Linear Usage
 
@@ -78,14 +78,6 @@ When working with Linear issues:
 - Never close Linear issues yourself - assign them back to whoever assigned it to you
 - When asked to "comment," call `mcp_linear_create_comment` (NOT `mcp_linear_update_issue`)
 - Never create or remove Linear issues
-
-**Benefits:**
-
-- ✅ Clean repository root
-- ✅ Clear separation between ephemeral and permanent documentation
-- ✅ Easy to exclude from version control if desired
-- ✅ Preserves planning history for archeological research
-- ✅ Reduces noise when browsing the project
 
 ## Important Rules
 

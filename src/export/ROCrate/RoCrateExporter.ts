@@ -207,7 +207,7 @@ async function getRoCrateInternal(
         "No title provided for this project.",
       description: getTextPropertyWithDefault(
         folder.metadataFile,
-        "collectionDescription",
+        "projectDescription",
         "No description provided for this project."
       ),
       datePublished: new Date().toISOString(),
@@ -1455,7 +1455,7 @@ function createDescriptionCollectionProtocolEntry(
     ? `${projectTitle} collection protocol`
     : "Collection protocol documents";
   const descriptionSource = project.metadataFile
-    ?.getTextProperty("collectionDescription", "")
+    ?.getTextProperty("projectDescription", "")
     ?.trim();
   const protocolDescription =
     descriptionSource && descriptionSource.length > 0

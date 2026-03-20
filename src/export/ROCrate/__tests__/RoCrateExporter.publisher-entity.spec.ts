@@ -17,7 +17,7 @@ describe("RoCrateExporter Publisher Entity", () => {
   const mockProject = createMockProject({
     metadata: {
       title: "Test Project",
-      collectionDescription: "A test project"
+      projectDescription: "A test project"
     }
   });
 

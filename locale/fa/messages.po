@@ -294,8 +294,6 @@ msgstr "فایل رضایت نامه پیدا نشد"
 msgid "Full Name"
 msgstr "نام کامل"
 
-msgid "Funding Project"
-msgstr ""
 
 msgid "Generating CSV export..."
 msgstr ""

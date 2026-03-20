@@ -57,7 +57,7 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo RO-Crate Test Project";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Test project for verifying OtherDocuments folder fix";
           return "";
         }),

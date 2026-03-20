@@ -331,8 +331,8 @@ describe("session imdi export", () => {
 
     it("should fall back to project languages when session has no languages", () => {
       // Set up project-level languages in "code : Name" format
-      project.properties.setText("collectionSubjectLanguages", "ita : Italian;deu : German");
-      project.properties.setText("collectionWorkingLanguages", "por : Portuguese");
+      project.properties.setText("SubjectLanguages", "ita : Italian;deu : German");
+      project.properties.setText("WorkingLanguages", "por : Portuguese");
 
       // Session has no languages
       session.properties.setText("languages", "");
@@ -358,8 +358,8 @@ describe("session imdi export", () => {
       expect("//Languages/Language[3]/Description").toHaveText("Working Language");
 
       // Clean up
-      project.properties.setText("collectionSubjectLanguages", "");
-      project.properties.setText("collectionWorkingLanguages", "");
+      project.properties.setText("SubjectLanguages", "");
+      project.properties.setText("WorkingLanguages", "");
     });
   });
 });

@@ -201,20 +201,13 @@ export default class ImdiGenerator {
 
     this.startGroup("Corpus");
 
-    // Corpus/Name should use first language only (it's an identifier)
-    const titleField = project.properties.getTextField("title");
-    const firstLanguage = titleField.getAllNonEmptyTextAxes()[0] || "en";
-    const nameValue =
-      titleField.getTextAxis(firstLanguage) || project.displayName;
-    this.element("Name", nameValue);
-
-    // Corpus/Title - use multilingual export if ELAR schema (reuse requiredMonolingualField)
+    this.requiredMonolingualField("Name", "name", project);
     this.requiredMonolingualField("Title", "title", project);
 
     // Corpus/Description - use multilingual export with Name attribute
     this.requiredMonolingualFieldWithAttributes(
       "Description",
-      "collectionDescription",
+      "projectDescription",
       project,
       { Name: "short_description" }
     );
@@ -226,10 +219,6 @@ export default class ImdiGenerator {
     // Project is required by the schema
     this.addProjectInfo();
     this.group("Keys", () => {
-      this.keyElement(
-        "CorpusId",
-        project.properties.getTextStringOrEmpty("collectionKey")
-      );
       this.keyElement(
         "Funding Body",
         project.properties.getTextStringOrEmpty("fundingProjectFunder")
@@ -349,11 +338,12 @@ export default class ImdiGenerator {
 
   private addProjectInfo() {
     this.group("Project", () => {
-      // Project/Name: A short name/identifier - use first language value only (schema allows only one)
-      // Project/Title: The full title - can be multilingual in ELAR schema
-
-      this.requiredSingleValueField("Name", "title", this.project);
+      // Project/Name is a single identifier value.
+      // Project/Title is the full title and can be multilingual in the ELAR schema.
+      // Note it is intentional that we are repeating the name of the people or corpus in the project for now.
+      this.requiredMonolingualField("Name", "name", this.project);
       this.requiredMonolingualField("Title", "title", this.project);
+
       // ELAR would like to put some of fundingProjectFunder, fundingProjectAffiliation, fundingProjectLead, and fundingProjectContact under MDGroup/Project/Funder but that will need a new schema
       // for now, they have specified places for them *all over* (see fields.json5 & ImdiGenerator-courpus-metadata.spec.ts)
 
@@ -373,10 +363,10 @@ export default class ImdiGenerator {
 
       // Project/Description: "An elaborate description of the scope and goals of the project."
       // Can be multilingual in ELAR schema
-      // Note: Field is stored as 'collectionDescription' but XML tag is 'ProjectDescription' for compatibility
+      // ProjectDescription is the persisted XML tag; projectDescription is the internal field key.
       this.optionalMonolingualField(
         "Description",
-        "collectionDescription",
+        "projectDescription",
         this.project
       );
     });
@@ -515,7 +505,7 @@ export default class ImdiGenerator {
           });
         } else {
           this.addMissingSessionLanguage(
-            "collectionSubjectLanguages",
+            "SubjectLanguages",
             "Subject Language"
           );
         }
@@ -535,7 +525,7 @@ export default class ImdiGenerator {
           });
         } else {
           this.addMissingSessionLanguage(
-            "collectionWorkingLanguages",
+            "WorkingLanguages",
             "Working Language"
           );
         }
@@ -1433,7 +1423,7 @@ export default class ImdiGenerator {
       true, // required
       "", // default value
       target,
-      undefined, // no fallback
+      undefined,
       false // imdiSupportsMultipleElements = false - forces single element, no LanguageId
     );
   }
@@ -1934,11 +1924,11 @@ export default class ImdiGenerator {
       // Add subject and working languages from project
       this.group("Languages", () => {
         this.addMissingSessionLanguage(
-          "collectionSubjectLanguages",
+          "SubjectLanguages",
           "Subject Language"
         );
         this.addMissingSessionLanguage(
-          "collectionWorkingLanguages",
+          "WorkingLanguages",
           "Working Language"
         );
       });

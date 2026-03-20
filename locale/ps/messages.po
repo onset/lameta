@@ -287,8 +287,6 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-msgid "Funding Project"
-msgstr ""
 
 msgid "Generating CSV export..."
 msgstr ""

@@ -292,9 +292,6 @@ msgstr "Tidak ada file dengan nama yang mengandung 'Consent'"
 msgid "Full Name"
 msgstr "Nama Lengkap"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 

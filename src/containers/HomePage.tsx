@@ -329,6 +329,31 @@ class HomePage extends React.Component<IProps, IState> {
     }
   }
 
+  private getWindowTitle(): string {
+    const project = this.projectHolder.project;
+    if (!project) {
+      return "lameta";
+    }
+
+    const directoryName = Path.basename(project.directory);
+    const projectName = project.properties.getTextStringOrEmpty("name");
+    const projectTitle = project.properties
+      .getTextField("title")
+      .getTextForSimpleDisplay();
+    const projectDisplayName = project.displayName || directoryName;
+    const shouldIncludeDirectoryName =
+      directoryName !== projectName && directoryName !== projectTitle;
+
+    if (
+      shouldIncludeDirectoryName &&
+      projectDisplayName !== directoryName
+    ) {
+      return `${directoryName} / ${projectDisplayName}`;
+    }
+
+    return projectDisplayName;
+  }
+
   public render() {
     // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
     // this has been converted to modern react with hooks.
@@ -344,11 +369,7 @@ class HomePage extends React.Component<IProps, IState> {
       );
     }
 
-    let title = this.projectHolder.project
-      ? `${Path.basename(this.projectHolder.project.directory)}/ ${
-          this.projectHolder.project.displayName
-        }  - lameta`
-      : "lameta";
+    let title = this.getWindowTitle();
 
     title += " " + pkg.version;
 

@@ -116,7 +116,7 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const mockProject = createMockProject({
         metadata: {
           title: "Test Project",
-          collectionDescription: "A test project",
+          projectDescription: "A test project",
           archiveConfigurationName: "PARADISEC"
         }
       });
@@ -143,7 +143,7 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const mockProject = createMockProject({
         metadata: {
           title: "Test Project",
-          collectionDescription: "A test project",
+          projectDescription: "A test project",
           archiveConfigurationName: "ELAR"
         }
       });
@@ -170,7 +170,7 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const mockProject = createMockProject({
         metadata: {
           title: "Test Project",
-          collectionDescription: "A test project",
+          projectDescription: "A test project",
           archiveConfigurationName: "lameta"
         }
       });
@@ -196,7 +196,7 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const mockProject = createMockProject({
         metadata: {
           title: "Test Project",
-          collectionDescription: "A test project",
+          projectDescription: "A test project",
           archiveConfigurationName: "PARADISEC"
         }
       });

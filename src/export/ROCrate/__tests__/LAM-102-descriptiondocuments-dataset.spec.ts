@@ -73,7 +73,7 @@ describe("LAM-102: DescriptionDocuments Dataset", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";

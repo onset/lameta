@@ -100,10 +100,6 @@ msgctxt "lameta/project/analysisIso3CodeAndName"
 msgid "Working Language"
 msgstr "Língua de trabalho"
 
-msgctxt "lameta/project/collectionDescription"
-msgid "Collection Description"
-msgstr ""
-
 msgctxt "lameta/project/collectionName"
 msgid "Collection Name"
 msgstr ""
@@ -196,9 +192,6 @@ msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
-msgctxt "lameta/project/fundingProjectTitle"
-msgid "Funding Project Title"
-msgstr "Título do Projeto Patrocinador"
 
 msgctxt "lameta/project/grantId"
 msgid "Grant ID"

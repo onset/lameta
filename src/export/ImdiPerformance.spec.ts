@@ -51,7 +51,7 @@ describe("IMDI Export Performance Profiling", () => {
     // Create a project with realistic data
     project = Project.fromDirectory(projectDir);
     project.properties.setText("title", "Performance Test Project");
-    project.properties.setText("collectionDescription", "A test project for measuring IMDI export performance");
+    project.properties.setText("projectDescription", "A test project for measuring IMDI export performance");
     project.properties.setText("country", "United States");
     project.properties.setText("continent", "North America");
 

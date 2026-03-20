@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 import Tooltip from "react-tooltip-lite";
-import { FieldLabel } from "./FieldLabel";
+import { FieldInfoAffordances, FieldLabel } from "./FieldLabel";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
@@ -19,6 +19,9 @@ import {
   LanguageTagWithKebab
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
+
+const rowStyleAffordanceWidth = "24px";
+
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -153,6 +156,22 @@ export const TextFieldEdit: React.FunctionComponent<
           )}
         </div>
       </div>
+      {props.showAffordancesAfter && (
+        <div
+          className="field-affordances-after"
+          css={css`
+            display: flex;
+            align-self: flex-start;
+            margin-top: 4px;
+            margin-left: 6px;
+            flex-shrink: 0;
+            width: ${rowStyleAffordanceWidth};
+            min-width: ${rowStyleAffordanceWidth};
+          `}
+        >
+          <FieldInfoAffordances fieldDef={props.field.definition} />
+        </div>
+      )}
     </div>
   );
 });

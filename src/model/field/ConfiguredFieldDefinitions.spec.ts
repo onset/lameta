@@ -25,8 +25,9 @@ describe("computeMergedCatalog", () => {
       key: "title",
       //englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
       englishLabel: "Title", // changed back for lameta 3 since projectID has its own field now
-      form: "collection",
-      imdiComment: "Corpus/Title",
+      description: 'The funded project title, e.g. "New speakers of Edolo"',
+      form: "project",
+      imdiComment: "Corpus/Title, Project/Title",
 
       tabIndex: 99, // configuration changed
       tooltip: "My special tooltip", // configuration added this
@@ -100,7 +101,7 @@ describe("ELAR archive configuration", () => {
     const birthYearField = catalog.person.find((f) => f.key === "birthYear");
 
     expect(nameField).toBeDefined();
-    expect(nameField!.description).toBe(
+    expect(nameField!.tipOnUsingThisField).toBe(
       "Person will be listed by this name on the ELAR catalogue."
     );
     expect(birthYearField).toBeDefined();

@@ -7,6 +7,11 @@
   ],
   project: [
     {
+      key: "name",
+      multilingual: false,
+      tipOnUsingThisField: "Key + Grant Id. E.g. 0793-SG0123"
+    },
+    {
       key: "collectionSteward",
       visibility: "always",
       tipOnUsingThisField: "This is usually the same person as the Depositor."
@@ -15,10 +20,10 @@
     {
       key: "depositor",
       visibility: "always",
-      tipOnUsingThisField: "This is usually the same person as the Collection Steward."
+      separatorWithCommaInstructions: "This is usually the same person as the Collection Steward. For multiple people, separate with commas."
     },
     {
-      key: "collectionDescription",
+      key: "projectDescription",
       multilingual: true
     },
     {

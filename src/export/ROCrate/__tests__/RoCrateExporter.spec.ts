@@ -1280,7 +1280,7 @@ describe("RoCrateExporter project document folders", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "collectionDescription") return "Test Description";
+          if (key === "projectDescription") return "Test Description";
           return "";
         }),
         properties: {

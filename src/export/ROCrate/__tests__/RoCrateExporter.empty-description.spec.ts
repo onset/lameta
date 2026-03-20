@@ -13,12 +13,12 @@ describe("RoCrateExporter Empty Description", () => {
     mockProject = createMockProject({
       metadata: {
         title: "Test Project",
-        collectionDescription: "" // Empty description field exists but is empty
+        projectDescription: "" // Empty description field exists but is empty
       }
     });
   });
 
-  it("should use default description when collectionDescription is empty string", async () => {
+  it("should use default description when projectDescription is empty string", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset
@@ -33,13 +33,13 @@ describe("RoCrateExporter Empty Description", () => {
     expect(rootDataset.description).not.toBe("");
   });
 
-  it("should use default description when collectionDescription is only whitespace", async () => {
+  it("should use default description when projectDescription is only whitespace", async () => {
     // Override with whitespace-only description
     (mockProject.metadataFile as any).getTextProperty = vi
       .fn()
       .mockImplementation((key: string, defaultValue: string = "") => {
         if (key === "title") return "Test Project";
-        if (key === "collectionDescription") return "   "; // whitespace only
+        if (key === "projectDescription") return "   "; // whitespace only
         return defaultValue;
       });
 
@@ -57,13 +57,13 @@ describe("RoCrateExporter Empty Description", () => {
     expect(rootDataset.description).not.toBe("   ");
   });
 
-  it("should use actual description when collectionDescription has content", async () => {
+  it("should use actual description when projectDescription has content", async () => {
     // Override with actual content
     (mockProject.metadataFile as any).getTextProperty = vi
       .fn()
       .mockImplementation((key: string, defaultValue: string = "") => {
         if (key === "title") return "Test Project";
-        if (key === "collectionDescription")
+        if (key === "projectDescription")
           return "This is a real project description";
         return defaultValue;
       });

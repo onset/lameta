@@ -1234,7 +1234,7 @@ describe("RoCrateHtmlGenerator", () => {
     }
   });
 
-  it("should render both subject language and collection working languages with proper links", () => {
+  it("should render both subject language and working languages with proper links", () => {
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
       "@graph": [
@@ -1243,7 +1243,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Language Comparison",
           "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
-          collectionWorkingLanguages: "spa;ita"
+          WorkingLanguages: "spa;ita"
         },
         {
           "@id": "#language_etr",
@@ -1274,7 +1274,7 @@ describe("RoCrateHtmlGenerator", () => {
     );
     expect(html).toContain(">Edolo</a>");
 
-    // Collection Working Languages should also be linked to Glottolog, not just show raw codes
+    // Working Languages should also be linked to Glottolog, not just show raw codes
     expect(html).toContain(
       'href="https://glottolog.org/resource/languoid/iso/spa"'
     );
@@ -1285,10 +1285,10 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain(">Italian</a>");
 
     // Should NOT contain raw language codes
-    expect(html).not.toContain("Collection Working Languages:spa;ita");
+    expect(html).not.toContain("Working Languages:spa;ita");
   });
 
-  it("should handle collection working languages when language entities are not in graph", () => {
+  it("should handle working languages when language entities are not in graph", () => {
     const testData = {
       "@context": "https://w3id.org/ro/crate/1.1/context",
       "@graph": [
@@ -1296,7 +1296,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Missing Languages",
-          collectionWorkingLanguages: "fra;deu"
+          WorkingLanguages: "fra;deu"
         }
       ]
     };
@@ -1305,7 +1305,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Should show the raw language codes when no Language entities are found
     expect(html).toContain(
-      'Collection Working Languages:</span><span class="property-value">fra, deu</span>'
+      'Working Languages:</span><span class="property-value">fra, deu</span>'
     );
   });
 
@@ -1317,7 +1317,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Mixed Languages",
-          collectionWorkingLanguages: "spa;xyz;ita"
+          WorkingLanguages: "spa;xyz;ita"
         },
         {
           "@id": "#language_spa",

@@ -22,7 +22,7 @@ describe("RO-Crate Field Integration Tests", () => {
 
     expect(projectFields.find((f) => f.key === "title")).toBeDefined();
     expect(
-      projectFields.find((f) => f.key === "collectionDescription")
+      projectFields.find((f) => f.key === "projectDescription")
     ).toBeDefined();
     expect(projectFields.find((f) => f.key === "grantId")).toBeDefined();
 

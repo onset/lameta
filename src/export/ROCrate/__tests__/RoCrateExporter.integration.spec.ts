@@ -178,7 +178,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           return "";
         }),

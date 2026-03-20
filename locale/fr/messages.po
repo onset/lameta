@@ -292,9 +292,6 @@ msgstr "Aucun fichier trouvé contenant le nom 'consentement'"
 msgid "Full Name"
 msgstr "Nom complet"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 

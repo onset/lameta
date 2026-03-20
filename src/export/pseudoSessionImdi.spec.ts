@@ -5,6 +5,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
+  value,
   printResultXml
 } from "../other/xmlUnitTestUtils";
 import temp from "temp";
@@ -163,8 +164,9 @@ describe("Pseudo-session IMDI for project documents", () => {
       );
     });
 
-    it("should include project name from title", () => {
-      project.properties.setText("title", "My Project Name");
+    it("should include project name from name", () => {
+      project.properties.setText("name", "My Project Name");
+      project.properties.setText("title", "My Project Title");
 
       const generator = new ImdiGenerator(
         IMDIMode.RAW_IMDI,
@@ -182,9 +184,30 @@ describe("Pseudo-session IMDI for project documents", () => {
       expect("//Session/MDGroup/Project/Name").toMatch("My Project Name");
     });
 
+    it("should leave project name empty when name is empty", () => {
+      project.properties.setText("name", "");
+      project.properties.setText("title", "Fallback Project Title");
+
+      const generator = new ImdiGenerator(
+        IMDIMode.RAW_IMDI,
+        project.descriptionFolder,
+        project
+      );
+      const xml = generator.makePseudoSessionImdiForOtherFolder(
+        "DescriptionDocuments",
+        project.descriptionFolder,
+        "Collection description",
+        true // omitNamespaces for testing
+      );
+      setResultXml(xml);
+
+      expect(count("//Session/MDGroup/Project/Name")).toBe(1);
+      expect(value("//Session/MDGroup/Project/Name")).toBe("");
+    });
+
     it("should include project description as sibling of Contact", () => {
       project.properties.setText(
-        "collectionDescription",
+        "projectDescription",
         "This project documents an endangered language"
       );
 
@@ -253,7 +276,7 @@ describe("Pseudo-session IMDI for project documents", () => {
   describe("Languages", () => {
     it("should include subject languages from project", () => {
       project.properties.setText(
-        "collectionSubjectLanguages",
+        "SubjectLanguages",
         "spa:Spanish;por:Portuguese"
       );
 
@@ -283,7 +306,7 @@ describe("Pseudo-session IMDI for project documents", () => {
     });
 
     it("should include working languages from project", () => {
-      project.properties.setText("collectionWorkingLanguages", "eng:English");
+      project.properties.setText("WorkingLanguages", "eng:English");
 
       const generator = new ImdiGenerator(
         IMDIMode.RAW_IMDI,
@@ -308,8 +331,8 @@ describe("Pseudo-session IMDI for project documents", () => {
     });
 
     it("should include both subject and working languages", () => {
-      project.properties.setText("collectionSubjectLanguages", "spa:Spanish");
-      project.properties.setText("collectionWorkingLanguages", "eng:English");
+      project.properties.setText("SubjectLanguages", "spa:Spanish");
+      project.properties.setText("WorkingLanguages", "eng:English");
 
       const generator = new ImdiGenerator(
         IMDIMode.RAW_IMDI,
@@ -470,7 +493,7 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should work the same for OtherDocuments folder", async () => {
       await project.otherDocsFolder.addFileForTestAsync(randomFileName());
       project.properties.setText("collectionSteward", "Dr. John Doe");
-      project.properties.setText("collectionSubjectLanguages", "fra:French");
+      project.properties.setText("SubjectLanguages", "fra:French");
       project.properties.setText("title", "French Documentation Project");
 
       const generator = new ImdiGenerator(

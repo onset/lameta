@@ -307,8 +307,8 @@ export function handlePlainValueField(context: FieldHandlerContext): boolean {
     // Access is now handled through the license system
     return true;
   }
-  if (field.key === "collectionDescription") {
-    // collectionDescription is mapped to the standard 'description' property
+  if (field.key === "projectDescription") {
+    // projectDescription is mapped to the standard 'description' property
     return true;
   }
   if (field.key === "title" && folderEntry["name"]) {

@@ -6,9 +6,36 @@ import path from "path";
 
 // Skip this suite if the optional Large Sample fixtures are not present locally
 const largeSamplePath = path.resolve("sample data", "Large Sample");
-const hasLargeSample = fs.existsSync(largeSamplePath);
+const largeSampleFixtureMarkers = [
+  {
+    filePath: path.join(largeSamplePath, "Large Sample.sprj"),
+    expectedText: "Kürbinian Language Documentation Project"
+  },
+  {
+    filePath: path.join(
+      largeSamplePath,
+      "Sessions",
+      "KUR002_CreationMyth",
+      "KUR002_CreationMyth.session"
+    ),
+    expectedText: "The Myth of the First Gourd - Valo-Kürb Mira"
+  },
+  {
+    filePath: path.join(
+      largeSamplePath,
+      "People",
+      "Elara_Miravalo",
+      "Elara_Miravalo.person"
+    ),
+    expectedText: "Elara Miravalo"
+  }
+];
+const hasPopulatedLargeSample = largeSampleFixtureMarkers.every(
+  ({ filePath, expectedText }) =>
+    fs.existsSync(filePath) && fs.readFileSync(filePath, "utf8").includes(expectedText)
+);
 
-(hasLargeSample ? describe : describe.skip)(
+(hasPopulatedLargeSample ? describe : describe.skip)(
   "Large Sample Project Loading",
   () => {
     it("should successfully load the Large Sample project via Project.fromDirectory", () => {
@@ -24,7 +51,7 @@ const hasLargeSample = fs.existsSync(largeSamplePath);
         "NSF-DEL-2024-789"
       );
       expect(
-        project.properties.getTextStringOrEmpty("collectionDescription")
+        project.properties.getTextStringOrEmpty("projectDescription")
       ).toContain("Kürbinian");
       expect(project.properties.getTextStringOrEmpty("country")).toBe(
         "Mythical Research Territory"

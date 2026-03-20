@@ -22,27 +22,27 @@ describe("Project Write", () => {
     temp.cleanupSync();
   });
 
-  it("should round-trip CollectionSubjectLanguages", () => {
+  it("should round-trip SubjectLanguages", () => {
     AttemptRoundTripOfOneField(
-      "collectionSubjectLanguages",
-      "CollectionSubjectLanguages",
+      "SubjectLanguages",
+      "SubjectLanguages",
       "foo: Foo"
     );
     AttemptRoundTripOfOneField(
-      "collectionSubjectLanguages",
-      "CollectionSubjectLanguages",
+      "SubjectLanguages",
+      "SubjectLanguages",
       "foo: Foo;bar: Bar"
     );
   });
-  it("should round-trip CollectionWorkingLanguages", () => {
+  it("should round-trip WorkingLanguages", () => {
     AttemptRoundTripOfOneField(
-      "collectionWorkingLanguages",
-      "CollectionWorkingLanguages",
+      "WorkingLanguages",
+      "WorkingLanguages",
       "foo: Foo"
     );
     AttemptRoundTripOfOneField(
-      "collectionWorkingLanguages",
-      "CollectionWorkingLanguages",
+      "WorkingLanguages",
+      "WorkingLanguages",
       "foo: Foo;bar: Bar"
     );
   });
@@ -53,35 +53,45 @@ describe("Project Write", () => {
       "FooBar"
     );
   });
-  it("should write deprecated VernacularISO3CodeAndName with first language in collectionSubjectLanguages", () => {
+  it("should write deprecated VernacularISO3CodeAndName with first language in SubjectLanguages", () => {
     const f = GetProjectFileWithOneField(
-      "CollectionSubjectLanguages",
+      "SubjectLanguages",
       "foo: Foo; bar: Bar"
     );
     setResultXml(f.getXml(true));
     // saving old field here for versions before lameta 3
     xexpect("Project/VernacularISO3CodeAndName").toMatch("foo: Foo");
+    xexpect("Project/SubjectLanguages").toMatch("foo: Foo; bar: Bar");
     xexpect("Project/CollectionSubjectLanguages").toMatch("foo: Foo; bar: Bar");
   });
 
   it("should write languages", () => {
     const f = GetProjectFileWithOneField("unused", "x");
-    f.properties.setText("collectionSubjectLanguages", "ab;cd;ef");
-    f.properties.setText("collectionWorkingLanguages", "gh;ij");
+    f.properties.setText("SubjectLanguages", "ab;cd;ef");
+    f.properties.setText("WorkingLanguages", "gh;ij");
     setResultXml(f.getXml());
-    xexpect("Project/CollectionSubjectLanguages").toHaveCount(1);
-    xexpect(
-      "Project/CollectionSubjectLanguages[text()='ab;cd;ef']"
-    ).toHaveCount(1);
-    xexpect("Project/CollectionWorkingLanguages").toHaveCount(1);
-    xexpect("Project/CollectionWorkingLanguages[text()='gh;ij']").toHaveCount(
+    xexpect("Project/SubjectLanguages").toHaveCount(1);
+    xexpect("Project/SubjectLanguages[text()='ab;cd;ef']").toHaveCount(1);
+    xexpect("Project/WorkingLanguages").toHaveCount(1);
+    xexpect("Project/WorkingLanguages[text()='gh;ij']").toHaveCount(
       1
     );
+    xexpect("Project/CollectionSubjectLanguages").toHaveCount(1);
+    xexpect("Project/CollectionWorkingLanguages").toHaveCount(1);
     // and these we output for backwards compatibility
     xexpect("Project/VernacularISO3CodeAndName").toHaveCount(1);
     xexpect("Project/VernacularISO3CodeAndName[text()='ab']").toHaveCount(1);
     xexpect("Project/AnalysisISO3CodeAndName").toHaveCount(1);
     xexpect("Project/AnalysisISO3CodeAndName[text()='gh']").toHaveCount(1);
+  });
+
+  it("should not write legacy CollectionKey fields", () => {
+    const f = GetProjectFileWithOneField("CollectionKey", "obsolete-id");
+
+    setResultXml(f.getXml(true));
+
+    expect(count("Project/CollectionKey")).toBe(0);
+    expect(count("Project/*[text()='obsolete-id']")).toBe(0);
   });
 });
 

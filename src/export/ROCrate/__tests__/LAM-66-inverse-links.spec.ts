@@ -172,7 +172,7 @@ describe("LAM-66: Inverse Links", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "A test project for inverse links";
           return "";
         }),

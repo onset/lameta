@@ -46,10 +46,10 @@ form.project {
   }
 
   .primary,
-  .collection,
+  .project,
   .fundingProject,
   .languages,
-  .collectionLocation,
+  .projectLocation,
   .accessProtocol {
     .field {
       display: flex;

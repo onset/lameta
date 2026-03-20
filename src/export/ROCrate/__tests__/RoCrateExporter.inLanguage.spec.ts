@@ -31,7 +31,7 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
       filePrefix: "test-project",
       metadata: {
         title: "Test Project",
-        collectionWorkingLanguages: "etr"
+        WorkingLanguages: "etr"
       }
     });
 

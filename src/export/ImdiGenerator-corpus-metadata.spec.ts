@@ -4,6 +4,7 @@ import {
   setResultXml,
   xexpect as expect,
   count,
+  value,
   printResultXml
 } from "../other/xmlUnitTestUtils";
 import temp from "temp";
@@ -44,14 +45,11 @@ describe("Imdi generation Funding Project", () => {
 
   it("should export collection and funding project data correctly", () => {
     TestFields([
+      { key: "name", xpath: "Corpus/Name" },
       { key: "title", xpath: "Corpus/Title" },
       {
-        key: "collectionDescription",
+        key: "projectDescription",
         xpath: "Corpus/Description[@Name='short_description']"
-      },
-      {
-        key: "collectionKey",
-        xpath: "Corpus/MDGroup/Keys/Key[@Name='CorpusId']"
       },
 
       {
@@ -72,6 +70,7 @@ describe("Imdi generation Funding Project", () => {
       // We don't have a way to test that yet.
 
       { key: "grantId", xpath: "Corpus/MDGroup/Project/Id" },
+      { key: "name", xpath: "Corpus/MDGroup/Project/Name" },
       // Project/Title now mirrors the collection title (not fundingProjectTitle)
       { key: "title", xpath: "Corpus/MDGroup/Project/Title" },
       {
@@ -174,7 +173,7 @@ describe("IMDI corpus multilingual field export", () => {
     });
 
     // Set multilingual description
-    const descField = project.properties.getTextField("collectionDescription");
+    const descField = project.properties.getTextField("projectDescription");
     descField.setTextAxis("en", "English description of collection");
     descField.setTextAxis("es", "Descripción en español");
 
@@ -251,7 +250,7 @@ describe("IMDI corpus multilingual field export", () => {
     expect(xml.indexOf("[[es]]") === -1).toBe(true);
   });
 
-  it("should export single Project/Name without LanguageId even when title has multiple languages (ELAR schema)", () => {
+  it("should export single Name elements from project name and multilingual Title elements from title (ELAR schema)", () => {
     // Configure for ELAR schema
     SetOtherConfigurationSettings({
       configurationFullName: "ELAR",
@@ -262,11 +261,13 @@ describe("IMDI corpus multilingual field export", () => {
       imdiSchema: "IMDI_3.0_elar.xsd"
     });
 
-    // Set multilingual title - but Project/Name should only use first language
-    // because IMDI schema only allows a single Project/Name element
+    project.properties.setText("name", "Short Project Name");
+
+    // Set multilingual title - Name elements should stay single-valued,
+    // while Title elements can be multilingual in the ELAR schema.
     const titleField = project.properties.getTextField("title");
-    titleField.setTextAxis("en", "English Collection Name");
-    titleField.setTextAxis("es", "Nombre de Colección en Español");
+    titleField.setTextAxis("en", "English Project Title");
+    titleField.setTextAxis("es", "Título del Proyecto en Español");
 
     const xml = ImdiGenerator.generateCorpus(
       IMDIMode.RAW_IMDI,
@@ -277,24 +278,55 @@ describe("IMDI corpus multilingual field export", () => {
     setResultXml(xml);
     // printResultXml();
 
+    expect("METATRANSCRIPT/Corpus/Name").toHaveCount(1);
+    expect("METATRANSCRIPT/Corpus/Name[@LanguageId]").toHaveCount(0);
+    expect("METATRANSCRIPT/Corpus/Name").toMatch("Short Project Name");
+
     // Project/Name should have exactly one element (schema doesn't allow multiples)
     expect("METATRANSCRIPT/Corpus/MDGroup/Project/Name").toHaveCount(1);
     // No LanguageId attribute on Project/Name
     expect(
       "METATRANSCRIPT/Corpus/MDGroup/Project/Name[@LanguageId]"
     ).toHaveCount(0);
-    // Should use the first/English value
+    // Should use the explicit project name
     expect("METATRANSCRIPT/Corpus/MDGroup/Project/Name").toMatch(
-      "English Collection Name"
+      "Short Project Name"
     );
 
     // Project/Title should have multilingual values (ELAR schema supports this)
+    expect("METATRANSCRIPT/Corpus/Title").toHaveCount(2);
+    expect(
+      "METATRANSCRIPT/Corpus/Title[@LanguageId='ISO639-3:eng']"
+    ).toMatch("English Project Title");
+    expect(
+      "METATRANSCRIPT/Corpus/Title[@LanguageId='ISO639-3:spa']"
+    ).toMatch("Título del Proyecto en Español");
+
     expect("METATRANSCRIPT/Corpus/MDGroup/Project/Title").toHaveCount(2);
     expect(
       "METATRANSCRIPT/Corpus/MDGroup/Project/Title[@LanguageId='ISO639-3:eng']"
-    ).toMatch("English Collection Name");
+    ).toMatch("English Project Title");
     expect(
       "METATRANSCRIPT/Corpus/MDGroup/Project/Title[@LanguageId='ISO639-3:spa']"
-    ).toMatch("Nombre de Colección en Español");
+    ).toMatch("Título del Proyecto en Español");
+  });
+
+  it("should leave Name elements empty when project name is empty", () => {
+    project.properties.setText("name", "");
+    const titleField = project.properties.getTextField("title");
+    titleField.setTextAxis("en", "Fallback Project Title");
+
+    const xml = ImdiGenerator.generateCorpus(
+      IMDIMode.RAW_IMDI,
+      project,
+      [],
+      true
+    );
+    setResultXml(xml);
+
+    expect("METATRANSCRIPT/Corpus/Name").toHaveCount(1);
+    expect("METATRANSCRIPT/Corpus/MDGroup/Project/Name").toHaveCount(1);
+    expect(value("METATRANSCRIPT/Corpus/Name")).toBe("");
+    expect(value("METATRANSCRIPT/Corpus/MDGroup/Project/Name")).toBe("");
   });
 });

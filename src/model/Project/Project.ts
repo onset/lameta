@@ -135,7 +135,7 @@ export class Project extends Folder {
     return sCurrentProject === null
       ? ""
       : sCurrentProject.properties.getTextStringOrEmpty(
-          "collectionSubjectLanguages"
+          "SubjectLanguages"
         );
   }
 
@@ -269,7 +269,7 @@ export class Project extends Folder {
     return sCurrentProject === null
       ? ""
       : sCurrentProject.properties.getTextStringOrEmpty(
-          "collectionWorkingLanguages"
+          "WorkingLanguages"
         );
   }
 
@@ -387,7 +387,9 @@ export class Project extends Folder {
   /**
    * Get the current project's vocabulary translations, if available.
    */
-  public static getVocabularyTranslations(): VocabularyTranslations | undefined {
+  public static getVocabularyTranslations():
+    | VocabularyTranslations
+    | undefined {
     return sCurrentProject?.vocabularyTranslations;
   }
 
@@ -420,8 +422,9 @@ export class Project extends Folder {
       this.wasChangeThatMobxDoesNotNotice();
     }
 
-    if (this.properties.getTextStringOrEmpty("title").length === 0) {
-      this.properties.setText("title", Path.basename(directory));
+    if (this.properties.getTextStringOrEmpty("name").length === 0) {
+      const title = this.properties.getTextStringOrEmpty("title");
+      this.properties.setText("name", title || Path.basename(directory));
     }
     // Note, we'd rather have an id that cannot change, but don't have one to
     // work with at the moment.
@@ -815,7 +818,14 @@ export class Project extends Folder {
 
   public get displayName(): string {
     const titleField = this.properties.getTextField("title");
-    return titleField.getTextForSimpleDisplay();
+    const t = titleField.getTextForSimpleDisplay();
+    const projectName = this.properties.getTextStringOrEmpty("name");
+
+    if (projectName && t) {
+      return projectName + " - " + t;
+    }
+
+    return projectName || t;
   }
 
   private getUniqueFolder(directory: string, baseName: string): string {
@@ -1367,8 +1377,8 @@ export class Project extends Folder {
   // }
 
   // used only by unit tests
-  public setCollectionSubjectLanguages(content: string) {
-    this.properties.setText("collectionSubjectLanguages", content);
+  public setSubjectLanguages(content: string) {
+    this.properties.setText("SubjectLanguages", content);
   }
 
   private getFirstLanguageCodeAndName(fieldName: string):
@@ -1401,15 +1411,15 @@ export class Project extends Folder {
         englishName: string;
       }
     | undefined {
-    return this.getFirstLanguageCodeAndName("collectionSubjectLanguages");
+    return this.getFirstLanguageCodeAndName("SubjectLanguages");
   }
 
   public getWorkingLanguageName(): string | undefined {
-    return this.getFirstLanguageCodeAndName("collectionWorkingLanguages")
+    return this.getFirstLanguageCodeAndName("WorkingLanguages")
       ?.englishName;
   }
   public getWorkingLanguageCode(): string | undefined {
-    return this.getFirstLanguageCodeAndName("collectionWorkingLanguages")
+    return this.getFirstLanguageCodeAndName("WorkingLanguages")
       ?.iso639_3;
   }
 
@@ -1504,13 +1514,28 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     // VernacularISO3CodeAndName to the first item in it.
     this.migrateLanguageField(
       "VernacularISO3CodeAndName", // note, uppercase because it is unknown to our field definitions, so it keeps the same case as the xml tag
-      "collectionSubjectLanguages"
+      "SubjectLanguages"
     );
     // same for the anlysis language
     this.migrateLanguageField(
       "AnalysisISO3CodeAndName", // note, uppercase because it is unknown to our field definitions, so it keeps the same case as the xml tag
-      "collectionWorkingLanguages"
+      "WorkingLanguages"
     );
+
+    this.migrateRenamedField(
+      "CollectionSubjectLanguages",
+      "SubjectLanguages"
+    );
+    this.migrateRenamedField(
+      "CollectionWorkingLanguages",
+      "WorkingLanguages"
+    );
+    this.migrateRenamedField(
+      "collectionDescription",
+      "projectDescription"
+    );
+    this.removeLegacyField("collectionKey");
+    this.removeLegacyField("CollectionKey");
 
     this.migrateContinentChoices();
   }
@@ -1525,16 +1550,21 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     // remove the legacy value if it is there
     this.properties.removeProperty(legacySingle);
 
-    this.properties.removeProperty("VernacularISO3CodeAndName");
+    // otherwise, ignore the V2 single-language value
+  }
 
-    // otheriwse, ignore the legacy value
+  private migrateRenamedField(oldKey: string, newKey: string) {
+    if (this.properties.getTextStringOrEmpty(newKey).length === 0) {
+      this.properties.setText(
+        newKey,
+        this.properties.getTextStringOrEmpty(oldKey)
+      );
+    }
+    this.properties.removeProperty(oldKey);
+  }
 
-    // else {
-    //   const parts = this.properties
-    //     .getTextStringOrEmpty(modernMultiple)
-    //     .split(";");
-    //   this.properties.setText(legacySingle, parts[0] || "");
-    // }
+  private removeLegacyField(key: string) {
+    this.properties.removeProperty(key);
   }
 
   private migrateContinentChoices() {

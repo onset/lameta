@@ -102,12 +102,8 @@ msgctxt "lameta/project/collectionDeputySteward/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
-msgctxt "lameta/project/collectionDescription"
+msgctxt "lameta/project/projectDescription"
 msgid "Description"
-msgstr ""
-
-msgctxt "lameta/project/collectionKey"
-msgid "Collection Key"
 msgstr ""
 
 msgctxt "lameta/project/collectionSteward"
@@ -192,10 +188,6 @@ msgstr ""
 
 msgctxt "lameta/project/fundingProjectFunder"
 msgid "Funder"
-msgstr ""
-
-msgctxt "lameta/project/fundingProjectTitle"
-msgid "Funding Project Title"
 msgstr ""
 
 msgctxt "lameta/project/grantId"

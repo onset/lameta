@@ -60,7 +60,9 @@ export function makeParadisecProjectFields(project: Project): string[][] {
     projectDescriptionBlacklist,
     (key) =>
       key
+        .replace("SubjectLanguages", "subject-lang")
         .replace("collectionSubjectLanguages", "subject-lang")
+        .replace("WorkingLanguages", "working-lang")
         .replace("workingLanguages", "working-lang")
   );
 

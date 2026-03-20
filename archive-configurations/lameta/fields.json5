@@ -63,34 +63,23 @@
 
     /* ------ Funding Project --------- */
     {
-      // confusing because, as ELAR's request, the lameta project title
-      // was labled as "Project ID" in lameta 2.x, but it also had a
-      // "grant id" field which is what actually went out to IMDI Project/Id!
-      // For now we're going to just stick with the "grantId" key
-      // and change the UI only, so what is "Grant ID" in lameta 2.x becomes
-      // "Project ID" under "Funding Project" in lameta 3.x
       key: "grantId",
-      //lameta2Tag: "grantId",
+      lameta2Tag: "grantId",
       xmlTag: "GrantId",
-      englishLabel: "Project ID",
+      englishLabel: "Grant ID",
       form: "fundingProject",
       tabIndex: 0,
       imdiComment: "Corpus/MDGroup/Project/Id"
     },
-    // {
-    //   key: "grantId",
-    //   xmlTag: "grantId",
-    //   xmlComment: "deprecated in 3.x, copied to fundingProjectId",
-    //   deprecated: true,
-    //   outputForOlderVersionsFrom: "fundingProjectId"
-    // },
 
     {
+      /* deprecated. Keeping this allows the data to not be lost if opened in v3 and
+      then they return to v2 */
       key: "fundingProjectTitle",
       englishLabel: "Funding Project Title",
       xmlTag: "FundingProjectTitle",
       form: "fundingProject",
-      imdiComment: "Corpus/MDGroup/Project/Title"
+      deprecated: "Retired in lameta V3 per ELAR request"
     },
     {
       key: "fundingProjectFunder",
@@ -126,32 +115,32 @@
     //   description: "Contact information about the person or institution responsible for the project.",
     //   tabIndex: 10
     // },
-    /* ------ Collection --------- */
-
+    /* ------ Project --------- */
+    {
+      key: "name",
+      xmlTag: "ProjectName",
+      englishLabel: "Name",
+      form: "project",
+      tabIndex: 0,
+      description: "The formal name of the project.",
+      imdiComment: "Project/Name, Corpus/Name" // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
+    },
     {
       key: "title",
       xmlTag: "Title",
-      englishLabel: "Title", // changed to Project ID at ELAR request Dec 2019
-      form: "collection",
+      englishLabel: "Title",
+      form: "project",
       tabIndex: 0,
-      imdiComment: "Corpus/Title"
+      description: 'The funded project title, e.g. "New speakers of Edolo"',
+      imdiComment: "Corpus/Title, Project/Title" // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
     },
     {
-      key: "collectionKey",
-      englishLabel: "Collection Key",
-      xmlTag: "CollectionKey",
-      form: "collection",
-      tabIndex: 1,
-      visibility: "never",
-      imdiComment: "Corpus/MDGroup/Keys/Key[@Name='CorpusId']"
-    },
-    {
-      key: "collectionDescription",
+      key: "projectDescription",
       lameta2Tag: "projectDescription",
       xmlTag: "ProjectDescription",
       englishLabel: "Description",
       multipleLines: true,
-      form: "collection",
+      form: "project",
       visibility: "always",
       imdiComment: "Corpus/Description[@Name='short_description']",
       tabIndex: 2
@@ -161,7 +150,7 @@
       xmlTag: "CollectionSteward",
       englishLabel: "Steward",
       visibility: "never",
-      form: "collection",
+      form: "project",
       cssClass: "field__newSection",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Collection Steward']",
       tabIndex: 4
@@ -172,7 +161,7 @@
       englishLabel: "Deputy Stewards",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "never",
-      form: "collection",
+      form: "project",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward'] - can be repeated",
       tabIndex: 5
     },
@@ -182,7 +171,7 @@
       englishLabel: "Depositors",
       separatorWithCommaInstructions: "For multiple people, separate with commas",
       visibility: "always",
-      form: "collection",
+      form: "project",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Depositor'] - can be repeated",
       tabIndex: 6
     },
@@ -208,7 +197,7 @@
       key: "collectionName",
       englishLabel: "Collection Name",
       visibility: "never",
-      form: "collection",
+      form: "project",
       tabIndex: 1
     },
     */
@@ -217,7 +206,7 @@
     // ------------This could eventually be its own kind of object. Currently is is just part of the Collection
     {
       key: "location",
-      form: "collectionLocation",
+      form: "projectLocation",
       englishLabel: "Location/Address",
       xmlTag: "Location",
       multipleLines: true,
@@ -226,14 +215,14 @@
     {
       key: "region",
 
-      form: "collectionLocation",
+      form: "projectLocation",
       englishLabel: "Region",
       xmlTag: "Region",
       tabIndex: 19
     },
     {
       key: "country",
-      form: "collectionLocation",
+      form: "projectLocation",
       englishLabel: "Country",
       xmlTag: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
@@ -243,7 +232,7 @@
     },
     {
       key: "continent",
-      form: "collectionLocation",
+      form: "projectLocation",
       englishLabel: "Continent",
       xmlTag: "Continent",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Continents.xml",
@@ -264,9 +253,10 @@
     },
 
     {
-      key: "collectionSubjectLanguages",
+      key: "SubjectLanguages",
       englishLabel: "Subject Languages",
-      xmlTag: "CollectionSubjectLanguages",
+      xmlTag: "SubjectLanguages",
+      tipOnUsingThisField: "Languages being studied in this project.",
       form: "languages",
       type: "languageChoices",
       controlProps: {
@@ -280,9 +270,10 @@
       tabIndex: 1
     },
     {
-      key: "collectionWorkingLanguages",
-      xmlTag: "CollectionWorkingLanguages",
+      key: "WorkingLanguages",
+      xmlTag: "WorkingLanguages",
       englishLabel: "Working Languages",
+      tipOnUsingThisField: "Languages used by researchers during data collection and analysis.",
       form: "languages",
       type: "languageChoices",
       controlProps: {},
@@ -300,7 +291,7 @@
       key: "metadataLanguages",
       xmlTag: "MetadataLanguages",
       englishLabel: "Metadata Languages",
-      description: "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields.",
+      tipOnUsingThisField: "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields.",
       form: "languages",
       type: "languageChoices",
       controlProps: {
@@ -765,10 +756,4 @@
     },
     { key: "genre", multingual: false }
   ]
-  // an idea, I don't know if it's worth it:
-  // migrations:[
-  //   {
-  //     oldXmlTag: "grantId",
-  //     toField: "fundingProjectId",
-  //   }
 }
