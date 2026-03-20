@@ -9,13 +9,13 @@
     {
       key: "collectionSteward",
       visibility: "always",
-      description: "This is usually the same person as the Depositor."
+      tipOnUsingThisField: "This is usually the same person as the Depositor."
     },
     { key: "collectionDeputySteward", visibility: "always" },
     {
       key: "depositor",
       visibility: "always",
-      description: "This is usually the same person as the Collection Steward."
+      tipOnUsingThisField: "This is usually the same person as the Collection Steward."
     },
     {
       key: "collectionDescription",
@@ -50,7 +50,7 @@
 
     {
       key: "id",
-      description: "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only."
+      tipOnUsingThisField: "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only."
     },
     {
       key: "description",
@@ -59,39 +59,39 @@
     {
       key: "title",
       multilingual: true,
-      description: "Title should be a short, meaningful sentence"
+      tipOnUsingThisField: "Title should be a short, meaningful sentence"
     },
     {
       key: "genre",
       multilingual: true,
-      description: "Select from the drop-down menu."
+      tipOnUsingThisField: "Select from the drop-down menu."
     },
     {
       key: "subgenre",
-      description: "Subgenre is optional"
+      tipOnUsingThisField: "Subgenre is optional"
     },
     {
       key: "topic",
       multilingual: true,
-      description: "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma."
+      separatorWithCommaInstructions: "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma."
     },
     {
       key: "keyword",
       multilingual: true,
-      description: "Add at least one Keyword. Multiple values must be separated with commas. Individual keywords cannot contain a comma."
+      separatorWithCommaInstructions: "Add at least one Keyword. Multiple values must be separated with commas. Individual keywords cannot contain a comma."
     },
     {
       key: "access",
-      description: "Select from the drop down menu. If you select the access level S you must complete the adjacent Access Explanation field."
+      tipOnUsingThisField: "Select from the drop down menu. If you select the access level S you must complete the adjacent Access Explanation field."
     },
     {
       key: "accessDescription",
       multilingual: true,
-      description: "Complete for sessions marked S, optional otherwise. Should be a short explanation about why access is restricted, and for how long."
+      tipOnUsingThisField: "Complete for sessions marked S, optional otherwise. Should be a short explanation about why access is restricted, and for how long."
     },
     {
       key: "customFields",
-      description: "Optional"
+      tipOnUsingThisField: "Optional"
     },
     {
       key: "locationContinent",
@@ -109,19 +109,19 @@
   person: [
     {
       key: "name",
-      description: "Person will be listed by this name on the ELAR catalogue."
+      tipOnUsingThisField: "Person will be listed by this name on the ELAR catalogue."
     },
     {
       key: "nickname",
-      description: "Optional, can be left blank."
+      tipOnUsingThisField: "Optional, can be left blank."
     },
     {
       key: "code",
-      description: "Optional, can be left blank."
+      tipOnUsingThisField: "Optional, can be left blank."
     },
     {
       key: "languages",
-      description: "Star indicates primary language. Icons indicate whether mother and father speak the language - this is optional."
+      tipOnUsingThisField: "Star indicates primary language. Icons indicate whether mother and father speak the language - this is optional."
     },
     {
       key: "birthYear",
@@ -129,25 +129,25 @@
     },
     {
       key: "education",
-      description: "Optional"
+      tipOnUsingThisField: "Optional"
     },
     {
       key: "howToContact",
-      description: "Leave blank",
+      tipOnUsingThisField: "Leave blank",
       visibility: "never"
     },
     {
       key: "ethnicGroup",
-      description: "Optional"
+      tipOnUsingThisField: "Optional"
     },
     {
       key: "primaryOccupation",
-      description: "Optional"
+      tipOnUsingThisField: "Optional"
     },
     {
       key: "description",
       multilingual: true,
-      description: "Should contain basic information about the person's background, role in the community and/or project, and a basic language profile."
+      tipOnUsingThisField: "Should contain basic information about the person's background, role in the community and/or project, and a basic language profile."
     }
   ],
   projectDocuments: [

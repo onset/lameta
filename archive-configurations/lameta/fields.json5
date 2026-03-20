@@ -733,8 +733,7 @@
     {
       key: "primaryOccupation",
       xmlTag: "PrimaryOccupation",
-      englishLabel: "Primary Occupation",
-      omitFromImdi: true
+      englishLabel: "Primary Occupation"
     },
     {
       key: "description",
