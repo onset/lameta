@@ -99,8 +99,8 @@ test.describe("ArchiveConfiguration", () => {
     await page.locator("#access-chooser").click();
     await shouldSeeExactlyOnce(page, [
       "O: fully open",
-      "U: open to users",
-      "S: open to subscribers"
+      "U: available to registered users",
+      "S: available upon request only"
     ]);
   });
 });

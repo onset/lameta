@@ -13,6 +13,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@assets": path.resolve(__dirname, "./assets"),
+      "@mui/system/createStyled": path.resolve(
+        __dirname,
+        "./node_modules/@mui/system/esm/createStyled.js"
+      ),
       "package.json": path.resolve(__dirname, "./package.json")
     }
   },

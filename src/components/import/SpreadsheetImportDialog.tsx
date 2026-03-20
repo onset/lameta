@@ -33,7 +33,11 @@ import { IFolderType } from "../../model/Folder/Folder";
 import { analyticsEvent } from "../../other/analytics";
 import { app } from "@electron/remote";
 
-export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
+let showSpreadsheetImportDialogImpl = (_folderType: IFolderType) => {};
+
+export const showSpreadsheetImportDialog = (folderType: IFolderType) => {
+  showSpreadsheetImportDialogImpl(folderType);
+};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
@@ -44,7 +48,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     "LingMetaXMap"
   );
 
-  showSpreadsheetImportDialog = (folderType: IFolderType) => {
+  showSpreadsheetImportDialogImpl = (folderType: IFolderType) => {
     setFolderType(folderType);
     setMode(Mode.normal);
     showDialog();
