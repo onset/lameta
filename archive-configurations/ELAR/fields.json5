@@ -12,6 +12,11 @@
       tipOnUsingThisField: "Key + Grant Id. E.g. 0793-SG0123"
     },
     {
+      // 22 mar 2026 "Grant: to avoid confusion the Funding project title field should either be filled out with the same information as in Project > Title or be deleted:"
+      key: "fundingProjectTitle",
+      visibility: "never"
+    },
+    {
       key: "collectionSteward",
       visibility: "always",
       tipOnUsingThisField: "This is usually the same person as the Depositor."

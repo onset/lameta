@@ -30,6 +30,7 @@ describe("computeMergedCatalog", () => {
       imdiComment: "Corpus/Title, Project/Title",
 
       tabIndex: 99, // configuration changed
+      tipOnUsingThisField: "This is the funded project title.",
       tooltip: "My special tooltip", // configuration added this
       xmlTag: "Title", // configuration added this
       multilingual: true // configuration added this
@@ -72,6 +73,17 @@ describe("prepareFieldDefinitionCatalog", () => {
     expect(catalog.person.find((f) => f.key == "howToContact")).toBeDefined();
   });
 
+  it("default project title and description include help text", () => {
+    const catalog = makeFieldDefinitionCatalog("default");
+    expect(catalog.project.find((f) => f.key == "title")!.tipOnUsingThisField).toBe(
+      "This is the funded project title."
+    );
+    expect(
+      catalog.project.find((f) => f.key == "projectDescription")!
+        .tipOnUsingThisField
+    ).toBe("This is a brief summary of your project");
+  });
+
   it("desfault session description is monolingual", () => {
     const catalog = makeFieldDefinitionCatalog("default");
     expect(
@@ -81,6 +93,16 @@ describe("prepareFieldDefinitionCatalog", () => {
 });
 
 describe("ELAR archive configuration", () => {
+  it("hides funding project title in project fields", () => {
+    const catalog = makeFieldDefinitionCatalog("ELAR");
+    const fundingProjectTitle = catalog.project.find(
+      (f) => f.key === "fundingProjectTitle"
+    );
+
+    expect(fundingProjectTitle).toBeDefined();
+    expect(fundingProjectTitle!.visibility).toBe("never");
+  });
+
   it("marks genre as multilingual in session fields", () => {
     const catalog = makeFieldDefinitionCatalog("ELAR");
     const genreField = catalog.session.find((f) => f.key === "genre");

@@ -131,6 +131,7 @@
       englishLabel: "Title",
       form: "project",
       tabIndex: 0,
+      tipOnUsingThisField: "This is the funded project title.",
       description: 'The funded project title, e.g. "New speakers of Edolo"',
       imdiComment: "Corpus/Title, Project/Title" // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
     },
@@ -142,6 +143,7 @@
       multipleLines: true,
       form: "project",
       visibility: "always",
+      tipOnUsingThisField: "This is a brief summary of your project",
       imdiComment: "Corpus/Description[@Name='short_description']",
       tabIndex: 2
     },
