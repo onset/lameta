@@ -160,6 +160,40 @@ describe("SpreadsheetToMatrix", () => {
     expect(m.rows[0].cells[9].column.lametaProperty).toBe("contribution.role");
     expect(m.rows[0].cells[9].value).toBe("Carefull Speech Speaker");
   });
+
+    it("accepts ELAR access codes during session import", () => {
+      project.properties.setText("archiveConfigurationName", "ELAR");
+      project.authorityLists.setAccessProtocol("ELAR", "");
+
+      const inputRows = [
+        ["filename", "title", "access_ELAR"],
+        ["session-open", "Open session", "O"],
+        ["session-user", "User session", "U"],
+        ["session-subscriber", "Subscriber session", "S"]
+      ];
+      const matrix = makeMappedMatrix(
+        inputRows,
+        lingMetaX_ImportMap,
+        project,
+        "session"
+      );
+
+      expect(matrix.columnInfos[2].lametaProperty).toBe("access");
+      expect(matrix.columnInfos[2].mappingStatus).toBe("Matched");
+      expect(matrix.columnInfos[2].choices).toEqual(["O", "U", "S"]);
+
+      expect(matrix.rows[0].cells[2].value).toBe("O");
+      expect(matrix.rows[0].cells[2].importStatus).toBe(CellImportStatus.OK);
+      expect(matrix.rows[0].importStatus).toBe(RowImportStatus.Yes);
+
+      expect(matrix.rows[1].cells[2].value).toBe("U");
+      expect(matrix.rows[1].cells[2].importStatus).toBe(CellImportStatus.OK);
+      expect(matrix.rows[1].importStatus).toBe(RowImportStatus.Yes);
+
+      expect(matrix.rows[2].cells[2].value).toBe("S");
+      expect(matrix.rows[2].cells[2].importStatus).toBe(CellImportStatus.OK);
+      expect(matrix.rows[2].importStatus).toBe(RowImportStatus.Yes);
+    });
 });
 it("Can map in filename and title from some data using LingMetaXMap column labels", () => {
   const inputRows = [

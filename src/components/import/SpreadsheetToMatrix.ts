@@ -205,7 +205,7 @@ function addMappingAndValidatationInfoToColumns(
       } else {
         column.choices =
           project.authorityLists.accessChoicesOfCurrentProtocol.map(
-            (c) => c.label
+              (c) => c.id
           );
         column.closedList = true; // review what if it's the "Custom" list?
       }
