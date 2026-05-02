@@ -53,6 +53,15 @@ let win: BrowserWindow | null = null;
 
 export { win as mainWindow };
 
+function isExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ["http:", "https:", "mailto:"].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
 const preload = join(__dirname, "../mainProcess/preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, "index.html");
@@ -156,10 +165,19 @@ async function createWindow() {
     win?.maximize();
   }
 
-  // Make all links open with the browser, not with the application
+  // Make all external links open with the browser, not inside the application.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:")) shell.openExternal(url);
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    }
     return { action: "deny" };
+  });
+
+  win.webContents.on("will-navigate", (event, navigationUrl) => {
+    if (isExternalUrl(navigationUrl)) {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
   });
 }
 
