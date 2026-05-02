@@ -9,7 +9,7 @@ import {
   VirtualTable
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@mui/material/Paper";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Theme } from "@mui/material/styles";
 import withStyles from '@mui/styles/withStyles';
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
@@ -24,14 +24,7 @@ import {
 } from "./MappedMatrix";
 import { lameta_dark_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
-import {
-  IntegratedSelection,
-  SelectionState,
-  TableColumnResizing,
-  TableColumnWidthInfo
-} from "@devexpress/dx-react-grid";
-
-const kpixelsThatAreNotAvailableToGridHeight = 400;
+import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 const kCharsBeforeWeHaveToShrink = 14;
 
 const styles = (theme: Theme) => ({
@@ -53,6 +46,33 @@ export const MatrixGrid: React.FunctionComponent<{
   matrix: MappedMatrix;
   chosenRowsCountChanged: () => void;
 }> = (props) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [tableHeight, setTableHeight] = useState(300);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (!containerRef.current) {
+        return;
+      }
+
+      setTableHeight(Math.max(containerRef.current.clientHeight - 12, 200));
+    };
+
+    updateHeight();
+    if (!containerRef.current) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(() => updateHeight());
+    resizeObserver.observe(containerRef.current);
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, []);
+
   const tableColumns = useMemo(() => {
     const columnObjects: any[] = [
       // first column is for check boxes, we don't seem to have access to that here.
@@ -174,9 +194,14 @@ export const MatrixGrid: React.FunctionComponent<{
 
   return (
     <div
+      ref={containerRef}
       css={css`
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
         margin: 1px;
         margin-top: 10px;
+        min-height: 0;
         thead {
           th {
             font-weight: bold;
@@ -190,6 +215,10 @@ export const MatrixGrid: React.FunctionComponent<{
     >
       <Paper
         css={css`
+          display: flex;
+          flex: 1 1 auto;
+          flex-direction: column;
+          min-height: 0;
           td:first-of-type {
             padding-left: 0 !important;
           }
@@ -229,8 +258,7 @@ export const MatrixGrid: React.FunctionComponent<{
           <VirtualTable
             columnExtensions={tableColumnExtensions}
             tableComponent={TableComponent}
-            // unfortunately we can't use CSS here, we have to know how much of the screen is ours to use
-            height={window.innerHeight - kpixelsThatAreNotAvailableToGridHeight}
+            height={tableHeight}
           />
           {/* no matter how I configure this, dragging doesn't change the width of the column,
              but after dragging, using the horizontal scroll bar shows disaster

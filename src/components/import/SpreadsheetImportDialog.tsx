@@ -139,18 +139,17 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   return (
     <LametaDialog
       open={currentlyOpen}
+      initialViewportMargin={15}
+      paperStyle={{
+        minWidth: "min(800px, calc(100vw - 30px))",
+        minHeight: "min(500px, calc(100vh - 30px))"
+      }}
       requestClose={() => {
         if (mode === Mode.importing) {
           return;
         }
         closeDialog();
       }}
-      css={css`
-        width: calc(100% - 100px);
-        // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
-        // So if you change this here, you may need to tweak that
-        height: calc(100% - 100px);
-      `}
     >
       <DialogTitle title={title}></DialogTitle>
       <DialogMiddle>

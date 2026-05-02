@@ -14,6 +14,8 @@ export const LametaDialog: React.FunctionComponent<{
   open: boolean;
   requestClose: () => void;
   "data-testid"?: string;
+  paperStyle?: React.CSSProperties;
+  initialViewportMargin?: number;
 }> = (props) => {
   if (!props.open) {
     return <React.Fragment />;
@@ -27,6 +29,8 @@ export const LametaDialog: React.FunctionComponent<{
         padding-right: ${kDialogSidePadding};
         padding-bottom: ${kDialogBottomPadding};
         height: 100%;
+        min-height: 0;
+        overflow: hidden;
       `}
     >
       {props.children}
@@ -34,6 +38,19 @@ export const LametaDialog: React.FunctionComponent<{
   );
 
   const { requestClose, ...dialogProps } = props;
+  const paperStyle: React.CSSProperties = {
+    ...props.paperStyle,
+    ...(props.initialViewportMargin !== undefined
+      ? {
+          width: `calc(100vw - ${props.initialViewportMargin * 2}px)`,
+          height: `calc(100vh - ${props.initialViewportMargin * 2}px)`,
+          maxWidth: "none",
+          maxHeight: "none",
+          margin: 0
+        }
+      : {})
+  };
+
   return (
     <Dialog
       data-testid={props["data-testid"]}
@@ -49,6 +66,10 @@ export const LametaDialog: React.FunctionComponent<{
         } else if (e.key === "Escape") {
           requestClose();
         }
+      }}
+      maxWidth={false}
+      PaperProps={{
+        style: paperStyle
       }}
       {...dialogProps}
     >
@@ -75,6 +96,7 @@ export const DialogTitle: React.FunctionComponent<{
         color: ${color};
         background-color: ${background};
         display: flex;
+        flex-shrink: 0;
         /*
         padding-left: ${kDialogTopPadding};
         padding-right: ${kDialogTopPadding};
@@ -124,6 +146,8 @@ export const DialogMiddle: React.FunctionComponent = (props) => {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
+        flex-shrink: 1;
+        min-height: 0;
         font-size: 14px;
 
         p {
@@ -174,6 +198,7 @@ export const DialogBottomButtons: React.FunctionComponent = (props) => {
         margin-top: auto; // push to bottom
         padding-top: 20px; // leave room between us and the content above us
         display: flex;
+        flex-shrink: 0;
 
         /* -- button separation -- */
         gap: ${kDialogPadding};
