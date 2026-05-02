@@ -4,8 +4,15 @@
     {
       "type": "shell",
       "label": "Run vitest tests",
-      "command": "yarn",
-      "args": ["test"],
+      "command": "pnpm",
+      "args": ["run", "test", "--", "--run"],
+      "options": {
+        "env": {
+          "TMP": "${env:LOCALAPPDATA}\\Temp",
+          "TEMP": "${env:LOCALAPPDATA}\\Temp",
+          "TMPDIR": "${env:LOCALAPPDATA}\\Temp"
+        }
+      },
       "group": "test",
       "isBackground": false,
       "problemMatcher": ["$tsc"]

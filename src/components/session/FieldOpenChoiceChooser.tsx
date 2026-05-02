@@ -27,7 +27,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
   
   // Read revision to subscribe to changes - when translations are updated,
   // revision changes and MobX will re-render this component
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   const _revision = vocabularyTranslations?.revision ?? 0;
   
   // Helper function to translate genres including project-level translations

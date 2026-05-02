@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { capitalCase, sentenceCaseUnlessAcronym } from "./case";
 
 describe("capitalCase tests", () => {

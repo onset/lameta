@@ -1,9 +1,9 @@
 /*
   Launch the app repeatedly to check for race conditions that could cause the app to fail with
-  a "no-access" error. During development, we've seen this happen rarely when running with `yarn dev`.
+  a "no-access" error. During development, we've seen this happen rarely when running with `pnpm run dev`.
   So far I've been unable to make it break while using this.
 
-  To run, do `yarn test:build-then-launch` or `yarn test:launch-previous-build` or `yarn test:launch-after-package`.
+  To run, do `pnpm run test:build-then-launch` or `pnpm run test:launch-previous-build` or `pnpm run test:launch-after-package`.
 */
 import { spawn } from "child_process";
 import * as fs from "fs";

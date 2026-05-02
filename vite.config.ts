@@ -1,23 +1,38 @@
-import path from "path";
-import { defineConfig } from "vite";
+import path from "node:path";
+import { fileURLToPath } from "url";
+import { defineConfig } from "vite-plus";
 //import react from "@vitejs/plugin-react-swc";
 import react from "@vitejs/plugin-react";
 import electron from "vite-electron-plugin";
 import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
-import pkg from "./package.json";
 import dsv from "@rollup/plugin-dsv";
 import { copyFileSync, mkdirSync } from "fs";
 
+const devServerUrl = new URL("http://127.0.0.1:7777");
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
+  staged: {
+    "*": "vp check --fix"
+  },
+  fmt: {},
+  lint: {
+    ignorePatterns: ["dist", "locale/"],
+    options: {
+      typeAware: true,
+      typeCheck: true
+    }
+  },
   resolve: {
     alias: {
-      "@assets": path.resolve(__dirname, "./assets"),
+      path: "node:path",
+      "@assets": path.resolve(rootDir, "./assets"),
       "@mui/system/createStyled": path.resolve(
-        __dirname,
+        rootDir,
         "./node_modules/@mui/system/esm/createStyled.js"
       ),
-      "package.json": path.resolve(__dirname, "./package.json")
+      "package.json": path.resolve(rootDir, "./package.json")
     }
   },
   build: {
@@ -96,13 +111,10 @@ export default defineConfig({
     dsv() // for importing csv
   ],
   server: process.env.VSCODE_DEBUG
-    ? (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port
-        };
-      })()
+    ? {
+        host: devServerUrl.hostname,
+        port: +devServerUrl.port
+      }
     : undefined,
   clearScreen: false
 });

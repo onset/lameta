@@ -348,7 +348,7 @@ export function useImdiGeneration(
 
   React.useEffect(() => {
     setResult(generateImdi(target, project));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [project, ...deps]);
 
   // Person and File targets need wrapping for validation

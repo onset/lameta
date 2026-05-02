@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { normalizePath } from "./crossPlatformUtilities";
 
 describe("Linked file", () => {

@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeAll, beforeEach, afterEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import {

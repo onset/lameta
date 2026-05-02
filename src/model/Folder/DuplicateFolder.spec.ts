@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect, afterEach } from "vitest";
+import { describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 import fs from "fs";
 import Path from "path";
 import { SessionMetadataFile, Session } from "../Project/Session/Session";

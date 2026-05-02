@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as temp from "temp";
 import {

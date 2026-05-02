@@ -1,0 +1,33 @@
+nodeLinker: hoisted
+minimumReleaseAge: 1440
+blockExoticSubdeps: false
+allowBuilds:
+  core-js@2.6.12 || 3.49.0: true
+  core-js-pure@3.49.0: true
+  electron@37.3.0: true
+  esbuild@0.21.5: true
+  exifreader@3.11.2: true
+  ffmpeg-ffprobe-static@6.1.2-rc.1: true
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@latest
+  vitest: npm:@voidzero-dev/vite-plus-test@latest
+  vite-plus: latest
+overrides:
+  vite: 'catalog:'
+  vitest: 'catalog:'
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: '*'
+    vitest: '*'
+minimumReleaseAgeExclude:
+  - vite-plus
+  - '@voidzero-dev/*'
+  - oxlint
+  - '@oxlint/*'
+  - oxlint-tsgolint
+  - '@oxlint-tsgolint/*'
+  - oxfmt
+  - '@oxfmt/*'

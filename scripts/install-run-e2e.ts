@@ -12,14 +12,14 @@ What this does now:
 3) Runs Playwright e2e with that executable
 
 Usage:
-  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [--debug] [--slowmo[=<ms>]] [<playwright-args>...]
+  pnpm exec tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [--debug] [--slowmo[=<ms>]] [<playwright-args>...]
 
 Examples:
   # Single file
-  yarn tsx ./scripts/install-run-e2e.ts e2e/peopleSearchByRole.e2e.ts
+  pnpm exec tsx ./scripts/install-run-e2e.ts e2e/peopleSearchByRole.e2e.ts
 
   # Single test by title grep
-  yarn tsx ./scripts/install-run-e2e.ts -g "typing a role filters and highlights person"
+  pnpm exec tsx ./scripts/install-run-e2e.ts -g "typing a role filters and highlights person"
 */
 import * as os from "os";
 import * as fs from "fs";
@@ -91,7 +91,7 @@ const killExistingLameta = async (): Promise<void> => {
   }
 };
 
-const runYarnE2E = async (
+const runPnpmE2E = async (
   exePath: string,
   opts?: {
     stopOnFailure?: boolean;
@@ -101,9 +101,9 @@ const runYarnE2E = async (
   }
 ): Promise<number> => {
   return new Promise<number>((resolve) => {
-    // Use 1 worker to avoid single-instance conflicts with packaged app
-    // Use the project's Yarn script to respect repo conventions and config
-    const args = ["e2e", "--workers=1"];
+    // Use 1 worker to avoid single-instance conflicts with packaged app.
+    // Run through the project's pnpm script so local CLI resolution stays consistent.
+    const args = ["run", "e2e", "--", "--workers=1"];
     if (opts?.stopOnFailure) {
       args.push("--max-failures=1");
     }
@@ -119,7 +119,7 @@ const runYarnE2E = async (
     if (opts?.extraArgs && opts.extraArgs.length) {
       args.push(...opts.extraArgs);
     }
-    const child = spawn("yarn", args, {
+    const child = spawn("pnpm", args, {
       stdio: "inherit",
       env: {
         ...process.env,
@@ -180,7 +180,7 @@ const main = async () => {
       extraArgs.length ? ` with args: ${extraArgs.join(" ")}` : ""
     }...`
   );
-  const exitCode = await runYarnE2E(exePath, {
+  const exitCode = await runPnpmE2E(exePath, {
     stopOnFailure,
     debug,
     slowmo,

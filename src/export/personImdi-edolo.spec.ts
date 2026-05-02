@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, beforeEach } from "vitest";
+import { describe, it, beforeAll, beforeEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
@@ -29,7 +29,7 @@ beforeAll(() => {
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi_Heole",
     new EncounteredVocabularyRegistry(),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line @typescript-eslint/no-unused-vars
     (oldName, newName) => true,
     languageFinder
   );

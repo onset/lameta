@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll } from "vitest";
+import { describe, it, beforeAll, afterAll } from "vite-plus/test";
 
 import { Project } from "../model/Project/Project";
 import {
@@ -49,7 +49,7 @@ describe("Consent Form Inclusion", () => {
         [],
         IMDIMode.RAW_IMDI,
         true, //<-- copy in files
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // oxlint-disable-next-line @typescript-eslint/no-unused-vars
         (f) => true,
         true
       );
@@ -103,7 +103,7 @@ describe("Consent Form Inclusion", () => {
 });
 
 async function waitForCondition(conditionFunction: () => boolean) {
-  // eslint-disable-next-line no-constant-condition
+  // oxlint-disable-next-line no-constant-condition
   while (true) {
     if (conditionFunction()) {
       return;

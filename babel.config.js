@@ -1,7 +1,7 @@
 // NOTE: this is used by multiple processes, so check all these after making any changes
-// 1. yarn dev, yarn build-production
-// 2. yarn test (jest test running environment)
-// 3. yarn lingui-extract
+// 1. pnpm run dev, pnpm run build-production
+// 2. pnpm run test -- --run (test running environment)
+// 3. pnpm run strings:extract
 
 module.exports = function (api) {
   if (api) api.cache(true);

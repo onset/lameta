@@ -14,7 +14,7 @@
  * and are called once per session.
  */
 
-import { describe, it, beforeAll, expect, afterAll } from "vitest";
+import { describe, it, beforeAll, expect, afterAll } from "vite-plus/test";
 import * as temp from "temp";
 import { Project } from "../model/Project/Project";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";

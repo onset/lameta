@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
 
 const stubCreatePersonId = (person: any) => {
   const baseValue = (person?.filePrefix || "person") as string;

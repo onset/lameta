@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, afterEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, afterEach, describe, expect, it } from "vite-plus/test";
 import * as temp from "temp";
 import fs from "fs-extra";
 import Path from "path";

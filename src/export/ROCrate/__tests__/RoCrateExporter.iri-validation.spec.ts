@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { createPersonId, sanitizeForIri } from "../RoCrateUtils";
 
 describe("RO-Crate IRI Validation", () => {

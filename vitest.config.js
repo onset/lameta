@@ -1,11 +1,16 @@
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 import dsv from "@rollup/plugin-dsv";
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
   resolve: {
     alias: {
-      "package.json": path.resolve(__dirname, "./package.json")
+      path: "node:path",
+      "package.json": path.resolve(rootDir, "./package.json")
     }
   },
   test: {

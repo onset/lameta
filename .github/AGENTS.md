@@ -19,7 +19,7 @@
 - **UI Framework**: React with MUI (Material-UI)
 - **Styling**: Emotion (css macro)
 - **Build Tool**: Vite
-- **Package Manager**: yarn 1.22.22 (NEVER use npm)
+- **Package Manager**: pnpm 11.0.3 (NEVER use npm or yarn)
 - **Testing**: Vitest for unit tests, Playwright for E2E tests
 
 ## Code Style
@@ -35,7 +35,7 @@
 ## Testing
 
 - Use vitest, not jest
-- Use `yarn test` in terminal to run unit tests (the "run_tests" tool often hangs)
+- Use `pnpm run test -- --run` in terminal to run unit tests (the "run_tests" tool often hangs)
 - Fail Fast: Don't write code that silently works around failed dependencies. If a dependency is missing we should fail. Javascript itself will fail if we try to use a missing dependency, and that's fine.
   - Example: Don't write `if(foo){}` - just use `foo` and let it fail if null
 - When making test data, include edge cases:
@@ -44,15 +44,15 @@
 
 ## E2E Testing with Playwright
 
-- Use `yarn e2e` to run UI tests
-- Run specific file: `yarn e2e <file-name>`
-- To see all renderer console messages and failed network requests: `E2E_VERBOSE=1 yarn e2e <file-name>`
-- run `yarn e2ebuildwatch` as a background task in order to keep the render code up to date. It takes about 20 seconds to complete.
+- Use `pnpm run e2e` to run UI tests
+- Run specific file: `pnpm run e2e -- <file-name>`
+- To see all renderer console messages and failed network requests: `E2E_VERBOSE=1 pnpm run e2e -- <file-name>`
+- run `pnpm run e2ebuildwatch` as a background task in order to keep the render code up to date. It takes about 20 seconds to complete.
 - After changing core app code, sleep 20 seconds before launching e2e tests so e2ebuildwatch can finish
 - If changes don't appear in e2e, try a console.log as sanity check
 - Factor out helper functions to `*-e2e-helpers.ts` files (check existing helpers before creating new ones)
 - Avoid time-based waiting; use DOM-based checks when possible
-- it's rare that a change requires work on the main process, but if it does, then we need to build the main process with `yarn build`. But if I say "run all playwright tests", You should just do a full build with this to be sure.
+- it's rare that a change requires work on the main process, but if it does, then we need to build the main process with `pnpm run build`. But if I say "run all playwright tests", You should just do a full build with this to be sure.
 
 ## Fast Launch (recommended for new tests)
 
@@ -81,7 +81,7 @@ When working with Linear issues:
 
 ## Important Rules
 
-- ✅ Use yarn (NEVER npm)
+- ✅ Use pnpm (NEVER npm or yarn)
 - ✅ Check existing helper functions before creating new ones
 - ✅ Store AI planning docs in `history/` directory
 - ❌ Do NOT use npm commands

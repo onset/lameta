@@ -8,7 +8,7 @@
  * 3. Person names with non-Latin characters are properly encoded in Dataset IDs
  * 4. Files have isPartOf pointing to their person-files Dataset
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import {
   createPersonId,

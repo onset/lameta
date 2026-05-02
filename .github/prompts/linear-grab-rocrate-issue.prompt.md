@@ -17,7 +17,7 @@ By nature of us getting this wrong the first time, we should makes sure to expla
 
 # testing
 
-Before you start, run `yarn test:rocrate`. If any fail, stop. As you work, run tests that you think are relevant. Once everything passes, run `yarn test:rocrate` again.
+Before you start, run `pnpm run test:rocrate`. If any fail, stop. As you work, run tests that you think are relevant. Once everything passes, run `pnpm run test:rocrate` again.
 
 # UI Problems
 
@@ -25,7 +25,7 @@ If the description seems to be about UI interactions, use e2e (playwright) tests
 
 # Committing
 
-Run Prettier on every changed file (from the repo root run `yarn prettier --write path/to/changed-file`) and make sure your editor has saved everything. Stage all code changes, commit with a message referencing the problem number from the report.md document and issue key from linear (e.g. "Ro-crate #3 / LAM-43 rerouted the power couplings"). Add the URL of the linear issue to the commit description. Explicitly say if you ran tests and what the results were. Add a summary of the change to the description. Do not push.
+Run Prettier on every changed file (from the repo root run `pnpm exec prettier --write path/to/changed-file`) and make sure your editor has saved everything. Stage all code changes, commit with a message referencing the problem number from the report.md document and issue key from linear (e.g. "Ro-crate #3 / LAM-43 rerouted the power couplings"). Add the URL of the linear issue to the commit description. Explicitly say if you ran tests and what the results were. Add a summary of the change to the description. Do not push.
 
 ABSOLUTELY NEVER run destructive git operations (e.g., git reset --hard, rm, git checkout/git restore to an older commit) unless the user gives an explicit, written instruction in this conversation. Treat these commands as catastrophic; if you are even slightly unsure, stop and ask before touching them. (When working within Cursor or Codex Web, these git limitations do not apply; use the tooling's capabilities as needed.)
 Never use git restore (or similar commands) to revert files you didn't author—coordinate with other agents instead so their in-progress work stays intact.

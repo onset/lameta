@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Command-line script to validate RO-Crate/LDAC files
- * Usage: yarn tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>
+ * Usage: pnpm exec tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>
  */
 
 import * as fs from "fs-extra";
@@ -59,7 +59,7 @@ async function validate(filePath: string) {
 // Main entry point
 if (process.argv.length < 3) {
   console.log(
-    "Usage: yarn tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>"
+    "Usage: pnpm exec tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>"
   );
   process.exit(1);
 }

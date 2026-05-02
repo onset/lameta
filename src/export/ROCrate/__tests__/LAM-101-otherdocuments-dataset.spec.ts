@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, expect, afterEach } from "vitest";
+import { vi, describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Project } from "../../../model/Project/Project";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";

@@ -11,7 +11,7 @@ import {
   RowImportStatus
 } from "./MappedMatrix";
 import * as Path from "path";
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta spreadsheet importer test");

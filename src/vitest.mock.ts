@@ -1,5 +1,5 @@
 import { app } from "electron";
-import { beforeAll, vi } from "vitest";
+import { beforeAll, vi } from "vite-plus/test";
 
 // Mock electron bindings and global window object for tests first
 Object.defineProperty(global, "window", {

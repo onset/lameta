@@ -148,7 +148,7 @@ export class Person extends Folder {
     directory: string,
     customVocabularies: EncounteredVocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line @typescript-eslint/no-unused-vars
     languageFinder: LanguageFinder
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customVocabularies);

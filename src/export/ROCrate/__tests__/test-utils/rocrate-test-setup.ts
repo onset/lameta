@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi } from "vite-plus/test";
 import { Project } from "../../../../model/Project/Project";
 import { Session } from "../../../../model/Project/Session/Session";
 import { Person } from "../../../../model/Project/Person/Person";

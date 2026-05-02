@@ -21,6 +21,11 @@
   "wallaby.alwaysOpenLocalWallabyAppUrl": true,
   "wallaby.codeLensFeature.runTest": true,
   "testing.automaticallyOpenPeekView": "never",
+  "terminal.integrated.env.windows": {
+    "TMP": "${env:LOCALAPPDATA}\\Temp",
+    "TEMP": "${env:LOCALAPPDATA}\\Temp",
+    "TMPDIR": "${env:LOCALAPPDATA}\\Temp"
+  },
   "workbench.colorCustomizations": {
     "statusBar.background": "#e69664",
     "statusBar.foreground": "#15202b",

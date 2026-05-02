@@ -7,7 +7,7 @@
  *
  * For base RO-Crate 1.2 specification tests, see RoCrateValidator.rocrate-spec.spec.ts
  */
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi } from "vite-plus/test";
 import { RoCrateValidator, ensureSubjectLanguage } from "../RoCrateValidator";
 import { RoCrateLanguages } from "../RoCrateLanguages";
 

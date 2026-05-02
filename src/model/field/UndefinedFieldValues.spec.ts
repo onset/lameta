@@ -18,7 +18,7 @@
  * - TypeError: Cannot read properties of undefined (reading 'replace') at Field.escapeSpecialChars
  * - TypeError: Cannot read properties of undefined (reading 'trim')
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
 import * as temp from "temp";
 import fs from "fs";
 import Path from "path";

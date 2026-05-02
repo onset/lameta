@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll, beforeEach, expect as vitestExpect } from "vitest";
+import { describe, it, beforeAll, afterAll, beforeEach, expect as vitestExpect } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode, parseLanguageCodeAndName } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";

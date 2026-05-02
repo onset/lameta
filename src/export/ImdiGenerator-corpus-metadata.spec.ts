@@ -19,7 +19,7 @@ import {
   test,
   afterEach,
   beforeEach
-} from "vitest";
+} from "vite-plus/test";
 import { GetProjectFileWithOneField } from "../model/Project/WriteProject.spec";
 import {
   SetOtherConfigurationSettings,

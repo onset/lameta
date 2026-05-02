@@ -12,7 +12,7 @@
  *
  * Fix: Only include LDAC access type definitions that are actually referenced by license entities.
  */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import {
   createSessionLicense,
   createLdacAccessTypeDefinitions,

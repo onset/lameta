@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll, expect } from "vitest";
+import { describe, it, beforeAll, afterAll, expect } from "vite-plus/test";
 import { printResultXml, setResultXml } from "../other/xmlUnitTestUtils";
 import * as XmlBuilder from "xmlbuilder";
 import { fieldElement } from "./Imdi-static-fns.ts";

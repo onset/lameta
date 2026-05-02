@@ -1,4 +1,4 @@
-import { expect, beforeEach, afterEach, describe, it } from "vitest";
+import { expect, beforeEach, afterEach, describe, it } from "vite-plus/test";
 import { Field, FieldType } from "./Field";
 
 describe("Field.typeAndValueEscapedForXml Language Axis tests", () => {

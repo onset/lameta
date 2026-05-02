@@ -8,7 +8,7 @@
  * For UNIT TESTS of the validation logic itself (RoCrateValidator class and
  * ensureSubjectLanguage function), see RoCrateValidator.spec.ts.
  */
-import { vi, describe, it, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
 import * as fs from "fs-extra";
 
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it

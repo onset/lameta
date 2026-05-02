@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 
 // Test the deduplication function directly
 describe("RO-Crate Array Deduplication", () => {

@@ -27,11 +27,14 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      - name: Install Node.js, NPM and Yarn as specified in package.json
-        uses: volta-cli/action@v4
+      - name: Install Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: '24.15.0'
+          cache: true
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --network-timeout 1000000
+        run: vp install --frozen-lockfile
 
       - name: Write out segment key
         env:
@@ -49,7 +52,7 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: Run full build (includes locale compilation)
-        run: yarn fullbuild
+        run: vp run fullbuild
 
       - name: Build/release Electron app
         # (disabled) Let's only do this if the commit is tagged with a version

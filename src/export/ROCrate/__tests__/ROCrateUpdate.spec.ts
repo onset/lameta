@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, afterEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, afterEach, expect } from "vite-plus/test";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { writeROCrateFile } from "../WriteROCrateFile";

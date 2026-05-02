@@ -69,11 +69,11 @@ function loadOneCatalog(code: string, set: string) {
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
-      `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn strings:compile" at least once.`
+      `Could not locate ${path}. If you are running the dev server, make sure you have run "pnpm run strings:compile" at least once.`
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // oxlint-disable-next-line @typescript-eslint/no-var-requires
   const { messages } = require(path);
   i18n.load(code, messages);
 }
