@@ -20,6 +20,11 @@ export let currentUILanguage: string;
 // this could probably go away.
 export const i18n = i18nFromLinguiCore;
 
+const catalogFolderAliases: Record<string, string[]> = {
+  "zh-CN": ["zh-cn", "zh"],
+  "pt-BR": ["pt"]
+};
+
 let olacRoles: IChoice[];
 
 export function initializeLocalization() {
@@ -53,19 +58,38 @@ export function setUILanguage(code: string, reload: boolean = true) {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
 
-  // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
-  const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
-  const folder = fixes[code] || code;
-  loadOneCatalog(folder, "messages"); // these come from code
-  loadOneCatalog(folder, "fields"); // these come from the fields.json5 files
-  loadOneCatalog(folder, "vocabularies"); // these come from the vocabularies.json5 files
+  // Crowdin and older compiled assets have used folder names like "zh-cn",
+  // "zh", and "pt" even when the UI locale code is "zh-CN" or "pt-BR".
+  const folder = resolveCatalogFolder(code);
+  loadOneCatalog(folder, code, "messages"); // these come from code
+  loadOneCatalog(folder, code, "fields"); // these come from the fields.json5 files
+  loadOneCatalog(folder, code, "vocabularies"); // these come from the vocabularies.json5 files
   i18n.activate(code);
   userSettings.UILanguage = code;
 
   //if (reload) remote.getCurrentWindow().reload();
 }
-function loadOneCatalog(code: string, set: string) {
-  const path = locateDependencyForFilesystemCall(`locale/${code}/${set}.js`);
+function resolveCatalogFolder(code: string): string {
+  const candidates = [
+    code,
+    code.toLowerCase(),
+    ...((catalogFolderAliases[code] || []) as string[])
+  ];
+
+  for (const candidate of candidates) {
+    const path = locateDependencyForFilesystemCall(
+      `locale/${candidate}/messages.js`
+    );
+    if (fs.existsSync(path)) {
+      return candidate;
+    }
+  }
+
+  return code;
+}
+
+function loadOneCatalog(folder: string, localeCode: string, set: string) {
+  const path = locateDependencyForFilesystemCall(`locale/${folder}/${set}.js`);
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
@@ -75,7 +99,7 @@ function loadOneCatalog(code: string, set: string) {
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { messages } = require(path);
-  i18n.load(code, messages);
+  i18n.load(localeCode, messages);
 }
 
 // This is for strings that are not part of react, e.g. menus. They use this i18n variable to do localization
