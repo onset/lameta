@@ -1,4 +1,4 @@
-import * as Path from "path";
+import * as Path from "node:path";
 import * as child_process from "child_process";
 import * as fs from "fs-extra";
 import filesize from "filesize";

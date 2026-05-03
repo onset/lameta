@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { writeFileSync } from "fs";
-import * as path from "path";
+import * as path from "node:path";
 
 type LaunchTestOptions = {
   markerPath?: string;

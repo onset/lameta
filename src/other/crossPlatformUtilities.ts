@@ -26,7 +26,7 @@ export async function asyncTrashWithContext<T>(
 ): Promise<{ succeeded: boolean; path: string; context: T }> {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
-  const fixedPath = Path.normalize(path).replace("/", Path.sep); // ?
+  const fixedPath = Path.normalize(path).replace(/\//g, Path.sep);
 
   const msg = t`lameta was not able to delete the file.`;
 

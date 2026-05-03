@@ -1,5 +1,5 @@
 import * as fs from "fs-extra";
-import * as Path from "path";
+import * as Path from "node:path";
 import { BrowserWindow } from "electron";
 import {
   ExportSessionData,
