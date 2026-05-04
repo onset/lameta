@@ -127,6 +127,33 @@ describe("imdi multilingual field export", () => {
       "house in edolo"
     );
   });
+
+  it("exports slash-syntax multilingual values using metadata slot order", () => {
+    const field = new Field("description", FieldType.Text, "a house / una casa");
+    field.definition = new FieldDefinition({
+      key: "description",
+      englishLabel: "Description",
+      persist: true,
+      type: "Text",
+      multilingual: true
+    });
+    run((builder) => {
+      fieldElement(
+        "description",
+        field,
+        builder,
+        builder,
+        true,
+        "",
+        true,
+        undefined,
+        ["en", "es"]
+      );
+    });
+    expect("//description[@LanguageId]").toHaveCount(2);
+    expect("//description[@LanguageId='ISO639-3:eng']").toHaveText("a house");
+    expect("//description[@LanguageId='ISO639-3:spa']").toHaveText("una casa");
+  });
 });
 
 describe("imdi monolingual field export", () => {
@@ -193,6 +220,37 @@ describe("imdi monolingual field export", () => {
     });
     // Should have multiple Description elements with LanguageId attributes
     expect("//description[@LanguageId]").toHaveCount(2);
+  });
+
+  it("uses the first virtual slash-syntax language when standard IMDI allows only one value", () => {
+    const field = new Field(
+      "title",
+      FieldType.Text,
+      "idea for tomorrow / idea para manana"
+    );
+    field.definition = new FieldDefinition({
+      key: "title",
+      englishLabel: "Title",
+      persist: true,
+      type: "Text",
+      multilingual: true
+    });
+    run((builder) => {
+      fieldElement(
+        "title",
+        field,
+        builder,
+        builder,
+        true,
+        "",
+        false,
+        undefined,
+        ["en", "es"]
+      );
+    });
+    expect("//title").toHaveCount(1);
+    expect("//title[@LanguageId]").toNotExist();
+    expect("//title").toHaveText("idea for tomorrow");
   });
 });
 

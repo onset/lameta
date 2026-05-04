@@ -86,6 +86,85 @@ describe("monolingual topic and keyword export", () => {
 });
 
 describe("multilingual topic and keyword export", () => {
+  it("exports slash-syntax multilingual keywords with index and LanguageId attributes", () => {
+    project.properties.setText("metadataLanguages", "en:English;es:Spanish");
+    const keywordField = getOrCreateField("keyword");
+
+    keywordField.definition = new FieldDefinition({
+      key: "keyword",
+      englishLabel: "Keywords",
+      persist: true,
+      multilingual: true,
+      separatorWithCommaInstructions:
+        "Separate with commas. Note that individual keywords cannot contain a comma."
+    });
+
+    keywordField.text = "Fat / Grasa, Heron / Garza";
+
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+
+    expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(4);
+    expect(
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`
+    ).toHaveText("Fat");
+    expect(
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="1"]`
+    ).toHaveText("Grasa");
+    expect(
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`
+    ).toHaveText("Heron");
+    expect(
+      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="2"]`
+    ).toHaveText("Garza");
+  });
+
+  it("exports slash-syntax multilingual topics with index and LanguageId attributes", () => {
+    project.properties.setText(
+      "metadataLanguages",
+      "en:English;es:Spanish;pt:Portuguese"
+    );
+    const topicField = getOrCreateField("topic");
+
+    topicField.definition = new FieldDefinition({
+      key: "topic",
+      englishLabel: "Topic",
+      persist: true,
+      multilingual: true,
+      separatorWithCommaInstructions:
+        "Separate with commas. Note that individual topics cannot contain a comma."
+    });
+
+    topicField.text =
+      "The moon and the sun adventures / Las aventuras de la luna y el sol / As aventuras da lua e do sol";
+
+    setResultXml(
+      ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      )
+    );
+
+    expect(count(`//Keys/Key[@Name="Topic"]`)).toBe(3);
+    expect(
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`
+    ).toHaveText("The moon and the sun adventures");
+    expect(
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`
+    ).toHaveText("Las aventuras de la luna y el sol");
+    expect(
+      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:por"][@index="1"]`
+    ).toHaveText("As aventuras da lua e do sol");
+  });
+
   it("exports multilingual keywords with index and LanguageId attributes", () => {
     // Set up multilingual keyword field
     const keywordField = getOrCreateField("keyword");

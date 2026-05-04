@@ -292,6 +292,12 @@ export default class ImdiGenerator {
     this.addSimpleActorInternal(role, name, translateRole);
   }
 
+  private getMetadataLanguageTags(): string[] {
+    // Keep export aligned with the same metadata slot order the multilingual UI uses
+    // when it virtually interprets slash-syntax content.
+    return Project.getMetadataLanguageSlots().map((slot) => slot.tag);
+  }
+
   private addSimpleActorInternal(
     role: string,
     name: string,
@@ -744,9 +750,22 @@ export default class ImdiGenerator {
           if (fieldContents && fieldContents.length > 0) {
             //https://trello.com/c/Xkq8cdoR/73-already-done-allow-for-more-than-one-topic
             const shouldSplitByCommas = ["topic", "keyword"].indexOf(key) > -1;
+            const metadataSlotTags = this.getMetadataLanguageTags();
 
-            // Check if this field has multiple languages (multilingual)
-            const languageAxes = field ? field.getAllNonEmptyTextAxes() : [];
+            // Topic/keyword can still be in slash syntax after import. Count languages
+            // from the virtual multilingual view so export does not depend on a user click.
+            const languageAxes =
+              field && definition?.multilingual === true
+                ? field
+                    .getEffectiveSlotTags(metadataSlotTags)
+                    .filter(
+                      (lang) =>
+                        field.getTextAxisVirtual(lang, metadataSlotTags).trim() !==
+                        ""
+                    )
+                : field
+                ? field.getAllNonEmptyTextAxes()
+                : [];
             const isMultilingual =
               languageAxes.length > 1 &&
               shouldSplitByCommas &&
@@ -758,7 +777,8 @@ export default class ImdiGenerator {
                 key,
                 field!,
                 languageAxes,
-                shouldSplitByCommas
+                shouldSplitByCommas,
+                metadataSlotTags
               );
             } else {
               // Monolingual export (original behavior)
@@ -799,14 +819,16 @@ export default class ImdiGenerator {
     key: string,
     field: Field,
     languageAxes: string[],
-    shouldSplitByCommas: boolean
+    shouldSplitByCommas: boolean,
+    metadataSlotTags: string[]
   ) {
-    // Build a structure: for each language, get the values split by comma
+    // Pull each language from the virtual view so slash-syntax imports and committed
+    // multilingual text both produce the same indexed IMDI Key output.
     const valuesByLanguage: Map<string, string[]> = new Map();
     let maxValueCount = 0;
 
     languageAxes.forEach((lang) => {
-      const langContent = field.getTextAxis(lang);
+      const langContent = field.getTextAxisVirtual(lang, metadataSlotTags);
       const values = shouldSplitByCommas
         ? langContent.split(",").map((x) => x.trim())
         : [langContent.trim()];
@@ -1164,7 +1186,9 @@ export default class ImdiGenerator {
           this.mostRecentElement,
           false, // not required
           "",
-          true // IMDI Description supports multiple elements with LanguageId
+          true, // IMDI Description supports multiple elements with LanguageId
+          undefined,
+          this.getMetadataLanguageTags()
         );
         this.tail = result.tail;
         if (result.mostRecentElement)
@@ -1538,7 +1562,8 @@ export default class ImdiGenerator {
       xmlElementIsRequired,
       defaultValue,
       imdiSupportsMultipleElements,
-      extraAttributes
+      extraAttributes,
+      this.getMetadataLanguageTags()
     );
     this.tail = result.tail;
     if (result.mostRecentElement)
