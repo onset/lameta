@@ -314,7 +314,8 @@ export default class ImdiGenerator {
         "Role",
         roleOutput,
         "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-        this.vocabularyTranslator.getRoleTranslator()
+        this.vocabularyTranslator.getRoleTranslator(),
+        role
       );
     } else {
       this.element("Role", role);
@@ -416,14 +417,13 @@ export default class ImdiGenerator {
       // Genre and SubGenre are multilingual vocabulary fields
       const genreValue = session.properties.getTextStringOrEmpty("genre");
       // Get the label for the genre (may be snake_case like "procedural_discourse")
-      const genreLabel = session.properties
-        .getLabelOfValue("genre")
-        .replace(/_/g, " ");
+      const genreLabel = session.properties.getLabelOfValue("genre").replace(/_/g, " ");
       this.multilingualVocabularyElement(
         "Genre",
         genreLabel || genreValue,
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-        this.vocabularyTranslator.getGenreTranslator()
+        this.vocabularyTranslator.getGenreTranslator(),
+        genreValue
       );
       this.keysThatHaveBeenOutput.add("Session.genre");
 
@@ -435,7 +435,8 @@ export default class ImdiGenerator {
         "SubGenre",
         subgenreLabel || subgenreValue,
         "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-        this.vocabularyTranslator.getGenreTranslator()
+        this.vocabularyTranslator.getGenreTranslator(),
+        subgenreValue
       );
       this.keysThatHaveBeenOutput.add("Session.subgenre");
 
@@ -1225,7 +1226,8 @@ export default class ImdiGenerator {
         "Role",
         roleOutput,
         "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-        this.vocabularyTranslator.getRoleTranslator()
+        this.vocabularyTranslator.getRoleTranslator(),
+        role
       );
 
       this.requiredField("Name", "name", person);
@@ -1630,7 +1632,8 @@ export default class ImdiGenerator {
     elementName: string,
     englishValue: string,
     vocabularyUrl: string,
-    translateFn: (value: string, lang: string) => string | undefined
+    translateFn: (value: string, lang: string) => string | undefined,
+    translationKey: string
   ) {
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element with attributes if value is empty
@@ -1668,7 +1671,7 @@ export default class ImdiGenerator {
     let outputCount = 0;
 
     for (const slot of metadataSlots) {
-      const translation = translateFn(englishValue, slot.tag);
+      const translation = translateFn(translationKey, slot.tag);
       if (translation) {
         // Normalize to sentence case for consistent IMDI output
         // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
@@ -1878,13 +1881,15 @@ export default class ImdiGenerator {
         "Genre",
         genre,
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-        this.vocabularyTranslator.getGenreTranslator()
+        this.vocabularyTranslator.getGenreTranslator(),
+        genre
       );
       this.multilingualVocabularyElement(
         "SubGenre",
         "",
         "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-        this.vocabularyTranslator.getGenreTranslator()
+        this.vocabularyTranslator.getGenreTranslator(),
+        ""
       );
       this.element(
         "Task",

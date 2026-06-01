@@ -118,6 +118,31 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     });
   });
 
+  it("should export project translation for built-in genre ids", () => {
+    const session = multiLangProject.addSession();
+    session.properties.setText("genre", "personal_narrative");
+    multiLangProject.vocabularyTranslations.setGenre(
+      "personal_narrative",
+      "project",
+      { pt: "Narrativa pessoal" }
+    );
+
+    const imdi = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      session,
+      multiLangProject,
+      true
+    );
+    setResultXml(imdi);
+
+    xexpect(
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
+    ).toHaveText("Personal narrative");
+    xexpect(
+      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:por']"
+    ).toHaveText("Narrativa pessoal");
+  });
+
   it("should output SubGenre in multiple languages", () => {
     const session = multiLangProject.addSession();
     session.properties.setText("subgenre", "myth");
