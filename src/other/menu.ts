@@ -13,6 +13,8 @@ import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
 import { ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
+import { ShowPluginsDialog } from "../components/PluginsDialog";
+import pluginManager from "../plugins/PluginManager";
 import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
@@ -155,6 +157,13 @@ export default class LametaMenu {
           enabled: haveProject,
           click: () => {
             ShowMediaFolderDialog();
+          }
+        },
+        {
+          label: t`Plugins...`,
+          enabled: haveProject,
+          click: () => {
+            ShowPluginsDialog();
           }
         }
       ]
@@ -342,6 +351,12 @@ export default class LametaMenu {
           accelerator: "CmdOrCtrl+R",
           click() {
             mainWindow.webContents.reload();
+          }
+        },
+        {
+          label: "Reload Plugins",
+          click() {
+            pluginManager.reload();
           }
         },
         {

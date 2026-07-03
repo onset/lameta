@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Waveform Annotator</title>
+    <!-- Vendored lameta CSS starter kit so this UI roughly matches the host. -->
+    <link rel="stylesheet" href="lameta-plugin.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="status" class="status"></div>
+
+    <div class="lameta-toolbar">
+      <span id="hint" class="hint"></span>
+      <input
+        id="label-input"
+        type="text"
+        placeholder=""
+        disabled
+        data-testid="region-label"
+      />
+      <button id="delete-region" disabled data-testid="delete-region"></button>
+    </div>
+
+    <div id="waveform" data-testid="waveform"></div>
+
+    <!-- Plain ES modules — no build step. Loaded from file:// (webSecurity is off in lameta). -->
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

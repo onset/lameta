@@ -25,6 +25,7 @@ import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { IFolderType } from "../model/Folder/Folder";
 import { MediaFolderDialog } from "./MediaFolderDialog";
+import { PluginsDialog } from "./PluginsDialog";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { lameta_blue, lameta_green, lameta_orange } from "../containers/theme";
 export interface IProps {
@@ -256,6 +257,7 @@ class Home extends React.Component<IProps> {
         <SaveNotifier />
         {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}
         <MediaFolderDialog />
+        <PluginsDialog />
         <div
           id="tabContainer"
           css={css`

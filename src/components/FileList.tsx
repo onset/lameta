@@ -30,6 +30,7 @@ import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { computeNestedFileOrder } from "./fileListNesting";
 const electron = require("electron");
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
@@ -64,6 +65,42 @@ export const _FileList: React.FunctionComponent<{
 
   const { searchTerm } = React.useContext(SearchContext);
   const highlight = (text: string) => <HighlightSearchTerm text={text} />;
+
+  // SayMore-style visual nesting: subordinate annotation files (F.annotations.eaf,
+  // its prefs file, F.oralAnnotations.wav) are shown indented under the file they
+  // belong to. This only changes display order and indentation; folder.files itself
+  // is untouched (exports etc. still iterate it), and every row still holds the real
+  // File object, so selection/context-menu/drop behavior is unaffected.
+  const nestedRows = computeNestedFileOrder(
+    props.folder.files.map((f) => f.getFilenameToShowInList())
+  );
+  const nestedFiles = nestedRows.map((r) => props.folder.files[r.index]);
+  const depthByFile = new Map<File, number>();
+  nestedRows.forEach((r) =>
+    depthByFile.set(props.folder.files[r.index], r.depth)
+  );
+  const indentedName = (cell: any) => {
+    const depth = depthByFile.get(cell.original as File) || 0;
+    if (depth === 0) return highlight(cell.value);
+    return (
+      <span
+        css={css`
+          display: inline-block;
+          padding-left: ${depth * 18}px;
+        `}
+      >
+        <span
+          css={css`
+            color: gray;
+            margin-right: 4px;
+          `}
+        >
+          └
+        </span>
+        {highlight(cell.value)}
+      </span>
+    );
+  };
 
   const fileHasMetadataMatch = (file: any, trimmed: string): boolean => {
     if (!trimmed || !file) return false;
@@ -118,7 +155,7 @@ export const _FileList: React.FunctionComponent<{
         return f.getFilenameToShowInList();
       },
       className: "filename",
-      Cell: (cell: any) => highlight(cell.value)
+      Cell: indentedName
     },
     {
       id: "linkStatus",
@@ -310,8 +347,13 @@ export const _FileList: React.FunctionComponent<{
           showPagination={props.folder.files.length > filesPerPage}
           pageSize={filesPerPage}
           showPageSizeOptions={false}
-          data={props.folder.files}
+          data={nestedFiles}
           columns={columns}
+          // When the user sorts by a column, sort normally and then re-attach
+          // subordinate annotation files beneath their parent, wherever it lands.
+          // orderByMethod is a real react-table-6 prop (used in its sortData) but
+          // is missing from its type definitions, hence the spread-with-cast.
+          {...({ orderByMethod: sortThenRegroupCompanions } as any)}
           onFetchData={() => scrollSelectedIntoView("fileList")}
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
@@ -385,6 +427,34 @@ export const _FileList: React.FunctionComponent<{
 // this hackery is to get a named export while applying observer... there must be a better way!
 const x = observer(_FileList);
 export { x as FileList };
+
+// react-table-6 calls this in place of its internal utils.orderBy when the user has
+// clicked a column header. `rows` are react-table's resolved rows (each carries the
+// real File as `_original`). We first sort exactly the way react-table's default
+// orderBy does, then regroup so each subordinate annotation file immediately follows
+// its parent, wherever the parent sorted to.
+function sortThenRegroupCompanions(
+  rows: any[],
+  comparators: ((a: any, b: any) => number)[],
+  ascending: boolean[],
+  indexKey: string
+): any[] {
+  const sorted = [...rows].sort((rowA, rowB) => {
+    for (let i = 0; i < comparators.length; i++) {
+      const result = comparators[i](rowA, rowB);
+      if (result) {
+        return ascending[i] === false ? -result : result;
+      }
+    }
+    // Use the row index for tie breakers, like react-table's default orderBy.
+    return ascending[0]
+      ? rowA[indexKey] - rowB[indexKey]
+      : rowB[indexKey] - rowA[indexKey];
+  });
+  return computeNestedFileOrder(
+    sorted.map((row) => (row._original as File).getFilenameToShowInList())
+  ).map((r) => sorted[r.index]);
+}
 
 function showFileMenu(
   folder: Folder,

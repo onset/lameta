@@ -11,6 +11,7 @@ import { t } from "@lingui/macro";
 import { PatientFS } from "./other/patientFile";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
+import pluginManager from "./plugins/PluginManager";
 
 // when I upgraded to mobx 6, I added this becuase I was getting "Since
 // strict-mode is enabled, changing (observed) observable values without using
@@ -30,6 +31,7 @@ app.whenReady().then(async () => {
   initializeErrorReporting(false);
 
   initializeLocalization();
+  pluginManager.initialize(); // discover file-handler plugins (installed + dev folder)
   initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
   analyticsEvent("Launch", "Launch");
 

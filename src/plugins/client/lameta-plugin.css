@@ -1,0 +1,128 @@
+/* lameta plugin starter stylesheet.
+ *
+ * Vendor a copy of this into your plugin and link it from your index.html so your UI roughly
+ * matches lameta's look (font stack, colors, spacing, form-control appearance). It is a
+ * starting point, not a requirement — override freely. Colors are exposed as CSS variables
+ * so you can theme against them.
+ */
+
+:root {
+  --lameta-fonts: "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu",
+    "Roboto", "Helvetica Neue", "Arial", sans-serif;
+  --lameta-font-size: 14px;
+
+  --lameta-orange: #e69664;
+  --lameta-blue: #becde4;
+  --lameta-dark-blue: #3d5e90;
+  --lameta-green: #cff09f;
+  --lameta-dark-green: #86cb20;
+  --lameta-text: #202020;
+  --lameta-muted: #6b6b6b;
+  --lameta-background: #ffffff;
+  --lameta-panel: #f7f7f7;
+  --lameta-border: #cccccc;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--lameta-fonts);
+  font-size: var(--lameta-font-size);
+  color: var(--lameta-text);
+  background-color: var(--lameta-background);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+a {
+  color: var(--lameta-dark-blue);
+  cursor: pointer;
+}
+
+/* Buttons — echo lameta's outlined/contained material feel without pulling in MUI. */
+button,
+.lameta-button {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 6px 16px;
+  border: 1px solid var(--lameta-dark-green);
+  border-radius: 4px;
+  background-color: white;
+  color: var(--lameta-dark-green);
+  cursor: pointer;
+  line-height: 1.4;
+}
+button:hover,
+.lameta-button:hover {
+  background-color: rgba(134, 203, 32, 0.1);
+}
+button.lameta-primary,
+.lameta-button.lameta-primary {
+  background-color: var(--lameta-dark-green);
+  color: white;
+}
+button:disabled,
+.lameta-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Form controls */
+input[type="text"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--lameta-border);
+  border-radius: 3px;
+  background-color: white;
+  color: var(--lameta-text);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--lameta-orange);
+  outline-offset: 0;
+}
+
+label {
+  color: var(--lameta-muted);
+  font-size: 0.85em;
+}
+
+.lameta-panel {
+  background-color: var(--lameta-panel);
+  border: 1px solid var(--lameta-border);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.lameta-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}

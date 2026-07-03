@@ -1,0 +1,17 @@
+{
+  id: "org.lameta.test.e2e",
+  name: "Test Plugin",
+  version: "1.0.0",
+  apiVersion: 1,
+  description: "E2E fixture plugin.",
+  tabs: [
+    {
+      id: "main",
+      label: "Test Plugin",
+      entry: "index.html",
+      match: { lametaTypes: ["Audio"] },
+      claimDefault: true,
+      defaultPriority: 100
+    }
+  ]
+}

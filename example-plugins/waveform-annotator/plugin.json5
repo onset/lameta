@@ -1,0 +1,22 @@
+{
+  // Namespaces this plugin's sidecar files and its install folder.
+  id: "org.lameta.example.waveform-annotator",
+  name: "Waveform Annotator",
+  version: "1.0.0",
+  apiVersion: 1,
+  description: "Show a waveform for audio files and let you annotate regions.",
+  author: "lameta",
+  tabs: [
+    {
+      id: "waveform",
+      label: { en: "Waveform", es: "Forma de onda", fr: "Forme d'onde" },
+      entry: "index.html",
+      match: {
+        lametaTypes: ["Audio"]
+      },
+      // Open this tab instead of the built-in Audio player when an audio file is selected.
+      claimDefault: true,
+      defaultPriority: 100
+    }
+  ]
+}

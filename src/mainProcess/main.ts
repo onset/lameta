@@ -119,6 +119,14 @@ async function createWindow() {
   // Enable spell checking for multiple languages
   session.defaultSession.setSpellCheckerLanguages(spellCheckLanguages);
 
+  // Electron grants every permission request by default when no handler is set. This
+  // explicit handler exists to make it clear that plugin iframes are allowed to capture
+  // audio (getUserMedia for their recorders), and it is the place to narrow permissions
+  // later (e.g. by inspecting `permission` / the requesting frame).
+  session.defaultSession.setPermissionRequestHandler(
+    (webContents, permission, callback) => callback(true)
+  );
+
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
     // electron-vite-vue#298

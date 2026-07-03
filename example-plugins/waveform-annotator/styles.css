@@ -1,0 +1,23 @@
+/* Plugin-specific styles layered on top of the lameta CSS starter kit. */
+
+.status {
+  min-height: 1.2em;
+  color: var(--lameta-muted);
+  margin-bottom: 8px;
+}
+
+.hint {
+  color: var(--lameta-muted);
+  margin-right: auto;
+}
+
+#waveform {
+  border: 1px solid var(--lameta-border);
+  border-radius: 4px;
+  background: white;
+  min-height: 160px;
+}
+
+#label-input {
+  min-width: 200px;
+}

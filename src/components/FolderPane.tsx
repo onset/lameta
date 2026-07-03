@@ -42,6 +42,17 @@ import { TiffViewer } from "./TiffViewer";
 import AccessChooser from "./session/AccessChooser";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { getSessionFormClass } from "./session/SessionFormVariant";
+import pluginManager from "../plugins/PluginManager";
+import {
+  getPluginTabsForFile,
+  computeDefaultIndex
+} from "../plugins/pluginMatching";
+import { localizeLabel } from "../plugins/PluginManifest";
+import { getMimeType } from "../model/file/FileTypeInfo";
+import { currentUILanguage } from "../other/localization";
+import { PluginTab } from "./PluginTab";
+import { PluginTabPanel } from "./PluginTabPanel";
+import pkg from "package.json";
 
 export interface IProps {
   folder: Folder;
@@ -342,6 +353,80 @@ const FileTabs: React.FunctionComponent<
   if ([".txt", ".md"].includes(ext)) t = "Text";
   if (ext === ".pdf") t = "PDF";
 
+  // --- File-handler plugins -------------------------------------------------
+  // Plugins may contribute tabs for regular content files. We skip the registry entirely for
+  // the Session/Person metadata views (they have their own dedicated cases below). Reading the
+  // observable plugin registry here makes this observer re-render on enable/disable and on the
+  // dev watcher's reloadCounter bump (which hot-reloads an open plugin tab).
+  const extNoDot = ext.replace(/^\./, "");
+  const mimeType = getMimeType(extNoDot);
+  const matchedPluginTabs =
+    t === "Session" || t === "Person"
+      ? []
+      : getPluginTabsForFile(
+          { extension: extNoDot, mimeType, lametaType: file.type },
+          pluginManager.getEnabledMatchablePlugins()
+        );
+  // The built-in viewer is tab 0; plugin tabs occupy 1..N; then the standard metadata tabs.
+  const fileTabsDefaultIndex = computeDefaultIndex(matchedPluginTabs);
+
+  const pluginTabs = matchedPluginTabs.map((m) => (
+    <PluginTab
+      key={`${m.pluginId}/${m.tab.id}`}
+      label={localizeLabel(m.tab.label, currentUILanguage)}
+    />
+  ));
+
+  const pluginPanels = matchedPluginTabs.map((m) => {
+    const record = pluginManager.getById(m.pluginId);
+    return (
+      <TabPanel key={`${m.pluginId}/${m.tab.id}`}>
+        <ErrorBoundary>
+          <PluginTabPanel
+            pluginId={m.pluginId}
+            pluginVersion={m.pluginVersion}
+            pluginDir={record?.directory || ""}
+            entry={m.tab.entry}
+            apiVersion={record?.manifest?.apiVersion ?? 1}
+            permissions={m.permissions}
+            reloadCounter={record?.reloadCounter ?? 0}
+            filePath={path}
+            fileName={filename}
+            fileExtension={extNoDot}
+            fileMimeType={mimeType}
+            fileLametaType={file.type}
+            fileUri={URL.pathToFileURL(path).toString()}
+            folderType={props.folder.folderType}
+            folderDirectory={props.folder.directory}
+            languageCode={currentUILanguage}
+            appVersion={pkg.version}
+          />
+        </ErrorBoundary>
+      </TabPanel>
+    );
+  });
+
+  // Shared skeleton for the generic (non-Session/Person) file types. The 7 built-in file
+  // cases differ only in their single viewer tab + panel; everything else (plugin tabs,
+  // standard metadata tabs, project-documents Access tab) is identical, so they funnel here.
+  const renderFileTabs = (
+    viewerTab: JSX.Element,
+    viewerPanel: JSX.Element
+  ) => (
+    <Tabs key={tabsKey} defaultIndex={fileTabsDefaultIndex}>
+      <TabList>
+        {viewerTab}
+        {pluginTabs}
+        {standardMetaTabs}
+        {projectDocsTabs}
+      </TabList>
+      {viewerPanel}
+      {pluginPanels}
+      {standardMetaPanels}
+      {projectDocsPanels}
+    </Tabs>
+  );
+
   switch (t) {
     case "Session":
       return (
@@ -517,185 +602,127 @@ const FileTabs: React.FunctionComponent<
       );
     }
     case "Audio":
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <Trans>Audio</Trans>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel>
-            <audio controls>
-              <source src={`file://${path}`} />
-            </audio>
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <Trans>Audio</Trans>
+        </Tab>,
+        <TabPanel>
+          <audio controls>
+            <source src={`file://${path}`} />
+          </audio>
+        </TabPanel>
       );
     case "Video":
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <Trans>Video</Trans>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel>
-            <ReactPlayer
-              //config={{ file: { forceHLS: true } }}
-              // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
-              light={dummyPreviewImage}
-              playing={true} // start playing when the "light" play button is clicked
-              url={`file://${path}`}
-              controls
-              onError={(e) => {
-                NotifyError("video error:" + e);
-              }}
-            />
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <Trans>Video</Trans>
+        </Tab>,
+        <TabPanel>
+          <ReactPlayer
+            //config={{ file: { forceHLS: true } }}
+            // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
+            light={dummyPreviewImage}
+            playing={true} // start playing when the "light" play button is clicked
+            url={`file://${path}`}
+            controls
+            onError={(e) => {
+              NotifyError("video error:" + e);
+            }}
+          />
+        </TabPanel>
       );
     case "Image":
       const isTiff = [".tif", ".tiff"].includes(ext.toLowerCase());
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <Trans>Image</Trans>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel>
-            {isTiff ? (
-              <TiffViewer path={path} className="imageViewer" />
-            ) : (
-              <img
-                className="imageViewer"
-                // file:// is required on mac
-                src={`file:///${path.replace(/#/g, "%23")}`}
-              />
-            )}
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <Trans>Image</Trans>
+        </Tab>,
+        <TabPanel>
+          {isTiff ? (
+            <TiffViewer path={path} className="imageViewer" />
+          ) : (
+            <img
+              className="imageViewer"
+              // file:// is required on mac
+              src={`file:///${path.replace(/#/g, "%23")}`}
+            />
+          )}
+        </TabPanel>
       );
     case "Text":
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <Trans>Text</Trans>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel>
-            {/* NB: not a url, just a file here path */}
-            <TextFileView path={path} />
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <Trans>Text</Trans>
+        </Tab>,
+        <TabPanel>
+          {/* NB: not a url, just a file here path */}
+          <TextFileView path={path} />
+        </TabPanel>
       );
     case "PDF":
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>PDF</Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel>
-            <object
-              data={`file:///${path.replace(
-                /#/g,
-                "%23"
-              )}#toolbar=0&navpanes=0&scrollbar=1`}
-              type="application/pdf"
-              css={css`
-                width: 100%;
-                height: 100%;
-                min-height: 400px;
-              `}
-            >
-              <p>
-                Unable to display PDF.{" "}
-                <a
-                  href=""
-                  onClick={(e) => {
-                    e.preventDefault();
-                    electron.shell.openPath(file.getActualFilePath());
-                  }}
-                >
-                  Open externally
-                </a>
-              </p>
-            </object>
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>PDF</Tab>,
+        <TabPanel>
+          <object
+            data={`file:///${path.replace(
+              /#/g,
+              "%23"
+            )}#toolbar=0&navpanes=0&scrollbar=1`}
+            type="application/pdf"
+            css={css`
+              width: 100%;
+              height: 100%;
+              min-height: 400px;
+            `}
+          >
+            <p>
+              Unable to display PDF.{" "}
+              <a
+                href=""
+                onClick={(e) => {
+                  e.preventDefault();
+                  electron.shell.openPath(file.getActualFilePath());
+                }}
+              >
+                Open externally
+              </a>
+            </p>
+          </object>
+        </TabPanel>
       );
     case "ELAN":
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <>ELAN {/* should not be translated */}</>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel className="unhandledFileType">
-            <a
-              onClick={() => {
-                // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openExternal(
-                  "file://" + file.getActualFilePath()
-                );
-              }}
-            >
-              <Trans>Open in ELAN</Trans>
-            </a>
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <>ELAN {/* should not be translated */}</>
+        </Tab>,
+        <TabPanel className="unhandledFileType">
+          <a
+            onClick={() => {
+              // the "file://" prefix is required on mac, works fine on windows
+              electron.shell.openExternal("file://" + file.getActualFilePath());
+            }}
+          >
+            <Trans>Open in ELAN</Trans>
+          </a>
+        </TabPanel>
       );
     default:
-      return (
-        <Tabs key={tabsKey}>
-          <TabList>
-            <Tab>
-              <Trans>File</Trans>
-            </Tab>
-            {standardMetaTabs}
-            {projectDocsTabs}
-          </TabList>
-          <TabPanel className="unhandledFileType">
-            <a
-              href=""
-              onClick={(e) => {
-                e.preventDefault(); // don't try to follow the link
-                // the "file://" prefix is required on mac, works fine on windows
-                electron.shell.openPath("file://" + file.getActualFilePath());
-              }}
-            >
-              Open in program associated with this file type
-            </a>
-          </TabPanel>
-          {standardMetaPanels}
-          {projectDocsPanels}
-        </Tabs>
+      return renderFileTabs(
+        <Tab>
+          <Trans>File</Trans>
+        </Tab>,
+        <TabPanel className="unhandledFileType">
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault(); // don't try to follow the link
+              // the "file://" prefix is required on mac, works fine on windows
+              electron.shell.openPath("file://" + file.getActualFilePath());
+            }}
+          >
+            Open in program associated with this file type
+          </a>
+        </TabPanel>
       );
   }
 });
