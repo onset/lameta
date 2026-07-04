@@ -44,10 +44,10 @@ import AccessChooser from "./session/AccessChooser";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { getSessionFormClass } from "./session/SessionFormVariant";
 import pluginManager from "../plugins/PluginManager";
-import {
-  getPluginTabsForFile,
-  computeDefaultIndex
-} from "../plugins/pluginMatching";
+import { computeDefaultIndex } from "../plugins/pluginMatching";
+import tabProviderHost, {
+  MatchedProviderTab
+} from "../plugins/tabProviderHost";
 import { localizeLabel } from "../plugins/PluginManifest";
 import { getMimeType } from "../model/file/FileTypeInfo";
 import { currentUILanguage } from "../other/localization";
@@ -171,6 +171,61 @@ const FileTabs: React.FunctionComponent<
     },
     [props.folder]
   );
+
+  // Plugin tabs come from tab PROVIDERS: on every selection change the host asks each plugin's
+  // hidden provider which tabs to show for the selected file (uncached — the answer may change as
+  // the file's companions come and go). This is async, so we hold the result in state and re-query
+  // whenever the selected file, or the set/reload-counter of provider plugins, changes.
+  const selectedFileForTabs = props.folder.selectedFile;
+  const selectedPathForTabs = selectedFileForTabs
+    ? selectedFileForTabs.getActualFilePath()
+    : "";
+  const providerSignal = pluginManager.plugins
+    .filter((p) => p.enabled && p.manifest?.tabProvider)
+    .map((p) => `${p.id}:${p.reloadCounter}`)
+    .join(",");
+  const [providerTabs, setProviderTabs] = React.useState<MatchedProviderTab[]>(
+    []
+  );
+  React.useEffect(() => {
+    const f = props.folder.selectedFile;
+    const p = f ? f.getActualFilePath() : "";
+    if (!f || !p) {
+      setProviderTabs([]);
+      return;
+    }
+    const name = f.getTextProperty("filename");
+    const extNoDot2 = Path.extname(p).replace(/^\./, "").toLowerCase();
+    const fileCtx = {
+      name,
+      extension: extNoDot2,
+      mimeType: getMimeType(extNoDot2),
+      lametaType: f.type,
+      path: p,
+      uri: URL.pathToFileURL(p).toString()
+    };
+    let cancelled = false;
+    tabProviderHost
+      .getTabsForFile(fileCtx, {
+        type: props.folder.folderType,
+        directory: props.folder.directory
+      })
+      .then((tabs) => {
+        if (!cancelled) setProviderTabs(tabs);
+      })
+      .catch(() => {
+        if (!cancelled) setProviderTabs([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedPathForTabs,
+    providerSignal,
+    props.folder.folderType,
+    props.folder.directory
+  ]);
 
   // tabIndex: number,
   // setTabIndex: (index: number) => void,
@@ -366,8 +421,13 @@ const FileTabs: React.FunctionComponent<
     </>
   ) : null;
 
-  // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
-  const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
+  // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file
+  // changes. It also includes the provider-tab signature so that when async provider tabs arrive
+  // (or change), the <Tabs> remounts and re-applies defaultIndex (e.g. a claimDefault "Segments").
+  const tabsKey =
+    props.folder.selectedFile!.getTextProperty("filename") +
+    "|" +
+    providerTabs.map((m) => `${m.pluginId}/${m.tab.id}`).join(",");
 
   let t = file.type;
   const ext = Path.extname(file.getActualFilePath()).toLowerCase();
@@ -381,13 +441,10 @@ const FileTabs: React.FunctionComponent<
   // dev watcher's reloadCounter bump (which hot-reloads an open plugin tab).
   const extNoDot = ext.replace(/^\./, "");
   const mimeType = getMimeType(extNoDot);
+  // Plugin tabs come from tab providers (queried asynchronously above into `providerTabs`).
+  // Metadata views (Session/Person) never show plugin tabs.
   const matchedPluginTabs =
-    t === "Session" || t === "Person"
-      ? []
-      : getPluginTabsForFile(
-          { extension: extNoDot, mimeType, lametaType: file.type },
-          pluginManager.getEnabledMatchablePlugins()
-        );
+    t === "Session" || t === "Person" ? [] : providerTabs;
   // The built-in viewer is tab 0; plugin tabs occupy 1..N; then the standard metadata tabs.
   const fileTabsDefaultIndex = computeDefaultIndex(matchedPluginTabs);
 
@@ -407,7 +464,8 @@ const FileTabs: React.FunctionComponent<
             pluginId={m.pluginId}
             pluginVersion={m.pluginVersion}
             pluginDir={record?.directory || ""}
-            entry={m.tab.entry}
+            entry={m.entry}
+            tabId={m.tab.id}
             apiVersion={record?.manifest?.apiVersion ?? 1}
             permissions={m.permissions}
             reloadCounter={record?.reloadCounter ?? 0}

@@ -12,6 +12,7 @@ import { PatientFS } from "./other/patientFile";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 import pluginManager from "./plugins/PluginManager";
+import tabProviderHost from "./plugins/tabProviderHost";
 
 // when I upgraded to mobx 6, I added this becuase I was getting "Since
 // strict-mode is enabled, changing (observed) observable values without using
@@ -32,6 +33,7 @@ app.whenReady().then(async () => {
 
   initializeLocalization();
   pluginManager.initialize(); // discover file-handler plugins (installed + dev folder)
+  tabProviderHost.warmUp(); // pre-load hidden tab-provider iframes so first selection is instant
   initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
   analyticsEvent("Launch", "Launch");
 

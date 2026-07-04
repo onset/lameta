@@ -258,6 +258,12 @@ export class PluginManager {
       .map((p) => ({ manifest: p.manifest! }));
   }
 
+  /** Enabled, valid plugins that declare a `tabProvider` — the input to the tab-provider host
+   * (which keeps a hidden provider iframe per plugin and asks it which tabs to show). */
+  public getEnabledTabProviders(): PluginRecord[] {
+    return this.plugins.filter((p) => p.enabled && p.manifest?.tabProvider);
+  }
+
   /** Look up a record by id (for the panel to read reloadCounter, directory, etc.). */
   public getById(id: string): PluginRecord | undefined {
     return this.plugins.find((p) => p.id === id);

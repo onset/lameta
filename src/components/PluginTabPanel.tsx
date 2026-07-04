@@ -37,6 +37,9 @@ export interface PluginTabPanelProps {
   /** Host handler for the `selectFile` plugin API: make `relPath` (a bare file name in the
    * owning folder) the selected file. Returns true if a file was selected. */
   onSelectFile?: (relPath: string) => Promise<boolean> | boolean;
+
+  /** The provider-supplied tab id this content iframe is rendering (echoed as context.tab.id). */
+  tabId?: string;
 }
 
 const HANDSHAKE_TIMEOUT_MS = 10000;
@@ -59,7 +62,7 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
   const apiSupported =
     LAMETA_PLUGIN_API_VERSIONS_SUPPORTED.includes(props.apiVersion);
 
-  const iframeKey = `${props.pluginId}:${props.reloadCounter}:${attempt}`;
+  const iframeKey = `${props.pluginId}:${props.tabId ?? ""}:${props.reloadCounter}:${attempt}`;
 
   useEffect(() => {
     if (!apiSupported) return;
@@ -70,6 +73,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
 
     const context: PluginInitContext = {
       apiVersion: props.apiVersion,
+      role: "tab",
+      tab: props.tabId ? { id: props.tabId } : undefined,
       plugin: {
         id: props.pluginId,
         version: props.pluginVersion,

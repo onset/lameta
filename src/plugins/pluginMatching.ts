@@ -103,9 +103,16 @@ export function getPluginTabsForFile(
  * claims the default, the winner (max defaultPriority; ties broken by plugin id then tab
  * id) gets selected; otherwise the viewer tab (0) stays selected.
  */
-export function computeDefaultIndex(matchedTabs: MatchedPluginTab[]): number {
+/** The minimal shape computeDefaultIndex needs — satisfied by both MatchedPluginTab (static) and
+ * MatchedProviderTab (tab-provider), whose `tab`s differ but share these fields. */
+export interface DefaultClaimant {
+  pluginId: string;
+  tab: { id: string; claimDefault?: boolean; defaultPriority?: number };
+}
+
+export function computeDefaultIndex(matchedTabs: DefaultClaimant[]): number {
   let winnerIndex = -1;
-  let winner: MatchedPluginTab | undefined;
+  let winner: DefaultClaimant | undefined;
 
   matchedTabs.forEach((m, i) => {
     if (!m.tab.claimDefault) return;

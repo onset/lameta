@@ -73,10 +73,18 @@ export class PluginHostBridge {
     folderDirectory: string;
   } | null = null;
 
+  /** Resolves the first time the plugin posts `lameta:ready` — i.e. its client listener is up
+   * and it will receive messages. A tab-provider manager awaits this before sending `getTabs`. */
+  public readonly ready: Promise<void>;
+  private markReady!: () => void;
+
   constructor(opts: PluginBridgeOptions) {
     this.opts = opts;
     this.listener = this.onMessage.bind(this);
     this.initContext = JSON.parse(JSON.stringify(opts.context));
+    this.ready = new Promise<void>((resolve) => {
+      this.markReady = resolve;
+    });
   }
 
   // File scope for request handling: the active getTabs query's file when a provider query is
@@ -187,6 +195,7 @@ export class PluginHostBridge {
     if (!data || typeof data !== "object") return;
 
     if (data.type === "lameta:ready") {
+      this.markReady();
       this.post({ type: "lameta:init", context: this.initContext });
       return;
     }
